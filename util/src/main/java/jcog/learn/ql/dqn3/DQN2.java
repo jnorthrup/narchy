@@ -94,7 +94,7 @@ public class DQN2 extends Agent {
      */
     @Override public int decide(float[] actionFeedback, float reward, float[] input) {
 
-        double[] rewardPrediction = valuePredict.predict(input);
+        var rewardPrediction = valuePredict.predict(input);
 
         //train the network with a memory
         if (lastAction!=-1) {
@@ -123,7 +123,7 @@ public class DQN2 extends Agent {
              */
 
             //predict the future discounted reward
-            float target =
+            var target =
                     //reward;
                     (float) ((reward) + learnConfig.getGamma() *
                             //Util.max(rewardPrediction));
@@ -146,7 +146,7 @@ public class DQN2 extends Agent {
         }
 
         ((DecideEpsilonGreedy)actionDecider).epsilonRandom = (float) learnConfig.getEpsilon();
-        int nextAction = actionDecider.applyAsInt(rewardPrediction);
+        var nextAction = actionDecider.applyAsInt(rewardPrediction);
 
         System.arraycopy(input, 0, lastState, 0, input.length);
 

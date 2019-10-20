@@ -65,7 +65,7 @@ public enum MetaGoal {
 
 
     public void learn(Task t, float strength, NAR n) {
-        Term why = t.why();
+        var why = t.why();
         if (why != null)
             learn(why, strength, n.control.why);
     }
@@ -116,31 +116,31 @@ public enum MetaGoal {
      **/
     public static void value(NAR n, @Nullable BiConsumer<NAR, FasterList<Cause>> valuePrioritizer) {
 
-        FasterList<Cause> cause = n.control.why;
-        int cc = cause.size();
+        var cause = n.control.why;
+        var cc = cause.size();
         if (cc == 0)
             return;
 
-        float[] wants = n.emotion.want;
+        var wants = n.emotion.want;
         if (Util.equals(Util.sumAbs(wants),0))
             return; //flat metagoal early exit
 
-        double[] want = Util.toDouble(wants);
+        var want = Util.toDouble(wants);
         Util.normalizeCartesian(want); //TODO this may differ from the array computed in Should if the want is modified in the meantime by another thread, so it should be shared
 
-        float[] credit = new float[want.length];
+        var credit = new float[want.length];
 
-        Cause[] ccc = cause.array();
-        for (int i = 0; i < cc; i++) {
+        var ccc = cause.array();
+        for (var i = 0; i < cc; i++) {
 
-            Cause ci = ccc[i];
+            var ci = ccc[i];
 
             //boolean valued = false;
             ci.commit(credit);
             //if (Math.abs(c) > Float.MIN_NORMAL) {
             //valued = true;
             //}
-            double v = IntStream.range(0, want.length).mapToDouble(w -> want[w] * credit[w]).sum();
+            var v = IntStream.range(0, want.length).mapToDouble(w -> want[w] * credit[w]).sum();
 
             ci.value(
                 //valued ? (float)v : Float.NaN
@@ -181,12 +181,12 @@ public enum MetaGoal {
      */
     @Deprecated public static float privaluate(FasterList<Cause> values, short[] effect) {
 
-        int effects = effect.length;
+        var effects = effect.length;
         if (effects == 0) return 0;
 
         float value = 0;
         Object[] vv = values.array();
-        for (short c : effect)
+        for (var c : effect)
             value += ((Cause) vv[c]).pri();
 
 
@@ -199,11 +199,11 @@ public enum MetaGoal {
 
         public TreeBasedTable<Cause, MetaGoal, Double> table() {
             TreeBasedTable<Cause, MetaGoal, Double> tt = TreeBasedTable.create();
-            MetaGoal[] mv = MetaGoal.values();
+            var mv = MetaGoal.values();
             synchronized (this) {
                 forEachKeyValue((k, v) -> {
-                    Cause c = k.getOne();
-                    MetaGoal m = mv[k.getTwo()];
+                    var c = k.getOne();
+                    var m = mv[k.getTwo()];
                     tt.put(c, m, v);
                 });
             }
@@ -219,7 +219,7 @@ public enum MetaGoal {
 
         public Report add(Iterable<Cause> cc) {
 
-            for (Cause c : cc) {//                int i = 0;
+            for (var c : cc) {//                int i = 0;
 //                MetaGoal[] values = MetaGoal.values();
                 //TODO
 //                for (Credit t : c.credit) {

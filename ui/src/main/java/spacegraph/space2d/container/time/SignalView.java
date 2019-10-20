@@ -36,13 +36,13 @@ public class SignalView extends Gridding {
         super();
 
 
-        FreqSpectrogram g = new FreqSpectrogram(128, 512);
+        var g = new FreqSpectrogram(128, 512);
         add(g);
 
-        WaveBitmap w = new WaveBitmap(new ArrayTensor(in.data), in.sampleRate, in.data.length, 250);
+        var w = new WaveBitmap(new ArrayTensor(in.data), in.sampleRate, in.data.length, 250);
         add(w);
 
-        Timeline2D t = new Timeline2D() {
+        var t = new Timeline2D() {
             final Fingering pan = new FingerMove(PAN_BUTTON) {
                 @Override
                 protected void move(float tx, float ty) {
@@ -86,7 +86,7 @@ public class SignalView extends Gridding {
 
             @Override
             public Surface finger(Finger finger) {
-                Surface x = super.finger(finger);
+                var x = super.finger(finger);
                 if (x!=null)
                     return x;
 
@@ -120,9 +120,9 @@ public class SignalView extends Gridding {
                     float sEnd = selectEnd;
                     if (sEnd == sEnd) {
                         r.on((gl, rr) -> {
-                            float ss = Util.clamp(x(selectStart), left(), right());
+                            var ss = Util.clamp(x(selectStart), left(), right());
                             gl.glColor4f(1f, 0.8f, 0, selectorAlpha);
-                            float ee = Util.clamp(x(selectEnd), left(), right());
+                            var ee = Util.clamp(x(selectEnd), left(), right());
                             if (ee - ss > ScalarValue.EPSILON) {
                                 Draw.rect(x() + ss, y(), ee - ss, h(), gl);
                             }

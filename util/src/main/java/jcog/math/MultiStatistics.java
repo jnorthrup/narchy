@@ -29,7 +29,7 @@ public class MultiStatistics<X> implements Consumer<X> {
 
         @Override
         public String toString() {
-            long N = getN();
+            var N = getN();
             return id + ": " +
                     (N > 0 ? (N +":" + getMin() + ".." + getMax() + ", avg=" + getMean() + ", sum=" + getSum() + ':' + super.toString())
                         :
@@ -62,7 +62,7 @@ public class MultiStatistics<X> implements Consumer<X> {
 
 
     public void clear() {
-        for (Consumer<X> c : cond) {
+        for (var c : cond) {
 
 
             if (c instanceof BooleanClassifierWithStatistics)
@@ -95,7 +95,7 @@ public class MultiStatistics<X> implements Consumer<X> {
 
         @Override
         public void accept(X x) {
-            float v = test.floatValueOf(x);
+            var v = test.floatValueOf(x);
             if (v == v)
                 accept(v);
         }
@@ -113,7 +113,7 @@ public class MultiStatistics<X> implements Consumer<X> {
 
     @Override
     public final void accept(X x) {
-        for (Consumer<X> cc : cond) {
+        for (var cc : cond) {
             cc.accept(x);
         }
     }
@@ -158,7 +158,7 @@ public class MultiStatistics<X> implements Consumer<X> {
 
         @Override
         public void accept(X z) {
-            float[] xy = func.apply(z);
+            var xy = func.apply(z);
             assert(xy.length==2);
             stats.add(xy[0], xy[1]);
         }

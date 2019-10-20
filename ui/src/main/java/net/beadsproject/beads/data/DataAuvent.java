@@ -54,8 +54,8 @@ public class DataAuvent extends Auvent implements Map<String, Object> {
     public DataAuvent(String[] proparr, Object[] valarr) {
         properties = new HashMap<>();
         if (proparr != null && valarr != null) {
-            int s = Math.min(proparr.length, valarr.length);
-            for (int i = 0; i < s; i++) {
+            var s = Math.min(proparr.length, valarr.length);
+            for (var i = 0; i < s; i++) {
                 if (proparr[i] != null)
                     properties.put(proparr[i], valarr[i]);
             }
@@ -112,7 +112,7 @@ public class DataAuvent extends Auvent implements Map<String, Object> {
      * @param objects an interleaved series of key-value pairs.
      */
     private void putAll(Object... objects) {
-        for (int i = 0; i < objects.length; i += 2) {
+        for (var i = 0; i < objects.length; i += 2) {
             put((String) objects[i], objects[i + 1]);
         }
     }
@@ -187,7 +187,7 @@ public class DataAuvent extends Auvent implements Map<String, Object> {
      */
 
     private Float getFloatObject(String key) {
-        Object o = get(key);
+        var o = get(key);
         if (o instanceof Number) {
             return ((Number) o).floatValue();
         } else if (o instanceof String) {
@@ -209,7 +209,7 @@ public class DataAuvent extends Auvent implements Map<String, Object> {
      * @return The UGen if it exists.
      */
     public UGen getUGen(String key) {
-        Object o = get(key);
+        var o = get(key);
         return o instanceof UGen ? (UGen) o : null;
     }
 
@@ -227,56 +227,56 @@ public class DataAuvent extends Auvent implements Map<String, Object> {
      * @return The derived float array.
      */
     public float[] getFloatArray(String key) {
-        Object o = get(key);
+        var o = get(key);
         float[] ret;
         if (o instanceof Number[]) {
-            Number[] n = (Number[]) o;
+            var n = (Number[]) o;
             ret = new float[n.length];
-            for (int i = 0; i < n.length; i++) {
+            for (var i = 0; i < n.length; i++) {
                 ret[i] = n[i].floatValue();
             }
         } else if (o instanceof float[]) {
             ret = (float[]) o;
         } else if (o instanceof double[]) {
-            double[] p = (double[]) o;
+            var p = (double[]) o;
             ret = new float[p.length];
-            for (int i = 0; i < p.length; i++) {
+            for (var i = 0; i < p.length; i++) {
                 ret[i] = (float) p[i];
             }
         } else if (o instanceof int[]) {
-            int[] p = (int[]) o;
+            var p = (int[]) o;
             ret = new float[p.length];
-            for (int i = 0; i < p.length; i++) {
+            for (var i = 0; i < p.length; i++) {
                 ret[i] = p[i];
             }
         } else if (o instanceof long[]) {
-            long[] p = (long[]) o;
+            var p = (long[]) o;
             ret = new float[p.length];
-            for (int i = 0; i < p.length; i++) {
+            for (var i = 0; i < p.length; i++) {
                 ret[i] = p[i];
             }
         } else if (o instanceof char[]) {
-            char[] p = (char[]) o;
+            var p = (char[]) o;
             ret = new float[p.length];
-            for (int i = 0; i < p.length; i++) {
+            for (var i = 0; i < p.length; i++) {
                 ret[i] = p[i];
             }
         } else if (o instanceof byte[]) {
-            byte[] p = (byte[]) o;
+            var p = (byte[]) o;
             ret = new float[p.length];
-            for (int i = 0; i < p.length; i++) {
+            for (var i = 0; i < p.length; i++) {
                 ret[i] = p[i];
             }
         } else if (o instanceof short[]) {
-            short[] p = (short[]) o;
+            var p = (short[]) o;
             ret = new float[p.length];
-            for (int i = 0; i < p.length; i++) {
+            for (var i = 0; i < p.length; i++) {
                 ret[i] = p[i];
             }
         } else if (o instanceof boolean[]) {
-            boolean[] p = (boolean[]) o;
+            var p = (boolean[]) o;
             ret = new float[p.length];
-            for (int i = 0; i < p.length; i++) {
+            for (var i = 0; i < p.length; i++) {
                 ret[i] = p[i] ? 1 : 0;
             }
         } else if (o instanceof Number) {
@@ -298,7 +298,7 @@ public class DataAuvent extends Auvent implements Map<String, Object> {
      * @return The UGen array.
      */
     public UGen[] getUGenArray(String key) {
-        Object o = get(key);
+        var o = get(key);
         if (o instanceof UGen[]) {
             return (UGen[]) o;
         } else if (o instanceof UGen) {
@@ -314,7 +314,7 @@ public class DataAuvent extends Auvent implements Map<String, Object> {
      */
     @Override
     public DataAuvent clone() {
-        DataAuvent ret = new DataAuvent();
+        var ret = new DataAuvent();
         ret.setName(getName());
         ret.putAll(properties);
         return ret;
@@ -330,7 +330,7 @@ public class DataAuvent extends Auvent implements Map<String, Object> {
      * @return The new DataBead.
      */
     public static DataAuvent combine(DataAuvent a, DataAuvent b) {
-        DataAuvent c = new DataAuvent();
+        var c = new DataAuvent();
         c.putAll(b);
         c.putAll(a);
         return c;

@@ -48,11 +48,11 @@ public class Grammar {
 
 	public IParsingResult parse(String stringToParse) {
 		check();
-		Tokenizer tokenizer = new Tokenizer(stringToParse);
+		var tokenizer = new Tokenizer(stringToParse);
 		Assembly assembly = new TokenAssembly(tokenizer);
 		if (initTokenizer != null)
 			initTokenizer.init(tokenizer);
-		Assembly result = startParser().bestMatch(assembly);
+		var result = startParser().bestMatch(assembly);
 		return new ParsingResult(result);
 	}
 
@@ -87,19 +87,19 @@ public class Grammar {
 	}
 
 	private void checkGrammarIsClosed() {
-		Set<Parser> seen = allParsersUsedFromStartRule();
+		var seen = allParsersUsedFromStartRule();
 		checkAllClausesAreUsed(seen);
 	}
 
 	private void checkAllClausesAreUsed(Set<Parser> seen) {
-		for (Map.Entry<String, Parser> entry : rules.entrySet()) {
+		for (var entry : rules.entrySet()) {
 			if (!seen.contains(entry.getValue()))
 				throw new GrammarException("Clause '" + entry.getKey() + "' is not being referenced from start rule.");
 		}
 	}
 
 	private Set<Parser> allParsersUsedFromStartRule() {
-		Set<Parser> all = ParserCollector.collectAllReferencedParsers(startParser());
+		var all = ParserCollector.collectAllReferencedParsers(startParser());
 		all.add(startParser());
 		return all;
 	}
@@ -122,7 +122,7 @@ public class Grammar {
 	}
 
 	public String defineRule(String ruleText, BiConsumer<List, Stack> matched) {
-		String ruleName = defineRule(ruleText);
+		var ruleName = defineRule(ruleText);
 		addAssembler(ruleName, new ParserMatchedAssembler(matched));
 		return ruleName;
 	}
@@ -154,7 +154,7 @@ public class Grammar {
 
 	public void printOn(PrintWriter writer) {
 		printRuleOn(startRule, writer);
-		for (String ruleName : rules.keySet()) {
+		for (var ruleName : rules.keySet()) {
 			if (ruleName.equals(startRule))
 				continue;
 			printRuleOn(ruleName, writer);
@@ -163,14 +163,14 @@ public class Grammar {
 	}
 
 	private void printRuleOn(String ruleName, PrintWriter writer) {
-		String ruleString = getRule(ruleName).toString();
+		var ruleString = getRule(ruleName).toString();
 		if (ruleString.startsWith("(") && ruleString.endsWith(")"))
 			ruleString = ruleString.substring(1, ruleString.length() - 1);
 		writer.println(ruleName + " = " + ruleString + ';');
 	}
 
 	public void registerTerminal(Class<? extends Terminal> terminalClass) {
-		String terminalType = terminalClass.getSimpleName();
+		var terminalType = terminalClass.getSimpleName();
 		registerTerminal(terminalType, terminalClass);
 	}
 
@@ -179,7 +179,7 @@ public class Grammar {
 	}
 
 	public Terminal terminal(String terminalType) {
-		Class<? extends Terminal> terminalClass = terminalTypes.get(terminalType.toLowerCase());
+		var terminalClass = terminalTypes.get(terminalType.toLowerCase());
 		if (terminalClass == null)
 			throw new GrammarException("Unknown terminal type: " + terminalType);
 		try {
@@ -208,8 +208,8 @@ public class Grammar {
 	 * @throws IOException
 	 */
 	public void addRulesFrom(Reader reader) throws IOException {
-		try (BufferedReader br = new BufferedReader(reader)) {
-			String line = br.readLine();
+		try (var br = new BufferedReader(reader)) {
+			var line = br.readLine();
 			while (line != null) {
 				defineRule(line);
 				line = br.readLine();

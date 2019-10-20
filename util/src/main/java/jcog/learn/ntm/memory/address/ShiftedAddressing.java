@@ -28,22 +28,22 @@ public class ShiftedAddressing
         shifted = UnitFactory.getVector(cells);
 
         shiftWeight = Sigmoid.getValue(_shift.value);
-        double maxShift = ((2.0 * shiftWeight) - 1.0);
+        var maxShift = ((2.0 * shiftWeight) - 1.0);
         double cellCountDbl = cells;
-        double convolutionDbl = (maxShift + cellCountDbl) % cellCountDbl;
+        var convolutionDbl = (maxShift + cellCountDbl) % cellCountDbl;
         simj = 1.0 - (convolutionDbl - Math.floor(convolutionDbl));
 
-        double oneMinusSimj = (1.0 - simj);
+        var oneMinusSimj = (1.0 - simj);
 
-        int conv = this.conv = convToInt(convolutionDbl);
+        var conv = this.conv = convToInt(convolutionDbl);
 
-        int cells = this.cells;
+        var cells = this.cells;
 
-        Unit[] shifted = this.shifted;
-        Unit[] gated = this.gated;
-        double simj = this.simj;
+        var shifted = this.shifted;
+        var gated = this.gated;
+        var simj = this.simj;
 
-        for (int i = 0;i < cells;i++) {
+        for (var i = 0; i < cells; i++) {
 
             /*
             int imj = (i + _convolution) % _cellCount;
@@ -53,12 +53,12 @@ public class ShiftedAddressing
             */
 
 
-            int imj = (i + conv) % cells;
+            var imj = (i + conv) % cells;
 
-            Unit vectorItem = shifted[i];
+            var vectorItem = shifted[i];
 
 
-            double v = vectorItem.value = (gated[imj].value * simj) +
+            var v = vectorItem.value = (gated[imj].value * simj) +
                     (gated[(imj + 1) % cells].value * oneMinusSimj);
 
             if (v < 0.0 || Double.isNaN(v)) {
@@ -78,12 +78,12 @@ public class ShiftedAddressing
 
     public void backwardErrorPropagation() {
 
-        double oneMinusSimj = (1.0 - simj);
+        var oneMinusSimj = (1.0 - simj);
 
-        double gradient = 0.0;
+        var gradient = 0.0;
 
 
-        for (int i = 0;i < cells;i++) {
+        for (var i = 0; i < cells; i++) {
 
             /*
              Unit vectorItem = ShiftedVector[i];
@@ -94,10 +94,10 @@ public class ShiftedAddressing
 
              */
 
-            Unit vectorItem = shifted[i];
-            int imj = (i + conv) % cells;
+            var vectorItem = shifted[i];
+            var imj = (i + conv) % cells;
             gradient += ((-gated[imj].value) + gated[(imj + 1) % cells].value) * vectorItem.grad;
-            int j = (i - conv + cells) % cells;
+            var j = (i - conv + cells) % cells;
             gated[i].grad += (vectorItem.grad * simj) + (shifted[(j - 1 + cells) % cells].grad * oneMinusSimj);
         }
         gradient = gradient * 2.0 * shiftWeight * (1.0 - shiftWeight);

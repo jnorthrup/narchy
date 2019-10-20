@@ -35,7 +35,7 @@ public class WallMenuView extends Menu.MenuView {
     public void active(Surface surface) {
         ContainerSurface w = wall.add(surface);
         //TODO
-        RectFloat r = RectFloat.XYXY((float) 10, (float) 10, (float) 400, (float) 300);
+        var r = RectFloat.XYXY((float) 10, (float) 10, (float) 400, (float) 300);
         w.pos(r);
     }
 

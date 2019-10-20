@@ -65,8 +65,8 @@ public class ScreenDisplay extends JPanel {
     public Dimension getPreferredSize() {
 
         statusBarY = defaultHeight * yScaleFactor;
-        int width = defaultWidth * xScaleFactor;
-        int height = statusBarY + statusBarHeight;
+        var width = defaultWidth * xScaleFactor;
+        var height = statusBarY + statusBarHeight;
 
         windowWidth = width;
         windowHeight = height;
@@ -104,16 +104,16 @@ public class ScreenDisplay extends JPanel {
     public void updateFrameCount() {
         synchronized (this) {
             frameCount++;
-            long time = System.currentTimeMillis();
+            var time = System.currentTimeMillis();
 
             
             if (time - frameTime >= 1000 / updateRate) {
                 if (fps == 0) {
                     fps = frameCount;
                 } else {
-                    
-                    double ticksSinceUpdate = (time - frameTime) * updateRate / 1000.0;
-                    double alpha = Math.pow(fpsAlpha, ticksSinceUpdate);
+
+                    var ticksSinceUpdate = (time - frameTime) * updateRate / 1000.0;
+                    var alpha = Math.pow(fpsAlpha, ticksSinceUpdate);
 
                     fps = alpha * fps + (1 - alpha) * (frameCount * updateRate / ticksSinceUpdate);
                 }
@@ -132,7 +132,7 @@ public class ScreenDisplay extends JPanel {
      */
     private static void rescale(Graphics g, double xFactor, double yFactor) {
         if (g instanceof Graphics2D) {
-            Graphics2D g2d = (Graphics2D) g;
+            var g2d = (Graphics2D) g;
             g2d.scale(xFactor, yFactor);
         }
     }
@@ -152,30 +152,30 @@ public class ScreenDisplay extends JPanel {
             
             rescale(g, 1.0 / xScaleFactor, 1.0 / yScaleFactor);
 
-            int statusBarTextOffset = statusBarY + 15;
+            var statusBarTextOffset = statusBarY + 15;
 
             
             if (fps > 0) {
                 g.setColor(Color.BLACK);
-                double roundedFPS = (Math.round(fps * 10) / 10.0);
+                var roundedFPS = (Math.round(fps * 10) / 10.0);
                 g.drawString("FPS: " + roundedFPS, 0, statusBarTextOffset);
             }
 
             
             if (centerString != null) {
-                int stringLength = g.getFontMetrics().stringWidth(centerString);
+                var stringLength = g.getFontMetrics().stringWidth(centerString);
                 g.drawString(centerString, (windowWidth - stringLength) / 2, statusBarTextOffset);
             }
 
-            int textOffset = statusBarY - 4;
+            var textOffset = statusBarY - 4;
 
             g.setColor(Color.YELLOW);
 
             
-            for (MessageHistory.Message m : messages.getMessages()) {
-                
-                String text = m.getText();
-                int stringLength = g.getFontMetrics().stringWidth(text);
+            for (var m : messages.getMessages()) {
+
+                var text = m.getText();
+                var stringLength = g.getFontMetrics().stringWidth(text);
                 g.drawString(text, windowWidth - stringLength - 2, textOffset);
 
                 

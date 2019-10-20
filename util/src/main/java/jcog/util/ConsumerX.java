@@ -64,7 +64,7 @@ import java.util.stream.Stream;
     }
 
     default void acceptAll(X[] xx) {
-        for (X x : xx)
+        for (var x : xx)
             accept(x);
     }
 
@@ -91,7 +91,7 @@ import java.util.stream.Stream;
         exe.execute(() -> {
 
             try {
-                FasterList batch = drainBuffer.get();
+                var batch = drainBuffer.get();
                 batch.ensureCapacity(max);
 
                 if (b instanceof ArrayBag) {
@@ -100,7 +100,7 @@ import java.util.stream.Stream;
                     b.pop(null, max, batch::addFast); //per item.. may be slow
                 }
 
-                int bs = batch.size();
+                var bs = batch.size();
                 if (bs > 0) {
 
                     try {

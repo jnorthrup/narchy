@@ -22,11 +22,11 @@ public class BinauralTones implements SoundProducer {
     }
 
     @Override public boolean read(float[] buf, int readRate) {
-        float dt = 1.0f / readRate;
+        var dt = 1.0f / readRate;
 
-        float leftRate = (carrier - (beat / 2.0f)) * (float)(Math.PI* 2.0f);
-        float rigtRate = (carrier + (beat / 2.0f)) * (float)(Math.PI* 2.0f);
-        for (int i = 0; i < buf.length-1; /*stereo*/) {
+        var leftRate = (carrier - (beat / 2.0f)) * (float)(Math.PI* 2.0f);
+        var rigtRate = (carrier + (beat / 2.0f)) * (float)(Math.PI* 2.0f);
+        for (var i = 0; i < buf.length-1; /*stereo*/) {
             buf[i++] = (float)FastMath.sin( x * leftRate );
             buf[i++] = (float)FastMath.sin( x * rigtRate );
             x += dt;
@@ -37,7 +37,7 @@ public class BinauralTones implements SoundProducer {
 
     @Override
     public void skip(int samplesToSkip, int readRate) {
-        float dt = 1.0f / readRate;
+        var dt = 1.0f / readRate;
         x += dt * samplesToSkip;
     }
 

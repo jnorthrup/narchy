@@ -35,7 +35,7 @@ public class ListNotMatch extends UnaryOperator {
 
     @Override
     public void describe(StringBuilder builder, DescriptionContext context, RegexFlavour flavour) {
-        Node child = get(0);
+        var child = get(0);
         builder.append("[^");
         child.describe(builder, context, flavour);
         builder.append(']');

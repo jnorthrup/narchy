@@ -36,7 +36,7 @@ public class Num extends Terminal {
 	 */
 	@Override
 	protected boolean qualifies(Object o) {
-		Token t = (Token) o;
+		var t = (Token) o;
 		return t.isNumber();
 	}
 
@@ -45,7 +45,7 @@ public class Num extends Terminal {
 	 */
 	@Override
 	public List<String> randomExpansion(int maxDepth, int depth) {
-		double d = Math.floor(1000.0 * Math.random()) / 10;
+		var d = Math.floor(1000.0 * Math.random()) / 10;
 		List<String> v = new ArrayList<>();
 		v.add(Double.toString(d));
 		return v;

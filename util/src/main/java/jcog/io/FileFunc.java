@@ -68,7 +68,7 @@ public class FileFunc {
             if (includeExistingInitially) {
                 try {
                     //invoke listener with existing children
-                    for (FileObject c : file.getChildren()) {
+                    for (var c : file.getChildren()) {
                         try {
                             l.fileCreated(new FileChangeEvent(c));
                         } catch (Exception e) {

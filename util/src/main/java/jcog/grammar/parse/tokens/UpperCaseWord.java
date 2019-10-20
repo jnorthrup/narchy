@@ -9,7 +9,7 @@ public class UpperCaseWord extends Word {
 	protected boolean qualifies(Object o) {
 		if (!super.qualifies(o))
 			return false;
-		Token t = (Token) o;
+		var t = (Token) o;
 		return Character.isUpperCase(t.sval().charAt(0));
 	}
 

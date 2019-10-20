@@ -157,7 +157,7 @@ public class VerletParticle2D extends Vec2D {
     }
 
     public boolean isDeleted() {
-        float m = this.mass;
+        var m = this.mass;
         return m!=m;
     }
 
@@ -188,7 +188,7 @@ public class VerletParticle2D extends Vec2D {
     }
 
     public VerletParticle2D addConstraints(Iterable<ParticleConstraint2D> constraints) {
-        for (ParticleConstraint2D c : constraints) {
+        for (var c : constraints) {
             addConstraint(c);
         }
         return this;
@@ -206,7 +206,7 @@ public class VerletParticle2D extends Vec2D {
 
     public void applyConstraints() {
         if (constraints != null) {
-            for (ParticleConstraint2D pc : constraints) {
+            for (var pc : constraints) {
                 pc.accept(this);
             }
         }
@@ -217,7 +217,7 @@ public class VerletParticle2D extends Vec2D {
         //Pos(next) = Pos(now) + (Pos(now) - Pos(prev)) + Accel * dt * dt
         //F = ma, a = F/m
 
-        Vec2D d = (this.sub(prev).scale(1f - drag)).addSelf(force.scale(
+        var d = (this.sub(prev).scale(1f - drag)).addSelf(force.scale(
                 //invWeight * dt * dt
                 //invWeight * dt
                 1/mass

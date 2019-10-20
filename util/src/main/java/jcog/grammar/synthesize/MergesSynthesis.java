@@ -27,10 +27,10 @@ import static jcog.grammar.synthesize.util.GrammarUtils.*;
 
 public class MergesSynthesis {
     public static NodeMerges getMergesMultiple(Iterable<Node> roots, Predicate<String> oracle) {
-        NodeMerges merges = new NodeMerges();
-        NodeMerges processed = new NodeMerges();
-        for (Node first : roots) {
-            for (Node second : roots) {
+        var merges = new NodeMerges();
+        var processed = new NodeMerges();
+        for (var first : roots) {
+            for (var second : roots) {
                 if (processed.contains(first, second)) {
                     continue;
                 }
@@ -42,12 +42,12 @@ public class MergesSynthesis {
     }
 
     public static NodeMerges getMergesSingle(Node firstRoot, Node secondRoot, Predicate<String> oracle) {
-        NodeMerges merges = new NodeMerges();
-        NodeMerges processedMerges = new NodeMerges();
-        MultivalueMap<Node, String> pairFirst = getAllExamples(firstRoot);
-        MultivalueMap<Node, String> pairSecond = getAllExamples(secondRoot);
-        for (Node first : getAllNodes(firstRoot)) {
-            for (Node second : getAllNodes(secondRoot)) {
+        var merges = new NodeMerges();
+        var processedMerges = new NodeMerges();
+        var pairFirst = getAllExamples(firstRoot);
+        var pairSecond = getAllExamples(secondRoot);
+        for (var first : getAllNodes(firstRoot)) {
+            for (var second : getAllNodes(secondRoot)) {
                 if (processedMerges.contains(first, second)) {
                     continue;
                 }
@@ -65,8 +65,8 @@ public class MergesSynthesis {
         if (!(first instanceof RepetitionNode) || !(second instanceof RepetitionNode)) {
             return;
         }
-        Node firstRep = ((RepetitionNode) first).rep;
-        Node secondRep = ((RepetitionNode) second).rep;
+        var firstRep = ((RepetitionNode) first).rep;
+        var secondRep = ((RepetitionNode) second).rep;
         if (firstRep instanceof ConstantNode || firstRep instanceof MultiConstantNode || secondRep instanceof ConstantNode || secondRep instanceof MultiConstantNode) {
             return;
         }
@@ -91,43 +91,43 @@ public class MergesSynthesis {
     }
 
     private static void getAllExamplesHelper(Node node, MultivalueMap<Node, String> examples) {
-        for (Node child : node.getChildren()) {
+        for (var child : node.getChildren()) {
             getAllExamplesHelper(child, examples);
         }
         if (node instanceof RepetitionNode) {
-            RepetitionNode repNode = (RepetitionNode) node;
-            for (String example : examples.get(repNode.start)) {
+            var repNode = (RepetitionNode) node;
+            for (var example : examples.get(repNode.start)) {
                 examples.add(repNode, example + repNode.rep.getData().example + repNode.end.getData().example);
             }
-            for (String example : examples.get(repNode.rep)) {
+            for (var example : examples.get(repNode.rep)) {
                 examples.add(repNode, repNode.start.getData().example + example + repNode.end.getData().example);
             }
-            for (String example : examples.get(repNode.end)) {
+            for (var example : examples.get(repNode.end)) {
                 examples.add(repNode, repNode.start.getData().example + repNode.rep.getData().example + example);
             }
         } else if (node instanceof MultiConstantNode) {
-            MultiConstantNode mconstNode = (MultiConstantNode) node;
-            String example = mconstNode.getData().example;
-            for (int i = 0; i < mconstNode.characterChecks.size(); i++) {
-                String pre = example.substring(0, i);
-                String post = example.substring(i + 1);
+            var mconstNode = (MultiConstantNode) node;
+            var example = mconstNode.getData().example;
+            for (var i = 0; i < mconstNode.characterChecks.size(); i++) {
+                var pre = example.substring(0, i);
+                var post = example.substring(i + 1);
                 for (char c : mconstNode.characterChecks.get(i)) {
                     examples.add(mconstNode, pre + c + post);
                 }
             }
         } else if (node instanceof AlternationNode) {
-            AlternationNode altNode = (AlternationNode) node;
-            for (String example : examples.get(altNode.first)) {
+            var altNode = (AlternationNode) node;
+            for (var example : examples.get(altNode.first)) {
                 examples.add(altNode, example);
             }
-            for (String example : examples.get(altNode.second)) {
+            for (var example : examples.get(altNode.second)) {
                 examples.add(altNode, example);
             }
         } else if (node instanceof ConstantNode) {
             examples.add(node, node.getData().example);
         } else if (node instanceof MultiAlternationNode) {
-            for (Node child : node.getChildren()) {
-                for (String example : examples.get(child)) {
+            for (var child : node.getChildren()) {
+                for (var example : examples.get(child)) {
                     examples.add(node, example);
                 }
             }
@@ -137,7 +137,7 @@ public class MergesSynthesis {
     }
 
     private static MultivalueMap<Node, String> getAllExamples(Node root) {
-        MultivalueMap<Node, String> allExamples = new MultivalueMap<>();
+        var allExamples = new MultivalueMap<Node, String>();
         getAllExamplesHelper(root, allExamples);
         return allExamples;
     }
@@ -148,12 +148,12 @@ public class MergesSynthesis {
     }
 
     private static boolean isStructuredExample(Node node) {
-        for (Node descendant : getDescendants(node)) {
+        for (var descendant : getDescendants(node)) {
             if (!(descendant instanceof MultiConstantNode)) {
                 continue;
             }
-            MultiConstantNode mconstNode = (MultiConstantNode) descendant;
-            for (Set<Character> checks : mconstNode.characterChecks) {
+            var mconstNode = (MultiConstantNode) descendant;
+            for (var checks : mconstNode.characterChecks) {
                 if (checks.size() == 1) {
                     return true;
                 }

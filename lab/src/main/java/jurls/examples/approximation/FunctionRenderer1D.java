@@ -29,15 +29,15 @@ public class FunctionRenderer1D extends javax.swing.JPanel {
         g.setColor(Color.black);
         g.fillRect(0, 0, getWidth(), getHeight());
 
-        for (RenderFunction1D rf : renderFunctions) {
+        for (var rf : renderFunctions) {
             g.setColor(rf.getColor());
 
             double prevX = 0;
             double prevY = 0;
             for (double x = 0; x < 1.0; x += 0.01) {
-                double y0 =rf.compute(x);
-                double y = (0.5f * y0+0.5)*getHeight();
-                int px = (int)(getWidth() * x);
+                var y0 =rf.compute(x);
+                var y = (0.5f * y0+0.5)*getHeight();
+                var px = (int)(getWidth() * x);
                 g.drawLine((int) prevX, (int) prevY, px, (int) y);
                 prevX = px;
                 prevY = y;
@@ -54,7 +54,7 @@ public class FunctionRenderer1D extends javax.swing.JPanel {
     
     private void initComponents() {
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
+        var layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)

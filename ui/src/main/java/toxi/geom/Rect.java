@@ -58,8 +58,8 @@ public class Rect implements Shape2D {
      * @since 0021
      */
     public static Rect getBoundingRect(List<? extends Vec2D> points) {
-        Vec2D first = points.get(0);
-        Rect bounds = new Rect(first.x, first.y, 0, 0);
+        var first = points.get(0);
+        var bounds = new Rect(first.x, first.y, 0, 0);
         for (int i = 1, num = points.size(); i < num; i++) {
             bounds.growToContainPoint(points.get(i));
         }
@@ -102,8 +102,8 @@ public class Rect implements Shape2D {
      * @param p2
      */
     public Rect(ReadonlyVec2D p1, ReadonlyVec2D p2) {
-        Vec2D tl = Vec2D.min(p1, p2);
-        Vec2D br = Vec2D.max(p1, p2);
+        var tl = Vec2D.min(p1, p2);
+        var br = Vec2D.max(p1, p2);
         x = tl.x;
         y = tl.y;
         width = br.x - x;
@@ -119,11 +119,11 @@ public class Rect implements Shape2D {
      */
     @Override
     public boolean containsPoint(ReadonlyVec2D p) {
-        float px = p.x();
+        var px = p.x();
         if (px < x || px > x + width)
             return false;
 
-        float py = p.y();
+        var py = p.y();
         return (py >= y || py <= y + height);
     }
 
@@ -170,7 +170,7 @@ public class Rect implements Shape2D {
     @Override
     public boolean equals(Object o) {
         if (o instanceof Rect) {
-            Rect r = (Rect) o;
+            var r = (Rect) o;
             return (x == r.x && y == r.y && width == r.width && height == r.height);
         }
         return false;
@@ -284,7 +284,7 @@ public class Rect implements Shape2D {
 
     @Override
     public List<Line2D> getEdges() {
-        List<Line2D> edges = IntStream.range(0, 4).mapToObj(this::getEdge).collect(Collectors.toList());
+        var edges = IntStream.range(0, 4).mapToObj(this::getEdge).collect(Collectors.toList());
         return edges;
     }
 
@@ -379,7 +379,7 @@ public class Rect implements Shape2D {
      */
     @Override
     public int hashCode() {
-        long bits = 1L;
+        var bits = 1L;
         bits = 31L * bits + floatToIntBits(x);
         bits = 31L * bits + floatToIntBits(y);
         bits = 31L * bits + floatToIntBits(width);
@@ -399,10 +399,10 @@ public class Rect implements Shape2D {
     public final Rect intersectionRectWith(Rect r) {
         Rect isec = null;
         if (intersectsRect(r)) {
-            float x1 = MathUtils.max(x, r.x);
-            float y1 = MathUtils.max(y, r.y);
-            float x2 = MathUtils.min(getRight(), r.getRight());
-            float y2 = MathUtils.min(getBottom(), r.getBottom());
+            var x1 = MathUtils.max(x, r.x);
+            var y1 = MathUtils.max(y, r.y);
+            var x2 = MathUtils.min(getRight(), r.getRight());
+            var y2 = MathUtils.min(getBottom(), r.getBottom());
             isec = new Rect(x1, y1, x2 - x1, y2 - y1);
         }
         return isec;
@@ -411,11 +411,11 @@ public class Rect implements Shape2D {
     public boolean intersectsCircle(Vec2D c, float r) {
         float s, d = 0;
 
-        float thisX = this.x;
-        float x2 = thisX + width;
-        float thisY = this.y;
-        float y2 = thisY + height;
-        float cx = c.x;
+        var thisX = this.x;
+        var x2 = thisX + width;
+        var thisY = this.y;
+        var y2 = thisY + height;
+        var cx = c.x;
         if (cx < thisX) {
             s = cx - thisX;
             d = s * s;
@@ -423,7 +423,7 @@ public class Rect implements Shape2D {
             s = cx - x2;
             d += s * s;
         }
-        float cy = c.y;
+        var cy = c.y;
         if (cy < thisY) {
             s = cy - thisY;
             d += s * s;
@@ -449,19 +449,19 @@ public class Rect implements Shape2D {
      *         interval
      */
     public ReadonlyVec2D intersectsRay(Ray2D ray, float minDist, float maxDist) {
-        Vec2D invDir = ray.getDirection().reciprocal();
-        boolean signDirX = invDir.x < 0;
-        boolean signDirY = invDir.y < 0;
-        Vec2D min = getTopLeft();
-        Vec2D max = getBottomRight();
-        Vec2D bbox = signDirX ? max : min;
-        float tmin = (bbox.x - ray.x) * invDir.x;
+        var invDir = ray.getDirection().reciprocal();
+        var signDirX = invDir.x < 0;
+        var signDirY = invDir.y < 0;
+        var min = getTopLeft();
+        var max = getBottomRight();
+        var bbox = signDirX ? max : min;
+        var tmin = (bbox.x - ray.x) * invDir.x;
         bbox = signDirX ? min : max;
-        float tmax = (bbox.x - ray.x) * invDir.x;
+        var tmax = (bbox.x - ray.x) * invDir.x;
         bbox = signDirY ? max : min;
-        float tymin = (bbox.y - ray.y) * invDir.y;
+        var tymin = (bbox.y - ray.y) * invDir.y;
         bbox = signDirY ? min : max;
-        float tymax = (bbox.y - ray.y) * invDir.y;
+        var tymax = (bbox.y - ray.y) * invDir.y;
         if ((tmin > tymax) || (tymin > tmax)) {
             return null;
         }
@@ -490,7 +490,7 @@ public class Rect implements Shape2D {
     }
 
     public Rect scale(float s) {
-        Vec2D c = getCentroid();
+        var c = getCentroid();
         width *= s;
         height *= s;
         x = c.x - width * 0.5f;
@@ -550,7 +550,7 @@ public class Rect implements Shape2D {
      */
     private static void toPolyArc(Polygon2D poly, Vec2D o, float radius, float theta,
                                   int res) {
-        for (int i = 0; i <= res; i++) {
+        for (var i = 0; i <= res; i++) {
             poly.add(o.add(Vec2D.fromTheta(theta + i * MathUtils.HALF_PI / res)
                     .scaleSelf(radius)));
         }
@@ -563,7 +563,7 @@ public class Rect implements Shape2D {
      */
     @Override
     public Polygon2D toPolygon2D() {
-        Polygon2D poly = new Polygon2D();
+        var poly = new Polygon2D();
         poly.add(new Vec2D(x, y));
         poly.add(new Vec2D(x + width, y));
         poly.add(new Vec2D(x + width, y + height));
@@ -583,7 +583,7 @@ public class Rect implements Shape2D {
      * @return rounded rect as polygon
      */
     public Polygon2D toPolygon2D(float radius, int res) {
-        Polygon2D poly = new Polygon2D();
+        var poly = new Polygon2D();
         toPolyArc(poly, new Vec2D(x + width - radius, y + radius), radius,
                 -MathUtils.HALF_PI, res);
         toPolyArc(poly, new Vec2D(x + width - radius, y + height - radius),
@@ -633,12 +633,12 @@ public class Rect implements Shape2D {
      * @return new Rect
      */
     public final Rect unionRectWith(Rect r) {
-        float x1 = MathUtils.min(x, r.x);
-        float x2 = MathUtils.max(x + width, r.x + r.width);
-        float w = x2 - x1;
-        float y1 = MathUtils.min(y, r.y);
-        float y2 = MathUtils.max(y + height, r.y + r.height);
-        float h = y2 - y1;
+        var x1 = MathUtils.min(x, r.x);
+        var x2 = MathUtils.max(x + width, r.x + r.width);
+        var w = x2 - x1;
+        var y1 = MathUtils.min(y, r.y);
+        var y2 = MathUtils.max(y + height, r.y + r.height);
+        var h = y2 - y1;
         return new Rect(x1, y1, w, h);
     }
 

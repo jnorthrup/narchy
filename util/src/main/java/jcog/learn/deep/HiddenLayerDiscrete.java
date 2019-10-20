@@ -25,10 +25,10 @@ public class HiddenLayerDiscrete extends HiddenLayer {
 
         if(W == null) {
             this.W = new double[n_out][n_in];
-            double a = 1.0 / this.n_in;
+            var a = 1.0 / this.n_in;
 
-            for(int i=0; i<n_out; i++) {
-                for(int j=0; j<n_in; j++) {
+            for(var i = 0; i<n_out; i++) {
+                for(var j = 0; j<n_in; j++) {
                     this.W[i][j] = uniform(-a, a, rng);
                 }
             }
@@ -41,14 +41,14 @@ public class HiddenLayerDiscrete extends HiddenLayer {
     }
 
     public double output(int[] input, double[] w, double b) {
-        int bound = n_in;
-        double linear_output = IntStream.range(0, bound).mapToDouble(j -> w[j] * input[j]).sum();
+        var bound = n_in;
+        var linear_output = IntStream.range(0, bound).mapToDouble(j -> w[j] * input[j]).sum();
         linear_output += b;
         return sigmoid(linear_output);
     }
 
     public void sample_h_given_v(double[] input, double[] sample) {
-        for(int i=0; i<n_out; i++) {
+        for(var i = 0; i<n_out; i++) {
             sample[i] = binomial(1, output(input, W[i], b[i]), rng);
         }
     }

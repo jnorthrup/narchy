@@ -926,7 +926,7 @@ public class M_Gunner {
         public boolean think(edict_t self) {
             float[] forward = { 0, 0, 0 }, right = { 0, 0, 0 };
 
-            int flash_number = Defines.MZ2_GUNNER_MACHINEGUN_1
+            var flash_number = Defines.MZ2_GUNNER_MACHINEGUN_1
                     + (self.s.frame - FRAME_attak216);
 
             Math3D.AngleVectors(self.s.angles, forward, right, null);

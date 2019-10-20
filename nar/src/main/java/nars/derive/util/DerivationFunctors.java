@@ -45,7 +45,7 @@ public enum DerivationFunctors {
 			if (s instanceof InlineFunctor)
 				add(m, s);
 
-		NAR nar = d.nar;
+		var nar = d.nar;
 
 
 		Functor[] derivationFunctors = {
@@ -99,7 +99,7 @@ public enum DerivationFunctors {
 			/** applies # dep and $ indep variable introduction if possible. returns the input term otherwise  */
 			Functor.f1Inline("varIntro", x -> {
 				if (!(x instanceof Compound)) return Null;
-				Term y = DepIndepVarIntroduction.the.apply((Compound)x, nar.random(), d.retransform);
+				var y = DepIndepVarIntroduction.the.apply((Compound)x, nar.random(), d.retransform);
 				return y == null ? Null : y;
 			}),
 
@@ -108,19 +108,19 @@ public enum DerivationFunctors {
 				@Override
 				protected Term apply1(Term _arg) {
 
-					boolean neg = _arg instanceof Neg;
-					Term arg = neg ? _arg.unneg() : _arg;
+					var neg = _arg instanceof Neg;
+					var arg = neg ? _arg.unneg() : _arg;
 
 					if (!(arg instanceof Compound))
 						return Null;
 
-					Subterms x = arg.subterms();
-					int n = x.subs();
+					var x = arg.subterms();
+					var n = x.subs();
 					if (n == 0)
 						return Null;
 
-					int which = d.random.nextInt(n);
-					Subterms y = x.transformSub(which, Term::neg);
+					var which = d.random.nextInt(n);
+					var y = x.transformSub(which, Term::neg);
 					if (x != y)
 						return arg.op().the(y).negIf(neg);
 

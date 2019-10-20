@@ -98,8 +98,8 @@ public abstract class AtomicCycle implements IntUnaryOperator {
             return get();
         assert(x >= 0 && x < (high()-low())): "TODO";
         return I.accumulateAndGet(this, x, (p,a)->{
-            int n = p + a;
-            int h = high();
+            var n = p + a;
+            var h = high();
             if (n >= h) n = low() + (n - h);
             return n;
         });

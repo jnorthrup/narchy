@@ -55,19 +55,19 @@ public class BoxCollision {
 	}
 	
 	private static boolean TEST_CROSS_EDGE_BOX_MCR(v3 edge, v3 absolute_edge, v3 pointa, v3 pointb, v3 _extend, int i_dir_0, int i_dir_1, int i_comp_0, int i_comp_1) {
-		float dir0 = -VectorUtil.coord(edge, i_dir_0);
-		float dir1 = VectorUtil.coord(edge, i_dir_1);
-		float pmin = VectorUtil.coord(pointa, i_comp_0) * dir0 + VectorUtil.coord(pointa, i_comp_1) * dir1;
-		float pmax = VectorUtil.coord(pointb, i_comp_0) * dir0 + VectorUtil.coord(pointb, i_comp_1) * dir1;
+		var dir0 = -VectorUtil.coord(edge, i_dir_0);
+		var dir1 = VectorUtil.coord(edge, i_dir_1);
+		var pmin = VectorUtil.coord(pointa, i_comp_0) * dir0 + VectorUtil.coord(pointa, i_comp_1) * dir1;
+		var pmax = VectorUtil.coord(pointb, i_comp_0) * dir0 + VectorUtil.coord(pointb, i_comp_1) * dir1;
 		if (pmin > pmax) {
 
             pmin += pmax;
 			pmax = pmin - pmax;
             pmin -= pmax;
 		}
-		float abs_dir0 = VectorUtil.coord(absolute_edge, i_dir_0);
-		float abs_dir1 = VectorUtil.coord(absolute_edge, i_dir_1);
-		float rad = VectorUtil.coord(_extend, i_comp_0) * abs_dir0 + VectorUtil.coord(_extend, i_comp_1) * abs_dir1;
+		var abs_dir0 = VectorUtil.coord(absolute_edge, i_dir_0);
+		var abs_dir1 = VectorUtil.coord(absolute_edge, i_dir_1);
+		var rad = VectorUtil.coord(_extend, i_comp_0) * abs_dir0 + VectorUtil.coord(_extend, i_comp_1) * abs_dir1;
         return !(pmin > rad || -rad > pmax);
     }
 
@@ -114,8 +114,8 @@ public class BoxCollision {
 			
 			
 
-			for (int i=0; i<3; i++) {
-				for (int j=0; j<3; j++) {
+			for (var i = 0; i<3; i++) {
+				for (var j = 0; j<3; j++) {
 					AR.setElement(i, j, 1e-6f + Math.abs(R1to0.get(i, j)));
 				}
 			}
@@ -125,7 +125,7 @@ public class BoxCollision {
 		 * Calc the transformation relative  1 to 0. Inverts matrics by transposing.
 		 */
 		public void calc_from_homogenic(Transform trans0, Transform trans1) {
-			Transform temp_trans = new Transform();
+			var temp_trans = new Transform();
 			temp_trans.invert(trans0);
 			temp_trans.mul(trans1);
 
@@ -143,7 +143,7 @@ public class BoxCollision {
 			T1to0.negated(trans0);
 			R1to0.transform(T1to0);
 
-			v3 tmp = new v3();
+			var tmp = new v3();
 			tmp.set(trans1);
 			R1to0.transform(tmp);
 			T1to0.add(tmp);
@@ -157,8 +157,8 @@ public class BoxCollision {
 			if (point == out) {
 				point = new v3(point);
 			}
-			
-			v3 tmp = new v3();
+
+			var tmp = new v3();
 			R1to0.getRow(0, tmp);
 			out.x = tmp.dot(point) + T1to0.x;
 			R1to0.getRow(1, tmp);
@@ -257,19 +257,19 @@ public class BoxCollision {
 		 * Apply a transform to an AABB.
 		 */
 		public void appy_transform(Transform trans) {
-			v3 tmp = new v3();
+			var tmp = new v3();
 
-			v3 center = new v3();
+			var center = new v3();
 			center.add(max, min);
 			center.scaled(0.5f);
 
-			v3 extends_ = new v3();
+			var extends_ = new v3();
 			extends_.sub(max, center);
 
 			
 			trans.transform(center);
 
-			v3 textends = new v3();
+			var textends = new v3();
 
 			trans.basis.getRow(0, tmp);
 			tmp.absolute();
@@ -291,19 +291,19 @@ public class BoxCollision {
 		 * Apply a transform to an AABB.
 		 */
         void appy_transform_trans_cache(BoxBoxTransformCache trans) {
-			v3 tmp = new v3();
+			var tmp = new v3();
 
-			v3 center = new v3();
+			var center = new v3();
 			center.add(max, min);
 			center.scaled(0.5f);
 
-			v3 extends_ = new v3();
+			var extends_ = new v3();
 			extends_.sub(max, center);
 
 			
 			trans.transform(center, center);
 
-			v3 textends = new v3();
+			var textends = new v3();
 
 			trans.R1to0.getRow(0, tmp);
 			tmp.absolute();
@@ -389,16 +389,16 @@ public class BoxCollision {
 			v3 extents = new v3(), center = new v3();
 			get_center_extend(center, extents);
 
-			float Dx = vorigin.x - center.x;
+			var Dx = vorigin.x - center.x;
 			if (BT_GREATER(Dx, extents.x) && Dx * vdir.x >= 0.0f) return false;
-			
-			float Dy = vorigin.y - center.y;
+
+			var Dy = vorigin.y - center.y;
 			if (BT_GREATER(Dy, extents.y) && Dy * vdir.y >= 0.0f) return false;
-			
-			float Dz = vorigin.z - center.z;
+
+			var Dz = vorigin.z - center.z;
 			if (BT_GREATER(Dz, extents.z) && Dz * vdir.z >= 0.0f) return false;
-			
-			float f = vdir.y * Dz - vdir.z * Dy;
+
+			var f = vdir.y * Dz - vdir.z * Dy;
 			if (Math.abs(f) > extents.y * Math.abs(vdir.z) + extents.z * Math.abs(vdir.y)) return false;
 			
 			f = vdir.z * Dx - vdir.x * Dz;
@@ -410,25 +410,25 @@ public class BoxCollision {
         }
 	
 		void projection_interval(v3 direction, float[] vmin, float[] vmax) {
-			v3 tmp = new v3();
+			var tmp = new v3();
 
-			v3 center = new v3();
-			v3 extend = new v3();
+			var center = new v3();
+			var extend = new v3();
 			get_center_extend(center, extend);
 
-			float _fOrigin = direction.dot(center);
+			var _fOrigin = direction.dot(center);
 			tmp.absolute(direction);
-			float _fMaximumExtent = extend.dot(tmp);
+			var _fMaximumExtent = extend.dot(tmp);
 			vmin[0] = _fOrigin - _fMaximumExtent;
 			vmax[0] = _fOrigin + _fMaximumExtent;
 		}
 
 		public PlaneIntersectionType plane_classify(Vector4f plane) {
-			v3 tmp = new v3();
+			var tmp = new v3();
 
             tmp.set(plane.x, plane.y, plane.z);
-            float[] _fmax = new float[1];
-            float[] _fmin = new float[1];
+			var _fmax = new float[1];
+			var _fmin = new float[1];
             projection_interval(tmp, _fmin, _fmax);
 
 			if (plane.w > _fmax[0] + BOX_PLANE_EPSILON) {
@@ -443,13 +443,13 @@ public class BoxCollision {
 		}
 		
 		public boolean overlapping_trans_conservative(AABB box, Transform trans1_to_0) {
-			AABB tbox = new AABB(box);
+			var tbox = new AABB(box);
 			tbox.appy_transform(trans1_to_0);
 			return has_collision(tbox);
 		}
 
 		public boolean overlapping_trans_conservative2(AABB box, BoxBoxTransformCache trans1_to_0) {
-			AABB tbox = new AABB(box);
+			var tbox = new AABB(box);
 			tbox.appy_transform_trans_cache(trans1_to_0);
 			return has_collision(tbox);
 		}
@@ -458,7 +458,7 @@ public class BoxCollision {
 		 * transcache is the transformation cache from box to this AABB.
 		 */
 		public boolean overlapping_trans_cache(AABB box, BoxBoxTransformCache transcache, boolean fulltest) {
-			v3 tmp = new v3();
+			var tmp = new v3();
 
 			
 			v3 ea = new v3(), eb = new v3(); 
@@ -466,11 +466,11 @@ public class BoxCollision {
 			get_center_extend(ca, ea);
 			box.get_center_extend(cb, eb);
 
-			v3 T = new v3();
+			var T = new v3();
 			float t;
 
 
-            for (int i=0; i<3; i++) {
+            for (var i = 0; i<3; i++) {
 				transcache.R1to0.getRow(i, tmp);
 				VectorUtil.setCoord(T, i, tmp.dot(cb) + VectorUtil.coord(transcache.T1to0, i) - VectorUtil.coord(ca, i));
 
@@ -482,7 +482,7 @@ public class BoxCollision {
 			}
 
             float t2;
-            for (int i = 0; i<3; i++) {
+            for (var i = 0; i<3; i++) {
 				t = bt_mat3_dot_col(transcache.R1to0, T, i);
 				t2 = bt_mat3_dot_col(transcache.AR, ea, i) + VectorUtil.coord(eb, i);
 				if (BT_GREATER(t, t2)) {
@@ -491,14 +491,14 @@ public class BoxCollision {
 			}
 			
 			if (fulltest) {
-                for (int i = 0; i < 3; i++) {
-                    int m = (i + 1) % 3;
-                    int n = (i + 2) % 3;
-                    int o = (i == 0) ? 1 : 0;
-                    int p = (i == 2) ? 1 : 2;
-                    for (int j=0; j<3; j++) {
-                        int q = j == 2 ? 1 : 2;
-                        int r = j == 0 ? 1 : 0;
+                for (var i = 0; i < 3; i++) {
+					var m = (i + 1) % 3;
+					var n = (i + 2) % 3;
+					var o = (i == 0) ? 1 : 0;
+					var p = (i == 2) ? 1 : 2;
+                    for (var j = 0; j<3; j++) {
+						var q = j == 2 ? 1 : 2;
+						var r = j == 0 ? 1 : 0;
                         t = VectorUtil.coord(T, n) * transcache.R1to0.get(m, j) - VectorUtil.coord(T, m) * transcache.R1to0.get(n, j);
 						t2 = VectorUtil.coord(ea, o) * transcache.AR.get(p, j) + VectorUtil.coord(ea, p) * transcache.AR.get(o, j) +
 								VectorUtil.coord(eb, r) * transcache.AR.get(i, q) + VectorUtil.coord(eb, q) * transcache.AR.get(i, r);
@@ -515,7 +515,7 @@ public class BoxCollision {
 		 * Simple test for planes.
 		 */
         boolean collide_plane(Vector4f plane) {
-			PlaneIntersectionType classify = plane_classify(plane);
+			var classify = plane_classify(plane);
 			return (classify == PlaneIntersectionType.COLLIDE_PLANE);
 		}
 		
@@ -529,17 +529,17 @@ public class BoxCollision {
 			v3 center = new v3(), extends_ = new v3();
 			get_center_extend(center, extends_);
 
-			v3 v1 = new v3();
+			var v1 = new v3();
 			v1.sub(p1, center);
-			v3 v2 = new v3();
+			var v2 = new v3();
 			v2.sub(p2, center);
-			v3 v3 = new v3();
+			var v3 = new v3();
 			v3.sub(p3, center);
 
-			
-			jcog.math.v3 diff = new v3();
+
+			var diff = new v3();
 			diff.sub(v2, v1);
-			jcog.math.v3 abs_diff = new v3();
+			var abs_diff = new v3();
 			abs_diff.absolute(diff);
 
 			

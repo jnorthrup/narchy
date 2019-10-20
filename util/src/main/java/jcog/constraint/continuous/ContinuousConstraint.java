@@ -33,11 +33,11 @@ public class ContinuousConstraint {
     private static Expression reduce(Expression expr){
 
         Map<DoubleSupplier, Double> vars = new LinkedHashMap<>(expr.terms.size());
-        for(DoubleTerm term: expr.terms)
+        for(var term: expr.terms)
             vars.merge(term.var, term.coefficient, Double::sum);
 
         List<DoubleTerm> reducedTerms = new FasterList<>(vars.size());
-        for(Map.Entry<DoubleSupplier, Double> variableDoubleEntry : vars.entrySet())
+        for(var variableDoubleEntry : vars.entrySet())
             reducedTerms.add(new DoubleTerm(variableDoubleEntry.getKey(), variableDoubleEntry.getValue()));
 
         return new Expression(reducedTerms, expr.getConstant());

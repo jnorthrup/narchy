@@ -24,7 +24,7 @@ public class Mat {
 
     void update(double alpha) {
         double[] w = this.w, dw = this.dw;
-        for (int i = 0; i < w.length; i++)
+        for (var i = 0; i < w.length; i++)
             w[i] += -alpha * dw[i];
         Arrays.fill(dw, 0);
         //Util.mul(0.9f, dw);

@@ -91,16 +91,16 @@ public class HyperRectFloat implements HyperRegion, Serializable, Comparable<Hyp
         if (a!=b) {
             if (Arrays.compare(a.data, b.data)>0) {
 
-                int dim = a.dim();
+                var dim = a.dim();
 
-                float[] min = new float[dim];
-                float[] max = new float[dim];
+                var min = new float[dim];
+                var max = new float[dim];
 
-                float[] ad = a.data;
-                float[] bd = b.data;
-                for (int i = 0; i < dim; i++) {
-                    float ai = ad[i];
-                    float bi = bd[i];
+                var ad = a.data;
+                var bd = b.data;
+                for (var i = 0; i < dim; i++) {
+                    var ai = ad[i];
+                    var bi = bd[i];
                     min[i] = Math.min(ai, bi);
                     max[i] = Math.max(ai, bi);
                 }
@@ -122,7 +122,7 @@ public class HyperRectFloat implements HyperRegion, Serializable, Comparable<Hyp
             return new HyperRectFloat(center); //point
 
         float[] a = center.clone(), b = center.clone();
-        for (int i = 0; i < a.length; i++) {
+        for (var i = 0; i < a.length; i++) {
             a[i] -= r;
             b[i] += r;
         }
@@ -132,9 +132,9 @@ public class HyperRectFloat implements HyperRegion, Serializable, Comparable<Hyp
 
     @Override
     public double cost() {
-        float sigma = 1f;
-        int dim = dim();
-        for (int i = 0; i < dim; i++) {
+        var sigma = 1f;
+        var dim = dim();
+        for (var i = 0; i < dim; i++) {
             sigma *= rangeIfFinite(i, 1 /* HACK an infinite dimension can not be compared, so just ignore it */);
         }
         return sigma;
@@ -145,17 +145,17 @@ public class HyperRectFloat implements HyperRegion, Serializable, Comparable<Hyp
         if (this == r)
             return this;
 
-        int dim = dim();
+        var dim = dim();
         float[] newMin = new float[dim], newMax = new float[dim];
         if (r instanceof HyperRectFloat) {
-            HyperRectFloat x = (HyperRectFloat) r;
-            for (int i = 0; i < dim; i++) {
+            var x = (HyperRectFloat) r;
+            for (var i = 0; i < dim; i++) {
                 newMin[i] = Math.min(min.data[i], x.min.data[i]);
                 newMax[i] = Math.max(max.data[i], x.max.data[i]);
             }
         } else {
 
-            for (int i = 0; i < dim; i++) {
+            for (var i = 0; i < dim; i++) {
                 newMin[i] = Math.min(min.data[i], (float) r.coord(i, false));
                 newMax[i] = Math.max(max.data[i], (float) r.coord(i, true));
             }
@@ -173,8 +173,8 @@ public class HyperRectFloat implements HyperRegion, Serializable, Comparable<Hyp
     }
 
     public float centerF(int dim) {
-        float min = this.min.data[dim];
-        float max = this.max.data[dim];
+        var min = this.min.data[dim];
+        var max = this.max.data[dim];
         if ((min == NEGATIVE_INFINITY) && (max == Float.POSITIVE_INFINITY))
             return 0;
         if (min == NEGATIVE_INFINITY)
@@ -186,9 +186,9 @@ public class HyperRectFloat implements HyperRegion, Serializable, Comparable<Hyp
     }
 
     public FloatND center() {
-        int dim = dim();
-        float[] c = new float[dim];
-        for (int i = 0; i < dim; i++) {
+        var dim = dim();
+        var c = new float[dim];
+        for (var i = 0; i < dim; i++) {
             c[i] = centerF(i);
         }
         return new FloatND(c);
@@ -207,8 +207,8 @@ public class HyperRectFloat implements HyperRegion, Serializable, Comparable<Hyp
 
     @Override
     public double range(int dim) {
-        float min = this.min.data[dim];
-        float max = this.max.data[dim];
+        var min = this.min.data[dim];
+        var max = this.max.data[dim];
         if (min == max)
             return 0;
         if ((min == NEGATIVE_INFINITY) || (max == Float.POSITIVE_INFINITY))
@@ -221,20 +221,20 @@ public class HyperRectFloat implements HyperRegion, Serializable, Comparable<Hyp
         if (this == o) return true;
         if (o == null /*|| getClass() != o.getClass()*/) return false;
 
-        HyperRectFloat r = (HyperRectFloat) o;
+        var r = (HyperRectFloat) o;
         return min.equals(r.min) && max.equals(r.max);
     }
 
     @Override
     public int compareTo(HyperRectFloat o) {
-        int a = min.compareTo(o.min);
+        var a = min.compareTo(o.min);
         if (a != 0) return a;
         return max.compareTo(o.max);
     }
 
     @Override
     public int hashCode() {
-        int result = min.hashCode();
+        var result = min.hashCode();
         result = 31 * result + max.hashCode();
         return result;
     }
@@ -252,14 +252,14 @@ public class HyperRectFloat implements HyperRegion, Serializable, Comparable<Hyp
     }
 
     public HyperRectFloat scale(float... s) {
-        int d = dim();
+        var d = dim();
         assert(s.length == d);
 
-        float[] x = new float[d];
+        var x = new float[d];
         float[] min = new float[d], max = new float[d];
-        for (int i = 0; i < x.length; i++) {
-            float center = (float) center(i);
-            float rangeHalf = (float)(range(i)*s[i])/2;
+        for (var i = 0; i < x.length; i++) {
+            var center = (float) center(i);
+            var rangeHalf = (float)(range(i)*s[i])/2;
             min[i] = center - rangeHalf;
             max[i] = center + rangeHalf;
         }

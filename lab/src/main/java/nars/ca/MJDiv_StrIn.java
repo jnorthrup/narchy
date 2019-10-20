@@ -31,14 +31,14 @@ public class MJDiv_StrIn {
 		m_Str = sStr;
 
 		m_Pos = 0;
-        StringTokenizer st = new StringTokenizer(sStr, ",", false);
+		var st = new StringTokenizer(sStr, ",", false);
 		while (st.hasMoreTokens()) {
-			String sTok = st.nextToken();
+			var sTok = st.nextToken();
 			sTok = sTok.trim();
 			if (sTok.contains("(")) 
 			{
-				int iPos = sTok.indexOf('(');
-				String sBff = sTok.substring(0, iPos);
+				var iPos = sTok.indexOf('(');
+				var sBff = sTok.substring(0, iPos);
 				int iCnt = Integer.valueOf(sBff);
 				sBff = sTok.substring(iPos + 1); 
 				iPos = sBff.indexOf(')');
@@ -71,9 +71,9 @@ public class MJDiv_StrIn {
 
 		Reset();
 
-        StringTokenizer st = new StringTokenizer(sStr, ",", false);
+		var st = new StringTokenizer(sStr, ",", false);
 		while (st.hasMoreTokens()) {
-			String sTok = st.nextToken().toUpperCase();
+			var sTok = st.nextToken().toUpperCase();
 
 			if (sTok.startsWith("ACT="))
 				m_Active = Integer.valueOf(sTok.substring(4)) != 0;
@@ -85,16 +85,16 @@ public class MJDiv_StrIn {
 				m_Y = Integer.valueOf(sTok.substring(2));
 		}
 
-        int iPos = sStr.indexOf("str=");
+		var iPos = sStr.indexOf("str=");
 		if (iPos >= 0) {
-			String sBff = sStr.substring(iPos + 4);
+			var sBff = sStr.substring(iPos + 4);
 			SetStr(sBff);
 		}
 	}
 
 	
 	public String GetAsString() {
-		String sRet = "#STRIN";
+		var sRet = "#STRIN";
 
 		sRet = sRet + ",act=" + (m_Active ? "1" : "0");
 		sRet = sRet + ",rep=" + (m_Repeat ? "1" : "0");

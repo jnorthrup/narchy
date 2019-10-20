@@ -32,10 +32,10 @@ public class SpecialTermTask extends ProxyTask {
 
     public static Task the(Task x, Term t, boolean copyCyclic) {
 
-        Term xt = x.term();
+        var xt = x.term();
         if (xt.equals(t)) return x;
 
-        @Nullable Term t2 = Task.taskTerm(t, x.punc(), false);
+        @Nullable var t2 = Task.taskTerm(t, x.punc(), false);
         if (t2!=t) {
             if (xt.equals(t2)) return x; //test for possible equality again
             t = t2;
@@ -45,7 +45,7 @@ public class SpecialTermTask extends ProxyTask {
             throw new TaskException("new content not taskable", t);
 
         if (x.getClass() == SpecialTermTask.class /* but not subclasses! */) {
-            SpecialTermTask et = (SpecialTermTask) x;
+            var et = (SpecialTermTask) x;
             x = et.task;
         }
 

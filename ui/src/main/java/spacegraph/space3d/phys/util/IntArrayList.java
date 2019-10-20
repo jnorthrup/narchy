@@ -41,7 +41,7 @@ public final class IntArrayList {
 	}
 	
 	public void add(int value) {
-		int[] a = this.array;
+		var a = this.array;
 		if (size == a.length) {
 			expand();
 			a = this.array;
@@ -51,25 +51,25 @@ public final class IntArrayList {
 	}
 	
 	private void expand() {
-		int[] newArray = new int[array.length << 1];
+		var newArray = new int[array.length << 1];
 		System.arraycopy(array, 0, newArray, 0, array.length);
 		array = newArray;
 	}
 
 	public int remove(int index) {
-		int s = this.size;
-		
-		int[] a = this.array;
-		int old = a[index];
+		var s = this.size;
+
+		var a = this.array;
+		var old = a[index];
 		if (index!= this.size -1)
 			System.arraycopy(a, index+1, a, index, s - index - 1);
 		this.size--;
 		return old;
 	}
 	public void removeQuick(int index) {
-		int s = this.size;
-		
-		int[] a = this.array;
+		var s = this.size;
+
+		var a = this.array;
 		if (index!= --this.size)
 			System.arraycopy(a, index+1, a, index, s - index - 1);
 	}

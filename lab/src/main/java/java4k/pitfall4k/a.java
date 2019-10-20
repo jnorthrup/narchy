@@ -44,70 +44,70 @@ public class a extends GamePanel {
 	@Override
     public void run() {
 
-        final int BACKGROUND_0 = 0;
-		final int BACKGROUND_1 = 1;
-		final int BACKGROUND_2 = 2;
+        final var BACKGROUND_0 = 0;
+		final var BACKGROUND_1 = 1;
+		final var BACKGROUND_2 = 2;
 
-        final int SPRITE_DIGIT_1 = 1;
-		final int SPRITE_DIGIT_2 = 2;
-		final int SPRITE_DIGIT_3 = 3;
-		final int SPRITE_DIGIT_4 = 4;
-		final int SPRITE_DIGIT_5 = 5;
-		final int SPRITE_DIGIT_6 = 6;
-		final int SPRITE_DIGIT_7 = 7;
-		final int SPRITE_DIGIT_8 = 8;
-		final int SPRITE_DIGIT_9 = 9;
-        final int SPRITE_LEAVES_0 = 17;
-		final int SPRITE_LEAVES_1 = 18;
-		final int SPRITE_LEAVES_2 = 19;
-        final int SPRITE_GOLD_BAR_1 = 23;
-        final int SPRITE_SILVER_BAR_1 = 25;
-        final int SPRITE_RATTLESNAKE_1 = 33;
-        final int SPRITE_COPYRIGHT_1 = 37;
-		final int SPRITE_COPYRIGHT_2 = 38;
-		final int SPRITE_COPYRIGHT_3 = 39;
-		final int SPRITE_COPYRIGHT_4 = 40;
-		final int SPRITE_COPYRIGHT_5 = 41;
-        final int SPRITE_HARRY_RUNNING_1 = 46;
-		final int SPRITE_HARRY_RUNNING_2 = 47;
-		final int SPRITE_HARRY_RUNNING_3 = 48;
+        final var SPRITE_DIGIT_1 = 1;
+		final var SPRITE_DIGIT_2 = 2;
+		final var SPRITE_DIGIT_3 = 3;
+		final var SPRITE_DIGIT_4 = 4;
+		final var SPRITE_DIGIT_5 = 5;
+		final var SPRITE_DIGIT_6 = 6;
+		final var SPRITE_DIGIT_7 = 7;
+		final var SPRITE_DIGIT_8 = 8;
+		final var SPRITE_DIGIT_9 = 9;
+        final var SPRITE_LEAVES_0 = 17;
+		final var SPRITE_LEAVES_1 = 18;
+		final var SPRITE_LEAVES_2 = 19;
+        final var SPRITE_GOLD_BAR_1 = 23;
+        final var SPRITE_SILVER_BAR_1 = 25;
+        final var SPRITE_RATTLESNAKE_1 = 33;
+        final var SPRITE_COPYRIGHT_1 = 37;
+		final var SPRITE_COPYRIGHT_2 = 38;
+		final var SPRITE_COPYRIGHT_3 = 39;
+		final var SPRITE_COPYRIGHT_4 = 40;
+		final var SPRITE_COPYRIGHT_5 = 41;
+        final var SPRITE_HARRY_RUNNING_1 = 46;
+		final var SPRITE_HARRY_RUNNING_2 = 47;
+		final var SPRITE_HARRY_RUNNING_3 = 48;
 
-        final int SCENE_SHIFTING_QUICKSAND = 7;
+        final var SCENE_SHIFTING_QUICKSAND = 7;
 
-		final int ITEM_1_ROLLING_LOG = 0;
-        final int ITEM_1_STATIONARY_LOG = 4;
-        final int ITEM_FIRE = 6;
-		final int ITEM_RATTLESNAKE = 7;
+		final var ITEM_1_ROLLING_LOG = 0;
+        final var ITEM_1_STATIONARY_LOG = 4;
+        final var ITEM_FIRE = 6;
+		final var ITEM_RATTLESNAKE = 7;
 
-		final int OBJECT_ARRAY_SIZE = 8;
+		final var OBJECT_ARRAY_SIZE = 8;
 
-		ArrayList<int[]> queue = new ArrayList<>();
+		var queue = new ArrayList<int[]>();
 
-        int[] object = new int[OBJECT_ARRAY_SIZE];
+		var object = new int[OBJECT_ARRAY_SIZE];
 		queue.add(object);
-        final int OBJECT_X = 0;
+        final var OBJECT_X = 0;
         object[OBJECT_X] = 116;
-        final int OBJECT_Y = 1;
+        final var OBJECT_Y = 1;
         object[OBJECT_Y] = 111;
-        final int OBJECT_SPRITE_INDEX = 2;
-        final int SPRITE_LOG = 35;
+        final var OBJECT_SPRITE_INDEX = 2;
+        final var SPRITE_LOG = 35;
         object[OBJECT_SPRITE_INDEX] = SPRITE_LOG;
-        final int OBJECT_SPRITE_DIRECTION = 3;
-        final int LEFT = 1;
+        final var OBJECT_SPRITE_DIRECTION = 3;
+        final var LEFT = 1;
         object[OBJECT_SPRITE_DIRECTION] = LEFT;
 
-        BufferedImage[][] sprites = new BufferedImage[50][2];
-		BufferedImage image = new BufferedImage(152, 192, BufferedImage.TYPE_INT_RGB);
-		Graphics2D g = (Graphics2D) image.getGraphics();
+		var sprites = new BufferedImage[50][2];
+		var image = new BufferedImage(152, 192, BufferedImage.TYPE_INT_RGB);
+		var g = (Graphics2D) image.getGraphics();
 
         int i;
 		int j;
-		int k = 0;
+		var k = 0;
 		int x;
 		int y;
 
 
-        final String S = "  nnnn   nn  nn  nn  nn  nn  nn  nn  nn  nn  nn  nn  nn  " + " nnnn     nn     nnn      nn      nn      nn      nn      nn     nnn"
+        final var S = "  nnnn   nn  nn  nn  nn  nn  nn  nn  nn  nn  nn  nn  nn  " + " nnnn     nn     nnn      nn      nn      nn      nn      nn     nnn"
                 + "n    nnnn   n   nn      nn      nn   nnnn   nn      nn      nnnnnn  " + " nnnn   n   nn      nn     nn      nn       nn  n   nn   nnnn      n"
                 + "n     nnn    n nn   n  nn   nnnnnn     nn      nn      nn   nnnnnn  " + "nn      nn      nnnnn       nn      nn  n   nn  nnnnn    nnnn   nn  "
                 + " n  nn      nnnnn   nn  nn  nn  nn  nn  nn   nnnn   nnnnnn  n    n  " + "    nn     nn     nn      nn      nn      nn     nnnn   nn  nn  nn  "
@@ -146,25 +146,25 @@ public class a extends GamePanel {
                 + "      ooo     oooo    o oo   oo  o   oo o    o  o    o   o   o      " + "  o               aa      hh      hh      h       ss      ss     sss"
                 + "     sss s   sssss   ssss     ss      oo      ooo    ooooo   oo oo  " + "oo   o  oo   o oo    ooo       o                          aa      hh"
                 + "      hh      h       ss      ss s   sssss  sssss   s ss    s ss    " + "  ss      ooo     oooo oo oo o  ooo  o   oo  oo                     " + "                   ";
-		final int LIGHT_GREEN = 0x5CBA5C;
-		final int DARKEST_GREEN = 0x143C00;
-		final int DARKEST_GRAY = 0x6F6F6F;
-		final int DARK_YELLOW = 0xBBBB35;
-		final int DARK_GREEN = 0x355F18;
-		final int GRAY = 0xD6D6D6;
-		final int WHITE = 0xECECEC;
-		final int DARK_GRAY = 0x8E8E8E;
-		final int BLACK = 0x000000;
-		final int BLUE = 0x2D6D98;
-		final int GREEN = 0x6E9C42;
-		final int PINK = 0xE46F6F;
-		final int YELLOW_GREEN = 0x86861D;
-		final int RED = 0xA71A1A;
-		final int ORANGE = 0xFCBC74;
-		final int LIGHT_ORANGE = 0xECC860;
-		final int YELLOW = 0xFCFC54;
-		final int DARK_BROWN = 0x484800;
-		final int BROWN = 0x69690F;
+		final var LIGHT_GREEN = 0x5CBA5C;
+		final var DARKEST_GREEN = 0x143C00;
+		final var DARKEST_GRAY = 0x6F6F6F;
+		final var DARK_YELLOW = 0xBBBB35;
+		final var DARK_GREEN = 0x355F18;
+		final var GRAY = 0xD6D6D6;
+		final var WHITE = 0xECECEC;
+		final var DARK_GRAY = 0x8E8E8E;
+		final var BLACK = 0x000000;
+		final var BLUE = 0x2D6D98;
+		final var GREEN = 0x6E9C42;
+		final var PINK = 0xE46F6F;
+		final var YELLOW_GREEN = 0x86861D;
+		final var RED = 0xA71A1A;
+		final var ORANGE = 0xFCBC74;
+		final var LIGHT_ORANGE = 0xECC860;
+		final var YELLOW = 0xFCFC54;
+		final var DARK_BROWN = 0x484800;
+		final var BROWN = 0x69690F;
 		int[] COLORS = {BROWN,
                 DARK_BROWN,
                 YELLOW,
@@ -191,139 +191,139 @@ public class a extends GamePanel {
 			sprites[i][1] = new BufferedImage(8, j, BufferedImage.TYPE_INT_ARGB_PRE);
 			for (y = 0; y < j; y++) {
 				for (x = 0; x < 8; x++, k++) {
-                    int z = (S.charAt(k) == ' ') ? 0 : (0xFF000000 | COLORS[S.charAt(k) - 'a']);
+					var z = (S.charAt(k) == ' ') ? 0 : (0xFF000000 | COLORS[S.charAt(k) - 'a']);
                     sprites[i][0].setRGB(x, y, z);
 					sprites[i][1].setRGB(7 - x, y, z);
 				}
 			}
 		}
 
-		long nextFrameStartTime = System.nanoTime();
-        int vineY = 0;
-        int vineX = 0;
+		var nextFrameStartTime = System.nanoTime();
+		var vineY = 0;
+		var vineX = 0;
         float vy = 0;
         float vx = 0;
         float vineAngle = 0;
         float harryVineRadius = 0;
         float harryVy = 0;
-        final int UPPER_FLOOR_Y = 97;
+        final var UPPER_FLOOR_Y = 97;
         float harryY = UPPER_FLOOR_Y;
-        boolean paused = false;
-        boolean hintsEnabled = false;
-        boolean harryLanded = true;
-        boolean vine = false;
-        boolean shiftingPit = false;
-        boolean crocodiles = false;
-        boolean pit = false;
-        boolean resetScreen = false;
-        boolean wallOnLeft = false;
-        boolean harrySwinging = false;
-        boolean harrySinking = false;
-        boolean harryClimbedDown = false;
-        boolean harryClimbing = false;
-        boolean harryJumping = false;
-        boolean pauseKeyReleased = true;
-        boolean hintsKeyReleased = true;
-        boolean jumpReleased = true;
-        boolean attractMode = true;
-        final int SPRITE_CROCODILE_0 = 30;
-        int crocodileSprite = SPRITE_CROCODILE_0;
-        int crocodileTimer = 0;
-        int pitTimer = 0;
-        int pitSprite = 0;
-        int pitOffset = 0;
-        int extraLives = 2;
-        int vineTimer = 0;
-        int timer = 0;
-        int harryCrushed = 0;
-        int harryRunTimer = 0;
-        final int SPRITE_HARRY_STANDING = 44;
-        int harrySprite = SPRITE_HARRY_STANDING;
-        int harryOffsetY = 0;
-        int harryDirection = 0;
-        final int BACKGROUND_3 = 3;
-        int background = BACKGROUND_3;
-        final int SCENE_LADDER = 0;
-        int scene = SCENE_LADDER;
-        int screenIndex = 0;
-        int screen = 196;
-        int restartDelay = 0;
-        int copyrightTimer = 0;
-        int copyrightOffset = 0;
-        int harryX = 8;
-        int clockTicks = 0;
-        int clockSeconds = 0;
-        int clockMinutes = 20;
-        int score = 2000;
-        int treasures = 32;
+		var paused = false;
+		var hintsEnabled = false;
+		var harryLanded = true;
+		var vine = false;
+		var shiftingPit = false;
+		var crocodiles = false;
+		var pit = false;
+		var resetScreen = false;
+		var wallOnLeft = false;
+		var harrySwinging = false;
+		var harrySinking = false;
+		var harryClimbedDown = false;
+		var harryClimbing = false;
+		var harryJumping = false;
+		var pauseKeyReleased = true;
+		var hintsKeyReleased = true;
+		var jumpReleased = true;
+		var attractMode = true;
+        final var SPRITE_CROCODILE_0 = 30;
+		var crocodileSprite = SPRITE_CROCODILE_0;
+		var crocodileTimer = 0;
+		var pitTimer = 0;
+		var pitSprite = 0;
+		var pitOffset = 0;
+		var extraLives = 2;
+		var vineTimer = 0;
+		var timer = 0;
+		var harryCrushed = 0;
+		var harryRunTimer = 0;
+        final var SPRITE_HARRY_STANDING = 44;
+		var harrySprite = SPRITE_HARRY_STANDING;
+		var harryOffsetY = 0;
+		var harryDirection = 0;
+        final var BACKGROUND_3 = 3;
+		var background = BACKGROUND_3;
+        final var SCENE_LADDER = 0;
+		var scene = SCENE_LADDER;
+		var screenIndex = 0;
+		var screen = 196;
+		var restartDelay = 0;
+		var copyrightTimer = 0;
+		var copyrightOffset = 0;
+		var harryX = 8;
+		var clockTicks = 0;
+		var clockSeconds = 0;
+		var clockMinutes = 20;
+		var score = 2000;
+		var treasures = 32;
         Graphics2D g2 = null;
-        boolean[] collectedTreasures = new boolean[256];
-        Color COLOR_DARK_YELLOW = new Color(DARK_YELLOW);
-        Color COLOR_GRAY = new Color(GRAY);
-        Color COLOR_GREEN = new Color(GREEN);
-        Color COLOR_YELLOW_GREEN = new Color(YELLOW_GREEN);
-        Color COLOR_DARK_GREEN = new Color(DARK_GREEN);
-        Color COLOR_BLACK = new Color(0);
-        Color COLOR_DARK_BROWN = new Color(DARK_BROWN);
-        final int OBJECT_SPRITE_INDEX_2 = 6;
-        final int OBJECT_TYPE = 5;
-        final int OBJECT_ROLLING = 4;
-        final int OBJECT_TYPE_SCORPION = 7;
-        final int OBJECT_TYPE_DIAMOND_RING = 6;
-        final int OBJECT_TYPE_GOLD_BRICK = 5;
-        final int OBJECT_TYPE_SILVER_BRICK = 4;
-        final int OBJECT_TYPE_MONEY_BAG = 3;
-        final int OBJECT_TYPE_RATTLESNAKE = 2;
-        final int OBJECT_TYPE_FIRE = 1;
-        final int OBJECT_TYPE_LOG = 0;
-        final int ITEM_3_STATIONARY_LOGS = 5;
-        final int ITEM_3_ROLLING_LOGS = 3;
-        final int ITEM_2_FAR_ROLLING_LOGS = 2;
-        final int ITEM_2_CLOSE_ROLLING_LOGS = 1;
-        final int SCENE_SHIFTING_TAR_WITH_VINE = 6;
-        final int SCENE_SHIFTING_TAR_WITH_TREASURE = 5;
-        final int SCENE_CROCODILES = 4;
-        final int SCENE_QUICKSAND_WITH_VINE = 3;
-        final int SCENE_TAR_WITH_VINE = 2;
-        final int SCENE_LADDER_AND_HOLES = 1;
-        final int SPRITE_HARRY_RUNNING_4 = 49;
-        final int SPRITE_HARRY_RUNNING_0 = 45;
-        final int SPRITE_HARRY_SWINGING = 43;
-        final int SPRITE_HARRY_CLIMBING = 42;
-        final int SPRITE_COPYRIGHT_0 = 36;
-        final int SPRITE_FIRE = 34;
-        final int SPRITE_RATTLESNAKE_0 = 32;
-        final int SPRITE_CROCODILE_1 = 31;
-        final int SPRITE_MONEY_BAG = 29;
-        final int SPRITE_SCORPION_1 = 28;
-        final int SPRITE_SCORPION_0 = 27;
-        final int SPRITE_BRICK_WALL = 26;
-        final int SPRITE_SILVER_BAR_0 = 24;
-        final int SPRITE_GOLD_BAR_0 = 22;
-        final int SPRITE_DIAMOND_RING = 21;
-        final int SPRITE_LEAVES_3 = 20;
-        final int SPRITE_TAR = 16;
-        final int SPRITE_WATER = 15;
-        final int SPRITE_TREE_BRANCHES = 14;
-        final int SPRITE_ARROW_2 = 13;
-        final int SPRITE_ARROW_1 = 12;
-        final int SPRITE_ARROW_0 = 11;
-        final int SPRITE_COLON = 10;
-        final int SPRITE_DIGIT_0 = 0;
-        final int VK_HINTS = 0x38;
-        final int VK_PAUSE = 0x50;
-        final int VK_JUMP = 0x42;
-        final int VK_DOWN = 0x28;
-        final int VK_UP = 0x26;
-        final int VK_RIGHT = 0x27;
-        final int VK_LEFT = 0x25;
-        final int RIGHT = 0;
-        final int LADDER_BOTTOM_Y = 152;
-        final int LADDER_TOP_Y = 112;
-        final int UPPER_FLOOR_LOWER_Y = 142;
-        final int LOWER_FLOOR_Y = 152;
-        final int JUMP_SPEED = -1;
-        final float GRAVITY = 0.05f;
+		var collectedTreasures = new boolean[256];
+		var COLOR_DARK_YELLOW = new Color(DARK_YELLOW);
+		var COLOR_GRAY = new Color(GRAY);
+		var COLOR_GREEN = new Color(GREEN);
+		var COLOR_YELLOW_GREEN = new Color(YELLOW_GREEN);
+		var COLOR_DARK_GREEN = new Color(DARK_GREEN);
+		var COLOR_BLACK = new Color(0);
+		var COLOR_DARK_BROWN = new Color(DARK_BROWN);
+        final var OBJECT_SPRITE_INDEX_2 = 6;
+        final var OBJECT_TYPE = 5;
+        final var OBJECT_ROLLING = 4;
+        final var OBJECT_TYPE_SCORPION = 7;
+        final var OBJECT_TYPE_DIAMOND_RING = 6;
+        final var OBJECT_TYPE_GOLD_BRICK = 5;
+        final var OBJECT_TYPE_SILVER_BRICK = 4;
+        final var OBJECT_TYPE_MONEY_BAG = 3;
+        final var OBJECT_TYPE_RATTLESNAKE = 2;
+        final var OBJECT_TYPE_FIRE = 1;
+        final var OBJECT_TYPE_LOG = 0;
+        final var ITEM_3_STATIONARY_LOGS = 5;
+        final var ITEM_3_ROLLING_LOGS = 3;
+        final var ITEM_2_FAR_ROLLING_LOGS = 2;
+        final var ITEM_2_CLOSE_ROLLING_LOGS = 1;
+        final var SCENE_SHIFTING_TAR_WITH_VINE = 6;
+        final var SCENE_SHIFTING_TAR_WITH_TREASURE = 5;
+        final var SCENE_CROCODILES = 4;
+        final var SCENE_QUICKSAND_WITH_VINE = 3;
+        final var SCENE_TAR_WITH_VINE = 2;
+        final var SCENE_LADDER_AND_HOLES = 1;
+        final var SPRITE_HARRY_RUNNING_4 = 49;
+        final var SPRITE_HARRY_RUNNING_0 = 45;
+        final var SPRITE_HARRY_SWINGING = 43;
+        final var SPRITE_HARRY_CLIMBING = 42;
+        final var SPRITE_COPYRIGHT_0 = 36;
+        final var SPRITE_FIRE = 34;
+        final var SPRITE_RATTLESNAKE_0 = 32;
+        final var SPRITE_CROCODILE_1 = 31;
+        final var SPRITE_MONEY_BAG = 29;
+        final var SPRITE_SCORPION_1 = 28;
+        final var SPRITE_SCORPION_0 = 27;
+        final var SPRITE_BRICK_WALL = 26;
+        final var SPRITE_SILVER_BAR_0 = 24;
+        final var SPRITE_GOLD_BAR_0 = 22;
+        final var SPRITE_DIAMOND_RING = 21;
+        final var SPRITE_LEAVES_3 = 20;
+        final var SPRITE_TAR = 16;
+        final var SPRITE_WATER = 15;
+        final var SPRITE_TREE_BRANCHES = 14;
+        final var SPRITE_ARROW_2 = 13;
+        final var SPRITE_ARROW_1 = 12;
+        final var SPRITE_ARROW_0 = 11;
+        final var SPRITE_COLON = 10;
+        final var SPRITE_DIGIT_0 = 0;
+        final var VK_HINTS = 0x38;
+        final var VK_PAUSE = 0x50;
+        final var VK_JUMP = 0x42;
+        final var VK_DOWN = 0x28;
+        final var VK_UP = 0x26;
+        final var VK_RIGHT = 0x27;
+        final var VK_LEFT = 0x25;
+        final var RIGHT = 0;
+        final var LADDER_BOTTOM_Y = 152;
+        final var LADDER_TOP_Y = 112;
+        final var UPPER_FLOOR_LOWER_Y = 142;
+        final var LOWER_FLOOR_Y = 152;
+        final var JUMP_SPEED = -1;
+        final var GRAVITY = 0.05f;
         while (true) {
 
 			do {
@@ -373,7 +373,7 @@ public class a extends GamePanel {
 
 						restartDelay--;
 					} else {
-						boolean b = IntStream.of(VK_JUMP, VK_UP, VK_DOWN, VK_LEFT, VK_RIGHT).anyMatch(v -> a[v]);
+						var b = IntStream.of(VK_JUMP, VK_UP, VK_DOWN, VK_LEFT, VK_RIGHT).anyMatch(v -> a[v]);
 						if (b) {
 
 
@@ -498,9 +498,9 @@ public class a extends GamePanel {
 							
 							x = harryX + 4;
 							y = (int) (harryY + 4);
-							float B = 2 * (72 * vx + 24 * vy - vx * x - vy * y);
+							var B = 2 * (72 * vx + 24 * vy - vx * x - vy * y);
 							float C = 5744 - 144 * x + x * x - 48 * y + y * y;
-							float D = B * B - 4 * C;
+							var D = B * B - 4 * C;
 							if (D >= 0) {
 								harryVineRadius = (-B - (float) Math.sqrt(D)) / 2;
 								harrySwinging = harryVineRadius <= 76;
@@ -1083,29 +1083,29 @@ public class a extends GamePanel {
 	@Override
 	public void processKeyEvent(KeyEvent keyEvent) {
 
-        int k = keyEvent.getKeyCode();
+		var k = keyEvent.getKeyCode();
 		if (k > 0) {
-            final int VK_D = 0x44;
-            final int VK_A = 0x41;
-            final int VK_S = 0x53;
-            final int VK_W = 0x57;
-            final int VK_DOWN = 0x28;
-            final int VK_UP = 0x26;
-            final int VK_RIGHT = 0x27;
-            final int VK_LEFT = 0x25;
+            final var VK_D = 0x44;
+            final var VK_A = 0x41;
+            final var VK_S = 0x53;
+            final var VK_W = 0x57;
+            final var VK_DOWN = 0x28;
+            final var VK_UP = 0x26;
+            final var VK_RIGHT = 0x27;
+            final var VK_LEFT = 0x25;
             k = k == VK_W ? VK_UP : k == VK_D ? VK_RIGHT : k == VK_A ? VK_LEFT : k == VK_S ? VK_DOWN : k;
-            final int VK_HINTS = 0x38;
-            final int VK_PAUSE = 0x50;
-            final int VK_JUMP = 0x42;
+            final var VK_HINTS = 0x38;
+            final var VK_PAUSE = 0x50;
+            final var VK_JUMP = 0x42;
             a[(k >= VK_LEFT && k <= VK_DOWN) || k == VK_HINTS || k == VK_PAUSE ? k : VK_JUMP] = keyEvent.getID() != 402;
 		}
 	}
 
 	
 	public static void main(String[] args) throws Throwable {
-	  javax.swing.JFrame frame = new javax.swing.JFrame("Pitfall 4K");
+		var frame = new javax.swing.JFrame("Pitfall 4K");
 	  frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-	  a applet = new a();
+		var applet = new a();
 	  applet.setPreferredSize(new java.awt.Dimension(608, 384));
 	  frame.add(applet, java.awt.BorderLayout.CENTER);
 	  frame.setResizable(false);

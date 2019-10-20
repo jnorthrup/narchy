@@ -288,7 +288,7 @@ public class edict_t {
     
 
     public boolean setField(String key, String value) {
-        boolean result = true;
+        var result = true;
 
         switch (key) {
             case "classname":
@@ -412,7 +412,7 @@ public class edict_t {
             f.writeInt(-1);
         else {
             f.writeInt(Defines.MAX_ENT_CLUSTERS);
-            for (int n = 0; n < Defines.MAX_ENT_CLUSTERS; n++)
+            for (var n = 0; n < Defines.MAX_ENT_CLUSTERS; n++)
                 f.writeInt(clusternums[n]);
 
         }
@@ -567,13 +567,13 @@ public class edict_t {
         if (f.readInt() != 9999)
             new Throwable("wrong read pos!").printStackTrace();
 
-        int len = f.readInt();
+        var len = f.readInt();
 
         if (len == -1)
             clusternums = null;
         else {
             clusternums = new int[Defines.MAX_ENT_CLUSTERS];
-            for (int n = 0; n < Defines.MAX_ENT_CLUSTERS; n++)
+            for (var n = 0; n < Defines.MAX_ENT_CLUSTERS; n++)
                 clusternums[n] = f.readInt();
         }
 
@@ -710,7 +710,7 @@ public class edict_t {
         moveinfo.read(f);
         monsterinfo.read(f);
 
-        int ndx = f.readInt();
+        var ndx = f.readInt();
         if (ndx == -1)
             client = null;
         else

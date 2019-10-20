@@ -82,7 +82,7 @@ public class FamilyClausesList extends ArrayDeque<ClauseInfo> {
 
     @Override
     public ClauseInfo removeLast() {
-        int s = size();
+        var s = size();
         return s == 0 ? null : super.removeLast();
 
 
@@ -126,7 +126,7 @@ public class FamilyClausesList extends ArrayDeque<ClauseInfo> {
     public Deque<ClauseInfo> get(Term goal) {
         
         if (goal instanceof Struct) {
-            Struct g = (Struct) goal.term();
+            var g = (Struct) goal.term();
 
             /*
              * If no arguments no optimization can be applied
@@ -138,7 +138,7 @@ public class FamilyClausesList extends ArrayDeque<ClauseInfo> {
             }
 
             /* Retrieves first argument and checks type */
-            Term t = g.sub(0).term();
+            var t = g.sub(0).term();
             if (t instanceof Var) {
                 /*
                  * if first argument is an unbounded variable,
@@ -205,14 +205,14 @@ public class FamilyClausesList extends ArrayDeque<ClauseInfo> {
 
     
     void register(ClauseInfo ci, boolean first) {
-        
-        Struct g = ci.head;
+
+        var g = ci.head;
 
         if (g.subs() == 0) {
             return;
         }
 
-        Term t = g.sub(0).term();
+        var t = g.sub(0).term();
         if (t instanceof Var) {
             numCompClausesIndex.insertAsShared(ci, first);
             constantCompClausesIndex.insertAsShared(ci, first);
@@ -247,13 +247,13 @@ public class FamilyClausesList extends ArrayDeque<ClauseInfo> {
     void unregister(ClauseInfo ci) {
         Term clause = ci.head;
         if (clause != null) {
-            Struct g = (Struct) clause.term();
+            var g = (Struct) clause.term();
 
             if (g.subs() == 0) {
                 return;
             }
 
-            Term t = g.sub(0).term();
+            var t = g.sub(0).term();
             if (t instanceof Var) {
                 numCompClausesIndex.removeShared(ci);
                 constantCompClausesIndex.removeShared(ci);

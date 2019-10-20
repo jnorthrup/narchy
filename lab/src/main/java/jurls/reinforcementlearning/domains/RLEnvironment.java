@@ -36,7 +36,7 @@ public interface RLEnvironment {
     @Deprecated
     Component component();
     @Deprecated default JFrame newWindow() {
-        JFrame j = new JFrame(getClass().toString());
+        var j = new JFrame(getClass().toString());
         j.setSize(800,600);
         j.getContentPane().setLayout(new BorderLayout());
         j.getContentPane().add(component(), BorderLayout.CENTER);

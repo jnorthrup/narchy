@@ -60,9 +60,9 @@ public class A extends GamePanel {
     final boolean[] keys = new boolean[65535];
 
 	public static void main(String[] args) throws Throwable {
-		javax.swing.JFrame frame = new javax.swing.JFrame("");
+		var frame = new javax.swing.JFrame("");
 		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-		A applet = new A();
+		var applet = new A();
 		applet.setPreferredSize(new java.awt.Dimension(768, 600));
 		frame.add(applet, java.awt.BorderLayout.CENTER);
 		frame.pack();
@@ -111,16 +111,16 @@ public class A extends GamePanel {
 
 	@Override
 	public void run() {
-		final boolean DEBUG = false;
+		final var DEBUG = false;
 		
 		
-		final int SCREEN_WIDTH = 672;
-		final int SCREEN_HEIGHT = 600;
+		final var SCREEN_WIDTH = 672;
+		final var SCREEN_HEIGHT = 600;
 
 
-		BufferedImage screen = new BufferedImage(SCREEN_WIDTH, SCREEN_HEIGHT, BufferedImage.TYPE_INT_RGB);
-		int[] pixels = ((DataBufferInt) screen.getRaster().getDataBuffer()).getData();
-		Graphics gfx = screen.getGraphics();
+		var screen = new BufferedImage(SCREEN_WIDTH, SCREEN_HEIGHT, BufferedImage.TYPE_INT_RGB);
+		var pixels = ((DataBufferInt) screen.getRaster().getDataBuffer()).getData();
+		var gfx = screen.getGraphics();
 
 
         /*******************
@@ -133,9 +133,9 @@ public class A extends GamePanel {
 		}
 
 
-		final int LIGHT_DISTANCE = 84;
-		int k = LIGHT_DISTANCE;
-        final String STRING_COLORS = "\u0080\u00FF\u0000" +
+		final var LIGHT_DISTANCE = 84;
+		var k = LIGHT_DISTANCE;
+        final var STRING_COLORS = "\u0080\u00FF\u0000" +
                 "\u00EF\u00E4\u00B0" +
                 "\u0000\u0040\u0000" +
                 "\u00FF\u00FF\u00FF" +
@@ -147,19 +147,19 @@ public class A extends GamePanel {
                 "\u0080\u0080\u0080" +
                 "\u00FF\u0000\u00FF" +
                 "\u00C0\u00C0\u00C0";
-        char[] c = STRING_COLORS.toCharArray();
-        int j = 0;
-        int i = 0;
-        int[] colors = new int[LIGHT_DISTANCE * 16];
+		var c = STRING_COLORS.toCharArray();
+		var j = 0;
+		var i = 0;
+		var colors = new int[LIGHT_DISTANCE * 16];
         for (i = 0; i < c.length; i += 3) {
 			for (j = LIGHT_DISTANCE - 1; j >= 0; j--) {
-				float coef = 1 - 1 / ((j / (float) (LIGHT_DISTANCE - 1) + 1) * (j / (float) (LIGHT_DISTANCE - 1) + 1));
+				var coef = 1 - 1 / ((j / (float) (LIGHT_DISTANCE - 1) + 1) * (j / (float) (LIGHT_DISTANCE - 1) + 1));
 				colors[k++] = ((int) (c[i] * coef) << 16) + ((int) (c[i + 1] * coef) << 8) + (int) (c[i + 2] * coef);
 			}
 		}
 
 
-        final String STRING_OBJECTS = "\u000B\u000B\u000B\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0032\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0032\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0032\u0031\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0031\u0031\u0031\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0031\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0031\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0031\u0031\u0031\u0031\u0031\u0031\u0031\u0000\u0000\u0031\u0031\u0031\u0031\u0031\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0031\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0033\u0033\u0033\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0032\u0032\u0032\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0032\u0032\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0031\u0031\u0031\u0031\u0031\u0000\u0000\u0000\u0031\u0031\u0031\u0031\u0031\u0031\u0031\u0031\u0000\u0000\u0000\u0031\u0031\u0031\u0031\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0034\u0031\u0031\u0033\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0032\u0031\u0031\u0031\u0000\u0031\u0000\u0000\u0000\u0000\u0000\u0032\u0032\u0032\u0031\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0032\u0032\u0032\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0032\u0032\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0031\u0031\u0031\u0031\u0031\u0000\u0000\u0000\u0000\u0031\u0031\u0031\u0031\u0031\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0031\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0033\u0033\u0033\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0032\u0032\u0032\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0032\u0032\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0031\u0031\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0031\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0031\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0032\u0031\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0032\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0032\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000" +
+        final var STRING_OBJECTS = "\u000B\u000B\u000B\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0032\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0032\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0032\u0031\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0031\u0031\u0031\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0031\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0031\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0031\u0031\u0031\u0031\u0031\u0031\u0031\u0000\u0000\u0031\u0031\u0031\u0031\u0031\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0031\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0033\u0033\u0033\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0032\u0032\u0032\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0032\u0032\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0031\u0031\u0031\u0031\u0031\u0000\u0000\u0000\u0031\u0031\u0031\u0031\u0031\u0031\u0031\u0031\u0000\u0000\u0000\u0031\u0031\u0031\u0031\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0034\u0031\u0031\u0033\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0032\u0031\u0031\u0031\u0000\u0031\u0000\u0000\u0000\u0000\u0000\u0032\u0032\u0032\u0031\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0032\u0032\u0032\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0032\u0032\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0031\u0031\u0031\u0031\u0031\u0000\u0000\u0000\u0000\u0031\u0031\u0031\u0031\u0031\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0031\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0033\u0033\u0033\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0032\u0032\u0032\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0032\u0032\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0031\u0031\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0031\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0031\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0032\u0031\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0032\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0032\u0031\u0031\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000" +
 
                 "\u0003\u0003\u0004\u0000\u0015\u0000\u0000\u0015\u0016\u0016\u0015\u0000\u0015\u0000\u0000\u0015\u0015\u0015\u0000\u0015\u0015\u0016\u0016\u0015\u0016\u0015\u0000\u0000\u0015\u0000\u0000\u0015\u0016\u0015\u0000\u0000\u0015\u0000\u0000" +
 
@@ -175,13 +175,13 @@ public class A extends GamePanel {
 
                 "\u0005\u0005\u0002\u0000\u0000\u0000\u0035\u0000\u0035\u0000\u0035\u0000\u0000\u0000\u0035\u0035\u0035\u0035\u0035\u0035\u0035\u0000\u0035\u0000\u0035\u0035\u0035\u0035\u0035\u0035\u0035\u0000\u0035\u0000\u0035\u0035\u0035\u0035\u0035\u0035\u0035\u0000\u0035\u0000\u0000\u0000\u0035\u0000\u0035\u0000\u0035\u0000\u0000";
         c = STRING_OBJECTS.toCharArray();
-		int n = 0;
-        int l = 0;
-        byte[][][][][] models = new byte[8][][][][];
-        final int RIGHT_ANGLE = 3;
-        final int BACK_ANGLE = 2;
-        final int LEFT_ANGLE = 1;
-        final int FRONT_ANGLE = 0;
+		var n = 0;
+		var l = 0;
+		var models = new byte[8][][][][];
+        final var RIGHT_ANGLE = 3;
+        final var BACK_ANGLE = 2;
+        final var LEFT_ANGLE = 1;
+        final var FRONT_ANGLE = 0;
         for (l = 0; l < c.length;) {
 
 			
@@ -216,9 +216,9 @@ public class A extends GamePanel {
 			for (i = 0; i < x; i++) {
 				for (j = 0; j < y; j++) {
 					for (k = 0; k < z; k++, l++) {
-						byte[][][][] model = models[n];
-						int x1 = x - i - 1;
-						int z1 = z - k - 1;
+						var model = models[n];
+						var x1 = x - i - 1;
+						var z1 = z - k - 1;
 						
 						model[FRONT_ANGLE][i][j][k] =
 						model[FRONT_ANGLE + 4][x1][j][k] =
@@ -244,32 +244,32 @@ public class A extends GamePanel {
         long nextLightVariation = 0;
         long nextBullet = 0;
         long lastFrame = 0;
-        int nbCoins = 0;
-        int lightStrength = 0;
-        int gameState = 0;
-        int playerZ = 0;
-        int playerX = 0;
-        int playerLife = 0;
-        int frustumZ = 0;
-        int frustumX = 0;
-        int nbEnemiesToPop = 0;
-        int nbEnemies = 0;
-        int level = 2;
-        int mazeHeight = 0;
-        int mazeWidth = 0;
-        int acc = 0;
-        int fps = 0;
-        int tick = 0;
-        int map_size_z = 0;
-        int map_size_x = 0;
+		var nbCoins = 0;
+		var lightStrength = 0;
+		var gameState = 0;
+		var playerZ = 0;
+		var playerX = 0;
+		var playerLife = 0;
+		var frustumZ = 0;
+		var frustumX = 0;
+		var nbEnemiesToPop = 0;
+		var nbEnemies = 0;
+		var level = 2;
+		var mazeHeight = 0;
+		var mazeWidth = 0;
+		var acc = 0;
+		var fps = 0;
+		var tick = 0;
+		var map_size_z = 0;
+		var map_size_x = 0;
         ArrayList<int[]> entities = null;
         Graphics appletGraphics = null;
         byte[][] maze = null;
-		final int WORLD_SIZE_Z = 1024;
-		final int WORLD_SIZE_Y = 29;
-		final int WORLD_SIZE_X = 1024;
-		byte[][][] box = new byte[WORLD_SIZE_X][WORLD_SIZE_Y][WORLD_SIZE_Z];
-        final String STRING_LEVELS = "\u0004\u0004\u001C\u001C" +
+		final var WORLD_SIZE_Z = 1024;
+		final var WORLD_SIZE_Y = 29;
+		final var WORLD_SIZE_X = 1024;
+		var box = new byte[WORLD_SIZE_X][WORLD_SIZE_Y][WORLD_SIZE_Z];
+        final var STRING_LEVELS = "\u0004\u0004\u001C\u001C" +
                 "\u0002\u0003\u0005\u0000" +
                 "\u0000\u0000\u000E\u0001" +
                 "\u0006\u0001\f\u0000" +
@@ -320,71 +320,71 @@ public class A extends GamePanel {
                 "\f\n\u0003\u000B\u000F\u000B\r\u000E\u0001\u0004" +
                 "\n\u0003\u0001\u0000\b\u0000\n\u000B\u0003\t" +
                 "\u0026";
-        final int MIN_WALL_SIZE = 4;
-        final int CELL_SIZE = 64;
-        final int MODEL_COIN = 7;
-        final int MODEL_WALL = 6;
-        final int MODEL_GROUND = 5;
-        final int MODEL_HEART = 4;
-        final int MODEL_BLOB_ENEMY = 3;
-        final int MODEL_BUZZ_ENEMY = 2;
-        final int KEY_RIGHT = VK_RIGHT;
-        final int KEY_LEFT = VK_LEFT;
-        final int KEY_DOWN = VK_DOWN;
-        final int KEY_UP = VK_UP;
-        final int KEY_W = VK_X;
-        final int KEY_P = VK_Z;
-        final int KEY_SPACE = 32;
-        final int KEY_ENTER = 10;
-        final int YOU_WIN = 5;
-        final int YOU_LOOSE = 4;
-        final int NEXT_LEVEL = 3;
-        final int PAUSE = 2;
-        final int PLAYING = 1;
-        final int GENERATE_MAP = 0;
-        final int BLOCK_VALUE_BITMASK = 15;
-        final int BLOCK_TYPE_SHIFT = 4;
-        final int BLOCK_SOLID = 4;
-        final int BLOCK_ENTITY = 3;
-        final int BLOCK_DECOR = 2;
-        final int BLOCK_EPHEMERAL = 1;
-        final int BLOCK_TRANSPARENT = 0;
-        final int ANIMATION_SPEED = 14;
-        final int FORCEZ = 13;
-        final int FORCEY = 12;
-        final int FORCEX = 11;
-        final int LIFE = 10;
-        final int TOUCH_GROUND = 9;
-        final int ANGLE = 8;
-        final int MODEL = 7;
-        final int DIRZ = 6;
-        final int DIRY = 5;
-        final int DIRX = 4;
-        final int Z = 3;
-        final int Y = 2;
-        final int X = 1;
-        final int TYPE = 0;
-        final int MIN_MOVING_DISTANCE = 6553600;
-        final int STEP_HEIGHT = 5;
-        final int EXPLOSION_RADIUS_FORCE = 10;
-        final int EXPLOSION_RADIUS = 10;
-        final int ENEMY_SPEED = 6400;
-        final int BULLET_SPEED = 100;
-        final int OBJECT_JUMP = 38400;
-        final int PLAYER_JUMP = 25600;
-        final int PLAYER_SPEED = 15360;
-        final int GRAVITY = 64000;
-        final int ENTITY_BLOCK_TYPE = 4;
-        final int ENTITY_OBJECT_TYPE = 3;
-        final int ENTITY_BULLET_TYPE = 2;
-        final int ENTITY_ENENY_TYPE = 1;
-        final int ENTITY_PLAYER_TYPE = 0;
-        final int PCF_SHADOW = 10;
-        final int BLOCK_Y = 3;
-        final int BLOCK_X = 4;
-        final int FRUSTUM_SIZE = 84;
+        final var MIN_WALL_SIZE = 4;
+        final var CELL_SIZE = 64;
+        final var MODEL_COIN = 7;
+        final var MODEL_WALL = 6;
+        final var MODEL_GROUND = 5;
+        final var MODEL_HEART = 4;
+        final var MODEL_BLOB_ENEMY = 3;
+        final var MODEL_BUZZ_ENEMY = 2;
+        final var KEY_RIGHT = VK_RIGHT;
+        final var KEY_LEFT = VK_LEFT;
+        final var KEY_DOWN = VK_DOWN;
+        final var KEY_UP = VK_UP;
+        final var KEY_W = VK_X;
+        final var KEY_P = VK_Z;
+        final var KEY_SPACE = 32;
+        final var KEY_ENTER = 10;
+        final var YOU_WIN = 5;
+        final var YOU_LOOSE = 4;
+        final var NEXT_LEVEL = 3;
+        final var PAUSE = 2;
+        final var PLAYING = 1;
+        final var GENERATE_MAP = 0;
+        final var BLOCK_VALUE_BITMASK = 15;
+        final var BLOCK_TYPE_SHIFT = 4;
+        final var BLOCK_SOLID = 4;
+        final var BLOCK_ENTITY = 3;
+        final var BLOCK_DECOR = 2;
+        final var BLOCK_EPHEMERAL = 1;
+        final var BLOCK_TRANSPARENT = 0;
+        final var ANIMATION_SPEED = 14;
+        final var FORCEZ = 13;
+        final var FORCEY = 12;
+        final var FORCEX = 11;
+        final var LIFE = 10;
+        final var TOUCH_GROUND = 9;
+        final var ANGLE = 8;
+        final var MODEL = 7;
+        final var DIRZ = 6;
+        final var DIRY = 5;
+        final var DIRX = 4;
+        final var Z = 3;
+        final var Y = 2;
+        final var X = 1;
+        final var TYPE = 0;
+        final var MIN_MOVING_DISTANCE = 6553600;
+        final var STEP_HEIGHT = 5;
+        final var EXPLOSION_RADIUS_FORCE = 10;
+        final var EXPLOSION_RADIUS = 10;
+        final var ENEMY_SPEED = 6400;
+        final var BULLET_SPEED = 100;
+        final var OBJECT_JUMP = 38400;
+        final var PLAYER_JUMP = 25600;
+        final var PLAYER_SPEED = 15360;
+        final var GRAVITY = 64000;
+        final var ENTITY_BLOCK_TYPE = 4;
+        final var ENTITY_OBJECT_TYPE = 3;
+        final var ENTITY_BULLET_TYPE = 2;
+        final var ENTITY_ENENY_TYPE = 1;
+        final var ENTITY_PLAYER_TYPE = 0;
+        final var PCF_SHADOW = 10;
+        final var BLOCK_Y = 3;
+        final var BLOCK_X = 4;
+        final var FRUSTUM_SIZE = 84;
         while (true) {
-			long now = System.nanoTime();
+			var now = System.nanoTime();
 
 			gfx.clearRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 
@@ -439,7 +439,7 @@ public class A extends GamePanel {
 
 				for (i = 0; i < mazeWidth; i++) {
 					for (j = 0; j < mazeHeight; j++, k++) {
-						byte cell = maze[i][j] = (byte) c[k + 4];
+						var cell = maze[i][j] = (byte) c[k + 4];
 
 						
 						if (cell > 0 && (i != playerX / CELL_SIZE || j != playerZ / CELL_SIZE)) {
@@ -474,19 +474,19 @@ public class A extends GamePanel {
 				for (i = 0; i < map_size_x; i++) {
 					for (j = 0; j < map_size_z; j++) {
 
-						byte cell = maze[i / CELL_SIZE][j / CELL_SIZE];
+						var cell = maze[i / CELL_SIZE][j / CELL_SIZE];
 
-						boolean murNord = (cell & 1) == 0;
-						boolean murSud = (cell & 2) == 0;
-						boolean murEst = (cell & 4) == 0;
-						boolean murOuest = (cell & 8) == 0;
+						var murNord = (cell & 1) == 0;
+						var murSud = (cell & 2) == 0;
+						var murEst = (cell & 4) == 0;
+						var murOuest = (cell & 8) == 0;
 
-						int x1 = murOuest ? MIN_WALL_SIZE : 0;
-						int x2 = murEst ? CELL_SIZE - MIN_WALL_SIZE : CELL_SIZE;
-						int z1 = murNord ? MIN_WALL_SIZE : 0;
-						int z2 = murSud ? CELL_SIZE - MIN_WALL_SIZE : CELL_SIZE;
+						var x1 = murOuest ? MIN_WALL_SIZE : 0;
+						var x2 = murEst ? CELL_SIZE - MIN_WALL_SIZE : CELL_SIZE;
+						var z1 = murNord ? MIN_WALL_SIZE : 0;
+						var z2 = murSud ? CELL_SIZE - MIN_WALL_SIZE : CELL_SIZE;
 						
-						for (int y = WORLD_SIZE_Y - 1; y >= 0; y--) {
+						for (var y = WORLD_SIZE_Y - 1; y >= 0; y--) {
 							
 							byte block = ((BLOCK_SOLID << BLOCK_TYPE_SHIFT) + 10);
 							
@@ -497,9 +497,9 @@ public class A extends GamePanel {
 									
 									block = y < 4 ? (BLOCK_DECOR << BLOCK_TYPE_SHIFT) + 10 : models[MODEL_GROUND][0][i % 8][0][j % 8];
 								} else {
-									
-									int x = i - (i / CELL_SIZE) * CELL_SIZE;
-									int z = j - (j / CELL_SIZE) * CELL_SIZE;
+
+									var x = i - (i / CELL_SIZE) * CELL_SIZE;
+									var z = j - (j / CELL_SIZE) * CELL_SIZE;
 									if (x >= x1 && x < x2 && z >= z1 && z < z2) {
 										block = 0;
 										if ((murNord && z == z1) || (murSud && z == z2 - 1))
@@ -517,8 +517,8 @@ public class A extends GamePanel {
 
 			}
 
-			
-			float timeElapsed = (int)(now - lastFrame) / 1000000000f;
+
+			var timeElapsed = (int)(now - lastFrame) / 1000000000f;
 			if (timeElapsed > 0.1f) {
 				timeElapsed = 0.1f;
 			}
@@ -536,30 +536,30 @@ public class A extends GamePanel {
 
 			lastFrame = now;
 
-			
-			float friction = 0.85f * (1 - timeElapsed);
+
+			var friction = 0.85f * (1 - timeElapsed);
 
 			
-			for (int e = entities.size() - 1; e >= 0; e--) {
-				int[] entity = entities.get(e);
+			for (var e = entities.size() - 1; e >= 0; e--) {
+				var entity = entities.get(e);
 
-				int entityType = entity[TYPE];
+				var entityType = entity[TYPE];
 				
 				
 				byte[][][] model = null;
-				
-				int x = entity[X] >> 8;
-				int y = entity[Y] >> 8;
-				int z = entity[Z] >> 8;
 
-				int dx = entity[DIRX];
-				int dy = entity[DIRY];
-				int dz = entity[DIRZ];
+				var x = entity[X] >> 8;
+				var y = entity[Y] >> 8;
+				var z = entity[Z] >> 8;
+
+				var dx = entity[DIRX];
+				var dy = entity[DIRY];
+				var dz = entity[DIRZ];
 
 
-                int sx = 1;
-				int sy = 1;
-				int sz = 1;
+				var sx = 1;
+				var sy = 1;
+				var sz = 1;
 
 				if (entityType < ENTITY_BLOCK_TYPE) {
 					model = models[entity[MODEL]][entity[ANGLE] >> 8];
@@ -580,7 +580,7 @@ public class A extends GamePanel {
 				}
 
 
-                boolean firing = false;
+				var firing = false;
                 if (entityType == ENTITY_PLAYER_TYPE) {
 					dx = 0;
 					dz = 0;
@@ -622,7 +622,7 @@ public class A extends GamePanel {
 				if (entityType == ENTITY_ENENY_TYPE) {
 					dx = playerX - x;
 					dz = playerZ - z;
-					int sqrt = (ENEMY_SPEED<<8) / ((int) Math.sqrt(dx * dx + dz * dz) + 1);
+					var sqrt = (ENEMY_SPEED<<8) / ((int) Math.sqrt(dx * dx + dz * dz) + 1);
 					dx = (dx * sqrt)>>8;
 					dz = (dz * sqrt)>>8;
 				}
@@ -692,8 +692,8 @@ public class A extends GamePanel {
 				dy *= timeElapsed;
 				dz *= timeElapsed;
 
-				
-				int decal = 0;
+
+				var decal = 0;
 				if (entityType < ENTITY_BLOCK_TYPE) {
 					model = models[entity[MODEL]][entity[ANGLE] >> 8];
 					sx = model.length;
@@ -720,16 +720,16 @@ public class A extends GamePanel {
                 entity[TOUCH_GROUND] = 0;
 
 
-                int cz = -1;
-                int cy = -1;
-                int cx = -1;
-                boolean collide = false;
+				var cz = -1;
+				var cy = -1;
+				var cx = -1;
+				var collide = false;
                 if (dy <= 0) {
 					for (j = 0; j >= (dy >> 8) && !collide; j--) {
-						int j2 = y + j - 1;
+						var j2 = y + j - 1;
 						for (i = x + sx - 1; i >= x && !collide; i--) {
 							for (k = z + sz - 1; k >= z && !collide; k--) {
-								int blockType = box[i][j2][k] >> BLOCK_TYPE_SHIFT;
+								var blockType = box[i][j2][k] >> BLOCK_TYPE_SHIFT;
 								if (blockType > BLOCK_EPHEMERAL && blockType != BLOCK_ENTITY) {
 									entity[TOUCH_GROUND] = 1;
 									cx = i;
@@ -744,7 +744,7 @@ public class A extends GamePanel {
 				} else {
 					
 					for (j = 0; j <= (dy >> 8) && !collide; j++) {
-						int j2 = y + j + sy;
+						var j2 = y + j + sy;
 						for (i = x + sx - 1; i >= x && !collide; i--) {
 							for (k = z + sz - 1; k >= z && !collide; k--) {
 								if (j2 >= WORLD_SIZE_Y - 1 || (box[i][j2][k] >> BLOCK_TYPE_SHIFT) > BLOCK_EPHEMERAL) {
@@ -775,10 +775,10 @@ public class A extends GamePanel {
 					if (dx != 0) {
 						collide = false;
 
-						
-						int x1 = decal;
-						int x2 = (dx >> 8) + 1;
-						int step = 1;
+
+						var x1 = decal;
+						var x2 = (dx >> 8) + 1;
+						var step = 1;
 
 						if (dx < 0) {
 							x1 = 0;
@@ -788,7 +788,7 @@ public class A extends GamePanel {
 
 						
 						for (i = x1; i != x2 && !collide; i += step) {
-							int i2 = 0;
+							var i2 = 0;
 							if (step < 0) {
 								i2 = x + i - 1;
 								if (i2 <= 0) {
@@ -806,9 +806,9 @@ public class A extends GamePanel {
 									break;
 								}
 							}
-							int yFloor = y - 1;
-							int yCeil = 100;
-							int blockType = 0;
+							var yFloor = y - 1;
+							var yCeil = 100;
+							var blockType = 0;
 
 							for (j = y + sy * 2 - 1; j >= y; j--) {
 								if (j < WORLD_SIZE_Y) {
@@ -865,9 +865,9 @@ public class A extends GamePanel {
 					if (dz != 0) {
 						collide = false;
 
-						int z1 = decal;
-						int z2 = (dz >> 8) + 1;
-						int step = 1;
+						var z1 = decal;
+						var z2 = (dz >> 8) + 1;
+						var step = 1;
 
 						if (dz < 0) {
 							z1 = 0;
@@ -877,7 +877,7 @@ public class A extends GamePanel {
 
 						
 						for (k = z1; k != z2 && !collide; k += step) {
-							int k2 = 0;
+							var k2 = 0;
 
 							if (step < 0) {
 								k2 = z + k - 1;
@@ -897,9 +897,9 @@ public class A extends GamePanel {
 								}
 							}
 
-							int yFloor = y - 1;
-							int yCeil = 100;
-							int blockType = 0;
+							var yFloor = y - 1;
+							var yCeil = 100;
+							var blockType = 0;
 
 							for (j = y + sy * 2 - 1; j >= y; j--) {
 								if (j < WORLD_SIZE_Y) {
@@ -959,18 +959,18 @@ public class A extends GamePanel {
 							
 							collide = false;
 							for (l = entities.size() - 1; l >= 0 && !collide; l--) {
-								int[] ent = entities.get(l);
+								var ent = entities.get(l);
 
 								
 								if (ent[TYPE] < entityType || ent[TYPE] == ENTITY_OBJECT_TYPE) {
-									byte[][][] model1 = models[ent[MODEL]][ent[ANGLE] >> 8];
-									int sx1 = model1.length;
-									int sy1 = model1[0].length;
-									int sz1 = model1[0][0].length;
+									var model1 = models[ent[MODEL]][ent[ANGLE] >> 8];
+									var sx1 = model1.length;
+									var sy1 = model1[0].length;
+									var sz1 = model1[0][0].length;
 
-									int x1 = ent[X] >> 8;
-									int y1 = ent[Y] >> 8;
-									int z1 = ent[Z] >> 8;
+									var x1 = ent[X] >> 8;
+									var y1 = ent[Y] >> 8;
+									var z1 = ent[Z] >> 8;
 
 									
 									if (cx >= x1 && cx < x1 + sx1 && cy >= y1 && cy < y1 + sy1 && cz >= z1 && cz < z1 + sz1) {
@@ -980,7 +980,7 @@ public class A extends GamePanel {
 												for (i = 0; i < sx1; i++) {
 													for (j = 0; j < sy1; j++) {
 														for (k = 0; k < sz1; k++) {
-															byte block = model1[i][j][k];
+															var block = model1[i][j][k];
 															if (block > 0) {
 																addEntity(
 																		entities,
@@ -1035,17 +1035,17 @@ public class A extends GamePanel {
 							
 							if (entityType == ENTITY_BULLET_TYPE && !collide) {
 								for (i = -EXPLOSION_RADIUS; i < EXPLOSION_RADIUS; i++) {
-									int x1 = cx + i - 1;
+									var x1 = cx + i - 1;
 									if (x1 > 0) {
 										for (j = -EXPLOSION_RADIUS; j < EXPLOSION_RADIUS; j++) {
-											int y1 = cy + j + 1;
+											var y1 = cy + j + 1;
 											if (y1 > 1 && y1 < WORLD_SIZE_Y) {
 												for (k = -EXPLOSION_RADIUS; k < EXPLOSION_RADIUS; k++) {
-													int z1 = cz + k - 1;
+													var z1 = cz + k - 1;
 													if (z1 > 0) {
-														byte block = box[x1][y1][z1];
+														var block = box[x1][y1][z1];
 														if (block > 0 && (block >> BLOCK_TYPE_SHIFT <= BLOCK_DECOR)) {
-															int d = (i * i) + (j * j) + (k * k);
+															var d = (i * i) + (j * j) + (k * k);
 															if (d < EXPLOSION_RADIUS * EXPLOSION_RADIUS - 1) {
 																if (d > 90*EXPLOSION_RADIUS * EXPLOSION_RADIUS / 100) {
 																	addEntity(
@@ -1103,7 +1103,7 @@ public class A extends GamePanel {
 							entity[LIFE] = 0;
 						}
 						if (box[x][y][z] >> BLOCK_TYPE_SHIFT == 0) {
-							byte block = (byte) entity[MODEL];
+							var block = (byte) entity[MODEL];
 							if (entity[LIFE] == 0)
 								block = (byte) ((BLOCK_DECOR << BLOCK_TYPE_SHIFT) + block & BLOCK_VALUE_BITMASK);
 
@@ -1216,8 +1216,8 @@ public class A extends GamePanel {
 					j = 1;
 					k = 10;
 				}
-				int x = (int) (Math.random() * mazeWidth);
-				int z = (int) (Math.random() * mazeHeight);
+				var x = (int) (Math.random() * mazeWidth);
+				var z = (int) (Math.random() * mazeHeight);
 				if ((x != playerX / CELL_SIZE || z != playerZ / CELL_SIZE) && maze[x][z] != 0) {
 					addEntity(
 							entities,
@@ -1246,24 +1246,24 @@ public class A extends GamePanel {
 			}
 
 			
-			for (int x = (FRUSTUM_SIZE << 1) - 1; x >= 0; x--) {
-				
-				ArrayList<Integer> blocksList = new ArrayList<>();
+			for (var x = (FRUSTUM_SIZE << 1) - 1; x >= 0; x--) {
+
+				var blocksList = new ArrayList<Integer>();
 
 				
 				for (i = 1; i < WORLD_SIZE_Y + (FRUSTUM_SIZE << 1); i++) {
-					
-					int z = i - WORLD_SIZE_Y;
+
+					var z = i - WORLD_SIZE_Y;
 					if (z < 1) {
 						z = 1;
 					}
-					
-					int y = i - z - 2;
+
+					var y = i - z - 2;
 					
 					z += frustumZ - FRUSTUM_SIZE;
 					
 					for (; z < frustumZ + FRUSTUM_SIZE && y > 0; z++, y--) {
-						byte block = box[x + frustumX - FRUSTUM_SIZE][y][z];
+						var block = box[x + frustumX - FRUSTUM_SIZE][y][z];
 						
 						if (block > 0) {
 							
@@ -1281,22 +1281,22 @@ public class A extends GamePanel {
 					int value = blocksList.get(j);
 
 
-                    int x1 = playerX << 7;
-					int y1 = 4096;	
-					int z1 = playerZ << 7;
-
-					
-					int x2 = x + frustumX - FRUSTUM_SIZE;
-					int y2 = -(value >> 12) & 0x3F;
-					int z2 = (value >> 18);
-
-					
-					int dx = (x2 << 7) - x1;
-					int dy = (y2 << 7) - y1;
-					int dz = (z2 << 7) - z1;
+					var x1 = playerX << 7;
+					var y1 = 4096;
+					var z1 = playerZ << 7;
 
 
-                    int len = dx * dx + dy * dy + dz * dz;
+					var x2 = x + frustumX - FRUSTUM_SIZE;
+					var y2 = -(value >> 12) & 0x3F;
+					var z2 = (value >> 18);
+
+
+					var dx = (x2 << 7) - x1;
+					var dy = (y2 << 7) - y1;
+					var dz = (z2 << 7) - z1;
+
+
+					var len = dx * dx + dy * dy + dz * dz;
 					
 					
 					if (len < (lightStrength*lightStrength) << 14) {
@@ -1313,15 +1313,15 @@ public class A extends GamePanel {
 						z1 += 64;
 
 
-                        int z = 0;
+						var z = 0;
 
 
-                        int pcf = 0;
+						var pcf = 0;
                         while (z < len - 1) {
-							int y3 = y1 >> 7;
+							var y3 = y1 >> 7;
 							if (y3 < WORLD_SIZE_Y - 1) {
-								int x3 = x1 >> 7;
-								int z3 = z1 >> 7;
+								var x3 = x1 >> 7;
+								var z3 = z1 >> 7;
 								if (box[x3][y3][z3] != 0) {
 									z = LIGHT_DISTANCE - 1;
 								}
@@ -1352,13 +1352,13 @@ public class A extends GamePanel {
 						
 						
 						if (z>=LIGHT_DISTANCE) z = LIGHT_DISTANCE-1;
-						
-						
-						int fz = (z + LIGHT_DISTANCE) >> 1;
+
+
+						var fz = (z + LIGHT_DISTANCE) >> 1;
 	
 						
 						l = x * BLOCK_X + (SCREEN_HEIGHT - ((value >> 4) & 0xFF) * BLOCK_Y) * SCREEN_WIDTH;
-                        int color = (value & BLOCK_VALUE_BITMASK) * LIGHT_DISTANCE;
+						var color = (value & BLOCK_VALUE_BITMASK) * LIGHT_DISTANCE;
                         for (i = l + BLOCK_X - 1; i >= l; i--) {
 							pixels[i] =
 							pixels[i + SCREEN_WIDTH] =

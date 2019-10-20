@@ -201,7 +201,7 @@ public class Key extends Globals {
 	 * 
 	 */
 	public static void Init() {
-		for (int i = 0; i < 32; i++) {
+		for (var i = 0; i < 32; i++) {
 			Globals.key_lines[i][0] = ']';
 			Globals.key_lines[i][1] = 0;
 		}
@@ -210,7 +210,7 @@ public class Key extends Globals {
 		
 		
 		
-		for (int i = 32; i < 128; i++)
+		for (var i = 32; i < 128; i++)
 			consolekeys[i] = true;
 		consolekeys[K_ENTER] = true;
 		consolekeys[K_KP_ENTER] = true;
@@ -271,7 +271,7 @@ public class Key extends Globals {
 
 
 		menubound[K_ESCAPE] = true;
-		for (int i = 0; i < 12; i++)
+		for (var i = 0; i < 12; i++)
 			menubound[K_F1 + i] = true;
 
 		
@@ -461,7 +461,7 @@ public class Key extends Globals {
 		if (str.length() == 1)
 			return str.charAt(0);
 
-        int bound = keynames.length;
+		var bound = keynames.length;
 		return IntStream.range(0, bound).filter(i -> str.equalsIgnoreCase(keynames[i])).findFirst().orElse(-1);
 
 	}
@@ -556,7 +556,7 @@ public class Key extends Globals {
 				break;
 		}
 
-		boolean finished = false;
+		var finished = false;
 		if (key == 'l') {
 			if (Globals.keydown[K_CTRL]) {
 				Cbuf.AddText("clear\n");
@@ -639,28 +639,28 @@ public class Key extends Globals {
 
 	private static void printCompletions(String type, List compl) {
 		Com.Printf(type);
-		for (int i = 0; i < compl.size(); i++) {
+		for (var i = 0; i < compl.size(); i++) {
 			Com.Printf(compl.get(i) + " ");
 		}
 		Com.Printf("\n");
 	}
 	
 	static void CompleteCommand() {
-		
-		int start = 1;
+
+		var start = 1;
 		if (key_lines[edit_line][start] == '\\' ||  key_lines[edit_line][start] == '/')
 			start++;
-		
-		int end = start;
+
+		var end = start;
 		while (key_lines[edit_line][end] != 0) end++;
-			
-		String s = new String(key_lines[edit_line], start, end-start);
+
+		var s = new String(key_lines[edit_line], start, end-start);
 		
 		var cmds = Cmd.CompleteCommand(s);
 		var vars = Cvar.CompleteVariable(s);
-		
-		int c = cmds.size();
-		int v = vars.size();
+
+		var c = cmds.size();
+		var v = vars.size();
 		
 		if ((c + v) > 1) {
 			if (c > 0) printCompletions("\nCommands:\n", cmds);
@@ -673,7 +673,7 @@ public class Key extends Globals {
 		} else return;
 		
 		key_lines[edit_line][1] = '/';
-		byte[] bytes = Lib.stringToBytes(s);
+		var bytes = Lib.stringToBytes(s);
 		System.arraycopy(bytes, 0, key_lines[edit_line], 2, bytes.length);
 		key_linepos = bytes.length + 2;
 		key_lines[edit_line][key_linepos++] = ' ';
@@ -689,13 +689,13 @@ public class Key extends Globals {
 	};
 
 	static void Key_Bind_f() {
-		int c = Cmd.Argc();
+		var c = Cmd.Argc();
 
 		if (c < 2) {
 			Com.Printf("bind <key> [command] : attach a command to a key\n");
 			return;
 		}
-		int b = StringToKeynum(Cmd.Argv(1));
+		var b = StringToKeynum(Cmd.Argv(1));
 		if (b == -1) {
 			Com.Printf('"' + Cmd.Argv(1) + "\" isn't a valid key\n");
 			return;
@@ -709,9 +709,9 @@ public class Key extends Globals {
 			return;
 		}
 
-		
-		String cmd = ""; 
-		for (int i = 2; i < c; i++) {
+
+		var cmd = "";
+		for (var i = 2; i < c; i++) {
 			cmd += Cmd.Argv(i);
 			if (i != (c - 1))
 				cmd += " ";
@@ -744,7 +744,7 @@ public class Key extends Globals {
 			return;
 		}
 
-		int b = Key.StringToKeynum(Cmd.Argv(1));
+		var b = Key.StringToKeynum(Cmd.Argv(1));
 		if (b == -1) {
 			Com.Printf('"' + Cmd.Argv(1) + "\" isn't a valid key\n");
 			return;
@@ -761,7 +761,7 @@ public class Key extends Globals {
 	};
 
 	static void Key_Unbindall_f() {
-		for (int i = 0; i < 256; i++)
+		for (var i = 0; i < 256; i++)
 			Key.SetBinding(i, null);
 	}
 
@@ -773,7 +773,7 @@ public class Key extends Globals {
 	};
 
 	static void Key_Bindlist_f() {
-		for (int i = 0; i < 256; i++)
+		for (var i = 0; i < 256; i++)
 			if (Globals.keybindings[i] != null && Globals.keybindings[i].length() != 0)
 				Com.Printf(Key.KeynumToString(i) + " \"" + Globals.keybindings[i] + "\"\n");
 	}
@@ -782,7 +782,7 @@ public class Key extends Globals {
 
         Key.anykeydown = 0;
 
-		for (int i = 0; i < 256; i++) {
+		for (var i = 0; i < 256; i++) {
 			if (keydown[i] || key_repeats[i]!=0)
 				Event(i, false, 0);
 			keydown[i] = false;
@@ -791,7 +791,7 @@ public class Key extends Globals {
 	}
 
 	public static void WriteBindings(RandomAccessFile f) {
-		for (int i = 0; i < 256; i++)
+		for (var i = 0; i < 256; i++)
 			if (keybindings[i] != null && keybindings[i].length() > 0)
 				try {
 					f.writeBytes("bind " + KeynumToString(i) + " \"" + keybindings[i] + "\"\n");

@@ -124,7 +124,7 @@ public class MutableInt extends Number  {
      * @since 3.5
      */
     public int getAndIncrement() {
-        int last = value;
+        var last = value;
         value++;
         return last;
     }
@@ -158,7 +158,7 @@ public class MutableInt extends Number  {
      * @since 3.5
      */
     public int getAndDecrement() {
-        int last = value;
+        var last = value;
         value--;
         return last;
     }
@@ -254,7 +254,7 @@ public class MutableInt extends Number  {
      * @since 3.5
      */
     public int getAndAdd(int operand) {
-        int last = value;
+        var last = value;
         this.value += operand;
         return last;
     }
@@ -269,7 +269,7 @@ public class MutableInt extends Number  {
      * @since 3.5
      */
     public int getAndAdd(Number operand) {
-        int last = value;
+        var last = value;
         this.value += operand.intValue();
         return last;
     }

@@ -26,7 +26,7 @@ public abstract class MutableArrayContainer<S extends Surface> extends AbstractM
     public MutableArrayContainer(S... items) {
         this(items.length);
         for (int i = 0, itemsLength = items.length; i < itemsLength; i++) {
-            S s = items[i];
+            var s = items[i];
             if (s!=null)
                 setAt(i, s);
         }
@@ -66,7 +66,7 @@ public abstract class MutableArrayContainer<S extends Surface> extends AbstractM
                 }
 
                 if (s != null) {
-                    Surfacelike sParent = s.parent;
+                    var sParent = s.parent;
                     assert (sParent == null || sParent == this): this + " confused that " + s + " already has parent " + sParent;
 
 
@@ -87,7 +87,7 @@ public abstract class MutableArrayContainer<S extends Surface> extends AbstractM
 
     @Override
     protected TextEdit clear() {
-        for (int i= 0; i < length; i++)
+        for (var i = 0; i < length; i++)
             setAt(i, null);
         return null;
     }
@@ -95,31 +95,31 @@ public abstract class MutableArrayContainer<S extends Surface> extends AbstractM
 
     @Override
     public int childrenCount() {
-        int l = this.length;
-        long result = IntStream.range(0, l).filter(i -> children.getFast(i) != null).count();
-        int count = (int) result;
+        var l = this.length;
+        var result = IntStream.range(0, l).filter(i -> children.getFast(i) != null).count();
+        var count = (int) result;
         return count;
     }
 
     @Override
     public void forEach(Consumer<Surface> o) {
-        for (int i = 0; i < length; i++) {
-            S ii = children.getFast(i);
+        for (var i = 0; i < length; i++) {
+            var ii = children.getFast(i);
             if (ii !=null) o.accept(ii);
         }
     }
 
     @Override
     public <X> void forEachWith(BiConsumer<Surface, X> o, X x) {
-        for (int i = 0; i < length; i++) {
-            S ii = children.getFast(i);
+        for (var i = 0; i < length; i++) {
+            var ii = children.getFast(i);
             if (ii !=null) o.accept(ii, x);
         }
     }
 
     @Override
     public boolean whileEach(Predicate<Surface> o) {
-        int bound = length;
+        var bound = length;
         return IntStream.range(0, bound).mapToObj(children::getFast).filter(Objects::nonNull).allMatch(o);
     }
 

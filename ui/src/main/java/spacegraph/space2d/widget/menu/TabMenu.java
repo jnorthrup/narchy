@@ -40,8 +40,8 @@ public class TabMenu extends Menu {
     public TabMenu(Map<String, Supplier<Surface>> options, MenuView view, Function<String, ToggleButton> buttonBuilder) {
         super(options, view);
         items.clear();
-        Gridding tabs = new Gridding();
-        List<Surface> list = options.entrySet().stream().map(x -> toggle(buttonBuilder, x.getKey(), x.getValue())).collect(toList());
+        var tabs = new Gridding();
+        var list = options.entrySet().stream().map(x -> toggle(buttonBuilder, x.getKey(), x.getValue())).collect(toList());
         tabs.set(list);
 
         wrap = new Splitting(tabs, 0, content.view());
@@ -50,7 +50,7 @@ public class TabMenu extends Menu {
     }
 
     public final TabMenu set(String item, boolean enable) {
-        ToggleButton b = items.get(item);
+        var b = items.get(item);
         b.on(enable);
         return this;
     }
@@ -78,7 +78,7 @@ public class TabMenu extends Menu {
             } else {
 
                 if (created[0] != null) {
-                    boolean removed = content.inactive(created[0]);
+                    var removed = content.inactive(created[0]);
                     assert(removed);
                     created[0] = null;
                 }
@@ -109,13 +109,13 @@ public class TabMenu extends Menu {
 //            });
         };
 
-        ToggleButton bb = buttonBuilder.apply(label).on(toggleInside);
+        var bb = buttonBuilder.apply(label).on(toggleInside);
         items.put(label, bb);
-        PushButton cc = PushButton.awesome("external-link").clicked(spawnOutside);
+        var cc = PushButton.awesome("external-link").clicked(spawnOutside);
 
         //return Splitting.row(bb, 0.75f, new AspectAlign(cc, AspectAlign.Align.RightTop,1, 0.75f));
 
-        AspectAlign ccc = new AspectAlign(cc, 1, AspectAlign.Align.TopRight, 0.25f, 0.25f);
+        var ccc = new AspectAlign(cc, 1, AspectAlign.Align.TopRight, 0.25f, 0.25f);
         return new MetaHover(bb, ()->ccc);
         //return new Stacking(cc, ccc);
 

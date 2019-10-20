@@ -40,14 +40,14 @@ public class DataTable extends Table implements Externalizable {
     public DataTable(Table copy) {
         super(copy.name());
 
-        int rc = copy.rowCount();
-        for (Column<?> column : copy.columns()) {
+        var rc = copy.rowCount();
+        for (var column : copy.columns()) {
             addColumns(column.emptyCopy(rc));
         }
 
-        int[] rows = new int[10];
-        int count = 0;
-        for (int i = 0; i < rc; i++) {
+        var rows = new int[10];
+        var count = 0;
+        for (var i = 0; i < rc; i++) {
             if (rows.length == count) rows = Arrays.copyOf(rows, count * 2);
             rows[count++] = i;
         }
@@ -67,7 +67,7 @@ public class DataTable extends Table implements Externalizable {
     @Override
     public void writeExternal(ObjectOutput objectOutput) throws IOException {
         //HACK
-        ByteArrayOutputStream o = new ByteArrayOutputStream();
+        var o = new ByteArrayOutputStream();
         write().csv(new GZIPOutputStream(o));
         objectOutput.writeInt(o.size());
         objectOutput.write(o.toByteArray());
@@ -76,10 +76,10 @@ public class DataTable extends Table implements Externalizable {
     @Override
     public void readExternal(ObjectInput i) throws IOException {
         //HACK
-        int size = i.readInt();
-        byte[] b = new byte[size];
+        var size = i.readInt();
+        var b = new byte[size];
         i.readFully(b);
-        Table csv = read().csv(new GZIPInputStream(new ByteArrayInputStream(b)));
+        var csv = read().csv(new GZIPInputStream(new ByteArrayInputStream(b)));
         addColumns(csv.columnArray());
     }
 
@@ -163,10 +163,10 @@ public class DataTable extends Table implements Externalizable {
         if (point.length != columnCount())
             throw new UnsupportedOperationException("row structure mismatch: provided " + point.length + " != expected " + columnCount());
 
-        List<Column<?>> l = columns();
-        for (int i = 0; i < point.length; i++) {
-            Column<?> c = l.get(i);
-            Object p = point[i];
+        var l = columns();
+        for (var i = 0; i < point.length; i++) {
+            var c = l.get(i);
+            var p = point[i];
             //TODO use type cast graph
             //come on tablesaw
             if (p instanceof String) {
@@ -174,7 +174,7 @@ public class DataTable extends Table implements Externalizable {
             } else if (p instanceof Boolean) {
                 //ok
             } else if (p instanceof Number) {
-                Number n = (Number) p;
+                var n = (Number) p;
                 if (c instanceof LongColumn) {
                     p = n.longValue();
                 } else if (c instanceof DoubleColumn) {
@@ -199,7 +199,7 @@ public class DataTable extends Table implements Externalizable {
     @Deprecated
     public FloatTable<String> toFloatTable() {
 
-        FloatTable<String> data = new FloatTable<>(columnNames().toArray(ArrayUtil.EMPTY_STRING_ARRAY));
+        var data = new FloatTable<String>(columnNames().toArray(ArrayUtil.EMPTY_STRING_ARRAY));
 
         doWithRows(rr -> data.add(toFloatArray(rr)));
 
@@ -208,10 +208,10 @@ public class DataTable extends Table implements Externalizable {
 
     private float[] toFloatArray(Row rr) {
 
-        int cols = rr.columnCount();
-        float[] r = new float[cols];
-        for (int i = 0; i < cols; i++) {
-            ColumnType it = column(i).type();
+        var cols = rr.columnCount();
+        var r = new float[cols];
+        for (var i = 0; i < cols; i++) {
+            var it = column(i).type();
             if (it == ColumnType.FLOAT) {
                 r[i] = rr.getFloat(i);
             } else if (it == ColumnType.DOUBLE) {
@@ -255,7 +255,7 @@ public class DataTable extends Table implements Externalizable {
         double[] bestScore = {Double.NEGATIVE_INFINITY};
         Row[] best = {null};
         doWithRows(e -> {
-            double s = e.getDouble(column);
+            var s = e.getDouble(column);
             if (s > bestScore[0]) {
                 best[0] = e;
                 bestScore[0] = s;
@@ -307,7 +307,7 @@ public class DataTable extends Table implements Externalizable {
 
 //        attribute_names.addAt(nominalAttribute);
 //        attrTypes.put(nominalAttribute, Nominal);
-        String[] prev = nominalCats.put(nominalAttribute, categories);
+        var prev = nominalCats.put(nominalAttribute, categories);
 
         addColumns(StringColumn.create(nominalAttribute));
 
@@ -318,7 +318,7 @@ public class DataTable extends Table implements Externalizable {
 
     public Instance instance(Row x) {
 
-        ColumnType[] ct = columnTypes();
+        var ct = columnTypes();
         List<Double> d = new FasterList<>(ct.length);
         for (int i1 = 0, ctLength = ct.length; i1 < ctLength; i1++) {
 //            ColumnType t = ct[i1];
@@ -354,10 +354,10 @@ public class DataTable extends Table implements Externalizable {
 //            return toDoubleArray(0, data.size());
 //        }
         public double[] toDoubleArray(int from, int to) {
-            double[] x = new double[to - from];
-            int j = 0;
-            for (int i = from; i < to; i++) {
-                Object o = data.get(i);
+            var x = new double[to - from];
+            var j = 0;
+            for (var i = from; i < to; i++) {
+                var o = data.get(i);
                 double v;
                 if (o instanceof Number) {
                     v = ((Number) o).doubleValue();
@@ -378,7 +378,7 @@ public class DataTable extends Table implements Externalizable {
             if (this == obj) return true;
             if (!(obj instanceof Instance)) return false;
 
-            Instance i = (Instance) obj;
+            var i = (Instance) obj;
             return i.data.equals(data) && table().equals(i.table());
         }
 

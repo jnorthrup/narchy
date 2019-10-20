@@ -49,20 +49,20 @@ public class SwingBitmap2D extends MonoBufImgBitmap2D implements Supplier<Buffer
 
     /** x and y in 0..1.0, w and h in 0..1.0 */
     public void input(float x, float y, float w, float h) {
-        int px = Math.round(inWidth() * x);
-        int py = Math.round(inHeight() * y);
-        int pw = Math.round(inWidth() * w);
-        int ph = Math.round(inWidth() * h);
+        var px = Math.round(inWidth() * x);
+        var py = Math.round(inHeight() * y);
+        var pw = Math.round(inWidth() * w);
+        var ph = Math.round(inWidth() * h);
         input(px, py, pw, ph);
     }
 
     public boolean inputTranslate(int dx, int dy) {
-        int nx = (int) (in.getX() + dx);
-        double sw = in.getWidth();
+        var nx = (int) (in.getX() + dx);
+        var sw = in.getWidth();
         if ((nx < 0) || (nx >= component.getWidth() - sw))
             return false;
-        int ny = (int) (in.getY() + dy);
-        double sh = in.getHeight();
+        var ny = (int) (in.getY() + dy);
+        var sh = in.getHeight();
         if ((ny < 0) || (ny >= component.getHeight() - sh))
             return false;
         this.in = new Rectangle(nx, ny, (int) sw, (int) sh);
@@ -71,18 +71,18 @@ public class SwingBitmap2D extends MonoBufImgBitmap2D implements Supplier<Buffer
 
 
     public boolean inputZoom(double scale, int minPixelsX, int minPixelsY) {
-        int rw = (int) in.getWidth();
-        double sw = max(minPixelsX, min(component.getWidth()-1, rw * scale));
-        int rh = (int) in.getHeight();
-        double sh = max(minPixelsY, min(component.getHeight()-1, rh * scale));
+        var rw = (int) in.getWidth();
+        var sw = max(minPixelsX, min(component.getWidth()-1, rw * scale));
+        var rh = (int) in.getHeight();
+        var sh = max(minPixelsY, min(component.getHeight()-1, rh * scale));
 
-        int isw = (int)sw;
-        int ish = (int)sh;
+        var isw = (int)sw;
+        var ish = (int)sh;
         if ((isw == rw) && (ish == rh))
-            return false; 
+            return false;
 
-        double dx = (sw - rw)/2.0;
-        double dy = (sh - rh)/2.0;
+        var dx = (sw - rw)/2.0;
+        var dy = (sh - rh)/2.0;
         this.in = new Rectangle(
                 (int)(in.getX()+dx), (int)(in.getY()+dy),
                 (int) sw, (int) sh);

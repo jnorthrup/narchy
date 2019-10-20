@@ -17,11 +17,11 @@ public class StreamReplay {
     }
 
     public static <T> Supplier<Stream<T>> replay(Supplier<Stream<T>> dataSrc) {
-        Recorder<T> rec = new Recorder<>(dataSrc);
+        var rec = new Recorder<T>(dataSrc);
         return () -> {
             // MemoizeIter starts on index 0 and reads data from srcIter or
             // from an internal mem replay Recorder.
-            Spliterator<T> iter = rec.memIterator();
+            var iter = rec.memIterator();
             return stream(iter, false);
         };
     }
@@ -118,7 +118,7 @@ public class StreamReplay {
 
             private int getFence() { // initialize fence to size on first use
                 int hi;
-                List<T> lst = mem;
+                var lst = mem;
                 if ((hi = fence) < 0) {
                     hi = fence = lst.size();
                 }
@@ -146,8 +146,8 @@ public class StreamReplay {
             public void forEachRemaining(Consumer<? super T> action) {
                 Objects.requireNonNull(action);
 //                List<T> lst = mem;
-                int hi = getFence();
-                int i = index;
+                var hi = getFence();
+                var i = index;
                 index = hi;
                 for (; i < hi; i++) {
                     action.accept(mem.get(i));

@@ -128,7 +128,7 @@ public class ConcurrentFastIteratingHashSet<T> extends AbstractSet<T> {
     }
 
     public T get(Random rng) {
-        T[] a = map.valueArray();
+        var a = map.valueArray();
         return a.length == 0 ? null : a[Math.abs(rng.nextInt(a.length))];
     }
 

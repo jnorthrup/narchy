@@ -26,7 +26,7 @@ public abstract class TaskTransformAction extends TaskAction {
 
 	@Override
 	protected final void accept(Task x, RuleCause why, Derivation d) {
-		Task y = transform(x, d);
+		var y = transform(x, d);
 		if (y != null)
 			d.remember(((AbstractTask) y).why(why.why(d)));
 	}

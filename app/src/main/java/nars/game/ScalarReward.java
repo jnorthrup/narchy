@@ -96,8 +96,8 @@ public abstract class ScalarReward extends Reward {
      * */
     protected void reinforceInit(Game g) {
         Term Rpos = concept.term(), Rneg = Rpos.neg();
-        Term rTargetP = goal.isPositive() ? Rpos : Rneg;
-        Term rTargetN = rTargetP.neg();
+        var rTargetP = goal.isPositive() ? Rpos : Rneg;
+        var rTargetN = rTargetP.neg();
         //reinforceTemporal(concept.term(), GOAL, goal, newStamp());
         reinforce(concept.term(), GOAL, goal, newStamp());
 //        reinforce(CONJ.the(Rpos, $.varDep(1)), GOAL, RimplAPos);
@@ -105,9 +105,9 @@ public abstract class ScalarReward extends Reward {
 
 //        long[] stamp = newStamp(); //shared
 
-        for (ActionSignal a : g.actions()) {
-            Term A = a.term();
-            long[] stampP = newStamp();
+        for (var a : g.actions()) {
+            var A = a.term();
+            var stampP = newStamp();
 //            long[] stampN = newStamp();
 
 //            reinforce(CONJ.the(rTargetP, A), GOAL, RimplAPos, stampP);
@@ -174,7 +174,7 @@ public abstract class ScalarReward extends Reward {
     }
 
     protected long[] newStamp() {
-        long[] stamp = !stamped ? Stamp.UNSTAMPED : nar().evidence();
+        var stamp = !stamped ? Stamp.UNSTAMPED : nar().evidence();
         return stamp;
     }
 
@@ -184,13 +184,13 @@ public abstract class ScalarReward extends Reward {
 
     @Override
     protected void reinforce() {
-        NAR nar = game.nar;
+        var nar = game.nar;
 
-        float cMax = nar.confDefault(GOAL);
+        var cMax = nar.confDefault(GOAL);
         goal.conf(cMax);
 
         float strength = 1;
-        float cMin = Math.min(NAL.truth.CONF_MAX,
+        var cMin = Math.min(NAL.truth.CONF_MAX,
             Math.max(nar.confMin.floatValue(), nar.confResolution.floatValue()) * strength
             //nar.confMin.floatValue() * strength
             //cMax / 2
@@ -228,9 +228,9 @@ public abstract class ScalarReward extends Reward {
         if (c==null)
             return NaN;
 
-        Truth t = (beliefOrGoal ? c.beliefs() : c.goals()).truth(start, end, dur, nar());
+        var t = (beliefOrGoal ? c.beliefs() : c.goals()).truth(start, end, dur, nar());
         if (t!=null) {
-            float f = t.freq();
+            var f = t.freq();
             return negate ? 1 - f : f;
         } else
             return NaN;

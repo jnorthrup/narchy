@@ -71,19 +71,19 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
         if (!(that instanceof Compound))
             return false;
 
-        Subterms superTerm = ((Compound)that).subtermsDirect();
+        var superTerm = ((Compound)that).subtermsDirect();
 
-        int ppp = p.size();
+        var ppp = p.size();
 
-        int n = superTerm.subs();
-        for (int i = 0; i < n; i++) {
+        var n = superTerm.subs();
+        for (var i = 0; i < n; i++) {
 
             p.add((byte) i);
 
-            Term s = superTerm.sub(i);
+            var s = superTerm.sub(i);
 
-            boolean kontinue = true;
-            X ss = subterm.apply(s);
+            var kontinue = true;
+            var ss = subterm.apply(s);
             if (ss != null) {
                 if (!receiver.test(p, ss))
                     kontinue = false;
@@ -177,7 +177,7 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
 //    Term transform(TermTransform t, @Nullable TermBuffer b, int volMax);
 
 	default int hashCodeShort() {
-	    int h = hashCode();
+        var h = hashCode();
 	    return ((h & 0xffff) ^ (h >>> 16));
     }
 
@@ -245,26 +245,26 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
     }
 
     default @Nullable Term replaceAt(ByteList path, int depth, Term replacement) {
-        int ps = path.size();
+        var ps = path.size();
         if (ps == depth)
             return replacement;
         if (ps < depth)
             throw new RuntimeException("path overflow");
 
-        Compound src = (Compound) this;
-        Subterms css = src.subtermsDirect();
+        var src = (Compound) this;
+        var css = src.subtermsDirect();
 
-        int n = css.subs();
+        var n = css.subs();
 
-        byte which = path.get(depth);
+        var which = path.get(depth);
         assert (which < n);
 
-        Term x = css.sub(which);
-        Term y = x.replaceAt(path, depth + 1, replacement);
+        var x = css.sub(which);
+        var y = x.replaceAt(path, depth + 1, replacement);
         if (y == x) {
             return src; //unchanged
         } else {
-            Term[] target = css.arrayClone();
+            var target = css.arrayClone();
             target[which] = y;
             return src.op().the(src.dt(), target);
         }
@@ -276,7 +276,7 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
 
 
     default <X> boolean pathsTo(Function<Term, X> target, Predicate<Term> descendIf, BiPredicate<ByteList, X> receiver) {
-        X ss = target.apply(this);
+        var ss = target.apply(this);
         if (ss != null && !receiver.test(Util.EmptyByteList, ss))
             return false;
 
@@ -285,10 +285,10 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
     }
 
     default Term commonParent(List<ByteList> subpaths) {
-        int subpathsSize = subpaths.size(); //assert (subpathsSize > 1);
+        var subpathsSize = subpaths.size(); //assert (subpathsSize > 1);
 
-        int shortest = Integer.MAX_VALUE;
-        for (ByteList subpath : subpaths)
+        var shortest = Integer.MAX_VALUE;
+        for (var subpath : subpaths)
             shortest = Math.min(shortest, subpath.size());
 
 
@@ -296,8 +296,8 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
         done:
         for (i = 0; i < shortest; i++) {
             byte needs = 0;
-            for (int j = 0; j < subpathsSize; j++) {
-                byte pi = subpaths.get(j).get(i);
+            for (var j = 0; j < subpathsSize; j++) {
+                var pi = subpaths.get(j).get(i);
                 if (j == 0) {
                     needs = pi;
                 } else if (needs != pi) {
@@ -311,7 +311,7 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
     }
 
     default @Nullable Term subPath(ByteList path) {
-        int p = path.size();
+        var p = path.size();
         return p > 0 ? subPath(path, 0, p) : this;
     }
 
@@ -320,13 +320,13 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
      * returns null if specified subterm does not exist
      */
     default @Nullable Term subPath(byte... path) {
-        int p = path.length;
+        var p = path.length;
         return p > 0 ? subPath(0, p, path) : this;
     }
 
     default @Nullable Term subPath(int start, int end, byte... path) {
-        Term ptr = this;
-        for (int i = start; i < end; i++) {
+        var ptr = this;
+        for (var i = start; i < end; i++) {
             if ((ptr = ptr.subSafe(path[i])) == Bool.Null)
                 return null;
         }
@@ -334,8 +334,8 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
     }
 
     default @Nullable Term subPath(ByteList path, int start, int end) {
-        Term ptr = this;
-        for (int i = start; i < end; i++) {
+        var ptr = this;
+        for (var i = start; i < end; i++) {
             if ((ptr = ptr.subSafe(path.get(i))) == Bool.Null)
                 return null;
         }
@@ -458,7 +458,7 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
                         return each.test(Tense.occToDT(when));
                     } else {
                         if (Term.this != what && what.op() == CONJ) { //HACK unwrap this better to avoid unnecessary recursion
-                            int subWhen = what.subTimeFirst(match);
+                            var subWhen = what.subTimeFirst(match);
                             if (subWhen != DTERNAL) {
 //                                hits[0]++;
                                 return each.test(Tense.occToDT(when + subWhen));
@@ -509,13 +509,13 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
         } else if (b && !a) {
             return -1;
         } else if (!b) {
-            int vc = Integer.compare(t.volume(), this.volume());
+            var vc = Integer.compare(t.volume(), this.volume());
             if (vc != 0)
                 return vc;
         }
 
-        Op op = this.op();
-        int oc = Integer.compare(op.id, t.opID());
+        var op = this.op();
+        var oc = Integer.compare(op.id, t.opID());
         if (oc != 0)
             return oc;
 
@@ -536,7 +536,7 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
         } else {
             //COMPOUND
 
-            int c = Subterms.compare(
+            var c = Subterms.compare(
                 ((Compound)this).subtermsDirect(),
                 ((Compound)t).subtermsDirect()
             );

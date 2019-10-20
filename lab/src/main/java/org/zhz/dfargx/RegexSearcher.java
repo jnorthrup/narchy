@@ -47,15 +47,15 @@ public class RegexSearcher extends DFA implements Enumeration<MatchedText> {
 
     @Override
     public boolean hasMoreElements() {
-        int[][] t = this.transitionTable;
+        var t = this.transitionTable;
 
-        int len = str.length();
-        String str = this.str;
-        int rs = this.rs;
-        boolean[] fs = this.fs;
+        var len = str.length();
+        var str = this.str;
+        var rs = this.rs;
+        var fs = this.fs;
         while (startPos < len) {
-            int s = is;
-            for (int i = startPos; i < len; i++) {
+            var s = is;
+            for (var i = startPos; i < len; i++) {
 
                 s = t[s][str.charAt(i)];
 

@@ -76,26 +76,26 @@ public abstract class ConceptBuilder implements BiFunction<Term, Concept, Concep
         if (!t.hasAny(AtomicConstant))
             return null;
 
-        Subterms tt = t.subterms();
+        var tt = t.subterms();
 
         AbstractDynamicTruth c = null;
         if (tt.hasAny(Op.CONJ)) {
 
-            Term su = tt.sub(0);
+            var su = tt.sub(0);
 //                if (su.hasAny(Op.VAR_INDEP))
 //                    return null;
-            Term pu = tt.sub(1);
+            var pu = tt.sub(1);
 //                if (pu.hasAny(Op.VAR_INDEP))
 //                    return null;
 
-            Op suo = su.op();
+            var suo = su.op();
             //subject has special negation union case
-            boolean subjDyn = (
+            var subjDyn = (
                     suo == CONJ && DynamicConjTruth.decomposeableConj(su)
                             ||
                             suo == NEG && (su.unneg().op() == CONJ && DynamicConjTruth.decomposeableConj(su.unneg()))
             );
-            boolean predDyn = (pu.op() == CONJ && DynamicConjTruth.decomposeableConj(pu));
+            var predDyn = (pu.op() == CONJ && DynamicConjTruth.decomposeableConj(pu));
 
 
             if (subjDyn && predDyn) {
@@ -118,7 +118,7 @@ public abstract class ConceptBuilder implements BiFunction<Term, Concept, Concep
             }
         }
 
-        AbstractDynamicTruth i = (!(tt.sub(0).unneg() instanceof nars.term.Variable || tt.sub(1) instanceof nars.term.Variable)) ?
+        var i = (!(tt.sub(0).unneg() instanceof nars.term.Variable || tt.sub(1) instanceof nars.term.Variable)) ?
             DynamicStatementTruth.Impl //TODO this may be decomposable if the other term is && or ||
             :
             null;
@@ -128,16 +128,16 @@ public abstract class ConceptBuilder implements BiFunction<Term, Concept, Concep
 
     private static @Nullable ObjectBooleanToObjectFunction<Term, BeliefTable[]> dynamicInh(Term i) {
 
-        Subterms ii = i.subterms();
+        var ii = i.subterms();
 
-        @Nullable AbstractDynamicTruth m = dynamicInhSect(ii);
-        @Nullable ObjectBooleanToObjectFunction<Term, BeliefTable[]> s = m != null ? table(m) : null;
+        @Nullable var m = dynamicInhSect(ii);
+        @Nullable var s = m != null ? table(m) : null;
 
         //HACK the temporal restriction is until ImageDynamicTruthModel can support dynamic transformation and untransformation of temporal-containing INH, like:
         //  ((believe("-ÈÛWédxÚñB",(y-->$1)) ==>+- (y-->$1))-->(believe,"-ÈÛWédxÚñB",/))
         if ((ii.sub(0).op()!=IMPL) && (ii.sub(1).op()!=IMPL)) {
 
-            Term n = Image.imageNormalize(i);
+            var n = Image.imageNormalize(i);
             if (!i.equals(n) && !(n instanceof Bool)) {
                 return s == null ?
                     ((t, bOrG) -> new BeliefTable[]{new ImageBeliefTable(t, bOrG)}) :
@@ -157,7 +157,7 @@ public abstract class ConceptBuilder implements BiFunction<Term, Concept, Concep
 
             //TODO if both subject and predicate are CONJ
 
-            Term s = ii.sub(0);
+            var s = ii.sub(0);
             if (s instanceof Compound && s.opID() == Op.CONJ.id) {
                 //if (s.subterms().AND(z -> validDynamicSubterm.test(INH.the(z, p)))) {
 //                    switch (so) {
@@ -169,7 +169,7 @@ public abstract class ConceptBuilder implements BiFunction<Term, Concept, Concep
                 //}
             }
 
-            Term p = ii.sub(1);
+            var p = ii.sub(1);
             if (p instanceof Compound && p.opID() == Op.CONJ.id) {
                 //if (p.subterms().AND(z -> validDynamicSubterm.test(INH.the(s, z)))) {
 //                    switch (po) {
@@ -195,7 +195,7 @@ public abstract class ConceptBuilder implements BiFunction<Term, Concept, Concep
     private Concept taskConcept(Term t) {
 
         BeliefTable B, G;
-        ObjectBooleanToObjectFunction<Term, BeliefTable[]> dmt = t instanceof Compound ?
+        var dmt = t instanceof Compound ?
                 ConceptBuilder.dynamicModel((Compound) t) : null;
 
         if (dmt != null) {
@@ -239,7 +239,7 @@ public abstract class ConceptBuilder implements BiFunction<Term, Concept, Concep
 
     public final Concept apply(Term x) {
 
-        Concept c = construct(x);
+        var c = construct(x);
 
         start(c);
 
@@ -250,7 +250,7 @@ public abstract class ConceptBuilder implements BiFunction<Term, Concept, Concep
      * constructs a concept but does no capacity allocation (result will have zero capacity, except dynamic abilities)
      */
     public final Concept construct(Term x) {
-        Concept c = Task.validTaskTerm(x) ? taskConcept(x) : nodeConcept(x);
+        var c = Task.validTaskTerm(x) ? taskConcept(x) : nodeConcept(x);
         if (c == null)
             throw new WTF(x + " unconceptualizable");
         return c;

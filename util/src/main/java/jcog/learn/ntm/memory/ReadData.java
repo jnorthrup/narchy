@@ -20,9 +20,9 @@ public class ReadData  {
         cellHeight = memory.memoryHeight;
 
         read = new Unit[cellWidth];
-        for (int i = 0;i < cellWidth;i++) {
-            double temp = 0.0;
-            for (int j = 0;j < cellHeight;j++) {
+        for (var i = 0; i < cellWidth; i++) {
+            var temp = 0.0;
+            for (var j = 0; j < cellHeight; j++) {
                 temp += head.addressingVector.value[j] * mem.data[j][i].value;
             }
             
@@ -34,23 +34,23 @@ public class ReadData  {
     }
 
     public void backwardErrorPropagation() {
-        UVector addressingVectorUnit = head.addressingVector;
+        var addressingVectorUnit = head.addressingVector;
 
-        Unit[][] memData = memory.data;
+        var memData = memory.data;
 
-        int h = this.cellHeight;
-        int w = this.cellWidth;
-        Unit[] read = this.read;
+        var h = this.cellHeight;
+        var w = this.cellWidth;
+        var read = this.read;
 
-        for (int i = 0; i < h; i++) {
-            double gradient = 0.0;
+        for (var i = 0; i < h; i++) {
+            var gradient = 0.0;
 
-            Unit[] dataVector = memData[i];
+            var dataVector = memData[i];
 
-            for (int j = 0; j < w; j++) {
+            for (var j = 0; j < w; j++) {
 
-                double readUnitGradient = read[j].grad;
-                Unit dataUnit = dataVector[j];
+                var readUnitGradient = read[j].grad;
+                var dataUnit = dataVector[j];
                 gradient += readUnitGradient * dataUnit.value;
                 dataUnit.grad += readUnitGradient * addressingVectorUnit.value[i];
             }
@@ -60,9 +60,9 @@ public class ReadData  {
 
     /** TODO return UMatrix of ReadData UVector's */
     public static ReadData[] getVector(NTMMemory memory, HeadSetting[] h) {
-        int x = memory.headNum();
+        var x = memory.headNum();
 
-        ReadData[] vector = IntStream.range(0, x).mapToObj(i -> new ReadData(h[i], memory)).toArray(ReadData[]::new);
+        var vector = IntStream.range(0, x).mapToObj(i -> new ReadData(h[i], memory)).toArray(ReadData[]::new);
         return vector;
     }
 

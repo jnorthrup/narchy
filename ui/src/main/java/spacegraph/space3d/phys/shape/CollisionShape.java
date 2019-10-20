@@ -54,10 +54,10 @@ public abstract class CollisionShape {
 		v3 aabbMin = new v3(), aabbMax = new v3();
 		getAabb(new Transform().setIdentity(), aabbMin, aabbMax);
 
-		v3 tmp = new v3();
+		var tmp = new v3();
 		tmp.sub(aabbMax, aabbMin);
 
-		float radius = tmp.length() * 0.5f;
+		var radius = tmp.length() * 0.5f;
 
 		if (center!=null) {
 			tmp.add(aabbMin, aabbMax);
@@ -68,7 +68,7 @@ public abstract class CollisionShape {
 
 	
 	private float getAngularMotionDisc() {
-		v3 center = new v3();
+		var center = new v3();
 		return getBoundingSphere(center) + center.length();
 	}
 
@@ -78,15 +78,15 @@ public abstract class CollisionShape {
 		
 		getAabb(curTrans, temporalAabbMin, temporalAabbMax);
 
-		float temporalAabbMaxx = temporalAabbMax.x;
-		float temporalAabbMaxy = temporalAabbMax.y;
-		float temporalAabbMaxz = temporalAabbMax.z;
-		float temporalAabbMinx = temporalAabbMin.x;
-		float temporalAabbMiny = temporalAabbMin.y;
-		float temporalAabbMinz = temporalAabbMin.z;
+		var temporalAabbMaxx = temporalAabbMax.x;
+		var temporalAabbMaxy = temporalAabbMax.y;
+		var temporalAabbMaxz = temporalAabbMax.z;
+		var temporalAabbMinx = temporalAabbMin.x;
+		var temporalAabbMiny = temporalAabbMin.y;
+		var temporalAabbMinz = temporalAabbMin.z;
 
-		
-		v3 linMotion = new v3(linvel, timeStep);
+
+		var linMotion = new v3(linvel, timeStep);
 
 		
 		if (linMotion.x > 0f) {
@@ -108,9 +108,9 @@ public abstract class CollisionShape {
 			temporalAabbMinz += linMotion.z;
 		}
 
-		
-		float angularMotion = angvel.length() * getAngularMotionDisc() * timeStep;
-		v3 angularMotion3d = new v3();
+
+		var angularMotion = angvel.length() * getAngularMotionDisc() * timeStep;
+		var angularMotion3d = new v3();
 		angularMotion3d.set(angularMotion, angularMotion, angularMotion);
 		temporalAabbMin.set(temporalAabbMinx, temporalAabbMiny, temporalAabbMinz);
 		temporalAabbMax.set(temporalAabbMaxx, temporalAabbMaxy, temporalAabbMaxz);

@@ -181,9 +181,9 @@ public class ContinuousConstraintSolver {
      */
     public void update() {
 
-        for (Map.Entry<DoubleVar, Symbol> entry : vars.entrySet()) {
-            DoubleVar key = entry.getKey();
-            Symbol value = entry.getValue();
+        for (var entry : vars.entrySet()) {
+            var key = entry.getKey();
+            var value = entry.getValue();
             var row = rows.get(value);
             if (row != null)
                 key.value(row.getConstant());
@@ -327,16 +327,16 @@ public class ContinuousConstraintSolver {
 
         var rowptr = rows.get(art);
 
-        boolean completed = false;
-        boolean res = false;
+        var completed = false;
+        var res = false;
         if (rowptr != null) {
             var deleteQueue = new ArrayList<>();
-            for (Map.Entry<Symbol, Row> entry : rows.entrySet()) {
-                Symbol key = entry.getKey();
-                Row value = entry.getValue();
+            for (var entry : rows.entrySet()) {
+                var key = entry.getKey();
+                var value = entry.getValue();
                 if (value == rowptr) deleteQueue.add(key);
             }
-            for (Object symbol : deleteQueue) {
+            for (var symbol : deleteQueue) {
                 rows.remove(symbol);
             }
 
@@ -357,7 +357,7 @@ public class ContinuousConstraintSolver {
 
         }
         if (!completed) {
-            for (Row r : rows.values()) {
+            for (var r : rows.values()) {
                 r.remove(art);
             }
 
@@ -456,7 +456,7 @@ public class ContinuousConstraintSolver {
      * If no such symbol is present, and Invalid symbol will be returned.
      */
     private static Symbol anyPivotableSymbol(Row row) {
-        Optional<Symbol> found = row.cells.keySet().stream().filter(k -> k.type == Symbol.Type.SLACK || k.type == Symbol.Type.ERROR).findFirst();
+        var found = row.cells.keySet().stream().filter(k -> k.type == Symbol.Type.SLACK || k.type == Symbol.Type.ERROR).findFirst();
         var symbol =
                 found.orElseGet(() -> new Symbol(Symbol.Type.INVALID));
 

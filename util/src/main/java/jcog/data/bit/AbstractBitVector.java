@@ -64,18 +64,18 @@ public abstract class AbstractBitVector implements BitVector {
 	public void flip(long index ) { set( index, ! getBoolean( index ) ); }
 	
 	@Override
-	public void fill(boolean value ) { for(long i = length(); i-- != 0; ) set( i, value ); }
+	public void fill(boolean value ) { for(var i = length(); i-- != 0; ) set( i, value ); }
 	@Override
 	public void fill(int value ) { fill( value != 0 ); }
 	@Override
-	public void flip() { for(long i = length(); i-- != 0; ) flip( i ); }
+	public void flip() { for(var i = length(); i-- != 0; ) flip( i ); }
 
 	@Override
-	public void fill(long from, long to, boolean value ) { BitVectors.ensureFromTo( length(), from, to ); for(long i = to; i-- != from; ) set( i, value ); }
+	public void fill(long from, long to, boolean value ) { BitVectors.ensureFromTo( length(), from, to ); for(var i = to; i-- != from; ) set( i, value ); }
 	@Override
 	public void fill(long from, long to, int value ) { fill( from, to, value != 0 ); }
 	@Override
-	public void flip(long from, long to ) { BitVectors.ensureFromTo( length(), from, to ); for(long i = to; i-- != from; ) flip( i ); }
+	public void flip(long from, long to ) { BitVectors.ensureFromTo( length(), from, to ); for(var i = to; i-- != from; ) flip( i ); }
 
 	@Override
 	public int getInt(long index ) { return getBoolean( index ) ? 1 : 0; }
@@ -107,14 +107,14 @@ public abstract class AbstractBitVector implements BitVector {
 
 	@Override
 	public BitVector append(long value, int k ) {
-		for( int i = 0; i < k; i++ ) add( ( value & 1L << i ) != 0 );
+		for(var i = 0; i < k; i++ ) add( ( value & 1L << i ) != 0 );
 		return this;
 	}
 
 	@Override
 	public BitVector append(BitVector bv ) {
-		long length = bv.length();
-		long l = length - length % Long.SIZE;
+		var length = bv.length();
+		var l = length - length % Long.SIZE;
 		
 		long i;
 		for( i = 0; i < l; i += Long.SIZE ) append( bv.getLong( i, i + Long.SIZE ), Long.SIZE );
@@ -128,9 +128,9 @@ public abstract class AbstractBitVector implements BitVector {
 	@Override
 	public BitVector copy(long from, long to ) {
 		BitVectors.ensureFromTo( length(), from, to );
-		long length = to - from;
-		long l = length - length % Long.SIZE;
-		long[] bits = new long[(int) ((length + Long.SIZE - 1) / Long.SIZE)];
+		var length = to - from;
+		var l = length - length % Long.SIZE;
+		var bits = new long[(int) ((length + Long.SIZE - 1) / Long.SIZE)];
 		long i;
 		for( i = 0; i < l; i += Long.SIZE ) bits[ (int)( i / Long.SIZE ) ] = getLong( from + i, from + i + Long.SIZE );
 		if ( i < length ) bits[ (int)( i / Long.SIZE ) ] = getLong( from + i, to );
@@ -150,7 +150,7 @@ public abstract class AbstractBitVector implements BitVector {
 	@Override
 	public long count() {
 		long c = 0;
-		for( long i = length(); i-- != 0; ) c += getInt( i );
+		for(var i = length(); i-- != 0; ) c += getInt( i );
 		return c;
 	}
 	
@@ -176,32 +176,32 @@ public abstract class AbstractBitVector implements BitVector {
 	
 	@Override
 	public long nextOne(long index ) {
-		long length = length();
+		var length = length();
 		return LongStream.range(index, length).filter(this::getBoolean).findFirst().orElse(-1L);
 	}
 	
 	@Override
 	public long previousOne(long index ) {
-		for ( long i = index; i-- != 0; ) if ( getBoolean( i ) ) return i;
+		for (var i = index; i-- != 0; ) if ( getBoolean( i ) ) return i;
 		return -1;
 	}
 	
 	@Override
 	public long nextZero(long index ) {
-		long length = length();
+		var length = length();
 		return LongStream.range(index, length).filter(i -> !getBoolean(i)).findFirst().orElse(-1L);
 	}
 	
 	@Override
 	public long previousZero(long index ) {
-		for ( long i = index; i-- != 0; ) if ( ! getBoolean( i ) ) return i;
+		for (var i = index; i-- != 0; ) if ( ! getBoolean( i ) ) return i;
 		return -1;
 	}
 	
 	@Override
 	public long longestCommonPrefixLength(BitVector v ) {
-		long minLength = Math.min( length(), v.length() );
-		long l = minLength - minLength % Long.SIZE;
+		var minLength = Math.min( length(), v.length() );
+		var l = minLength - minLength % Long.SIZE;
 		long w0, w1;
 		
 		long i;
@@ -230,25 +230,25 @@ public abstract class AbstractBitVector implements BitVector {
 	
 	@Override
 	public BitVector and(BitVector v ) {
-		for( long i = Math.min( size64(), v.size64() ); i-- != 0; ) if ( ! v.getBoolean( i ) ) clear( i );
+		for(var i = Math.min( size64(), v.size64() ); i-- != 0; ) if ( ! v.getBoolean( i ) ) clear( i );
 		return this;
 	}
 	
 	@Override
 	public BitVector or(BitVector v ) {
-		for( long i = Math.min( size64(), v.size64() ); i-- != 0; ) if ( v.getBoolean( i ) ) set( i );
+		for(var i = Math.min( size64(), v.size64() ); i-- != 0; ) if ( v.getBoolean( i ) ) set( i );
 		return this;
 	}
 
 	@Override
 	public BitVector xor(BitVector v ) {
-		for( long i = Math.min( size64(), v.size64() ); i-- != 0; ) if ( v.getBoolean( i ) ) flip( i );
+		for(var i = Math.min( size64(), v.size64() ); i-- != 0; ) if ( v.getBoolean( i ) ) flip( i );
 		return this;
 	}
 
 	@Deprecated
 	public int size() {
-		long length = length();
+		var length = length();
 		if ( length > Integer.MAX_VALUE ) throw new IllegalStateException( "The number of bits of this bit vector (" + length + ") exceeds Integer.MAX_INT" );
 		return (int)length;
 	}
@@ -265,7 +265,7 @@ public abstract class AbstractBitVector implements BitVector {
 	@Override
 	public BitVector replace(BitVector bv ) {
 		clear();
-		long fullBits = bv.length() - bv.length() % Long.SIZE;
+		var fullBits = bv.length() - bv.length() % Long.SIZE;
 		for( long i = 0; i < fullBits; i += Long.SIZE ) append( bv.getLong( i, i + Long.SIZE ), Long.SIZE );
 		if ( bv.length() % Long.SIZE != 0 ) append( bv.getLong( fullBits, bv.length() ), (int)( bv.length() - fullBits ) );
 		return this;
@@ -273,19 +273,19 @@ public abstract class AbstractBitVector implements BitVector {
 
 	public boolean equals( Object o ) {
 		if ( ! ( o instanceof BitVector ) ) return false;
-		BitVector v = (BitVector)o;
-		long length = length();
+		var v = (BitVector)o;
+		var length = length();
 		if ( length != v.length() ) return false;
-		long fullLength = length - length % Long.SIZE;
+		var fullLength = length - length % Long.SIZE;
         return LongStream.iterate(0, i -> i < fullLength, i -> i + Long.SIZE).noneMatch(i -> getLong(i, i + Long.SIZE) != v.getLong(i, i + Long.SIZE)) && getLong(fullLength, length) == v.getLong(fullLength, length);
 	}
 
 	@Override
 	public boolean equals(BitVector v, long start, long end ) {
-		long startFull = start - start % LongArrayBitVector.BITS_PER_WORD;
-		long endFull = end - end % LongArrayBitVector.BITS_PER_WORD;
-		int startBit = (int)( start & LongArrayBitVector.WORD_MASK );
-		int endBit = (int)( end & LongArrayBitVector.WORD_MASK );
+		var startFull = start - start % LongArrayBitVector.BITS_PER_WORD;
+		var endFull = end - end % LongArrayBitVector.BITS_PER_WORD;
+		var startBit = (int)( start & LongArrayBitVector.WORD_MASK );
+		var endBit = (int)( end & LongArrayBitVector.WORD_MASK );
 		
 		if ( startFull == endFull )
 				return ( ( getLong( startFull, Math.min( length(), startFull + Long.SIZE ) ) 
@@ -304,9 +304,9 @@ public abstract class AbstractBitVector implements BitVector {
 
 	
 	public int hashCode() {
-		long length = length();
-		long fullLength = length - length % Long.SIZE;
-		long h = 0x9e3779b97f4a7c13L ^ length;
+		var length = length();
+		var fullLength = length - length % Long.SIZE;
+		var h = 0x9e3779b97f4a7c13L ^ length;
 
 		for( long i = 0; i < fullLength; i += Long.SIZE ) h ^= ( h << 5 ) + getLong( i, i + Long.SIZE ) + ( h >>> 2 );
 		if ( length != fullLength ) h ^= ( h << 5 ) + getLong( fullLength, length ) + ( h >>> 2 );
@@ -316,8 +316,8 @@ public abstract class AbstractBitVector implements BitVector {
 	
 	@Override
 	public long[] bits() {
-		long[] bits = new long[ (int)( ( length() + LongArrayBitVector.BITS_PER_WORD - 1 ) >> LongArrayBitVector.LOG2_BITS_PER_WORD ) ];
-		long length = length();
+		var bits = new long[ (int)( ( length() + LongArrayBitVector.BITS_PER_WORD - 1 ) >> LongArrayBitVector.LOG2_BITS_PER_WORD ) ];
+		var length = length();
 		for( long i = 0; i < length; i++ ) if ( getBoolean( i ) ) bits[ (int)( i >> LongArrayBitVector.LOG2_BITS_PER_WORD ) ] |= 1L << i; 
 		return bits;
 	}
@@ -574,9 +574,9 @@ public abstract class AbstractBitVector implements BitVector {
 		
 	@Override
 	public BitVector length(long newLength ) {
-		long length = length();
-		if ( length < newLength ) for( long i = newLength - length; i-- != 0; ) add( false );
-		else for( long i = length; i-- != newLength; ) removeBoolean( i );
+		var length = length();
+		if ( length < newLength ) for(var i = newLength - length; i-- != 0; ) add( false );
+		else for(var i = length; i-- != newLength; ) removeBoolean( i );
 		return this;
 	}
 
@@ -614,8 +614,8 @@ public abstract class AbstractBitVector implements BitVector {
 
 	
 	public int compareTo( BitVector v ) {
-		long minLength = Math.min( length(), v.length() );
-		long l = minLength - minLength % Long.SIZE;
+		var minLength = Math.min( length(), v.length() );
+		var l = minLength - minLength % Long.SIZE;
 		long w0, w1, xor;
 		
 		long i;
@@ -643,7 +643,7 @@ public abstract class AbstractBitVector implements BitVector {
 	 */
 	
 	public String toString() {
-        long size = size64();
+		var size = size64();
 		return LongStream.range(0, size).mapToObj(i -> String.valueOf(getInt(i))).collect(Collectors.joining());
 	}
 

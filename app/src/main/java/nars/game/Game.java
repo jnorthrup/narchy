@@ -136,14 +136,14 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
 	 * evidence/confidence in action decisions, current measurement
 	 */
 	public double dexterity() {
-		int a = actions.size();
-		double result = a == 0 ? 0 : actions.sumBy(ActionSignal::dexterity);
+		var a = actions.size();
+		var result = a == 0 ? 0 : actions.sumBy(ActionSignal::dexterity);
 		return a > 0 ? result / a : 0;
 	}
 
 	public double coherency() {
-		int a = actions.size();
-		double result = a == 0 ? 0 : actions.sumBy(ActionSignal::coherency);
+		var a = actions.size();
+		var result = a == 0 ? 0 : actions.sumBy(ActionSignal::coherency);
 		return a > 0 ? result / a : 0;
 	}
 
@@ -162,7 +162,7 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
 
 	@Override
 	public final <A extends ActionSignal> A addAction(A c) {
-		Term ct = c.term();
+		var ct = c.term();
 		if (actions.OR(e -> e.term().equals(ct)))
 			throw new RuntimeException("action exists with the ID: " + ct);
 		actions.add(c);
@@ -171,7 +171,7 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
 
 	@Override
 	public final <S extends GameLoop> S addSensor(S s) {
-		Term st = s.term();
+		var st = s.term();
 		if (sensors.OR(e -> e.term().equals(st)))
 			throw new RuntimeException("sensor exists with the ID: " + st);
 
@@ -208,7 +208,7 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
 	}
 
 	public Random random() {
-		What w = this.what;
+		var w = this.what;
 		return w != null ? w.random() : ThreadLocalRandom.current();
 	}
 
@@ -251,13 +251,13 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
 		nar.control.add(rewardPri = new PriSource($.inh(id, REWARD),
 			Util.or(nar.beliefPriDefault.pri(), nar.goalPriDefault.pri())));
 
-		for (GameLoop s : sensors) {
+		for (var s : sensors) {
 			init(sensorPri, s);
 		}
-		for (ActionSignal a : actions) {
+		for (var a : actions) {
 			init(actionPri, a);
 		}
-		for (Reward r : rewards) {
+		for (var r : rewards) {
 			init(rewardPri, r);
 		}
 	}
@@ -316,7 +316,7 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
 	}
 
 	public SimpleReward reward(Term reward, float freq, FloatSupplier rewardFunc) {
-		SimpleReward r = new SimpleReward(reward, freq, rewardFunc, this);
+		var r = new SimpleReward(reward, freq, rewardFunc, this);
 		reward(r);
 		return r;
 	}
@@ -382,19 +382,19 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
 
 		try {
 
-			long now =
+			var now =
 				nar.time();
 
-			long prev = this.now;
+			var prev = this.now;
 			if (now < prev)
 				return;
 
 			time.next(this.now = now);
 
-			float durLoop = durLoop();
-			long lastEnd = nowPercept.end;
-			long nextStart = Math.max(lastEnd + 1, (long) Math.floor(now - durLoop / 2));
-			long nextEnd = Math.max(nextStart, Math.round(Math.ceil(now + durLoop / 2 - 1)));
+			var durLoop = durLoop();
+			var lastEnd = nowPercept.end;
+			var nextStart = Math.max(lastEnd + 1, (long) Math.floor(now - durLoop / 2));
+			var nextEnd = Math.max(nextStart, Math.round(Math.ceil(now + durLoop / 2 - 1)));
 
 			nowPercept.range(nextStart, nextEnd).dur(what.dur());
 			nowLoop.range(nextStart, nextEnd).dur(durLoop);
@@ -420,10 +420,10 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
 	}
 
 	protected void act() {
-		ActionSignal[] aaa = actions.array().clone();
+		var aaa = actions.array().clone();
 		ArrayUtil.shuffle(aaa, random());
 
-		for (ActionSignal a : aaa)
+		for (var a : aaa)
 			update(a);
 	}
 

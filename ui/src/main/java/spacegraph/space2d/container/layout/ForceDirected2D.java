@@ -48,13 +48,13 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X> {
     @Override
     protected void layout(Graph2D<X> g, float dtS) {
 
-        int n = nodes.size();
+        var n = nodes.size();
         if (n == 0)
             return;
 
-        float gRad = g.radius();
+        var gRad = g.radius();
 
-        float AUTOSCALE = (float) (nodeScale.floatValue() * gRad / Math.sqrt(1f + n));
+        var AUTOSCALE = (float) (nodeScale.floatValue() * gRad / Math.sqrt(1f + n));
         assert (AUTOSCALE == AUTOSCALE);
 
 
@@ -63,39 +63,38 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X> {
         equilibriumDistFactor = nodeSpacing.floatValue();
 
 
-        int iterations1 = 1;
-        int iterations = iterations1;
-        float gRadPerSec = gRad / dtS;
-        float repelSpeed = this.repelSpeed.floatValue() * gRadPerSec / iterations / gRad;
-        float attractSpeed = this.attractSpeed.floatValue() / iterations / gRad;
+        var iterations1 = 1;
+        var iterations = iterations1;
+        var gRadPerSec = gRad / dtS;
+        var repelSpeed = this.repelSpeed.floatValue() * gRadPerSec / iterations / gRad;
+        var attractSpeed = this.attractSpeed.floatValue() / iterations / gRad;
 
 
 //        float maxSpeedPerIter = (nodeSpeedMax.floatValue() * dtS) * gRad / iterations;
 
 
-        RectFloat gg = g.bounds;
+        var gg = g.bounds;
 
-        for (MutableRectFloat<X> a : nodes) {
+        for (var a : nodes) {
             size(a, AUTOSCALE);
             a.clamp(gg);
         }
 
 
+        var speed = this.speed.floatValue();
 
-        float speed = this.speed.floatValue();
+        for (var ii = 0; ii < iterations; ii++) {
 
-        for (int ii = 0; ii < iterations; ii++) {
+            for (var aa = 0; aa < n; aa++) {
 
-            for (int aa = 0; aa < n; aa++) {
-
-                MutableRectFloat<X> a = nodes.get(aa);
+                var a = nodes.get(aa);
 
 
                 attract(a, attractSpeed);
 
-                float ar = a.radius();
+                var ar = a.radius();
 
-                for (int y = aa + 1; y < n; y++)
+                for (var y = aa + 1; y < n; y++)
                     repel(a, ar, nodes.get(y), repelSpeed);
 
             }
@@ -108,7 +107,7 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X> {
     }
 
     protected void size(MutableRectFloat<X> m, float a) {
-        float p = (float) (1f + Math.sqrt(m.node.pri)) * a;
+        var p = (float) (1f + Math.sqrt(m.node.pri)) * a;
         m.size(p, p);
     }
 
@@ -122,9 +121,9 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X> {
         float px = a.cx(), py = a.cy();
 
 
-        float aRad = a.radius();
+        var aRad = a.radius();
 
-        ConcurrentFastIteratingHashMap<X, EdgeVis<X>> read = from.outs;
+        var read = from.outs;
         //int neighbors = read.size();
 
         double[] dx = {0};
@@ -134,25 +133,25 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X> {
             if (edge == null)
                 return; //wtf
 
-            NodeVis<X> who = edge.to;
+            var who = edge.to;
             if (who == null)
                 return;
 
-            MutableRectFloat b = who.mover;
+            var b = who.mover;
             if (b == null)
                 return;
 
-            float idealLen = (aRad + b.radius()) * equilibriumDistFactor;
+            var idealLen = (aRad + b.radius()) * equilibriumDistFactor;
 
-            v2 delta = new v2(b.cx() - px, b.cy() - py);
-            float len = delta.normalize();
+            var delta = new v2(b.cx() - px, b.cy() - py);
+            var len = delta.normalize();
 //            if (len > idealLen) {
 //            len = len * (1+Util.tanhFast(len - (scale)))/2;
 
 
                 //attractSpeed/=neighbors;
 
-                float s = (len - idealLen) * attractSpeed * weightToVelocity(edge.weight);
+            var s = (len - idealLen) * attractSpeed * weightToVelocity(edge.weight);
 
                 //s = Util.tanhFast(s);...
                 //s = (float) Math.sqrt(s);
@@ -179,33 +178,33 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X> {
 
         v2 aCenter = a;
 
-        float br = b.radius();
+        var br = b.radius();
 //        ar *= ar;
 //        br *= br;
 
 
-        v2 v2 = aCenter.clone();
+        var v2 = aCenter.clone();
         v2.x -= b.cx();
         v2.y -= b.cy();
-        v2 delta = v2;
-        float len = delta.normalize();
+        var delta = v2;
+        var len = delta.normalize();
         if (len <= Spatialization.EPSILONf) {
             //coincident, apply random vector
             double theta = (float) (rng.nextFloat()*Math.PI*2);
-            float tx = (float) Math.cos(theta);
-            float ty = (float) Math.sin(theta);
+            var tx = (float) Math.cos(theta);
+            var ty = (float) Math.sin(theta);
             delta.scaleClone(Spatialization.EPSILONf * 2);
             delta.set(tx, ty);
         }
         if (len >= maxRepelDist)
             return;
 
-        float radii = (ar + br) * equilibriumDistFactor;
+        var radii = (ar + br) * equilibriumDistFactor;
 //        len -= (radii * equilibriumDistFactor);
 //        if (len < 0)
 //            len = 0;
 
-        float s = repelSpeed /
+        var s = repelSpeed /
                 (1 + (len * len));
                 //Util.sqr(1 + len);
 
@@ -213,9 +212,9 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X> {
 
             delta.scaled(s);
 
-            float baRad = br / radii;
+            var baRad = br / radii;
             a.move(delta.x * baRad, delta.y * baRad);
-            float abRad = -ar / radii;
+            var abRad = -ar / radii;
             b.move(delta.x * abRad, delta.y * abRad);
         }
 

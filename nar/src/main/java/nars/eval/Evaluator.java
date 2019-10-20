@@ -59,13 +59,13 @@ public class Evaluator extends HeapTermTransform {
                 compoundBuilder.clear(); //true, compoundBuilder.sub.termCount() >= 64 /* HACK */);
 
                 compoundBuilder.volRemain = Integer.MAX_VALUE; //HACK
-                TermBuffer y = compoundBuilder.append(X);
+                var y = compoundBuilder.append(X);
                 int[] functors = {0};
                 y.updateMap(g -> {
                     if (g instanceof Functor)
                         functors[0]++;
                     else if (g instanceof Atom) {
-                        Functor h = funcResolver.apply((Atom) g);
+                        var h = funcResolver.apply((Atom) g);
                         if (h != null) {
                             functors[0]++;
                             return h;
@@ -76,7 +76,7 @@ public class Evaluator extends HeapTermTransform {
 
                 if (functors[0] > 0) {
 
-                    Term yy = y.term();
+                    var yy = y.term();
                     if (yy.sub(1) instanceof Functor) {
                         clauses.add(yy);
                     }
@@ -101,10 +101,10 @@ public class Evaluator extends HeapTermTransform {
 
     private static final Comparator<? super Term> complexitySort = (a,b)->{
 
-        int vol = Integer.compare(a.volume(), b.volume());
+        var vol = Integer.compare(a.volume(), b.volume());
         if (vol!=0)
             return vol;
-        int vars = Integer.compare(a.vars(), b.vars());
+        var vars = Integer.compare(a.vars(), b.vars());
         if (vars!=0)
             return vars;
 
@@ -119,7 +119,7 @@ public class Evaluator extends HeapTermTransform {
             return x;
 
         if (x instanceof Atom) {
-            Functor f = funcResolver.apply((Atom) x);
+            var f = funcResolver.apply((Atom) x);
             if (f != null)
                 return f;
         }
@@ -135,7 +135,7 @@ public class Evaluator extends HeapTermTransform {
         Evaluation e = new EvaluationTrueFalseFiltered(each, includeTrues, includeFalses);
 
         //iterating at the top level is effectively DFS; a BFS solution is also possible
-        for (Term x : queries) {
+        for (var x : queries) {
             if (x instanceof Compound) //HACK
                 e.evalTry((Compound)x, this, true);
         }

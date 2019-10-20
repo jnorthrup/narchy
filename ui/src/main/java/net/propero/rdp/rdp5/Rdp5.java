@@ -83,24 +83,23 @@ public class Rdp5 extends Rdp {
         byte[] packet = null;
         if (encryption) {
             s.incrementPosition(8); /* signature */
-            byte[] data = new byte[s.size() - s.getPosition()];
+            var data = new byte[s.size() - s.getPosition()];
             s.copyToByteArray(data, 0, s.getPosition(), data.length);
             packet = SecureLayer.decrypt(data);
         }
 
-        
-        
-        RdpPacket_Localised bf = new RdpPacket_Localised(packet.length);
+
+        var bf = new RdpPacket_Localised(packet.length);
         bf.copyFromByteArray(packet, 0, 0, packet.length);
         bf.incrementPosition(packet.length);
         bf.markEnd();
         bf.setPosition(0);
 
         while (bf.getPosition() < bf.getEnd()) {
-            int type = bf.get8();
-            int length = bf.getLittleEndian16();
+            var type = bf.get8();
+            var length = bf.getLittleEndian16();
             /* next_packet = */
-            int next = bf.getPosition() + length;
+            var next = bf.getPosition() + length;
             logger.debug("RDP5: type = {}", type);
             int count;
             switch (type) {
@@ -147,7 +146,7 @@ public class Rdp5 extends Rdp {
      * @param channelno Channel on which packet was received
      */
     void rdp5_process_channel(RdpPacket_Localised s, int channelno) {
-        VChannel channel = channels.find_channel_by_channelno(channelno);
+        var channel = channels.find_channel_by_channelno(channelno);
         if (channel != null) {
             try {
                 channel.process(s);

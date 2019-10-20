@@ -47,11 +47,11 @@ public class ListTopic<V> extends jcog.data.list.FastCoWList<Consumer<V>> implem
     public void emitAsyncAndWait(V x, Executor executorService) throws InterruptedException {
         Consumer[] cc = this.array();
         if (cc != null) {
-            int n = cc.length;
+            var n = cc.length;
             if (n != 0) {
-                CountDownLatch l = new CountDownLatch(n);
+                var l = new CountDownLatch(n);
 
-                for (Consumer c : cc) {
+                for (var c : cc) {
                     executorService.execute(() -> {
                         try {
                             c.accept(x);
@@ -71,12 +71,12 @@ public class ListTopic<V> extends jcog.data.list.FastCoWList<Consumer<V>> implem
     @Override
     public void emitAsync(V x, Executor exe, Runnable onFinish) {
         Consumer[] cc = this.array();
-        int n = cc != null ? cc.length : 0;
+        var n = cc != null ? cc.length : 0;
         switch (n) {
             case 0:
                 return;
             case 1: {
-                Consumer cc0 = cc[0];
+                var cc0 = cc[0];
                 exe.execute(() -> {
                     try {
                         cc0.accept(x);
@@ -89,7 +89,7 @@ public class ListTopic<V> extends jcog.data.list.FastCoWList<Consumer<V>> implem
             default: {
                 busy.reset(n, onFinish);
 
-                for (Consumer c: cc)
+                for (var c: cc)
                     exe.execute(busy.run(c, x));
                 break;
             }

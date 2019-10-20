@@ -59,7 +59,7 @@ public final class WeakValueCache<K, V> {
             map.remove(ref.key, ref);
         }
 
-        KeyValueReference<K, V> ref = map.get(key);
+        var ref = map.get(key);
         if (ref != null) {
             return ref.get();
         }
@@ -75,7 +75,7 @@ public final class WeakValueCache<K, V> {
      * @return the existing value, or a new one if none existed
      */
     public V getOrCreate(K key, Function<? super K, ? extends V> creator) {
-        V value = get(key);
+        var value = get(key);
 
         if (value == null) {
             

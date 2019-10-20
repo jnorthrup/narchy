@@ -13,7 +13,7 @@ public interface Contexter extends Context {
 
         ContextBranch start(Contexter parent) {
             synchronized (this) {
-                Contexter prevParent = this.parent;
+                var prevParent = this.parent;
                 if (prevParent!=parent) {
                     if (prevParent!=null)
                         stop();

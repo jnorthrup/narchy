@@ -74,7 +74,7 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
         private transient float prw;
         private transient float prh;
         void pre(Dynamics2D physics, RectFloat r) {
-            boolean resized = false;
+            var resized = false;
 
             float nrw = r.w, nrh = r.h;
 
@@ -87,7 +87,7 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
             }
 
             float ncx = r.cx(), ncy = r.cy();
-            boolean moved = false;
+            var moved = false;
             if (body.setTransform(new v2(ncx / scaling, ncy / scaling), 0, SHAPE_SIZE_EPSILON))
                 moved = true;
 
@@ -97,7 +97,7 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
 
         void post(Dynamics2D physics, RectFloat clamp) {
 
-            v2 p = body.pos;
+            var p = body.pos;
             surface.pos(RectFloat.XYWH(
                     p.x * scaling, p.y * scaling,
                     surface.w(), surface.h()).clamp(clamp));
@@ -123,7 +123,7 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
     @Override
     public PhySurface add(Surface w) {
         return this.w.computeIfAbsent(w, (ww->{
-            Body2D body = new Body2D(BodyType.DYNAMIC, physics);
+            var body = new Body2D(BodyType.DYNAMIC, physics);
             PhySurface<?> wd = ww instanceof Windo ?
                     new PhySurface(ww, body)
                     :
@@ -134,17 +134,17 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
     }
     protected PhySurface shadow(Surface w) {
         return this.w.computeIfAbsent(w, (ww->{
-            Body2D body = new Body2D(BodyType.DYNAMIC, physics) {
+            var body = new Body2D(BodyType.DYNAMIC, physics) {
 
                 @Override
                 public boolean preUpdate() {
 
                     //prevent collisions HACK
-                    Fixture f = this.fixtures;
+                    var f = this.fixtures;
                     if (f!=null) {
-                        Fixture fn = f.next;
+                        var fn = f.next;
                         if (fn!=null) {
-                            Filter fnf = fn.filter;
+                            var fnf = fn.filter;
                             if (fnf!=null) {
                                 fnf.groupIndex = -1;
                             }
@@ -190,7 +190,7 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
 
     @Override
     public void remove(Surface w) {
-        PhySurface ww = this.w.remove(w);
+        var ww = this.w.remove(w);
         physics.removeBody(ww.body);
     }
 
@@ -215,9 +215,9 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
 
         w.forEachValue(ww -> ww.pre(physics, ww.surface.bounds.clamp(clamp)));
 
-        float timeScale = 1f;
-        int posIter = 2;
-        int velIter = 2;
+        var timeScale = 1f;
+        var posIter = 2;
+        var velIter = 2;
         physics.step(dt * timeScale, velIter, posIter);
 
         w.forEachValue(ww -> ww.post(physics, clamp));
@@ -226,7 +226,7 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
     /** apply any preprocessing of bounds before entry to the physics engine (and affecting its possible feedback after it finishes)
      * @param r*/
     private RectFloat preBounds(Surface r) {
-        RectFloat b = preBoundsPos(preBoundsSize(r.bounds));
+        var b = preBoundsPos(preBoundsSize(r.bounds));
         r.pos(b);
         return b;
     }
@@ -239,8 +239,8 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
     }
 
     private RectFloat preBoundsSize(RectFloat r) {
-        float rw = r.w; if (!Float.isFinite(rw)) rw = 0;
-        float rh = r.h; if (!Float.isFinite(rh)) rh = 0;
+        var rw = r.w; if (!Float.isFinite(rw)) rw = 0;
+        var rh = r.h; if (!Float.isFinite(rh)) rh = 0;
         float nw = Util.clamp(rw, wMin, clamp.w), nh = Util.clamp(rh, hMin, clamp.h);
         return r.size(nw, nh);
     }
@@ -276,21 +276,21 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
         }
 
         protected @Nullable Dynamics2D world() {
-            Body2D b = sourceBody();
+            var b = sourceBody();
             if (b != null)
                 return b.W;
-            Body2D c = targetBody();
+            var c = targetBody();
             if (c != null)
                 return c.W;
             return null;
         }
 
         protected <C extends ContainerSurface> Body2D body(Surface x, Class<? extends C> sooper) {
-            C z = x.parentOrSelf(sooper);
+            var z = x.parentOrSelf(sooper);
             if (z == null)
                 return null;
             else {
-                PhySurface p = phy(z);
+                var p = phy(z);
                 return p != null ? p.body : null;
             }
         }
@@ -320,7 +320,7 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
 
 
         AABB physicsBounds(Body2D x) {
-            Fixture f = x.fixtures();
+            var f = x.fixtures();
             if (f != null) {
                 return f.getAABB(0);
             } else {
@@ -347,13 +347,13 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
         GlueLink(Wire wire) {
             super(wire);
 
-            Dynamics2D w = world();
+            var w = world();
             if (w == null) {
                 throw new TODO();
                 //wire.remove();
             }
 
-            RopeJointDef jd = new RopeJointDef(sourceBody(), targetBody());
+            var jd = new RopeJointDef(sourceBody(), targetBody());
             //WeldJointDef jd = new WeldJointDef();
             jd.maxLength = targetLength();
             jd.collideConnected = true;
@@ -375,7 +375,7 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
             w.addJoint(joint);
 
             on(() -> {
-                Dynamics2D ww = world();
+                var ww = world();
                 if (ww != null)
                     ww.removeJoint(joint);
             });
@@ -384,8 +384,8 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
         float targetLength() {
             //TODO sourceBody().fixtures.shape.computeDistanceToOut()
 
-            Body2D a = sourceBody();
-            Body2D b = targetBody();
+            var a = sourceBody();
+            var b = targetBody();
             if (a != null && b != null && a.fixtures != null && b.fixtures != null) {
 //                RayCastOutput out12 = new RayCastOutput();
 //                RayCastInput in12 = new RayCastInput();
@@ -425,11 +425,11 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
         SnakeLink(Wire wire) {
             super(wire);
 
-            Body2D a = sourceBody();
+            var a = sourceBody();
             if (a == null)
                 a = shadow(a()).body;
 
-            Body2D b = targetBody();
+            var b = targetBody();
             if (b == null)
                 b = shadow(b()).body;
 
@@ -443,13 +443,13 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
             linkPanel.pos(center());
             on(linkPanel::delete);
 
-            int segments = 7;
+            var segments = 7;
 
             this.snake = new Snake(a, b, segments) {
                 @Override
                 protected void updateGeometry() {
                     super.updateGeometry();
-                    float w = widgetRadius();
+                    var w = widgetRadius();
                     linkPanel.resize(w, w);
                 }
             };
@@ -471,7 +471,7 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
         }
 
         float widgetRadius() {
-            Snake s = this.snake;
+            var s = this.snake;
             return (s != null ? s.elementThickness * (1 / PHI) : 1) * scaling;
         }
 
@@ -481,7 +481,7 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
 
                 ContainerSurface wPort = graph.add(port);
                 wPort.pos(center());
-                float w = widgetRadius() * 4f;
+                var w = widgetRadius() * 4f;
                 wPort.resize(w, w);
                 graph.addWire(new Wire(a(), port));
                 graph.addWire(new Wire(b(), port));
@@ -522,8 +522,8 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
         protected void updateGeometry() {
             elementLength = (distance() / n) * Util.PHI_min_1f;
 
-            float sourceRadius = sourceRadius(); //((Surface)sourceBody.data()).radius();
-            float targetRadius = targetRadius();  //((Surface)targetBody.data()).radius();
+            var sourceRadius = sourceRadius(); //((Surface)sourceBody.data()).radius();
+            var targetRadius = targetRadius();  //((Surface)targetBody.data()).radius();
             elementThickness = Math.max(Settings.EPSILONsqrt,
                     Util.mean(sourceRadius, targetRadius) / 7f);
             //TODO get from surfaces Math.min( sourceBody.fixtures.shape.radius, targetBody.fixtures.shape.radius );
@@ -538,7 +538,7 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
         }
 
         private static float radius(@Nullable Body2D t) {
-            Fixture tf = t!=null ? t.fixtures : null;
+            var tf = t!=null ? t.fixtures : null;
             return tf!=null ? tf.getAABB(0).extents().length() : 1;
         }
 
@@ -556,24 +556,24 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
             joints = new FasterList(num);
             attachments = new FasterList(0);
 
-            Dynamics2D w = sourceBody.W;
+            var w = sourceBody.W;
 
             updateGeometry();
 
-            FixtureDef segment = new FixtureDef(PolygonShape.box(1, 1), 0.01f, 0f);
+            var segment = new FixtureDef(PolygonShape.box(1, 1), 0.01f, 0f);
             segment.restitution = 0f;
             //segment.filter.maskBits = 0;
             segment.filter.groupIndex = -1;
 
-            FixtureDef segmentCollidable = new FixtureDef(PolygonShape.box(1, 1), 0.01f, 0f);
+            var segmentCollidable = new FixtureDef(PolygonShape.box(1, 1), 0.01f, 0f);
             segmentCollidable.restitution = 0f;
 
             Body2D from = null;
 
-            v2 center = sourceCenterWorld().addToNew(targetCenterWorld()).scaleClone(0.5f);
+            var center = sourceCenterWorld().addToNew(targetCenterWorld()).scaleClone(0.5f);
 
-            int mid = num / 2;
-            for (int i = 0; i < num; ++i) {
+            var mid = num / 2;
+            for (var i = 0; i < num; ++i) {
 
 
                 if (from == null) {
@@ -586,7 +586,7 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
                         to = targetBody;
                     } else {
 
-                        int finalI = i;
+                        var finalI = i;
                         to = new SnakeElementBody(center, w, finalI);
 
                         to.addFixture(i == mid ? segmentCollidable : segment);
@@ -597,7 +597,7 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
                         to.postUpdate();
                     }
 
-                    RevoluteJointDef jd = new RevoluteJointDef();
+                    var jd = new RevoluteJointDef();
                     jd.collideConnected = false;
                     jd.bodyA = from;
                     jd.bodyB = to;
@@ -617,10 +617,10 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
             }
 
             w.invoke(() -> {
-                for (Body2D b : bodies) {
+                for (var b : bodies) {
                     w.addBody(b);
                 }
-                for (Joint joint : joints) {
+                for (var joint : joints) {
                     w.addJoint(joint);
                 }
             });
@@ -631,9 +631,9 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
          * attach a body to center of one of the segments
          */
         public void attach(Body2D b, int segment) {
-            RevoluteJointDef rr = new RevoluteJointDef(bodies.get(segment), b);
+            var rr = new RevoluteJointDef(bodies.get(segment), b);
             world().invoke(() -> {
-                RevoluteJoint w = (RevoluteJoint) b.W.addJoint(rr);
+                var w = (RevoluteJoint) b.W.addJoint(rr);
                 attachments.add(b);
                 joints.add(w);
             });
@@ -645,16 +645,16 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
 
         public void remove() {
 
-            Dynamics2D world = world();
+            var world = world();
             world.invoke(() -> {
 
 
-                for (Body2D attachment : attachments) {
+                for (var attachment : attachments) {
                     attachment.remove();
                 }
                 attachments.clear();
 
-                for (Body2D body : bodies) {
+                for (var body : bodies) {
                     body.remove();
                 }
                 bodies.clear();
@@ -704,7 +704,7 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
             private void updateFixtures(Fixture f /* the only one */) {
                 ((PolygonShape) f.shape).setAsBox(eleLen, eleThick);
 
-                RevoluteJoint rj = (RevoluteJoint) ((Snake.this.joints).get(finalI - 1));
+                var rj = (RevoluteJoint) ((Snake.this.joints).get(finalI - 1));
                 if (rj != null) {
 //                    if (finalI != 0) {
                         rj.getLocalAnchorB().set(+eleLen, 0);
@@ -713,7 +713,7 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
 //                    }
                 }
 
-                RevoluteJoint rk = (RevoluteJoint) ((Snake.this.joints).get(finalI));
+                var rk = (RevoluteJoint) ((Snake.this.joints).get(finalI));
                 if (rk != null) {
                     if (finalI != n - 1) {
                         rk.getLocalAnchorA().set(-eleLen, 0);
@@ -989,7 +989,7 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
         @Override
         protected void paint(GL2 gl, ReSurface reSurface) {
 
-            Dynamics2D w = physics;
+            var w = physics;
 
             if (drawJoints) {
                 w.joints(j -> drawJoint(j, gl, reSurface.frameNS));
@@ -1007,10 +1007,10 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
 
         private void drawParticleSystem(GL2 gl, ParticleSystem system) {
 
-            int particleCount = system.getParticleCount();
+            var particleCount = system.getParticleCount();
             if (particleCount != 0) {
-                float particleRadius = system.getParticleRadius();
-                v2[] positionBuffer = system.getParticlePositionBuffer();
+                var particleRadius = system.getParticleRadius();
+                var positionBuffer = system.getParticlePositionBuffer();
                 ParticleColor[] colorBuffer = null;
                 if (system.m_colorBuffer.data != null) {
                     colorBuffer = system.getParticleColorBuffer();
@@ -1023,7 +1023,7 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
         }
 
         private void drawJoint(Joint joint, GL2 g, long now) {
-            Object data = joint.data();
+            var data = joint.data();
             if (data instanceof ObjectLongProcedure) {
                 ((ObjLongConsumer) data).accept(g, now);
             } else {
@@ -1054,16 +1054,16 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
 //            }
 
 
-            boolean awake = body.isAwake();
+            var awake = body.isAwake();
 
             gl.glColor4f(0.5f, 0.5f, 0.5f, awake ? 0.75f : 0.65f);
 
-            for (Fixture f = body.fixtures; f != null; f = f.next) {
-                PolygonFixture pg = f.polygon;
+            for (var f = body.fixtures; f != null; f = f.next) {
+                var pg = f.polygon;
                 if (pg != null) {
 
                 } else {
-                    Shape shape = f.shape();
+                    var shape = f.shape();
 
 
                     switch (shape.m_type) {
@@ -1073,18 +1073,18 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
                             break;
                         case CIRCLE:
 
-                            CircleShape circle = (CircleShape) shape;
-                            float r = circle.skinRadius;
-                            v2 v = new v2();
+                            var circle = (CircleShape) shape;
+                            var r = circle.skinRadius;
+                            var v = new v2();
                             body.getWorldPointToOut(circle.center, v);
                             v.scaleClone(scaling);
 
                             Draw.circle(gl, v, true, r * scaling, 9);
                             break;
                         case EDGE:
-                            EdgeShape edge = (EdgeShape) shape;
-                            v2 p1 = edge.m_vertex1;
-                            v2 p2 = edge.m_vertex2;
+                            var edge = (EdgeShape) shape;
+                            var p1 = edge.m_vertex1;
+                            var p2 = edge.m_vertex2;
                             gl.glLineWidth(4f);
                             Draw.line(p1.x * scaling, p1.y * scaling, p2.x * scaling, p2.y * scaling, gl);
                             break;

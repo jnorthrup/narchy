@@ -47,7 +47,7 @@ class GImpactTriangleCallback extends TriangleCallback {
 
 	@Override
 	public void processTriangle(v3[] triangle, int partId, int triangleIndex) {
-		TriangleShapeEx tri1 = new TriangleShapeEx(triangle[0], triangle[1], triangle[2]);
+		var tri1 = new TriangleShapeEx(triangle[0], triangle[1], triangle[2]);
 		tri1.setMargin(margin);
 		if (swapped) {
 			algorithm.setPart0(partId);

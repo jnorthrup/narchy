@@ -24,7 +24,7 @@ public class DirectTangent implements AdjacentConcepts {
 
 		Term[] T = {null};
 		links.sampleUnique(d.random, y -> {
-			Term z = ((AbstractTaskLink) y).matchReverse(from, fromHash, to, toHash);
+			var z = ((AbstractTaskLink) y).matchReverse(from, fromHash, to, toHash);
 			if (z == null) return true;
 
 			T[0] = z;

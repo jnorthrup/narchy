@@ -52,12 +52,12 @@ public class Polygon2D implements Shape2D, Iterable<Vec2D> {
      * @return polygon
      */
     public static Polygon2D fromBaseEdge(Vec2D baseA, Vec2D baseB, int res) {
-        float theta = -(MathUtils.PI - (MathUtils.PI * (res - 2) / res));
-        Vec2D dir = baseB.sub(baseA);
-        Vec2D prev = baseB;
-        Polygon2D poly = new Polygon2D(baseA, baseB);
-        for (int i = 1; i < res - 1; i++) {
-            Vec2D p = prev.add(dir.getRotated(theta * i));
+        var theta = -(MathUtils.PI - (MathUtils.PI * (res - 2) / res));
+        var dir = baseB.sub(baseA);
+        var prev = baseB;
+        var poly = new Polygon2D(baseA, baseB);
+        for (var i = 1; i < res - 1; i++) {
+            var p = prev.add(dir.getRotated(theta * i));
             poly.add(p);
             prev = p;
         }
@@ -103,13 +103,13 @@ public class Polygon2D implements Shape2D, Iterable<Vec2D> {
     }
 
     public Polygon2D(Iterable<Vec2D> points) {
-        for (Vec2D p : points) {
+        for (var p : points) {
             add(p.copy());
         }
     }
 
     public Polygon2D(Vec2D... points) {
-        for (Vec2D p : points) {
+        for (var p : points) {
             add(p.copy());
         }
     }
@@ -156,23 +156,23 @@ public class Polygon2D implements Shape2D, Iterable<Vec2D> {
      * @return itself
      */
     public Polygon2D center(ReadonlyVec2D origin) {
-        Vec2D centroid = getCentroid();
-        Vec2D delta = origin != null ? origin.sub(centroid) : centroid.invert();
-        for (Vec2D v : vertices) {
+        var centroid = getCentroid();
+        var delta = origin != null ? origin.sub(centroid) : centroid.invert();
+        for (var v : vertices) {
             v.addSelf(delta);
         }
         return this;
     }
 
     public boolean containsPoint(ReadonlyVec2D p) {
-        int num = vertices.size();
-        int j = num - 1;
-        boolean oddNodes = false;
-        float px = p.x();
-        float py = p.y();
-        for (int i = 0; i < num; i++) {
-            Vec2D vi = vertices.get(i);
-            Vec2D vj = vertices.get(j);
+        var num = vertices.size();
+        var j = num - 1;
+        var oddNodes = false;
+        var px = p.x();
+        var py = p.y();
+        for (var i = 0; i < num; i++) {
+            var vi = vertices.get(i);
+            var vj = vertices.get(j);
             if (vi.y < py && vj.y >= py || vj.y < py && vi.y >= py) {
                 if (vi.x + (py - vi.y) / (vj.y - vi.y) * (vj.x - vi.x) < px) {
                     oddNodes = !oddNodes;
@@ -239,8 +239,8 @@ public class Polygon2D implements Shape2D, Iterable<Vec2D> {
     public float getArea() {
         float area = 0;
         for (int i = 0, num = vertices.size(); i < num; i++) {
-            Vec2D a = vertices.get(i);
-            Vec2D b = vertices.get((i + 1) % num);
+            var a = vertices.get(i);
+            var b = vertices.get((i + 1) % num);
             area += a.x * b.y;
             area -= a.y * b.x;
         }
@@ -269,11 +269,11 @@ public class Polygon2D implements Shape2D, Iterable<Vec2D> {
      * @return centroid point
      */
     public Vec2D getCentroid() {
-        Vec2D res = new Vec2D();
+        var res = new Vec2D();
         for (int i = 0, num = vertices.size(); i < num; i++) {
-            Vec2D a = vertices.get(i);
-            Vec2D b = vertices.get((i + 1) % num);
-            float crossP = a.x * b.y - b.x * a.y;
+            var a = vertices.get(i);
+            var b = vertices.get((i + 1) % num);
+            var crossP = a.x * b.y - b.x * a.y;
             res.x += (a.x + b.x) * crossP;
             res.y += (a.y + b.y) * crossP;
         }
@@ -296,11 +296,11 @@ public class Polygon2D implements Shape2D, Iterable<Vec2D> {
     }
 
     public Vec2D getClosestPointTo(ReadonlyVec2D p) {
-        float minD = Float.MAX_VALUE;
+        var minD = Float.MAX_VALUE;
         Vec2D q = null;
-        for (Line2D l : getEdges()) {
-            Vec2D c = l.closestPointTo(p);
-            float d = c.distanceToSquared(p);
+        for (var l : getEdges()) {
+            var c = l.closestPointTo(p);
+            var d = c.distanceToSquared(p);
             if (d < minD) {
                 q = c;
                 minD = d;
@@ -310,10 +310,10 @@ public class Polygon2D implements Shape2D, Iterable<Vec2D> {
     }
 
     public Vec2D getClosestVertexTo(ReadonlyVec2D p) {
-        float minD = Float.MAX_VALUE;
+        var minD = Float.MAX_VALUE;
         Vec2D q = null;
-        for (Vec2D v : vertices) {
-            float d = v.distanceToSquared(p);
+        for (var v : vertices) {
+            var d = v.distanceToSquared(p);
             if (d < minD) {
                 q = v;
                 minD = d;
@@ -328,7 +328,7 @@ public class Polygon2D implements Shape2D, Iterable<Vec2D> {
      * @return list of lines
      */
     public List<Line2D> getEdges() {
-        int num = vertices.size();
+        var num = vertices.size();
         List<Line2D> edges = IntStream.range(0, num).mapToObj(i -> new Line2D(vertices.get(i), vertices.get((i + 1) % num))).collect(Collectors.toCollection(() -> new ArrayList<>(num)));
         return edges;
     }
@@ -357,16 +357,16 @@ public class Polygon2D implements Shape2D, Iterable<Vec2D> {
      * @return Vec2D
      */
     public Vec2D getRandomPoint() {
-        List<Line2D> edges = getEdges();
-        int numEdges = edges.size();
-        Line2D ea = edges.get(MathUtils.random(numEdges));
+        var edges = getEdges();
+        var numEdges = edges.size();
+        var ea = edges.get(MathUtils.random(numEdges));
         Line2D eb = null;
         // and another one, making sure it's different
         while (eb == null || eb.equals(ea)) {
             eb = edges.get(MathUtils.random(numEdges));
         }
         // pick a random point on edge A
-        Vec2D p = ea.a.interpolateTo(ea.b, MathUtils.random(1f));
+        var p = ea.a.interpolateTo(ea.b, MathUtils.random(1f));
         // then randomly interpolate to another random point on edge B
         return p.interpolateToSelf(
                 eb.a.interpolateTo(eb.b, MathUtils.random(1f)),
@@ -382,13 +382,13 @@ public class Polygon2D implements Shape2D, Iterable<Vec2D> {
      * @return itself
      */
     public Polygon2D increaseVertexCount(int count) {
-        int num = vertices.size();
+        var num = vertices.size();
         while (num < count) {
             // find longest edge
-            int longestID = 0;
+            var longestID = 0;
             float maxD = 0;
-            for (int i = 0; i < num; i++) {
-                float d = vertices.get(i).distanceToSquared(
+            for (var i = 0; i < num; i++) {
+                var d = vertices.get(i).distanceToSquared(
                         vertices.get((i + 1) % num));
                 if (d > maxD) {
                     longestID = i;
@@ -396,7 +396,7 @@ public class Polygon2D implements Shape2D, Iterable<Vec2D> {
                 }
             }
             // insert mid point of longest segment in vertex list
-            Vec2D m = vertices.get(longestID)
+            var m = vertices.get(longestID)
                     .add(vertices.get((longestID + 1) % num)).scaleSelf(0.5f);
             vertices.add(longestID + 1, m);
             num++;
@@ -405,8 +405,8 @@ public class Polygon2D implements Shape2D, Iterable<Vec2D> {
     }
 
     protected static boolean intersectsLine(Line2D l, Iterable<Line2D> edges) {
-        for (Line2D e : edges) {
-            Type isec = l.intersectLine(e).getType();
+        for (var e : edges) {
+            var isec = l.intersectLine(e).getType();
             if (isec == Type.INTERSECTING || isec == Type.COINCIDENT) {
                 return true;
             }
@@ -422,12 +422,12 @@ public class Polygon2D implements Shape2D, Iterable<Vec2D> {
      * @return true, if polygons intersect.
      */
     public boolean intersectsPolygon(Shape2D poly) {
-        List<Line2D> edgesB = poly.getEdges();
+        var edgesB = poly.getEdges();
         return getEdges().stream().anyMatch(ea -> intersectsLine(ea, edgesB));
     }
 
     public boolean intersectsRect(Shape2D r) {
-        List<Line2D> edges = r.getEdges();
+        var edges = r.getEdges();
         return getEdges().stream().anyMatch(ea -> intersectsLine(ea, edges));
     }
 
@@ -449,14 +449,14 @@ public class Polygon2D implements Shape2D, Iterable<Vec2D> {
      * @return true, if convex.
      */
     public boolean isConvex() {
-        boolean isPositive = false;
-        int num = vertices.size();
-        for (int i = 0; i < num; i++) {
-            int prev = (i == 0) ? num - 1 : i - 1;
-            int next = (i == num - 1) ? 0 : i + 1;
-            Vec2D d0 = vertices.get(i).sub(vertices.get(prev));
-            Vec2D d1 = vertices.get(next).sub(vertices.get(i));
-            boolean newIsP = (d0.cross(d1) > 0);
+        var isPositive = false;
+        var num = vertices.size();
+        for (var i = 0; i < num; i++) {
+            var prev = (i == 0) ? num - 1 : i - 1;
+            var next = (i == num - 1) ? 0 : i + 1;
+            var d0 = vertices.get(i).sub(vertices.get(prev));
+            var d1 = vertices.get(next).sub(vertices.get(i));
+            var newIsP = (d0.cross(d1) > 0);
             if (i == 0) {
                 isPositive = newIsP;
             } else if (isPositive != newIsP) {
@@ -491,12 +491,12 @@ public class Polygon2D implements Shape2D, Iterable<Vec2D> {
     protected static void offsetCorner(float x1, float y1, float x2, float y2,
                                        float x3, float y3, float distance, Vec2D out) {
 
-        float dx1 = x2 - x1;
-        float dy1 = y2 - y1;
-        float dist1 = (float) Math.sqrt(dx1 * dx1 + dy1 * dy1);
-        float dx2 = x3 - x2;
-        float dy2 = y3 - y2;
-        float dist2 = (float) Math.sqrt(dx2 * dx2 + dy2 * dy2);
+        var dx1 = x2 - x1;
+        var dy1 = y2 - y1;
+        var dist1 = (float) Math.sqrt(dx1 * dx1 + dy1 * dy1);
+        var dx2 = x3 - x2;
+        var dy2 = y3 - y2;
+        var dist2 = (float) Math.sqrt(dx2 * dx2 + dy2 * dy2);
 
         if (dist1 < MathUtils.EPS || dist2 < MathUtils.EPS) {
             return;
@@ -504,21 +504,21 @@ public class Polygon2D implements Shape2D, Iterable<Vec2D> {
         dist1 = distance / dist1;
         dist2 = distance / dist2;
 
-        float insetX = dy1 * dist1;
-        float insetY = -dx1 * dist1;
+        var insetX = dy1 * dist1;
+        var insetY = -dx1 * dist1;
         x1 += insetX;
-        float c1 = x2;
+        var c1 = x2;
         c1 += insetX;
         y1 += insetY;
-        float d1 = y2;
+        var d1 = y2;
         d1 += insetY;
         insetX = dy2 * dist2;
         insetY = -dx2 * dist2;
         x3 += insetX;
-        float c2 = x2;
+        var c2 = x2;
         c2 += insetX;
         y3 += insetY;
-        float d2 = y2;
+        var d2 = y2;
         d2 += insetY;
 
         if (c1 == c2 && d1 == d2) {
@@ -526,10 +526,10 @@ public class Polygon2D implements Shape2D, Iterable<Vec2D> {
             return;
         }
 
-        Line2D l1 = new Line2D(new Vec2D(x1, y1), new Vec2D(c1, d1));
-        Line2D l2 = new Line2D(new Vec2D(c2, d2), new Vec2D(x3, y3));
-        LineIntersection isec = l1.intersectLine(l2);
-        Vec2D ipos = isec.getPos();
+        var l1 = new Line2D(new Vec2D(x1, y1), new Vec2D(c1, d1));
+        var l2 = new Line2D(new Vec2D(c2, d2), new Vec2D(x3, y3));
+        var isec = l1.intersectLine(l2);
+        var ipos = isec.getPos();
         if (ipos != null) {
             out.set(ipos);
         }
@@ -548,17 +548,17 @@ public class Polygon2D implements Shape2D, Iterable<Vec2D> {
      * @return itself
      */
     public Polygon2D offsetShape(float distance) {
-        int num = vertices.size() - 1;
+        var num = vertices.size() - 1;
         if (num > 1) {
-            float startX = vertices.get(0).x;
-            float startY = vertices.get(0).y;
-            float c = vertices.get(num).x;
-            float d = vertices.get(num).y;
-            float e = startX;
-            float f = startY;
-            for (int i = 0; i < num; i++) {
-                float a = c;
-                float b = d;
+            var startX = vertices.get(0).x;
+            var startY = vertices.get(0).y;
+            var c = vertices.get(num).x;
+            var d = vertices.get(num).y;
+            var e = startX;
+            var f = startY;
+            for (var i = 0; i < num; i++) {
+                var a = c;
+                var b = d;
                 c = e;
                 d = f;
                 e = vertices.get(i + 1).x;
@@ -582,11 +582,11 @@ public class Polygon2D implements Shape2D, Iterable<Vec2D> {
     public Polygon2D reduceVertices(float minEdgeLen) {
         minEdgeLen *= minEdgeLen;
         List<Vec2D> reduced = new ArrayList<>();
-        Vec2D prev = vertices.get(0);
+        var prev = vertices.get(0);
         reduced.add(prev);
-        int num = vertices.size() - 1;
-        for (int i = 1; i < num; i++) {
-            Vec2D v = vertices.get(i);
+        var num = vertices.size() - 1;
+        for (var i = 1; i < num; i++) {
+            var v = vertices.get(i);
             if (prev.distanceToSquared(v) >= minEdgeLen) {
                 reduced.add(v);
                 prev = v;
@@ -609,17 +609,17 @@ public class Polygon2D implements Shape2D, Iterable<Vec2D> {
      */
     public Polygon2D removeDuplicates(float tolerance) {
         Vec2D prev = null;
-        for (Iterator<Vec2D> iv = vertices.iterator(); iv.hasNext();) {
-            Vec2D p = iv.next();
+        for (var iv = vertices.iterator(); iv.hasNext();) {
+            var p = iv.next();
             if (p.equalsWithTolerance(prev, tolerance)) {
                 iv.remove();
             } else {
                 prev = p;
             }
         }
-        int num = vertices.size();
+        var num = vertices.size();
         if (num > 0) {
-            Vec2D last = vertices.get(num - 1);
+            var last = vertices.get(num - 1);
             if (last.equalsWithTolerance(vertices.get(0), tolerance)) {
                 vertices.remove(last);
             }
@@ -628,7 +628,7 @@ public class Polygon2D implements Shape2D, Iterable<Vec2D> {
     }
 
     public Polygon2D rotate(float theta) {
-        for (Vec2D v : vertices) {
+        for (var v : vertices) {
             v.rotate(theta);
         }
         return this;
@@ -639,7 +639,7 @@ public class Polygon2D implements Shape2D, Iterable<Vec2D> {
     }
 
     public Polygon2D scale(float x, float y) {
-        for (Vec2D v : vertices) {
+        for (var v : vertices) {
             v.scaleSelf(x, y);
         }
         return this;
@@ -654,8 +654,8 @@ public class Polygon2D implements Shape2D, Iterable<Vec2D> {
     }
 
     public Polygon2D scaleSize(float x, float y) {
-        Vec2D centroid = getCentroid();
-        for (Vec2D v : vertices) {
+        var centroid = getCentroid();
+        for (var v : vertices) {
             v.subSelf(centroid).scaleSelf(x, y).addSelf(centroid);
         }
         return this;
@@ -683,12 +683,12 @@ public class Polygon2D implements Shape2D, Iterable<Vec2D> {
      * @return itself
      */
     public Polygon2D smooth(float amount, float baseWeight) {
-        Vec2D centroid = getCentroid();
-        int num = vertices.size();
+        var centroid = getCentroid();
+        var num = vertices.size();
         Collection<Vec2D> filtered = new ArrayList<>(num);
         for (int i = 0, j = num - 1, k = 1; i < num; i++) {
-            Vec2D a = vertices.get(i);
-            Vec2D dir = vertices.get(j).sub(a).addSelf(vertices.get(k).sub(a))
+            var a = vertices.get(i);
+            var dir = vertices.get(j).sub(a).addSelf(vertices.get(k).sub(a))
                     .addSelf(a.sub(centroid).scaleSelf(baseWeight));
             filtered.add(a.add(dir.scaleSelf(amount)));
             j++;
@@ -740,11 +740,11 @@ public class Polygon2D implements Shape2D, Iterable<Vec2D> {
      * @return true, if process completed succcessfully.
      */
     public boolean toOutline() {
-        int corners = vertices.size();
-        int maxSegs = corners * 3;
+        var corners = vertices.size();
+        var maxSegs = corners * 3;
         List<Vec2D> newVerts = new ArrayList<>(corners);
-        Vec2D start = vertices.get(0).copy();
-        int j = corners - 1;
+        var start = vertices.get(0).copy();
+        var j = corners - 1;
 
         if (corners > maxSegs) {
             return false;
@@ -752,13 +752,13 @@ public class Polygon2D implements Shape2D, Iterable<Vec2D> {
 
         // 1,3. Reformulate the polygon as a set of line segments, and choose a
         // starting point that must be on the perimeter.
-        int segs = 0;
+        var segs = 0;
         int i;
-        Vec2D[] segEnds = new Vec2D[maxSegs];
-        Vec2D[] segments = new Vec2D[maxSegs];
+        var segEnds = new Vec2D[maxSegs];
+        var segments = new Vec2D[maxSegs];
         for (i = 0; i < corners; i++) {
-            Vec2D pi = vertices.get(i);
-            Vec2D pj = vertices.get(j);
+            var pi = vertices.get(i);
+            var pj = vertices.get(j);
             if (!pi.equals(pj)) {
                 segments[segs] = pi;
                 segEnds[segs++] = pj;
@@ -775,11 +775,11 @@ public class Polygon2D implements Shape2D, Iterable<Vec2D> {
         // 2. Break the segments up at their intersection points.
         for (i = 0; i < segs - 1; i++) {
             for (j = i + 1; j < segs; j++) {
-                Line2D li = new Line2D(segments[i], segEnds[i]);
-                Line2D lj = new Line2D(segments[j], segEnds[j]);
-                LineIntersection isec = li.intersectLine(lj);
+                var li = new Line2D(segments[i], segEnds[i]);
+                var lj = new Line2D(segments[j], segEnds[j]);
+                var isec = li.intersectLine(lj);
                 if (isec.getType() == Type.INTERSECTING) {
-                    Vec2D ipos = isec.getPos();
+                    var ipos = isec.getPos();
                     if (!ipos.equals(segments[i]) && !ipos.equals(segEnds[i])) {
                         if (segs == maxSegs) {
                             return false;
@@ -801,21 +801,21 @@ public class Polygon2D implements Shape2D, Iterable<Vec2D> {
         }
 
         // Calculate the angle of each segment.
-        float[] segAngles = new float[maxSegs];
+        var segAngles = new float[maxSegs];
         for (i = 0; i < segs; i++) {
             segAngles[i] = segEnds[i].sub(segments[i]).positiveHeading();
         }
 
         // 4. Build the perimeter polygon.
-        float c = start.x;
-        float d = start.y;
-        float a = c - 1;
-        float b = d;
+        var c = start.x;
+        var d = start.y;
+        var a = c - 1;
+        var b = d;
         newVerts.add(new Vec2D(c, d));
         corners = 1;
         float f = 0;
         float e = 0;
-        float lastAngle = MathUtils.PI;
+        var lastAngle = MathUtils.PI;
         while (true) {
             double bestAngleDif = MathUtils.TWO_PI;
             for (i = 0; i < segs; i++) {
@@ -880,8 +880,8 @@ public class Polygon2D implements Shape2D, Iterable<Vec2D> {
     }
 
     public String toString() {
-        StringBuilder buf = new StringBuilder();
-        for (Iterator<Vec2D> i = vertices.iterator(); i.hasNext();) {
+        var buf = new StringBuilder();
+        for (var i = vertices.iterator(); i.hasNext();) {
             buf.append(i.next());
             if (i.hasNext()) {
                 buf.append(", ");
@@ -891,7 +891,7 @@ public class Polygon2D implements Shape2D, Iterable<Vec2D> {
     }
 
     public Polygon2D translate(float x, float y) {
-        for (Vec2D v : vertices) {
+        for (var v : vertices) {
             v.addSelf(x, y);
         }
         return this;

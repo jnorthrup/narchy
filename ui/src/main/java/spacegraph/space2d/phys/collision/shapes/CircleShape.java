@@ -51,7 +51,7 @@ public class CircleShape extends Shape {
     }
 
     public final Shape clone() {
-        CircleShape shape = new CircleShape();
+        var shape = new CircleShape();
         shape.center.x = center.x;
         shape.center.y = center.y;
         shape.skinRadius = skinRadius;
@@ -110,9 +110,9 @@ public class CircleShape extends Shape {
         
         
         Rot q = transform;
-        v2 tp = transform.pos;
-        float centerx = -(q.c * center.x - q.s * center.y + tp.x - p.x);
-        float centery = -(q.s * center.x + q.c * center.y + tp.y - p.y);
+        var tp = transform.pos;
+        var centerx = -(q.c * center.x - q.s * center.y + tp.x - p.x);
+        var centery = -(q.s * center.x + q.c * center.y + tp.y - p.y);
 
         return centerx * centerx + centery * centery <= skinRadius * skinRadius;
     }
@@ -120,11 +120,11 @@ public class CircleShape extends Shape {
     @Override
     public float distance(Transform xf, v2 p, int childIndex, v2 normalOut) {
         Rot xfq = xf;
-        float centerx = xfq.c * center.x - xfq.s * center.y + xf.pos.x;
-        float centery = xfq.s * center.x + xfq.c * center.y + xf.pos.y;
-        float dx = p.x - centerx;
-        float dy = p.y - centery;
-        float d1 = (float) Math.sqrt(dx * dx + dy * dy);
+        var centerx = xfq.c * center.x - xfq.s * center.y + xf.pos.x;
+        var centery = xfq.s * center.x + xfq.c * center.y + xf.pos.y;
+        var dx = p.x - centerx;
+        var dy = p.y - centery;
+        var d1 = (float) Math.sqrt(dx * dx + dy * dy);
         normalOut.x = dx * 1 / d1;
         normalOut.y = dy * 1 / d1;
         return d1 - skinRadius;
@@ -138,37 +138,36 @@ public class CircleShape extends Shape {
     public final boolean raycast(RayCastOutput output, RayCastInput input, Transform transform,
                                  int childIndex) {
 
-        v2 inputp1 = input.p1;
-        v2 inputp2 = input.p2;
+        var inputp1 = input.p1;
+        var inputp2 = input.p2;
         Rot tq = transform;
-        v2 tp = transform.pos;
+        var tp = transform.pos;
 
-        
-        
-        float positionx = tq.c * center.x - tq.s * center.y + tp.x;
-        float positiony = tq.s * center.x + tq.c * center.y + tp.y;
 
-        float sx = inputp1.x - positionx;
-        float sy = inputp1.y - positiony;
-        
-        float b = sx * sx + sy * sy - skinRadius * skinRadius;
+        var positionx = tq.c * center.x - tq.s * center.y + tp.x;
+        var positiony = tq.s * center.x + tq.c * center.y + tp.y;
 
-        
-        float rx = inputp2.x - inputp1.x;
-        float ry = inputp2.y - inputp1.y;
-        
-        
-        float c = sx * rx + sy * ry;
-        float rr = rx * rx + ry * ry;
-        float sigma = c * c - rr * b;
+        var sx = inputp1.x - positionx;
+        var sy = inputp1.y - positiony;
+
+        var b = sx * sx + sy * sy - skinRadius * skinRadius;
+
+
+        var rx = inputp2.x - inputp1.x;
+        var ry = inputp2.y - inputp1.y;
+
+
+        var c = sx * rx + sy * ry;
+        var rr = rx * rx + ry * ry;
+        var sigma = c * c - rr * b;
 
         
         if (sigma < 0.0f || rr < Settings.EPSILON) {
             return false;
         }
 
-        
-        float a = -(c + (float) Math.sqrt(sigma));
+
+        var a = -(c + (float) Math.sqrt(sigma));
 
         
         if (0.0f <= a && a <= input.maxFraction * rr) {
@@ -186,9 +185,9 @@ public class CircleShape extends Shape {
     @Override
     public final void computeAABB(AABB aabb, Transform transform, int childIndex) {
         Rot tq = transform;
-        v2 tp = transform.pos;
-        float px = tq.c * center.x - tq.s * center.y + tp.x;
-        float py = tq.s * center.x + tq.c * center.y + tp.y;
+        var tp = transform.pos;
+        var px = tq.c * center.x - tq.s * center.y + tp.x;
+        var py = tq.s * center.x + tq.c * center.y + tp.y;
 
         aabb.lowerBound.x = px - skinRadius;
         aabb.lowerBound.y = py - skinRadius;

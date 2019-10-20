@@ -155,7 +155,7 @@ public final class RC4 {
         if (Arrays.equals(in, out)
                 && (outOffset >= inOffset && outOffset < inOffset + inLen || inOffset >= outOffset
                 && inOffset < outOffset + inLen)) {
-            byte[] newin = new byte[inLen];
+            var newin = new byte[inLen];
             System.arraycopy(in, inOffset, newin, 0, inLen);
             in = newin;
             inOffset = 0;
@@ -183,15 +183,15 @@ public final class RC4 {
     private void rc4(byte[] in, int inOffset, int inLen, byte[] out,
                      int outOffset) {
 
-        for (int i = 0; i < inLen; i++) {
+        for (var i = 0; i < inLen; i++) {
             x = (x + 1) & 0xFF;
             y = (sBox[x] + y) & 0xFF;
 
-            int t = sBox[x];
+            var t = sBox[x];
             sBox[x] = sBox[y];
             sBox[y] = t;
 
-            int xorIndex = (sBox[x] + sBox[y]) & 0xFF;
+            var xorIndex = (sBox[x] + sBox[y]) & 0xFF;
             out[outOffset++] = (byte) (in[inOffset++] ^ sBox[xorIndex]);
         }
     }
@@ -218,21 +218,21 @@ public final class RC4 {
         if (userkey == null)
             throw new CryptoException(getAlgorithm() + ": Null user key");
 
-        int len = userkey.length;
+        var len = userkey.length;
         if (len == 0)
             throw new CryptoException(getAlgorithm()
                     + ": Invalid user key length");
 
         x = y = 0;
-        for (int i = 0; i < 256; i++)
+        for (var i = 0; i < 256; i++)
             sBox[i] = i;
 
         int i1 = 0, i2 = 0;
 
-        for (int i = 0; i < 256; i++) {
+        for (var i = 0; i < 256; i++) {
             i2 = ((userkey[i1] & 0xFF) + sBox[i] + i2) & 0xFF;
 
-            int t = sBox[i];
+            var t = sBox[i];
             sBox[i] = sBox[i2];
             sBox[i2] = t;
 
@@ -278,13 +278,13 @@ public final class RC4 {
     }
 
     public final byte[] crypt(byte[] data, int position, int length) {
-        byte[] buffer = new byte[length];
+        var buffer = new byte[length];
         engineUpdate(data, position, length, buffer, 0);
         return buffer;
     }
 
     public final byte[] crypt(byte[] data) {
-        byte[] buffer = new byte[data.length];
+        var buffer = new byte[data.length];
         engineUpdate(data, 0, data.length, buffer, 0);
         return buffer;
     }

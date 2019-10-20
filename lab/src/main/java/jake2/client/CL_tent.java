@@ -105,13 +105,13 @@ public class CL_tent {
     }
 
     static {
-        for (int i = 0; i < cl_explosions.length; i++)
+        for (var i = 0; i < cl_explosions.length; i++)
             cl_explosions[i] = new explosion_t();
     }
     static {
-        for (int i = 0; i < cl_beams.length; i++)
+        for (var i = 0; i < cl_beams.length; i++)
             cl_beams[i] = new beam_t();
-        for (int i = 0; i < cl_playerbeams.length; i++)
+        for (var i = 0; i < cl_playerbeams.length; i++)
             cl_playerbeams[i] = new beam_t();
     }
 
@@ -127,12 +127,12 @@ public class CL_tent {
     }
 
     static {
-        for (int i = 0; i < cl_lasers.length; i++)
+        for (var i = 0; i < cl_lasers.length; i++)
             cl_lasers[i] = new laser_t();
     }
 
     static {
-        for (int i = 0; i < cl_sustains.length; i++)
+        for (var i = 0; i < cl_sustains.length; i++)
             cl_sustains[i] = new cl_sustain_t();
     }
 
@@ -239,9 +239,9 @@ public class CL_tent {
         S.RegisterSound("player/fall2.wav");
         S.RegisterSound("player/fall1.wav");
 
-        for (int i = 0; i < 4; i++) {
+        for (var i = 0; i < 4; i++) {
 
-            String name = "player/step" + (i + 1) + ".wav";
+            var name = "player/step" + (i + 1) + ".wav";
             cl_sfx_footsteps[i] = S.RegisterSound(name);
         }
 
@@ -309,17 +309,17 @@ public class CL_tent {
      */
     static void ClearTEnts() {
         
-        for (beam_t cl_beam : cl_beams) cl_beam.clear();
+        for (var cl_beam : cl_beams) cl_beam.clear();
         
-        for (explosion_t cl_explosion : cl_explosions) cl_explosion.clear();
+        for (var cl_explosion : cl_explosions) cl_explosion.clear();
         
-        for (laser_t cl_laser : cl_lasers) cl_laser.clear();
+        for (var cl_laser : cl_lasers) cl_laser.clear();
         
         
         
-        for (beam_t cl_playerbeam : cl_playerbeams) cl_playerbeam.clear();
+        for (var cl_playerbeam : cl_playerbeams) cl_playerbeam.clear();
         
-        for (cl_sustain_t cl_sustain : cl_sustains) cl_sustain.clear();
+        for (var cl_sustain : cl_sustains) cl_sustain.clear();
         
     }
 
@@ -337,8 +337,8 @@ public class CL_tent {
             }
         }
 
-        int time = Globals.cl.time;
-        int index = 0;
+        var time = Globals.cl.time;
+        var index = 0;
 
         for (i = 0; i < MAX_EXPLOSIONS; i++)
             if (cl_explosions[i].start < time) {
@@ -355,7 +355,7 @@ public class CL_tent {
      */
     static void SmokeAndFlash(float[] origin) {
 
-        explosion_t ex = AllocExplosion();
+        var ex = AllocExplosion();
         Math3D.VectorCopy(origin, ex.ent.origin);
         ex.type = ex_misc;
         ex.frames = 4;
@@ -378,16 +378,16 @@ public class CL_tent {
      * =================
      */
     static int ParseBeam(model_t model) {
-        float[] start = new float[3];
+        var start = new float[3];
 
         int ent = MSG.ReadShort(Globals.net_message);
 
         MSG.ReadPos(Globals.net_message, start);
-        float[] end = new float[3];
+        var end = new float[3];
         MSG.ReadPos(Globals.net_message, end);
 
 
-        beam_t[] b = cl_beams;
+        var b = cl_beams;
         int i;
         for (i = 0; i < MAX_BEAMS; i++)
             if (b[i].entity == ent) {
@@ -421,18 +421,18 @@ public class CL_tent {
      * ================= CL_ParseBeam2 =================
      */
     static int ParseBeam2(model_t model) {
-        float[] start = new float[3];
+        var start = new float[3];
 
         int ent = MSG.ReadShort(Globals.net_message);
 
         MSG.ReadPos(Globals.net_message, start);
-        float[] end = new float[3];
+        var end = new float[3];
         MSG.ReadPos(Globals.net_message, end);
-        float[] offset = new float[3];
+        var offset = new float[3];
         MSG.ReadPos(Globals.net_message, offset);
 
 
-        beam_t[] b = cl_beams;
+        var b = cl_beams;
         int i;
         for (i = 0; i < MAX_BEAMS; i++)
             if (b[i].entity == ent) {
@@ -468,15 +468,15 @@ public class CL_tent {
      * instead of the cl_beams array =================
      */
     static int ParsePlayerBeam(model_t model) {
-        float[] start = new float[3];
+        var start = new float[3];
 
         int ent = MSG.ReadShort(Globals.net_message);
 
         MSG.ReadPos(Globals.net_message, start);
-        float[] end = new float[3];
+        var end = new float[3];
         MSG.ReadPos(Globals.net_message, end);
 
-        float[] offset = new float[3];
+        var offset = new float[3];
         if (model == cl_mod_heatbeam)
             Math3D.VectorSet(offset, 2, 7, -3);
         else if (model == cl_mod_monster_heatbeam) {
@@ -486,7 +486,7 @@ public class CL_tent {
             MSG.ReadPos(Globals.net_message, offset);
 
 
-        beam_t[] b = cl_playerbeams;
+        var b = cl_playerbeams;
         int i;
         for (i = 0; i < MAX_BEAMS; i++) {
             if (b[i].entity == ent) {
@@ -536,7 +536,7 @@ public class CL_tent {
         MSG.ReadPos(Globals.net_message, end);
 
 
-        beam_t[] b = cl_beams;
+        var b = cl_beams;
         int i;
         for (i = 0; i < MAX_BEAMS; i++)
             if (b[i].entity == srcEnt && b[i].dest_entity == destEnt) {
@@ -581,8 +581,8 @@ public class CL_tent {
         MSG.ReadPos(Globals.net_message, start);
         MSG.ReadPos(Globals.net_message, end);
 
-        laser_t[] l = cl_lasers;
-        for (int i = 0; i < MAX_LASERS; i++) {
+        var l = cl_lasers;
+        for (var i = 0; i < MAX_LASERS; i++) {
             if (l[i].endtime < Globals.cl.time) {
                 l[i].ent.flags = Defines.RF_TRANSLUCENT | Defines.RF_BEAM;
                 Math3D.VectorCopy(start, l[i].ent.origin);
@@ -613,7 +613,7 @@ public class CL_tent {
         {
 
             cl_sustain_t free_sustain = null;
-            cl_sustain_t[] s = cl_sustains;
+            var s = cl_sustains;
             int i;
             for (i = 0; i < MAX_SUSTAINS; i++) {
                 if (s[i].id == 0) {
@@ -657,7 +657,7 @@ public class CL_tent {
             MSG.ReadDir(Globals.net_message, dir);
             r = MSG.ReadByte(Globals.net_message);
             magnitude = MSG.ReadShort(Globals.net_message);
-            int color = r & 0xff;
+            var color = r & 0xff;
             CL_newfx.ParticleSteamEffect(pos, dir, color, cnt, magnitude);
             
         }
@@ -671,7 +671,7 @@ public class CL_tent {
         int id = MSG.ReadShort(Globals.net_message);
 
         cl_sustain_t free_sustain = null;
-        cl_sustain_t[] s = cl_sustains;
+        var s = cl_sustains;
         for (i = 0; i < MAX_SUSTAINS; i++) {
             if (s[i].id == 0) {
                 free_sustain = s[i];
@@ -703,7 +703,7 @@ public class CL_tent {
         int i;
 
         cl_sustain_t free_sustain = null;
-        cl_sustain_t[] s = cl_sustains;
+        var s = cl_sustains;
         for (i = 0; i < MAX_SUSTAINS; i++) {
             if (s[i].id == 0) {
                 free_sustain = s[i];
@@ -748,7 +748,7 @@ public class CL_tent {
         int ent;
         int magnitude;
 
-        int type = MSG.ReadByte(Globals.net_message);
+        var type = MSG.ReadByte(Globals.net_message);
 
         switch (type) {
         case Defines.TE_BLOOD: 
@@ -1284,8 +1284,8 @@ public class CL_tent {
     static void AddBeams() {
 
 
-        beam_t[] b = cl_beams;
-        for (int i = 0; i < MAX_BEAMS; i++) {
+        var b = cl_beams;
+        for (var i = 0; i < MAX_BEAMS; i++) {
             if (b[i].model == null || b[i].endtime < Globals.cl.time)
                 continue;
 
@@ -1320,7 +1320,7 @@ public class CL_tent {
                 if (yaw < 0)
                     yaw += 360;
 
-                float forward = (float) Math.sqrt(dist[0] * dist[0] + dist[1]
+                var forward = (float) Math.sqrt(dist[0] * dist[0] + dist[1]
                         * dist[1]);
                 pitch = (float) (Math.atan2(dist[2], forward) * -180.0 / Math.PI);
                 if (pitch < 0)
@@ -1328,7 +1328,7 @@ public class CL_tent {
             }
 
 
-            float d = Math3D.VectorNormalize(dist);
+            var d = Math3D.VectorNormalize(dist);
 
 
             ent.clear();
@@ -1339,8 +1339,8 @@ public class CL_tent {
             } else {
                 model_length = 30.0f;
             }
-            float steps = (float) Math.ceil(d / model_length);
-            float len = (d - model_length) / (steps - 1);
+            var steps = (float) Math.ceil(d / model_length);
+            var len = (d - model_length) / (steps - 1);
 
 
             if ((b[i].model == cl_mod_lightning) && (d <= model_length)) {
@@ -1376,7 +1376,7 @@ public class CL_tent {
                 
                 V.AddEntity(ent);
 
-                for (int j = 0; j < 3; j++)
+                for (var j = 0; j < 3; j++)
                     org[j] += dist[j] * len;
                 d -= model_length;
             }
@@ -1410,12 +1410,11 @@ public class CL_tent {
         } else {
             hand_multiplier = 1;
         }
-        
 
-        
-        beam_t[] b = cl_playerbeams;
-        int framenum = 0;
-        for (int i = 0; i < MAX_BEAMS; i++) {
+
+        var b = cl_playerbeams;
+        var framenum = 0;
+        for (var i = 0; i < MAX_BEAMS; i++) {
 
             if (b[i].model == null || b[i].endtime < Globals.cl.time)
                 continue;
@@ -1428,17 +1427,17 @@ public class CL_tent {
                 {
 
 
-                    player_state_t ps = Globals.cl.frame.playerstate;
-                    int j = (Globals.cl.frame.serverframe - 1)
+                    var ps = Globals.cl.frame.playerstate;
+                    var j = (Globals.cl.frame.serverframe - 1)
                             & Defines.UPDATE_MASK;
-                    frame_t oldframe = Globals.cl.frames[j];
+                    var oldframe = Globals.cl.frames[j];
 
                     if (oldframe.serverframe != Globals.cl.frame.serverframe - 1
                             || !oldframe.valid)
                         oldframe = Globals.cl.frame;
 
 
-                    player_state_t ops = oldframe.playerstate;
+                    var ops = oldframe.playerstate;
                     for (j = 0; j < 3; j++) {
                         b[i].start[j] = Globals.cl.refdef.vieworg[j]
                                 + ops.gunoffset[j] + Globals.cl.lerpfrac
@@ -1510,7 +1509,7 @@ public class CL_tent {
                 if (yaw < 0)
                     yaw += 360;
 
-                float forward = (float) Math.sqrt(dist[0] * dist[0] + dist[1]
+                var forward = (float) Math.sqrt(dist[0] * dist[0] + dist[1]
                         * dist[1]);
                 pitch = (float) (Math.atan2(dist[2], forward) * -180.0 / Math.PI);
                 if (pitch < 0)
@@ -1549,7 +1548,7 @@ public class CL_tent {
             }
 
 
-            float d = Math3D.VectorNormalize(dist);
+            var d = Math3D.VectorNormalize(dist);
 
 
             ent.clear();
@@ -1563,7 +1562,7 @@ public class CL_tent {
             } else {
                 model_length = 30.0f;
             }
-            float steps = (float) Math.ceil(d / model_length);
+            var steps = (float) Math.ceil(d / model_length);
             len = (d - model_length) / (steps - 1);
 
             
@@ -1613,7 +1612,7 @@ public class CL_tent {
                 
                 V.AddEntity(ent);
 
-                for (int j = 0; j < 3; j++)
+                for (var j = 0; j < 3; j++)
                     org[j] += dist[j] * len;
                 d -= model_length;
             }
@@ -1627,12 +1626,12 @@ public class CL_tent {
 
 
         entity_t ent = null;
-        explosion_t[] ex = cl_explosions;
-        for (int i = 0; i < MAX_EXPLOSIONS; i++) {
+        var ex = cl_explosions;
+        for (var i = 0; i < MAX_EXPLOSIONS; i++) {
             if (ex[i].type == ex_free)
                 continue;
-            float frac = (Globals.cl.time - ex[i].start) / 100.0f;
-            int f = (int) Math.floor(frac);
+            var frac = (Globals.cl.time - ex[i].start) / 100.0f;
+            var f = (int) Math.floor(frac);
 
             ent = ex[i].ent;
 
@@ -1712,8 +1711,8 @@ public class CL_tent {
      */
     static void AddLasers() {
 
-        laser_t[] l = cl_lasers;
-        for (int i = 0; i < MAX_LASERS; i++) {
+        var l = cl_lasers;
+        for (var i = 0; i < MAX_LASERS; i++) {
             if (l[i].endtime >= Globals.cl.time)
                 V.AddEntity(l[i].ent);
         }
@@ -1722,8 +1721,8 @@ public class CL_tent {
     /* PMM - CL_Sustains */
     static void ProcessSustain() {
 
-        cl_sustain_t[] s = cl_sustains;
-        for (int i = 0; i < MAX_SUSTAINS; i++) {
+        var s = cl_sustains;
+        for (var i = 0; i < MAX_SUSTAINS; i++) {
             if (s[i].id != 0)
                 if ((s[i].endtime >= Globals.cl.time)
                         && (Globals.cl.time >= s[i].nextthink)) {

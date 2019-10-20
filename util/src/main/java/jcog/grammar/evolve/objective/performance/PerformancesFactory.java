@@ -32,7 +32,7 @@ public class PerformancesFactory {
     }
     
     public static Objective buildObjective(Context.EvaluationPhases phase, Configuration configuration, boolean isStriped){
-        Context context = new Context(phase, configuration);
+        var context = new Context(phase, configuration);
         context.setStripedPhase(isStriped);
         Objective objective = new PerformacesObjective();
         objective.setup(context);

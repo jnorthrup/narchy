@@ -134,7 +134,7 @@ public class AudioTransceiver {
         // Define whether we should listen to our own.
         mSampleSelf = true;
         // Declare the SampleBuffer; capable of storing an entire audio, with each symbol sampled at the sub-sampling rate.
-        int pitchBufferSize = READ_SUBSAMPLING_FACTOR * synth.encodedLen();
+        var pitchBufferSize = READ_SUBSAMPLING_FACTOR * synth.encodedLen();
         pitchBuffer = new FloatArrayList(pitchBufferSize);
         // Allocate the ConfidenceBuffer; declares the corresponding confidence for each sample.
         confBuffer = new FloatArrayList(pitchBufferSize);
@@ -142,13 +142,13 @@ public class AudioTransceiver {
     }
 
     private static String decode(int[] coded, int len) {
-        StringBuilder s = new StringBuilder();
+        var s = new StringBuilder();
         // Buffer the initial characters.
-        for (int i = 0; i < len; i++) {
+        for (var i = 0; i < len; i++) {
             s.append(synth.range.chars.charAt(coded[i]));
         }
         // Iterate skipping over zero-padded region.
-        for (int i = (coded.length) - synth.errLen; i < coded.length; i++) {
+        for (var i = (coded.length) - synth.errLen; i < coded.length; i++) {
             s.append(synth.range.chars.charAt(coded[i]));
         }
 
@@ -179,15 +179,15 @@ public class AudioTransceiver {
                                 int pSubsamples,
                                 Synth.IListener listener) {
         // Calculate the Number of Symbols.
-        int lSymbols = (pSamples.size() / pSubsamples);
+        var lSymbols = (pSamples.size() / pSubsamples);
         // Declare the String.
-        StringBuilder lAccumulation = new StringBuilder();
+        var lAccumulation = new StringBuilder();
         // Iterate the Samples whilst we're building up the string.
-        for (int i = 0; i < lSymbols && (lAccumulation.length() != synth.encodedLen()); i++) {
+        for (var i = 0; i < lSymbols && (lAccumulation.length() != synth.encodedLen()); i++) {
             // Fetch the Offset for the next Symbol.
-            int lOffset = (i * pSubsamples);
+            var lOffset = (i * pSubsamples);
 
-            Synth.Result lResult = Synth.DETECTOR_MEAN.getSymbol(synth, pSamples, pConfidences, lOffset, pSubsamples);
+            var lResult = Synth.DETECTOR_MEAN.getSymbol(synth, pSamples, pConfidences, lOffset, pSubsamples);
             // Is the Result valid?
             if (lResult.mValid) {
                 // Buffer the Result's data into the Accumulation.
@@ -197,15 +197,15 @@ public class AudioTransceiver {
         // Is the accumulated data long enough?
         if (lAccumulation.length() == synth.encodedLen()) {
             // Declare the Packetized Representation.
-            int[] lPacketized = new int[synth.range.mFrameLength];
+            var lPacketized = new int[synth.range.mFrameLength];
             // Buffer the Header/Payload.
-            int ii = synth.identifier.length() + synth.payloadLen;
-            for (int i = 0; i < ii; i++) {
+            var ii = synth.identifier.length() + synth.payloadLen;
+            for (var i = 0; i < ii; i++) {
                 // Update the Packetized with the corresponding index value.
                 lPacketized[i] = synth.range.chars.indexOf(lAccumulation.charAt(i));
             }
             // Iterate the Error Symbols.
-            for (int i = 0; i < synth.errLen; i++) {
+            for (var i = 0; i < synth.errLen; i++) {
                 // Update the Packetized with the corresponding index value.
                 lPacketized[synth.range.mFrameLength - synth.errLen + i] = synth.range.chars.indexOf(lAccumulation.charAt(synth.identifier.length() + synth.payloadLen + i));
             }
@@ -214,21 +214,21 @@ public class AudioTransceiver {
                 // Decode the Sample.
                 pReedSolomonDecoder.decode(lPacketized, synth.errLen);
                 // Declare the search metric.
-                boolean acc = true;
-                int bound = synth.identifier.length();
-                for (int i1 = 0; i1 < bound; i1++) {
-                    boolean aBoolean = synth.identifier.charAt(i1) == (synth.range.chars.charAt(lPacketized[i1]));
+                var acc = true;
+                var bound = synth.identifier.length();
+                for (var i1 = 0; i1 < bound; i1++) {
+                    var aBoolean = synth.identifier.charAt(i1) == (synth.range.chars.charAt(lPacketized[i1]));
                     acc = acc && aBoolean;
                 }
-                boolean lIsValid = acc;
+                var lIsValid = acc;
                 // Iterate the Identifier characters.
                 // Update the search metric.
                 // Is the message directed to us?
                 if (lIsValid) {
                     // Fetch the Message data.
-                    String lMessage = "";
+                    var lMessage = "";
                     // Iterate the Packet.
-                    for (int i = synth.identifier.length(); i < ii; i++) {
+                    for (var i = synth.identifier.length(); i < ii; i++) {
                         // Accumulate the Message.
                         lMessage += synth.range.chars.charAt(lPacketized[i]);
                     }
@@ -247,8 +247,8 @@ public class AudioTransceiver {
     @SuppressWarnings("unused")
     private static void indices(CharSequence pData, int[] pBuffer, int pOffset) {
         // Iterate the Data.
-        int len = pData.length();
-        for (int i = 0; i < len; i++) {
+        var len = pData.length();
+        for (var i = 0; i < len; i++) {
             // Update the contents of the Array.
             pBuffer[pOffset + i] = synth.range.chars.indexOf(pData.charAt(i));
         }
@@ -259,22 +259,22 @@ public class AudioTransceiver {
      */
     private static float[] encode(CharSequence pData, int pPeriod) {
         // Calculate the Number of Samples per msg.
-        int lNumberOfSamples = (int) (WRITE_AUDIO_RATE_SAMPLE_HZ * (pPeriod / 1000.0f));
+        var lNumberOfSamples = (int) (WRITE_AUDIO_RATE_SAMPLE_HZ * (pPeriod / 1000.0f));
 
-        int pdl = pData.length();
-        float[] lSampleArray = new float[pdl * lNumberOfSamples];
+        var pdl = pData.length();
+        var lSampleArray = new float[pdl * lNumberOfSamples];
 
 //        final byte[] lGeneration = new byte[lSampleArray.length * 2];
 
-        int lOffset = 0;
+        var lOffset = 0;
 
-        for (int i = 0; i < pdl; i++) {
+        for (var i = 0; i < pdl; i++) {
             // Fetch the Data.
             Character lData = pData.charAt(i);
             // Fetch the Frequency.
             double lFrequency = synth.mapCharFreq.get(lData);
             // Iterate the NumberOfSamples. (Per msg data.)
-            for (int j = 0; j < lNumberOfSamples; j++) {
+            for (var j = 0; j < lNumberOfSamples; j++) {
                 // Update the SampleArray.
                 lSampleArray[lOffset] = (float) Math.sin(2 * Math.PI * j / (WRITE_AUDIO_RATE_SAMPLE_HZ / lFrequency));
                 lOffset++;
@@ -283,16 +283,16 @@ public class AudioTransceiver {
         // Reset the Offset.
 //        lOffset = 0;
         // Iterate between each sample.
-        for (int i = 0; i < pdl; i++) {
+        for (var i = 0; i < pdl; i++) {
             // Fetch the Start and End Indexes of the Sample.
-            int lIo = i * lNumberOfSamples;
-            int lIa = lIo + lNumberOfSamples;
+            var lIo = i * lNumberOfSamples;
+            var lIa = lIo + lNumberOfSamples;
             // Declare the RampWidth. We'll change it between iterations for more tuneful sound.)
-            int lRw = (int) (lNumberOfSamples * 0.3);
+            var lRw = (int) (lNumberOfSamples * 0.3);
             // Iterate the Ramp.
-            for (int j = 0; j < lRw; j++) {
+            for (var j = 0; j < lRw; j++) {
                 // Calculate the progression of the Ramp.
-                double lP = j / (double) lRw;
+                var lP = j / (double) lRw;
                 // Scale the corresponding samples.
                 lSampleArray[lIo + j] *= lP;
                 lSampleArray[lIa - j - 1] *= lP;
@@ -329,15 +329,15 @@ public class AudioTransceiver {
 
 
         // Fetch the Floats.
-        float[] lFloats = pAudioEvent.getFloatBuffer();
+        var lFloats = pAudioEvent.getFloatBuffer();
         // Calculate the FrameSize.
-        int lFrameSize = (lFloats.length / READ_SUBSAMPLING_FACTOR);
+        var lFrameSize = (lFloats.length / READ_SUBSAMPLING_FACTOR);
         // Iterate across the Floats.
-        for (int i = 0; i < (lFloats.length - lFrameSize); i += lFrameSize) {
+        for (var i = 0; i < (lFloats.length - lFrameSize); i += lFrameSize) {
             // Segment the buffer.
-            float[] lSegment = Arrays.copyOfRange(lFloats, i, i + lFrameSize);
+            var lSegment = Arrays.copyOfRange(lFloats, i, i + lFrameSize);
 
-            AudioEvent lAudioEvent = new AudioEvent(fmt, lSegment);
+            var lAudioEvent = new AudioEvent(fmt, lSegment);
 
             // Export the AudioEvent to the PitchProessor.
             mPitchProcessor.process(lAudioEvent);
@@ -353,9 +353,9 @@ public class AudioTransceiver {
             throw new UnsupportedOperationException("Invalid message size (" + pMessage.length() + ")! Expected " + synth.payloadLen + " symbols.");
         }
         // Declare the search metric.
-        boolean lIsSupported = true;
+        var lIsSupported = true;
         // Iterate through the Message.
-        for (char c : pMessage.toCharArray()) {
+        for (var c : pMessage.toCharArray()) {
             // Update the search metric.
             lIsSupported &= synth.range.chars.indexOf(c) != -1;
         }
@@ -370,22 +370,22 @@ public class AudioTransceiver {
         // Append the Header.
         pMessage = synth.identifier + pMessage;
 
-        int[] buffer = new int[synth.range.mFrameLength];
+        var buffer = new int[synth.range.mFrameLength];
         // Fetch the indices of the Message.
         indices(pMessage, buffer, 0);
         // Encode the Bytes.
         mReedSolomonEncoder.encode(buffer, synth.errLen);
 
-        String msg = decode(buffer, pMessage.length()); // "hj050422014jikhif";
+        var msg = decode(buffer, pMessage.length()); // "hj050422014jikhif";
         // (Period is in milliseconds.)
-        int period = synth.symPeriodMS;
+        var period = synth.symPeriodMS;
 
 
         return AudioTransceiver.encode(msg, period);
     }
 
     private static boolean isActive() {
-        boolean active = true;
+        var active = true;
         return active;
     }
 
@@ -421,12 +421,12 @@ public class AudioTransceiver {
          */
         static final IDetector DETECTOR_MEAN = (pSynth, pSamples, pConfidences, pOffset, pLength) -> {
             // Ignore the First/Last 18% of the Samples. (Protected against slew rate.)
-            int lIgnore = (int) Math.ceil(pLength * 0.3);
+            var lIgnore = (int) Math.ceil(pLength * 0.3);
             // Declare buffers to accumulate the sampled frequencies.
-            double lFacc = 0.0;
-            int lCount = 0;
+            var lFacc = 0.0;
+            var lCount = 0;
             // Iterate the Samples.
-            for (int i = pOffset + lIgnore; i < pOffset + pLength - lIgnore; i++) { /** TODO: fn */
+            for (var i = pOffset + lIgnore; i < pOffset + pLength - lIgnore; i++) { /** TODO: fn */
                 // Are we confident in this sample?
                 if (pConfidences.get(i) > 0.75) {
                     // Fetch the Sample.
@@ -443,7 +443,7 @@ public class AudioTransceiver {
             // Result valid?
             if (lCount != 0) {
                 // Calculate the Mean.
-                double lMean = lFacc / lCount;
+                var lMean = lFacc / lCount;
                 /** TODO: Frequency tolerance? */
                 // Return the Result.
                 return new Result(pSynth.character(lMean), true);
@@ -472,16 +472,16 @@ public class AudioTransceiver {
          */
         private Synth(double pBaseFrequency, String pIdentifier, Range pRange, int pPayloadLength, int pErrorLength, int pSymbolPeriodMs) {
             // Allocate the Frequencies.
-            double[] lFrequencies = new double[pRange.chars.length()];
+            var lFrequencies = new double[pRange.chars.length()];
             // Declare the Mappings. (It's useful to index via either the Character or the Frequency.)
             Map<Character, Double> lMapCharFreq = new HashMap<>(); /** TODO: Use only a single mapping? */
             Map<Double, Character> lMapFreqChar = new HashMap<>();
             // Generate the frequencies that correspond to each valid symbol.
-            for (int i = 0; i < pRange.chars.length(); i++) {
+            for (var i = 0; i < pRange.chars.length(); i++) {
                 // Fetch the Character.
-                char c = pRange.chars.charAt(i);
+                var c = pRange.chars.charAt(i);
                 // Calculate the Frequency.
-                double lFrequency = pBaseFrequency * Math.pow(Synth.SEMITONE, i);
+                var lFrequency = pBaseFrequency * Math.pow(Synth.SEMITONE, i);
                 // Buffer the Frequency.
                 lFrequencies[i] = lFrequency;
                 // Buffer the Frequency.
@@ -507,14 +507,14 @@ public class AudioTransceiver {
          */
         final char character(double pPitch) {
             // Declare search metrics.
-            double lDistance = Double.POSITIVE_INFINITY;
-            int lIndex = -1;
+            var lDistance = Double.POSITIVE_INFINITY;
+            var lIndex = -1;
             // Iterate the Frequencies.
-            for (int i = 0; i < freqs.length; i++) {
+            for (var i = 0; i < freqs.length; i++) {
                 // Fetch the Frequency.
-                double lFrequency = freqs[i];
+                var lFrequency = freqs[i];
                 // Calculate the Delta.
-                double lDelta = Math.abs(pPitch - lFrequency);
+                var lDelta = Math.abs(pPitch - lFrequency);
                 // Is the Delta smaller than the current distance?
                 if (lDelta < lDistance) {
                     // Overwrite the Distance.
@@ -524,7 +524,7 @@ public class AudioTransceiver {
                 }
             }
             // Fetch the corresponding character.
-            Character lCharacter = mapFreqChar.get(freqs[lIndex]);
+            var lCharacter = mapFreqChar.get(freqs[lIndex]);
             // Return the Character.
             return Optional.ofNullable(lCharacter).orElseGet(() -> (char) 0);
         }

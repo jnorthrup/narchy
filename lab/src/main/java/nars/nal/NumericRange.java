@@ -105,7 +105,7 @@ public class NumericRange {
 	 * steps
 	 */
 	public int proportionDiscrete(double v, int steps) {
-		double p = proportion(v);
+		var p = proportion(v);
 		
 		p = Math.min(Math.max(p, 0), 1.0);
 		return (int) (Math.round(p * (steps - 1)));
@@ -116,7 +116,7 @@ public class NumericRange {
 	}
 
 	public void vectorize(double[] target, int index, double v, int steps) {
-		int p = proportionDiscrete(v, steps);
+		var p = proportionDiscrete(v, steps);
 		target[index + p] = 1;
 	}
 
@@ -129,10 +129,10 @@ public class NumericRange {
 			v = Math.min(1, v);
 			v = Math.max(0, v);
 		}
-		double stepScale = 1.0 / (steps - 1);
-		for (int p = 0; p < steps; p++) {
-			double pp = (p) * stepScale;
-			double d = 1.0 - Math.abs(pp - v) / stepScale;
+		var stepScale = 1.0 / (steps - 1);
+		for (var p = 0; p < steps; p++) {
+			var pp = (p) * stepScale;
+			var d = 1.0 - Math.abs(pp - v) / stepScale;
 			d = Math.max(d, 0);
 			
 			
@@ -157,17 +157,12 @@ public class NumericRange {
 	 * result
 	 */
 	public void adaptiveContrast(double rate, double target) {
-		double range = (max - min) * rate; 
-											
-											
-											
-											
-											
-											
+		var range = (max - min) * rate;
 
-		double targetMin = target - range / 2.0;
+
+		var targetMin = target - range / 2.0;
         min = (1.0 - rate) * min + (rate) * targetMin;
-        double targetMax = target + range / 2.0;
+		var targetMax = target + range / 2.0;
         max = (1.0 - rate) * max + (rate) * targetMax;
 	}
 }

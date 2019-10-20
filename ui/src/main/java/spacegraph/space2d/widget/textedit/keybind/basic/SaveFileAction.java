@@ -19,13 +19,13 @@ public class SaveFileAction implements Action {
 
   @Override
   public void execute(TextEditModel editor, String... args) {
-    JFileChooser fileChooser = new JFileChooser();
-    int selected = fileChooser.showSaveDialog(null);
+      var fileChooser = new JFileChooser();
+      var selected = fileChooser.showSaveDialog(null);
     if (selected == JFileChooser.APPROVE_OPTION) {
-      try (OutputStreamWriter writer =
+      try (var writer =
           new OutputStreamWriter(new FileOutputStream(fileChooser.getSelectedFile()),
               Charsets.UTF_8)) {
-          for (BufferLine l : editor.buffer().lines) {
+          for (var l : editor.buffer().lines) {
               try {
                   writer.append(l.toLineString());
                   writer.append("\n");

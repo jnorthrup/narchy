@@ -15,7 +15,7 @@ public class SpectrogramChip extends TypedPort<float[]> {
 
         super(float[].class);
         on(row ->{
-            Spectrogram s = this.s;
+            var s = this.s;
             if (s == null || s.N.intValue()!=row.length) {
                 //s = new Spectrogram()
                 set(s = this.s = new Spectrogram(true, history, row.length));

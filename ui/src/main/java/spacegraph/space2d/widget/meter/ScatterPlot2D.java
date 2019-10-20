@@ -71,13 +71,13 @@ public class ScatterPlot2D<X> extends Graph2D<X> {
         public MutableRectFloat layout(float[][] in, float[][] out) {
             if (in.length == 0) return new MutableRectFloat().setX0Y0WH(0,0, 1,1);
 
-            int dim = dimensionExternal();
-            for (int i = 0; i < in.length; i++) {
+            var dim = dimensionExternal();
+            for (var i = 0; i < in.length; i++) {
                 System.arraycopy(in[i], 0, out[i], 0, dim); //TODO make this unnecessary by making in==out
             }
 
-            MutableRectFloat m = new MutableRectFloat().setX0Y0WH(out[0][0], out[0][1], 0, 0);
-            for (int i = 1; i < in.length; i++) {
+            var m = new MutableRectFloat().setX0Y0WH(out[0][0], out[0][1], 0, 0);
+            for (var i = 1; i < in.length; i++) {
                 m.mbr(out[i][0], out[i][1]);
             }
             return m;
@@ -117,20 +117,20 @@ public class ScatterPlot2D<X> extends Graph2D<X> {
 
 
         update((g, dtS)->{
-            float minVis = minVisPct;
-            int n = g.nodes();
+            var minVis = minVisPct;
+            var n = g.nodes();
             float w = w(), h = h();
-            MutableRectFloat e = extent.animated();
+            var e = extent.animated();
             g.forEachValue(node->{
-                float[][] cc = coordOut;
-                int c = node.i;
+                var cc = coordOut;
+                var c = node.i;
                 if (c < 0 || c >= cc.length) {
                     node.hide();
                 } else {
 
-                    float[] xy = cc[c];
+                    var xy = cc[c];
 
-                    X id = node.id;
+                    var id = node.id;
 
                     node.pos(e.normalizeScale(
                             xy[0], xy[1],
@@ -159,7 +159,7 @@ public class ScatterPlot2D<X> extends Graph2D<X> {
                     @Override
                     public void nodes(CellMap<X, NodeVis<X>> cells, GraphEditing<X> edit) {
 
-                        int n = cells.size();
+                        var n = cells.size();
 
                         model.start();
 
@@ -171,7 +171,7 @@ public class ScatterPlot2D<X> extends Graph2D<X> {
                         currentCoord = 0;
                         Graph2DRenderer.super.nodes(cells, edit);
 
-                        MutableRectFloat nextExtent = model.layout(coord, coordOut);
+                        var nextExtent = model.layout(coord, coordOut);
                         if (Util.equals(0, nextExtent.w))
                             nextExtent.w = 1;
                         if (Util.equals(0, nextExtent.h))
@@ -186,7 +186,7 @@ public class ScatterPlot2D<X> extends Graph2D<X> {
                      */
                     @Override
                     public void node(NodeVis<X> node, GraphEditing<X> graph) {
-                        int c = currentCoord++;
+                        var c = currentCoord++;
                         if (c < coord.length) {
                             model.coord(node.id, coord[c]);
                             node.i = c;

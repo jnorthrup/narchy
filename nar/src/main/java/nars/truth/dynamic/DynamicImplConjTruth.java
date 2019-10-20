@@ -27,8 +27,8 @@ public enum DynamicImplConjTruth {
 
 		@Override
 		public boolean evalComponents(Compound superterm, long start, long end, ObjectLongLongPredicate<Term> each) {
-			Subterms ss = superterm.subterms();
-			Term subj = ss.sub(0);
+			var ss = superterm.subterms();
+			var subj = ss.sub(0);
 			assert (subj instanceof Neg);
 			return decomposeImplConj(superterm, start, end, each, ss.sub(1),
 				(Compound) (subj.unneg()), true, true);
@@ -60,9 +60,9 @@ public enum DynamicImplConjTruth {
 	public static final AbstractDynamicTruth ImplPred = new DynamicStatementTruth.AbstractInhImplSectTruth(false, false) {
 		@Override
 		public boolean evalComponents(Compound superterm, long start, long end, ObjectLongLongPredicate<Term> each) {
-			Subterms supertermSubs = superterm.subterms();
-			Term common = DynamicStatementTruth.stmtCommon(subjOrPred, supertermSubs);
-			Compound decomposed = (Compound) DynamicStatementTruth.stmtCommon(!subjOrPred, supertermSubs);
+			var supertermSubs = superterm.subterms();
+			var common = DynamicStatementTruth.stmtCommon(subjOrPred, supertermSubs);
+			var decomposed = (Compound) DynamicStatementTruth.stmtCommon(!subjOrPred, supertermSubs);
 			return decomposeImplConj(superterm, start, end, each, common, decomposed, false, false);
 		}
 
@@ -74,8 +74,8 @@ public enum DynamicImplConjTruth {
 
 	private static boolean decomposeImplConj(Compound superterm, long start, long end, ObjectLongLongPredicate<Term> each, Term common, Compound decomposed, boolean subjOrPred, boolean negateConjComponents) {
 
-		int superDT = superterm.dt() == DTERNAL ? 0 : superterm.dt();
-		int decRange = subjOrPred ? decomposed.eventRange() : 0;
+		var superDT = superterm.dt() == DTERNAL ? 0 : superterm.dt();
+		var decRange = subjOrPred ? decomposed.eventRange() : 0;
 		return DynamicConjTruth.ConjIntersection.evalComponents(decomposed, start, end, (what, s, e) -> {
 
 			int innerDT;
@@ -87,11 +87,11 @@ public enum DynamicImplConjTruth {
 //                if (s == start && e - s >= decRange) {
 //                    innerDT = 0; //eternal/immediate component
 //                } else
-				long d = s - start;
+				var d = s - start;
 				innerDT = Tense.occToDT(subjOrPred ? decRange - d : d) + superDT;
 			}
 
-			Term i = subjOrPred ?
+			var i = subjOrPred ?
 				IMPL.the(what.negIf(negateConjComponents), innerDT, common)
 				:
 				IMPL.the(common, innerDT, what).negIf(negateConjComponents);

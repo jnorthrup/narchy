@@ -13,7 +13,7 @@ public abstract class ByteMultiHijackMemoize<X extends ByteKeyExternal,Y> implem
     public ByteMultiHijackMemoize(Function<X, Y> f, int capacity, boolean soft, int levels) {
         this.level = new ByteHijackMemoize[levels];
         this.capacity = capacity;
-        for (int i = 0; i < levels; i++) {
+        for (var i = 0; i < levels; i++) {
             level[i] = new ByteHijackMemoize<>(f, capacity(i), reprobes(i), soft);
         }
     }
@@ -36,7 +36,7 @@ public abstract class ByteMultiHijackMemoize<X extends ByteKeyExternal,Y> implem
 
     @Override
     public Y apply(X x) {
-        int l = level(x);
+        var l = level(x);
         return level[l].apply(x);
     }
 

@@ -56,7 +56,7 @@ public class Quat4f extends Tuple4f {
      * @param w the w scalar component
      */
     public Quat4f(float x, float y, float z, float w) {
-        float mag = (float) (1.0 / Math.sqrt(x * x + y * y + z * z + w * w));
+        var mag = (float) (1.0 / Math.sqrt(x * x + y * y + z * z + w * w));
         this.x = x * mag;
         this.y = y * mag;
         this.z = z * mag;
@@ -70,7 +70,7 @@ public class Quat4f extends Tuple4f {
      * @param q the array of length 4 containing xyzw in order
      */
     public Quat4f(float[] q) {
-        float mag = (float) (1.0 / Math.sqrt(q[0] * q[0] + q[1] * q[1] + q[2] * q[2] + q[3] * q[3]));
+        var mag = (float) (1.0 / Math.sqrt(q[0] * q[0] + q[1] * q[1] + q[2] * q[2] + q[3] * q[3]));
         x = q[0] * mag;
         y = q[1] * mag;
         z = q[2] * mag;
@@ -104,7 +104,7 @@ public class Quat4f extends Tuple4f {
      * @param t1 the Tuple4f containing the initialization x y z w data
      */
     public Quat4f(Tuple4f t1) {
-        float mag = (float) (1.0 / Math.sqrt(t1.x * t1.x + t1.y * t1.y + t1.z * t1.z + t1.w * t1.w));
+        var mag = (float) (1.0 / Math.sqrt(t1.x * t1.x + t1.y * t1.y + t1.z * t1.z + t1.w * t1.w));
         x = t1.x * mag;
         y = t1.y * mag;
         z = t1.z * mag;
@@ -173,9 +173,9 @@ public class Quat4f extends Tuple4f {
             this.z = q1.w * q2.z + q2.w * q1.z + q1.x * q2.y - q1.y * q2.x;
         } else {
 
-            float w = q1.w * q2.w - q1.x * q2.x - q1.y * q2.y - q1.z * q2.z;
-            float x = q1.w * q2.x + q2.w * q1.x + q1.y * q2.z - q1.z * q2.y;
-            float y = q1.w * q2.y + q2.w * q1.y - q1.x * q2.z + q1.z * q2.x;
+            var w = q1.w * q2.w - q1.x * q2.x - q1.y * q2.y - q1.z * q2.z;
+            var x = q1.w * q2.x + q2.w * q1.x + q1.y * q2.z - q1.z * q2.y;
+            var y = q1.w * q2.y + q2.w * q1.y - q1.x * q2.z + q1.z * q2.x;
             this.z = q1.w * q2.z + q2.w * q1.z + q1.x * q2.y - q1.y * q2.x;
             this.w = w;
             this.x = x;
@@ -192,9 +192,9 @@ public class Quat4f extends Tuple4f {
      */
     public final void mul(Quat4f q1) {
 
-        float w = this.w * q1.w - this.x * q1.x - this.y * q1.y - this.z * q1.z;
-        float x = this.w * q1.x + q1.w * this.x + this.y * q1.z - this.z * q1.y;
-        float y = this.w * q1.y + q1.w * this.y - this.x * q1.z + this.z * q1.x;
+        var w = this.w * q1.w - this.x * q1.x - this.y * q1.y - this.z * q1.z;
+        var x = this.w * q1.x + q1.w * this.x + this.y * q1.z - this.z * q1.y;
+        var y = this.w * q1.y + q1.w * this.y - this.x * q1.z + this.z * q1.x;
         this.z = this.w * q1.z + q1.w * this.z + this.x * q1.y - this.y * q1.x;
         this.w = w;
         this.x = x;
@@ -211,7 +211,7 @@ public class Quat4f extends Tuple4f {
      * @param q2 the second quaternion
      */
     public final void mulInverse(Quat4f q1, Quat4f q2) {
-        Quat4f tempQuat = new Quat4f(q2);
+        var tempQuat = new Quat4f(q2);
 
         tempQuat.inverse();
         this.mul(q1, tempQuat);
@@ -226,7 +226,7 @@ public class Quat4f extends Tuple4f {
      * @param q1 the other quaternion
      */
     public final void mulInverse(Quat4f q1) {
-        Quat4f tempQuat = new Quat4f(q1);
+        var tempQuat = new Quat4f(q1);
 
         tempQuat.inverse();
         this.mul(tempQuat);
@@ -240,7 +240,7 @@ public class Quat4f extends Tuple4f {
      */
     public final void inverse(Quat4f q1) {
 
-        float norm = 1.0f / (q1.w * q1.w + q1.x * q1.x + q1.y * q1.y + q1.z * q1.z);
+        var norm = 1.0f / (q1.w * q1.w + q1.x * q1.x + q1.y * q1.y + q1.z * q1.z);
         this.w = norm * q1.w;
         this.x = -norm * q1.x;
         this.y = -norm * q1.y;
@@ -253,7 +253,7 @@ public class Quat4f extends Tuple4f {
      */
     private void inverse() {
 
-        float norm = 1.0f / (this.w * this.w + this.x * this.x + this.y * this.y + this.z * this.z);
+        var norm = 1.0f / (this.w * this.w + this.x * this.x + this.y * this.y + this.z * this.z);
         this.w *= norm;
         this.x *= -norm;
         this.y *= -norm;
@@ -269,7 +269,7 @@ public class Quat4f extends Tuple4f {
      */
     public final void normalize(Quat4f q1) {
 
-        float norm = (q1.x * q1.x + q1.y * q1.y + q1.z * q1.z + q1.w * q1.w);
+        var norm = (q1.x * q1.x + q1.y * q1.y + q1.z * q1.z + q1.w * q1.w);
 
         if (norm > 0.0f) {
             norm = 1.0f / (float) Math.sqrt(norm);
@@ -291,7 +291,7 @@ public class Quat4f extends Tuple4f {
      */
     public final void normalize() {
 
-        float norm = (this.x * this.x + this.y * this.y + this.z * this.z + this.w * this.w);
+        var norm = (this.x * this.x + this.y * this.y + this.z * this.z + this.w * this.w);
 
         if (norm > 0.0f) {
             norm = 1.0f / (float) Math.sqrt(norm);
@@ -315,7 +315,7 @@ public class Quat4f extends Tuple4f {
      * @param m1 the Matrix4f
      */
     public final void set(Matrix4f m1) {
-        float ww = 0.25f * (m1.m00 + m1.m11 + m1.m22 + m1.m33);
+        var ww = 0.25f * (m1.m00 + m1.m11 + m1.m22 + m1.m33);
 
         if (ww >= 0) {
             if (ww >= EPS2) {
@@ -429,7 +429,7 @@ public class Quat4f extends Tuple4f {
      * @param m1 the Matrix3f
      */
     public final void set(Matrix3f m1) {
-        float ww = 0.25f * (m1.m00 + m1.m11 + m1.m22 + 1.0f);
+        var ww = 0.25f * (m1.m00 + m1.m11 + m1.m22 + 1.0f);
 
         if (ww >= 0) {
             if (ww >= EPS2) {
@@ -542,17 +542,17 @@ public class Quat4f extends Tuple4f {
      */
     public final void set(AxisAngle4f a) {
         float amag;
-        
-        float ax = a.x;
-        float ay = a.y;
-        float az = a.z;
-        float angle = a.angle;
+
+        var ax = a.x;
+        var ay = a.y;
+        var az = a.z;
+        var angle = a.angle;
 
         setAngle(ax, ay, az, angle);
     }
 
     public void setAngle(float ax, float ay, float az, float angle) {
-        float amag = (ax * ax + ay * ay + az * az);
+        var amag = (ax * ax + ay * ay + az * az);
         if (amag < EPS*EPS) {
             this.x = this.y = this.z = this.w = 0.0f;
         } else {
@@ -561,8 +561,8 @@ public class Quat4f extends Tuple4f {
             } else {
                 amag = (float) (1.0f / Math.sqrt(amag));
 
-                double ha = angle / 2.0;
-                float mag = (float) Math.sin(ha) * amag;
+                var ha = angle / 2.0;
+                var mag = (float) Math.sin(ha) * amag;
                 w = (float) Math.cos(ha);
                 if (mag < EPS * EPS) {
                     this.x = this.y = this.z = 0;
@@ -588,7 +588,7 @@ public class Quat4f extends Tuple4f {
     public final void interpolate(Quat4f q1, float alpha) {
 
 
-        float dot = x * q1.x + y * q1.y + z * q1.z + w * q1.w;
+        var dot = x * q1.x + y * q1.y + z * q1.z + w * q1.w;
 
         if (dot < 0) {
             
@@ -602,8 +602,8 @@ public class Quat4f extends Tuple4f {
         float s2;
         float s1;
         if ((1.0 - dot) > EPS) {
-            float om = (float) Math.acos(dot);
-            float sinom = (float) Math.sin(om);
+            var om = (float) Math.acos(dot);
+            var sinom = (float) Math.sin(om);
             s1 = (float) (Math.sin((1.0 - alpha) * om) / sinom);
             s2 = (float) (Math.sin(alpha * om) / sinom);
         } else {
@@ -663,7 +663,7 @@ public class Quat4f extends Tuple4f {
 
 
     public static Quat4f angle(float ax, float ay, float az, float angle) {
-        Quat4f q = new Quat4f();
+        var q = new Quat4f();
         q.setAngle(ax, ay, az, angle);
         return q;
     }
@@ -671,28 +671,27 @@ public class Quat4f extends Tuple4f {
     public final v3 rotateVector(v3 vecIn, v3 vecOut) {
 
 
+        var vecX = vecIn.x;
+        var vecY = vecIn.y;
+        var vecZ = vecIn.z;
+        var x_x = x*x;
+        var y_y = y*y;
+        var z_z = z*z;
+        var w_w = w*w;
 
-            float vecX = vecIn.x;
-            float vecY = vecIn.y;
-            float vecZ = vecIn.z;
-            float x_x = x*x;
-            float y_y = y*y;
-            float z_z = z*z;
-            float w_w = w*w;
-
-            float ox =   w_w * vecX
+        var ox =   w_w * vecX
                     + x_x * vecX
                     - z_z * vecX
                     - y_y * vecX
                     + 2f * ( y*w*vecZ - z*w*vecY + y*x*vecY + z*x*vecZ );
 
-        float oy =  y_y * vecY
+        var oy =  y_y * vecY
                     - z_z * vecY
                     + w_w * vecY
                     - x_x * vecY
                     + 2f * ( x*y*vecX + z*y*vecZ + w*z*vecX - x*w*vecZ );
 
-        float oz =   z_z * vecZ
+        var oz =   z_z * vecZ
                     - y_y * vecZ
                     - x_x * vecZ
                     + w_w * vecZ

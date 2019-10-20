@@ -49,7 +49,7 @@ public class HyperIterator<X>  {
 
             scan();
 
-            int leaves = plan.size();
+            var leaves = plan.size();
             if (leaves == 1)
                 leaf((RLeaf<X>) plan.first(), whle, random);
             else
@@ -61,16 +61,16 @@ public class HyperIterator<X>  {
         boolean findingLeaves;
         restart: do {
             findingLeaves = false;
-            Object[] items = plan.items;
+            var items = plan.items;
             for (int i = 0, itemsLength = plan.size(); i < itemsLength; ) {
-                Object x = items[i];
+                var x = items[i];
                 if (x instanceof RBranch) {
                     plan.remove(i);
-                    RBranch xb = (RBranch) x;
-                    Object[] data = xb.data;
-                    boolean added = false;
+                    var xb = (RBranch) x;
+                    var data = xb.data;
+                    var added = false;
                     for (int j = 0, dataLength = xb.size; j < dataLength; j++) {
-                        Object y = data[j];
+                        var y = data[j];
                         added |= plan.add(y);
                         if (added && y instanceof RBranch)
                             findingLeaves = true;
@@ -96,18 +96,18 @@ public class HyperIterator<X>  {
     }
 
     private void bfsRoundRobin(Predicate whle, Random random) {
-        int leaves = plan.size(); //assert(leaves > 0);
-        int[] remain = new int[leaves];
-        Object[] pp = plan.items;
-        int n = IntStream.range(0, leaves).map(i -> (remain[i] = ((RLeaf) pp[i]).size)).sum();
-        int c = 0;
-        int k = 0;
-        int o = random.nextInt(n * leaves); //shuffles the inner-leaf visiting order
+        var leaves = plan.size(); //assert(leaves > 0);
+        var remain = new int[leaves];
+        var pp = plan.items;
+        var n = IntStream.range(0, leaves).map(i -> (remain[i] = ((RLeaf) pp[i]).size)).sum();
+        var c = 0;
+        var k = 0;
+        var o = random.nextInt(n * leaves); //shuffles the inner-leaf visiting order
         //TODO shuffle inner visit order differently for each leaf for even more fairness
         do {
-            int pk = remain[k];
+            var pk = remain[k];
             if (pk > 0) {
-                RLeaf<X> lk = (RLeaf<X>) pp[k];
+                var lk = (RLeaf<X>) pp[k];
                 if (!whle.test( lk.data[ (--remain[k] + o ) % lk.size ] ))
                     break;
             }
@@ -116,12 +116,12 @@ public class HyperIterator<X>  {
     }
 
     private static <X> void leaf(RLeaf<X> rl, Predicate whle, Random random) {
-        short ls = rl.size;
-        X[] rld = rl.data;
+        var ls = rl.size;
+        var rld = rl.data;
         if (ls <= 1) {
             whle.test(rld[0]);
         } else {
-            short[] order = new short[ls];
+            var order = new short[ls];
             for (short i = 0; i < ls; i++)
                 order[i] = i;
             ArrayUtil.shuffle(order, random);
@@ -184,7 +184,7 @@ public class HyperIterator<X>  {
 
         @Override
         public float rank(Object r, float min) {
-            HyperRegion y =
+            var y =
                 r instanceof HyperRegion ?
                     ((HyperRegion) r)
                     :

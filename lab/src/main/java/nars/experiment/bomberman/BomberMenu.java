@@ -42,7 +42,7 @@ public class BomberMenu extends JPanel {
         /** if java runtime is Java 2 */
         if (Main.J2) {
             /** create the rendering hints for better graphics output */
-            RenderingHints h = new RenderingHints(null);
+            var h = new RenderingHints(null);
             h.put(RenderingHints.KEY_TEXT_ANTIALIASING,
                     RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
             h.put(RenderingHints.KEY_FRACTIONALMETRICS,
@@ -61,16 +61,16 @@ public class BomberMenu extends JPanel {
         buttonImagesUp = new Image[5];
 
         /** setup path names */
-        Toolkit tk = Toolkit.getDefaultToolkit();
+        var tk = Toolkit.getDefaultToolkit();
 
-        String path = BomberMain.RP + "Images/BomberMenu/";
+        var path = BomberMain.RP + "Images/BomberMenu/";
         try {
             /** load background image */
-            String file = path + "Background.jpg";
+            var file = path + "Background.jpg";
             backgroundImg = tk.getImage(new File(file).getCanonicalPath());
 
             /** load each button image */
-            for (int i = 0; i < 5; i++) {
+            for (var i = 0; i < 5; i++) {
                 if (i <= P4) file = path + (i + 2) + " Player Game";
                 else if (i == CONTROL_SETUP) file = path + "Control Setup";
                 else if (i == EXIT) file = path + "Exit";
@@ -97,14 +97,14 @@ public class BomberMenu extends JPanel {
         setDoubleBuffered(true);
 
         /** load the images */
-        MediaTracker mt = new MediaTracker(this);
+        var mt = new MediaTracker(this);
 
         try {
-            int counter = 0;
+            var counter = 0;
             /** load the background image */
             mt.addImage(backgroundImg, counter++);
             /** load the button images */
-            for (int i = 0; i < 5; i++) {
+            for (var i = 0; i < 5; i++) {
                 mt.addImage(buttonImagesDown[i], counter++);
                 mt.addImage(buttonImagesUp[i], counter++);
             }
@@ -115,16 +115,16 @@ public class BomberMenu extends JPanel {
         }
         /** create the button objects array */
         imageButtons = new BomberImageButton[5];
-        for (int i = 0; i < 5; i++) {
+        for (var i = 0; i < 5; i++) {
             /** setup the images */
             Image[] images = {buttonImagesDown[i], buttonImagesUp[i]};
             /** create each object */
             imageButtons[i] = new BomberImageButton(this, images);
         }
         /** calculate distance between each button */
-        int dy = buttonImagesDown[0].getHeight(this) / (32 / BomberMain.size * 2);
+        var dy = buttonImagesDown[0].getHeight(this) / (32 / BomberMain.size * 2);
         /** setup the buttons' positions */
-        for (int i = P2; i <= EXIT; i++)
+        for (var i = P2; i <= EXIT; i++)
             imageButtons[i].setInfo(0, (280 / (32 / BomberMain.size)) + (dy * i), i);
         /** set current selection to Player 2 */
         imageButtons[P2].setBevel(true);
@@ -136,7 +136,7 @@ public class BomberMenu extends JPanel {
      */
     public void keyPressed(KeyEvent evt) {
         /** store old selection */
-        int newSelection = selection;
+        var newSelection = selection;
         switch (evt.getKeyCode()) {
             case KeyEvent.VK_UP:
             case KeyEvent.VK_LEFT:
@@ -179,17 +179,17 @@ public class BomberMenu extends JPanel {
                 break;
             case EXIT:
                 /** create the dialog content */
-                JOptionPane pane =
+                var pane =
                         new JOptionPane("Are you sure you want to exit Bomberman?");
                 /** setup the dialog content */
                 pane.setOptionType(JOptionPane.YES_NO_OPTION);
                 pane.setMessageType(JOptionPane.WARNING_MESSAGE);
                 /** create the dialog */
-                JDialog dialog = pane.createDialog(this, "Exit Bomberman?");
+                var dialog = pane.createDialog(this, "Exit Bomberman?");
                 dialog.setResizable(false);
                 /** show the dialog */
                 dialog.show();
-                Object selection = pane.getValue();
+                var selection = pane.getValue();
 
                 /** if user clicked on yes */
                 if (selection != null && "0".equals(selection.toString()))
@@ -204,7 +204,7 @@ public class BomberMenu extends JPanel {
      */
     @Override
     public void paint(Graphics graphics) {
-        Graphics g = graphics;
+        var g = graphics;
         /** if java runtime is Java 2 */
         if (Main.J2) {
             paint2D(graphics);
@@ -214,7 +214,7 @@ public class BomberMenu extends JPanel {
             g.drawImage(backgroundImg, 0, 0, 17 <<
                     BomberMain.shiftCount, 17 << BomberMain.shiftCount, this);
         }
-        for (int i = 0; i < 5; i++)
+        for (var i = 0; i < 5; i++)
             if (imageButtons[i] != null)
                 imageButtons[i].paint(g);
     }
@@ -224,7 +224,7 @@ public class BomberMenu extends JPanel {
      * @param graphics graphics handle
      */
     public void paint2D(Graphics graphics) {
-        Graphics2D g2 = (Graphics2D) graphics;
+        var g2 = (Graphics2D) graphics;
         /** set the rendering hints */
         g2.setRenderingHints((RenderingHints) hints);
         g2.drawImage(backgroundImg, 0, 0, 17 <<

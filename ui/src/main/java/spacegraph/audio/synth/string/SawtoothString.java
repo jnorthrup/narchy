@@ -12,9 +12,9 @@ public class SawtoothString extends KarplusStrongString{
 
     public void pluck() {
         clear();
-        int capacity = buffer.capacity();
-        for (int i = 0; i < capacity; i++) {
-            double sample = (-0.5 + (i / (capacity - 1)) * 2 * getMaxVolume());
+        var capacity = buffer.capacity();
+        for (var i = 0; i < capacity; i++) {
+            var sample = (-0.5 + (i / (capacity - 1)) * 2 * getMaxVolume());
             buffer.enqueue(sample);
         }
     }
@@ -22,7 +22,7 @@ public class SawtoothString extends KarplusStrongString{
     public void tic() {
         double first = buffer.dequeue();
         double second = buffer.peek();
-		double last = (first + second) * (deltaVolume / 2);
+        var last = (first + second) * (deltaVolume / 2);
         buffer.enqueue(last);
     }
 

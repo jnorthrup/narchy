@@ -37,12 +37,12 @@ public class ByteAnonMap {
     }
 
     public void clear() {
-        int s = termToId.size();
+        var s = termToId.size();
         if (s > 0) {
             termToId.clear();
             idToTerm.clear();
         }
-        int compactThesh = 4;
+        var compactThesh = 4;
         if (s > compactThesh) {
             termToId.compact();
             idToTerm.clearCapacity(compactThesh);
@@ -91,10 +91,10 @@ public class ByteAnonMap {
     }
 
     public boolean updateMap(UnaryOperator<Term> m) {
-        boolean changed = false;
+        var changed = false;
         for (int i = 0, idToTermSize = idToTerm.size(); i < idToTermSize; i++) {
-            Term x = idToTerm.get(i);
-            Term y = m.apply(x);
+            var x = idToTerm.get(i);
+            var y = m.apply(x);
             if (x!=y) {
                 idToTerm.setFast(i, y);
                 changed = true;

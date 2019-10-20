@@ -37,7 +37,7 @@ public enum IntCoding {;
      * @return decoded 64-bit signed integer.
      */
     public static long decodeZigZagLong(long unsigned) {
-        long t = (((unsigned << 63) >> 63) ^ unsigned) >> 1;
+        var t = (((unsigned << 63) >> 63) ^ unsigned) >> 1;
         return t ^ (unsigned & (1L << 63));
     }
 
@@ -58,7 +58,7 @@ public enum IntCoding {;
      * @return decoded 32-bit signed integer.
      */
     public static int decodeZigZagInt(int unsigned) {
-        int t = (((unsigned << 31) >> 31) ^ unsigned) >> 1;
+        var t = (((unsigned << 31) >> 31) ^ unsigned) >> 1;
         return t ^ (unsigned & (1 << 31));
     }
 
@@ -74,7 +74,7 @@ public enum IntCoding {;
         if (unsigned == 0) {
             return 1;
         }
-        int bits = 64 - Long.numberOfLeadingZeros(unsigned);
+        var bits = 64 - Long.numberOfLeadingZeros(unsigned);
         return (bits + 6) / 7;
     }
 
@@ -124,7 +124,7 @@ public enum IntCoding {;
      *
      */
     public static int encodeUnsignedVariableLong(long unsigned, byte[] dst, int dstOff) {
-        int count = 0;
+        var count = 0;
         while ((unsigned & 0xffffffffffffff80L) != 0L) {
             dst[dstOff + (count++)] = (byte) ((unsigned & 0x7fL) | 0x80L);
             unsigned >>>= 7L;
@@ -146,7 +146,7 @@ public enum IntCoding {;
      *
      */
     public static int encodeUnsignedVariableInt(int unsigned, byte[] dst, int dstOff) {
-        int count = 0;
+        var count = 0;
         while ((unsigned & 0xffffff80) != 0L) {
             dst[dstOff + (count++)] = (byte) ((unsigned & 0x7f) | 0x80);
             unsigned >>>= 7;
@@ -174,8 +174,8 @@ public enum IntCoding {;
         if (in instanceof DynBytes)
             return ((DynBytes)in).readVarEncodedUnsignedInt();
         else {
-            int unsigned = 0;
-            int i = 0;
+            var unsigned = 0;
+            var i = 0;
             int b;
             while (((b = in.readByte() & 0xff) & 0x80) != 0) {
                 unsigned |= (b & 0x7f) << i;

@@ -45,9 +45,9 @@ public class RankedN<X> extends TopN<X> {
     public TopFilter<X> rank(FloatRank<X> rank) {
         if (rank!=this.rank) {
             this.rank = rank;
-            int s = this.size;
+            var s = this.size;
             if (s > 0) {
-                for (int i = 0; i < s; i++) {
+                for (var i = 0; i < s; i++) {
                     value[i] = rank.rank(items[i]);
                 }
                 QuickSort.quickSort(0, s-1, this::valueComparator, this::swap);
@@ -58,7 +58,7 @@ public class RankedN<X> extends TopN<X> {
 
     @Override
     protected int addEnd(X x, float elementRank) {
-        int i = super.addEnd(x, elementRank);
+        var i = super.addEnd(x, elementRank);
         if (i!=-1)
             insertValue(i, elementRank);
         return i;
@@ -66,7 +66,7 @@ public class RankedN<X> extends TopN<X> {
 
     @Override
     protected int addAtIndex(int index, X element, float elementRank, int oldSize) {
-        int i = super.addAtIndex(index, element, elementRank, oldSize);
+        var i = super.addAtIndex(index, element, elementRank, oldSize);
         if (i!=-1)
             insertValue(i, elementRank);
 
@@ -79,9 +79,9 @@ public class RankedN<X> extends TopN<X> {
     }
 
     private void insertValue(int i, float elementRank) {
-        float[] v = this.value;
+        var v = this.value;
 
-        int shift = size-1-i;
+        var shift = size-1-i;
         if (shift > 0)
             System.arraycopy(v, i, v, i+1, shift );
 
@@ -91,12 +91,12 @@ public class RankedN<X> extends TopN<X> {
 
     @Override
     public X remove(int index) {
-        int totalOffset = this.size - index - 1;
+        var totalOffset = this.size - index - 1;
         if (totalOffset >= 0) {
-            X[] list = this.items;
-            X previous = list[index];
+            var list = this.items;
+            var previous = list[index];
             if (totalOffset > 0) {
-                float[] value = this.value;
+                var value = this.value;
                 System.arraycopy(value, index + 1, value, index, totalOffset);
                 System.arraycopy(list, index + 1, list, index, totalOffset);
             }
@@ -119,7 +119,7 @@ public class RankedN<X> extends TopN<X> {
 
     @Override
     public void clear() {
-        int s = this.size;
+        var s = this.size;
         if (s > 0) {
             Arrays.fill(items, 0, s, null);
             super.clear();
@@ -133,7 +133,7 @@ public class RankedN<X> extends TopN<X> {
     }
 
     private int valueComparator(int a, int b) {
-        float[] v = this.value;
+        var v = this.value;
         return Float.compare(v[b], v[a]);
     }
 

@@ -69,9 +69,9 @@ public class UndirectedGraph implements Graph {
     @Override
     public IntHashSet neighborsOut(int i) {
 
-        IntHashSet result = new IntHashSet(g.neighborsOut(i));
-        int max = g.size();
-        for (int j = 0; j < max; ++j) {
+        var result = new IntHashSet(g.neighborsOut(i));
+        var max = g.size();
+        for (var j = 0; j < max; ++j) {
             if (i!=j && g.isEdge(j, i))
                 result.add(j);
         }

@@ -27,14 +27,14 @@ public class Decoder implements Constants {
      * @return the index in signal of the key sequence, or -1 if it wasn't found (in which case signalStrengths is trashed)
      */
     public static int findKeySequence(byte[] signal, double[] signalStrengths, int granularity, int keyFrequency) {
-        int maxCorrelationIndex = -1;
+        var maxCorrelationIndex = -1;
         double maxCorrelation = -1;
-        double minSignal = 0.003;
-        int i = 0;
+        var minSignal = 0.003;
+        var i = 0;
         for (i = 0; i <= signal.length - kSamplesPerDuration; i += granularity) {
             //test the correlation
-            byte[] partialSignal = ArrayUtils.subarray(signal, i, kSamplesPerDuration);
-            double corr = complexDetect(partialSignal, keyFrequency) /* * 4 */;
+            var partialSignal = ArrayUtils.subarray(signal, i, kSamplesPerDuration);
+            var corr = complexDetect(partialSignal, keyFrequency) /* * 4 */;
             //	    System.out.println("Correlation at " + i + ":" + corr);
             if (corr > maxCorrelation) {
                 maxCorrelation = corr;
@@ -46,7 +46,7 @@ public class Decoder implements Constants {
         }
 
         //System.out.println("Searched to index:" + i);
-        double acceptedSignal = 0.01;
+        var acceptedSignal = 0.01;
         if (maxCorrelation < acceptedSignal && maxCorrelation > -1) {
             //System.out.println("Best Correlation:" + maxCorrelation);
             maxCorrelationIndex = -1;
@@ -79,17 +79,17 @@ public class Decoder implements Constants {
      */
     private static byte[] decode(double[] startSignals, double[][] signal) {
         //normalize to the start signals
-        for (int i = 0; i < (kBitsPerByte * kBytesPerDuration); i++) {
-            for (int j = 0; j < signal[i].length; j++) {
+        for (var i = 0; i < (kBitsPerByte * kBytesPerDuration); i++) {
+            for (var j = 0; j < signal[i].length; j++) {
                 signal[i][j] /= startSignals[i];
             }
         }
 
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        for (int i = 0; i < signal[0].length; i++) {
-            for (int k = 0; k < kBytesPerDuration; k++) {
+        var baos = new ByteArrayOutputStream();
+        for (var i = 0; i < signal[0].length; i++) {
+            for (var k = 0; k < kBytesPerDuration; k++) {
                 byte value = 0;
-                for (int j = 0; j < kBitsPerByte; j++) {
+                for (var j = 0; j < kBitsPerByte; j++) {
                     if (signal[(k * kBitsPerByte) + j][i] > 0.4) { // detection threshold
                         value |= (1 << j);
                     } else {
@@ -109,18 +109,18 @@ public class Decoder implements Constants {
      */
     private static double[][] getSignalStrengths(byte[] input) {
         //detect the signal strength of each frequency in each duration
-        int durations = input.length / kSamplesPerDuration;
+        var durations = input.length / kSamplesPerDuration;
 
         // rows are durations, cols are bit strengths
-        double[][] signal = new double[kBitsPerByte * kBytesPerDuration][durations];
+        var signal = new double[kBitsPerByte * kBytesPerDuration][durations];
 
         //for each duration, check each bit for representation in the input
-        for (int i = 0; i < durations; i++) {
+        for (var i = 0; i < durations; i++) {
             //separate this duration's input into its own array
-            byte[] durationInput = ArrayUtils.subarray(input, i * kSamplesPerDuration, kSamplesPerDuration);
+            var durationInput = ArrayUtils.subarray(input, i * kSamplesPerDuration, kSamplesPerDuration);
 
             //for each bit represented, detect
-            for (int j = 0; j < kBitsPerByte * kBytesPerDuration; j++) {
+            for (var j = 0; j < kBitsPerByte * kBytesPerDuration; j++) {
                 signal[j][i] =
                         complexDetect(durationInput, Encoder.getFrequency(j));
 		/*
@@ -135,13 +135,13 @@ public class Decoder implements Constants {
     }
 
     public static void getKeySignalStrengths(byte[] signal, double[] signalStrengths) {
-        byte[] partialSignal = ArrayUtils.subarray(signal, 0, kSamplesPerDuration);
-        for (int j = 1; j < kBitsPerByte * kBytesPerDuration; j += 2) {
+        var partialSignal = ArrayUtils.subarray(signal, 0, kSamplesPerDuration);
+        for (var j = 1; j < kBitsPerByte * kBytesPerDuration; j += 2) {
             signalStrengths[j] = complexDetect(partialSignal, Encoder.getFrequency(j));
         }
 
-        byte[] partialSignal2 = ArrayUtils.subarray(signal, kSamplesPerDuration, kSamplesPerDuration);
-        for (int j = 0; j < kBitsPerByte * kBytesPerDuration; j += 2) {
+        var partialSignal2 = ArrayUtils.subarray(signal, kSamplesPerDuration, kSamplesPerDuration);
+        for (var j = 0; j < kBitsPerByte * kBytesPerDuration; j += 2) {
             signalStrengths[j] = complexDetect(partialSignal2, Encoder.getFrequency(j));
             //System.out.println(signalStrengths[j]);
         }
@@ -261,17 +261,17 @@ public class Decoder implements Constants {
     private static double complexDetect(byte[] signal, double frequency) {
         double realSum = 0;
         double imaginarySum = 0;
-        double u = 2 * Math.PI * frequency / kSamplingFrequency;
+        var u = 2 * Math.PI * frequency / kSamplingFrequency;
         // y = e^(ju) = cos(u) + j * sin(u)
 
-        for (int i = 0; i < signal.length; i++) {
+        for (var i = 0; i < signal.length; i++) {
             //System.out.println("signal[" +i +"]: " +signal[i] + "; convert: " + (signal[i])/(float)Constants.kFloatToByteShift);
             realSum += (Math.cos(i * u) * (signal[i] / (float) Constants.kFloatToByteShift));
             imaginarySum += (Math.sin(i * u) * (signal[i] / (float) Constants.kFloatToByteShift));
         }
         //System.out.println("realSum=" + realSum + "; imSum=" + imaginarySum);
-        double realAve = realSum / signal.length;
-        double imaginaryAve = imaginarySum / signal.length;
+        var realAve = realSum / signal.length;
+        var imaginaryAve = imaginarySum / signal.length;
 //       	System.out.println("u:" + u + " realAve:" + realAve + " imaginaryAve:" + imaginaryAve 
 //       			   + " \r\nfrequency:" + frequency + " signal.length:" + signal.length
 //       			   + " realSum:" + realSum + " imaginarySum:" + imaginarySum 

@@ -36,8 +36,8 @@ public final class ReflectiveClassLoader
         this.loader = Objects.requireNonNull(loader);
 
         try {
-            Class<?> loaderClass = Class.forName(CLASSLOADER);
-            Method fcm = loaderClass.getDeclaredMethod(FIND_LOADED_CLASS,
+            var loaderClass = Class.forName(CLASSLOADER);
+            var fcm = loaderClass.getDeclaredMethod(FIND_LOADED_CLASS,
                 String.class);
             fcm.trySetAccessible();
             findClass = MethodHandles.publicLookup().unreflect(fcm).bindTo(loader);
@@ -48,7 +48,7 @@ public final class ReflectiveClassLoader
                 "unable to find the needed methods", e);
         }
 
-        ParserTransformException exception = new ParserTransformException(
+        var exception = new ParserTransformException(
             "could not change the necessary access modifiers");
 
 //        try {
@@ -125,7 +125,7 @@ public final class ReflectiveClassLoader
     @Override
     public void close()
     {
-        ParserTransformException exception = new ParserTransformException(
+        var exception = new ParserTransformException(
             "could not close classloader properly");
 //        try {
 //            findClass.setAccessible(false);

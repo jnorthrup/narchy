@@ -81,7 +81,7 @@ public class Manifold {
      */
     public Manifold() {
         points = new ManifoldPoint[Settings.maxManifoldPoints];
-        for (int i = 0; i < Settings.maxManifoldPoints; i++) {
+        for (var i = 0; i < Settings.maxManifoldPoints; i++) {
             points[i] = new ManifoldPoint();
         }
         localNormal = new v2();
@@ -101,7 +101,7 @@ public class Manifold {
         pointCount = other.pointCount;
         type = other.type;
         
-        for (int i = 0; i < Settings.maxManifoldPoints; i++) {
+        for (var i = 0; i < Settings.maxManifoldPoints; i++) {
             points[i] = new ManifoldPoint(other.points[i]);
         }
     }
@@ -112,7 +112,7 @@ public class Manifold {
      * @param cp manifold to copy from
      */
     public void set(Manifold cp) {
-        for (int i = 0; i < cp.pointCount; i++) {
+        for (var i = 0; i < cp.pointCount; i++) {
             points[i].set(cp.points[i]);
         }
 

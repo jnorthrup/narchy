@@ -27,20 +27,19 @@ public class HeadSetting
 
         this.shiftedAddressing = shiftedAddressing;
 
-        double gammaIndex = getGammaIndex();
+        var gammaIndex = getGammaIndex();
 
 
-        int cellCount = getShiftedVector().length;
+        var cellCount = getShiftedVector().length;
 
         addressingVector = new UVector(cellCount);
 
-        
 
-        double[] addr = addressingVector.value;
+        var addr = addressingVector.value;
 
-        Unit[] sv = getShiftedVector();
-        int bound = cellCount;
-        double sum = IntStream.range(0, bound).mapToDouble(i -> (addr[i] = Math.pow(sv[i].value, gammaIndex))).sum();
+        var sv = getShiftedVector();
+        var bound = cellCount;
+        var sum = IntStream.range(0, bound).mapToDouble(i -> (addr[i] = Math.pow(sv[i].value, gammaIndex))).sum();
 
         addressingVector.valueMultiplySelf(1.0/sum);
         
@@ -52,41 +51,41 @@ public class HeadSetting
 
         addressingVector = new UVector(memoryColumnsN);
 
-        double[] addr = addressingVector.value;
-        for (int i = 0;i < memoryColumnsN;i++) {
+        var addr = addressingVector.value;
+        for (var i = 0; i < memoryColumnsN; i++) {
             addr[i] = contentAddressing.content.value(i);
         }
     }
 
     public void backwardErrorPropagation() {
 
-        Unit[] sv = getShiftedVector();
-        int cells = sv.length;
+        var sv = getShiftedVector();
+        var cells = sv.length;
 
-        double[] lns = new double[cells];
-        double[] temps = new double[cells];
+        var lns = new double[cells];
+        var temps = new double[cells];
 
 
-        double gammaIndex = getGammaIndex();
+        var gammaIndex = getGammaIndex();
 
-        double[] addrValue = addressingVector.value;
-        double[] addrGrad = addressingVector.grad;
+        var addrValue = addressingVector.value;
+        var addrGrad = addressingVector.grad;
 
-        int bound1 = cells;
-        for (int i1 = 0; i1 < bound1; i1++) {
-            Unit weight = sv[i1];
-            double weightValue = weight.value;
+        var bound1 = cells;
+        for (var i1 = 0; i1 < bound1; i1++) {
+            var weight = sv[i1];
+            var weightValue = weight.value;
             if (weightValue < NTMMemory.EPSILON) {
                 continue;
             }
 
 
-            double gradient = 0.0;
+            var gradient = 0.0;
 
-            for (int j = 0; j < cells; j++) {
+            for (var j = 0; j < cells; j++) {
 
-                double dataWeightValue = addrValue[j];
-                double dataWeightGradient = addrGrad[j];
+                var dataWeightValue = addrValue[j];
+                var dataWeightGradient = addrGrad[j];
                 if (i1 == j) {
                     gradient += dataWeightGradient * (1.0 - dataWeightValue);
                 } else {
@@ -100,15 +99,15 @@ public class HeadSetting
             temps[i1] = Math.pow(weightValue, gammaIndex);
         }
 
-        double s = 0.0;
-        double lnexp = 0.0;
-        for (int i = 0;i < cells;i++) {
+        var s = 0.0;
+        var lnexp = 0.0;
+        for (var i = 0; i < cells; i++) {
             lnexp += lns[i] * temps[i];
             s += temps[i];
         }
-        double lnexps = lnexp / s;
-        int bound = cells;
-        double gradient2 = IntStream.range(0, bound).filter(i -> !(sv[i].value < NTMMemory.EPSILON)).mapToDouble(i -> addrGrad[i] * (addrValue[i] * (lns[i] - lnexps))).sum();
+        var lnexps = lnexp / s;
+        var bound = cells;
+        var gradient2 = IntStream.range(0, bound).filter(i -> !(sv[i].value < NTMMemory.EPSILON)).mapToDouble(i -> addrGrad[i] * (addrValue[i] * (lns[i] - lnexps))).sum();
 
 
         gradient2 /= (1.0 + Math.exp(-gamma.value));
@@ -116,10 +115,10 @@ public class HeadSetting
     }
 
     public static HeadSetting[] getVector(NTMMemory memory) {
-        int x = memory.headNum();
+        var x = memory.headNum();
 
-        int bound = x;
-        HeadSetting[] vector = IntStream.range(0, bound).mapToObj(i -> new HeadSetting(
+        var bound = x;
+        var vector = IntStream.range(0, bound).mapToObj(i -> new HeadSetting(
                 new Unit(0.0),
                 memory.memoryHeight,
                 memory.getContentAddressing()[i])).toArray(HeadSetting[]::new);

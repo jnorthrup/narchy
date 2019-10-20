@@ -63,7 +63,7 @@ public class MultiWrapper extends UGenChain implements DataBeadReceiver {
 
         ugens = new UGen[channels];
 
-        for (int i = 0; i < channels; i++) {
+        for (var i = 0; i < channels; i++) {
             ugens[i] = buildUGens(i);
         }
         setupUGens();
@@ -95,11 +95,11 @@ public class MultiWrapper extends UGenChain implements DataBeadReceiver {
 
     private void setupUGens() {
 
-        for (int i = 0; i < channels; i++) {
+        for (var i = 0; i < channels; i++) {
 
             
             
-            for (int j = 0; j < insPerChannel; j++) {
+            for (var j = 0; j < insPerChannel; j++) {
                 if (j < ugens[i].getIns()) {
                     this.drawFromChainInput(i * insPerChannel + j, ugens[i], j);
                 }
@@ -107,7 +107,7 @@ public class MultiWrapper extends UGenChain implements DataBeadReceiver {
 
             
             
-            for (int j = 0; j < outsPerChannel; j++) {
+            for (var j = 0; j < outsPerChannel; j++) {
                 if (j < ugens[i].getOuts()) {
                     this.addToChainOutput(i * outsPerChannel + j, ugens[i], j);
                 }
@@ -161,7 +161,7 @@ public class MultiWrapper extends UGenChain implements DataBeadReceiver {
      */
     @Override
     public DataBeadReceiver sendData(DataAuvent db) {
-        for (int i = 0; i < channels; i++) {
+        for (var i = 0; i < channels; i++) {
             if (ugens[i] instanceof DataBeadReceiver) {
                 ((DataBeadReceiver) ugens[i]).sendData(db);
             } else {
@@ -182,7 +182,7 @@ public class MultiWrapper extends UGenChain implements DataBeadReceiver {
      * @param db      The DataBead.
      */
     public DataBeadReceiver sendData(int channel, DataAuvent db) {
-        for (int i = 0; i < channels; i++) {
+        for (var i = 0; i < channels; i++) {
             if (ugens[i] instanceof DataBeadReceiver) {
                 ((DataBeadReceiver) ugens[i]).sendData(db);
             } else {
@@ -203,7 +203,7 @@ public class MultiWrapper extends UGenChain implements DataBeadReceiver {
         if (message instanceof DataAuvent) {
             sendData((DataAuvent) message);
         } else {
-            for (int i = 0; i < channels; i++) {
+            for (var i = 0; i < channels; i++) {
                 ugens[i].accept(message);
 
             }

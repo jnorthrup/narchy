@@ -58,7 +58,7 @@ public class BroadphasePair {
 	
 	public boolean equals(Object pp) {
 		if (this == pp) return true;
-		BroadphasePair p = (BroadphasePair) pp;
+		var p = (BroadphasePair) pp;
 		return (pProxy0 == p.pProxy0 && pProxy1 == p.pProxy1);
 	}
 	
@@ -66,16 +66,16 @@ public class BroadphasePair {
 		if (a == b)
 			return 0;
 
-        
-        Broadphasing a0 = a.pProxy0;
-        Broadphasing b0 = b.pProxy0;
-        Broadphasing a1 = a.pProxy1;
-        Broadphasing b1 = b.pProxy1;
-        int a0uid = a0.uid;
-        int b0uid = b0.uid;
-        int a1uid = a1.uid;
-        int b1uid = b1.uid;
-        boolean result = a0uid > b0uid ||
+
+		var a0 = a.pProxy0;
+		var b0 = b.pProxy0;
+		var a1 = a.pProxy1;
+		var b1 = b.pProxy1;
+		var a0uid = a0.uid;
+		var b0uid = b0.uid;
+		var a1uid = a1.uid;
+		var b1uid = b1.uid;
+		var result = a0uid > b0uid ||
                 (a0uid == b0uid && a1uid > b1uid) ||
                 (a0uid == b0uid && a1uid == b1uid /*&& a.algorithm > b.m_algorithm*/);
         return result? -1 : 1;

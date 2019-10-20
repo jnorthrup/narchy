@@ -16,9 +16,9 @@ public class CosineSimilarityFunction implements ISimilarityFunction
         double _uv = 0;
         double _normalizedU = 0, _normalizedV = 0;
 
-        for (int i = 0;i < u.length;i++) {
-            double uV = u[i].value;
-            double vV = v[i].value;
+        for (var i = 0; i < u.length; i++) {
+            var uV = u[i].value;
+            var vV = v[i].value;
             _uv += uV * vV;
             _normalizedU += Util.sqr(uV);
             _normalizedV += Util.sqr(vV);
@@ -26,7 +26,7 @@ public class CosineSimilarityFunction implements ISimilarityFunction
         _normalizedU = Math.sqrt(_normalizedU);
         _normalizedV = Math.sqrt(_normalizedV);
 
-        double value = _uv / (_normalizedU * _normalizedV);
+        var value = _uv / (_normalizedU * _normalizedV);
         if (!Double.isFinite(value))
             throw new NumberException("Cosine similarity is nan -> error", value);
 
@@ -34,18 +34,18 @@ public class CosineSimilarityFunction implements ISimilarityFunction
         this.vNorm = _normalizedV;
         this.uv = _uv;
 
-        Unit data = new Unit(value);
+        var data = new Unit(value);
         return data;
     }
 
     @Override
     public void differentiate(Unit similarity, Unit[] uVector, Unit[] vVector) {
-        double uvuu = uv / (uNorm * uNorm);
-        double uvvv = uv / (vNorm * vNorm);
-        double uvg = similarity.grad / (uNorm * vNorm);
-        for (int i = 0;i < uVector.length;i++) {
-            double u = uVector[i].value;
-            double v = vVector[i].value;
+        var uvuu = uv / (uNorm * uNorm);
+        var uvvv = uv / (vNorm * vNorm);
+        var uvg = similarity.grad / (uNorm * vNorm);
+        for (var i = 0; i < uVector.length; i++) {
+            var u = uVector[i].value;
+            var v = vVector[i].value;
             uVector[i].grad += (v - (u * uvuu)) * uvg;
             vVector[i].grad += (u - (v * uvvv)) * uvg;
         }

@@ -217,7 +217,7 @@ public abstract class Tuple4b implements java.io.Serializable, Cloneable {
     public boolean equals(Object t1)
     {
         try {
-           Tuple4b t2 = (Tuple4b) t1;
+			var t2 = (Tuple4b) t1;
            return(this.x == t2.x && this.y == t2.y && 
                   this.z == t2.z && this.w == t2.w);
         }

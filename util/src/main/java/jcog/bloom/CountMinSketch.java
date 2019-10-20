@@ -124,24 +124,18 @@ public class CountMinSketch {
     }
 
     public void add(byte... key) {
-        
-        
-        
-        
-        
 
-        
-        
-        long hash64 = Murmur3Hash.hash64(key);
-        int hash1 = (int) hash64;
-        int hash2 = (int) (hash64 >>> 32);
-        for (int i = 0; i < d; i++) {
-            int combinedHash = hash1 + ((i - 1) * hash2);
+
+        var hash64 = Murmur3Hash.hash64(key);
+        var hash1 = (int) hash64;
+        var hash2 = (int) (hash64 >>> 32);
+        for (var i = 0; i < d; i++) {
+            var combinedHash = hash1 + ((i - 1) * hash2);
             
             if (combinedHash < 0) {
                 combinedHash = ~combinedHash;
             }
-            int pos = combinedHash % w;
+            var pos = combinedHash % w;
             multiset[i][pos] += 1;
         }
     }
@@ -163,15 +157,15 @@ public class CountMinSketch {
     }
 
     public int countAndAdd(int val) {
-        byte[] b = Ints.toByteArray(val);
-        int c = count(b);
+        var b = Ints.toByteArray(val);
+        var c = count(b);
         add(b);
         return c;
     }
 
     public int countAndAdd(long val) {
-        byte[] b = Longs.toByteArray(val);
-        int c = count(b);
+        var b = Longs.toByteArray(val);
+        var c = count(b);
         add(b);
         return c;
     }
@@ -190,17 +184,17 @@ public class CountMinSketch {
 
 
     public int count(byte[] key) {
-        long hash64 = Murmur3Hash.hash64(key);
-        int hash1 = (int) hash64;
-        int hash2 = (int) (hash64 >>> 32);
-        int min = Integer.MAX_VALUE;
-        for (int i = 0; i < d; i++) {
-            int combinedHash = hash1 + ((i-1) * hash2);
+        var hash64 = Murmur3Hash.hash64(key);
+        var hash1 = (int) hash64;
+        var hash2 = (int) (hash64 >>> 32);
+        var min = Integer.MAX_VALUE;
+        for (var i = 0; i < d; i++) {
+            var combinedHash = hash1 + ((i-1) * hash2);
             
             if (combinedHash < 0) {
                 combinedHash = ~combinedHash;
             }
-            int pos = combinedHash % w;
+            var pos = combinedHash % w;
             min = Math.min(min, multiset[i][pos]);
         }
 
@@ -254,10 +248,10 @@ public class CountMinSketch {
                     "this.depth: " + this.depth() + " that.depth: " + that.depth());
         }
 
-        for (int i = 0; i < d; i++) {
-            int[] xi = this.multiset[i];
-            int[] yi = that.multiset[i];
-            for (int j = 0; j < w; j++) {
+        for (var i = 0; i < d; i++) {
+            var xi = this.multiset[i];
+            var yi = that.multiset[i];
+            for (var j = 0; j < w; j++) {
                 xi[j] += yi[j];
             }
         }
@@ -272,12 +266,12 @@ public class CountMinSketch {
      * @return serialized byte array
      */
     public static byte[] serialize(CountMinSketch cms) {
-        long serializedSize = cms.byteSize();
-        ByteBuffer bb = ByteBuffer.allocate((int) serializedSize);
+        var serializedSize = cms.byteSize();
+        var bb = ByteBuffer.allocate((int) serializedSize);
         bb.putInt(cms.w);
         bb.putInt(cms.depth());
-        for (int i = 0; i < cms.depth(); i++) {
-            for (int j = 0; j < cms.w; j++) {
+        for (var i = 0; i < cms.depth(); i++) {
+            for (var j = 0; j < cms.w; j++) {
                 bb.putInt(cms.multiset[i][j]);
             }
         }
@@ -292,14 +286,14 @@ public class CountMinSketch {
      * @return deserialized count min sketch object
      */
     public static CountMinSketch deserialize(byte[] serialized) {
-        ByteBuffer bb = ByteBuffer.allocate(serialized.length);
+        var bb = ByteBuffer.allocate(serialized.length);
         bb.put(serialized);
         bb.flip();
-        int width = bb.getInt();
-        int depth = bb.getInt();
-        int[][] multiset = new int[depth][width];
-        for (int i = 0; i < depth; i++) {
-            for (int j = 0; j < width; j++) {
+        var width = bb.getInt();
+        var depth = bb.getInt();
+        var multiset = new int[depth][width];
+        for (var i = 0; i < depth; i++) {
+            for (var j = 0; j < width; j++) {
                 multiset[i][j] = bb.getInt();
             }
         }

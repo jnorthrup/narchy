@@ -13,10 +13,10 @@ public class TuffySmokesTest {
     static NAR n;
 
     static void print() throws Narsese.NarseseException {
-        for (String name : new String[]{"Edward", "Anna", "Bob", "Frank", "Gary", "Helen"}) {
-            String t = "<" + name + " --> Cancer>";
-            
-            Concept c = n.conceptualize(t);
+        for (var name : new String[]{"Edward", "Anna", "Bob", "Frank", "Gary", "Helen"}) {
+            var t = "<" + name + " --> Cancer>";
+
+            var c = n.conceptualize(t);
 
             System.err.print(System.identityHashCode(c) + " ");
 

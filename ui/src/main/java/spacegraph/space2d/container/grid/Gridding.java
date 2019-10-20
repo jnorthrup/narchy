@@ -70,7 +70,7 @@ public class Gridding extends MutableListContainer {
     }
 
     public boolean isGrid() {
-        float a = aspect;
+        var a = aspect;
         return a!=0 && a!=Float.POSITIVE_INFINITY;
     }
 
@@ -97,32 +97,28 @@ public class Gridding extends MutableListContainer {
     @Override
     public void doLayout(float dtS) {
 
-        Surface[] children = this.children();
+        var children = this.children();
 
-        int n = children.length;
+        var n = children.length;
         if (n == 0) return;
 
-        float a = aspect;
+        var a = aspect;
 
 
 
 
         if (a!=0 && Float.isFinite(a)) {
 
-            
-            
 
-            
-
-            float h = h();
-            float w = w();
+            var h = h();
+            var w = w();
             if (w < Float.MIN_NORMAL || h < Float.MIN_NORMAL)
                 return;
 
-            float actualAspect = h / w;
+            var actualAspect = h / w;
 
             int x;
-            int s = (int) Math.ceil((float)Math.sqrt(n));
+            var s = (int) Math.ceil((float)Math.sqrt(n));
             if (actualAspect/a > 1f) {
                 x = Math.round(lerp((actualAspect)/n, s, 1f));
             } else if (actualAspect/a < 1f) {
@@ -133,7 +129,7 @@ public class Gridding extends MutableListContainer {
             }
 
             x = Math.max(1, x);
-            int y = (int)Math.max(1, Math.ceil((float)n / x));
+            var y = (int)Math.max(1, Math.ceil((float)n / x));
 
             assert(y*x >= s);
 
@@ -159,38 +155,38 @@ public class Gridding extends MutableListContainer {
     }
 
     protected void layoutGrid(Surface[] children, int nx, int ny, float margin) {
-        int i = 0;
+        var i = 0;
 
-        float hm = margin/2f;
+        var hm = margin/2f;
 
-        float mx = (1 + 1 + nx/2f) * hm;
-        float my = (1 + 1 + ny/2f) * hm;
+        var mx = (1 + 1 + nx/2f) * hm;
+        var my = (1 + 1 + ny/2f) * hm;
 
-        float dx = nx > 0 ? (1f-hm)/nx : 0;
-        float dxc = (1f - mx)/nx;
-        float dy = ny > 0 ? (1f-hm)/ny : 0;
-        float dyc = (1f - my)/ny;
+        var dx = nx > 0 ? (1f-hm)/nx : 0;
+        var dxc = (1f - mx)/nx;
+        var dy = ny > 0 ? (1f-hm)/ny : 0;
+        var dyc = (1f - my)/ny;
 
 
-        int n = children.length;
+        var n = children.length;
 
 
 
         float X = x(), Y = y(), W = w(), H = h();
 
-        for (int y = 0; y < ny; y++) {
+        for (var y = 0; y < ny; y++) {
 
-            float px = hm;
+            var px = hm;
 
-            float py = (((ny-1)-y) * dy) + hm;
-            float y1 = py * H;
+            var py = (((ny-1)-y) * dy) + hm;
+            var y1 = py * H;
 
-            for (int x = 0; x < nx; x++) {
-                
+            for (var x = 0; x < nx; x++) {
 
-                Surface c = children[layoutIndex(i++)];
 
-                float x1 = px * W;
+                var c = children[layoutIndex(i++)];
+
+                var x1 = px * W;
                 c.pos(RectFloat.X0Y0WH(X+x1, Y+y1, dxc*W, dyc*H));
 
                 px += dx;
@@ -221,7 +217,7 @@ public class Gridding extends MutableListContainer {
     }
     public static <S> Gridding grid(Collection<S> c, Function<S,Surface> builder) {
         List<Surface> ss  = new FasterList(c.size());
-        for (S x : c)
+        for (var x : c)
             ss.add(builder.apply(x));
         return new Gridding(ss);
     }
@@ -253,7 +249,7 @@ public class Gridding extends MutableListContainer {
     }
 
     public static Gridding grid(int num, IntFunction<Surface> build) {
-        Surface[] x = Util.map(0, num, Surface[]::new, build);
+        var x = Util.map(0, num, Surface[]::new, build);
         return new Gridding(x);
     }
 

@@ -34,8 +34,8 @@ public class BetaSimilarity extends Unit {
     }
 
     public void backwardErrorPropagation() {
-        Unit similarity = measure.similarity;
-        double betaGradient = grad;
+        var similarity = measure.similarity;
+        var betaGradient = grad;
         _beta.grad += similarity.value * B * betaGradient;
         similarity.grad += B * betaGradient;
     }

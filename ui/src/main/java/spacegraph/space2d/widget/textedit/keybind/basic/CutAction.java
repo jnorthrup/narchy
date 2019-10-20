@@ -17,16 +17,16 @@ public class CutAction implements Action {
 
   @Override
   public void execute(TextEditModel editor, String... args) {
-    Buffer currentBuffer = editor.buffer();
+    var currentBuffer = editor.buffer();
     setClipboardString(currentBuffer.copy());
     currentBuffer.cut();
   }
 
   private static void setClipboardString(String value) {
-    StringSelection selection = new StringSelection(value);
+    var selection = new StringSelection(value);
 
-    Toolkit toolKit = Toolkit.getDefaultToolkit();
-    Clipboard clipboard = toolKit.getSystemClipboard();
+    var toolKit = Toolkit.getDefaultToolkit();
+    var clipboard = toolKit.getSystemClipboard();
     clipboard.setContents(selection, selection);
   }
 }

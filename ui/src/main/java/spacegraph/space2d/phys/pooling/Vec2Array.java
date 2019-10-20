@@ -49,7 +49,7 @@ public class Vec2Array {
     }
 
     private static v2[] getInitializedArray(int argLength) {
-        v2[] ray = IntStream.range(0, argLength).mapToObj(i -> new v2()).toArray(v2[]::new);
+        var ray = IntStream.range(0, argLength).mapToObj(i -> new v2()).toArray(v2[]::new);
         return ray;
     }
 }

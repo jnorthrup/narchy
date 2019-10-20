@@ -50,7 +50,7 @@ public class EnumClassifier<X> extends AbstractClassifier<X> {
             bmp.remove(offset, offset+dim);
         }
 
-        int w = which.applyAsInt(x);
+        var w = which.applyAsInt(x);
         if (w >= 0) {
             assert (w < dim);
             bmp.add(offset + w);

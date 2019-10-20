@@ -6,9 +6,9 @@ public class Disassembler {
 
 
     public static int getCode(ArrayList<String> codebuffer, int pc) {
-        String code = "0x" + codebuffer.get(pc);
+        var code = "0x" + codebuffer.get(pc);
         code = code.toLowerCase();
-        int opbytes = 1;
+        var opbytes = 1;
         switch (code) {
             case "0x00":
                 System.out.println("NOP");

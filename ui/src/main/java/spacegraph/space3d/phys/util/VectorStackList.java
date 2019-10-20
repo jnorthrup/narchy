@@ -34,13 +34,13 @@ import jcog.math.v3;
 public class VectorStackList extends StackList<v3> {
 
 	public v3 get(float x, float y, float z) {
-		v3 v = get();
+		var v = get();
 		v.set(x, y, z);
 		return v;
 	}
 
 	public v3 get(v3 vec) {
-		v3 v = get();
+		var v = get();
 		v.set(vec);
 		return v;
 	}

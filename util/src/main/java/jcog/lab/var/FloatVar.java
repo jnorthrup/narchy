@@ -44,15 +44,15 @@ public class FloatVar<X> extends Var<X,Float> {
 
     @Override
     public List<String> unknown(Map<String,Object> hints) {
-        FasterList<String> unknown = new FasterList<>(3);
+        var unknown = new FasterList<String>(3);
         this.min = unknown(this.min, "min", hints, unknown);
         this.max = unknown(this.max, "max", hints, unknown);
 
 
         this.inc = unknown(this.inc, "inc", hints, unknown);
         if (this.inc!=this.inc && (max==max) && (min==min)) {
-            
-            float autoInc = ((Number)hints.getOrDefault("autoInc", Float.NaN)).floatValue();
+
+            var autoInc = ((Number)hints.getOrDefault("autoInc", Float.NaN)).floatValue();
             if (autoInc==autoInc) {
                 this.inc = (max-min)/autoInc;
                 unknown.removeLast();
@@ -65,7 +65,7 @@ public class FloatVar<X> extends Var<X,Float> {
         if (known == known)
             return known;
 
-        String key = id + '.' + val;
+        var key = id + '.' + val;
         float suggestedMin = (Float)hints.getOrDefault(key, Float.NaN);
         if (suggestedMin==suggestedMin)
             return suggestedMin;

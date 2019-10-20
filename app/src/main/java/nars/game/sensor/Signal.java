@@ -83,7 +83,7 @@ public abstract class Signal extends TaskConcept implements GameLoop, PermanentC
     }
 
     @Deprecated public static FloatToObjectFunction<Truth> truther(float freqRes, float conf, Game g) {
-        float c = g.ditherConf(conf);
+        var c = g.ditherConf(conf);
         return nextValue ->
             nextValue==nextValue ?
                 DiscreteTruth.the(g.ditherFreq(nextValue, freqRes),c) : null;
@@ -100,7 +100,7 @@ public abstract class Signal extends TaskConcept implements GameLoop, PermanentC
     /** pre-commit phase */
     public final boolean input(@Nullable Truth next, Term why, When<What> wLoop) {
         //Truth prevValue = currentValue;
-        Truth nextValue = (currentValue = next);
+        var nextValue = (currentValue = next);
 
         return this.inputting = ((SensorBeliefTables) beliefs()).input(nextValue, wLoop, why);
     }
@@ -114,9 +114,9 @@ public abstract class Signal extends TaskConcept implements GameLoop, PermanentC
 
     /** post-commit phase */
     public final void commit(float pri, When<What> w) {
-        SensorBeliefTables b = (SensorBeliefTables) beliefs();
+        var b = (SensorBeliefTables) beliefs();
 
-        float dur = w.dur;
+        var dur = w.dur;
 
         if (inputting)
             b.remember(w.x, pri, autoTaskLink(), dur);

@@ -52,7 +52,7 @@ public class SubGoalStore {
                 }
             } else {
 
-                SubTree s = commaStruct.get(index++);
+                var s = commaStruct.get(index++);
                 if (s instanceof SubGoalTree) {
                     pushSubGoal((SubGoalTree) s);
                 } else {

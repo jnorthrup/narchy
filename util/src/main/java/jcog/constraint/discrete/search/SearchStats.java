@@ -9,7 +9,7 @@ public class SearchStats {
 
     @Override
     public String toString() {
-        String bf = (completed ? "Complete search\n" : "Incomplete search\n") +
+        var bf = (completed ? "Complete search\n" : "Incomplete search\n") +
                 "#solutions  : " + nSolutions + '\n' +
                 "#nodes      : " + nNodes + '\n' +
                 "#fails      : " + nFails + '\n';

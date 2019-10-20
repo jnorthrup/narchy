@@ -66,23 +66,23 @@ public abstract class IDebugDraw {
 	public abstract int getDebugMode();
 
 	public void drawAabb(v3 from, v3 to, v3 color) {
-		v3 halfExtents = new v3(to);
+		var halfExtents = new v3(to);
 		halfExtents.sub(from);
 		halfExtents.scaled(0.5f);
 
-		v3 center = new v3(to);
+		var center = new v3(to);
 		center.add(from);
 		center.scaled(0.5f);
 
-        v3 edgecoord = new v3();
+		var edgecoord = new v3();
 		edgecoord.set(1f, 1f, 1f);
 		v3 pa = new v3(), pb = new v3();
-		for (int i = 0; i < 4; i++) {
-			for (int j = 0; j < 3; j++) {
+		for (var i = 0; i < 4; i++) {
+			for (var j = 0; j < 3; j++) {
 				pa.set(edgecoord.x * halfExtents.x, edgecoord.y * halfExtents.y, edgecoord.z * halfExtents.z);
 				pa.add(center);
 
-				int othercoord = j % 3;
+				var othercoord = j % 3;
 
 				VectorUtil.mulCoord(edgecoord, othercoord, -1f);
 				pb.set(edgecoord.x * halfExtents.x, edgecoord.y * halfExtents.y, edgecoord.z * halfExtents.z);

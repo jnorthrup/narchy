@@ -91,11 +91,11 @@ public final class Console extends Globals {
 	    }
 
 
-		String name = FS.Gamedir() + '/' + Cmd.Argv(1) + ".txt";
+		var name = FS.Gamedir() + '/' + Cmd.Argv(1) + ".txt";
 
 	    Com.Printf("Dumped console text to " + name + ".\n");
 	    FS.CreatePath(name);
-		RandomAccessFile f = Lib.fopen(name, "rw");
+		var f = Lib.fopen(name, "rw");
 	    if (f == null) {
 		Com.Printf("ERROR: couldn't open.\n");
 		return;
@@ -115,7 +115,7 @@ public final class Console extends Globals {
 	    }
 
 
-        byte[] buffer = new byte[1024];
+		var buffer = new byte[1024];
         buffer[con.linewidth] = 0;
 	    for (; l <= con.current; l++) {
 		line = (l % con.totallines) * con.linewidth;
@@ -172,7 +172,7 @@ public final class Console extends Globals {
      */
     public static void CheckResize() {
 
-	int width = (Globals.viddef.getWidth() >> 3) - 2;
+		var width = (Globals.viddef.getWidth() >> 3) - 2;
 	if (width > Defines.MAXCMDLINE)
 	    width = Defines.MAXCMDLINE;
 
@@ -186,28 +186,28 @@ public final class Console extends Globals {
 		    / Globals.con.linewidth;
 	    Arrays.fill(Globals.con.text, (byte) ' ');
 	} else {
-	    int oldwidth = Globals.con.linewidth;
+		var oldwidth = Globals.con.linewidth;
 	    Globals.con.linewidth = width;
-	    int oldtotallines = Globals.con.totallines;
+		var oldtotallines = Globals.con.totallines;
 	    Globals.con.totallines = Defines.CON_TEXTSIZE
 		    / Globals.con.linewidth;
-	    int numlines = oldtotallines;
+		var numlines = oldtotallines;
 
 	    if (Globals.con.totallines < numlines)
 		numlines = Globals.con.totallines;
 
-	    int numchars = oldwidth;
+		var numchars = oldwidth;
 
 	    if (Globals.con.linewidth < numchars)
 		numchars = Globals.con.linewidth;
 
-	    byte[] tbuf = new byte[Defines.CON_TEXTSIZE];
+		var tbuf = new byte[Defines.CON_TEXTSIZE];
 	    System
 		    .arraycopy(Globals.con.text, 0, tbuf, 0,
 			    Defines.CON_TEXTSIZE);
 	    Arrays.fill(Globals.con.text, (byte) ' ');
 
-	    for (int i = 0; i < numlines; i++) {
+	    for (var i = 0; i < numlines; i++) {
 			System.arraycopy(tbuf, ((Globals.con.current
 					- i + oldtotallines) % oldtotallines) * oldwidth + 0, Globals.con.text, (Globals.con.totallines - 1 - i) * Globals.con.linewidth + 0, numchars);
 	    }
@@ -220,19 +220,19 @@ public final class Console extends Globals {
     }
 
     public static void ClearNotify() {
-        for (int i = 0; i < Defines.NUM_CON_TIMES; i++)
+        for (var i = 0; i < Defines.NUM_CON_TIMES; i++)
 	    Globals.con.times[i] = 0;
     }
 
     static void DrawString(int x, int y, String s) {
-	for (int i = 0; i < s.length(); i++) {
+	for (var i = 0; i < s.length(); i++) {
 	    Globals.re.DrawChar(x, y, s.charAt(i));
 	    x += 8;
 	}
     }
 
     static void DrawAltString(int x, int y, String s) {
-	for (int i = 0; i < s.length(); i++) {
+	for (var i = 0; i < s.length(); i++) {
 	    Globals.re.DrawChar(x, y, s.charAt(i) ^ 0x80);
 	    x += 8;
 	}
@@ -288,9 +288,9 @@ public final class Console extends Globals {
 	if (Globals.con.display == Globals.con.current)
 	    Globals.con.display++;
 	Globals.con.current++;
-	int i = (Globals.con.current % Globals.con.totallines)
+		var i = (Globals.con.current % Globals.con.totallines)
 		* Globals.con.linewidth;
-	int e = i + Globals.con.linewidth;
+		var e = i + Globals.con.linewidth;
 	while (i++ < e)
 	    Globals.con.text[i] = (byte) ' ';
     }
@@ -309,7 +309,7 @@ public final class Console extends Globals {
         if (!con.initialized)
 	    return;
 
-        int txtpos = 0;
+		var txtpos = 0;
         int mask;
         if (txt.charAt(0) == 1 || txt.charAt(0) == 2) {
 	    mask = 128; 
@@ -369,13 +369,13 @@ public final class Console extends Globals {
      * ============== Con_CenteredPrint ==============
      */
     static void CenteredPrint(String text) {
-	int l = text.length();
+		var l = text.length();
 	l = (con.linewidth - l) / 2;
 	if (l < 0)
 	    l = 0;
 
-	StringBuilder sb = new StringBuilder(1024);
-	for (int i = 0; i < l; i++)
+		var sb = new StringBuilder(1024);
+	for (var i = 0; i < l; i++)
 	    sb.append(' ');
 	sb.append(text);
 	sb.append('\n');
@@ -406,7 +406,7 @@ public final class Console extends Globals {
 	if (cls.key_dest != key_console && cls.state == ca_active)
 	    return;
 
-		byte[] text = key_lines[edit_line];
+		var text = key_lines[edit_line];
 
 	
 	text[key_linepos] = (byte) (10 + (cls.realtime >> 8 & 1));
@@ -417,7 +417,7 @@ public final class Console extends Globals {
 	    text[i] = ' ';
 
 
-        int start = 0;
+		var start = 0;
         if (key_linepos >= con.linewidth)
 	    start += 1 + key_linepos - con.linewidth;
 
@@ -440,12 +440,12 @@ public final class Console extends Globals {
     static void DrawNotify() {
 	int x;
 
-        int v = 0;
-	for (int i = con.current - NUM_CON_TIMES + 1; i <= con.current; i++) {
+		var v = 0;
+	for (var i = con.current - NUM_CON_TIMES + 1; i <= con.current; i++) {
 	    if (i < 0)
 		continue;
 
-        int time = (int) con.times[i % NUM_CON_TIMES];
+		var time = (int) con.times[i % NUM_CON_TIMES];
         if (time == 0)
 		continue;
 
@@ -453,7 +453,7 @@ public final class Console extends Globals {
 	    if (time > con_notifytime.value * 1000)
 		continue;
 
-        int text = (i % con.totallines) * con.linewidth;
+		var text = (i % con.totallines) * con.linewidth;
 
         for (x = 0; x < con.linewidth; x++)
 		re.DrawChar((x + 1) << 3, v, con.text[text + x]);
@@ -471,7 +471,7 @@ public final class Console extends Globals {
 		skip = 5;
 	    }
 
-        String s = chat_buffer;
+		var s = chat_buffer;
         if (chat_bufferlen > (viddef.getWidth() >> 3) - (skip + 1))
 		s = s.substring(chat_bufferlen
 			- ((viddef.getWidth() >> 3) - (skip + 1)));
@@ -497,9 +497,9 @@ public final class Console extends Globals {
      */
     static void DrawConsole(float frac) {
 
-	int width = viddef.getWidth();
-	int height = viddef.getHeight();
-	int lines = (int) (height * frac);
+		var width = viddef.getWidth();
+		var height = viddef.getHeight();
+		var lines = (int) (height * frac);
 	if (lines <= 0)
 	    return;
 
@@ -511,8 +511,8 @@ public final class Console extends Globals {
 	SCR.AddDirtyPoint(0, 0);
 	SCR.AddDirtyPoint(width - 1, lines - 1);
 
-	String version = Com.sprintf("v%4.2f", new Vargs(1).add(VERSION));
-	for (int x = 0; x < 5; x++)
+		var version = Com.sprintf("v%4.2f", new Vargs(1).add(VERSION));
+	for (var x = 0; x < 5; x++)
 	    re
 		    .DrawChar(width - 44 + x * 8, lines - 12, 128 + version
 			    .charAt(x));
@@ -520,14 +520,14 @@ public final class Console extends Globals {
 	
 	con.vislines = lines;
 
-	int rows = (lines - 22) >> 3; 
+		var rows = (lines - 22) >> 3;
 
-	int y = lines - 30;
+		var y = lines - 30;
 
 	
 	if (con.display != con.current) {
 	    
-	    for (int x = 0; x < con.linewidth; x += 4)
+	    for (var x = 0; x < con.linewidth; x += 4)
 		re.DrawChar((x + 1) << 3, y, '^');
 
 	    y -= 8;
@@ -536,14 +536,14 @@ public final class Console extends Globals {
 
 	int i, x;
 
-        int row = con.display;
+		var row = con.display;
 	for (i = 0; i < rows; i++, y -= 8, row--) {
 	    if (row < 0)
 		break;
 	    if (con.current - row >= con.totallines)
-		break; 
+		break;
 
-	    int first = (row % con.totallines) * con.linewidth;
+		var first = (row % con.totallines) * con.linewidth;
 
 	    for (x = 0; x < con.linewidth; x++)
 		re.DrawChar((x + 1) << 3, y, con.text[x + first]);
@@ -562,10 +562,10 @@ public final class Console extends Globals {
 	    x = con.linewidth - ((con.linewidth * 7) / 40);
 	    y = x - (cls.downloadname.length() - text) - 8;
 	    i = con.linewidth / 3;
-	    StringBuilder dlbar = new StringBuilder(512);
+		var dlbar = new StringBuilder(512);
 	    if (cls.downloadname.length() - text > i) {
 		y = x - i - 11;
-		int end = text + i - 1;
+			var end = text + i - 1;
 			dlbar.append(cls.downloadname, text, end);
 		dlbar.append("...");
 	    } else {
@@ -581,7 +581,7 @@ public final class Console extends Globals {
 	    else
 		n = y * cls.downloadpercent / 100;
 
-	    for (int j = 0; j < y; j++) {
+	    for (var j = 0; j < y; j++) {
 		if (j == n)
 		    dlbar.append((char) 0x83);
 		else

@@ -63,12 +63,12 @@ public class CombFilter extends IIRFilter {
     @Override
     public void gen() {
 
-        float[] bi = bufIn[0];
-        float[] bo = bufOut[0];
+        var bi = bufIn[0];
+        var bo = bufOut[0];
 
         if (areAllStatic) {
-            for (int currsample = 0; currsample < bufferSize; currsample++) {
-                int ind2 = (ind + bufLen - delay) % bufLen;
+            for (var currsample = 0; currsample < bufferSize; currsample++) {
+                var ind2 = (ind + bufLen - delay) % bufLen;
                 bo[currsample] = yn[ind] = a * (xn[ind] = bi[currsample]) + g
                         * xn[ind2] - h * yn[ind2];
                 ind = (ind + 1) % bufLen;
@@ -79,7 +79,7 @@ public class CombFilter extends IIRFilter {
             hUGen.update();
             delayUGen.update();
 
-            for (int currsample = 0; currsample < bufferSize; currsample++) {
+            for (var currsample = 0; currsample < bufferSize; currsample++) {
                 a = aUGen.getValue(0, currsample);
                 g = gUGen.getValue(0, currsample);
                 h = hUGen.getValue(0, currsample);
@@ -90,7 +90,7 @@ public class CombFilter extends IIRFilter {
                     delay = maxDelay;
                 }
 
-                int ind2 = (ind + bufLen - delay) % bufLen;
+                var ind2 = (ind + bufLen - delay) % bufLen;
                 bo[currsample] = yn[ind] = a * (xn[ind] = bi[currsample]) + g
                         * xn[ind2] - h * yn[ind2];
                 ind = (ind + 1) % bufLen;
@@ -447,7 +447,7 @@ public class CombFilter extends IIRFilter {
      * @return The parameter DataBead.
      */
     public DataAuvent getParams() {
-        DataAuvent db = new DataAuvent();
+        var db = new DataAuvent();
         if (isAStatic) {
             db.put("a", a);
         } else {
@@ -482,7 +482,7 @@ public class CombFilter extends IIRFilter {
      * @return The static parameter DataBead.
      */
     public DataAuvent getStaticParams() {
-        DataAuvent db = new DataAuvent();
+        var db = new DataAuvent();
         db.put("a", a);
         db.put("g", g);
         db.put("h", h);

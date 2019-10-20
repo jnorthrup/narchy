@@ -379,7 +379,7 @@ public class MutableFloat extends NumberX implements FloatSupplier {
     }
 
     public float zero() {
-        float v = value;
+        var v = value;
         set(0f);
         return v;
     }

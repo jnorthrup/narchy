@@ -43,18 +43,18 @@ public class BomberConfigDialog extends JDialog
         /** create the temporary key objects */
         keys = new int[4][5];
         /** set the object's data from the currently configurations */
-        for (int i = 0; i < 4; i++)
+        for (var i = 0; i < 4; i++)
             System.arraycopy(BomberKeyConfig.keys[i], 0, keys[i], 0, 5);
 
         /** create the panel that holds the config. stuff */
-        JPanel centerPanel = new JPanel(new GridLayout(2, 2));
+        var centerPanel = new JPanel(new GridLayout(2, 2));
         /** panel for each player's config. stuff */
-        JPanel[] panels = new JPanel[4];
+        var panels = new JPanel[4];
         /** create the text fields array of array */
         keyFields = new JTextField[4][];
         /** create the buttons array */
         buttons = new JButton[4][5];
-        for (int i = 0; i < 4; i++) {
+        for (var i = 0; i < 4; i++) {
             /** create the key fields array */
             keyFields[i] = new JTextField[5];
             /** create the 4 panels */
@@ -62,7 +62,7 @@ public class BomberConfigDialog extends JDialog
         }
 
         /** create the panel to display the help message */
-        JPanel helpPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        var helpPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         /** setup the border */
         helpPanel.setBorder(BorderFactory.createEtchedBorder());
         /** add a label to it */
@@ -73,14 +73,14 @@ public class BomberConfigDialog extends JDialog
         /** add the key setup panels to the center */
         getContentPane().add(centerPanel, "Center");
         /** create the panel to hold the buttons */
-        JPanel buttonsP = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        var buttonsP = new JPanel(new FlowLayout(FlowLayout.CENTER));
         buttonsP.setBorder(BorderFactory.createEtchedBorder());
         /** create the save configuration button */
-        JButton saveButton = new JButton("Save Configurations");
+        var saveButton = new JButton("Save Configurations");
         saveButton.addActionListener(this);
         buttonsP.add(saveButton);
         /** create the close button */
-        JButton closeButton = new JButton("Close");
+        var closeButton = new JButton("Close");
         closeButton.addActionListener(this);
         buttonsP.add(closeButton);
         /** add the buttons panel to the south side of the dialog */
@@ -91,9 +91,9 @@ public class BomberConfigDialog extends JDialog
         /** minimize the size of the dialog */
         pack();
 
-        int x = owner.getLocation().x + (owner.getSize().width -
+        var x = owner.getLocation().x + (owner.getSize().width -
                 getSize().width) / 2;
-        int y = owner.getLocation().y + (owner.getSize().height -
+        var y = owner.getLocation().y + (owner.getSize().height -
                 getSize().height) / 2;
 
         /** center the dialog relative to the owner */
@@ -110,11 +110,11 @@ public class BomberConfigDialog extends JDialog
      */
     private void setupPanel(int pn, JPanel m, JTextField[] fields) {
         /** create the left and right panels, 5 rows each */
-        JPanel left = new JPanel(new GridLayout(5, 1));
-        JPanel right = new JPanel(new GridLayout(5, 1));
+        var left = new JPanel(new GridLayout(5, 1));
+        var right = new JPanel(new GridLayout(5, 1));
 
         /** create the buttons and text fields */
-        for (int i = 0; i < 5; i++) {
+        for (var i = 0; i < 5; i++) {
             /** create the button */
             buttons[pn][i] = new JButton();
             /** create the text field */
@@ -150,7 +150,7 @@ public class BomberConfigDialog extends JDialog
         }
 
         /** create the player's panel */
-        JPanel p = new JPanel(new GridLayout(1, 2));
+        var p = new JPanel(new GridLayout(1, 2));
         /** set the border */
         p.setBorder(BorderFactory.createTitledBorder(BorderFactory.
                 createEtchedBorder(), "Player " + (pn + 1) + " Keys Configuration"));
@@ -170,7 +170,7 @@ public class BomberConfigDialog extends JDialog
         /** if save configuration button is clicked */
         if ("Save Configurations".equals(evt.getActionCommand())) {
             /** copy new keys back to glocal variables */
-            for (int i = 0; i < 4; i++)
+            for (var i = 0; i < 4; i++)
                 System.arraycopy(keys[i], 0, BomberKeyConfig.keys[i], 0, 5);
             /** write the file */
             BomberKeyConfig.writeFile();
@@ -183,7 +183,7 @@ public class BomberConfigDialog extends JDialog
         else {
             /** find which key setup button is clicked */
             int i = 0, j = 0;
-            boolean found = false;
+            var found = false;
             for (i = 0; i < 4; ++i) {
                 for (j = 0; j < 5; ++j) {
                     /** if key found then exit the loop */
@@ -233,15 +233,15 @@ public class BomberConfigDialog extends JDialog
                     /** if it's waiting for a key */
                     if (waitingForKey) {
                         /** get index of key to set */
-                        int i = keysBeingSet[0];
-                        int j = keysBeingSet[1];
+                        var i = keysBeingSet[0];
+                        var j = keysBeingSet[1];
                         /** get the key pressed */
-                        int newKey = evt.getKeyCode();
+                        var newKey = evt.getKeyCode();
                         /** key used flag */
-                        boolean keyUsed = false;
+                        var keyUsed = false;
                         /** see if the key is used already or not */
-                        for (int p = 0; p < 4; ++p) {
-                            for (int k = 0; k < 5; ++k) {
+                        for (var p = 0; p < 4; ++p) {
+                            for (var k = 0; k < 5; ++k) {
                                 /** if key is used already */
                                 if (keys[p][k] == newKey) {
                                     /** if it isn't the key being set */
@@ -271,14 +271,14 @@ public class BomberConfigDialog extends JDialog
                         else {
                             /** then show an error dialog */
                             /** create the dialog content */
-                            JOptionPane pane = new JOptionPane(
+                            var pane = new JOptionPane(
                                     "Key: [" + KeyEvent.getKeyText(newKey) +
                                             "] is used already.  Pick a different key.");
                             /** setup the dialog controls */
                             pane.setOptionType(-JOptionPane.NO_OPTION);
                             pane.setMessageType(JOptionPane.ERROR_MESSAGE);
                             /** create the dialog */
-                            JDialog dialog = pane.createDialog(me, "Error");
+                            var dialog = pane.createDialog(me, "Error");
                             /** set it so user can't resize the dialog */
                             dialog.setResizable(false);
                             /** show the dialog */
@@ -293,9 +293,9 @@ public class BomberConfigDialog extends JDialog
             /** set dialog size */
             setSize(300, 0);
 
-            int x = owner.getLocation().x + (owner.getSize().width -
+            var x = owner.getLocation().x + (owner.getSize().width -
                     getSize().width) / 2;
-            int y = owner.getLocation().y + (owner.getSize().width -
+            var y = owner.getLocation().y + (owner.getSize().width -
                     getSize().height) / 2;
             /** center the dialog relative to the owner */
             setLocation(x, y);

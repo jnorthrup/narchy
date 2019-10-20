@@ -39,8 +39,8 @@ public class SymbolRootNode extends SymbolNode {
 	 *            the character sequence to addAt
 	 */
 	public void add(String s) {
-		char c = s.charAt(0);
-		SymbolNode n = ensureChildWithChar(c);
+		var c = s.charAt(0);
+		var n = ensureChildWithChar(c);
 		n.addDescendantLine(s.substring(1));
 		findDescendant(s).setValid(true);
 	}
@@ -72,7 +72,7 @@ public class SymbolRootNode extends SymbolNode {
 	 * this tree assumes that the first available character is a valid symbol.
 	 */
 	private void init() {
-		int len = rootsChildren.length;
+		var len = rootsChildren.length;
 		for (char i = 0; i < len; i++) {
 			rootsChildren[i] = new SymbolNode(this, i);
 			rootsChildren[i].setValid(true);
@@ -92,9 +92,9 @@ public class SymbolRootNode extends SymbolNode {
 	 */
 	public String nextSymbol(PushbackReader r, int first) throws IOException {
 
-		SymbolNode n1 = findChildWithChar((char) first);
-		SymbolNode n2 = n1.deepestRead(r);
-		SymbolNode n3 = n2.unreadToValid(r);
+		var n1 = findChildWithChar((char) first);
+		var n2 = n1.deepestRead(r);
+		var n3 = n2.unreadToValid(r);
 		return n3.ancestry();
 	}
 }

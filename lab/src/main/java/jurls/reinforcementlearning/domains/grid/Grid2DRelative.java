@@ -50,7 +50,7 @@ public class Grid2DRelative implements World {
             g2.clearRect(0, 0, width, height);
             
             int px = 0, py = 0;
-            for (int i = 0; i < sensor.length; i++) {
+            for (var i = 0; i < sensor.length; i++) {
                 g2.setPaint(Color.getHSBColor(0.5f, 0.5f, (float)sensor[i]));
                 g2.fillRect(px, py, 1, 1);
                 px++;
@@ -136,7 +136,7 @@ public class Grid2DRelative implements World {
 
         this.sensor = sensor;
 
-        double speed = 0.001;
+        var speed = 0.001;
         focusPositionX = speed * ((double)nextFocusPositionX) + (1.0 - speed) * focusPositionX;
         focusPositionY = speed * ((double)nextFocusPositionY) + (1.0 - speed) * focusPositionY;
 
@@ -184,22 +184,22 @@ public class Grid2DRelative implements World {
             positionY = height - 1;
         }
 
-        double dx = (positionX - focusPositionX);
-        double dy = (positionY - focusPositionY);
-        double dist = Math.sqrt(dx * dx + dy * dy);
+        var dx = (positionX - focusPositionX);
+        var dy = (positionY - focusPositionY);
+        var dist = Math.sqrt(dx * dx + dy * dy);
 
-        int ix = (int)Math.round(positionX);
-        int iy = (int)Math.round(positionY);
-        for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
-                final double exp = 1.0; 
+        var ix = (int)Math.round(positionX);
+        var iy = (int)Math.round(positionY);
+        for (var x = 0; x < width; x++) {
+            for (var y = 0; y < height; y++) {
+                final var exp = 1.0;
 
-                double fdx = x - focusPositionX;
-                double fdy = y - focusPositionY;
-                double fdist = Math.sqrt(fdx * fdx + fdy * fdy);
+                var fdx = x - focusPositionX;
+                var fdy = y - focusPositionY;
+                var fdist = Math.sqrt(fdx * fdx + fdy * fdy);
 
-                int i = x + y * width;
-                double v = Math.pow(1.0 / (1.0 + fdist/2.0), exp) + (Math.random() * noise);
+                var i = x + y * width;
+                var v = Math.pow(1.0 / (1.0 + fdist/2.0), exp) + (Math.random() * noise);
                 if (v < 0.0) {
                     v = 0;
                 }
@@ -221,9 +221,9 @@ public class Grid2DRelative implements World {
                 image.updateImage();
         }
 
-        double match = 1.0 / (1.0 + dist);
+        var match = 1.0 / (1.0 + dist);
         double energyCost = 0;
-        double reward = REWARD_MAGNITUDE * ((MATCH_REWARD_FACTOR * match) - (energyCost * ENERGY_COST_FACTOR)) - 0.5;
+        var reward = REWARD_MAGNITUDE * ((MATCH_REWARD_FACTOR * match) - (energyCost * ENERGY_COST_FACTOR)) - 0.5;
         return reward;
     }
 

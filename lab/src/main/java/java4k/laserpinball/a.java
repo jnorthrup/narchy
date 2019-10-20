@@ -43,7 +43,7 @@ public class a extends GamePanel {
 		int i;
 
 
-        final String S = "ubc1bubcffua829ua81aua81aub127ub127ub1ffu9554" + "u8e66u8e66u9168u9168ua153uaf57u9290u9290u9593u9e9bub1ae" + "u700fu760fu760fu7615u7615u7015u7015u700fu830fu890fu890f"
+        final var S = "ubc1bubcffua829ua81aua81aub127ub127ub1ffu9554" + "u8e66u8e66u9168u9168ua153uaf57u9290u9290u9593u9e9bub1ae" + "u700fu760fu760fu7615u7615u7015u7015u700fu830fu890fu890f"
 				+ "u8916u8916u8316u8316u830fu9711u9d11u9d11u9d1cu9d1cu971c" + "u971cu9711ub1e0u9aeeu9aeeu9affu25ffu25f1u25f1u19eau19ea" + "u19f5u19f5u0df5u0df5u0dabu1ca0u1c84u1c84u013eu013eu010c"
 				+ "u0f0cu0f3eu0f3eu2162u2162u2560u2560u1d4bu440au7401u7401" + "ua301u19d4u19dcu19dcu31e9u31e9u34e7u34e7u19d4ua4d4ua4dc" + "ua4dcu8ce9u8ce9u89e7u89e7ua4d4u29b2u37d6u37d6u32d8u32d8"
 				+ "u24ccu24ccu24b4u24b4u29b2u93b2u85d6u85d6u8ad8u8ad8u98cc" + "u98ccu98b4u98b4u93b2u2c4au3748u3748u302du3d28u5558u5558" + "u5858u5858u5f40u5f3fu7a44u6316u6319u19b3u19d4ua4b3ua4d4"
@@ -54,9 +54,9 @@ public class a extends GamePanel {
 				+ "u0082u1fceu0780u007au2516u1208u007au2516u0408u007au01a6" + "u0048u01f3u0056u0242u0048u028bu0056u0021u0056u0159u0034" + "u00a1u035fu025au026fu0256u035fu00a7u0221u00a7u0261u00a7"
 				+ "u02a1uc896uc8fauc8fau2a2au1030u1710u3939u3939u341b";
 
-		BufferedImage[] images = new BufferedImage[9];
+		var images = new BufferedImage[9];
 
-        Graphics2D[] imageGraphics = new Graphics2D[9];
+		var imageGraphics = new Graphics2D[9];
 
 
         for (i = 0; i < 9; i++) {
@@ -66,8 +66,8 @@ public class a extends GamePanel {
 
 
         Graphics2D g = null;
-        int[][][] boxSizes = new int[2][48][32];
-        float[][][][][] layers = new float[2][48][32][67][2];
+		var boxSizes = new int[2][48][32];
+		var layers = new float[2][48][32][67][2];
         float[] ball;
         float mag;
         float vy;
@@ -82,8 +82,8 @@ public class a extends GamePanel {
         int x;
         int k;
         int j;
-        final int IMAGE_LAYER_0 = 1;
-        for (int q = 0; q < 2; q++) {
+        final var IMAGE_LAYER_0 = 1;
+        for (var q = 0; q < 2; q++) {
 			g = imageGraphics[IMAGE_LAYER_0 + q];
 
 			for (j = 63; j >= 0; j--) {
@@ -124,12 +124,12 @@ public class a extends GamePanel {
 					y = (S.charAt(k) & 0xFF) << 2;
 					z = (S.charAt(k + 1) >> 8) << 2;
 
-					float startAngle = (S.charAt(k + 1) & 0xFF) * 0.02464f;
-					float endAngle = startAngle + S.charAt(k + 2) * 0.02464f;
+					var startAngle = (S.charAt(k + 1) & 0xFF) * 0.02464f;
+					var endAngle = startAngle + S.charAt(k + 2) * 0.02464f;
 
 					x1 = -1;
 					y1 = 0;
-					for (float angle = startAngle; angle <= endAngle; angle += 0.125f) {
+					for (var angle = startAngle; angle <= endAngle; angle += 0.125f) {
 						x2 = (int) (x + z * (float) Math.cos(angle));
 						y2 = (int) (y - z * (float) Math.sin(angle));
 						if (x1 >= 0) {
@@ -157,7 +157,7 @@ public class a extends GamePanel {
 		}
 
 
-        final int IMAGE_BALL = 3;
+        final var IMAGE_BALL = 3;
         g = imageGraphics[IMAGE_BALL];
 		for (j = 63; j >= 0; j--) {
 			g.setColor(j == 0 ? Color.WHITE : new Color(255, 0, 0, (63 - j) >> 3));
@@ -165,7 +165,7 @@ public class a extends GamePanel {
 		}
 
 
-        final int IMAGE_BUMPER = 6;
+        final var IMAGE_BUMPER = 6;
         g = imageGraphics[IMAGE_BUMPER];
 		for (j = 63; j >= 0; j--) {
 			g.setColor(j == 0 ? Color.WHITE : new Color(255, 255, 255, (63 - j) >> 3));
@@ -173,7 +173,7 @@ public class a extends GamePanel {
 		}
 
 
-        final int IMAGE_SLINGSHOT = 7;
+        final var IMAGE_SLINGSHOT = 7;
         g = imageGraphics[IMAGE_SLINGSHOT];
 		for (j = 63; j >= 0; j--) {
 			g.setColor(new Color(255, 255, 255, (63 - j) >> 3));
@@ -181,7 +181,7 @@ public class a extends GamePanel {
 		}
 
 
-        final int IMAGE_GATE = 5;
+        final var IMAGE_GATE = 5;
         g = imageGraphics[IMAGE_GATE];
 		for (j = 63; j >= 0; j--) {
 			g.setColor(j == 0 ? Color.WHITE : new Color(0, 128, 255, (63 - j) >> 3));
@@ -190,7 +190,7 @@ public class a extends GamePanel {
 		}
 
 
-        final int IMAGE_PLUNGER = 4;
+        final var IMAGE_PLUNGER = 4;
         g = imageGraphics[IMAGE_PLUNGER];
 		for (j = 63; j >= 0; j--) {
 			g.setColor(j == 0 ? Color.WHITE : new Color(255, 0, 255, (63 - j) >> 3));
@@ -199,7 +199,7 @@ public class a extends GamePanel {
 		}
 
 
-        final int IMAGE_FLIPPER = 8;
+        final var IMAGE_FLIPPER = 8;
         g = imageGraphics[IMAGE_FLIPPER];
 		for (j = 63; j >= 0; j--) {
 			g.setColor(j == 0 ? Color.WHITE : new Color((63 - j) << 2, 0, (63 - j) << 2));
@@ -220,62 +220,62 @@ public class a extends GamePanel {
 		g.drawImage(images[IMAGE_PLUNGER], 640, -60, null);
 		g.drawImage(images[IMAGE_PLUNGER], 45, 946, null);
 
-        final int IMAGE_BUFFER = 0;
+        final var IMAGE_BUFFER = 0;
         g = imageGraphics[IMAGE_BUFFER];
 		g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 		g.setFont(new Font(Font.DIALOG, Font.PLAIN, 40));
-		AffineTransform transform = new AffineTransform();
+		var transform = new AffineTransform();
 
-        final int VK_ENTER = 10;
+        final var VK_ENTER = 10;
         a[VK_ENTER] = true;
-		long nextFrameStartTime = System.nanoTime();
+		var nextFrameStartTime = System.nanoTime();
         Graphics2D g2 = null;
-        float[][] balls = new float[3][8];
+		var balls = new float[3][8];
         int[][] itemsTable = null;
-        boolean gameOver = true;
-        boolean hit = false;
-        boolean cameraOnTarget = false;
-        boolean railGateEnabled = false;
-        boolean lowerLeftGateEnabled = false;
+		var gameOver = true;
+		var hit = false;
+		var cameraOnTarget = false;
+		var railGateEnabled = false;
+		var lowerLeftGateEnabled = false;
         float rightFlipperAngle = 0;
         float leftFlipperAngle = 0;
-        int ballCount = 0;
-        int multiplier = 0;
-        int extraBalls = 0;
-        int lastScore = 0;
-        int score = 0;
-        int rightFlipperCounter = 0;
-        int leftFlipperCounter = 0;
-        int rightSlingshot = 0;
-        int leftSlingshot = 0;
-        int rightBumper = 0;
-        int leftBumper = 0;
-        int plungerX = 0;
-        int cameraY = 0;
-        final int IMAGE_LAYER_1 = 2;
-        final int BALL_STUCK = 6;
-        final int BALL_TIME = 5;
-        final int BALL_VY = 4;
-        final int BALL_VX = 3;
-        final int BALL_Y = 2;
-        final int BALL_X = 1;
-        final int BALL_LAYER = 0;
-        final int VK_RIGHT_1 = 108;
-        final int VK_RIGHT_0 = 39;
-        final int VK_LEFT_1 = 113;
-        final int VK_LEFT_0 = 97;
-        final int VK_SPACE = 32;
-		final int MAX_VELOCITY = 32;
+		var ballCount = 0;
+		var multiplier = 0;
+		var extraBalls = 0;
+		var lastScore = 0;
+		var score = 0;
+		var rightFlipperCounter = 0;
+		var leftFlipperCounter = 0;
+		var rightSlingshot = 0;
+		var leftSlingshot = 0;
+		var rightBumper = 0;
+		var leftBumper = 0;
+		var plungerX = 0;
+		var cameraY = 0;
+        final var IMAGE_LAYER_1 = 2;
+        final var BALL_STUCK = 6;
+        final var BALL_TIME = 5;
+        final var BALL_VY = 4;
+        final var BALL_VX = 3;
+        final var BALL_Y = 2;
+        final var BALL_X = 1;
+        final var BALL_LAYER = 0;
+        final var VK_RIGHT_1 = 108;
+        final var VK_RIGHT_0 = 39;
+        final var VK_LEFT_1 = 113;
+        final var VK_LEFT_0 = 97;
+        final var VK_SPACE = 32;
+		final var MAX_VELOCITY = 32;
 		final float MAX_VELOCITY2 = MAX_VELOCITY * MAX_VELOCITY;
-		final float BALL_RADIUS = 19.5f;
-		final float BALL_RADIUS2 = BALL_RADIUS * BALL_RADIUS;
-        final int EXTRA_BALL_BONUS = 15000;
-        final int ITEMS = 12;
-        final int FLIPPER_VELOCITY = 24;
-        final int FLIPPER_DELAY = 8;
-        final int BUMPER_VELOCITY = 16;
-        final float DAMPENING = 1.5f;
-        final float GRAVITY = 0.15f;
+		final var BALL_RADIUS = 19.5f;
+		final var BALL_RADIUS2 = BALL_RADIUS * BALL_RADIUS;
+        final var EXTRA_BALL_BONUS = 15000;
+        final var ITEMS = 12;
+        final var FLIPPER_VELOCITY = 24;
+        final var FLIPPER_DELAY = 8;
+        final var BUMPER_VELOCITY = 16;
+        final var DAMPENING = 1.5f;
+        final var GRAVITY = 0.15f;
         while (true) {
 
 			do {
@@ -309,8 +309,8 @@ public class a extends GamePanel {
 					}
 				}
 
-				
-				int plungerStrike = 0;
+
+				var plungerStrike = 0;
 				if (!gameOver && a[VK_SPACE]) {
 					if (plungerX < 64) {
 						plungerX++;
@@ -364,9 +364,9 @@ public class a extends GamePanel {
 					rightSlingshot--;
 				}
 
-				
-				int maxBallY = 0;
-				int cameraVy = 0;
+
+				var maxBallY = 0;
+				var cameraVy = 0;
 				for (i = ballCount - 1; i >= 0; i--) {
 					ball = balls[i];
 
@@ -424,7 +424,7 @@ public class a extends GamePanel {
 					do {
 
 
-                        float t = ball[BALL_TIME];
+						var t = ball[BALL_TIME];
                         vx = t * ball[BALL_VX];
 						vy = t * ball[BALL_VY];
 						mag = vx * vx + vy * vy;
@@ -688,8 +688,8 @@ public class a extends GamePanel {
 							}
 						}
 
-						boolean first = true;
-						boolean collision = false;
+						var first = true;
+						var collision = false;
 						do {
 							
 							x1 = ((int) ball[BALL_X] - 20) >> 5;
@@ -708,7 +708,7 @@ public class a extends GamePanel {
 							collision = false;
 							for (; y <= y2; y++) {
 								for (x = x1; x <= x2; x++) {
-                                    float[][] box = layers[(int) ball[BALL_LAYER]][y][x];
+									var box = layers[(int) ball[BALL_LAYER]][y][x];
                                     for (z = boxSizes[(int) ball[BALL_LAYER]][y][x] - 1; z >= 0; z--) {
 										vx = ball[BALL_X] - box[z][0];
 										vy = ball[BALL_Y] - box[z][1];
@@ -721,18 +721,18 @@ public class a extends GamePanel {
 								}
 							}
 
-							boolean flipperHit = false;
+							var flipperHit = false;
 
 							
-							for (float angle = leftFlipperAngle + (leftFlipperCounter > 0 && leftFlipperCounter <= FLIPPER_DELAY ? .3f : 0); angle >= leftFlipperAngle; angle -= .006f) {
-								float sin = (float) Math.sin(angle);
-								float cos = (float) Math.cos(angle);
-								float X1 = 126 * cos + 21 * sin;
+							for (var angle = leftFlipperAngle + (leftFlipperCounter > 0 && leftFlipperCounter <= FLIPPER_DELAY ? .3f : 0); angle >= leftFlipperAngle; angle -= .006f) {
+								var sin = (float) Math.sin(angle);
+								var cos = (float) Math.cos(angle);
+								var X1 = 126 * cos + 21 * sin;
                                 vx = ball[BALL_X] - X1 - 221;
-                                float Y1 = 126 * sin - 21 * cos;
+								var Y1 = 126 * sin - 21 * cos;
                                 vy = ball[BALL_Y] - Y1 - 949;
-								float px = -21 * cos + 21 * sin - X1;
-								float py = -21 * sin - 21 * cos - Y1;
+								var px = -21 * cos + 21 * sin - X1;
+								var py = -21 * sin - 21 * cos - Y1;
 								mag = (vx * px + vy * py) / (px * px + py * py);
 								if (mag >= 0 && mag <= 1) {
 									vx -= mag * px;
@@ -748,15 +748,15 @@ public class a extends GamePanel {
 							}
 
 							
-							for (float angle = rightFlipperAngle + (rightFlipperCounter > 0 && rightFlipperCounter <= FLIPPER_DELAY ? .3f : 0); angle >= rightFlipperAngle; angle -= .006f) {
-								float sin = (float) Math.sin(angle);
-								float cos = (float) Math.cos(angle);
-								float X1 = 126 * cos + 21 * sin;
+							for (var angle = rightFlipperAngle + (rightFlipperCounter > 0 && rightFlipperCounter <= FLIPPER_DELAY ? .3f : 0); angle >= rightFlipperAngle; angle -= .006f) {
+								var sin = (float) Math.sin(angle);
+								var cos = (float) Math.cos(angle);
+								var X1 = 126 * cos + 21 * sin;
                                 vx = ball[BALL_X] + X1 - 540;
-                                float Y1 = 126 * sin - 21 * cos;
+								var Y1 = 126 * sin - 21 * cos;
                                 vy = ball[BALL_Y] - Y1 - 949;
-								float px = 21 * cos - 21 * sin + X1;
-								float py = -21 * sin - 21 * cos - Y1;
+								var px = 21 * cos - 21 * sin + X1;
+								var py = -21 * sin - 21 * cos - Y1;
 								mag = (vx * px + vy * py) / (px * px + py * py);
 								if (mag >= 0 && mag <= 1) {
 									vx -= mag * px;
@@ -1007,9 +1007,9 @@ public class a extends GamePanel {
 
 	
 	public static void main(String[] args) throws Throwable {
-	  javax.swing.JFrame frame = new javax.swing.JFrame("Laser Pinball");
+		var frame = new javax.swing.JFrame("Laser Pinball");
 	  frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-	  a applet = new a();
+		var applet = new a();
 	  applet.setPreferredSize(new java.awt.Dimension(800, 600));
 	  frame.add(applet, java.awt.BorderLayout.CENTER);
 	  frame.setResizable(false);    

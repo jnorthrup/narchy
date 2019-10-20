@@ -88,13 +88,13 @@ public class ManifoldResult extends DiscreteCollisionDetectorInterface.Result {
 			return;
 		}
 
-		boolean isSwapped = manifoldPtr.getBody0() != body0;
+		var isSwapped = manifoldPtr.getBody0() != body0;
 
-		v3 pointA = new v3();
+		var pointA = new v3();
 		pointA.scaleAdd(depth, normalOnBInWorld, pointInWorld);
 
-		v3 localA = new v3();
-		v3 localB = new v3();
+		var localA = new v3();
+		var localB = new v3();
 
 		if (isSwapped) {
 			rootTransB.invXform(pointA, localA);
@@ -105,13 +105,13 @@ public class ManifoldResult extends DiscreteCollisionDetectorInterface.Result {
 			rootTransB.invXform(pointInWorld, localB);
 		}
 
-		ManifoldPoint newPt =new ManifoldPoint();
+		var newPt =new ManifoldPoint();
 		newPt.init(localA, localB, normalOnBInWorld, depth);
 
 		newPt.positionWorldOnA.set(pointA);
 		newPt.positionWorldOnB.set(pointInWorld);
 
-		int insertIndex = manifoldPtr.getCacheEntry(newPt, manifoldPtr.getContactBreakingThreshold());
+		var insertIndex = manifoldPtr.getCacheEntry(newPt, manifoldPtr.getContactBreakingThreshold());
 
 		newPt.combinedFriction = calculateCombinedFriction(body0, body1);
 		newPt.combinedRestitution = calculateCombinedRestitution(body0, body1);
@@ -136,9 +136,9 @@ public class ManifoldResult extends DiscreteCollisionDetectorInterface.Result {
 				
 				((body0.getCollisionFlags() & CollisionFlags.CUSTOM_MATERIAL_CALLBACK) != 0 ||
 				(body1.getCollisionFlags() & CollisionFlags.CUSTOM_MATERIAL_CALLBACK) != 0)) {
-			
-			Collidable obj0 = isSwapped ? body1 : body0;
-			Collidable obj1 = isSwapped ? body0 : body1;
+
+			var obj0 = isSwapped ? body1 : body0;
+			var obj1 = isSwapped ? body0 : body1;
 			manifoldPtr.globals.getContactAddedCallback().contactAdded(manifoldPtr.getContactPoint(insertIndex), obj0, partId0, index0, obj1, partId1, index1);
 		}
 
@@ -146,9 +146,9 @@ public class ManifoldResult extends DiscreteCollisionDetectorInterface.Result {
 
 	
 	private static float calculateCombinedFriction(Collidable body0, Collidable body1) {
-		float friction = body0.getFriction() * body1.getFriction();
+		var friction = body0.getFriction() * body1.getFriction();
 
-		float MAX_FRICTION = 10f;
+		var MAX_FRICTION = 10f;
 		if (friction < -MAX_FRICTION) {
 			friction = -MAX_FRICTION;
 		}
@@ -168,7 +168,7 @@ public class ManifoldResult extends DiscreteCollisionDetectorInterface.Result {
 			return;
 		}
 
-		boolean isSwapped = manifoldPtr.getBody0() != body0;
+		var isSwapped = manifoldPtr.getBody0() != body0;
 
 		if (isSwapped) {
 			manifoldPtr.refreshContactPoints(rootTransB, rootTransA);

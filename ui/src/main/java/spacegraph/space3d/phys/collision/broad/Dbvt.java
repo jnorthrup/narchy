@@ -71,7 +71,7 @@ public final class Dbvt {
 
 	public void optimizeBottomUp() {
 		if (root != null) {
-			FasterList<Node> leaves = new FasterList<>(this.leaves);
+			var leaves = new FasterList<Node>(this.leaves);
 			fetchleaves(this, root, leaves);
 			bottomup(this, leaves);
             
@@ -85,7 +85,7 @@ public final class Dbvt {
 
 	private void optimizeTopDown(int bu_treshold) {
 		if (root != null) {
-			FasterList<Node> leaves = new FasterList<>(this.leaves);
+			var leaves = new FasterList<Node>(this.leaves);
 			fetchleaves(this, root, leaves);
 			root = topdown(this, leaves, bu_treshold);
 		}
@@ -97,13 +97,13 @@ public final class Dbvt {
 		}
 		
 		if (root != null && (passes > 0)) {
-			Node[] root_ref = new Node[1];
+			var root_ref = new Node[1];
 			do {
-				Node node = root;
-				int bit = 0;
+				var node = root;
+				var bit = 0;
 				while (node.isinternal()) {
 					root_ref[0] = root;
-					Node nextNode = sort(node, root_ref).childs[(opath >>> bit) & 1];
+					var nextNode = sort(node, root_ref).childs[(opath >>> bit) & 1];
 					assert(nextNode!=node);
 					node = nextNode;
 					root = root_ref[0];
@@ -118,7 +118,7 @@ public final class Dbvt {
 	}
 
 	public Node insert(DbvtAabbMm box, DbvtProxy data) {
-		Node leaf = set(this, null, box, data);
+		var leaf = set(this, null, box, data);
 		insertleaf(this, root, leaf);
 		leaves++;
 		return leaf;
@@ -129,10 +129,10 @@ public final class Dbvt {
 	}
 
 	private void update(Node leaf, int lookahead) {
-		Node root = removeleaf(this, leaf);
+		var root = removeleaf(this, leaf);
 		if (root != null) {
 			if (lookahead >= 0) {
-				for (int i = 0; (i < lookahead) && root.parent != null; i++) {
+				for (var i = 0; (i < lookahead) && root.parent != null; i++) {
 					root = root.parent;
 				}
 			}
@@ -144,10 +144,10 @@ public final class Dbvt {
 	}
 
 	public void update(Node leaf, DbvtAabbMm volume) {
-		Node root = removeleaf(this, leaf);
+		var root = removeleaf(this, leaf);
 		if (root != null) {
 			if (lkhd >= 0) {
-				for (int i = 0; (i < lkhd) && root.parent != null; i++) {
+				for (var i = 0; (i < lkhd) && root.parent != null; i++) {
 					root = root.parent;
 				}
 			}
@@ -163,7 +163,7 @@ public final class Dbvt {
 		if (leaf.volume.Contain(volume)) {
 			return false;
 		}
-		v3 tmp = new v3();
+		var tmp = new v3();
 		tmp.set(margin, margin, margin);
 		volume.Expand(tmp);
 		volume.SignedExpand(velocity);
@@ -184,7 +184,7 @@ public final class Dbvt {
 		if (leaf.volume.Contain(volume)) {
 			return false;
 		}
-		v3 tmp = new v3();
+		var tmp = new v3();
 		tmp.set(margin, margin, margin);
 		volume.Expand(tmp);
 		update(leaf, volume);
@@ -256,17 +256,17 @@ public final class Dbvt {
 		if (root0 != null && root1 != null) {
 			stack.add(sStkNN(root0, root1));
 			do {
-				Node[] p = stack.removeLast();
-				Node pa = p[0];
-				Node[] pac = pa.childs;
-				Node pb = p[1];
+				var p = stack.removeLast();
+				var pa = p[0];
+				var pac = pa.childs;
+				var pb = p[1];
 				if (pa == pb) {
 					if (pa.isinternal()) {
 						stack.addAll(sStkNN(pac[0], pac[0]),sStkNN(pac[1], pac[1]),sStkNN(pac[0], pac[1]));
 					}
 				}
 				else if (DbvtAabbMm.intersect(pa.volume, pb.volume)) {
-					Node[] pbc = pb.childs;
+					var pbc = pb.childs;
 					if (pa.isinternal()) {
 						if (pb.isinternal()) {
 							stack.addAll(sStkNN(pac[0], pbc[0]),sStkNN(pac[1], pbc[0]),sStkNN(pac[0], pbc[1]),sStkNN(pac[1], pbc[1]));
@@ -292,10 +292,10 @@ public final class Dbvt {
 	private static void collideTT(Node root0, Node root1, Transform xform, ICollide policy) {
 		
 		if (root0 != null && root1 != null) {
-			OArrayList<sStkNN> stack = new OArrayList<>(DOUBLE_STACKSIZE);
+			var stack = new OArrayList<sStkNN>(DOUBLE_STACKSIZE);
 			stack.add(new sStkNN(root0, root1));
 			do {
-				sStkNN p = stack.remove(stack.size() - 1);
+				var p = stack.remove(stack.size() - 1);
 				if (p.a == p.b) {
 					if (p.a.isinternal()) {
 						stack.add(new sStkNN(p.a.childs[0], p.a.childs[0]));
@@ -332,7 +332,7 @@ public final class Dbvt {
 	}
 
 	public static void collideTT(Node root0, Transform xform0, Node root1, Transform xform1, ICollide policy) {
-		Transform xform = new Transform();
+		var xform = new Transform();
 		xform.invert(xform0);
 		xform.mul(xform1);
 		collideTT(root0, root1, xform, policy);
@@ -341,10 +341,10 @@ public final class Dbvt {
 	public static void collideTV(Node root, DbvtAabbMm volume, ICollide policy) {
 		
 		if (root != null) {
-			OArrayList<Node> stack = new OArrayList<>(SIMPLE_STACKSIZE);
+			var stack = new OArrayList<Node>(SIMPLE_STACKSIZE);
 			stack.add(root);
 			do {
-				Node n = stack.remove(stack.size() - 1);
+				var n = stack.remove(stack.size() - 1);
 				if (DbvtAabbMm.intersect(n.volume, volume)) {
 					if (n.isinternal()) {
 						stack.add(n.childs[0]);
@@ -362,15 +362,15 @@ public final class Dbvt {
 	public static void collideRAY(Node root, v3 origin, v3 direction, ICollide policy) {
 		
 		if (root != null) {
-			v3 normal = new v3();
+			var normal = new v3();
 			normal.normalize(direction);
-			v3 invdir = new v3();
+			var invdir = new v3();
 			invdir.set(1f / normal.x, 1f / normal.y, 1f / normal.z);
 			int[] signs = { direction.x<0 ? 1:0, direction.y<0 ? 1:0, direction.z<0 ? 1:0 };
-			OArrayList<Node> stack = new OArrayList<>(SIMPLE_STACKSIZE);
+			var stack = new OArrayList<Node>(SIMPLE_STACKSIZE);
 			stack.add(root);
 			do {
-				Node node = stack.remove(stack.size() - 1);
+				var node = stack.remove(stack.size() - 1);
 				if (DbvtAabbMm.intersect(node.volume, origin, invdir, signs)) {
 					if (node.isinternal()) {
 						stack.add(node.childs[0]);
@@ -389,21 +389,21 @@ public final class Dbvt {
 		
 		if (root != null) {
             assert (count < (/*sizeof(signs)*/128 / /*sizeof(signs[0])*/ 4));
-            int[] signs = new int[4 * 8];
-            for (int i = 0; i<count; ++i) {
+			var signs = new int[4 * 8];
+            for (var i = 0; i<count; ++i) {
 				signs[i] = ((normals[i].x >= 0) ? 1 : 0) +
 						((normals[i].y >= 0) ? 2 : 0) +
 						((normals[i].z >= 0) ? 4 : 0);
 			}
-            OArrayList<sStkNP> stack = new OArrayList<>(SIMPLE_STACKSIZE);
+			var stack = new OArrayList<sStkNP>(SIMPLE_STACKSIZE);
             stack.add(new sStkNP(root, 0));
-            int inside = (1 << count) - 1;
+			var inside = (1 << count) - 1;
             do {
-				sStkNP se = stack.remove(stack.size() - 1);
-				boolean out = false;
+				var se = stack.remove(stack.size() - 1);
+				var out = false;
 				for (int i = 0, j = 1; (!out) && (i < count); ++i, j <<= 1) {
 					if (0 == (se.mask & j)) {
-						int side = se.node.volume.Classify(normals[i], offsets[i], signs[i]);
+						var side = se.node.volume.Classify(normals[i], offsets[i], signs[i]);
 						switch (side) {
 							case -1:
 								out = true;
@@ -437,34 +437,34 @@ public final class Dbvt {
 	private static void collideOCL(Node root, v3[] normals, float[] offsets, v3 sortaxis, int count, ICollide policy, boolean fullsort) {
 		
 		if (root != null) {
-			int srtsgns = (sortaxis.x >= 0 ? 1 : 0) +
+			var srtsgns = (sortaxis.x >= 0 ? 1 : 0) +
 					(sortaxis.y >= 0 ? 2 : 0) +
 					(sortaxis.z >= 0 ? 4 : 0);
-            IntArrayList ifree = new IntArrayList();
-			IntArrayList stack = new IntArrayList();
+			var ifree = new IntArrayList();
+			var stack = new IntArrayList();
             assert (count < (/*sizeof(signs)*/128 / /*sizeof(signs[0])*/ 4));
-            int[] signs = new int[/*sizeof(unsigned)*8*/4 * 8];
-            for (int i = 0; i < count; i++) {
+			var signs = new int[/*sizeof(unsigned)*8*/4 * 8];
+            for (var i = 0; i < count; i++) {
 				signs[i] = ((normals[i].x >= 0) ? 1 : 0) +
 						((normals[i].y >= 0) ? 2 : 0) +
 						((normals[i].z >= 0) ? 4 : 0);
 			}
 
 
-            OArrayList<sStkNPS> stock = new OArrayList<>();
+			var stock = new OArrayList<sStkNPS>();
             stack.add(allocate(ifree, stock, new sStkNPS(root, 0, root.volume.ProjectMinimum(sortaxis, srtsgns))));
-            int inside = (1 << count) - 1;
+			var inside = (1 << count) - 1;
             do {
-				
-				int id = stack.remove(stack.size() - 1);
-                
-                sStkNPS se = stock.get(id);
+
+				var id = stack.remove(stack.size() - 1);
+
+				var se = stock.get(id);
 				ifree.add(id);
 				if (se.mask != inside) {
-					boolean out = false;
+					var out = false;
 					for (int i = 0, j = 1; (!out) && (i < count); ++i, j <<= 1) {
 						if (0 == (se.mask & j)) {
-							int side = se.node.volume.Classify(normals[i], offsets[i], signs[i]);
+							var side = se.node.volume.Classify(normals[i], offsets[i], signs[i]);
 							switch (side) {
 								case -1:
 									out = true;
@@ -485,8 +485,8 @@ public final class Dbvt {
 						sStkNPS[] nes = {new sStkNPS(pns[0], se.mask, pns[0].volume.ProjectMinimum(sortaxis, srtsgns)),
 							new sStkNPS(pns[1], se.mask, pns[1].volume.ProjectMinimum(sortaxis, srtsgns))
 						};
-						int q = nes[0].value < nes[1].value ? 1 : 0;
-						int j = stack.size();
+						var q = nes[0].value < nes[1].value ? 1 : 0;
+						var j = stack.size();
 						if (fullsort && (j > 0)) {
 							/* Insert 0	*/
 							j = nearest(stack, stock, nes[q].value, 0, stack.size());
@@ -494,7 +494,7 @@ public final class Dbvt {
 							
 							
 							
-							for (int k = stack.size() - 1; k > j; --k) {
+							for (var k = stack.size() - 1; k > j; --k) {
 								stack.set(k, stack.get(k - 1));
 							
 							}
@@ -505,7 +505,7 @@ public final class Dbvt {
 							
 							
 							
-							for (int k = stack.size() - 1; k > j; --k) {
+							for (var k = stack.size() - 1; k > j; --k) {
 								stack.set(k, stack.get(k - 1));
 							
 							}
@@ -528,10 +528,10 @@ public final class Dbvt {
 	public static void collideTU(Node root, ICollide policy) {
 		
 		if (root != null) {
-			OArrayList<Node> stack = new OArrayList<>(SIMPLE_STACKSIZE);
+			var stack = new OArrayList<Node>(SIMPLE_STACKSIZE);
 			stack.add(root);
 			do {
-				Node n = stack.remove(stack.size() - 1);
+				var n = stack.remove(stack.size() - 1);
 				if (ICollide.Descent(n)) {
 					if (n.isinternal()) {
 						stack.add(n.childs[0]);
@@ -547,7 +547,7 @@ public final class Dbvt {
 	}
 
 	private static int nearest(IntArrayList i, OArrayList<sStkNPS> a, float v, int l, int h) {
-		int m = 0;
+		var m = 0;
 		while (l < h) {
 			m = (l + h) >> 1;
             
@@ -563,7 +563,7 @@ public final class Dbvt {
 
 	private static int allocate(IntArrayList ifree, OArrayList<sStkNPS> stock, sStkNPS value) {
 		int i;
-		int size = ifree.size();
+		var size = ifree.size();
 		if (size > 0) {
 			
 			i = ifree.remove(size - 1);
@@ -590,7 +590,7 @@ public final class Dbvt {
 
 	
 	private static float size(DbvtAabbMm a) {
-		v3 edges = a.lengths(new v3());
+		var edges = a.lengths(new v3());
 
 		return (edges.x * edges.y * edges.z +
 		        edges.x + edges.y + edges.z);
@@ -647,8 +647,8 @@ public final class Dbvt {
 				}
 				while (!root.isLeaf());
 			}
-			Node prev = root.parent;
-			Node node = set(pdbvt, prev, merge(leaf.volume, root.volume, new DbvtAabbMm()), null);
+			var prev = root.parent;
+			var node = set(pdbvt, prev, merge(leaf.volume, root.volume, new DbvtAabbMm()), null);
 			if (prev != null) {
 				prev.childs[indexof(root)] = node;
 				node.childs[0] = root;
@@ -682,15 +682,15 @@ public final class Dbvt {
 			return null;
 		}
 		else {
-			Node parent = leaf.parent;
-			Node prev = parent.parent;
-			Node sibling = parent.childs[1 - indexof(leaf)];
+			var parent = leaf.parent;
+			var prev = parent.parent;
+			var sibling = parent.childs[1 - indexof(leaf)];
 			if (prev != null) {
 				prev.childs[indexof(parent)] = sibling;
 				sibling.parent = prev;
 				deletenode(pdbvt, parent);
 				while (prev != null) {
-					DbvtAabbMm pb = prev.volume;
+					var pb = prev.volume;
 					DbvtAabbMm.merge(prev.childs[0].volume, prev.childs[1].volume, prev.volume);
 					if (DbvtAabbMm.NotEqual(pb, prev.volume)) {
 						prev = prev.parent;
@@ -726,10 +726,10 @@ public final class Dbvt {
 	}
 
 	private static void split(FasterList<Node> leaves, FasterList<Node> left, FasterList<Node> right, v3 org, v3 axis) {
-		v3 tmp = new v3();
+		var tmp = new v3();
 		MiscUtil.resize(left, 0, Node.class);
 		MiscUtil.resize(right, 0, Node.class);
-		for (Node li : leaves) {
+		for (var li : leaves) {
 
 			li.volume.center(tmp);
 			tmp.sub(org);
@@ -738,8 +738,8 @@ public final class Dbvt {
 	}
 
 	private static DbvtAabbMm bounds(List<Node> leaves) {
-        
-        DbvtAabbMm volume = new DbvtAabbMm(leaves.get(0).volume);
+
+		var volume = new DbvtAabbMm(leaves.get(0).volume);
 		for (int i=1, ni=leaves.size(); i<ni; i++) {
             
             merge(volume, leaves.get(i).volume, volume);
@@ -748,17 +748,17 @@ public final class Dbvt {
 	}
 
 	private static void bottomup(Dbvt pdbvt, FasterList<Node> leaves) {
-		DbvtAabbMm tmpVolume = new DbvtAabbMm();
+		var tmpVolume = new DbvtAabbMm();
 		int num;
         while ((num  = leaves.size()) > 1) {
-			float minsize = BulletGlobals.SIMD_INFINITY;
+			var minsize = BulletGlobals.SIMD_INFINITY;
 			int[] minidx = { -1, -1 };
-			for (int i = 0; i< num; i++) {
-				Node li = leaves.get(i);
-				for (int j = i+1; j< num; j++) {
-                    
-                    
-					float sz = size(merge(li.volume, leaves.get(j).volume, tmpVolume));
+			for (var i = 0; i< num; i++) {
+				var li = leaves.get(i);
+				for (var j = i+1; j< num; j++) {
+
+
+					var sz = size(merge(li.volume, leaves.get(j).volume, tmpVolume));
 					if (sz < minsize) {
 						minsize = sz;
 						minidx[0] = i;
@@ -769,7 +769,7 @@ public final class Dbvt {
             
             
             Node[] n = {leaves.get(minidx[0]), leaves.get(minidx[1])};
-			Node p = set(pdbvt, null, merge(n[0].volume, n[1].volume, new DbvtAabbMm()), null);
+			var p = set(pdbvt, null, merge(n[0].volume, n[1].volume, new DbvtAabbMm()), null);
 			p.childs[0] = n[0];
 			p.childs[1] = n[1];
 			n[0].parent = p;
@@ -786,26 +786,26 @@ public final class Dbvt {
 	private static Node topdown(Dbvt pdbvt, FasterList<Node> leaves, int bu_treshold) {
 		if (leaves.size() > 1) {
 			if (leaves.size() > bu_treshold) {
-				DbvtAabbMm vol = bounds(leaves);
-				v3 org = vol.center(new v3());
-				FasterList[] sets = IntStream.range(0, 2).mapToObj(i -> new FasterList()).toArray(FasterList[]::new);
-                int bestmidp = leaves.size();
+				var vol = bounds(leaves);
+				var org = vol.center(new v3());
+				var sets = IntStream.range(0, 2).mapToObj(i -> new FasterList()).toArray(FasterList[]::new);
+				var bestmidp = leaves.size();
 				int[][] splitcount = {{0, 0}, {0, 0}, {0, 0}};
 
-				v3 x = new v3();
+				var x = new v3();
 
-				for (Node leave : leaves) {
+				for (var leave : leaves) {
 
 					leave.volume.center(x);
 					x.sub(org);
-					for (int j = 0; j < 3; j++) {
+					for (var j = 0; j < 3; j++) {
 						splitcount[j][x.dot(axis[j]) > 0f ? 1 : 0]++;
 					}
 				}
-                int bestaxis = -1;
-                for (int i = 0; i<3; i++) {
+				var bestaxis = -1;
+                for (var i = 0; i<3; i++) {
 					if ((splitcount[i][0] > 0) && (splitcount[i][1] > 0)) {
-						int midp = Math.abs(splitcount[i][0] - splitcount[i][1]);
+						var midp = Math.abs(splitcount[i][0] - splitcount[i][1]);
 						if (midp < bestmidp) {
 							bestaxis = i;
 							bestmidp = midp;
@@ -825,7 +825,7 @@ public final class Dbvt {
                         sets[i & 1].add(leaves.get(i));
 					}
 				}
-				Node node = set(pdbvt, null, vol, null);
+				var node = set(pdbvt, null, vol, null);
 				node.childs[0] = topdown(pdbvt, sets[0], bu_treshold);
 				node.childs[1] = topdown(pdbvt, sets[1], bu_treshold);
 				node.childs[0].parent = node;
@@ -843,14 +843,14 @@ public final class Dbvt {
     }
 
 	private static Node sort(Node n, Node[] r) {
-		Node p = n.parent;
+		var p = n.parent;
 		
 		
 		if (p != null && p.hashCode() > n.hashCode()) {
-			int i = indexof(n);
-			int j = 1 - i;
-			Node s = p.childs[j];
-			Node q = p.parent;
+			var i = indexof(n);
+			var j = 1 - i;
+			var s = p.childs[j];
+			var q = p.parent;
 			assert (n == p.childs[i]);
 			if (q != null) {
 				q.childs[indexof(p)] = n;
@@ -903,7 +903,7 @@ public final class Dbvt {
 			if (data!=null) {
 				l.add(data.data);
 			} else {
-				for (Node x : childs)
+				for (var x : childs)
 					x.leaves(l);
 			}
 		}

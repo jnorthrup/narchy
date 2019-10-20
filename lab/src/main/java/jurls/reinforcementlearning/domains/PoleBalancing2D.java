@@ -37,7 +37,7 @@ public class PoleBalancing2D implements RLEnvironment {
         physicsRenderer.physics2D = physics2D;
         agentPoint = new Point((minAgentX + maxAgentX) / 2.0, agentY, 0, 0, decay2, 0);
         pendulumPoint = new Point((minAgentX + maxAgentX)/2.0, agentY-poleLength, 0, 0, decay, decay);
-        Connection c = new Connection(poleLength, agentPoint, pendulumPoint);
+        var c = new Connection(poleLength, agentPoint, pendulumPoint);
         physics2D.points.add(agentPoint);
         physics2D.points.add(pendulumPoint);
         physics2D.connections.add(c);

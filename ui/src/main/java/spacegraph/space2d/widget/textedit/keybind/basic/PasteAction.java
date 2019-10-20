@@ -22,8 +22,8 @@ public class PasteAction implements Action {
   }
 
   private static String getClipboardString() {
-    Toolkit toolKit = Toolkit.getDefaultToolkit();
-    Clipboard clipboard = toolKit.getSystemClipboard();
+    var toolKit = Toolkit.getDefaultToolkit();
+    var clipboard = toolKit.getSystemClipboard();
     try {
       return clipboard.getData(DataFlavor.stringFlavor).toString();
     } catch (UnsupportedFlavorException | IOException e1) {

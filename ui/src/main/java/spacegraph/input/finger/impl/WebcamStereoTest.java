@@ -74,7 +74,7 @@ public class WebcamStereoTest {
 
         VideoSource[] ab = WebCam.theFirst(2);
 
-        OrthoSurfaceGraph g = window(new LazySurface(() -> new LabeledPane(new Gridding(new PushButton("stereo", ()-> stereo3d(ab[0], ab[1]))),
+        var g = window(new LazySurface(() -> new LabeledPane(new Gridding(new PushButton("stereo", ()-> stereo3d(ab[0], ab[1]))),
         new Gridding(
                 new VideoSurface(ab[0]),
                 new VideoSurface(ab[1])
@@ -84,53 +84,53 @@ public class WebcamStereoTest {
 
     static void stereo3d(VideoSource a, VideoSource b) {
 
-        BufferedImage buff01 = ((WebCam)a).webcam.getDevice().getImage();
-        BufferedImage buff02 = ((WebCam)b).webcam.getDevice().getImage();
+        var buff01 = ((WebCam)a).webcam.getDevice().getImage();
+        var buff02 = ((WebCam)b).webcam.getDevice().getImage();
         assert(buff01.getWidth() == buff02.getWidth());
         assert(buff01.getHeight() == buff02.getHeight());
 
-        Planar<GrayU8> color01 = ConvertBufferedImage.convertFrom(buff01,true, ImageType.pl(3,GrayU8.class));
-        Planar<GrayU8> color02 = ConvertBufferedImage.convertFrom(buff02,true, ImageType.pl(3,GrayU8.class));
+        var color01 = ConvertBufferedImage.convertFrom(buff01,true, ImageType.pl(3,GrayU8.class));
+        var color02 = ConvertBufferedImage.convertFrom(buff02,true, ImageType.pl(3,GrayU8.class));
 
-        GrayU8 image01 = ConvertImage.average(color01,null);
-        GrayU8 image02 = ConvertImage.average(color02,null);
+        var image01 = ConvertImage.average(color01,null);
+        var image02 = ConvertImage.average(color02,null);
 
         // Find a set of point feature matches
-        List<AssociatedPair> matches = ExampleFundamentalMatrix.computeMatches(buff01, buff02);
+        var matches = ExampleFundamentalMatrix.computeMatches(buff01, buff02);
 
         // Prune matches using the epipolar constraint. use a low threshold to prune more false matches
         List<AssociatedPair> inliers = new ArrayList<>();
-        DMatrixRMaj F = ExampleFundamentalMatrix.robustFundamental(matches, inliers, /*0.1*/ 0.05);
+        var F = ExampleFundamentalMatrix.robustFundamental(matches, inliers, /*0.1*/ 0.05);
 
         // Perform self calibration using the projective view extracted from F
         // Note that P1 = [I|0]
         System.out.println("Self calibration");
-        DMatrixRMaj P2 = MultiViewOps.fundamentalToProjective(F);
+        var P2 = MultiViewOps.fundamentalToProjective(F);
 
         // Take a crude guess at the intrinsic parameters. Bundle adjustment will fix this later.
         int width = buff01.getWidth(), height = buff01.getHeight();
         double fx = width/2;
-        double fy = fx;
+        var fy = fx;
         double cx = width/2;
         double cy = height/2;
 
         // Compute a transform from projective to metric by assuming we know the camera's calibration
-        EstimatePlaneAtInfinityGivenK estimateV = new EstimatePlaneAtInfinityGivenK();
+        var estimateV = new EstimatePlaneAtInfinityGivenK();
         estimateV.setCamera1(fx,fy,0,cx,cy);
         estimateV.setCamera2(fx,fy,0,cx,cy);
 
-        Vector3D_F64 v = new Vector3D_F64(); // plane at infinity
+        var v = new Vector3D_F64(); // plane at infinity
         if( !estimateV.estimatePlaneAtInfinity(P2,v))
             throw new RuntimeException("Failed!");
 
-        DMatrixRMaj K = PerspectiveOps.pinholeToMatrix(fx,fy,0,cx,cy);
-        DMatrixRMaj H = MultiViewOps.createProjectiveToMetric(K,v.x,v.y,v.z,1,null);
-        DMatrixRMaj P2m = new DMatrixRMaj(3,4);
+        var K = PerspectiveOps.pinholeToMatrix(fx,fy,0,cx,cy);
+        var H = MultiViewOps.createProjectiveToMetric(K,v.x,v.y,v.z,1,null);
+        var P2m = new DMatrixRMaj(3,4);
         CommonOps_DDRM.mult(P2,H,P2m);
 
         // Decompose and get the initial estimate for translation
-        DMatrixRMaj tmp = new DMatrixRMaj(3,3);
-        Se3_F64 view1_to_view2 = new Se3_F64();
+        var tmp = new DMatrixRMaj(3,3);
+        var view1_to_view2 = new Se3_F64();
         MultiViewOps.decomposeMetricCamera(P2m,tmp,view1_to_view2);
 
         //------------------------- Setting up bundle adjustment
@@ -138,12 +138,12 @@ public class WebcamStereoTest {
         System.out.println("Configuring bundle adjustment");
 
         // Construct bundle adjustment data structure
-        SceneStructureMetric structure = new SceneStructureMetric(false);
-        SceneObservations observations = new SceneObservations(2);
+        var structure = new SceneStructureMetric(false);
+        var observations = new SceneObservations(2);
 
         // We will assume that the camera has fixed intrinsic parameters
         structure.initialize(1,2,inliers.size());
-        BundlePinholeSimplified bp = new BundlePinholeSimplified();
+        var bp = new BundlePinholeSimplified();
         bp.f = fx;
         structure.setCamera(0,false,bp);
 
@@ -154,8 +154,8 @@ public class WebcamStereoTest {
         structure.setView(1,false,view1_to_view2);
         structure.connectViewToCamera(1,0);
 
-        for (int i = 0; i < inliers.size(); i++) {
-            AssociatedPair t = inliers.get(i);
+        for (var i = 0; i < inliers.size(); i++) {
+            var t = inliers.get(i);
 
             // substract out the camera center from points. This allows a simple camera model to be used and
             // errors in the this coordinate tend to be non-fatal
@@ -172,21 +172,21 @@ public class WebcamStereoTest {
 
         //------------------ Running Bundle Adjustment
         System.out.println("Performing bundle adjustment");
-        ConfigLevenbergMarquardt configLM = new ConfigLevenbergMarquardt();
+        var configLM = new ConfigLevenbergMarquardt();
         configLM.dampeningInitial = 1e-3;
         configLM.hessianScaling = false;
-        ConfigBundleAdjustment configSBA = new ConfigBundleAdjustment();
+        var configSBA = new ConfigBundleAdjustment();
         configSBA.configOptimizer = configLM;
 
         // Create and configure the bundle adjustment solver
-        BundleAdjustment<SceneStructureMetric> bundleAdjustment = FactoryMultiView.bundleSparseMetric(configSBA);
+        var bundleAdjustment = FactoryMultiView.bundleSparseMetric(configSBA);
         // prints out useful debugging information that lets you know how well it's converging
         bundleAdjustment.setVerbose(System.out,0);
         // Specifies convergence criteria
         bundleAdjustment.configure(1e-6, 1e-6, 100);
 
         // Scaling improve accuracy of numerical calculations
-        ScaleSceneStructure bundleScale = new ScaleSceneStructure();
+        var bundleScale = new ScaleSceneStructure();
         bundleScale.applyScale(structure,observations);
 
         bundleAdjustment.setParameters(structure,observations);
@@ -194,7 +194,7 @@ public class WebcamStereoTest {
 
         // Sometimes pruning outliers help improve the solution. In the stereo case the errors are likely
         // to already fatal
-        PruneStructureFromSceneMetric pruner = new PruneStructureFromSceneMetric(structure,observations);
+        var pruner = new PruneStructureFromSceneMetric(structure,observations);
         pruner.pruneObservationsByErrorRank(0.85);
         pruner.prunePoints(1);
         bundleAdjustment.setParameters(structure,observations);
@@ -203,22 +203,22 @@ public class WebcamStereoTest {
         bundleScale.undoScale(structure,observations);
 
         System.out.println("\nCamera");
-        for (int i = 0; i < structure.cameras.size(); i++) {
+        for (var i = 0; i < structure.cameras.size(); i++) {
             System.out.println(structure.cameras.get(i).getModel());
         }
         System.out.println("\n\nworldToView");
-        for (int i = 0; i < structure.views.size(); i++) {
+        for (var i = 0; i < structure.views.size(); i++) {
             System.out.println(structure.views.get(i).worldToView);
         }
 
         // display the inlier matches found using the robust estimator
         System.out.println("\n\nComputing Stereo Disparity");
         BundlePinholeSimplified cp = structure.getCameras().get(0).getModel();
-        CameraPinholeBrown intrinsic = new CameraPinholeBrown();
+        var intrinsic = new CameraPinholeBrown();
         intrinsic.fsetK(cp.f,cp.f,0,cx,cy,width,height);
         intrinsic.fsetRadial(cp.k1,cp.k2);
 
-        Se3_F64 leftToRight = structure.views.get(1).worldToView;
+        var leftToRight = structure.views.get(1).worldToView;
 
         computeStereoCloud(image01,image02,color01,color02,intrinsic,intrinsic,leftToRight,0,250);
     }
@@ -231,17 +231,17 @@ public class WebcamStereoTest {
                                            int minDisparity , int maxDisparity) {
 
 //		drawInliers(origLeft, origRight, intrinsic, inliers);
-        int width = distortedLeft.width;
-        int height = distortedRight.height;
+        var width = distortedLeft.width;
+        var height = distortedRight.height;
 
         // Rectify and remove lens distortion for stereo processing
-        DMatrixRMaj rectifiedK = new DMatrixRMaj(3, 3);
-        DMatrixRMaj rectifiedR = new DMatrixRMaj(3, 3);
+        var rectifiedK = new DMatrixRMaj(3, 3);
+        var rectifiedR = new DMatrixRMaj(3, 3);
 
         // rectify a colored image
-        Planar<GrayU8> rectColorLeft = colorLeft.createSameShape();
-        Planar<GrayU8> rectColorRight = colorLeft.createSameShape();
-        GrayU8 rectMask = new GrayU8(colorLeft.width,colorLeft.height);
+        var rectColorLeft = colorLeft.createSameShape();
+        var rectColorRight = colorLeft.createSameShape();
+        var rectMask = new GrayU8(colorLeft.width,colorLeft.height);
 
         rectifyImages(colorLeft, colorRight, leftToRight, intrinsicLeft,intrinsicRight,
                 rectColorLeft, rectColorRight,rectMask, rectifiedK,rectifiedR);
@@ -255,32 +255,32 @@ public class WebcamStereoTest {
         System.out.println("Rectified R");
         rectifiedR.print();
 
-        GrayU8 rectifiedLeft = distortedLeft.createSameShape();
-        GrayU8 rectifiedRight = distortedRight.createSameShape();
+        var rectifiedLeft = distortedLeft.createSameShape();
+        var rectifiedRight = distortedRight.createSameShape();
         ConvertImage.average(rectColorLeft,rectifiedLeft);
         ConvertImage.average(rectColorRight,rectifiedRight);
 
         // compute disparity
-        StereoDisparity<GrayS16, GrayF32> disparityAlg =
+        var disparityAlg =
                 FactoryStereoDisparity.regionSubpixelWta(DisparityAlgorithms.RECT_FIVE,
                         minDisparity, maxDisparity, 6, 6, 30, 3, 0.05, GrayS16.class);
 
         // Apply the Laplacian across the image to add extra resistance to changes in lighting or camera gain
-        GrayS16 derivLeft = new GrayS16(width,height);
-        GrayS16 derivRight = new GrayS16(width,height);
+        var derivLeft = new GrayS16(width,height);
+        var derivRight = new GrayS16(width,height);
         GImageDerivativeOps.laplace(rectifiedLeft, derivLeft, BorderType.EXTENDED);
         GImageDerivativeOps.laplace(rectifiedRight,derivRight, BorderType.EXTENDED);
 
         // process and return the results
         disparityAlg.process(derivLeft, derivRight);
-        GrayF32 disparity = disparityAlg.getDisparity();
+        var disparity = disparityAlg.getDisparity();
         RectifyImageOps.applyMask(disparity,rectMask,0);
 
         // show results
-        BufferedImage visualized = VisualizeImageData.disparity(disparity, null, minDisparity, maxDisparity, 0);
+        var visualized = VisualizeImageData.disparity(disparity, null, minDisparity, maxDisparity, 0);
 
-        BufferedImage outLeft = ConvertBufferedImage.convertTo(rectColorLeft, new BufferedImage(width,height, BufferedImage.TYPE_INT_RGB),true);
-        BufferedImage outRight = ConvertBufferedImage.convertTo(rectColorRight, new BufferedImage(width,height, BufferedImage.TYPE_INT_RGB),true);
+        var outLeft = ConvertBufferedImage.convertTo(rectColorLeft, new BufferedImage(width,height, BufferedImage.TYPE_INT_RGB),true);
+        var outRight = ConvertBufferedImage.convertTo(rectColorRight, new BufferedImage(width,height, BufferedImage.TYPE_INT_RGB),true);
 
         ShowImages.showWindow(new RectifiedPairPanel(true, outLeft, outRight), "Rectification",true);
         ShowImages.showWindow(visualized, "Disparity",true);
@@ -294,17 +294,17 @@ public class WebcamStereoTest {
                                       Se3_F64 motion, DMatrixRMaj rectifiedK , DMatrixRMaj rectifiedR,
                                       int minDisparity, int maxDisparity)
     {
-        DisparityToColorPointCloud d2c = new DisparityToColorPointCloud();
-        double baseline = motion.getT().norm();
+        var d2c = new DisparityToColorPointCloud();
+        var baseline = motion.getT().norm();
         d2c.configure(baseline, rectifiedK, rectifiedR, new DoNothing2Transform2_F64(), minDisparity, maxDisparity);
         d2c.process(disparity,left);
 
-        CameraPinhole rectifiedPinhole = PerspectiveOps.matrixToPinhole(rectifiedK,disparity.width,disparity.height,null);
+        var rectifiedPinhole = PerspectiveOps.matrixToPinhole(rectifiedK,disparity.width,disparity.height,null);
 
         // skew the view to make the structure easier to see
-        Se3_F64 cameraToWorld = SpecialEuclideanOps_F64.eulerXyz(-baseline*5,0,0,0,0.2,0,null);
+        var cameraToWorld = SpecialEuclideanOps_F64.eulerXyz(-baseline*5,0,0,0,0.2,0,null);
 
-        PointCloudViewer pcv = VisualizeData.createPointCloudViewer();
+        var pcv = VisualizeData.createPointCloudViewer();
         pcv.setCameraHFov(PerspectiveOps.computeHFov(rectifiedPinhole));
         pcv.setCameraToWorld(cameraToWorld);
         pcv.setTranslationStep(baseline/3);
@@ -337,17 +337,17 @@ public class WebcamStereoTest {
                        GrayU8 rectifiedMask,
                        DMatrixRMaj rectifiedK,
                        DMatrixRMaj rectifiedR) {
-        RectifyCalibrated rectifyAlg = RectifyImageOps.createCalibrated();
+        var rectifyAlg = RectifyImageOps.createCalibrated();
 
         // original camera calibration matrices
-        DMatrixRMaj K1 = PerspectiveOps.pinholeToMatrix(intrinsicLeft, (DMatrixRMaj)null);
-        DMatrixRMaj K2 = PerspectiveOps.pinholeToMatrix(intrinsicRight, (DMatrixRMaj)null);
+        var K1 = PerspectiveOps.pinholeToMatrix(intrinsicLeft, (DMatrixRMaj)null);
+        var K2 = PerspectiveOps.pinholeToMatrix(intrinsicRight, (DMatrixRMaj)null);
 
         rectifyAlg.process(K1, new Se3_F64(), K2, leftToRight);
 
         // rectification matrix for each image
-        DMatrixRMaj rect1 = rectifyAlg.getRect1();
-        DMatrixRMaj rect2 = rectifyAlg.getRect2();
+        var rect1 = rectifyAlg.getRect1();
+        var rect2 = rectifyAlg.getRect2();
         rectifiedR.set(rectifyAlg.getRectifiedRotation());
 
         // New calibration matrix,
@@ -357,16 +357,16 @@ public class WebcamStereoTest {
         RectifyImageOps.fullViewLeft(intrinsicLeft, rect1, rect2, rectifiedK);
 
         // undistorted and rectify images
-        FMatrixRMaj rect1_F32 = new FMatrixRMaj(3,3);
-        FMatrixRMaj rect2_F32 = new FMatrixRMaj(3,3);
+        var rect1_F32 = new FMatrixRMaj(3,3);
+        var rect2_F32 = new FMatrixRMaj(3,3);
         ConvertMatrixData.convert(rect1, rect1_F32);
         ConvertMatrixData.convert(rect2, rect2_F32);
 
         // Extending the image prevents a harsh edge reducing false matches at the image border
         // SKIP is another option, possibly a tinny bit faster, but has a harsh edge which will need to be filtered
-        ImageDistort<T,T> distortLeft =
+        var distortLeft =
                 RectifyImageOps.rectifyImage(intrinsicLeft, rect1_F32, BorderType.EXTENDED, distortedLeft.getImageType());
-        ImageDistort<T,T> distortRight =
+        var distortRight =
                 RectifyImageOps.rectifyImage(intrinsicRight, rect2_F32, BorderType.EXTENDED, distortedRight.getImageType());
 
         distortLeft.apply(distortedLeft, rectifiedLeft,rectifiedMask);
@@ -421,10 +421,10 @@ public class WebcamStereoTest {
         public static DMatrixRMaj robustFundamental( List<AssociatedPair> matches ,
                                                      List<AssociatedPair> inliers , double inlierThreshold ) {
 
-            ConfigRansac configRansac = new ConfigRansac();
+            var configRansac = new ConfigRansac();
             configRansac.inlierThreshold = inlierThreshold;
             configRansac.maxIterations = 1000;
-            ConfigFundamental configFundamental = new ConfigFundamental();
+            var configFundamental = new ConfigFundamental();
             configFundamental.which = EnumFundamental.LINEAR_7;
             configFundamental.numResolve = 2;
             configFundamental.errorModel = ConfigFundamental.ErrorModel.GEOMETRIC;
@@ -432,7 +432,7 @@ public class WebcamStereoTest {
             // results change if you switch to sampson and how much faster it is. You also should adjust
             // the inlier threshold.
 
-            ModelMatcher<DMatrixRMaj, AssociatedPair> ransac =
+            var ransac =
                     FactoryMultiViewRobust.fundamentalRansac(configFundamental,configRansac);
 
             // Estimate the fundamental matrix while removing outliers
@@ -443,7 +443,7 @@ public class WebcamStereoTest {
             inliers.addAll(ransac.getMatchSet());
 
             // Improve the estimate of the fundamental matrix using non-linear optimization
-            DMatrixRMaj F = new DMatrixRMaj(3,3);
+            var F = new DMatrixRMaj(3,3);
             ModelFitter<DMatrixRMaj,AssociatedPair> refine =
                     FactoryMultiView.fundamentalRefine(1e-8, 400, EpipolarError.SAMPSON);
             if( !refine.fitModel(inliers, ransac.getModelParameters(), F) )
@@ -460,9 +460,9 @@ public class WebcamStereoTest {
          */
         public static DMatrixRMaj simpleFundamental( List<AssociatedPair> matches ) {
             // Use the 8-point algorithm since it will work with an arbitrary number of points
-            Estimate1ofEpipolar estimateF = FactoryMultiView.fundamental_1(EnumFundamental.LINEAR_8, 0);
+            var estimateF = FactoryMultiView.fundamental_1(EnumFundamental.LINEAR_8, 0);
 
-            DMatrixRMaj F = new DMatrixRMaj(3,3);
+            var F = new DMatrixRMaj(3,3);
             if( !estimateF.process(matches,F) )
                 throw new IllegalArgumentException("Failed");
 
@@ -480,18 +480,18 @@ public class WebcamStereoTest {
                     new ConfigFastHessian(0, 2, 400, 1, 9, 4, 4), null,null, GrayF32.class);
 //		DetectDescribePoint detDesc = FactoryDetectDescribe.sift(null,new ConfigSiftDetector(2,0,200,5),null,null);
 
-            ScoreAssociation<BrightFeature> scorer = FactoryAssociation.scoreEuclidean(BrightFeature.class,true);
-            AssociateDescription<BrightFeature> associate = FactoryAssociation.greedy(scorer, 0.1, true);
+            var scorer = FactoryAssociation.scoreEuclidean(BrightFeature.class,true);
+            var associate = FactoryAssociation.greedy(scorer, 0.1, true);
 
             ExampleAssociatePoints<GrayF32,BrightFeature> findMatches =
                     new ExampleAssociatePoints<>(detDesc, associate, GrayF32.class);
 
             findMatches.associate(left,right);
 
-            FastQueue<AssociatedIndex> matchIndexes = associate.getMatches();
+            var matchIndexes = associate.getMatches();
 
-            int bound = matchIndexes.size;
-            List<AssociatedPair> matches = IntStream.range(0, bound).mapToObj(matchIndexes::get).map(a -> new AssociatedPair(findMatches.pointsA.get(a.src), findMatches.pointsB.get(a.dst))).collect(Collectors.toList());
+            var bound = matchIndexes.size;
+            var matches = IntStream.range(0, bound).mapToObj(matchIndexes::get).map(a -> new AssociatedPair(findMatches.pointsA.get(a.src), findMatches.pointsB.get(a.dst))).collect(Collectors.toList());
 
             return matches;
         }
@@ -531,16 +531,16 @@ public class WebcamStereoTest {
          * Detect and associate point features in the two images.  Display the results.
          */
         public void associate(BufferedImage imageA, BufferedImage imageB) {
-            T inputA = ConvertBufferedImage.convertFromSingle(imageA, null, imageType);
-            T inputB = ConvertBufferedImage.convertFromSingle(imageB, null, imageType);
+            var inputA = ConvertBufferedImage.convertFromSingle(imageA, null, imageType);
+            var inputB = ConvertBufferedImage.convertFromSingle(imageB, null, imageType);
 
             // stores the location of detected interest points
             pointsA = new ArrayList<>();
             pointsB = new ArrayList<>();
 
             // stores the description of detected interest points
-            FastQueue<TD> descA = UtilFeature.createQueue(detDesc, 100);
-            FastQueue<TD> descB = UtilFeature.createQueue(detDesc, 100);
+            var descA = UtilFeature.createQueue(detDesc, 100);
+            var descB = UtilFeature.createQueue(detDesc, 100);
 
             // describe each image using interest points
             describeImage(inputA, pointsA, descA);
@@ -552,7 +552,7 @@ public class WebcamStereoTest {
             associate.associate();
 
             // display the results
-            AssociationPanel panel = new AssociationPanel(20);
+            var panel = new AssociationPanel(20);
             panel.setAssociation(pointsA, pointsB, associate.getMatches());
             panel.setImages(imageA, imageB);
 
@@ -565,7 +565,7 @@ public class WebcamStereoTest {
         private void describeImage(T input, List<Point2D_F64> points, FastQueue<TD> descs) {
             detDesc.detect(input);
 
-            for (int i = 0; i < detDesc.getNumberOfFeatures(); i++) {
+            for (var i = 0; i < detDesc.getNumberOfFeatures(); i++) {
                 points.add(detDesc.getLocation(i).copy());
                 descs.grow().setTo(detDesc.getDescription(i));
             }

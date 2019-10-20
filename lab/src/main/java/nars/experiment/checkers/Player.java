@@ -71,7 +71,7 @@ public abstract class Player {
     public void stopTurn() {
         hasTurn = false;
 
-        for (PlayerListener l : listeners)
+        for (var l : listeners)
             l.finishedTurn(this);
     }
 

@@ -80,9 +80,9 @@ public interface TaskTable {
     void match(Answer a);
 
     default Answer matching(long start, long end, @Nullable Term template, Predicate<Task> filter, float dur, NAR nar) {
-        boolean beliefOrQuestion = !(this instanceof QuestionTable);
+        var beliefOrQuestion = !(this instanceof QuestionTable);
 
-        Answer a = Answer.taskStrength(beliefOrQuestion, NAL.ANSWER_BELIEF_MATCH_CAPACITY, start, end, template, filter, nar).dur(dur);
+        var a = Answer.taskStrength(beliefOrQuestion, NAL.ANSWER_BELIEF_MATCH_CAPACITY, start, end, template, filter, nar).dur(dur);
         match(a);
         return a;
     }
@@ -115,9 +115,9 @@ public interface TaskTable {
         if (isEmpty())
             return null;
 
-        boolean isBeliefOrGoal = !(this instanceof QuestionTable);
+        var isBeliefOrGoal = !(this instanceof QuestionTable);
 
-        Answer a = Answer.taskStrength(isBeliefOrGoal,
+        var a = Answer.taskStrength(isBeliefOrGoal,
             isBeliefOrGoal ? NAL.ANSWER_BELIEF_SAMPLE_CAPACITY : NAL.ANSWER_QUESTION_SAMPLE_CAPACITY,
             start, end, template, filter, nar);
         a.dur(dur);
@@ -131,7 +131,7 @@ public interface TaskTable {
 //    }
 
     default @Nullable Task sample(When<What> when, @Nullable Term template, @Nullable Predicate<Task> filter) {
-        Answer a = sampleAnswer(when, template, filter);
+        var a = sampleAnswer(when, template, filter);
         return a==null ? null : a.sample();
     }
 

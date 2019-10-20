@@ -180,7 +180,7 @@ public class PlayerClient {
         public boolean think(edict_t self) {
 
             if (Lib.Q_stricmp(GameBase.level.mapname, "security") == 0) {
-                edict_t spot = GameUtil.G_Spawn();
+                var spot = GameUtil.G_Spawn();
                 spot.classname = "info_player_coop";
                 spot.s.origin[0] = 188 - 64;
                 spot.s.origin[1] = -164;
@@ -225,7 +225,7 @@ public class PlayerClient {
             if (self.health < -40) {
                 game_import_t.sound(self, Defines.CHAN_BODY,
                 		game_import_t.soundindex("misc/udeath.wav"), 1, Defines.ATTN_NORM, 0);
-                for (int n = 0; n < 4; n++)
+                for (var n = 0; n < 4; n++)
                     GameMisc.ThrowGib(self, "models/objects/gibs/sm_meat/tris.md2", damage,
                             Defines.GIB_ORGANIC);
                 self.s.origin[2] -= 48;
@@ -288,7 +288,7 @@ public class PlayerClient {
             return;
         }
 
-        boolean b = Stream.of("jail2", "jail4", "mine1", "mine2", "mine3", "mine4", "lab", "boss1", "fact3", "biggun", "space", "command", "power2", "strike").anyMatch(s -> (Lib.Q_stricmp(GameBase.level.mapname, s) == 0));
+        var b = Stream.of("jail2", "jail4", "mine1", "mine2", "mine3", "mine4", "lab", "boss1", "fact3", "biggun", "space", "command", "power2", "strike").anyMatch(s -> (Lib.Q_stricmp(GameBase.level.mapname, s) == 0));
         if (b) {
             
             self.think = PlayerClient.SP_FixCoopSpots;
@@ -312,8 +312,8 @@ public class PlayerClient {
             GameBase.meansOfDeath |= Defines.MOD_FRIENDLY_FIRE;
 
         if (GameBase.deathmatch.value != 0 || GameBase.coop.value != 0) {
-            boolean ff = (GameBase.meansOfDeath & Defines.MOD_FRIENDLY_FIRE) != 0;
-            int mod = GameBase.meansOfDeath & ~Defines.MOD_FRIENDLY_FIRE;
+            var ff = (GameBase.meansOfDeath & Defines.MOD_FRIENDLY_FIRE) != 0;
+            var mod = GameBase.meansOfDeath & ~Defines.MOD_FRIENDLY_FIRE;
             String message = null;
 
             switch (mod) {
@@ -400,7 +400,7 @@ public class PlayerClient {
 
             self.enemy = attacker;
             if (attacker != null && attacker.client != null) {
-                String message2 = "";
+                var message2 = "";
                 switch (mod) {
                 case Defines.MOD_BLASTER:
                     message = "was blasted by";
@@ -501,7 +501,7 @@ public class PlayerClient {
 
         client.pers = new client_persistant_t();
 
-        gitem_t item = GameItems.FindItem("Blaster");
+        var item = GameItems.FindItem("Blaster");
         client.pers.selected_item = GameItems.ITEM_INDEX(item);
         client.pers.inventory[client.pers.selected_item] = 1;
 
@@ -540,8 +540,8 @@ public class PlayerClient {
      */
     public static void SaveClientData() {
 
-        for (int i = 0; i < GameBase.game.maxclients; i++) {
-            edict_t ent = GameBase.g_edicts[1 + i];
+        for (var i = 0; i < GameBase.game.maxclients; i++) {
+            var ent = GameBase.g_edicts[1 + i];
             if (!ent.inuse)
                 continue;
 
@@ -571,8 +571,8 @@ public class PlayerClient {
 
         float bestplayerdistance = 9999999;
 
-        for (int n = 1; n <= GameBase.maxclients.value; n++) {
-            edict_t player = GameBase.g_edicts[n];
+        for (var n = 1; n <= GameBase.maxclients.value; n++) {
+            var player = GameBase.g_edicts[n];
 
             if (!player.inuse)
                 continue;
@@ -581,7 +581,7 @@ public class PlayerClient {
                 continue;
 
             Math3D.VectorSubtract(spot.s.origin, player.s.origin, v);
-            float playerdistance = Math3D.VectorLength(v);
+            var playerdistance = Math3D.VectorLength(v);
 
             if (playerdistance < bestplayerdistance)
                 bestplayerdistance = playerdistance;
@@ -596,19 +596,19 @@ public class PlayerClient {
     public static edict_t SelectRandomDeathmatchSpawnPoint() {
         float range2;
 
-        float range1 = range2 = 99999;
+        var range1 = range2 = 99999;
         edict_t spot2;
-        edict_t spot1 = spot2 = null;
+        var spot1 = spot2 = null;
 
         EdictIterator es = null;
 
         edict_t spot = null;
-        int count = 0;
+        var count = 0;
         while ((es = GameBase.G_Find(es, GameBase.findByClass,
                 "info_player_deathmatch")) != null) {
             spot = es.o;
             count++;
-            float range = PlayersRangeFromSpot(spot);
+            var range = PlayersRangeFromSpot(spot);
             if (range < range1) {
                 range1 = range;
                 spot1 = spot;
@@ -626,7 +626,7 @@ public class PlayerClient {
         } else
             count -= 2;
 
-        int selection = Lib.rand() % count;
+        var selection = Lib.rand() % count;
 
         spot = null;
         es = null;
@@ -658,7 +658,7 @@ public class PlayerClient {
         while ((es = GameBase.G_Find(es, GameBase.findByClass,
                 "info_player_deathmatch")) != null) {
             spot = es.o;
-            float bestplayerdistance = PlayersRangeFromSpot(spot);
+            var bestplayerdistance = PlayersRangeFromSpot(spot);
 
             if (bestplayerdistance > bestdistance) {
                 bestspot = spot;
@@ -670,9 +670,8 @@ public class PlayerClient {
             return bestspot;
         }
 
-        
-        
-        EdictIterator edit = GameBase.G_Find(null, GameBase.findByClass,
+
+        var edit = GameBase.G_Find(null, GameBase.findByClass,
                 "info_player_deathmatch");
         if (edit == null)
             return null;
@@ -691,7 +690,7 @@ public class PlayerClient {
     public static edict_t SelectCoopSpawnPoint(edict_t ent) {
 
 
-        int index = ent.client.index;
+        var index = ent.client.index;
 
         
         if (index == 0)
@@ -714,7 +713,7 @@ public class PlayerClient {
             if (spot == null)
                 return null;
 
-            String target = spot.targetname;
+            var target = spot.targetname;
             if (target == null)
                 target = "";
             if (Lib.Q_stricmp(GameBase.game.spawnpoint, target) == 0) { 
@@ -785,8 +784,8 @@ public class PlayerClient {
     public static void InitBodyQue() {
 
         GameBase.level.body_que = 0;
-        for (int i = 0; i < Defines.BODY_QUEUE_SIZE; i++) {
-            edict_t ent = GameUtil.G_Spawn();
+        for (var i = 0; i < Defines.BODY_QUEUE_SIZE; i++) {
+            var ent = GameUtil.G_Spawn();
             ent.classname = "bodyque";
         }
     }
@@ -794,8 +793,8 @@ public class PlayerClient {
     public static void CopyToBodyQue(edict_t ent) {
 
 
-        int i = (int) GameBase.maxclients.value + GameBase.level.body_que + 1;
-        edict_t body = GameBase.g_edicts[i];
+        var i = (int) GameBase.maxclients.value + GameBase.level.body_que + 1;
+        var body = GameBase.g_edicts[i];
         GameBase.level.body_que = (GameBase.level.body_que + 1)
                 % Defines.BODY_QUEUE_SIZE;
 
@@ -861,7 +860,7 @@ public class PlayerClient {
 
 
         if (ent.client.pers.spectator) {
-            String value = Info.Info_ValueForKey(ent.client.pers.userinfo,
+            var value = Info.Info_ValueForKey(ent.client.pers.userinfo,
                     "spectator");
 
             if (!passwdOK(GameBase.spectator_password.string, value)) {
@@ -893,9 +892,9 @@ public class PlayerClient {
                 return;
             }
         } else {
-            
-            
-            String value = Info.Info_ValueForKey(ent.client.pers.userinfo,
+
+
+            var value = Info.Info_ValueForKey(ent.client.pers.userinfo,
                     "password");
             if (!passwdOK(GameBase.spectator_password.string, value)) {
                 game_import_t.cprintf(ent, Defines.PRINT_HIGH,
@@ -944,22 +943,22 @@ public class PlayerClient {
      */
     public static void PutClientInServer(edict_t ent) {
         float[] spawn_origin = { 0, 0, 0 }, spawn_angles = { 0, 0, 0 };
-        client_persistant_t saved = new client_persistant_t();
-        client_respawn_t resp = new client_respawn_t();
+        var saved = new client_persistant_t();
+        var resp = new client_respawn_t();
 
         
         
         
         SelectSpawnPoint(ent, spawn_origin, spawn_angles);
 
-        int index = ent.index - 1;
-        gclient_t client = ent.client;
+        var index = ent.index - 1;
+        var client = ent.client;
 
         
         if (GameBase.deathmatch.value != 0) {           
 
             resp.set(client.resp);
-            String userinfo = client.pers.userinfo;
+            var userinfo = client.pers.userinfo;
             InitClientPersistant(client);
             
             userinfo = ClientUserinfoChanged(ent, userinfo);
@@ -968,7 +967,7 @@ public class PlayerClient {
 
             resp.set(client.resp);
 
-            String userinfo = client.pers.userinfo;
+            var userinfo = client.pers.userinfo;
 
             resp.coop_respawn.game_helpchanged = client.pers.game_helpchanged;
             resp.coop_respawn.helpchanged = client.pers.helpchanged;
@@ -1055,7 +1054,7 @@ public class PlayerClient {
         Math3D.VectorCopy(ent.s.origin, ent.s.old_origin);
 
         
-        for (int i = 0; i < 3; i++) {
+        for (var i = 0; i < 3; i++) {
             client.ps.pmove.delta_angles[i] = (short) Math3D
                     .ANGLE2SHORT(spawn_angles[i] - client.resp.cmd_angles[i]);
         }
@@ -1142,7 +1141,7 @@ public class PlayerClient {
             
             
             
-            for (int i = 0; i < 3; i++)
+            for (var i = 0; i < 3; i++)
                 ent.client.ps.pmove.delta_angles[i] = (short) Math3D
                         .ANGLE2SHORT(ent.client.ps.viewangles[i]);
         } else {
@@ -1189,7 +1188,7 @@ public class PlayerClient {
         }
 
 
-        String s = Info.Info_ValueForKey(userinfo, "name");
+        var s = Info.Info_ValueForKey(userinfo, "name");
 
         ent.client.pers.netname = s;
 
@@ -1201,7 +1200,7 @@ public class PlayerClient {
         
         s = Info.Info_ValueForKey(userinfo, "skin");
 
-        int playernum = ent.index - 1;
+        var playernum = ent.index - 1;
 
         
         game_import_t.configstring(Defines.CS_PLAYERSKINS + playernum,
@@ -1242,7 +1241,7 @@ public class PlayerClient {
     public static boolean ClientConnect(edict_t ent, String userinfo) {
 
 
-        String value = Info.Info_ValueForKey(userinfo, "ip");
+        var value = Info.Info_ValueForKey(userinfo, "ip");
         if (GameSVCmds.SV_FilterPacket(value)) {
             userinfo = Info.Info_SetValueForKey(userinfo, "rejmsg", "Banned.");
             return false;
@@ -1261,7 +1260,7 @@ public class PlayerClient {
 
 
             int numspec;
-            for (int i = numspec = 0; i < GameBase.maxclients.value; i++)
+            for (var i = numspec = 0; i < GameBase.maxclients.value; i++)
                 if (GameBase.g_edicts[i + 1].inuse
                         && GameBase.g_edicts[i + 1].client.pers.spectator)
                     numspec++;
@@ -1327,7 +1326,7 @@ public class PlayerClient {
         ent.classname = "disconnected";
         ent.client.pers.connected = false;
 
-        int playernum = ent.index - 1;
+        var playernum = ent.index - 1;
         game_import_t.configstring(Defines.CS_PLAYERSKINS + playernum, "");
     }
 
@@ -1358,7 +1357,7 @@ public class PlayerClient {
     public static void ClientThink(edict_t ent, usercmd_t ucmd) {
 
         GameBase.level.current_entity = ent;
-        gclient_t client = ent.client;
+        var client = ent.client;
 
         if (GameBase.level.intermissiontime != 0) {
             client.ps.pmove.pm_type = Defines.PM_FREEZE;
@@ -1382,7 +1381,7 @@ public class PlayerClient {
         } else {
 
 
-            pmove_t pm = new pmove_t();
+            var pm = new pmove_t();
 
             if (ent.movetype == Defines.MOVETYPE_NOCLIP)
                 client.ps.pmove.pm_type = Defines.PM_SPECTATOR;
@@ -1531,7 +1530,7 @@ public class PlayerClient {
         if (GameBase.level.intermissiontime != 0)
             return;
 
-        gclient_t client = ent.client;
+        var client = ent.client;
 
         if (GameBase.deathmatch.value != 0
                 && client.pers.spectator != client.resp.spectator
@@ -1581,7 +1580,7 @@ public class PlayerClient {
         if (null == ent.client)
             return false;
 
-        char info = Info.Info_ValueForKey(ent.client.pers.userinfo, "gender")
+        var info = Info.Info_ValueForKey(ent.client.pers.userinfo, "gender")
                 .charAt(0);
         return info == 'f' || info == 'F';
     }
@@ -1595,7 +1594,7 @@ public class PlayerClient {
         if (ent.client == null)
             return false;
 
-        char info = Info.Info_ValueForKey(ent.client.pers.userinfo, "gender")
+        var info = Info.Info_ValueForKey(ent.client.pers.userinfo, "gender")
                 .charAt(0);
 
         return info != 'f' && info != 'F' && info != 'm' && info != 'M';
@@ -1607,8 +1606,8 @@ public class PlayerClient {
     public static void LookAtKiller(edict_t self, edict_t inflictor,
             edict_t attacker) {
         float[] dir = {0, 0, 0};
-    
-        edict_t world = GameBase.g_edicts[0];
+
+        var world = GameBase.g_edicts[0];
     
         if (attacker != null && attacker != world && attacker != self) {
             Math3D.VectorSubtract(attacker.s.origin, self.s.origin, dir);
@@ -1643,7 +1642,7 @@ public class PlayerClient {
         if (GameBase.deathmatch.value == 0)
             return;
 
-        gitem_t item = self.client.pers.weapon;
+        var item = self.client.pers.weapon;
         if (0 == self.client.pers.inventory[self.client.ammo_index])
             item = null;
         if (item != null && (Lib.strcmp(item.pickup_name, "Blaster") == 0))

@@ -21,7 +21,7 @@ class Stroke {
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof Stroke) {
-            Stroke stroke = (Stroke) obj;
+            var stroke = (Stroke) obj;
             return (this.key == stroke.key) && (this.supportKey == stroke.supportKey);
         }
         return false;

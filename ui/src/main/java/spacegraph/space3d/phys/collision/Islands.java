@@ -49,15 +49,15 @@ public class Islands {
     private final FasterList<Collidable> islandBodies = new FasterList<>();
 
     private void findUnions(Collisions colWorld) {
-        FasterList<BroadphasePair> pairPtr = colWorld.pairs().getOverlappingPairArray();
-        int n = pairPtr.size();
+        var pairPtr = colWorld.pairs().getOverlappingPairArray();
+        var n = pairPtr.size();
 
 
-        for (BroadphasePair collisionPair : pairPtr) {
+        for (var collisionPair : pairPtr) {
 
-            Collidable colObj0 = collisionPair.pProxy0.data;
+            var colObj0 = collisionPair.pProxy0.data;
             if (colObj0 != null && ((colObj0).mergesSimulationIslands())) {
-                Collidable colObj1 = collisionPair.pProxy1.data;
+                var colObj1 = collisionPair.pProxy1.data;
                 if (colObj1 != null && ((colObj1).mergesSimulationIslands())) {
                     find.unite((colObj0).tag(), (colObj1).tag());
                 }
@@ -66,13 +66,13 @@ public class Islands {
     }
 
     public final void updateActivationState(Collisions<?> colWorld) {
-        List<Collidable> cc = colWorld.collidables();
-        int num = cc.size();
+        var cc = colWorld.collidables();
+        var num = cc.size();
 
         find.reset(num);
 
         int[] i = {0};
-        for (Collidable collidable : cc) {
+        for (var collidable : cc) {
             collidable.setIslandTag(i[0]++);
             collidable.setCompanionId(-1);
             collidable.setHitFraction(1f);
@@ -83,10 +83,10 @@ public class Islands {
     }
 
     public final void storeIslandActivationState(Collisions<?> world) {
-        
-        int i = 0;
-        List<Collidable> collidables = world.collidables();
-        for (Collidable collidable : collidables) {
+
+        var i = 0;
+        var collidables = world.collidables();
+        for (var collidable : collidables) {
             storeIslandActivationState(i++, collidable);
         }
     }
@@ -103,10 +103,10 @@ public class Islands {
     }
 
     private static int getIslandId(PersistentManifold lhs) {
-        Collidable rcolObj0 = (Collidable) lhs.getBody0();
-        int t0 = rcolObj0.tag();
+        var rcolObj0 = (Collidable) lhs.getBody0();
+        var t0 = rcolObj0.tag();
         if (t0 >= 0) return t0;
-        Collidable rcolObj1 = (Collidable) lhs.getBody1();
+        var rcolObj1 = (Collidable) lhs.getBody1();
         return rcolObj1.tag();
     }
 
@@ -121,27 +121,26 @@ public class Islands {
             
 
             find.sortIslands();
-            int numElem = find.size();
+        var numElem = find.size();
 
-            int endIslandIndex = 1;
+        var endIslandIndex = 1;
 
 
-        for (int startIslandIndex = 0; startIslandIndex < numElem; startIslandIndex = endIslandIndex) {
-                int islandId = find.id(startIslandIndex);
+        for (var startIslandIndex = 0; startIslandIndex < numElem; startIslandIndex = endIslandIndex) {
+            var islandId = find.id(startIslandIndex);
                 for (endIslandIndex = startIslandIndex + 1; (endIslandIndex < numElem) && (find.id(endIslandIndex) == islandId); endIslandIndex++) {
                 }
 
-                
 
-                boolean allSleeping = true;
+            var allSleeping = true;
 
                 int idx;
                 for (idx = startIslandIndex; idx < endIslandIndex; idx++) {
-                    int i = find.sz(idx);
+                    var i = find.sz(idx);
 
-                    
-                    Collidable colObj0 = collidables.get(i);
-                    int tag0 = colObj0.tag();
+
+                    var colObj0 = collidables.get(i);
+                    var tag0 = colObj0.tag();
 
                     if ((tag0 != islandId) && (tag0 != -1)) {
                         islandError(colObj0);
@@ -150,7 +149,7 @@ public class Islands {
 
                     
                     if (tag0 == islandId) {
-                        int s = colObj0.getActivationState();
+                        var s = colObj0.getActivationState();
                         if (s == Collidable.ACTIVE_TAG || s == Collidable.DISABLE_DEACTIVATION) {
                             allSleeping = false;
                         }
@@ -161,10 +160,10 @@ public class Islands {
                 if (allSleeping) {
                     
                     for (idx = startIslandIndex; idx < endIslandIndex; idx++) {
-                        int i = find.sz(idx);
-                        
-                        Collidable colObj0 = collidables.get(i);
-                        int tag0 = colObj0.tag();
+                        var i = find.sz(idx);
+
+                        var colObj0 = collidables.get(i);
+                        var tag0 = colObj0.tag();
                         if ((tag0 != islandId) && (tag0 != -1)) {
                             islandError(colObj0);
                             continue;
@@ -178,11 +177,11 @@ public class Islands {
 
                     
                     for (idx = startIslandIndex; idx < endIslandIndex; idx++) {
-                        int i = find.sz(idx);
+                        var i = find.sz(idx);
 
-                        
-                        Collidable colObj0 = collidables.get(i);
-                        int tag0 = colObj0.tag();
+
+                        var colObj0 = collidables.get(i);
+                        var tag0 = colObj0.tag();
                         if ((tag0 != islandId) && (tag0 != -1)) {
                             islandError(colObj0);
                             continue;
@@ -198,23 +197,23 @@ public class Islands {
             }
 
 
-        int maxNumManifolds = intersecter.manifoldCount();
+        var maxNumManifolds = intersecter.manifoldCount();
 
             
             
             
 
-            for (int i = 0; i < maxNumManifolds; i++) {
-                PersistentManifold manifold = intersecter.manifold(i);
+            for (var i = 0; i < maxNumManifolds; i++) {
+                var manifold = intersecter.manifold(i);
 
-                Collidable colObj0 = (Collidable) manifold.getBody0();
+                var colObj0 = (Collidable) manifold.getBody0();
                 if (colObj0!=null) {
-                    Collidable colObj1 = (Collidable) manifold.getBody1();
+                    var colObj1 = (Collidable) manifold.getBody1();
                     if (colObj1!=null) {
 
-                        
-                        int s0 = colObj0.getActivationState();
-                        int s1 = colObj1.getActivationState();
+
+                        var s0 = colObj0.getActivationState();
+                        var s1 = colObj1.getActivationState();
                         if ((s0 != Collidable.ISLAND_SLEEPING) || (s1 != Collidable.ISLAND_SLEEPING)) {
 
                             
@@ -245,19 +244,10 @@ public class Islands {
     public void buildAndProcessIslands(Intersecter intersecter, List<Collidable> collidables, IslandCallback callback) {
         buildIslands(intersecter, collidables);
 
-        int numElem = find.size();
+        var numElem = find.size();
 
 
-            
-            
-            
-            
-            
-            
-            
-            
-
-            int numManifolds = islandmanifold.size();
+        var numManifolds = islandmanifold.size();
 
             
             
@@ -266,21 +256,20 @@ public class Islands {
             
             MiscUtil.quickSort(islandmanifold, persistentManifoldComparator);
 
-            
 
-            int startManifoldIndex = 0;
-            int endManifoldIndex = 1;
+        var startManifoldIndex = 0;
+        var endManifoldIndex = 1;
 
 
-        int endIslandIndex = 1;
-        for (int startIslandIndex = 0; startIslandIndex < numElem; startIslandIndex = endIslandIndex) {
-                int islandId = find.id(startIslandIndex);
-                boolean islandSleeping = false;
+        var endIslandIndex = 1;
+        for (var startIslandIndex = 0; startIslandIndex < numElem; startIslandIndex = endIslandIndex) {
+            var islandId = find.id(startIslandIndex);
+            var islandSleeping = false;
 
                 for (endIslandIndex = startIslandIndex; (endIslandIndex < numElem) && ((find.id(endIslandIndex) == islandId)); endIslandIndex++) {
-                    int i = find.sz(endIslandIndex);
-                    
-                    Collidable colObj0 = collidables.get(i);
+                    var i = find.sz(endIslandIndex);
+
+                    var colObj0 = collidables.get(i);
                     islandBodies.add(colObj0);
                     if (!colObj0.isActive()) {
                         islandSleeping = true;
@@ -288,14 +277,13 @@ public class Islands {
                 }
 
 
-                
-                int numIslandManifolds = 0;
-                
-                int startManifold_idx = -1;
+            var numIslandManifolds = 0;
+
+            var startManifold_idx = -1;
 
                 if (startManifoldIndex < numManifolds) {
-                    
-                    int curIslandId = getIslandId(islandmanifold.get(startManifoldIndex));
+
+                    var curIslandId = getIslandId(islandmanifold.get(startManifoldIndex));
                     if (curIslandId == islandId) {
                         
                         

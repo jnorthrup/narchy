@@ -25,12 +25,12 @@ public class BoundedFloatFunctionCache<X> extends MRUMap<X, Float> implements Fl
     public float floatValueOf(X x) {
 
         synchronized (f) {
-            Float f = get(x);
+            var f = get(x);
             if (f != null)
                 return f;
         }
 
-        float v = f.floatValueOf(x);
+        var v = f.floatValueOf(x);
 
         synchronized (f) {
             put(x, v);
@@ -40,11 +40,11 @@ public class BoundedFloatFunctionCache<X> extends MRUMap<X, Float> implements Fl
     }
 
     public void forget(float pct) {
-        int toForget = (int) Math.ceil(size()*pct);
+        var toForget = (int) Math.ceil(size()*pct);
         if (toForget > 0) {
             synchronized (f) {
 
-                Iterator<Map.Entry<X,Float>> ii = entrySet().iterator();
+                var ii = entrySet().iterator();
                 while (--toForget > 0 && ii.hasNext()) {
                     onEvict(ii.next());
                     ii.remove();

@@ -27,9 +27,9 @@ public class FreqSpectrogram extends BitmapMatrixView implements BitmapMatrixVie
 
     @Override
     public void color(BufferedImage buf, int[] pix) {
-        int v = freq.volume();
-        for (int i = 0; i < v; i++) {
-            float x = freq.getAt(i);
+        var v = freq.volume();
+        for (var i = 0; i < v; i++) {
+            var x = freq.getAt(i);
             pix[i] =
                     //Draw.colorHSB(0.3f * (1 - x), 0.9f, x);
                     Draw.rgbInt(x,x,x);

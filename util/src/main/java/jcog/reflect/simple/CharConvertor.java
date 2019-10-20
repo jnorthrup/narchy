@@ -40,7 +40,7 @@ public class CharConvertor implements ToValueConvertor {
         if (srcData == null) {
             throw new IllegalArgumentException("srcData == null");
         }
-        String c = srcData.toString();
+        var c = srcData.toString();
         if (!c.isEmpty()) return String.valueOf(c.charAt(0));
         return null;
     };

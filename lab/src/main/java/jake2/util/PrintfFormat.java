@@ -470,16 +470,16 @@ public class PrintfFormat {
 	public PrintfFormat(Locale locale, String fmtArg) throws IllegalArgumentException {
 		dfs = new DecimalFormatSymbols(locale);
         ConversionSpecification sFmt = null;
-		String unCS = this.nonControl(fmtArg, 0);
+		var unCS = this.nonControl(fmtArg, 0);
 		if (unCS != null) {
 			sFmt = new ConversionSpecification();
 			sFmt.setLiteral(unCS);
 			vFmt.addElement(sFmt);
 		}
-        int ePos = 0;
+		var ePos = 0;
         while (cPos != -1 && cPos < fmtArg.length()) {
 			for (ePos = cPos + 1; ePos < fmtArg.length(); ePos++) {
-                char c = fmtArg.charAt(ePos);
+				var c = fmtArg.charAt(ePos);
 				if (c == 'i')
 					break;
 				if (c == 'd')
@@ -532,7 +532,7 @@ public class PrintfFormat {
 	 *     to the beginning of the control string.
 	 */
 	private String nonControl(String s, int start) {
-		String ret = "";
+		var ret = "";
 		cPos = s.indexOf('%', start);
 		if (cPos == -1)
 			cPos = s.length();
@@ -547,11 +547,11 @@ public class PrintfFormat {
 	 * @return  The formatted String.
 	 */
 	public String sprintf(Object[] o) {
-		Iterator iterator = vFmt.iterator();
+		var iterator = vFmt.iterator();
 		ConversionSpecification cs = null;
 		char c = 0;
-		int i = 0;
-		StringBuilder sb = new StringBuilder();
+		var i = 0;
+		var sb = new StringBuilder();
 		while (iterator.hasNext()) {
 			cs = (ConversionSpecification) iterator.next();
 			c = cs.getConversionCharacter();
@@ -566,11 +566,11 @@ public class PrintfFormat {
                     if (cs.isPositionalSpecification()) {
                         i = cs.getArgumentPosition() - 1;
                         if (cs.isPositionalFieldWidth()) {
-                            int ifw = cs.getArgumentPositionForFieldWidth() - 1;
+							var ifw = cs.getArgumentPositionForFieldWidth() - 1;
                             cs.setFieldWidthWithArg((Integer) o[ifw]);
                         }
                         if (cs.isPositionalPrecision()) {
-                            int ipr = cs.getArgumentPositionForPrecision() - 1;
+							var ipr = cs.getArgumentPositionForPrecision() - 1;
                             cs.setPrecisionWithArg((Integer) o[ipr]);
                         }
                     } else {
@@ -613,10 +613,10 @@ public class PrintfFormat {
 	 * @return  the formatted String.
 	 */
 	public String sprintf() {
-		Iterator iterator = vFmt.iterator();
+		var iterator = vFmt.iterator();
 		ConversionSpecification cs = null;
 		char c = 0;
-		StringBuilder sb = new StringBuilder();
+		var sb = new StringBuilder();
 		while (iterator.hasNext()) {
 			cs = (ConversionSpecification) iterator.next();
 			c = cs.getConversionCharacter();
@@ -640,10 +640,10 @@ public class PrintfFormat {
 	 *     or S.
 	 */
 	public String sprintf(int x) throws IllegalArgumentException {
-		Iterator iterator = vFmt.iterator();
+		var iterator = vFmt.iterator();
 		ConversionSpecification cs = null;
 		char c = 0;
-		StringBuilder sb = new StringBuilder();
+		var sb = new StringBuilder();
 		while (iterator.hasNext()) {
 			cs = (ConversionSpecification) iterator.next();
 			c = cs.getConversionCharacter();
@@ -670,10 +670,10 @@ public class PrintfFormat {
 	 *     or S.
 	 */
 	public String sprintf(long x) throws IllegalArgumentException {
-		Iterator iterator = vFmt.iterator();
+		var iterator = vFmt.iterator();
 		ConversionSpecification cs = null;
 		char c = 0;
-		StringBuilder sb = new StringBuilder();
+		var sb = new StringBuilder();
 		while (iterator.hasNext()) {
 			cs = (ConversionSpecification) iterator.next();
 			c = cs.getConversionCharacter();
@@ -700,10 +700,10 @@ public class PrintfFormat {
 	 *     d, d, x, X, or o.
 	 */
 	public String sprintf(double x) throws IllegalArgumentException {
-		Iterator iterator = vFmt.iterator();
+		var iterator = vFmt.iterator();
 		ConversionSpecification cs = null;
 		char c = 0;
-		StringBuilder sb = new StringBuilder();
+		var sb = new StringBuilder();
 		while (iterator.hasNext()) {
 			cs = (ConversionSpecification) iterator.next();
 			c = cs.getConversionCharacter();
@@ -729,10 +729,10 @@ public class PrintfFormat {
 	 *   conversion character is neither s nor S.
 	 */
 	public String sprintf(String x) throws IllegalArgumentException {
-		Iterator iterator = vFmt.iterator();
+		var iterator = vFmt.iterator();
 		ConversionSpecification cs = null;
 		char c = 0;
-		StringBuilder sb = new StringBuilder();
+		var sb = new StringBuilder();
 		while (iterator.hasNext()) {
 			cs = (ConversionSpecification) iterator.next();
 			c = cs.getConversionCharacter();
@@ -764,10 +764,10 @@ public class PrintfFormat {
 	 *    formatting an unwrapped value.
 	 */
 	public String sprintf(Object x) throws IllegalArgumentException {
-		Iterator iterator = vFmt.iterator();
+		var iterator = vFmt.iterator();
 		ConversionSpecification cs = null;
 		char c = 0;
-		StringBuilder sb = new StringBuilder();
+		var sb = new StringBuilder();
 		while (iterator.hasNext()) {
 			cs = (ConversionSpecification) iterator.next();
 			c = cs.getConversionCharacter();
@@ -899,13 +899,13 @@ public class PrintfFormat {
 		 * @return s the stored String.
 		 */
 		String getLiteral() {
-			StringBuilder sb = new StringBuilder();
-			int i = 0;
+			var sb = new StringBuilder();
+			var i = 0;
 			while (i < fmt.length()) {
 				if (fmt.charAt(i) == '\\') {
 					i++;
 					if (i < fmt.length()) {
-						char c = fmt.charAt(i);
+						var c = fmt.charAt(i);
 						switch (c) {
 							case 'a' :
 								sb.append((char) 0x07);
@@ -1001,7 +1001,7 @@ public class PrintfFormat {
 		 *     conversion character is f, e, E, g, or G.
 		 */
 		String internalsprintf(int s) throws IllegalArgumentException {
-			String s2 = "";
+			var s2 = "";
 			switch (conversionCharacter) {
 				case 'd' :
 				case 'i' :
@@ -1048,7 +1048,7 @@ public class PrintfFormat {
 		 *     conversion character is f, e, E, g, or G.
 		 */
 		String internalsprintf(long s) throws IllegalArgumentException {
-			String s2 = "";
+			var s2 = "";
 			switch (conversionCharacter) {
 				case 'd' :
 				case 'i' :
@@ -1096,7 +1096,7 @@ public class PrintfFormat {
 		 *     x, X, or o.
 		 */
 		String internalsprintf(double s) throws IllegalArgumentException {
-			String s2 = "";
+			var s2 = "";
 			switch (conversionCharacter) {
 				case 'f' :
 					s2 = printFFormat(s);
@@ -1124,7 +1124,7 @@ public class PrintfFormat {
 		 *   conversion character is neither s nor S.
 		 */
 		String internalsprintf(String s) throws IllegalArgumentException {
-			String s2 = "";
+			var s2 = "";
 			if (conversionCharacter == 's' || conversionCharacter == 'S')
 				s2 = printSFormat(s);
 			else
@@ -1141,7 +1141,7 @@ public class PrintfFormat {
 		 *     conversion character is neither s nor S.
 		 */
 		String internalsprintf(Object s) {
-			String s2 = "";
+			var s2 = "";
 			if (conversionCharacter == 's' || conversionCharacter == 'S')
 				s2 = printSFormat(s.toString());
 			else
@@ -1174,7 +1174,7 @@ public class PrintfFormat {
 		private char[] fFormatDigits(double x) {
 			
 			String sx, sxOut;
-            boolean minusSign = false;
+			var minusSign = false;
 			if (x > 0.0)
 				sx = Double.toString(x);
 			else if (x < 0.0) {
@@ -1187,8 +1187,8 @@ public class PrintfFormat {
 					sx = sx.substring(1);
 				}
 			}
-			int ePos = sx.indexOf('E');
-			int rPos = sx.indexOf('.');
+			var ePos = sx.indexOf('E');
+			var rPos = sx.indexOf('.');
             int n1In;
             if (rPos != -1)
 				n1In = rPos;
@@ -1204,10 +1204,10 @@ public class PrintfFormat {
 					n2In = sx.length() - rPos - 1;
 			} else
 				n2In = 0;
-            int expon = 0;
+			var expon = 0;
             if (ePos != -1) {
                 expon = 0;
-                int ie = ePos + 1;
+				var ie = ePos + 1;
                 if (sx.charAt(ie) == '-') {
 					for (++ie; ie < sx.length(); ie++)
 						if (sx.charAt(ie) != '0')
@@ -1229,12 +1229,12 @@ public class PrintfFormat {
 				p = precision;
 			else
 				p = defaultDigits - 1;
-			char[] ca1 = sx.toCharArray();
-			char[] ca2 = new char[n1In + n2In];
+			var ca1 = sx.toCharArray();
+			var ca2 = new char[n1In + n2In];
             int j;
             for (j = 0; j < n1In; j++)
 				ca2[j] = ca1[j];
-            int i = j + 1;
+			var i = j + 1;
             int k;
             for (k = 0; k < n2In; j++, i++, k++)
 				ca2[j] = ca1[i];
@@ -1247,7 +1247,7 @@ public class PrintfFormat {
 					ca3[j] = ca2[i];
 			} else
 				ca3 = ca2;
-			boolean carry = false;
+			var carry = false;
 			if (p < -expon + n2In) {
 				if (expon < 0)
 					i = p;
@@ -1299,14 +1299,14 @@ public class PrintfFormat {
 						ca4[j] = '0';
 				}
 			}
-			int nZeros = 0;
+			var nZeros = 0;
 			if (!leftJustify && leadingZeros) {
-				int xThousands = 0;
+				var xThousands = 0;
 				if (thousands) {
-					int xlead = 0;
+					var xlead = 0;
 					if (ca4[0] == '+' || ca4[0] == '-' || ca4[0] == ' ')
 						xlead = 1;
-					int xdp = xlead;
+					var xdp = xlead;
 					for (; xdp < ca4.length; xdp++)
 						if (ca4[xdp] == '.')
 							break;
@@ -1339,18 +1339,18 @@ public class PrintfFormat {
 			for (i = 0; i < ca4.length; i++, j++)
 				ca5[j] = ca4[i];
 
-			int lead = 0;
+			var lead = 0;
 			if (ca5[0] == '+' || ca5[0] == '-' || ca5[0] == ' ')
 				lead = 1;
-			int dp = lead;
+			var dp = lead;
 			for (; dp < ca5.length; dp++)
 				if (ca5[dp] == '.')
 					break;
-			int nThousands = (dp - lead) / 3;
+			var nThousands = (dp - lead) / 3;
 			
 			if (dp < ca5.length)
 				ca5[dp] = dfs.getDecimalSeparator();
-			char[] ca6 = ca5;
+			var ca6 = ca5;
 			if (thousands && nThousands > 0) {
 				ca6 = new char[ca5.length + nThousands + lead];
 				ca6[0] = ca5[0];
@@ -1381,7 +1381,7 @@ public class PrintfFormat {
 		 * @return the converted double value.
 		 */
 		private String fFormatString(double x) {
-			boolean noDigits = false;
+			var noDigits = false;
 			char[] ca6;
             if (Double.isInfinite(x)) {
 				if (x == Double.POSITIVE_INFINITY) {
@@ -1404,7 +1404,7 @@ public class PrintfFormat {
 				noDigits = true;
 			} else
 				ca6 = fFormatDigits(x);
-            char[] ca7 = applyFloatPadding(ca6, false);
+			var ca7 = applyFloatPadding(ca6, false);
 			return new String(ca7);
 		}
 		/**
@@ -1440,7 +1440,7 @@ public class PrintfFormat {
 		private char[] eFormatDigits(double x, char eChar) {
 
             String sx, sxOut;
-            boolean minusSign = false;
+			var minusSign = false;
 			if (x > 0.0)
 				sx = Double.toString(x);
 			else if (x < 0.0) {
@@ -1453,10 +1453,10 @@ public class PrintfFormat {
 					sx = sx.substring(1);
 				}
 			}
-            int ePos = sx.indexOf('E');
+			var ePos = sx.indexOf('E');
 			if (ePos == -1)
 				ePos = sx.indexOf('e');
-            int rPos = sx.indexOf('.');
+			var rPos = sx.indexOf('.');
             int n1In;
             if (rPos != -1)
 				n1In = rPos;
@@ -1472,9 +1472,9 @@ public class PrintfFormat {
 					n2In = sx.length() - rPos - 1;
 			} else
 				n2In = 0;
-            int expon = 0;
+			var expon = 0;
             if (ePos != -1) {
-				int ie = ePos + 1;
+				var ie = ePos + 1;
 				expon = 0;
 				if (sx.charAt(ie) == '-') {
 					for (++ie; ie < sx.length(); ie++)
@@ -1508,7 +1508,7 @@ public class PrintfFormat {
 				ca1 = sx.substring(0, ePos).toCharArray();
 			else
 				ca1 = sx.toCharArray();
-            int i0 = 0;
+			var i0 = 0;
 			if (ca1[0] != '0')
 				i0 = 0;
 			else
@@ -1519,7 +1519,7 @@ public class PrintfFormat {
             int i;
             char[] ca2;
             if (i0 + p < ca1.length - 1) {
-                boolean carry = checkForCarry(ca1, i0 + p + 1);
+				var carry = checkForCarry(ca1, i0 + p + 1);
                 if (carry)
 					carry = startSymbolicCarry(ca1, i0 + p, i0);
 				if (carry) {
@@ -1671,14 +1671,14 @@ public class PrintfFormat {
 					ca2[i] = '9';
 					break;
 			}
-			int nZeros = 0;
+			var nZeros = 0;
 			if (!leftJustify && leadingZeros) {
-				int xThousands = 0;
+				var xThousands = 0;
 				if (thousands) {
-					int xlead = 0;
+					var xlead = 0;
 					if (ca2[0] == '+' || ca2[0] == '-' || ca2[0] == ' ')
 						xlead = 1;
-					int xdp = xlead;
+					var xdp = xlead;
 					for (; xdp < ca2.length; xdp++)
 						if (ca2[xdp] == '.')
 							break;
@@ -1711,18 +1711,18 @@ public class PrintfFormat {
 			for (i = 0; i < ca2.length && j < ca3.length; i++, j++)
 				ca3[j] = ca2[i];
 
-			int lead = 0;
+			var lead = 0;
 			if (ca3[0] == '+' || ca3[0] == '-' || ca3[0] == ' ')
 				lead = 1;
-			int dp = lead;
+			var dp = lead;
 			for (; dp < ca3.length; dp++)
 				if (ca3[dp] == '.')
 					break;
-			int nThousands = dp / 3;
+			var nThousands = dp / 3;
 			
 			if (dp < ca3.length)
 				ca3[dp] = dfs.getDecimalSeparator();
-			char[] ca4 = ca3;
+			var ca4 = ca3;
 			if (thousands && nThousands > 0) {
 				ca4 = new char[ca3.length + nThousands + lead];
 				ca4[0] = ca3[0];
@@ -1753,7 +1753,7 @@ public class PrintfFormat {
 		 *     a round that will change the print
 		 */
 		private boolean checkForCarry(char[] ca1, int icarry) {
-			boolean carry = false;
+			var carry = false;
 			if (icarry < ca1.length) {
                 switch (ca1[icarry]) {
                     case '6':
@@ -1763,7 +1763,7 @@ public class PrintfFormat {
                         carry = true;
                         break;
                     case '5':
-                        int ii = icarry + 1;
+						var ii = icarry + 1;
                         for (; ii < ca1.length; ii++)
                             if (ca1[ii] != '0')
                                 break;
@@ -1795,8 +1795,8 @@ public class PrintfFormat {
 		 *     more
 		 */
 		private boolean startSymbolicCarry(char[] ca, int cLast, int cFirst) {
-			boolean carry = true;
-			for (int i = cLast; carry && i >= cFirst; i--) {
+			var carry = true;
+			for (var i = cLast; carry && i >= cFirst; i--) {
 				carry = false;
 				switch (ca[i]) {
 					case '0' :
@@ -1846,7 +1846,7 @@ public class PrintfFormat {
 		 * @return the converted double value.
 		 */
 		private String eFormatString(double x, char eChar) {
-			boolean noDigits = false;
+			var noDigits = false;
 			char[] ca4;
             if (Double.isInfinite(x)) {
 				if (x == Double.POSITIVE_INFINITY) {
@@ -1869,7 +1869,7 @@ public class PrintfFormat {
 				noDigits = true;
 			} else
 				ca4 = eFormatDigits(x, eChar);
-            char[] ca5 = applyFloatPadding(ca4, false);
+			var ca5 = applyFloatPadding(ca4, false);
 			return new String(ca5);
 		}
 		/**
@@ -1880,7 +1880,7 @@ public class PrintfFormat {
 		 * @return a padded array of characters
 		 */
 		private char[] applyFloatPadding(char[] ca4, boolean noDigits) {
-			char[] ca5 = ca4;
+			var ca5 = ca4;
 			if (fieldWidthSet) {
 				int i, j, nBlanks;
 				if (leftJustify) {
@@ -1912,7 +1912,7 @@ public class PrintfFormat {
 							i++;
 							j++;
 						}
-						for (int k = 0; k < nBlanks; i++, k++)
+						for (var k = 0; k < nBlanks; i++, k++)
 							ca5[i] = '0';
 						for (; j < ca4.length; i++, j++)
 							ca5[i] = ca4[j];
@@ -1968,9 +1968,9 @@ public class PrintfFormat {
 		 * @return the formatted String.
 		 */
 		private String printGFormat(double x) {
-            int savePrecision = precision;
+			var savePrecision = precision;
             char[] ca4;
-            boolean noDigits = false;
+			var noDigits = false;
 			if (Double.isInfinite(x)) {
 				if (x == Double.POSITIVE_INFINITY) {
 					if (leadingSign)
@@ -1995,7 +1995,7 @@ public class PrintfFormat {
 					precision = defaultDigits;
 				if (precision == 0)
 					precision = 1;
-				int ePos = -1;
+				var ePos = -1;
                 String sx;
                 if (conversionCharacter == 'g') {
 					sx = eFormatString(x, 'e').trim();
@@ -2004,8 +2004,8 @@ public class PrintfFormat {
 					sx = eFormatString(x, 'E').trim();
 					ePos = sx.indexOf('E');
 				}
-                int i = ePos + 1;
-                int expon = 0;
+				var i = ePos + 1;
+				var expon = 0;
 				if (sx.charAt(i) == '-') {
 					for (++i; i < sx.length(); i++)
 						if (sx.charAt(i) != '0')
@@ -2061,7 +2061,7 @@ public class PrintfFormat {
 				ca4 = ret.toCharArray();
 			}
 
-            char[] ca5 = applyFloatPadding(ca4, false);
+			var ca5 = applyFloatPadding(ca4, false);
 			precision = savePrecision;
 			return new String(ca5);
 		}
@@ -2161,10 +2161,10 @@ public class PrintfFormat {
 		 * @return the formatted String.
 		 */
 		private String printDFormat(String sx) {
-            boolean neg = sx.charAt(0) == '-';
+			var neg = sx.charAt(0) == '-';
 			if ("0".equals(sx) && precisionSet && precision == 0)
 				sx = "";
-            int nLeadingZeros = 0;
+			var nLeadingZeros = 0;
             if (!neg) {
 				if (precisionSet && sx.length() < precision)
 					nLeadingZeros = precision - sx.length();
@@ -2174,7 +2174,7 @@ public class PrintfFormat {
 			}
 			if (nLeadingZeros < 0)
 				nLeadingZeros = 0;
-            int nBlanks = 0;
+			var nBlanks = 0;
             if (fieldWidthSet) {
 				nBlanks = fieldWidth - nLeadingZeros - sx.length();
 				if (!neg && (leadingSign || leadingSpace))
@@ -2182,7 +2182,7 @@ public class PrintfFormat {
 			}
 			if (nBlanks < 0)
 				nBlanks = 0;
-            int n = 0;
+			var n = 0;
             if (leadingSign)
 				n++;
 			else if (leadingSpace)
@@ -2190,9 +2190,9 @@ public class PrintfFormat {
 			n += nBlanks;
 			n += nLeadingZeros;
 			n += sx.length();
-			char[] ca = new char[n];
-            int jFirst = 0;
-            int i = 0;
+			var ca = new char[n];
+			var jFirst = 0;
+			var i = 0;
             if (leftJustify) {
 				if (neg)
 					ca[i++] = '-';
@@ -2200,13 +2200,13 @@ public class PrintfFormat {
 					ca[i++] = '+';
 				else if (leadingSpace)
 					ca[i++] = ' ';
-				char[] csx = sx.toCharArray();
+				var csx = sx.toCharArray();
 				jFirst = neg ? 1 : 0;
-				for (int j = 0; j < nLeadingZeros; i++, j++)
+				for (var j = 0; j < nLeadingZeros; i++, j++)
 					ca[i] = '0';
-				for (int j = jFirst; j < csx.length; j++, i++)
+				for (var j = jFirst; j < csx.length; j++, i++)
 					ca[i] = csx[j];
-				for (int j = 0; j < nBlanks; i++, j++)
+				for (var j = 0; j < nBlanks; i++, j++)
 					ca[i] = ' ';
 			} else {
 				if (!leadingZeros) {
@@ -2225,14 +2225,14 @@ public class PrintfFormat {
 						ca[i++] = '+';
 					else if (leadingSpace)
 						ca[i++] = ' ';
-					for (int j = 0; j < nBlanks; j++, i++)
+					for (var j = 0; j < nBlanks; j++, i++)
 						ca[i] = '0';
 				}
-				for (int j = 0; j < nLeadingZeros; j++, i++)
+				for (var j = 0; j < nLeadingZeros; j++, i++)
 					ca[i] = '0';
-				char[] csx = sx.toCharArray();
+				var csx = sx.toCharArray();
 				jFirst = neg ? 1 : 0;
-				for (int j = jFirst; j < csx.length; j++, i++)
+				for (var j = jFirst; j < csx.length; j++, i++)
 					ca[i] = csx[j];
 			}
 			return new String(ca);
@@ -2335,7 +2335,7 @@ public class PrintfFormat {
 			if (x == Long.MIN_VALUE)
 				sx = "8000000000000000";
 			else if (x < 0) {
-				String t = Long.toString((~(-x - 1)) ^ Long.MIN_VALUE, 16);
+				var t = Long.toString((~(-x - 1)) ^ Long.MIN_VALUE, 16);
 				switch (t.length()) {
 					case 1 :
 						sx = "800000000000000" + t;
@@ -2437,7 +2437,7 @@ public class PrintfFormat {
 			if (x == Integer.MIN_VALUE)
 				sx = "80000000";
 			else if (x < 0) {
-				String t = Integer.toString((~(-x - 1)) ^ Integer.MIN_VALUE, 16);
+				var t = Integer.toString((~(-x - 1)) ^ Integer.MIN_VALUE, 16);
 				switch (t.length()) {
 					case 1 :
 						sx = "8000000" + t;
@@ -2501,12 +2501,12 @@ public class PrintfFormat {
 		private String printXFormat(String sx) {
             if ("0".equals(sx) && precisionSet && precision == 0)
 				sx = "";
-            int nLeadingZeros = 0;
+			var nLeadingZeros = 0;
             if (precisionSet)
 				nLeadingZeros = precision - sx.length();
 			if (nLeadingZeros < 0)
 				nLeadingZeros = 0;
-            int nBlanks = 0;
+			var nBlanks = 0;
             if (fieldWidthSet) {
 				nBlanks = fieldWidth - nLeadingZeros - sx.length();
 				if (alternateForm)
@@ -2514,44 +2514,44 @@ public class PrintfFormat {
 			}
 			if (nBlanks < 0)
 				nBlanks = 0;
-			int n = 0;
+			var n = 0;
 			if (alternateForm)
 				n += 2;
 			n += nLeadingZeros;
 			n += sx.length();
 			n += nBlanks;
-			char[] ca = new char[n];
-			int i = 0;
+			var ca = new char[n];
+			var i = 0;
 			if (leftJustify) {
 				if (alternateForm) {
 					ca[i++] = '0';
 					ca[i++] = 'x';
 				}
-				for (int j = 0; j < nLeadingZeros; j++, i++)
+				for (var j = 0; j < nLeadingZeros; j++, i++)
 					ca[i] = '0';
-				char[] csx = sx.toCharArray();
-				for (int j = 0; j < csx.length; j++, i++)
+				var csx = sx.toCharArray();
+				for (var j = 0; j < csx.length; j++, i++)
 					ca[i] = csx[j];
-				for (int j = 0; j < nBlanks; j++, i++)
+				for (var j = 0; j < nBlanks; j++, i++)
 					ca[i] = ' ';
 			} else {
 				if (!leadingZeros)
-					for (int j = 0; j < nBlanks; j++, i++)
+					for (var j = 0; j < nBlanks; j++, i++)
 						ca[i] = ' ';
 				if (alternateForm) {
 					ca[i++] = '0';
 					ca[i++] = 'x';
 				}
 				if (leadingZeros)
-					for (int j = 0; j < nBlanks; j++, i++)
+					for (var j = 0; j < nBlanks; j++, i++)
 						ca[i] = '0';
-				for (int j = 0; j < nLeadingZeros; j++, i++)
+				for (var j = 0; j < nLeadingZeros; j++, i++)
 					ca[i] = '0';
-				char[] csx = sx.toCharArray();
-				for (int j = 0; j < csx.length; j++, i++)
+				var csx = sx.toCharArray();
+				for (var j = 0; j < csx.length; j++, i++)
 					ca[i] = csx[j];
 			}
-			String caReturn = new String(ca);
+			var caReturn = new String(ca);
 			if (conversionCharacter == 'X')
 				caReturn = caReturn.toUpperCase();
 			return caReturn;
@@ -2582,7 +2582,7 @@ public class PrintfFormat {
 			if (x == Short.MIN_VALUE)
 				sx = "100000";
 			else if (x < 0) {
-				String t = Integer.toString((~(-x - 1)) ^ Short.MIN_VALUE, 8);
+				var t = Integer.toString((~(-x - 1)) ^ Short.MIN_VALUE, 8);
 				switch (t.length()) {
 					case 1 :
 						sx = "10000" + t;
@@ -2630,7 +2630,7 @@ public class PrintfFormat {
 			if (x == Long.MIN_VALUE)
 				sx = "1000000000000000000000";
 			else if (x < 0) {
-				String t = Long.toString((~(-x - 1)) ^ Long.MIN_VALUE, 8);
+				var t = Long.toString((~(-x - 1)) ^ Long.MIN_VALUE, 8);
 				switch (t.length()) {
 					case 1 :
 						sx = "100000000000000000000" + t;
@@ -2726,7 +2726,7 @@ public class PrintfFormat {
 			if (x == Integer.MIN_VALUE)
 				sx = "20000000000";
 			else if (x < 0) {
-				String t = Integer.toString((~(-x - 1)) ^ Integer.MIN_VALUE, 8);
+				var t = Integer.toString((~(-x - 1)) ^ Integer.MIN_VALUE, 8);
 				switch (t.length()) {
 					case 1 :
 						sx = "2000000000" + t;
@@ -2777,28 +2777,28 @@ public class PrintfFormat {
 		private String printOFormat(String sx) {
             if ("0".equals(sx) && precisionSet && precision == 0)
 				sx = "";
-            int nLeadingZeros = 0;
+			var nLeadingZeros = 0;
             if (precisionSet)
 				nLeadingZeros = precision - sx.length();
 			if (alternateForm)
 				nLeadingZeros++;
 			if (nLeadingZeros < 0)
 				nLeadingZeros = 0;
-            int nBlanks = 0;
+			var nBlanks = 0;
             if (fieldWidthSet)
 				nBlanks = fieldWidth - nLeadingZeros - sx.length();
 			if (nBlanks < 0)
 				nBlanks = 0;
-			int n = nLeadingZeros + sx.length() + nBlanks;
-			char[] ca = new char[n];
+			var n = nLeadingZeros + sx.length() + nBlanks;
+			var ca = new char[n];
 			int i;
 			if (leftJustify) {
 				for (i = 0; i < nLeadingZeros; i++)
 					ca[i] = '0';
-				char[] csx = sx.toCharArray();
-				for (int j = 0; j < csx.length; j++, i++)
+				var csx = sx.toCharArray();
+				for (var j = 0; j < csx.length; j++, i++)
 					ca[i] = csx[j];
-				for (int j = 0; j < nBlanks; j++, i++)
+				for (var j = 0; j < nBlanks; j++, i++)
 					ca[i] = ' ';
 			} else {
 				if (leadingZeros)
@@ -2807,10 +2807,10 @@ public class PrintfFormat {
 				else
 					for (i = 0; i < nBlanks; i++)
 						ca[i] = ' ';
-				for (int j = 0; j < nLeadingZeros; j++, i++)
+				for (var j = 0; j < nLeadingZeros; j++, i++)
 					ca[i] = '0';
-				char[] csx = sx.toCharArray();
-				for (int j = 0; j < csx.length; j++, i++)
+				var csx = sx.toCharArray();
+				for (var j = 0; j < csx.length; j++, i++)
 					ca[i] = csx[j];
 			}
 			return new String(ca);
@@ -2833,12 +2833,12 @@ public class PrintfFormat {
 		 * @return the formatted String.
 		 */
 		private String printCFormat(char x) {
-			int nPrint = 1;
-			int width = fieldWidth;
+			var nPrint = 1;
+			var width = fieldWidth;
 			if (!fieldWidthSet)
 				width = nPrint;
-			char[] ca = new char[width];
-			int i = 0;
+			var ca = new char[width];
+			var i = 0;
 			if (leftJustify) {
 				ca[0] = x;
 				for (i = 1; i <= width - nPrint; i++)
@@ -2874,43 +2874,43 @@ public class PrintfFormat {
 		 * @return the formatted String.
 		 */
 		private String printSFormat(String x) {
-			int nPrint = x.length();
-			int width = fieldWidth;
+			var nPrint = x.length();
+			var width = fieldWidth;
 			if (precisionSet && nPrint > precision)
 				nPrint = precision;
 			if (!fieldWidthSet)
 				width = nPrint;
-			int n = 0;
+			var n = 0;
 			if (width > nPrint)
 				n += width - nPrint;
 			if (nPrint >= x.length())
 				n += x.length();
 			else
 				n += nPrint;
-			char[] ca = new char[n];
-			int i = 0;
+			var ca = new char[n];
+			var i = 0;
 			if (leftJustify) {
 				if (nPrint >= x.length()) {
-					char[] csx = x.toCharArray();
+					var csx = x.toCharArray();
 					for (i = 0; i < x.length(); i++)
 						ca[i] = csx[i];
 				} else {
-					char[] csx = x.substring(0, nPrint).toCharArray();
+					var csx = x.substring(0, nPrint).toCharArray();
 					for (i = 0; i < nPrint; i++)
 						ca[i] = csx[i];
 				}
-				for (int j = 0; j < width - nPrint; j++, i++)
+				for (var j = 0; j < width - nPrint; j++, i++)
 					ca[i] = ' ';
 			} else {
 				for (i = 0; i < width - nPrint; i++)
 					ca[i] = ' ';
 				if (nPrint >= x.length()) {
-					char[] csx = x.toCharArray();
-					for (int j = 0; j < x.length(); i++, j++)
+					var csx = x.toCharArray();
+					for (var j = 0; j < x.length(); i++, j++)
 						ca[i] = csx[j];
 				} else {
-					char[] csx = x.substring(0, nPrint).toCharArray();
-					for (int j = 0; j < nPrint; i++, j++)
+					var csx = x.substring(0, nPrint).toCharArray();
+					for (var j = 0; j < nPrint; i++, j++)
 						ca[i] = csx[j];
 				}
 			}
@@ -2927,9 +2927,9 @@ public class PrintfFormat {
 		private boolean setConversionCharacter() {
 			/* idfgGoxXeEcs */
             conversionCharacter = '\0';
-            boolean ret = false;
+			var ret = false;
             if (pos < fmt.length()) {
-				char c = fmt.charAt(pos);
+				var c = fmt.charAt(pos);
 				if (c == 'i'
 					|| c == 'd'
 					|| c == 'f'
@@ -2964,7 +2964,7 @@ public class PrintfFormat {
 			optionall = false;
 			optionalL = false;
 			if (pos < fmt.length()) {
-				char c = fmt.charAt(pos);
+				var c = fmt.charAt(pos);
                 switch (c) {
                     case 'h':
                         optionalh = true;
@@ -2985,7 +2985,7 @@ public class PrintfFormat {
 		 * Set the precision.
 		 */
 		private void setPrecision() {
-			int firstPos = pos;
+			var firstPos = pos;
 			precisionSet = false;
 			if (pos < fmt.length() && fmt.charAt(pos) == '.') {
 				pos++;
@@ -2997,14 +2997,14 @@ public class PrintfFormat {
 					}
                 } else {
 					while (pos < fmt.length()) {
-						char c = fmt.charAt(pos);
+						var c = fmt.charAt(pos);
 						if (Character.isDigit(c))
 							pos++;
 						else
 							break;
 					}
 					if (pos > firstPos + 1) {
-						String sz = fmt.substring(firstPos + 1, pos);
+						var sz = fmt.substring(firstPos + 1, pos);
 						precision = Integer.parseInt(sz);
 						precisionSet = true;
 					}
@@ -3015,7 +3015,7 @@ public class PrintfFormat {
 		 * Set the field width.
 		 */
 		private void setFieldWidth() {
-			int firstPos = pos;
+			var firstPos = pos;
 			fieldWidth = 0;
 			fieldWidthSet = false;
 			if ((pos < fmt.length()) && (fmt.charAt(pos) == '*')) {
@@ -3026,14 +3026,14 @@ public class PrintfFormat {
 				}
 			} else {
 				while (pos < fmt.length()) {
-					char c = fmt.charAt(pos);
+					var c = fmt.charAt(pos);
 					if (Character.isDigit(c))
 						pos++;
 					else
 						break;
 				}
 				if (firstPos < pos && firstPos < fmt.length()) {
-					String sz = fmt.substring(firstPos, pos);
+					var sz = fmt.substring(firstPos, pos);
 					fieldWidth = Integer.parseInt(sz);
 					fieldWidthSet = true;
 				}
@@ -3065,7 +3065,7 @@ public class PrintfFormat {
 				if (!Character.isDigit(fmt.charAt(xPos)))
 					break;
 			}
-            boolean ret = false;
+			var ret = false;
             if (xPos > pos && xPos < fmt.length()) {
 				if (fmt.charAt(xPos) == '$') {
 					positionalFieldWidth = true;
@@ -3085,7 +3085,7 @@ public class PrintfFormat {
 				if (!Character.isDigit(fmt.charAt(xPos)))
 					break;
 			}
-            boolean ret = false;
+			var ret = false;
             if (xPos > pos && xPos < fmt.length()) {
 				if (fmt.charAt(xPos) == '$') {
 					positionalPrecision = true;
@@ -3127,7 +3127,7 @@ public class PrintfFormat {
 			leadingZeros = false;
             label:
             for (; pos < fmt.length(); pos++) {
-                char c = fmt.charAt(pos);
+				var c = fmt.charAt(pos);
                 switch (c) {
                     case '\'':
                         thousands = true;

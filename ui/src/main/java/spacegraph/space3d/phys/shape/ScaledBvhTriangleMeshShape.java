@@ -55,13 +55,13 @@ public class ScaledBvhTriangleMeshShape extends ConcaveShape {
 
 	@Override
 	public void processAllTriangles(TriangleCallback callback, v3 aabbMin, v3 aabbMax) {
-		ScaledTriangleCallback scaledCallback = new ScaledTriangleCallback(callback, localScaling);
+		var scaledCallback = new ScaledTriangleCallback(callback, localScaling);
 
-		v3 invLocalScaling = new v3();
+		var invLocalScaling = new v3();
 		invLocalScaling.set(1.f / localScaling.x, 1.f / localScaling.y, 1.f / localScaling.z);
 
-		v3 scaledAabbMin = new v3();
-		v3 scaledAabbMax = new v3();
+		var scaledAabbMin = new v3();
+		var scaledAabbMax = new v3();
 
 		
 		scaledAabbMin.x = (localScaling.x >= 0f ? aabbMin.x : aabbMax.x) * invLocalScaling.x;
@@ -77,11 +77,11 @@ public class ScaledBvhTriangleMeshShape extends ConcaveShape {
 
 	@Override
 	public void getAabb(Transform trans, v3 aabbMin, v3 aabbMax) {
-		v3 localAabbMin = bvhTriMeshShape.getLocalAabbMin(new v3());
-		v3 localAabbMax = bvhTriMeshShape.getLocalAabbMax(new v3());
+		var localAabbMin = bvhTriMeshShape.getLocalAabbMin(new v3());
+		var localAabbMax = bvhTriMeshShape.getLocalAabbMax(new v3());
 
-		v3 tmpLocalAabbMin = new v3();
-		v3 tmpLocalAabbMax = new v3();
+		var tmpLocalAabbMin = new v3();
+		var tmpLocalAabbMax = new v3();
 		VectorUtil.mul(tmpLocalAabbMin, localAabbMin, localScaling);
 		VectorUtil.mul(tmpLocalAabbMax, localAabbMax, localScaling);
 
@@ -92,27 +92,27 @@ public class ScaledBvhTriangleMeshShape extends ConcaveShape {
 		localAabbMax.y = (localScaling.y <= 0f) ? tmpLocalAabbMin.y : tmpLocalAabbMax.y;
 		localAabbMax.z = (localScaling.z <= 0f) ? tmpLocalAabbMin.z : tmpLocalAabbMax.z;
 
-		v3 localHalfExtents = new v3();
+		var localHalfExtents = new v3();
 		localHalfExtents.sub(localAabbMax, localAabbMin);
 		localHalfExtents.scaled(0.5f);
 
-		float margin = bvhTriMeshShape.getMargin();
+		var margin = bvhTriMeshShape.getMargin();
 		localHalfExtents.x += margin;
 		localHalfExtents.y += margin;
 		localHalfExtents.z += margin;
 
-		v3 localCenter = new v3();
+		var localCenter = new v3();
 		localCenter.add(localAabbMax, localAabbMin);
 		localCenter.scaled(0.5f);
 
-		Matrix3f abs_b = new Matrix3f(trans.basis);
+		var abs_b = new Matrix3f(trans.basis);
 		MatrixUtil.absolute(abs_b);
 
-		v3 center = new v3(localCenter);
+		var center = new v3(localCenter);
 		trans.transform(center);
 
-		v3 extent = new v3();
-		v3 tmp = new v3();
+		var extent = new v3();
+		var tmp = new v3();
 		abs_b.getRow(0, tmp);
 		extent.x = tmp.dot(localHalfExtents);
 		abs_b.getRow(1, tmp);
@@ -160,7 +160,7 @@ public class ScaledBvhTriangleMeshShape extends ConcaveShape {
 			this.originalCallback = originalCallback;
 			this.localScaling = localScaling;
 			
-			for (int i=0; i<newTriangle.length; i++) {
+			for (var i = 0; i<newTriangle.length; i++) {
 				newTriangle[i] = new v3();
 			}
 		}

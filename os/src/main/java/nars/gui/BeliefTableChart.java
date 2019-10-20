@@ -70,7 +70,7 @@ public class BeliefTableChart extends DurSurface<Stacking> implements Labeled, M
 
             colorize.colorize(gl, freq, conf);
 
-            float Y = y(freq);
+            var Y = y(freq);
 
 
             gl.glVertex2f(
@@ -95,29 +95,29 @@ public class BeliefTableChart extends DurSurface<Stacking> implements Labeled, M
 
         gl.glBegin(GL2ES3.GL_QUADS);
 
-        float midY = y.apply(0.5f, 0.5f);
+        var midY = y.apply(0.5f, 0.5f);
 //
 //        gl.glVertex2f(xTime(minT, minT, maxT), midY);
 //        gl.glVertex2f(xTime(minT, minT, maxT), midY);
 
         wave.forEach((freq, conf, start, end) -> {
 
-            long end1 = end;
+            var end1 = end;
             if (start > maxT || end1 < minT)
                 return;
 
             colorize.colorize(gl, freq, conf);
 
-            float Y = y.apply(freq, conf);
+            var Y = y.apply(freq, conf);
 
-            float x1 = xTime(start);
+            var x1 = xTime(start);
             gl.glVertex2f(x1, midY);
             gl.glVertex2f(x1, Y);
 
             if (start == end1)
                 end1 = start + 1;
 
-            float x2 = xTime(end1);
+            var x2 = xTime(end1);
             gl.glVertex2f(x2, Y);
             gl.glVertex2f(x2, midY);
 
@@ -151,28 +151,28 @@ public class BeliefTableChart extends DurSurface<Stacking> implements Labeled, M
             tasks = new TruthWave(1024);
             this.colorizeLine = beliefOrGoal ?
                     (gl, f, c) -> {
-                        float a = 0.6f + 0.1f * c;
-                        float i = 0.1f + 0.9f * c;  //intensity
-                        float j = 0.05f * (1 - c);
+                        var a = 0.6f + 0.1f * c;
+                        var i = 0.1f + 0.9f * c;  //intensity
+                        var j = 0.05f * (1 - c);
                         gl.glColor4f(i, j, j, a);
                     }
                     :
                     (gl, f, c) -> {
-                        float a = 0.6f + 0.1f * c;
-                        float i = 0.1f + 0.9f * c;  //intensity
-                        float j = 0.05f * (1 - c);
+                        var a = 0.6f + 0.1f * c;
+                        var i = 0.1f + 0.9f * c;  //intensity
+                        var j = 0.05f * (1 - c);
                         gl.glColor4f(j, i, j, a);
                     };
             this.colorizeFill = beliefOrGoal ?
                     (gl, f, c) -> {
-                        float a =
+                        var a =
                             0.25f + 0.5f * (c*c);
                             //c;
                         gl.glColor4f(1, 0, 0, a);
                     }
                     :
                     (gl, f, c) -> {
-                        float a =
+                        var a =
                             0.25f + 0.5f * (c*c);
                             //c;
                         gl.glColor4f(0, 1, 0, a);
@@ -188,12 +188,12 @@ public class BeliefTableChart extends DurSurface<Stacking> implements Labeled, M
             if (table.isEmpty())
                 return;
 
-            int dither = Math.max(1,
+            var dither = Math.max(1,
                     (int) Math.round(((double) (end - start)) / (projections)));
-            long projStart = Util.round(start-dither/2, dither);
-            long projEnd = Math.max(Util.round(end+dither/2, dither), Util.round(start + 1, dither));
+            var projStart = Util.round(start-dither/2, dither);
+            var projEnd = Math.max(Util.round(end+dither/2, dither), Util.round(start + 1, dither));
 
-            int dur = Math.round(nar.dur() * projectDurs.floatValue());
+            var dur = Math.round(nar.dur() * projectDurs.floatValue());
             projected.project(table, projStart, projEnd, projections, term, dur, nar);
             tasks.set(table, start, end);
         }
@@ -210,7 +210,7 @@ public class BeliefTableChart extends DurSurface<Stacking> implements Labeled, M
             gl.glColor3f(0.5f, 0.5f, 0.5f);
             gl.glLineWidth(2f);
 
-            float mid = xTime(now);
+            var mid = xTime(now);
             Draw.line(mid, 0, mid, 1, gl);
 
             renderNodes(gl, tasks);
@@ -221,7 +221,7 @@ public class BeliefTableChart extends DurSurface<Stacking> implements Labeled, M
         }
 
         private void renderNodes(GL2 gl, TruthWave tasks) {
-            BeliefTable table = tasks.table;
+            var table = tasks.table;
             if (table instanceof BeliefTables)
                 ((BeliefTables)table).forEach(b -> renderBeliefTable(gl, b));
             else
@@ -241,13 +241,13 @@ public class BeliefTableChart extends DurSurface<Stacking> implements Labeled, M
             gl.glLineWidth(2f);
             gl.glColor4f(0.5f, 0.5f, 0.5f, 0.75f);
 
-            float fEps = nar.freqResolution.floatValue()/2;
+            var fEps = nar.freqResolution.floatValue()/2;
 
             t.streamNodes().filter(Objects::nonNull).map(n -> (TaskRegion) n.bounds()).filter(b -> b != null && !(b instanceof Task) && b.intersects(start, end)).forEach(b -> {
-                float x1 = xTime(b.start());
-                float x2 = xTime(b.end());
-                float y1 = b.freqMin() - fEps;
-                float y2 = b.freqMax() + fEps;
+                var x1 = xTime(b.start());
+                var x2 = xTime(b.end());
+                var y1 = b.freqMin() - fEps;
+                var y2 = b.freqMax() + fEps;
                 Draw.rectStroke(x1, y1, x2 - x1, y2 - y1, gl);
             });
         }
@@ -255,28 +255,28 @@ public class BeliefTableChart extends DurSurface<Stacking> implements Labeled, M
 
         private void renderTasks(GL2 gl, TruthWave wave, Colorize colorize) {
 
-            float ph = Math.max(taskHeightMin, nar.freqResolution.floatValue());
+            var ph = Math.max(taskHeightMin, nar.freqResolution.floatValue());
 
             wave.forEach((freq, conf, s, e) -> {
 
-                float start = xTime(s);
+                var start = xTime(s);
                 if (start > 1)
                     return;
 
-                float end = xTime(e + 1);
+                var end = xTime(e + 1);
                 if (end < 0)
                     return;
 
                 colorize.colorize(gl, freq, conf);
 
-                float yBottom = BeliefTableChart.y(freq) - ph / 2;
-                float width = end - start;
+                var yBottom = BeliefTableChart.y(freq) - ph / 2;
+                var width = end - start;
                 if (width < taskWidthMin) {
                     //point-like
-                    float w = taskWidthMin; //visible width
-                    float center = (end + start) / 2;
+                    var w = taskWidthMin; //visible width
+                    var center = (end + start) / 2;
 //                    float yMid = freq;
-                    float thick = taskWidthMin/2;
+                    var thick = taskWidthMin/2;
                     //Draw.rectFrame(center, yMid, w, thick, ph, gl);
                     Draw.rectCross(center - w / 2, yBottom, w, ph, thick, gl);
                 } else {
@@ -315,18 +315,18 @@ public class BeliefTableChart extends DurSurface<Stacking> implements Labeled, M
     @Override
     public void update() {
 
-        @Nullable BeliefTable beliefs = nar.tableDynamic(term/* lookup by target, not the termed which could be a dead instance */, true);
-        @Nullable BeliefTable goals = nar.tableDynamic(term/* lookup by target, not the termed which could be a dead instance */, false);
+        @Nullable var beliefs = nar.tableDynamic(term/* lookup by target, not the termed which could be a dead instance */, true);
+        @Nullable var goals = nar.tableDynamic(term/* lookup by target, not the termed which could be a dead instance */, false);
         if (beliefs == null && goals == null)
             return;
 
-        long now = this.now = nar.time();
+        var now = this.now = nar.time();
 
         //TODO different time modes
-        float narDur = nar.dur();
-        double visDurs = this.rangeDurs.doubleValue();
-        long start = now - Math.round(visDurs * narDur);
-        long end = now + Math.round(visDurs * narDur);
+        var narDur = nar.dur();
+        var visDurs = this.rangeDurs.doubleValue();
+        var start = now - Math.round(visDurs * narDur);
+        var end = now + Math.round(visDurs * narDur);
         if (end == start) end = start + 1;
         this.start = start;
         this.end = end;

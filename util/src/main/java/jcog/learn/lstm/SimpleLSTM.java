@@ -48,9 +48,9 @@ public class SimpleLSTM  {
 		
 		full_input_dimension = input_dimension + cell_blocks + 1;
 
-        NeuronType neuron_type_F = NeuronType.Sigmoid;
+		var neuron_type_F = NeuronType.Sigmoid;
         F = Neuron.build(neuron_type_F);
-        NeuronType neuron_type_G = NeuronType.Sigmoid;
+		var neuron_type_G = NeuronType.Sigmoid;
         G = Neuron.build(neuron_type_G);
 		
 		weightsF = new double[cell_blocks][full_input_dimension];
@@ -59,9 +59,9 @@ public class SimpleLSTM  {
 		dSdF = new double[cell_blocks][full_input_dimension];
 		dSdG = new double[cell_blocks][full_input_dimension];
 
-        double init_weight_range = 1.0;
-        for (int i = 0; i < full_input_dimension; i++) {
-			for (int j = 0; j < cell_blocks; j++) {
+		var init_weight_range = 1.0;
+        for (var i = 0; i < full_input_dimension; i++) {
+			for (var j = 0; j < cell_blocks; j++) {
 				weightsF[j][i] = (r.nextDouble() * 2.0d - 1d) * init_weight_range;
 				weightsG[j][i] = (r.nextDouble() * 2.0d - 1d) * init_weight_range;
 			}
@@ -69,8 +69,8 @@ public class SimpleLSTM  {
 		
 		weightsOut = new double[output_dimension][cell_blocks + 1];
 		
-		for (int j = 0; j < cell_blocks + 1; j++) {
-			for (int k = 0; k < output_dimension; k++)
+		for (var j = 0; j < cell_blocks + 1; j++) {
+			for (var k = 0; k < output_dimension; k++)
 				weightsOut[k][j] = (r.nextDouble() * 2.0d - 1d) * init_weight_range;
 		}
 	}
@@ -82,7 +82,7 @@ public class SimpleLSTM  {
 		Arrays.fill(context, 0.0);
 
 		
-		for (int c = 0; c < cell_blocks; c++) {
+		for (var c = 0; c < cell_blocks; c++) {
 			Arrays.fill(this.dSdG[c], 0.0);
 			Arrays.fill(this.dSdF[c], 0.0);
 		}
@@ -92,7 +92,7 @@ public class SimpleLSTM  {
 	/** 0 = total forget, 1 = no forget. proportional version of the RESET operation  */
 	public void forget(float forgetRate) {
 
-		float scalingFactor = 1f - forgetRate;
+		var scalingFactor = 1f - forgetRate;
 
 		if (scalingFactor >= 1)
 			return; 
@@ -103,9 +103,9 @@ public class SimpleLSTM  {
 		}
 
 		scaleInPlace(scalingFactor, context);
-		for (int c = 0; c < cell_blocks; c++)
+		for (var c = 0; c < cell_blocks; c++)
 			scaleInPlace(scalingFactor, this.dSdG[c]);
-		for (int c = 0; c < cell_blocks; c++)
+		for (var c = 0; c < cell_blocks; c++)
 			scaleInPlace(scalingFactor, this.dSdF[c]);
 
 
@@ -127,13 +127,13 @@ public class SimpleLSTM  {
 		if ((this.in == null) || (this.in.length != full_input_dimension)) {
 			this.in = new double[full_input_dimension];
 		}
-		double[] full_input = this.in;
+		var full_input = this.in;
 
-		int loc = 0;
-		for (int i = 0; i < input.length; ) {
+		var loc = 0;
+		for (var i = 0; i < input.length; ) {
 			full_input[loc++] = input[i++];
 		}
-		for (int c = 0; c < context.length; ) {
+		for (var c = 0; c < context.length; ) {
 			full_input[loc++] = context[c++];
 		}
 		full_input[loc++] = 1.0; 
@@ -156,15 +156,15 @@ public class SimpleLSTM  {
 			
 			
 		}
-		double[] full_hidden = this.full_hidden;
+		var full_hidden = this.full_hidden;
 
 		
-		for (int j = 0; j < cell_blocks; j++) {
-			double[] wj = weightsF[j];
-			double[] wg = weightsG[j];
+		for (var j = 0; j < cell_blocks; j++) {
+			var wj = weightsF[j];
+			var wg = weightsG[j];
 			double sf = 0, sg = 0;
-			for (int i = 0; i < full_input_dimension; i++)			{
-				double fi = full_input[i];
+			for (var i = 0; i < full_input_dimension; i++)			{
+				var fi = full_input[i];
 				sf += wj[i] * fi;
 				sg += wg[i] * fi;
 			}
@@ -172,9 +172,9 @@ public class SimpleLSTM  {
 			sumG[j] = sg;
 		}
 		
-		for (int j = 0; j < cell_blocks; j++) {
-			double actfj = actF[j] = F.activate(sumF[j]);
-			double actgj = actG[j] = G.activate(sumG[j]);
+		for (var j = 0; j < cell_blocks; j++) {
+			var actfj = actF[j] = F.activate(sumF[j]);
+			var actgj = actG[j] = G.activate(sumG[j]);
 
 
 			
@@ -184,11 +184,11 @@ public class SimpleLSTM  {
 		full_hidden[cell_blocks] = 1.0; 
 		
 		
-		for (int k = 0; k < output_dimension; k++)
+		for (var k = 0; k < output_dimension; k++)
 		{
-            double[] wk = weightsOut[k];
-            int bound = cell_blocks + 1;
-            double s = IntStream.range(0, bound).mapToDouble(j -> wk[j] * full_hidden[j]).sum();
+			var wk = weightsOut[k];
+			var bound = cell_blocks + 1;
+			var s = IntStream.range(0, bound).mapToDouble(j -> wk[j] * full_hidden[j]).sum();
 
             out[k] = s;
 		}
@@ -200,22 +200,22 @@ public class SimpleLSTM  {
 		
 		
 		
-		for (int j = 0; j < cell_blocks; j++) {
-			
-			double f = actF[j];
-			double df = F.derivate(sumF[j]);
-			double g = actG[j];
-			double dg = G.derivate(sumG[j]);
-			double h_ = context[j]; 
+		for (var j = 0; j < cell_blocks; j++) {
 
-			double[] dsg = dSdG[j];
-			double[] dsf = dSdF[j];
+			var f = actF[j];
+			var df = F.derivate(sumF[j]);
+			var g = actG[j];
+			var dg = G.derivate(sumG[j]);
+			var h_ = context[j];
 
-			for (int i = 0; i < full_input_dimension; i++) {
-				
-				double prevdSdF = dsf[i];
-				double prevdSdG = dsg[i];
-				double in = full_input[i];
+			var dsg = dSdG[j];
+			var dsf = dSdF[j];
+
+			for (var i = 0; i < full_input_dimension; i++) {
+
+				var prevdSdF = dsf[i];
+				var prevdSdG = dsg[i];
+				var in = full_input[i];
 				
 				dsg[i] = ((1.0 - f)*dg*in) + (f*prevdSdG);
 				dsf[i] = ((h_- g)*df*in) + (f*prevdSdF);
@@ -235,18 +235,18 @@ public class SimpleLSTM  {
 				Arrays.fill(deltaH, 0);
 			}
 
-            double SCALE_OUTPUT_DELTA = 1.0;
-            double outputDeltaScale = SCALE_OUTPUT_DELTA;
+			var SCALE_OUTPUT_DELTA = 1.0;
+			var outputDeltaScale = SCALE_OUTPUT_DELTA;
 
-			for (int k = 0; k < output_dimension; k++) {
+			for (var k = 0; k < output_dimension; k++) {
 
-				double dok  = deltaOut[k] = (target_output[k] - out[k]) * outputDeltaScale;
+				var dok  = deltaOut[k] = (target_output[k] - out[k]) * outputDeltaScale;
 
-				double[] wk = weightsOut[k];
+				var wk = weightsOut[k];
 
-				double[] dh = this.deltaH;
-				double[] ah = this.actH;
-				for (int j = cell_blocks - 1; j >= 0; j--) {
+				var dh = this.deltaH;
+				var ah = this.actH;
+				for (var j = cell_blocks - 1; j >= 0; j--) {
 					dh[j] += dok * wk[j];
 					wk[j] += dok * ah[j] * learningRate;
 				}
@@ -256,8 +256,8 @@ public class SimpleLSTM  {
 			}
 			
 			
-			for (int j = 0; j < cell_blocks; j++) {
-				double dhj = deltaH[j];
+			for (var j = 0; j < cell_blocks; j++) {
+				var dhj = deltaH[j];
 				updateWeights(learningRate * dhj, full_input_dimension, dSdF[j], weightsF[j]);
 				updateWeights(learningRate * dhj, full_input_dimension, dSdG[j], weightsG[j]);
 			}
@@ -276,7 +276,7 @@ public class SimpleLSTM  {
 									 int length,
 									 double[] in,
 									 double[] out) {
-		for (int i = length - 1; i >= 0; i--) {
+		for (var i = length - 1; i >= 0; i--) {
 			out[i] += in[i] * learningRate;
 		}
 	}

@@ -94,7 +94,7 @@ public class LinearModel implements Serializable, Cloneable {
         prediction = 0;
 
         
-        for (int i = 0; i < features.length; i++) {
+        for (var i = 0; i < features.length; i++) {
             prediction += weights[i] * features[i];
         }
 
@@ -118,8 +118,8 @@ public class LinearModel implements Serializable, Cloneable {
         }
 
         
-        for (int index = 0; index < lastFeatures.length; index++) {
-            double value = lastFeatures[index];
+        for (var index = 0; index < lastFeatures.length; index++) {
+            var value = lastFeatures[index];
 
             weights[index] += alpha * (delta * value);
         }

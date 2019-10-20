@@ -23,7 +23,7 @@ public class StreamingNormalizer {
 
     public void clear() {
 
-        for (int i = 0; i < dim * 2; i++) {
+        for (var i = 0; i < dim * 2; i++) {
             n[i] = (
                     i % 2 == 0 ? Float.NEGATIVE_INFINITY /* for max */ : Float.POSITIVE_INFINITY /* for min */
             );
@@ -34,12 +34,12 @@ public class StreamingNormalizer {
      * y may be the same as x, it will just get destructively modified
      */
     public float[] normalize(float[] x, float[] y) {
-        for (int i = 0; i < dim; i++) {
-            float v = x[i];
-            float max = n[i * 2];
+        for (var i = 0; i < dim; i++) {
+            var v = x[i];
+            var max = n[i * 2];
             if (v > max)
                 n[i * 2] = v;
-            float min = n[i * 2 + 1];
+            var min = n[i * 2 + 1];
             if (v < min)
                 n[i * 2 + 1] = v;
 
@@ -48,20 +48,20 @@ public class StreamingNormalizer {
         return y;
     }
     public float[] unnormalize(ArrayRealVector v) {
-        double[] vv = v.getDataRef();
-        float[] f = new float[vv.length];
-        for (int i = 0; i < dim; i++) {
-            float max = n[i * 2];
-            float min = n[i * 2 + 1];
+        var vv = v.getDataRef();
+        var f = new float[vv.length];
+        for (var i = 0; i < dim; i++) {
+            var max = n[i * 2];
+            var min = n[i * 2 + 1];
             f[i] = ((float)vv[i]) * (max-min) + min;
         }
         return f;
     }
 
     float maxmin(boolean maxOrMin) {
-        float z = maxOrMin ? Float.NEGATIVE_INFINITY : Float.POSITIVE_INFINITY;
-        for (int i = 0; i < dim; i++) {
-            float m = n[i * 2 + (maxOrMin ? 0 : 1)];
+        var z = maxOrMin ? Float.NEGATIVE_INFINITY : Float.POSITIVE_INFINITY;
+        for (var i = 0; i < dim; i++) {
+            var m = n[i * 2 + (maxOrMin ? 0 : 1)];
             if (maxOrMin ? m > z : m < z)
                 z = m;
         }
@@ -69,7 +69,7 @@ public class StreamingNormalizer {
     }
 
     public void decay(float v) {
-        for (int i = 0; i < dim*2; i++) {
+        for (var i = 0; i < dim*2; i++) {
             n[i] *= v;
         }
     }

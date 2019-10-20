@@ -42,7 +42,7 @@ public class TsneModel implements Graph2D.Graph2DUpdater<DataTable.Instance> {
 
     @Override public void update(Graph2D<DataTable.Instance> g, float dtS) {
 
-        int iters = this.iters.getAsInt();
+        var iters = this.iters.getAsInt();
         if (iters < 1)
             return;
 
@@ -54,15 +54,15 @@ public class TsneModel implements Graph2D.Graph2DUpdater<DataTable.Instance> {
             xx.clear();
             xx.addAll(nn);
 
-            int rows = xx.size();
+            var rows = xx.size();
             if (rows > 0) {
                 //TODO write an overridable extractor method
 //                    int cols = xx.get(0).id.data.size()-1;
                 if (X.length != rows /*|| X[0].length != cols*/) {
                     X = new double[rows][];
                 }
-                int j = 0;
-                for (NodeVis<DataTable.Instance> i : xx) {
+                var j = 0;
+                for (var i : xx) {
                     X[j++] = i.id.toDoubleArray(firstCol, lastCol);
                 }
             } else {
@@ -75,18 +75,18 @@ public class TsneModel implements Graph2D.Graph2DUpdater<DataTable.Instance> {
 
         double gcx = g.cx(), gcy = g.cy();
 
-        double[][] Y = s.next(iters);
-        int j = 0;
+        var Y = s.next(iters);
+        var j = 0;
 
-        int n = X.length;
+        var n = X.length;
         double magnify = spaceScale.floatValue() * g.radius(); ///Math.sqrt(n+1);// * g.radius();// / (float) Math.sqrt(n+1);
-        float nodeScale = this.nodeScale.floatValue();
-        for (NodeVis<DataTable.Instance> i : xx) {
-            double[] Yj = Y[j];
-            double x = (
+        var nodeScale = this.nodeScale.floatValue();
+        for (var i : xx) {
+            var Yj = Y[j];
+            var x = (
                             Yj[0]
                     )*magnify;
-            double y = (
+            var y = (
                             Yj[1]
                     )*magnify;
 
@@ -95,7 +95,7 @@ public class TsneModel implements Graph2D.Graph2DUpdater<DataTable.Instance> {
 //                //Arrays.fill(s.gains[j], 0.0); //reset gains
 
 
-            float w = 10+nodeScale *
+            var w = 10+nodeScale *
                     (((Number)xx.get(j).id.data.get(0)).floatValue() )*0.01f; //customized: first column as size TODO normalize
 
             i.posXYWH((float)(gcx+x), (float)(gcy+y), w, w);

@@ -75,7 +75,7 @@ public enum TermTest { ;
         assertEquals(0, y.compareTo(y));
 
 
-        Op xo = x.op();
+        var xo = x.op();
         assertEquals(xo, y.op());
         if (xo ==NEG) {
             assertTrue(x instanceof Neg);
@@ -85,8 +85,8 @@ public enum TermTest { ;
         assertEquals(x.opBit(), y.opBit());
         assertEquals(x.subs(), y.subs());
 
-        Subterms xs = x.subterms();
-        Subterms ys = y.subterms();
+        var xs = x.subterms();
+        var ys = y.subterms();
         assertEq(xs, ys);
 
 
@@ -102,7 +102,7 @@ public enum TermTest { ;
     }
 
     public static Term assertEq(String exp, String is) {
-        Term t = $$(is);
+        var t = $$(is);
         return assertEq(exp, is, t);
     }
 
@@ -122,7 +122,7 @@ public enum TermTest { ;
         assertEquals(x, y);
 
         try {
-            Term z = y.anon();
+            var z = y.anon();
         } catch (Throwable e) {
             fail(e::toString);
         }
@@ -131,7 +131,7 @@ public enum TermTest { ;
     }
 
     public static Term assertEq(Term z, String x) {
-        Term y = $$(x);
+        var y = $$(x);
         assertEq(z, y);
         assertEq(z, x, y);
         return y;
@@ -189,9 +189,9 @@ public enum TermTest { ;
         assertEq((Termlike)a, (Termlike)b);
 
         assertTrue(Iterators.elementsEqual(a.iterator(), b.iterator()));
-        int s = a.subs();
+        var s = a.subs();
         assertEquals(s, b.subs());
-        for (int i = 0; i < s; i++)
+        for (var i = 0; i < s; i++)
             assertEq(a.sub(i), b.sub(i));
 
         assertEquals(TermBuilder.newCompound(PROD, a), TermBuilder.newCompound(PROD, b));
@@ -205,21 +205,21 @@ public enum TermTest { ;
         Assertions.assertEquals(0, Subterms.compare(a, b));
         Assertions.assertEquals(0, Subterms.compare(a, b));
 
-        boolean aNorm = a.isNormalized();
-        boolean bNorm = b.isNormalized();
+        var aNorm = a.isNormalized();
+        var bNorm = b.isNormalized();
         assertEquals(aNorm, bNorm, () -> a + " (" + a.getClass() + ") normalized=" + aNorm + ", " + " (" + b.getClass() + ") normalized=" + bNorm);
         assertEquals(a.isSorted(), b.isSorted());
         assertEquals(a.isCommuted(), b.isCommuted());
 
         {
-            byte[] bytesExpected = IO.termToBytes($.pFast(a));
-            byte[] bytesActual = IO.termToBytes($.pFast(b));
+            var bytesExpected = IO.termToBytes($.pFast(a));
+            var bytesActual = IO.termToBytes($.pFast(b));
             assertArrayEquals(bytesExpected, bytesActual);
         }
         {
             if (a.subs() > 0) {
-                byte[] bytesExpected = IO.termToBytes($.sFast(a));
-                byte[] bytesActual = IO.termToBytes($.sFast(b));
+                var bytesExpected = IO.termToBytes($.sFast(a));
+                var bytesActual = IO.termToBytes($.sFast(b));
                 assertArrayEquals(bytesExpected, bytesActual);
             }
         }
@@ -247,10 +247,10 @@ public enum TermTest { ;
 
     /** HACK may need to split this into two functions, one which accepts bool result and others which only accept a thrown exception */
     public static void assertInvalidTerms(@NotNull String... inputs) {
-        for (String s : inputs) {
+        for (var s : inputs) {
 
             try {
-                Term e = Narsese.term(s);
+                var e = Narsese.term(s);
                 assertTrue(e instanceof Bool, () -> s + " should not be parseable but got: " + e);
 
             } catch (Narsese.NarseseException | TermException e) {

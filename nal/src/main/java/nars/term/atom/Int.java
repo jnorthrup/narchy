@@ -21,10 +21,10 @@ public final class Int extends Atomic implements The {
 	private static final Int[] neg = new Int[INT_CACHE_SIZE];
 
 	static {
-		for (int i = 0; i < pos.length; i++) {
+		for (var i = 0; i < pos.length; i++) {
 			pos[i] = new Int(i);
 		}
-		for (int i = 1; i < neg.length; i++) {
+		for (var i = 1; i < neg.length; i++) {
 			neg[i] = new Int(-i);
 		}
 	}
@@ -46,7 +46,7 @@ public final class Int extends Atomic implements The {
 	private Int(int i) {
 		this.i = i;
 
-		int intLen = IntCoding.variableByteLengthOfZigZagInt(i); //1 to 4 bytes
+		var intLen = IntCoding.variableByteLengthOfZigZagInt(i); //1 to 4 bytes
 		this.bytesCached = new byte[1 + intLen];
 		bytesCached[0] = Op.INT.id;
 		IntCoding.encodeZigZagVariableInt(i, bytesCached, 1);

@@ -54,7 +54,7 @@ public class WhitespaceState extends TokenizerState {
 	}
 
 	private Token nextTokenWithWhitespaceTokenizing(PushbackReader r, int unicode, Tokenizer t) throws IOException {
-		StringBuilder whitespace = new StringBuilder();
+		var whitespace = new StringBuilder();
 		do {
 			whitespace.append((char) unicode);
 			unicode = r.read();
@@ -95,7 +95,7 @@ public class WhitespaceState extends TokenizerState {
 	 *        range
 	 */
 	private void setWhitespaceChars(int from, int to, boolean b) {
-		for (int i = from; i <= to; i++) {
+		for (var i = from; i <= to; i++) {
 			if (i >= 0 && i < whitespaceChar.length) {
 				whitespaceChar[i] = b;
 			}

@@ -30,7 +30,7 @@ public class Grid1D implements World {
     public Grid1D(int size, int totalTime, double noise, double cycleSkew) {
         this.time = 0;
         this.size = size;
-        double VISUALIZE_PERIOD = Math.pow(10, 4);
+        var VISUALIZE_PERIOD = Math.pow(10, 4);
         this.REWARD_MAGNITUDE = 100.0;
         this.ENERGY_COST =  this.REWARD_MAGNITUDE / 100.0;
         this.JUMP_FRACTION = 0.0;        
@@ -59,9 +59,9 @@ public class Grid1D implements World {
         time++;
         
         this.action = action;
-        
-        
-        double stepSize = (    action[0] + 
+
+
+        var stepSize = (    action[0] +
                             2 * action[1] + 
                             3 * action[2] + 
                             4 * action[3] - 
@@ -100,7 +100,7 @@ public class Grid1D implements World {
         # Represent the presence or absence of the current position in the bin.
         */
         
-        for (int i = 0; i < sensor.length; i++) {
+        for (var i = 0; i < sensor.length; i++) {
             sensor[i] = (Math.random()*noise);
         }            
         sensor[simpleState] = 1 - (Math.random()*noise);
@@ -111,8 +111,8 @@ public class Grid1D implements World {
     }
     
     public double getReward(double[] sensor) {
-        
-        double reward = 0.;
+
+        var reward = 0.;
         reward -= sensor[8] * REWARD_MAGNITUDE;
         reward += sensor[3] * REWARD_MAGNITUDE;
         
@@ -126,8 +126,8 @@ public class Grid1D implements World {
 
     @Override
     public String toString() {
-        String s = "";
-        for (int i = 0; i < size; i++) {
+        var s = "";
+        for (var i = 0; i < size; i++) {
             char c;
             if (i == simpleState)
                 c = 'O';
@@ -136,7 +136,7 @@ public class Grid1D implements World {
             s += c;
         }
         s += "\n";
-        for (int i = 0; i < size; i++) {
+        for (var i = 0; i < size; i++) {
             char c;
             if (action[i] > 0)
                 c = 'X';

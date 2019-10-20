@@ -570,7 +570,7 @@ public class M_Medic {
             game_import_t.sound(self, Defines.CHAN_VOICE, sound_idle1, 1,
                     Defines.ATTN_IDLE, 0);
 
-            edict_t ent = medic_FindDeadMonster(self);
+            var ent = medic_FindDeadMonster(self);
             if (ent != null) {
                 self.enemy = ent;
                 self.enemy.owner = self;
@@ -591,7 +591,7 @@ public class M_Medic {
                     Defines.ATTN_IDLE, 0);
 
             if (self.oldenemy == null) {
-                edict_t ent = medic_FindDeadMonster(self);
+                var ent = medic_FindDeadMonster(self);
                 if (ent != null) {
                     self.oldenemy = self.enemy;
                     self.enemy = ent;
@@ -765,7 +765,7 @@ public class M_Medic {
         public boolean think(edict_t self) {
             if (0 == (self.monsterinfo.aiflags & Defines.AI_MEDIC)) {
 
-                edict_t ent = medic_FindDeadMonster(self);
+                var ent = medic_FindDeadMonster(self);
                 if (ent != null) {
                     self.oldenemy = self.enemy;
                     self.enemy = ent;
@@ -857,7 +857,7 @@ public class M_Medic {
                     || (self.s.frame == FRAME_attack12))
                 effect = Defines.EF_BLASTER;
             else {
-                boolean b = IntStream.of(FRAME_attack19, FRAME_attack22, FRAME_attack25, FRAME_attack28).anyMatch(i -> (self.s.frame == i));
+                var b = IntStream.of(FRAME_attack19, FRAME_attack22, FRAME_attack25, FRAME_attack28).anyMatch(i -> (self.s.frame == i));
                 if (b)
                     effect = Defines.EF_HYPERBLASTER;
                 else
@@ -1152,7 +1152,7 @@ public class M_Medic {
 
             float[] dir = {0, 0, 0};
             Math3D.VectorSubtract(start, self.enemy.s.origin, dir);
-            float distance = Math3D.VectorLength(dir);
+            var distance = Math3D.VectorLength(dir);
             if (distance > 256)
                 return true;
 
@@ -1164,7 +1164,7 @@ public class M_Medic {
             if (Math.abs(angles[0]) > 45)
                 return true;
 
-            trace_t tr = game_import_t.trace(start, null, null, self.enemy.s.origin,
+            var tr = game_import_t.trace(start, null, null, self.enemy.s.origin,
                     self, Defines.MASK_SHOT);
             if (tr.fraction != 1.0 && tr.ent != self.enemy)
                 return true;

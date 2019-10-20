@@ -22,9 +22,9 @@ public class OperatingStack {
     }
 
     public void visit(BranchNode branchNode) {
-        ArrayDeque<Node> st = this.stack;
-        Node right = st.pop();
-        Node left = st.pop();
+        var st = this.stack;
+        var right = st.pop();
+        var left = st.pop();
         branchNode.operate(left, right);
         st.push(branchNode);
     }

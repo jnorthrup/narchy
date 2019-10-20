@@ -60,19 +60,19 @@ public class CliffWalking extends AbstractAgentTest {
 
     @Override
     protected void test(IntIntToObjectFunction<Agent> agentBuilder) {
-        Agent a = agentBuilder.value(shapeX * shapeY, 4);
+        var a = agentBuilder.value(shapeX * shapeY, 4);
 
-        for (int y = 1; y < shapeY-1; y++)
+        for (var y = 1; y < shapeY-1; y++)
             cliff[shapeX-1][y] = true;
 
         float epReward = 0;
         float reward = 0;
 
         int goals = 0, deaths = 0;
-        float[] map = new float[shapeX * shapeY];
+        var map = new float[shapeX * shapeY];
 
-        FloatArrayList episodeReward = new FloatArrayList(2 * cycles/(shapeX*shapeY));
-        for (int i = 0; i < cycles; i++) {
+        var episodeReward = new FloatArrayList(2 * cycles/(shapeX*shapeY));
+        for (var i = 0; i < cycles; i++) {
 
             Arrays.fill(map, 0);
             map[index(x,y)] = 1;
@@ -82,7 +82,7 @@ public class CliffWalking extends AbstractAgentTest {
 //                    }
 //                }
 
-            int action = a.act(reward, map);
+            var action = a.act(reward, map);
 
             switch (action) {
                 case LEFT:
@@ -102,7 +102,7 @@ public class CliffWalking extends AbstractAgentTest {
             }
 
 
-            boolean restart = false;
+            var restart = false;
             if (cliff[x][y]) {
                 reward = -1;
                 deaths++;

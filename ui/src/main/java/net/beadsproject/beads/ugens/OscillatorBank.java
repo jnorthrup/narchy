@@ -129,18 +129,18 @@ public class OscillatorBank extends UGen {
      */
     @Override
     public void gen() {
-        float[] chan = bufOut[0];
+        var chan = bufOut[0];
 
-        float sampleRate = context.getSampleRate();
-        for (int i = 0; i < size; i++) {
+        var sampleRate = context.getSampleRate();
+        for (var i = 0; i < size; i++) {
             increment[i] = frequency.getAt(i) / sampleRate;
         }
 
-        for (int i = 0; i < bufferSize; i++) {
+        for (var i = 0; i < bufferSize; i++) {
             float x =0;
-            for (int j = 0; j < size; j++) {
+            for (var j = 0; j < size; j++) {
 
-                float p = (float) (point[j] + increment[j]);
+                var p = (float) (point[j] + increment[j]);
                 while (p > 1)
                     p -= 1;
                 point[j] = p;

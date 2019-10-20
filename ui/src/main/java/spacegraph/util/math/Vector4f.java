@@ -153,7 +153,7 @@ public class Vector4f extends Tuple4f {
   public final void normalize(Vector4f v1)
   {
 
-      float norm = (float) (1.0 / Math.sqrt(v1.x * v1.x + v1.y * v1.y +
+      var norm = (float) (1.0 / Math.sqrt(v1.x * v1.x + v1.y * v1.y +
               v1.z * v1.z + v1.w * v1.w));
       this.x = v1.x*norm;
     this.y = v1.y*norm;
@@ -168,7 +168,7 @@ public class Vector4f extends Tuple4f {
   public final void normalize()
   {
 
-      float norm = (float) (1.0 / Math.sqrt(this.x * this.x + this.y * this.y +
+      var norm = (float) (1.0 / Math.sqrt(this.x * this.x + this.y * this.y +
               this.z * this.z + this.w * this.w));
       this.x *= norm;
     this.y *= norm;

@@ -45,12 +45,12 @@ public class ParseTreeUtils {
             this.start = start;
             this.rep = rep;
             this.end = end;
-            StringJoiner joiner = new StringJoiner("", start.getExample(), end.getExample());
-            for (ParseTreeNode parseTreeNode : rep) {
-                String parseTreeNodeExample = parseTreeNode.getExample();
+            var joiner = new StringJoiner("", start.getExample(), end.getExample());
+            for (var parseTreeNode : rep) {
+                var parseTreeNodeExample = parseTreeNode.getExample();
                 joiner.add(parseTreeNodeExample);
             }
-            String sb = joiner.toString();
+            var sb = joiner.toString();
             this.example = sb;
         }
 
@@ -182,9 +182,9 @@ public class ParseTreeUtils {
 
     public static ParseTreeNode getParseTreeRepConst(Node node) {
         if (node instanceof RepetitionNode) {
-            RepetitionNode repNode = (RepetitionNode) node;
-            ParseTreeNode start = getParseTreeRepConst(repNode.start);
-            ParseTreeNode end = getParseTreeRepConst(repNode.end);
+            var repNode = (RepetitionNode) node;
+            var start = getParseTreeRepConst(repNode.start);
+            var end = getParseTreeRepConst(repNode.end);
             return new ParseTreeRepetitionNode(repNode, start,
                     (repNode.rep instanceof MultiAlternationNode) ?
                             getParseTreeAlt((MultiAlternationNode) repNode.rep)
@@ -205,7 +205,7 @@ public class ParseTreeUtils {
 
     private static void getDescendantsHelper(ParseTreeNode node, List<ParseTreeNode> descendants) {
         descendants.add(node);
-        for (ParseTreeNode child : node.getChildren()) {
+        for (var child : node.getChildren()) {
             getDescendantsHelper(child, descendants);
         }
     }
@@ -222,7 +222,7 @@ public class ParseTreeUtils {
         } else {
             descendants[1].add(node);
         }
-        for (ParseTreeNode child : node.getChildren()) {
+        for (var child : node.getChildren()) {
             getDescendantsByTypeHelper(child, descendants);
         }
     }
@@ -238,9 +238,9 @@ public class ParseTreeUtils {
         if (node == cur) {
             return sub;
         } else if (node instanceof ParseTreeRepetitionNode) {
-            ParseTreeRepetitionNode repNode = (ParseTreeRepetitionNode) node;
+            var repNode = (ParseTreeRepetitionNode) node;
 
-            List<ParseTreeNode> newRep = repNode.rep.stream().map(rep -> getSubstitute(rep, cur, sub)).collect(Collectors.toList());
+            var newRep = repNode.rep.stream().map(rep -> getSubstitute(rep, cur, sub)).collect(Collectors.toList());
 
             return new ParseTreeRepetitionNode(repNode.node,
                     getSubstitute(repNode.start, cur, sub),
@@ -248,7 +248,7 @@ public class ParseTreeUtils {
                     getSubstitute(repNode.end, cur, sub));
 
         } else if (node instanceof ParseTreeMultiAlternationNode) {
-            ParseTreeMultiAlternationNode pn = (ParseTreeMultiAlternationNode) node;
+            var pn = (ParseTreeMultiAlternationNode) node;
             return new ParseTreeMultiAlternationNode(pn.node, getSubstitute(pn.choice, cur, sub));
         } else if (node instanceof ParseTreeMultiConstantNode) {
             return node;

@@ -43,8 +43,8 @@ public enum GraphIO { ;
      */
     public static void writeEdgeList(Graph g, PrintStream out) {
 
-        for (int i = 0; i < g.size(); ++i) {
-            int ii = i;
+        for (var i = 0; i < g.size(); ++i) {
+            var ii = i;
             g.neighborsOut(i).forEach(o -> out.println(ii + " " + o));
         }
     }
@@ -59,7 +59,7 @@ public enum GraphIO { ;
 
         out.println("# " + g.size());
 
-        for (int i = 0; i < g.size(); ++i) {
+        for (var i = 0; i < g.size(); ++i) {
             out.print(i + " ");
             g.neighborsOut(i).forEach(o -> out.print(o + " "));
             out.println();
@@ -76,8 +76,8 @@ public enum GraphIO { ;
 
         out.println((g.directed() ? "digraph" : "graph") + " {");
 
-        for (int i = 0; i < g.size(); ++i) {
-            int ii = i;
+        for (var i = 0; i < g.size(); ++i) {
+            var ii = i;
             g.neighborsOut(i).forEach(j -> {
                 if (g.directed())
                     out.println(ii + " -> " + j + ';');
@@ -100,12 +100,12 @@ public enum GraphIO { ;
 
         out.println("graph [ directed " + (g.directed() ? "1" : "0"));
 
-        int size = g.size();
-        for (int i = 0; i < size; ++i)
+        var size = g.size();
+        for (var i = 0; i < size; ++i)
             out.println("node [ id " + i + " label \"" + g.vertex(i) + "\" ]");
 
-        for (int i = 0; i < size; ++i) {
-            int ii = i;
+        for (var i = 0; i < size; ++i) {
+            var ii = i;
             g.neighborsOut(i).forEach(o -> {
                 out.println(
                         "edge [ source " + ii + " target " + o + " ]"); //TODO edge label
@@ -124,12 +124,12 @@ public enum GraphIO { ;
     public static void writeNetmeter(Graph g, PrintStream out) {
 
         out.println("*Vertices " + g.size());
-        for (int i = 0; i < g.size(); ++i)
+        for (var i = 0; i < g.size(); ++i)
             out.println((i + 1) + " \"" + (i + 1) + '"');
 
         out.println("*Arcs");
-        for (int i = 0; i < g.size(); ++i) {
-            int ii = i;
+        for (var i = 0; i < g.size(); ++i) {
+            var ii = i;
             g.neighborsOut(i).forEach(o -> out.println((ii + 1) + " " +
                     (o + 1) + " 1"));
         }
@@ -146,7 +146,7 @@ public enum GraphIO { ;
 
         out.println("DL\nN=" + g.size() + "\nFORMAT=NODELIST\nDATA:");
 
-        for (int i = 0; i < g.size(); ++i) {
+        for (var i = 0; i < g.size(); ++i) {
             out.print(" " + (i + 1));
             g.neighborsOut(i).forEach(o -> out.print(" " + (o + 1)));
             out.println();
@@ -164,10 +164,10 @@ public enum GraphIO { ;
 
         out.println("DL\nN=" + g.size() + "\nDATA:");
 
-        for (int i = 0; i < g.size(); ++i) {
-            BitSet bs = new BitSet(g.size());
+        for (var i = 0; i < g.size(); ++i) {
+            var bs = new BitSet(g.size());
             g.neighborsOut(i).forEach(bs::set);
-            for (int j = 0; j < g.size(); ++j) {
+            for (var j = 0; j < g.size(); ++j) {
                 out.print(bs.get(j) ? " 1" : " 0");
             }
             out.println();
@@ -188,12 +188,12 @@ public enum GraphIO { ;
         if (g.directed()) System.err.println(
                 "warning: you're saving a directed graph in Chaco format");
 
-        int bound = g.size();
-        long edges = IntStream.range(0, bound).mapToLong(i1 -> g.neighborsOut(i1).size()).sum();
+        var bound = g.size();
+        var edges = IntStream.range(0, bound).mapToLong(i1 -> g.neighborsOut(i1).size()).sum();
 
         out.println(g.size() + " " + edges / 2);
 
-        for (int i = 0; i < g.size(); ++i) {
+        for (var i = 0; i < g.size(); ++i) {
             g.neighborsOut(i).forEach(o -> out.print((o + 1) + " "));
             out.println();
         }
@@ -228,30 +228,30 @@ public enum GraphIO { ;
     public static Graph readNewscastGraph(String file, int direction)
             throws IOException {
 
-        AdjGraph gr = new AdjGraph(direction != 2);
-        FileInputStream fis = new FileInputStream(file);
-        DataInputStream dis = new DataInputStream(fis);
+        var gr = new AdjGraph(direction != 2);
+        var fis = new FileInputStream(file);
+        var dis = new DataInputStream(fis);
 
         dis.readByte();
         dis.readByte();
         dis.readByte();
 
-        int MODE = dis.readInt();
+        var MODE = dis.readInt();
         if (MODE != 1) throw new IOException("Unknown mode " + MODE);
 
-        int CACHESIZE = dis.readInt();
-        int GRAPHSIZE = dis.readInt();
+        var CACHESIZE = dis.readInt();
+        var GRAPHSIZE = dis.readInt();
 
 
 
-        for (int i = 1; i <= GRAPHSIZE; ++i) {
-            int iind = gr.addNode(i);
+        for (var i = 1; i <= GRAPHSIZE; ++i) {
+            var iind = gr.addNode(i);
 
-            for (int j = 0; j < CACHESIZE; ++j) {
-                int a = dis.readInt();
+            for (var j = 0; j < CACHESIZE; ++j) {
+                var a = dis.readInt();
                 dis.readLong();
 
-                int agentIndex = gr.addNode(a);
+                var agentIndex = gr.addNode(a);
                 if (direction == 0) gr.setEdge(iind, agentIndex);
                 else gr.setEdge(agentIndex, iind);
             }

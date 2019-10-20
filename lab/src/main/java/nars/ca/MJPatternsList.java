@@ -29,7 +29,7 @@ public class MJPatternsList extends Dialog implements ActionListener {
 		add("North", lblPrompt);
 		add("Center", LstFiles);
 
-		Panel pnlButtons = new Panel();
+		var pnlButtons = new Panel();
 		pnlButtons.setLayout(new FlowLayout());
 		pnlButtons.add(btnLoad = new Button(" Load "));
 		btnLoad.addActionListener(this);
@@ -37,11 +37,11 @@ public class MJPatternsList extends Dialog implements ActionListener {
 		btnCcl.addActionListener(this);
 		add("South", pnlButtons);
 
-		Dimension d = getToolkit().getScreenSize();
+		var d = getToolkit().getScreenSize();
 		setLocation(d.width / 4, d.height / 3);
 		setSize(d.width / 6, d.height / 3);
 		setVisible(false);
-		for (int i = 0; i <= MJRules.GAME_LAST; i++) {
+		for (var i = 0; i <= MJRules.GAME_LAST; i++) {
 			vPatterns[i] = new Vector();
 		}
 		AddPatterns();
@@ -53,14 +53,14 @@ public class MJPatternsList extends Dialog implements ActionListener {
 	@SuppressWarnings("HardcodedFileSeparator")
 	private void AddPatterns() {
 
-        Vector vLines = new Vector();
-        MJTools mjT = new MJTools();
+		var vLines = new Vector();
+		var mjT = new MJTools();
 		if (MJTools.LoadResTextFile("pat.txt", vLines)) // load the file with pattern names
 		{
-            int iGame = -1;
-            int i = -1;
+			var iGame = -1;
+			var i = -1;
             for (i = 0; i < vLines.size(); i++) {
-                String sBff = ((String) vLines.elementAt(i)).trim();
+				var sBff = ((String) vLines.elementAt(i)).trim();
                 if ((!sBff.isEmpty())
 						&& !((String) vLines.elementAt(i)).startsWith("//")) {
 					if (sBff.length() > 0 && sBff.charAt(0) == '#') // next family of rules
@@ -84,9 +84,9 @@ public class MJPatternsList extends Dialog implements ActionListener {
 		sGameName = mjUI.cmbGames.getSelectedItem();
 
 		LstFiles.clear();
-        int iGame = MJRules.GetGameIndex(sGameName);
+		var iGame = MJRules.GetGameIndex(sGameName);
 		if (MJRules.IsGameIdxValid(iGame))
-			for (int i = 0; i < vPatterns[iGame].size(); i++)
+			for (var i = 0; i < vPatterns[iGame].size(); i++)
 				if (((String) vPatterns[iGame].elementAt(i))
 						.startsWith(sRuleName + '/'))
 					LstFiles.add(((String) vPatterns[iGame].elementAt(i))
@@ -98,7 +98,7 @@ public class MJPatternsList extends Dialog implements ActionListener {
 	@SuppressWarnings("HardcodedFileSeparator")
 	private void LoadCurrentPattern() {
 		if (LstFiles.getSelectedIndex() >= 0) {
-			String sItem = LstFiles.getSelectedItem();
+			var sItem = LstFiles.getSelectedItem();
 			lblPrompt.setText("Please wait...");
 			try {
 				mjUI.mjo.OpenFile(sGameName + '/' + sRuleName + '/' + sItem);

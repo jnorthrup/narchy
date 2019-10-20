@@ -65,13 +65,13 @@ public class Panner extends UGen implements DataBeadReceiver {
     @Override
     public void gen() {
 
-        float[] bi = bufIn[0];
-        float[] bo1 = bufOut[0];
-        float[] bo2 = bufOut[1];
+        var bi = bufIn[0];
+        var bo1 = bufOut[0];
+        var bo2 = bufOut[1];
 
         if (isPosStatic) {
 
-            for (int currsample = 0; currsample < bufferSize; currsample++) {
+            for (var currsample = 0; currsample < bufferSize; currsample++) {
                 bo1[currsample] = p1 * bi[currsample];
                 bo2[currsample] = p2 * bi[currsample];
             }
@@ -80,7 +80,7 @@ public class Panner extends UGen implements DataBeadReceiver {
 
             posUGen.update();
 
-            for (int currsample = 0; currsample < bufferSize; currsample++) {
+            for (var currsample = 0; currsample < bufferSize; currsample++) {
 
                 if ((pos = posUGen.getValue(0, currsample)) >= 1) {
                     p1 = 0;
@@ -90,7 +90,7 @@ public class Panner extends UGen implements DataBeadReceiver {
                     p2 = 0;
                 } else {
                     int n1;
-                    float f = (pos + 1) * .5f * rootSize;
+                    var f = (pos + 1) * .5f * rootSize;
                     f -= (n1 = (int) Math.floor(f));
                     p2 = ROOTS[n1] * (1 - f) + ROOTS[n1 + 1] * f;
                     p1 = ROOTS[rootSize - n1] * (1 - f)
@@ -110,8 +110,8 @@ public class Panner extends UGen implements DataBeadReceiver {
      * @return The array.
      */
     private static float[] buildRoots(int rs) {
-        float[] roots = new float[rs + 2];
-        for (int i = 0; i < rs + 1; i++) {
+        var roots = new float[rs + 2];
+        for (var i = 0; i < rs + 1; i++) {
             roots[i] = (float) Math.sqrt((float) i / rs);
         }
         roots[rs + 1] = 1;
@@ -142,7 +142,7 @@ public class Panner extends UGen implements DataBeadReceiver {
             p2 = 0;
         } else {
             int n1;
-            float f = (pos + 1) * .5f * rootSize;
+            var f = (pos + 1) * .5f * rootSize;
             f -= (n1 = (int) Math.floor(f));
             p2 = ROOTS[n1] * (1 - f) + ROOTS[n1 + 1] * f;
             p1 = ROOTS[rootSize - n1] * (1 - f) + ROOTS[rootSize - (n1 + 1)]
@@ -219,7 +219,7 @@ public class Panner extends UGen implements DataBeadReceiver {
      * @return The DataBead with the stored parameter.
      */
     public DataAuvent getParams() {
-        DataAuvent db = new DataAuvent();
+        var db = new DataAuvent();
 
         if (isPosStatic) {
             db.put("position", pos);
@@ -236,7 +236,7 @@ public class Panner extends UGen implements DataBeadReceiver {
      * @return The DataBead with the static float parameter value.
      */
     public DataAuvent getStaticParams() {
-        DataAuvent db = new DataAuvent();
+        var db = new DataAuvent();
         db.put("position", pos);
         return db;
     }

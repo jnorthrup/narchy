@@ -124,7 +124,7 @@ public final class Answer implements Timed, Predicate<Task> {
 
     static FloatRank<Task> taskStrength(boolean beliefOrQuestion, long start, long end, @Nullable Term template) {
 
-        FloatRank<Task> strength =
+        var strength =
                 beliefOrQuestion ?
                     (start == ETERNAL ?
                         beliefStrengthInEternity()
@@ -151,12 +151,12 @@ public final class Answer implements Timed, Predicate<Task> {
 
     private static FloatRank<Task> intermpolateStrength(FloatRank<Task> strength, Term template) {
         return (x, min) -> {
-            float str = strength.rank(x, min);
+            var str = strength.rank(x, min);
             if (str < min)
                 return Float.NaN; //already below thresh
 
-            Term xt = x.term();
-            float dtDiff = Intermpolate.dtDiff(template, xt);
+            var xt = x.term();
+            var dtDiff = Intermpolate.dtDiff(template, xt);
             if (!Float.isFinite(dtDiff)) {
 //                /* probably safe to ignore caused by a Dynamic task result that doesnt quite match what is being sought
 //                   TODO record a misfire event. this will measure how much dynamic task generation is reducing efficiency
@@ -176,7 +176,7 @@ public final class Answer implements Timed, Predicate<Task> {
 //            }
             //dtDiff = dtDiff > 0 ? (float) Math.log(1+dtDiff) : 0; //HACK
 
-            float d = 1 / (1 + dtDiff);
+            var d = 1 / (1 + dtDiff);
             return str * d;
         };
     }
@@ -190,7 +190,7 @@ public final class Answer implements Timed, Predicate<Task> {
                         (t, m) -> t.pri()
                         :
                         (t, m) -> {
-                            float pri = t.pri(); // * t.originality();
+                            var pri = t.pri(); // * t.originality();
                             if (pri == pri && pri > m)
                                 return (float) (pri / (1 + t.maxTimeTo(start, end)));
                                 //return (float) (pri / (1 + Math.log(1+t.minTimeTo(start, end))));
@@ -234,14 +234,14 @@ public final class Answer implements Timed, Predicate<Task> {
      */
     private @Nullable Task task(boolean topOrSample, boolean forceProject, boolean ditherTruth, boolean ditherTime) {
 
-        int s = tasks.size();
+        var s = tasks.size();
         if (s == 0)
             return null;
 
         ditherTruth(ditherTruth); //enable/disable truth dithering
 
 
-        Task t = topOrSample ? taskTop(forceProject) : taskSample();
+        var t = topOrSample ? taskTop(forceProject) : taskSample();
         if (t == null)
             return null; //why?  intermpolate?
 
@@ -249,15 +249,15 @@ public final class Answer implements Timed, Predicate<Task> {
 //            assert(t.range() >= end-start);
 
 
-        double eviMin = eviMin();
+        var eviMin = eviMin();
         if (t.evi() < eviMin)
             return null;
 
         //dont bother sub-projecting eternal here.
         if (forceProject) {
-            long ss = start;
+            var ss = start;
             if (ss != ETERNAL) {
-                long ee = end;
+                var ee = end;
                 t = Task.project(t, ss, ee, eviMin, ditherTruth, ditherTime ? nar.dtDither() : 1, dur, false, nar);
             }
         }
@@ -267,8 +267,8 @@ public final class Answer implements Timed, Predicate<Task> {
     }
 
     private Task taskTop(boolean forceProject) {
-        Task root = tasks.first();
-        int s = tasks.size();
+        var root = tasks.first();
+        var s = tasks.size();
         if (s == 1 && (!forceProject || start==ETERNAL || (root.start() == start && root.end() == end)))
             return root;
 
@@ -299,7 +299,7 @@ public final class Answer implements Timed, Predicate<Task> {
     public @Nullable Truth truth(float perceptualDur) {
         assert (!ditherTruth); //assert (eviMin() <= NAL.truth.EVI_MIN);
 
-        TruthProjection tp = truthProjection();
+        var tp = truthProjection();
 
         if (tp != null) {
             tp.dur(perceptualDur);
@@ -313,13 +313,13 @@ public final class Answer implements Timed, Predicate<Task> {
     }
 
     public final @Nullable TruthProjection truthProjection() {
-        int numTasks = tasks.size();
+        var numTasks = tasks.size();
         if (numTasks == 0)
             return null;
 
         //        if (start!=ETERNAL && start!=TIMELESS && Util.or((Task t) -> t.intersects(start, end), 0, tasks.size(), tasks.items)) {
-        long s = start;
-        long e = end;
+        var s = start;
+        var e = end;
 //        } else {
 //            s = e = TIMELESS;
 //        }
@@ -346,7 +346,7 @@ public final class Answer implements Timed, Predicate<Task> {
      * a false return value should signal a stop to any iteration supplying results
      */
     public final boolean test(Task t) {
-        int remain = --ttl;
+        var remain = --ttl;
         if (remain >= 0 && (filter == null || filter.test(t)))
             tasks.add(t);
 
@@ -354,7 +354,7 @@ public final class Answer implements Timed, Predicate<Task> {
     }
 
     public final void test(Task t, BiFunction<Task,Answer,Task> ifSuccessfulInsert) {
-        int remain = --ttl;
+        var remain = --ttl;
         if (remain >= 0 && (filter == null || filter.test(t)))
             tasks.add(ifSuccessfulInsert.apply(t,this));
         // a tiny curry:            ifSuccessfulInsert.andThen(tasks::add).apply(t, this);
@@ -380,9 +380,9 @@ public final class Answer implements Timed, Predicate<Task> {
 
     public final Answer time(long start, long end, boolean dither) {
         if (dither && start!=ETERNAL) {
-            int dtDither = nar.dtDither();
+            var dtDither = nar.dtDither();
             if (dtDither > 1) {
-                long[] se = Tense.dither(new long[] { start, end }, dtDither);
+                var se = Tense.dither(new long[] { start, end }, dtDither);
                 start = se[0];
                 end = se[1];
             }

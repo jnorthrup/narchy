@@ -20,7 +20,7 @@ public class RunThese extends jcog.data.list.FastCoWList<Runnable> implements Ru
 
     public RunThese(Runnable... r) {
         this(r.length);
-        for (Runnable o : r)
+        for (var o : r)
             add(o);
     }
 
@@ -34,7 +34,7 @@ public class RunThese extends jcog.data.list.FastCoWList<Runnable> implements Ru
     }
 
     @Override public final void run() {
-        for (Runnable runnable : this) {
+        for (var runnable : this) {
             runnable.run();
         }
         super.clear();

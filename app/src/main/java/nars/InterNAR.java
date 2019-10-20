@@ -70,7 +70,7 @@ public class InterNAR extends NARPart implements TriConsumer<NAR, Task /* questi
 	public InterNAR(int port, boolean discover, What w) {
 		super();
 
-		NAR nar = w.nar;
+		var nar = w.nar;
 		UDPeer p;
 		try {
 			p = new UDPeer(port, discover);
@@ -175,7 +175,7 @@ public class InterNAR extends NARPart implements TriConsumer<NAR, Task /* questi
 
 		logger.info("{} send {}", peer, next);
 
-		@Nullable byte[] msg = IO.taskToBytes(next);
+		@Nullable var msg = IO.taskToBytes(next);
 		assert (msg != null);
 		if (peer.tellSome(msg, ttl(next), true) > 0) {
 			return 1;
@@ -188,7 +188,7 @@ public class InterNAR extends NARPart implements TriConsumer<NAR, Task /* questi
 	protected void receive(UDPeer.MsgReceived m) {
 
 		try {
-			Task t = TaskIO.bytesToTask(m.data());
+			var t = TaskIO.bytesToTask(m.data());
             if (t.isQuestionOrQuest()) {
                 questions.putAsync(new MsgLink<>(t, m, t.priElseZero()));
             }
@@ -239,14 +239,14 @@ public class InterNAR extends NARPart implements TriConsumer<NAR, Task /* questi
 
 	/** TODO this isnt attached to any event handler yet */
 	@Override public void accept(NAR NAR, Task question, Task answer) {
-        @Nullable MsgLink<Task, UDPeer.MsgReceived> qq = questions.get(question);
+        @Nullable var qq = questions.get(question);
 		if (qq == null)
 			return;
-        UDPeer.MsgReceived q = qq.msg;
+		var q = qq.msg;
 
-		@Nullable byte[] a = IO.taskToBytes(answer);
+		@Nullable var a = IO.taskToBytes(answer);
 		if (a != null) {
-			UDPeer.Msg aa = new UDPeer.Msg(TELL.id, ttl(answer), peer.me, null, a);
+			var aa = new UDPeer.Msg(TELL.id, ttl(answer), peer.me, null, a);
 			if (!peer.seen(aa, 1f))
 				peer.send(aa, q.origin());
 		}

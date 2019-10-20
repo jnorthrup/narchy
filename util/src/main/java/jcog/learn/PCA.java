@@ -30,14 +30,14 @@ public class PCA {
         };
 
 //create real matrix
-        RealMatrix realMatrix = MatrixUtils.createRealMatrix(pointsArray);
+        var realMatrix = MatrixUtils.createRealMatrix(pointsArray);
 
 //create covariance matrix of points, then find eigen vectors
 //see https://stats.stackexchange.com/questions/2691/making-sense-of-principal-component-analysis-eigenvectors-eigenvalues
 
-        Covariance covariance = new Covariance(realMatrix);
-        RealMatrix covarianceMatrix = covariance.getCovarianceMatrix();
-        EigenDecomposition ed = new EigenDecomposition(covarianceMatrix);
+        var covariance = new Covariance(realMatrix);
+        var covarianceMatrix = covariance.getCovarianceMatrix();
+        var ed = new EigenDecomposition(covarianceMatrix);
 
         /* feature vectors:
          * Gets the matrix V of the decomposition.
@@ -51,7 +51,7 @@ public class PCA {
          */
         //public RealMatrix getV() {
 
-        RealMatrix V = ed.getV();
+        var V = ed.getV();
         vectors = V.getData();
 
         System.out.println(V);

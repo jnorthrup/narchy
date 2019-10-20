@@ -115,7 +115,7 @@ public abstract class Derivation extends PreDerivation implements Caused, Predic
 
     private Term polarize(Term arg, MutableTruth t) {
         if (t.is()) {
-			boolean tNeg = t.isNegative();
+            var tNeg = t.isNegative();
             if (tNeg != (arg instanceof Neg))
                 arg = arg.neg(); //invert to expected polarity
         } else
@@ -142,7 +142,7 @@ public abstract class Derivation extends PreDerivation implements Caused, Predic
         public @Nullable Term apply(Evaluation e, Subterms xx) {
             Term input = xx.sub(0), replaced = xx.sub(1), replacement = xx.sub(2);
 
-            Term y = Replace.apply(xx, input, replaced, replacement);
+            var y = Replace.apply(xx, input, replaced, replacement);
             if (y != null)
                 retransform.put(replaced, replacement);
 
@@ -217,7 +217,7 @@ public abstract class Derivation extends PreDerivation implements Caused, Predic
     @Override
     public boolean test(PremiseRunnable r) {
 
-        How a = r.action;
+        var a = r.action;
 
         if (a instanceof PatternHow.TruthifyDeriveAction)
             reset(r.truth, r.punc, r.single);
@@ -255,11 +255,11 @@ public abstract class Derivation extends PreDerivation implements Caused, Predic
 
         protected boolean match() {
 
-            Emotion emotion = nar.emotion;
+            var emotion = nar.emotion;
 
             emotion.deriveUnified.increment();
 
-            Taskify x = Derivation.this.taskify;
+            var x = Derivation.this.taskify;
 
             Term y;
 
@@ -303,7 +303,7 @@ public abstract class Derivation extends PreDerivation implements Caused, Predic
 
 
         this.random = nar.random();
-        for (Unify u : _u) u.random = random;
+        for (var u : _u) u.random = random;
 
         this.anon = new AnonWithVarShift(ANON_INITIAL_CAPACITY,
             Op.VAR_INDEP.bit | Op.VAR_DEP.bit | Op.VAR_QUERY.bit
@@ -359,7 +359,7 @@ public abstract class Derivation extends PreDerivation implements Caused, Predic
         if (nextBelief != null) {
             beliefTruth_at_Belief.set( nextBelief.truth() );
 
-            long nextBeliefStart = nextBelief.start();
+            var nextBeliefStart = nextBelief.start();
             beliefTruth_at_Task.set(
                 (taskStart == ETERNAL || nextBeliefStart == ETERNAL) ?
                     beliefTruth_at_Belief : beliefAtTask(nextBelief)
@@ -408,7 +408,7 @@ public abstract class Derivation extends PreDerivation implements Caused, Predic
         if (!b.hasAny(Op.Variable & t.structure())) {
             shift = shiftRandomOrCompletely = false; //unnecessary
         } else {
-            float r = random.nextFloat();
+            var r = random.nextFloat();
             if (b.equalsRoot(t)) {
                 shift = r < PREMISE_SHIFT_EQUALS_ROOT; //structural identity
             } else if (b.containsRecursively(t) || t.containsRecursively(b)) {
@@ -428,16 +428,16 @@ public abstract class Derivation extends PreDerivation implements Caused, Predic
 
 
     private @Nullable Truth beliefAtTask(Task nextBelief) {
-        @Nullable Truth t = nextBelief.truth(taskStart, taskEnd, dur, true); //integration-calculated
+        @Nullable var t = nextBelief.truth(taskStart, taskEnd, dur, true); //integration-calculated
         return t!=null && t.evi() >= eviMin ? t : null;
     }
 
     private Task resetTask(Task nextTask, Task currentTask) {
 
-        Term nextTaskTerm = nextTask.term();
+        var nextTaskTerm = nextTask.term();
 
-        boolean sameTask = currentTask != null && currentTask.equals(nextTask);
-        boolean sameTerm = sameTask || (currentTask != null && currentTask.term().equals(nextTaskTerm));
+        var sameTask = currentTask != null && currentTask.equals(nextTask);
+        var sameTerm = sameTask || (currentTask != null && currentTask.term().equals(nextTaskTerm));
 
         if (sameTerm) {
 
@@ -458,7 +458,7 @@ public abstract class Derivation extends PreDerivation implements Caused, Predic
 
 
         if (!sameTask) {
-            byte p = nextTask.punc();
+            var p = nextTask.punc();
             this.taskTruth.set(
                 ((((this.taskPunc = p)) == BELIEF) || (p == GOAL)) ?
                     nextTask.truth() : null
@@ -471,7 +471,7 @@ public abstract class Derivation extends PreDerivation implements Caused, Predic
     }
 
     private void budget(Task task, Task belief) {
-        float taskPri = task.priElseZero();
+        var taskPri = task.priElseZero();
         priSingle = taskPri;
         priDouble = belief == null ?
                 taskPri :
@@ -492,10 +492,10 @@ public abstract class Derivation extends PreDerivation implements Caused, Predic
      */
     void truthifyReady() {
 
-        Task task = _task;
+        var task = _task;
         this.overlapSingle = task.isCyclic();
 
-        Task belief = _belief;
+        var belief = _belief;
         //Stamp.overlap(this._task, _belief);
         //N/A
         this.overlapDouble = belief != null ? Stamp.overlapAny(task, belief) : false;
@@ -511,7 +511,7 @@ public abstract class Derivation extends PreDerivation implements Caused, Predic
         ttl(deriveTTL);
         budget(_task, _belief);
 
-        boolean eternalCompletely = (taskStart == ETERNAL) && (_belief == null || beliefStart == ETERNAL);
+        var eternalCompletely = (taskStart == ETERNAL) && (_belief == null || beliefStart == ETERNAL);
         this.temporal = !eternalCompletely || Occurrify.temporal(taskTerm) || (!beliefTerm.equals(taskTerm) && Occurrify.temporal(beliefTerm));
     }
 
@@ -526,7 +526,7 @@ public abstract class Derivation extends PreDerivation implements Caused, Predic
     /** switch to new context */
     public void next(What w) {
 
-        NAR n = nar;
+        var n = nar;
         time = n.time();
 
         the(this.x = w);
@@ -544,14 +544,14 @@ public abstract class Derivation extends PreDerivation implements Caused, Predic
 
         w.tryCommit();
 
-        float uttd = nar.unifyDTToleranceDurs.floatValue();
-        int dtTolerance =
+        var uttd = nar.unifyDTToleranceDurs.floatValue();
+        var dtTolerance =
             //n.dtDither(); //FINE
             //Math.round(n.dtDither() * n.unifyTimeToleranceDurs.floatValue()); //COARSE
             Math.max(1, Math.round(dur * uttd)); //COARSE
             //Math.max(n.dtDither(), Math.round(w.dur() * n.unifyTimeToleranceDurs.floatValue())); //COARSE
 
-        for (Unify u : _u)
+        for (var u : _u)
             u.dtTolerance = dtTolerance;
 
         w.derivePri.reset(this);
@@ -582,10 +582,10 @@ public abstract class Derivation extends PreDerivation implements Caused, Predic
                 be *= _belief.range();
             }
 
-            double tbe = te + be;
-            double tb = tbe < ScalarValue.EPSILON ? 0.5f : te / tbe;
+            var tbe = te + be;
+            var tb = tbe < ScalarValue.EPSILON ? 0.5f : te / tbe;
 
-            long[] e = Stamp.merge(_task.stamp(), _belief.stamp(), (float) tb, unify.random);
+            var e = Stamp.merge(_task.stamp(), _belief.stamp(), (float) tb, unify.random);
             if (stampDouble == null || !Arrays.equals(e, stampDouble))
                 this.stampDouble = e;
             return e;
@@ -610,7 +610,7 @@ public abstract class Derivation extends PreDerivation implements Caused, Predic
      * resolve a target (ex: task target or belief target) with the result of 2nd-layer substitutions
      */
     public Term retransform(Term x) {
-        Term y = x;
+        var y = x;
 
         try {
             y = y.replace(retransform); //substitution/unification derivation functors only
@@ -640,7 +640,7 @@ public abstract class Derivation extends PreDerivation implements Caused, Predic
 
         short[] can;
 
-        Emotion e = nar.emotion;
+        var e = nar.emotion;
         try (var __ = e.derive_C_Pre.time()) {
             can = preReady(p);
         }
@@ -649,13 +649,13 @@ public abstract class Derivation extends PreDerivation implements Caused, Predic
             return e.premiseUnderivable1;
 
         int valid = 0, lastValid = -1;
-        PremiseRunnable[] post = this.post;
+        var post = this.post;
 
         try (var __ = e.derive_D_Truthify.time()) {
             this.truthifyReady();
 
-            How[] branch = this.deriver.program.branch;
-            for (int i = 0; i < can.length; i++) {
+            var branch = this.deriver.program.branch;
+            for (var i = 0; i < can.length; i++) {
                 if ((post[i].pri(branch[can[i]], this)) > Float.MIN_NORMAL) {
                     lastValid = i;
                     valid++;
@@ -684,8 +684,8 @@ public abstract class Derivation extends PreDerivation implements Caused, Predic
                     Arrays.sort(post, 0, can.length, sortByPri);
                 }
 
-                float[] pri = new float[valid];
-                for (int i = 0; i < valid; i++)
+                var pri = new float[valid];
+                for (var i = 0; i < valid; i++)
                     pri[i] = post[i].pri;
                 MutableRoulette.run(pri, random, wi -> 0, this::test);
 
@@ -705,7 +705,7 @@ public abstract class Derivation extends PreDerivation implements Caused, Predic
 
         this._task = resetTask(p.task(), this._task);
 
-        Term nextBeliefTerm = p.beliefTerm();
+        var nextBeliefTerm = p.beliefTerm();
         this._belief = resetBelief(p.belief(), this._beliefTerm = nextBeliefTerm);
 
 
@@ -740,7 +740,7 @@ public abstract class Derivation extends PreDerivation implements Caused, Predic
 
     private static final Comparator<? super PremiseRunnable> sortByPri = (a, b)->{
         if (a==b) return 0;
-        int i = Float.compare(a.pri, b.pri);
+        var i = Float.compare(a.pri, b.pri);
         return i != 0 ? -i : Integer.compare(System.identityHashCode(a), System.identityHashCode(b));
     };
 
@@ -802,7 +802,7 @@ public abstract class Derivation extends PreDerivation implements Caused, Predic
     }
 
     public final boolean isBeliefOrGoal() {
-        byte p = this.punc;
+        var p = this.punc;
         return p == BELIEF || p == GOAL;
     }
 
@@ -839,7 +839,7 @@ public abstract class Derivation extends PreDerivation implements Caused, Predic
 					else if (a == DerivationFunctors.BeliefTerm)
 						return beliefTerm;
 
-					Term b = derivationFunctors.get(a);
+                    var b = derivationFunctors.get(a);
 
 					if (b!=null) {
 //						if (NAL.DEBUG) {

@@ -59,8 +59,8 @@ import java.util.function.Consumer;
         if (p != null && supportsSpatialIndex()) {
             applyWithIndex(p.index);
         } else {
-            ParticleBehavior2D c = this;
-            for (VerletParticle2D particle : p.particles) {
+            var c = this;
+            for (var particle : p.particles) {
                 c.accept(particle);
             }
         }

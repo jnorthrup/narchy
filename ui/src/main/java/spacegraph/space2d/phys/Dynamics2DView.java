@@ -55,16 +55,16 @@ public class Dynamics2DView extends PaintSurface {
 //            gl.glColor3f(0.5f,0.5f,0.5f);
 //        }
 //        v2 v = new v2();
-        for (Fixture f = body.fixtures; f != null; f = f.next) {
-            PolygonFixture pg = f.polygon;
+        for (var f = body.fixtures; f != null; f = f.next) {
+            var pg = f.polygon;
             if (pg != null) {
                 renderer.drawSolidPolygon(body, pg.vertices(), pg.size(), new Color3f(0.5f, 0.25f, 0.25f));
 
             } else {
-                Shape shape = f.shape();
+                var shape = f.shape();
                 switch (shape.m_type) {
                     case POLYGON:
-                        PolygonShape poly = (PolygonShape) shape;
+                        var poly = (PolygonShape) shape;
 
                         renderer.drawSolidPolygon(body, poly.vertex, poly.vertices, new Color3f(0.25f, 0.5f, 0.25f));
 //                        for (int i = 0; i < poly.vertices; ++i) {
@@ -77,16 +77,16 @@ public class Dynamics2DView extends PaintSurface {
                         break;
                     case CIRCLE:
 
-                        CircleShape circle = (CircleShape) shape;
-                        float r = circle.skinRadius;
-                        v2 v = new v2();
+                        var circle = (CircleShape) shape;
+                        var r = circle.skinRadius;
+                        var v = new v2();
                         body.getWorldPointToOut(circle.center, v);
                         renderer.drawCircle(v, r, new Color3f(0.25f,0.25f,0.5f));
                         break;
                     case EDGE:
-                        EdgeShape edge = (EdgeShape) shape;
-                        v2 v1 = edge.m_vertex1;
-                        v2 v2 = edge.m_vertex2;
+                        var edge = (EdgeShape) shape;
+                        var v1 = edge.m_vertex1;
+                        var v2 = edge.m_vertex2;
                         renderer.drawSegment(body.getWorldPoint(v1), body.getWorldPoint(v2), new Color3f(0.75f,0.75f,0.75f));
 //                        Point p1 = getPoint(v1);
 //                        Point p2 = getPoint(v2);
@@ -153,11 +153,11 @@ public class Dynamics2DView extends PaintSurface {
 
 
         private void transformViewport(GL2 gl, v2 center) {
-            v2 e = viewportTransform.getExtents();
-            v2 vc = viewportTransform.getCenter();
-            Mat22 vt = viewportTransform.getMat22Representation();
+            var e = viewportTransform.getExtents();
+            var vc = viewportTransform.getCenter();
+            var vt = viewportTransform.getMat22Representation();
 
-            int f = viewportTransform.isYFlip() ? -1 : 1;
+            var f = viewportTransform.isYFlip() ? -1 : 1;
             mat[0] = vt.ex.x;
             mat[4] = vt.ey.x;
             // mat[8] = 0;
@@ -181,7 +181,7 @@ public class Dynamics2DView extends PaintSurface {
 
         @Override
         public void drawPoint(v2 argPoint, float argRadiusOnScreen, Color3f argColor) {
-            v2 vec = getWorldToScreen(argPoint);
+            var vec = getWorldToScreen(argPoint);
             gl.glPointSize(argRadiusOnScreen);
             gl.glBegin(GL.GL_POINTS);
             gl.glVertex2f(vec.x, vec.y);
@@ -197,8 +197,8 @@ public class Dynamics2DView extends PaintSurface {
             transformViewport(gl, zero);
             gl.glBegin(GL.GL_LINE_LOOP);
             gl.glColor4f(color.x, color.y, color.z, 1f);
-            for (int i = 0; i < vertexCount; i++) {
-                v2 v = vertices[i];
+            for (var i = 0; i < vertexCount; i++) {
+                var v = vertices[i];
                 gl.glVertex2f(v.x, v.y);
             }
             gl.glEnd();
@@ -212,8 +212,8 @@ public class Dynamics2DView extends PaintSurface {
             transformViewport(gl, zero);
             gl.glBegin(GL.GL_TRIANGLE_FAN);
             gl.glColor4f(color.x, color.y, color.z, .8f);
-            for (int i = 0; i < vertexCount; i++) {
-                v2 w = b.getWorldPoint(vertices[i]);
+            for (var i = 0; i < vertexCount; i++) {
+                var w = b.getWorldPoint(vertices[i]);
                 gl.glVertex2f(w.x, w.y);
             }
             gl.glEnd();
@@ -233,19 +233,19 @@ public class Dynamics2DView extends PaintSurface {
 
             gl.glPushMatrix();
             transformViewport(gl, zero);
-            float theta = 2 * MathUtils.PI / NUM_CIRCLE_POINTS;
-            float c = (float) Math.cos(theta);
-            float s = (float) Math.sin(theta);
-            float cx = center.x;
-            float cy = center.y;
+            var theta = 2 * MathUtils.PI / NUM_CIRCLE_POINTS;
+            var c = (float) Math.cos(theta);
+            var s = (float) Math.sin(theta);
+            var cx = center.x;
+            var cy = center.y;
             gl.glBegin(GL.GL_LINE_LOOP);
             gl.glColor4f(color.x, color.y, color.z, 1);
             float y = 0;
-            float x = radius;
-            for (int i = 0; i < NUM_CIRCLE_POINTS; i++) {
+            var x = radius;
+            for (var i = 0; i < NUM_CIRCLE_POINTS; i++) {
                 gl.glVertex3f(x + cx, y + cy, 0);
                 // apply the rotation matrix
-                float temp = x;
+                var temp = x;
                 x = c * x - s * y;
                 y = s * temp + c * y;
             }
@@ -258,19 +258,19 @@ public class Dynamics2DView extends PaintSurface {
 
             gl.glPushMatrix();
             transformViewport(gl, zero);
-            float theta = 2 * MathUtils.PI / NUM_CIRCLE_POINTS;
-            float c = (float) Math.cos(theta);
-            float s = (float) Math.sin(theta);
-            float cx = center.x;
-            float cy = center.y;
+            var theta = 2 * MathUtils.PI / NUM_CIRCLE_POINTS;
+            var c = (float) Math.cos(theta);
+            var s = (float) Math.sin(theta);
+            var cx = center.x;
+            var cy = center.y;
             gl.glBegin(GL.GL_LINE_LOOP);
             gl.glColor4f(color.x, color.y, color.z, 1);
             float y = 0;
-            float x = radius;
-            for (int i = 0; i < NUM_CIRCLE_POINTS; i++) {
+            var x = radius;
+            for (var i = 0; i < NUM_CIRCLE_POINTS; i++) {
                 gl.glVertex3f(x + cx, y + cy, 0);
                 // apply the rotation matrix
-                float temp = x;
+                var temp = x;
                 x = c * x - s * y;
                 y = s * temp + c * y;
             }
@@ -287,29 +287,29 @@ public class Dynamics2DView extends PaintSurface {
 
             gl.glPushMatrix();
             transformViewport(gl, zero);
-            float theta = 2 * MathUtils.PI / NUM_CIRCLE_POINTS;
-            float c = (float) Math.cos(theta);
-            float s = (float) Math.sin(theta);
-            float cx = center.x;
-            float cy = center.y;
+            var theta = 2 * MathUtils.PI / NUM_CIRCLE_POINTS;
+            var c = (float) Math.cos(theta);
+            var s = (float) Math.sin(theta);
+            var cx = center.x;
+            var cy = center.y;
             gl.glBegin(GL.GL_TRIANGLE_FAN);
             gl.glColor4f(color.x, color.y, color.z, .4f);
             float y = 0;
-            float x = radius;
-            for (int i = 0; i < NUM_CIRCLE_POINTS; i++) {
+            var x = radius;
+            for (var i = 0; i < NUM_CIRCLE_POINTS; i++) {
                 gl.glVertex3f(x + cx, y + cy, 0);
                 // apply the rotation matrix
-                float temp = x;
+                var temp = x;
                 x = c * x - s * y;
                 y = s * temp + c * y;
             }
             gl.glEnd();
             gl.glBegin(GL.GL_LINE_LOOP);
             gl.glColor4f(color.x, color.y, color.z, 1);
-            for (int i = 0; i < NUM_CIRCLE_POINTS; i++) {
+            for (var i = 0; i < NUM_CIRCLE_POINTS; i++) {
                 gl.glVertex3f(x + cx, y + cy, 0);
                 // apply the rotation matrix
-                float temp = x;
+                var temp = x;
                 x = c * x - s * y;
                 y = s * temp + c * y;
             }
@@ -340,27 +340,27 @@ public class Dynamics2DView extends PaintSurface {
             gl.glPushMatrix();
             transformViewport(gl, zero);
 
-            float theta = 2 * MathUtils.PI / NUM_CIRCLE_POINTS;
-            float c = (float) Math.cos(theta);
-            float s = (float) Math.sin(theta);
+            var theta = 2 * MathUtils.PI / NUM_CIRCLE_POINTS;
+            var c = (float) Math.cos(theta);
+            var s = (float) Math.sin(theta);
 
-            float x = radius;
+            var x = radius;
             float y = 0;
 
-            for (int i = 0; i < count; i++) {
-                v2 center = centers[i];
-                float cx = center.x;
-                float cy = center.y;
+            for (var i = 0; i < count; i++) {
+                var center = centers[i];
+                var cx = center.x;
+                var cy = center.y;
                 gl.glBegin(GL.GL_TRIANGLE_FAN);
                 if (colors == null) {
                     gl.glColor4f(1, 1, 1, .4f);
                 } else {
-                    ParticleColor color = colors[i];
+                    var color = colors[i];
                     gl.glColor4b(color.r, color.g, color.b, color.a);
                 }
-                for (int j = 0; j < NUM_CIRCLE_POINTS; j++) {
+                for (var j = 0; j < NUM_CIRCLE_POINTS; j++) {
                     gl.glVertex3f(x + cx, y + cy, 0);
-                    float temp = x;
+                    var temp = x;
                     x = c * x - s * y;
                     y = s * temp + c * y;
                 }
@@ -376,27 +376,27 @@ public class Dynamics2DView extends PaintSurface {
             gl.glPushMatrix();
             transformViewport(gl, zero);
 
-            float theta = 2 * MathUtils.PI / NUM_CIRCLE_POINTS;
-            float c = (float) Math.cos(theta);
-            float s = (float) Math.sin(theta);
+            var theta = 2 * MathUtils.PI / NUM_CIRCLE_POINTS;
+            var c = (float) Math.cos(theta);
+            var s = (float) Math.sin(theta);
 
-            float x = radius;
+            var x = radius;
             float y = 0;
 
-            for (int i = 0; i < count; i++) {
-                v2 center = centers[i];
-                float cx = center.x;
-                float cy = center.y;
+            for (var i = 0; i < count; i++) {
+                var center = centers[i];
+                var cx = center.x;
+                var cy = center.y;
                 gl.glBegin(GL.GL_LINE_LOOP);
                 if (colors == null) {
                     gl.glColor4f(1, 1, 1, 1);
                 } else {
-                    ParticleColor color = colors[i];
+                    var color = colors[i];
                     gl.glColor4b(color.r, color.g, color.b, (byte) 127);
                 }
-                for (int j = 0; j < NUM_CIRCLE_POINTS; j++) {
+                for (var j = 0; j < NUM_CIRCLE_POINTS; j++) {
                     gl.glVertex3f(x + cx, y + cy, 0);
-                    float temp = x;
+                    var temp = x;
                     x = c * x - s * y;
                     y = s * temp + c * y;
                 }
@@ -417,7 +417,7 @@ public class Dynamics2DView extends PaintSurface {
             gl.glBegin(GL.GL_LINES);
             gl.glColor3f(1, 0, 0);
 
-            float k_axisScale = 0.4f;
+            var k_axisScale = 0.4f;
             temp2.x = xf.pos.x + k_axisScale * xf.c;
             temp2.y = xf.pos.y + k_axisScale * xf.s;
             getWorldToScreenToOut(temp2, temp2);

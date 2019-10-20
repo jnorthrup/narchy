@@ -145,9 +145,9 @@ public class a extends GamePanel {
 		
 		for (y = 0; y < 236; y++) {
 			for (x = 0; x < 256; x++) {
-				float Y = 107.5f - y;
-				float py = OY + zy * D + Y * yy;
-				float K = OY / (OY - py);
+				var Y = 107.5f - y;
+				var py = OY + zy * D + Y * yy;
+				var K = OY / (OY - py);
 				floorMap[(y << 8) | x][0] = ((int) (1024 + (x - 127.5f) * K)) - 1024;
 				floorMap[(y << 8) | x][1] = (int) ((Y * zy - yy * D) * K);
 			}
@@ -169,7 +169,7 @@ public class a extends GamePanel {
 			for (j = 0; j < 2; j++) {
 				for (y = 0; y < 16; y++) {
 					for (x = 0; x < 8; x++) {
-						int color = 0x03 & S.charAt(3 + i * 35 + (j << 4) + y) >> (x << 1);
+						var color = 0x03 & S.charAt(3 + i * 35 + (j << 4) + y) >> (x << 1);
 						sprites[i][15 - y][x + (j << 3)] = sprites[i + 8][x + (j << 3)][15 - y] = sprites[i + 16][y][x + (j << 3)] = sprites[i + 24][x + (j << 3)][y] = (color == 0) ? sprites[0][15 - y][x
 								+ (j << 3)]
 								: (color == 1) ? 0 : (color == 2) ? ((S.charAt(i * 35) << 8) | (S.charAt(i * 35 + 2) >> 8)) : (S.charAt(i * 35 + 1) << 8) | (S.charAt(i * 35 + 2) & 0xFF);
@@ -182,7 +182,7 @@ public class a extends GamePanel {
 		for (i = 0; i < 32; i++) {
 			for (y = 0; y < 16; y++) {
 				for (x = 0; x < 16; x++) {
-					float[] hsb = new float[3];
+					var hsb = new float[3];
 					Color.RGBtoHSB(sprites[i][y][x] >> 16, 0xFF & (sprites[i][y][x] >> 8), 0xFF & sprites[i][y][x], hsb);
 					sprites[i + 32][y][x] = Color.HSBtoRGB(hsb[0], hsb[1], 0.5f * hsb[2]);
 				}
@@ -192,7 +192,7 @@ public class a extends GamePanel {
 		
 		for (y = 0; y < 43; y++) {
 			for (x = 0; x < 8; x++) {
-				int color = 0x03 & S.charAt(283 + y) >> (x << 1);
+				var color = 0x03 & S.charAt(283 + y) >> (x << 1);
 				pixels[x] = pixels[15 - x] = (color == 0) ? 0 : 0xFF000000 | ((color == 1) ? 0 : (color == 2) ? ((S.charAt(280) << 8) | (S.charAt(282) >> 8)) : (S.charAt(281) << 8)
 						| (S.charAt(282) & 0xFF));
 			}
@@ -504,11 +504,9 @@ public class a extends GamePanel {
 
 		} while (nextFrameStartTime < System.nanoTime());
 
-		
 
-		
-		int offsetX = (int) playerX;
-		int offsetZ = (int) playerZ;
+		var offsetX = (int) playerX;
+		var offsetZ = (int) playerZ;
 		for (z = 0; z < 65536; z++) {
 			pixels[z] = sky[z >> 8][(z - cloudX) & 0xFF];
 			if (z > 5120) {
@@ -577,17 +575,17 @@ public class a extends GamePanel {
 	@Override
 	public void processAWTEvent(AWTEvent awtEvent) {
 		if (awtEvent instanceof KeyEvent) {
-			KeyEvent keyEvent = (KeyEvent) awtEvent;
-			final int VK_LEFT = 0x25;
-			final int VK_RIGHT = 0x27;
-			final int VK_UP = 0x26;
-			final int VK_DOWN = 0x28;
-			final int VK_W = 0x57;
-			final int VK_S = 0x53;
-			final int VK_A = 0x41;
-			final int VK_D = 0x44;
+			var keyEvent = (KeyEvent) awtEvent;
+			final var VK_LEFT = 0x25;
+			final var VK_RIGHT = 0x27;
+			final var VK_UP = 0x26;
+			final var VK_DOWN = 0x28;
+			final var VK_W = 0x57;
+			final var VK_S = 0x53;
+			final var VK_A = 0x41;
+			final var VK_D = 0x44;
 
-			int k = keyEvent.getKeyCode();
+			var k = keyEvent.getKeyCode();
 			a[k == VK_W ? VK_UP : k == VK_D ? VK_RIGHT : k == VK_A ? VK_LEFT : k == VK_S ? VK_DOWN : k] = keyEvent.getID() != 402;
 		}
 	}

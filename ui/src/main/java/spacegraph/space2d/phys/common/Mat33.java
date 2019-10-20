@@ -81,15 +81,15 @@ public class Mat33 implements Serializable {
     }
 
     public void set(Mat33 mat) {
-        v3 vec = mat.ex;
+        var vec = mat.ex;
         ex.x = vec.x;
         ex.y = vec.y;
         ex.z = vec.z;
-        v3 vec1 = mat.ey;
+        var vec1 = mat.ey;
         ey.x = vec1.x;
         ey.y = vec1.y;
         ey.z = vec1.z;
-        v3 vec2 = mat.ez;
+        var vec2 = mat.ez;
         ez.x = vec2.x;
         ez.y = vec2.y;
         ez.z = vec2.z;
@@ -118,7 +118,7 @@ public class Mat33 implements Serializable {
     }
 
     public static void mul22ToOut(Mat33 A, v2 v, v2 out) {
-        float tempx = A.ex.x * v.x + A.ey.x * v.y;
+        var tempx = A.ex.x * v.x + A.ey.x * v.y;
         out.y = A.ex.y * v.x + A.ey.y * v.y;
         out.x = tempx;
     }
@@ -130,8 +130,8 @@ public class Mat33 implements Serializable {
     }
 
     public static void mulToOut(Mat33 A, v3 v, v3 out) {
-        float tempy = v.x * A.ex.y + v.y * A.ey.y + v.z * A.ez.y;
-        float tempz = v.x * A.ex.z + v.y * A.ey.z + v.z * A.ez.z;
+        var tempy = v.x * A.ex.y + v.y * A.ey.y + v.z * A.ez.y;
+        var tempz = v.x * A.ex.z + v.y * A.ey.z + v.z * A.ez.z;
         out.x = v.x * A.ex.x + v.y * A.ey.x + v.z * A.ez.x;
         out.y = tempy;
         out.z = tempz;
@@ -152,7 +152,7 @@ public class Mat33 implements Serializable {
      * @return
      */
     public final v2 solve22(v2 b) {
-        v2 x = new v2();
+        var x = new v2();
         solve22ToOut(b, x);
         return x;
     }
@@ -166,7 +166,7 @@ public class Mat33 implements Serializable {
      */
     public final void solve22ToOut(v2 b, v2 out) {
         float a11 = ex.x, a12 = ey.x, a21 = ex.y, a22 = ey.y;
-        float det = a11 * a22 - a12 * a21;
+        var det = a11 * a22 - a12 * a21;
         if (Math.abs(det) > Float.MIN_NORMAL) {
             det = 1.0f / det;
         }
@@ -199,21 +199,21 @@ public class Mat33 implements Serializable {
     public final void solve33ToOut(v3 b, v3 out) {
         assert (b != out);
         v3.crossToOutUnsafe(ey, ez, out);
-        float det = ex.dot(out);
+        var det = ex.dot(out);
         if (Math.abs(det) > Float.MIN_NORMAL) {
             det = 1.0f / det;
         }
         v3.crossToOutUnsafe(ey, ez, out);
-        float x = det * b.dot(out);
+        var x = det * b.dot(out);
         v3.crossToOutUnsafe(b, ez, out);
-        float y = det * ex.dot(out);
+        var y = det * ex.dot(out);
         v3.crossToOutUnsafe(ey, b, out);
         out.set(x, y, det * ex.dot(out));
     }
 
     public void getInverse22(Mat33 M) {
         float a = ex.x, b = ey.x, c = ex.y, d = ey.y;
-        float det = a * d - b * c;
+        var det = a * d - b * c;
         if (Math.abs(det) > Float.MIN_NORMAL) {
             det = 1.0f / det;
         }
@@ -231,17 +231,17 @@ public class Mat33 implements Serializable {
 
     
     public void getSymInverse33(Mat33 M) {
-        float bx = ey.y * ez.z - ey.z * ez.y;
-        float by = ey.z * ez.x - ey.x * ez.z;
-        float bz = ey.x * ez.y - ey.y * ez.x;
-        float det = ex.x * bx + ex.y * by + ex.z * bz;
+        var bx = ey.y * ez.z - ey.z * ez.y;
+        var by = ey.z * ez.x - ey.x * ez.z;
+        var bz = ey.x * ez.y - ey.y * ez.x;
+        var det = ex.x * bx + ex.y * by + ex.z * bz;
         if (Math.abs(det) > Float.MIN_NORMAL) {
             det = 1.0f / det;
         }
 
         float a11 = ex.x, a12 = ey.x, a13 = ez.x;
         float a22 = ey.y, a23 = ez.y;
-        float a33 = ez.z;
+        var a33 = ez.z;
 
         M.ex.x = det * (a22 * a33 - a23 * a23);
         M.ex.y = det * (a13 * a23 - a12 * a33);
@@ -264,8 +264,8 @@ public class Mat33 implements Serializable {
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
+        final var prime = 31;
+        var result = 1;
         result = prime * result + ((ex == null) ? 0 : ex.hashCode());
         result = prime * result + ((ey == null) ? 0 : ey.hashCode());
         result = prime * result + ((ez == null) ? 0 : ez.hashCode());
@@ -277,7 +277,7 @@ public class Mat33 implements Serializable {
         if (this == obj) return true;
         if (obj == null) return false;
         if (getClass() != obj.getClass()) return false;
-        Mat33 other = (Mat33) obj;
+        var other = (Mat33) obj;
         if (ex == null) {
             if (other.ex != null) return false;
         } else if (!ex.equals(other.ex)) return false;

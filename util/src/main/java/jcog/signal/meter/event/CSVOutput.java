@@ -27,9 +27,9 @@ public class CSVOutput extends PrintStream {
     }
 
     public void out(double... row) {
-        StringJoiner joiner = new StringJoiner(",");
-        for (double v : row) {
-            String s = String.valueOf(v);
+        var joiner = new StringJoiner(",");
+        for (var v : row) {
+            var s = String.valueOf(v);
             joiner.add(s);
         }
         println(joiner.toString());

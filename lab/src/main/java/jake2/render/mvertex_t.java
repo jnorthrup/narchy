@@ -34,7 +34,7 @@ public class mvertex_t {
     public final float[] position = { 0, 0, 0 };
 
     public mvertex_t(ByteBuffer b) {
-        float[] position = this.position;
+        var position = this.position;
         position[0] = b.getFloat();
         position[1] = b.getFloat();
         position[2] = b.getFloat();

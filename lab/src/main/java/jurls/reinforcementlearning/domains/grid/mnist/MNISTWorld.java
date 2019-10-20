@@ -83,13 +83,13 @@ public class MNISTWorld extends MNIST implements World {
         retina.toArray(sensor, noise);
         */
         i.toArray(sensor, noise);
-        
-        
-        double threshold = 0.75;
-        
-        int a = -1;        
-        for (int x = 0; x < action.length; x++) {
-            boolean active = (action[x] > threshold);
+
+
+        var threshold = 0.75;
+
+        var a = -1;
+        for (var x = 0; x < action.length; x++) {
+            var active = (action[x] > threshold);
             if (active) {
                 a = x;
             }            
@@ -135,8 +135,8 @@ public class MNISTWorld extends MNIST implements World {
     static final double noise = 0.01;
     
     public static void main(String[] args) throws Exception {
-        
-        MNISTWorld m = new MNISTWorld("/home/me/Downloads", 800, maxDigit);
+
+        var m = new MNISTWorld("/home/me/Downloads", 800, maxDigit);
 
 
 

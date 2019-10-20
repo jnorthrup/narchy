@@ -52,13 +52,13 @@ class Utilities {
      */
     public static String strReplaceAll(String in, String regex, String replace) {
         String[] finArgs = null;
-        StringTokenizer tok = new StringTokenizer(in, regex);
+        var tok = new StringTokenizer(in, regex);
         for (Object[] obj = {tok, finArgs = new String[tok.countTokens()],
                 new int[]{0}}; ((StringTokenizer) obj[0]).hasMoreTokens(); ((String[]) obj[1])[((int[]) obj[2])[0]++] = ((StringTokenizer) obj[0])
                 .nextToken()) {
         }
-        String out = finArgs[0];
-        for (int i = 1; i < finArgs.length; i++) {
+        var out = finArgs[0];
+        for (var i = 1; i < finArgs.length; i++) {
             out += replace + finArgs[i];
         }
         return out;
@@ -73,7 +73,7 @@ class Utilities {
      */
     public static String[] split(String in, String splitWith) {
         String[] out = null;
-        StringTokenizer tok = new StringTokenizer(in, splitWith);
+        var tok = new StringTokenizer(in, splitWith);
         for (Object[] obj = {tok, out = new String[tok.countTokens()],
                 new int[]{0}}; ((StringTokenizer) obj[0]).hasMoreTokens(); ((String[]) obj[1])[((int[]) obj[2])[0]++] = ((StringTokenizer) obj[0])
                 .nextToken()) {

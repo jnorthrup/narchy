@@ -22,7 +22,7 @@ public class DependentWindow extends Windo {
     protected void starting() {
         super.starting();
 
-        GraphEdit2D g = parentOrSelf(GraphEdit2D.class);
+        var g = parentOrSelf(GraphEdit2D.class);
 
         this.on = new RunThese(()->{
             g.physics.remove(this);

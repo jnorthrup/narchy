@@ -27,23 +27,23 @@ public class VideoEqualizer extends VideoTransform {
      * https://www.codeproject.com/Tips/1172662/Histogram-Equalisation-in-Java
      */
     private BufferedImage equalize(BufferedImage src) {
-        WritableRaster in = src.getRaster();
-        int W = in.getWidth();
-        int H = in.getHeight();
-        int bands = src.getColorModel().getNumColorComponents();
+        var in = src.getRaster();
+        var W = in.getWidth();
+        var H = in.getHeight();
+        var bands = src.getColorModel().getNumColorComponents();
 
         Arrays.fill(histogram, 0);
 
-        for (int x = 0; x < W; x++) {
-            for (int y = 0; y < H; y++) {
+        for (var x = 0; x < W; x++) {
+            for (var y = 0; y < H; y++) {
                 histogram[sample(in, x, y, bands)]++;
             }
         }
 
-        float momentum = this.momentum.floatValue();
-        int totpix = W * H;
-        for (int i = 0; i < 256; i++) {
-            int c = (i > 0 ? chistogram[i - 1] : 0) + histogram[i];
+        var momentum = this.momentum.floatValue();
+        var totpix = W * H;
+        for (var i = 0; i < 256; i++) {
+            var c = (i > 0 ? chistogram[i - 1] : 0) + histogram[i];
             chistogram[i] = c;
             arr[i] = Util.lerp(momentum, ((chistogram[i] * 255f) / totpix), arr[i]);
         }
@@ -52,10 +52,10 @@ public class VideoEqualizer extends VideoTransform {
             out = new BufferedImage(W, H, BufferedImage.TYPE_BYTE_GRAY);
         }
 
-        WritableRaster o = out.getRaster();
-        for (int x = 0; x < W; x++) {
-            for (int y = 0; y < H; y++) {
-                int nVal = (int) arr[sample(in, x, y, bands)];
+        var o = out.getRaster();
+        for (var x = 0; x < W; x++) {
+            for (var y = 0; y < H; y++) {
+                var nVal = (int) arr[sample(in, x, y, bands)];
                 o.setSample(x, y, 0, nVal);
             }
         }
@@ -73,7 +73,7 @@ public class VideoEqualizer extends VideoTransform {
         if (bands == 0)
             return in.getSample(x, y, 0);
         else {
-            int total = IntStream.range(0, bands).map(i -> in.getSample(x, y, i)).sum();
+            var total = IntStream.range(0, bands).map(i -> in.getSample(x, y, i)).sum();
             return (total) / bands;
         }
     }

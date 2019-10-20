@@ -51,12 +51,12 @@ public class DoubleClicking {
         if (!finger.clickedNow(button, clicked))
             return count.get() > 0; //could be in-between presses
 
-        int c = count.incrementAndGet();
+        var c = count.incrementAndGet();
 
-        v2 downHit = finger.posPixelPress[button].clone();
-        long now = System.nanoTime();
+        var downHit = finger.posPixelPress[button].clone();
+        var now = System.nanoTime();
 
-        boolean unclick = false;
+        var unclick = false;
         /** in milliseconds */
         long maxDoubleClickTimeNS = 250 * 1000 * 1000;
         if (c > 1 && doubleClickSpot != null && now - doubleClickTime > maxDoubleClickTimeNS) {

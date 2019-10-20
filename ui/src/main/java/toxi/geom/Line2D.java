@@ -116,10 +116,10 @@ public class Line2D {
         if (addFirst) {
             segments.add(a.copy());
         }
-        float dist = a.distanceTo(b);
+        var dist = a.distanceTo(b);
         if (dist > stepLength) {
-            Vec2D pos = a.copy();
-            Vec2D step = b.sub(a).limit(stepLength);
+            var pos = a.copy();
+            var step = b.sub(a).limit(stepLength);
             while (dist > stepLength) {
                 pos.addSelf(step);
                 segments.add(pos.copy());
@@ -156,8 +156,8 @@ public class Line2D {
      * @return classifier float
      */
     public float classifyPoint(ReadonlyVec2D p) {
-        Vec2D normal = b.sub(a).perpendicular();
-        float d = p.sub(a).dot(normal);
+        var normal = b.sub(a).perpendicular();
+        var d = p.sub(a).dot(normal);
         return Math.signum(d);
     }
 
@@ -169,8 +169,8 @@ public class Line2D {
      * @return closest point on the line
      */
     public Vec2D closestPointTo(ReadonlyVec2D p) {
-        Vec2D v = b.sub(a);
-        float t = p.sub(a).dot(v) / v.magSquared();
+        var v = b.sub(a);
+        var t = p.sub(a).dot(v) / v.magSquared();
         // Check to see if t is beyond the extents of the line segment
         if (t < 0.0f) {
             return a.copy();
@@ -196,7 +196,7 @@ public class Line2D {
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof Line2D) {
-        Line2D l = (Line2D) obj;
+            var l = (Line2D) obj;
         return (a.equals(l.a) || a.equals(l.b))
                 && (b.equals(l.b) || b.equals(l.a));
         }
@@ -214,7 +214,7 @@ public class Line2D {
 
     @Override
     public int hashCode() {
-        int hash = 5;
+        var hash = 5;
         hash = 37 * hash + (a.hashCode() + b.hashCode());
         return hash;
     }
@@ -271,7 +271,7 @@ public class Line2D {
      * @see #hashCode()
      */
     public int hashCodeWithDirection() {
-        int hash = 5;
+        var hash = 5;
         hash = 89 * hash + a.hashCode();
         hash = 89 * hash + b.hashCode();
         return hash;
@@ -294,17 +294,17 @@ public class Line2D {
      */
     public LineIntersection intersectLine(Line2D l) {
         LineIntersection isec;
-        float denom = (l.b.y - l.a.y) * (b.x - a.x) - (l.b.x - l.a.x)
+        var denom = (l.b.y - l.a.y) * (b.x - a.x) - (l.b.x - l.a.x)
                 * (b.y - a.y);
 
-        float na = (l.b.x - l.a.x) * (a.y - l.a.y) - (l.b.y - l.a.y)
+        var na = (l.b.x - l.a.x) * (a.y - l.a.y) - (l.b.y - l.a.y)
                 * (a.x - l.a.x);
-        float nb = (b.x - a.x) * (a.y - l.a.y) - (b.y - a.y) * (a.x - l.a.x);
+        var nb = (b.x - a.x) * (a.y - l.a.y) - (b.y - a.y) * (a.x - l.a.x);
 
         if (denom != 0.0) {
-            float ua = na / denom;
-            float ub = nb / denom;
-            Vec2D i = a.interpolateTo(b, ua);
+            var ua = na / denom;
+            var ub = nb / denom;
+            var i = a.interpolateTo(b, ua);
             if (ua >= 0.0f && ua <= 1.0 && ub >= 0.0 && ub <= 1.0) {
                 isec = new LineIntersection(Type.INTERSECTING, i, ua, ub);
             } else {
@@ -326,9 +326,9 @@ public class Line2D {
     }
 
     public Line2D offsetAndGrowBy(float offset, float scale, Vec2D ref) {
-        Vec2D m = getMidPoint();
-        Vec2D d = getDirection();
-        Vec2D n = d.getPerpendicular();
+        var m = getMidPoint();
+        var d = getDirection();
+        var n = d.getPerpendicular();
         if (ref != null && m.sub(ref).dot(n) < 0) {
             n.invert();
         }
@@ -342,8 +342,8 @@ public class Line2D {
     }
 
     public Line2D scaleLength(float scale) {
-        float delta = (1 - scale) * 0.5f;
-        Vec2D newA = a.interpolateTo(b, delta);
+        var delta = (1 - scale) * 0.5f;
+        var newA = a.interpolateTo(b, delta);
         b.interpolateToSelf(a, delta);
         a.set(newA);
         return this;

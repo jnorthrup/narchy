@@ -44,28 +44,28 @@ public class AxialSplit<X> implements Split<X> {
     public RBranch<X> apply(X x, RLeaf<X> leaf, Spatialization<X> model) {
 
 
-        HyperRegion rCombined = leaf.bounds.mbr(model.bounds(x));
+        var rCombined = leaf.bounds.mbr(model.bounds(x));
 
-        int nD = rCombined.dim();
+        var nD = rCombined.dim();
 
-        
-        int axis = 0;
-        double mostCost = Double.NEGATIVE_INFINITY;
-        for (int d = 0; d < nD; d++) {
-            
-            double axisCost = rCombined.cost(d);
+
+        var axis = 0;
+        var mostCost = Double.NEGATIVE_INFINITY;
+        for (var d = 0; d < nD; d++) {
+
+            var axisCost = rCombined.cost(d);
             if (axisCost > mostCost) {
                 axis = d;
                 mostCost = axisCost;
             }
         }
 
-        
-        int splitDimension = axis;
 
-        short size = (short) (leaf.size+1);
-        X[] ld = leaf.data;
-        X[] obj = Arrays.copyOf(ld, size); //? X[] obj = (X[]) Array.newInstance(leaf.data.getClass(), size);
+        var splitDimension = axis;
+
+        var size = (short) (leaf.size+1);
+        var ld = leaf.data;
+        var obj = Arrays.copyOf(ld, size); //? X[] obj = (X[]) Array.newInstance(leaf.data.getClass(), size);
         obj[size-1] = x;
 
 //        double[] strength = new double[size];
@@ -81,10 +81,10 @@ public class AxialSplit<X> implements Split<X> {
             );
         }
 
-        int splitN = size/2 + (((size & 1)!=0) ? 1 : 0);
+        var splitN = size/2 + (((size & 1)!=0) ? 1 : 0);
         //TODO if size is odd, maybe l1Node should have the 1 extra element rather than l2Node as this will:
-        RLeaf<X> l1Node = model.transfer(obj, 0, splitN);
-        RLeaf<X> l2Node = model.transfer(obj, splitN, size);
+        var l1Node = model.transfer(obj, 0, splitN);
+        var l2Node = model.transfer(obj, splitN, size);
 
         //assert (l1Node.size()+l2Node.size() == size);
 

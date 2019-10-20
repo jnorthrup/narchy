@@ -44,10 +44,10 @@ public interface TermIO {
     void writeSubterms(Subterms subs, ByteArrayDataOutput out);
 
     default void writeSubterms(ByteArrayDataOutput out, Term... subs) {
-        int n = subs.length;
+        var n = subs.length;
         //assert(n < Byte.MAX_VALUE);
         out.writeByte(n);
-        for (Term s : subs)
+        for (var s : subs)
             write(s, out);
     }
 
@@ -67,12 +67,12 @@ public interface TermIO {
         //static { assert(TEMPORAL_BIT_0 == OP_MASK + 1); }
         static {
             assert(Op.values().length < OP_MASK);
-            for (Op o : Op.values()) assert !o.temporal || (o.id != OP_MASK); /* sanity test to avoid temporal Op id appearing as SPECIAL_BYTE if the higher bits were all 1's */
+            for (var o : Op.values()) assert !o.temporal || (o.id != OP_MASK); /* sanity test to avoid temporal Op id appearing as SPECIAL_BYTE if the higher bits were all 1's */
         }
 
         @Override
         public Term read(DataInput in) throws IOException {
-            byte opByte = in.readByte();
+            var opByte = in.readByte();
             if (opByte == SPECIAL_BYTE) {
                 try {
                     return Narsese.term(in.readUTF(), false);
@@ -80,7 +80,7 @@ public interface TermIO {
                     throw new IOException(e);
                 }
             }
-            Op o = Op.the(opByte & OP_MASK);
+            var o = Op.the(opByte & OP_MASK);
             switch (o) {
                 case VAR_DEP:
                 case VAR_INDEP:
@@ -90,7 +90,7 @@ public interface TermIO {
                 case IMG:
                     return in.readByte() == ((byte) '/') ? Op.ImgExt : Op.ImgInt;
                 case BOOL:
-                    byte code = in.readByte();
+                    var code = in.readByte();
                     switch (code) {
                         case -1:
                             return Null;
@@ -120,7 +120,7 @@ public interface TermIO {
                     return read(in).neg();
                 default: {
 
-                    int temporalFlags = (opByte & (TEMPORAL_BIT_0|TEMPORAL_BIT_1)) >> 5;
+                    var temporalFlags = (opByte & (TEMPORAL_BIT_0|TEMPORAL_BIT_1)) >> 5;
                     int dt;
                     switch (temporalFlags) {
                         case 0: dt = DTERNAL; break;
@@ -133,14 +133,14 @@ public interface TermIO {
 
                     assert (siz < NAL.term.SUBTERMS_MAX);
 
-                    Term[] s = new Term[siz];
-                    for (int i = 0; i < siz; i++) {
-                        Term read = (s[i] = read(in));
+                    var s = new Term[siz];
+                    for (var i = 0; i < siz; i++) {
+                        var read = (s[i] = read(in));
                         if (read == null)
                             throw new TermException("read invalid", Op.PROD /* consider the termvector as a product */, s);
                     }
 
-                    Term y = o.the(dt, s);
+                    var y = o.the(dt, s);
                     if (!(y instanceof Compound))
                         throw new TermException("read invalid compound", o, dt, s);
 
@@ -167,16 +167,15 @@ public interface TermIO {
             } else {
 
 
-                Op o = t.op();
+                var o = t.op();
 
                 writeCompoundPrefix(o, o.temporal ? t.dt() : DTERNAL, out);
 
 
-
-                Subterms s = t instanceof SeparateSubtermsCompound ? t.subterms() : ((Subterms) t);
-                int ss = s.subs();
+                var s = t instanceof SeparateSubtermsCompound ? t.subterms() : ((Subterms) t);
+                var ss = s.subs();
                 out.writeByte(ss);
-                for (int i = 0; i < ss; i++)
+                for (var i = 0; i < ss; i++)
                     write(s.sub(i), out);
 
             }
@@ -184,8 +183,8 @@ public interface TermIO {
 
         public void writeCompoundPrefix(Op o, int dt, ByteArrayDataOutput out) {
 
-            byte opByte = o.id;
-            boolean dtSpecial = false;
+            var opByte = o.id;
+            var dtSpecial = false;
             if (dt != DTERNAL && o.temporal) {
                 switch (dt) {
                     case XTERNAL: opByte |= TEMPORAL_BIT_0; break;
@@ -216,11 +215,11 @@ public interface TermIO {
                     write(ttt.mapSub(x), out);
                 }
             } else */if (tt instanceof RemappedSubterms) {
-                RemappedSubterms ttt = (RemappedSubterms) tt;
-                int s = ttt.subs();
+                var ttt = (RemappedSubterms) tt;
+                var s = ttt.subs();
                 out.writeByte(s);
-                for (int i = 0; i < s; i++) {
-                    int x = ttt.subMap(i);
+                for (var i = 0; i < s; i++) {
+                    var x = ttt.subMap(i);
                     if (x < 0) {
                         outNegByte(out);
                         x = (byte) -x;
@@ -228,10 +227,10 @@ public interface TermIO {
                     write(ttt.mapTerm(x), out);
                 }
             } else if (tt instanceof IntrinSubterms) {
-                IntrinSubterms ttt = (IntrinSubterms) tt;
-                short[] ss = ttt.subterms;
+                var ttt = (IntrinSubterms) tt;
+                var ss = ttt.subterms;
                 out.writeByte(ss.length);
-                for (short s : ss) {
+                for (var s : ss) {
                     if (s < 0) {
                         outNegByte(out);
                         s = (short) -s;
@@ -268,28 +267,28 @@ public interface TermIO {
          * canonical heuristic
          */
         public void writeDTs(int dtDither, ByteArrayDataOutput out) {
-            IntArrayList d = this.dts;
+            var d = this.dts;
             if (d == null)
                 return;
-            int n = d.size();
+            var n = d.size();
             if (n == 1) {
                 //only one: canonicalize to either 0 or +/- dtDither
-                int x = d.get(0);
+                var x = d.get(0);
                 d.set(0, ditherUniform(dtDither, x));
             } else {
-                boolean same = true;
-                for (int i = 0; i < n - 1; i++) {
-                    int a = d.get(i);
-                    int b = d.get(i + 1);
+                var same = true;
+                for (var i = 0; i < n - 1; i++) {
+                    var a = d.get(i);
+                    var b = d.get(i + 1);
                     if (a != b) {
                         same = false;
                         break;
                     }
                 }
                 if (same) {
-                    int x = d.get(0);
-                    int y = ditherUniform(dtDither, x);
-                    for (int i = 0; i < n; i++) {
+                    var x = d.get(0);
+                    var y = ditherUniform(dtDither, x);
+                    for (var i = 0; i < n; i++) {
                         d.set(i, y);
                     }
 
@@ -299,12 +298,12 @@ public interface TermIO {
                 }
             }
 
-            for (int i = 0; i < n; i++)
+            for (var i = 0; i < n; i++)
                 super.writeDT(d.get(i), out);
         }
 
         static int ditherUniform(int dtDither, int x) {
-            int y = Tense.dither(x, dtDither);
+            var y = Tense.dither(x, dtDither);
             if (y != 0)
                 y = y > 0 ? dtDither : -dtDither; //destroying most of the the temporal data in canonicalization
             return y;

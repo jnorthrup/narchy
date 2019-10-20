@@ -119,7 +119,7 @@ public class Graph2D<X> extends MutableMapContainer<X, NodeVis<X>> {
 
     /** TODO impl using MetaFrame menu */
     public Surface widget(Object controls) {
-        Gridding cfg = configWidget();
+        var cfg = configWidget();
 
         if (controls!=null) {
             cfg.add(new ObjectSurface(controls));
@@ -156,7 +156,7 @@ public class Graph2D<X> extends MutableMapContainer<X, NodeVis<X>> {
      */
     @SafeVarargs
     public final Graph2D<X> render(Graph2DRenderer<X>... renderStages) {
-        List<Graph2DRenderer<X>> nextRenderStages = List.of(renderStages);
+        var nextRenderStages = List.of(renderStages);
         if (!renderers.equals(nextRenderStages)) {
             renderers = nextRenderStages;
             layout();
@@ -184,7 +184,7 @@ public class Graph2D<X> extends MutableMapContainer<X, NodeVis<X>> {
     }
 
     public Gridding configWidget() {
-        Gridding g = new Gridding();
+        var g = new Gridding();
         g.add(new ObjectSurface(updater));
         for (Graph2DRenderer l : renderers) {
             g.add(new ObjectSurface(l));
@@ -277,19 +277,19 @@ public class Graph2D<X> extends MutableMapContainer<X, NodeVis<X>> {
 
     private void updateNodes(Iterable<X> nodes, boolean addOrReplace) {
         if (!addOrReplace) {
-            for (Map.Entry<X, CellMap.CacheCell<X, NodeVis<X>>> entry : cells.map.entrySet()) {
-                X k = entry.getKey();
-                CellMap.CacheCell<X, NodeVis<X>> v = entry.getValue();
+            for (var entry : cells.map.entrySet()) {
+                var k = entry.getKey();
+                var v = entry.getValue();
                 wontRemain.add(k);
             }
         }
 
 
-        for (X x : nodes) {
-            CellMap.CacheCell<X, NodeVis<X>> xxx =
+        for (var x : nodes) {
+            var xxx =
                     compute(x, xx -> xx == null ? materialize(x) : rematerialize(xx));
 
-            NodeVis<X> cv = xxx.value;
+            var cv = xxx.value;
             if (cv.parent == null)
                 cv.start(this);
 
@@ -305,7 +305,7 @@ public class Graph2D<X> extends MutableMapContainer<X, NodeVis<X>> {
 
     private NodeVis<X> materialize(X x0) {
 //        NodeVis<X> yy = nodeCache.computeIfAbsent(x, x0 -> {
-            NodeVis<X> yy = new NodeVis<>();
+        var yy = new NodeVis<X>();
             yy.start(x0);
             builder.accept(yy);
 //            return y;
@@ -332,7 +332,7 @@ public class Graph2D<X> extends MutableMapContainer<X, NodeVis<X>> {
     }
 
     private void render() {
-        for (Graph2DRenderer<X> layer : renderers) {
+        for (var layer : renderers) {
             layer.nodes(cells, edit);
         }
     }
@@ -353,7 +353,7 @@ public class Graph2D<X> extends MutableMapContainer<X, NodeVis<X>> {
          * adds a visible edge between two nodes, if they exist and are visible
          */
         public @Nullable EdgeVis<X> edge(Object from, Object to) {
-            @Nullable NodeVis<X> fromNode = graph.cells.get(from);
+            @Nullable var fromNode = graph.cells.get(from);
             return fromNode != null ? edge(fromNode, to) : null;
         }
 
@@ -362,7 +362,7 @@ public class Graph2D<X> extends MutableMapContainer<X, NodeVis<X>> {
          */
         public @Nullable EdgeVis<X> edge(NodeVis<X> from, Object to) {
 
-            @Nullable NodeVis<X> t = graph.cells.getValue(to);
+            @Nullable var t = graph.cells.getValue(to);
             if (t == null)
                 return null;
 

@@ -63,8 +63,8 @@ public abstract class MutableWeightedCaster<X,Y> extends WeightedCaster<X,Y> imp
 //                l.weightChanged(ev);
 //            }
 //        });
-            for (WeakReference<WeightChangeListener> wref : weakListeners) {
-                WeightChangeListener l = wref.get();
+            for (var wref : weakListeners) {
+                var l = wref.get();
                 if (l == null) {
                     removeSet.add(wref);
                 } else {
@@ -80,7 +80,7 @@ public abstract class MutableWeightedCaster<X,Y> extends WeightedCaster<X,Y> imp
 //            l.weightChanged(ev);
 //        });
 
-        for (WeightChangeListener l : listeners) {
+        for (var l : listeners) {
             if (l != null) l.weightChanged(ev);
         }
     }
@@ -112,9 +112,9 @@ public abstract class MutableWeightedCaster<X,Y> extends WeightedCaster<X,Y> imp
     @Deprecated public CloseHandler addWeightChangeListener(WeightChangeListener listener) {
         if (listener == null) return new CloseHandler() {
         };
-        WeightChangeListener fl = listener;
+        var fl = listener;
         MutableWeightedCaster self = this;
-        CloseHandler ch = new CloseHandler() {
+        var ch = new CloseHandler() {
 
         };
         listeners.add(fl);
@@ -128,9 +128,9 @@ public abstract class MutableWeightedCaster<X,Y> extends WeightedCaster<X,Y> imp
             public void closeHandler() {
             }
         };
-        WeightChangeListener fl = listener;
+        var fl = listener;
         MutableWeightedCaster self = this;
-        CloseHandler ch = new CloseHandler() {
+        var ch = new CloseHandler() {
             WeightChangeListener l = fl;
             MutableWeightedCaster slf = self;
 
@@ -166,8 +166,8 @@ public abstract class MutableWeightedCaster<X,Y> extends WeightedCaster<X,Y> imp
 //        });
 //        weakListeners.removeAll(removeSet);
 
-        for (WeakReference<WeightChangeListener> wref : weakListeners) {
-            WeightChangeListener l = wref.get();
+        for (var wref : weakListeners) {
+            var l = wref.get();
             if (l == null) {
                 removeSet.add(wref);
             } else {

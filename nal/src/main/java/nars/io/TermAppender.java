@@ -27,7 +27,7 @@ public enum TermAppender {
 
         op.append(c, p);
 
-        Subterms cs = c.subterms();
+        var cs = c.subterms();
         if (cs.subs() == 1)
             p.append(Op.ARGUMENT_SEPARATOR);
 
@@ -42,7 +42,7 @@ public enum TermAppender {
 
         p.append(Op.COMPOUND_TERM_OPENER);
 
-        int n = c.subs();
+        var n = c.subs();
         if (n == 2) {
 
 
@@ -71,10 +71,10 @@ public enum TermAppender {
 
 
     static void appendArgs(Subterms c, Appendable p) throws IOException {
-        int nterms = c.subs();
+        var nterms = c.subs();
 
-        boolean bb = nterms > 1;
-        for (int i = 0; i < nterms; i++) {
+        var bb = nterms > 1;
+        for (var i = 0; i < nterms; i++) {
             if ((i != 0) || bb) {
                 p.append(Op.ARGUMENT_SEPARATOR);
             }
@@ -83,10 +83,10 @@ public enum TermAppender {
     }
 
     static void appendArgs(Subterms c, UnaryOperator<Term> filter, Appendable p) throws IOException {
-        int nterms = c.subs();
+        var nterms = c.subs();
 
-        boolean bb = nterms > 1;
-        for (int i = 0; i < nterms; i++) {
+        var bb = nterms > 1;
+        for (var i = 0; i < nterms; i++) {
             if ((i != 0) || bb) {
                 p.append(Op.ARGUMENT_SEPARATOR);
             }
@@ -99,7 +99,7 @@ public enum TermAppender {
     }
 
     public static void append(Compound c, Appendable p) throws IOException {
-        Op op = c.op();
+        var op = c.op();
 
         switch (op) {
 
@@ -127,10 +127,10 @@ public enum TermAppender {
 
 
                     if (c.hasAll(Op.FuncBits)) {
-                        Term subj = c.sub(0);
+                        var subj = c.sub(0);
                         if (op == INH && subj.op() == Op.PROD) {
-                            Term pred = c.sub(1);
-                            Op pOp = pred.op();
+                            var pred = c.sub(1);
+                            var pOp = pred.op();
                             if (pOp == ATOM) {
                                 operationAppend((Compound) subj, (Atomic) pred, p);
                                 return;
@@ -181,12 +181,12 @@ public enum TermAppender {
          * (--, (&&, --A, --B, .., --Z) )
          */
 
-        Term sub = neg.unneg();
+        var sub = neg.unneg();
 
         if ((sub.opID() == CONJ.id) && sub.hasAny(NEG.bit)) {
             int dt;
             if ((((dt = sub.dt()) == DTERNAL) || (dt == XTERNAL))) {
-                Subterms cxx = sub.subterms();
+                var cxx = sub.subterms();
                 if ((cxx.hasAny(NEG) ? cxx.count(x -> x instanceof Neg && !x.hasAny(CONJ)) : 0) >= cxx.subs() / 2) {
                     disjAppend(cxx, dt, p);
                     return;
@@ -224,11 +224,11 @@ public enum TermAppender {
 
         p.append(Op.COMPOUND_TERM_OPENER);
 
-        int dt = c.dt();
+        var dt = c.dt();
 
-        boolean reversedDT = dt != DTERNAL && /*dt != XTERNAL && */ dt < 0 && op.commutative;
+        var reversedDT = dt != DTERNAL && /*dt != XTERNAL && */ dt < 0 && op.commutative;
 
-        Subterms cs = c.subterms();
+        var cs = c.subterms();
         cs.sub(reversedDT ? 1 : 0).appendTo(p);
 
         op.append(dt, p, reversedDT);
@@ -247,8 +247,8 @@ public enum TermAppender {
     }
 
     private static void appendSubterms(Subterms x, Appendable p) throws IOException {
-        int s = x.subs();
-        for (int i = 0; i < s; i++) {
+        var s = x.subs();
+        for (var i = 0; i < s; i++) {
             x.sub(i).appendTo(p);
             if (i < s - 1)
                 p.append(',');
@@ -258,7 +258,7 @@ public enum TermAppender {
 
     static void setAppend(Compound set, Appendable p) throws IOException {
 
-        int len = set.subs();
+        var len = set.subs();
 
 
         char opener, closer;
@@ -272,8 +272,8 @@ public enum TermAppender {
 
         p.append(opener);
 
-        Subterms setsubs = set.subterms();
-        for (int i = 0; i < len; i++) {
+        var setsubs = set.subterms();
+        for (var i = 0; i < len; i++) {
             if (i != 0) p.append(Op.ARGUMENT_SEPARATOR);
             setsubs.sub(i).appendTo(p);
         }

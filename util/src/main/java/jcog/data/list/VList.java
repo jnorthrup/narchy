@@ -175,7 +175,7 @@ public final class VList<T> extends AbstractList<T> {
      * is used. This means that the total number of used elements in each
      * cell is mElems.length - mFreeSpace.
      */
-        VListCell<T> curr = mHead;
+        var curr = mHead;
         int delta;
         while (index >= (delta = (curr.mElems.length - curr.mFreeSpace))) {
       /* Skip past all these elements. */
@@ -220,7 +220,7 @@ public final class VList<T> extends AbstractList<T> {
      * is used. This means that the total number of used elements in each
      * cell is mElems.length - mFreeSpace.
      */
-        VListCell<T> curr = mHead;
+        var curr = mHead;
         int delta;
         while (index >= (delta = (curr.mElems.length - curr.mFreeSpace))) {
       /* Skip past all these elements. */
@@ -267,12 +267,12 @@ public final class VList<T> extends AbstractList<T> {
      */
     @Override
     public T set(int index, T value) {
-        
 
-        VListLocation<T> where = locateElement(index);
+
+        var where = locateElement(index);
 
     /* Cache the element in the current position of this array. */
-        T result = where.mCell.mElems[where.mOffset];
+        var result = where.mCell.mElems[where.mOffset];
         where.mCell.mElems[where.mOffset] = value;
         return result;
     }
@@ -286,10 +286,10 @@ public final class VList<T> extends AbstractList<T> {
      */
     @Override
     public T remove(int index) {
-        VListLocation<T> where = locateElement(index);
+        var where = locateElement(index);
 
     /* Cache the value that will be removed. */
-        T result = where.mCell.mElems[where.mOffset];
+        var result = where.mCell.mElems[where.mOffset];
 
     /* Invoke the helper to do most of the work. */
         removeAtPosition(where);
@@ -312,8 +312,8 @@ public final class VList<T> extends AbstractList<T> {
      * first block, this is the position of the element that was
      * overwritten. In all other blocks, it's the last element.
      */
-        VListCell<T> curr = where.mCell;
-        for (int shuffleTargetPosition = where.mOffset; curr != null;
+        var curr = where.mCell;
+        for (var shuffleTargetPosition = where.mOffset; curr != null;
              curr = curr.mPrev, shuffleTargetPosition = (curr == null ? 0 : curr.mElems.length - 1)) {
       /* Shuffle down each element in the current array on top of the
        * target position. Note that in the final block, this may end up
@@ -414,7 +414,7 @@ public final class VList<T> extends AbstractList<T> {
                 throw new NoSuchElementException();
 
       /* Cache the return value; we'll be moving off of it soon. */
-            T result = mCurrCell.mElems[mCurrIndex];
+            var result = mCurrCell.mElems[mCurrIndex];
 
       /* Back up one step. */
             --mCurrIndex;

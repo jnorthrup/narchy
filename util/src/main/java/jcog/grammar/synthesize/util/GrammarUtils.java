@@ -20,7 +20,7 @@ import java.util.stream.IntStream;
 
 public class GrammarUtils {
     public static <V> Map<V, Integer> getInverse(List<V> list) {
-        int l = list.size();
+        var l = list.size();
         Map<V, Integer> inverse = IntStream.range(0, l).boxed().collect(Collectors.toMap(list::get, integer -> integer, (a, b) -> b, () -> new HashMap<>(l)));
         return inverse;
     }
@@ -115,10 +115,10 @@ public class GrammarUtils {
             if (characterOptions.size() != characterChecks.size()) {
                 throw new RuntimeException("Invalid characters!");
             }
-            for (List<Character> characters : characterOptions) {
+            for (var characters : characterOptions) {
                 this.characterOptions.add(new LinkedHashSet<>(characters));
             }
-            for (List<Character> characters : characterChecks) {
+            for (var characters : characterChecks) {
                 this.characterChecks.add(new LinkedHashSet<>(characters));
             }
         }
@@ -132,8 +132,8 @@ public class GrammarUtils {
         }
 
         public String toString() {
-            StringBuilder sb = new StringBuilder();
-            for (Set<Character> characterOption : this.characterOptions) {
+            var sb = new StringBuilder();
+            for (var characterOption : this.characterOptions) {
                 sb.append('(');
                 for (char character : characterOption) {
                     sb.append(character).append('+');
@@ -192,8 +192,8 @@ public class GrammarUtils {
         }
 
         public String toString() {
-            StringBuilder sb = new StringBuilder();
-            for (Node child : this.children) {
+            var sb = new StringBuilder();
+            for (var child : this.children) {
                 sb.append('(').append(child).append(")+");
             }
             return sb.substring(0, sb.length() - 1);
@@ -240,8 +240,8 @@ public class GrammarUtils {
         }
 
         public void addAll(NodeMerges other) {
-            for (Node first : other.keySet()) {
-                for (Node second : other.get(first)) {
+            for (var first : other.keySet()) {
+                for (var second : other.get(first)) {
                     this.add(first, second);
                 }
             }
@@ -262,7 +262,7 @@ public class GrammarUtils {
 
     private static void getAllNodesHelper(Node root, List<Node> nodes) {
         nodes.add(root);
-        for (Node child : root.getChildren()) {
+        for (var child : root.getChildren()) {
             getAllNodesHelper(child, nodes);
         }
     }
@@ -275,7 +275,7 @@ public class GrammarUtils {
 
     private static void getDescendantsHelper(Node node, List<Node> descendants) {
         descendants.add(node);
-        for (Node child : node.getChildren()) {
+        for (var child : node.getChildren()) {
             getDescendantsHelper(child, descendants);
         }
     }
@@ -299,7 +299,7 @@ public class GrammarUtils {
 
         @Override
         public Set<V> get(Object k) {
-            Set<V> vSet = super.get(k);
+            var vSet = super.get(k);
             return vSet == null ? Collections.emptySet() : vSet;
         }
     }

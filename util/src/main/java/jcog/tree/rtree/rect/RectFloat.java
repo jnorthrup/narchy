@@ -37,12 +37,12 @@ public class RectFloat implements HyperRegion, Comparable<RectFloat> {
      */
     public static RectFloat XYXY(float x1 /* left */, float y1 /* bottom */, float x2, float y2) {
         if (x2 < x1) {
-            float t = x2;
+            var t = x2;
             x2 = x1;
             x1 = t;
         }
         if (y2 < y1) {
-            float t = y2;
+            var t = y2;
             y2 = y1;
             y1 = t;
         }
@@ -81,9 +81,9 @@ public class RectFloat implements HyperRegion, Comparable<RectFloat> {
      * interpolates the coordinates, and the scale is proportional to the mean dimensions of each
      */
     public static RectFloat mid(RectFloat source, RectFloat target, float relScale) {
-        float cx = (source.cx() + target.cx()) / 2;
-        float cy = (source.cy() + target.cy()) / 2;
-        float wh = relScale * Math.max((source.w + target.w) / 2f, (source.h + target.h) / 2);
+        var cx = (source.cx() + target.cx()) / 2;
+        var cy = (source.cy() + target.cy()) / 2;
+        var wh = relScale * Math.max((source.w + target.w) / 2f, (source.h + target.h) / 2);
         return target.orThisIfEqual(source.orThisIfEqual(RectFloat.XYWH(cx, cy, wh, wh)));
     }
 
@@ -121,7 +121,7 @@ public class RectFloat implements HyperRegion, Comparable<RectFloat> {
     public RectFloat mbr(HyperRegion _b) {
         if (_b == this) return this;
 
-        RectFloat b = (RectFloat) _b;
+        var b = (RectFloat) _b;
 
         //TODO better merge of these conditions
 //        if (contains(b))
@@ -187,13 +187,13 @@ public class RectFloat implements HyperRegion, Comparable<RectFloat> {
     @Override
     public final boolean contains(HyperRegion r) {
         if (this == r) return true;
-        RectFloat R = (RectFloat) r;
+        var R = (RectFloat) r;
         return contains(R.x, R.y, R.w, R.h);
     }
     @Override
     public final boolean intersects(HyperRegion r) {
         if (this == r) return true;
-        RectFloat R = (RectFloat) r;
+        var R = (RectFloat) r;
         return intersects(R.x, R.y, R.w, R.h);
     }
 
@@ -327,8 +327,8 @@ public class RectFloat implements HyperRegion, Comparable<RectFloat> {
 //    }
 
     public RectFloat rel(float cx, float cy, float pctW, float pctH) {
-        float nw = this.w * pctW;
-        float nh = this.h * pctH;
+        var nw = this.w * pctW;
+        var nh = this.h * pctH;
         return orThisIfEqual(X0Y0WH( x + cx , y + cy , nw, nh));
     }
 
@@ -365,8 +365,8 @@ public class RectFloat implements HyperRegion, Comparable<RectFloat> {
 //                throw new WTF(this +  " is too large to fit inside " + outer);
 
             //if ((cx != cx) || (cy != cy)) randomize(bounds);
-            float x = cx(); if (!Float.isFinite(x)) x = 0;
-            float y = cy(); if (!Float.isFinite(y)) y = 0;
+            var x = cx(); if (!Float.isFinite(x)) x = 0;
+            var y = cy(); if (!Float.isFinite(y)) y = 0;
 
             return orThisIfEqual(XYWH(
                     Util.clamp(x, outer.left() + w / 2, outer.right() - w / 2),

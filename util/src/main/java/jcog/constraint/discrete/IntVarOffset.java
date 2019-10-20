@@ -88,8 +88,8 @@ public class IntVarOffset extends IntVar {
 
     @Override
     public int copyDomain(int[] array) {
-        int size = variable.copyDomain(array);
-        for (int i = 0; i < size; i++)
+        var size = variable.copyDomain(array);
+        for (var i = 0; i < size; i++)
             array[i] += offset;
         return size;
     }

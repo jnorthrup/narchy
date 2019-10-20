@@ -86,14 +86,14 @@ public class HMM implements Serializable{
 
 
         pi[0] = 1;
-		for(int i=1; i<numStates; i++) {
+		for(var i = 1; i<numStates; i++) {
 			pi[i] = 0;
 		}
 
 
-        int jumplimit = 2;
-        for(int i = 0; i<numStates; i++) {
-			for(int j=0; j<numStates; j++) {
+		var jumplimit = 2;
+        for(var i = 0; i<numStates; i++) {
+			for(var j = 0; j<numStates; j++) {
 				if(i==numStates-1 && j==numStates-1) { 
 					a[i][j] = 1.0;
 				} else if(i==numStates-2 && j==numStates-2) { 
@@ -110,8 +110,8 @@ public class HMM implements Serializable{
 		
 		
 		
-		for(int i=0; i<numStates; i++) {
-			for(int j=0; j<numObservations; j++) {
+		for(var i = 0; i<numStates; i++) {
+			for(var j = 0; j<numObservations; j++) {
 				b[i][j] = 1.0/(double)numObservations;
 			}
 		}
@@ -133,25 +133,25 @@ public class HMM implements Serializable{
 	 */
 	public void train(Iterable<int[]> trainsequence) {
 
-		double[][] a_new = new double[a.length][a.length];
-		double[][] b_new = new double[b.length][b[0].length];
+		var a_new = new double[a.length][a.length];
+		var b_new = new double[b.length][b[0].length];
 		
-		for(int i=0; i<a.length; i++) {
-			for(int j=0; j<a[i].length; j++) {	
+		for(var i = 0; i<a.length; i++) {
+			for(var j = 0; j<a[i].length; j++) {
 				double zaehler=0;
 				double nenner=0;
 
-				for (int[] sequence : trainsequence) {
+				for (var sequence : trainsequence) {
 
-					double[][] fwd = this.forwardProc(sequence);
-					double[][] bwd = this.backwardProc(sequence);
-					double prob = this.getProbability(sequence);
+					var fwd = this.forwardProc(sequence);
+					var bwd = this.backwardProc(sequence);
+					var prob = this.getProbability(sequence);
 		
 					double zaehler_innersum=0;
 					double nenner_innersum=0;
 					
 					
-					for(int t=0; t<sequence.length-1; t++) {
+					for(var t = 0; t<sequence.length-1; t++) {
 						zaehler_innersum+=fwd[i][t]*a[i][j]*b[j][sequence[t+1]]*bwd[j][t+1];
 						nenner_innersum+=fwd[i][t]*bwd[i][t];
 					}
@@ -164,22 +164,22 @@ public class HMM implements Serializable{
 		} 
 		
 		
-		for(int i=0; i<b.length; i++) { 
-			for(int j=0; j<b[i].length; j++) {	
+		for(var i = 0; i<b.length; i++) {
+			for(var j = 0; j<b[i].length; j++) {
 				double zaehler=0;
 				double nenner=0;
 			
-				for (int[] sequence : trainsequence) {
-					
-					double[][] fwd = this.forwardProc(sequence);
-					double[][] bwd = this.backwardProc(sequence);
-					double prob = this.getProbability(sequence);
+				for (var sequence : trainsequence) {
+
+					var fwd = this.forwardProc(sequence);
+					var bwd = this.backwardProc(sequence);
+					var prob = this.getProbability(sequence);
 		
 					double zaehler_innersum=0;
 					double nenner_innersum=0;
 					
 					
-					for(int t=0; t<sequence.length-1; t++) {
+					for(var t = 0; t<sequence.length-1; t++) {
 						if(sequence[t]==j) {
 							zaehler_innersum+=fwd[i][t]*bwd[i][t];
 						}
@@ -205,14 +205,14 @@ public class HMM implements Serializable{
 	 * 
 	 */
 	protected double[][] forwardProc(int[] o) {
-		double[][] f = new double[numStates][o.length];
-		for (int l = 0; l < f.length; l++) {
+		var f = new double[numStates][o.length];
+		for (var l = 0; l < f.length; l++) {
 			f[l][0] = pi[l] * b[l][o[0]];
 		}
-		for (int i = 1; i < o.length; i++) {
-			for (int k = 0; k < f.length; k++) {
+		for (var i = 1; i < o.length; i++) {
+			for (var k = 0; k < f.length; k++) {
 				double sum = 0;
-				for (int l = 0; l < numStates; l++) {
+				for (var l = 0; l < numStates; l++) {
 					sum += f[l][i-1] * a[l][k];
 				}
 				f[k][i] = sum * b[k][o[i]];
@@ -230,9 +230,9 @@ public class HMM implements Serializable{
 	 * @return probability that sequence o belongs to this hmm
 	 */
 	public double getProbability(int[] o) {
-        double[][] forward = this.forwardProc(o);
+		var forward = this.forwardProc(o);
 
-        double prob = Arrays.stream(forward).mapToDouble(doubles -> doubles[doubles.length - 1]).sum();
+		var prob = Arrays.stream(forward).mapToDouble(doubles -> doubles[doubles.length - 1]).sum();
 		return prob;
 	}
 	
@@ -244,16 +244,16 @@ public class HMM implements Serializable{
 	 * @return Array[State][Time]
 	 */
 	protected double[][] backwardProc(int[] o) {
-		int T = o.length;
-		double[][] bwd = new double[numStates][T];
+		var T = o.length;
+		var bwd = new double[numStates][T];
 		/* Basisfall */
-		for (int i = 0; i < numStates; i++)
+		for (var i = 0; i < numStates; i++)
 			bwd[i][T - 1] = 1;
 		/* Induktion */
-		for (int t = T - 2; t >= 0; t--) {
-			for (int i = 0; i < numStates; i++) {
+		for (var t = T - 2; t >= 0; t--) {
+			for (var i = 0; i < numStates; i++) {
 				bwd[i][t] = 0;
-				for (int j = 0; j < numStates; j++)
+				for (var j = 0; j < numStates; j++)
 					bwd[i][t] += (bwd[j][t + 1] * a[i][j] * b[j][o[t + 1]]);
 			}
 		}
@@ -269,21 +269,21 @@ public class HMM implements Serializable{
 	 * 
 	 */
 	public void print() {
-		DecimalFormat fmt = new DecimalFormat();
+		var fmt = new DecimalFormat();
 		fmt.setMinimumFractionDigits(5);
 		fmt.setMaximumFractionDigits(5);
-		for (int i = 0; i < numStates; i++)
+		for (var i = 0; i < numStates; i++)
 			System.out.println("pi(" + i + ") = " + fmt.format(pi[i]));
 		System.out.println();
-		for (int i = 0; i < numStates; i++) {
-			for (int j = 0; j < numStates; j++)
+		for (var i = 0; i < numStates; i++) {
+			for (var j = 0; j < numStates; j++)
 				System.out.println("a(" + i + ',' + j + ") = "
 						+ fmt.format(a[i][j]) + ' ');
 			System.out.println();
 		}
 		System.out.println();
-		for (int i = 0; i < numStates; i++) {
-			for (int k = 0; k < numObservations; k++)
+		for (var i = 0; i < numStates; i++) {
+			for (var k = 0; k < numObservations; k++)
 				System.out.println("b(" + i + ',' + k + ") = "
 						+ fmt.format(b[i][k]) + ' ');
 			System.out.println();

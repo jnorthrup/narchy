@@ -29,8 +29,8 @@ public class Checkers {
         pieces = (Piece[][]) Array.newInstance(Piece.class, WIDTH, HEIGHT);
 
 
-        for (int i = 0; i < WIDTH; i++) {
-            for (int j = 0; j < HEIGHT; j++) {
+        for (var i = 0; i < WIDTH; i++) {
+            for (var j = 0; j < HEIGHT; j++) {
 
                 if (i % 2 == j % 2) {
                     if (j < (HEIGHT / 2) - 1)
@@ -131,7 +131,7 @@ public class Checkers {
      * @return
      */
     public ArrayList<int[]> pieceCouldJumpToFrom(int srcX, int srcY) {
-        ArrayList<int[]> destinations = new ArrayList<>();
+        var destinations = new ArrayList<int[]>();
 
         if (pieces[srcX][srcY].isLight() || pieces[srcX][srcY] instanceof King) {
             if (srcY <= HEIGHT - 3) {
@@ -186,7 +186,7 @@ public class Checkers {
      * @return
      */
     public ArrayList<int[]> pieceCouldMoveToFrom(int srcX, int srcY) {
-        ArrayList<int[]> destinations = new ArrayList<>();
+        var destinations = new ArrayList<int[]>();
 
         if (pieces[srcX][srcY] != null) {
             if (pieces[srcX][srcY].isLight() || pieces[srcX][srcY] instanceof King) {
@@ -231,8 +231,8 @@ public class Checkers {
      * @param dstY
      */
     private void jump(int srcX, int srcY, int dstX, int dstY) {
-        int targetX = srcX < dstX ? srcX + 1 : srcX - 1;
-        int targetY = srcY < dstY ? srcY + 1 : srcY - 1;
+        var targetX = srcX < dstX ? srcX + 1 : srcX - 1;
+        var targetY = srcY < dstY ? srcY + 1 : srcY - 1;
 
         pieces[dstX][dstY] = pieces[srcX][srcY];
         pieces[targetX][targetY] = null;
@@ -243,8 +243,8 @@ public class Checkers {
      * @return
      */
     private boolean canJump() {
-        for (int i = 0; i < WIDTH; i++) {
-            for (int j = 0; j < HEIGHT; j++) {
+        for (var i = 0; i < WIDTH; i++) {
+            for (var j = 0; j < HEIGHT; j++) {
                 if (pieces[i][j] != null) {
                     if (isTurnLight() && pieces[i][j].isLight() && !pieceCouldJumpToFrom(i, j).isEmpty() || isTurnDark() && pieces[i][j].isDark() && !pieceCouldJumpToFrom(i, j).isEmpty())
                         return true;
@@ -265,7 +265,7 @@ public class Checkers {
     private boolean isValidMove(int srcX, int srcY, int dstX, int dstY) {
         if (pieces[srcX][srcY] != null) {
             if ((pieces[srcX][srcY].isLight() && isTurnLight()) || (pieces[srcX][srcY].isDark() && isTurnDark())) {
-                ArrayList<int[]> dsts = new ArrayList<>();
+                var dsts = new ArrayList<int[]>();
 
                 if (hasRemainingJump()) {
                     if (srcX == remainingJumpX && srcY == remainingJumpY)
@@ -317,10 +317,10 @@ public class Checkers {
     @Override
     public boolean equals(Object o) {
         if (o instanceof Checkers) {
-            Piece[][] p = ((Checkers) o).getPieces();
+            var p = ((Checkers) o).getPieces();
 
-            for (int i = 0; i < WIDTH; i++) {
-                for (int j = 0; j < HEIGHT; j++) {
+            for (var i = 0; i < WIDTH; i++) {
+                for (var j = 0; j < HEIGHT; j++) {
                     if (p[i][j] == null ^ pieces[i][j] == null)
                         return false;
                     else if (p[i][j] != null && pieces[i][j] != null) {

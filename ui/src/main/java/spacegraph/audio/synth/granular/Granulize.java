@@ -62,7 +62,7 @@ public class Granulize extends SoundProducer.Amplifiable {
 	}
 
 	private int calculateCurrentBufferIndex() {
-        float sf = stretchFactor.floatValue();
+		var sf = stretchFactor.floatValue();
 
 		return Math.abs(Math.round(playOffset + (now - playTime) / sf)) % sourceBuffer.length;
 	}
@@ -79,8 +79,8 @@ public class Granulize extends SoundProducer.Amplifiable {
 			currentGrain = nextGrain(null);
 		}
 
-		float amp = currentAmplitude;
-		float dAmp = (amp() - amp) / buf.length;
+		var amp = currentAmplitude;
+		var dAmp = (amp() - amp) / buf.length;
 
 
 //		if (!p)
@@ -88,12 +88,12 @@ public class Granulize extends SoundProducer.Amplifiable {
 
 		long samples = buf.length;
 
-		long[] cGrain = currentGrain;
-		long[] fGrain = fadingGrain;
-		float dNow = pitchFactor.floatValue();
-		float n = now;
+		var cGrain = currentGrain;
+		var fGrain = fadingGrain;
+		var dNow = pitchFactor.floatValue();
+		var n = now;
 
-		for (int i = 0; i < samples; i++ ) {
+		for (var i = 0; i < samples; i++ ) {
             float nextSample = 0;
             long lnow = Math.round(n);
 			if (cGrain != null) {

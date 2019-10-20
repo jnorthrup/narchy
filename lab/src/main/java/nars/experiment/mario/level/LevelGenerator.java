@@ -14,7 +14,7 @@ public class LevelGenerator {
     private static final Random levelSeedRandom = new Random();
 
     public static Level createLevel(int width, int height, long seed, int difficulty, int type) {
-        LevelGenerator levelGenerator = new LevelGenerator(width, height);
+        var levelGenerator = new LevelGenerator(width, height);
         return levelGenerator.createLevel(seed, difficulty, type);
     }
 
@@ -51,7 +51,7 @@ public class LevelGenerator {
             odds[ODDS_HILL_STRAIGHT] = 0;
         }
 
-        for (int i = 0; i < odds.length; i++) {
+        for (var i = 0; i < odds.length; i++) {
             if (odds[i] < 0) odds[i] = 0;
             totalOdds += odds[i];
             odds[i] = totalOdds - odds[i];
@@ -61,19 +61,19 @@ public class LevelGenerator {
         level = new Level(width, height);
         random = new Random(seed);
 
-        int length = 0;
+        var length = 0;
         length += buildStraight(0, level.width, true);
         while (length < level.width - 64) {
             length += buildZone(length, level.width - length);
         }
 
-        int floor = height - 1 - random.nextInt(4);
+        var floor = height - 1 - random.nextInt(4);
 
         level.xExit = length + 8;
         level.yExit = floor;
 
-        for (int x = length; x < level.width; x++) {
-            for (int y = 0; y < height; y++) {
+        for (var x = length; x < level.width; x++) {
+            for (var y = 0; y < height; y++) {
                 if (y >= floor) {
                     level.setBlock(x, y, (byte) (1 + 9 * 16));
                 }
@@ -81,14 +81,14 @@ public class LevelGenerator {
         }
 
         if (type == LevelGenerator.TYPE_CASTLE || type == LevelGenerator.TYPE_UNDERGROUND) {
-            int ceiling = 0;
-            int run = 0;
-            for (int x = 0; x < level.width; x++) {
+            var ceiling = 0;
+            var run = 0;
+            for (var x = 0; x < level.width; x++) {
                 if (run-- <= 0 && x > 4) {
                     ceiling = random.nextInt(4);
                     run = random.nextInt(4) + 4;
                 }
-                for (int y = 0; y < level.height; y++) {
+                for (var y = 0; y < level.height; y++) {
                     if ((x > 4 && y <= ceiling) || x < 1) {
                         level.setBlock(x, y, (byte) (1 + 9 * 16));
                     }
@@ -102,9 +102,9 @@ public class LevelGenerator {
     }
 
     private int buildZone(int x, int maxLength) {
-        int t = random.nextInt(totalOdds);
-        int type = 0;
-        for (int i = 0; i < odds.length; i++) {
+        var t = random.nextInt(totalOdds);
+        var type = 0;
+        for (var i = 0; i < odds.length; i++) {
             if (odds[i] <= t) {
                 type = i;
             }
@@ -126,16 +126,16 @@ public class LevelGenerator {
     }
 
     private int buildJump(int xo, int maxLength) {
-        int js = random.nextInt(4) + 2;
-        int jl = random.nextInt(2) + 2;
-        int length = js * 2 + jl;
+        var js = random.nextInt(4) + 2;
+        var jl = random.nextInt(2) + 2;
+        var length = js * 2 + jl;
 
-        boolean hasStairs = random.nextInt(3) == 0;
+        var hasStairs = random.nextInt(3) == 0;
 
-        int floor = height - 1 - random.nextInt(4);
-        for (int x = xo; x < xo + length; x++) {
+        var floor = height - 1 - random.nextInt(4);
+        for (var x = xo; x < xo + length; x++) {
             if (x < xo + js || x > xo + length - js - 1) {
-                for (int y = 0; y < height; y++) {
+                for (var y = 0; y < height; y++) {
                     if (y >= floor) {
                         level.setBlock(x, y, (byte) (1 + 9 * 16));
                     } else if (hasStairs) {
@@ -157,19 +157,19 @@ public class LevelGenerator {
     }
 
     private int buildCannons(int xo, int maxLength) {
-        int length = random.nextInt(10) + 2;
+        var length = random.nextInt(10) + 2;
         if (length > maxLength) length = maxLength;
 
-        int floor = height - 1 - random.nextInt(4);
-        int xCannon = xo + 1 + random.nextInt(4);
-        for (int x = xo; x < xo + length; x++) {
+        var floor = height - 1 - random.nextInt(4);
+        var xCannon = xo + 1 + random.nextInt(4);
+        for (var x = xo; x < xo + length; x++) {
             if (x > xCannon) {
                 xCannon += 2 + random.nextInt(4);
             }
             if (xCannon == xo + length - 1) xCannon += 10;
-            int cannonHeight = floor - random.nextInt(4) - 1;
+            var cannonHeight = floor - random.nextInt(4) - 1;
 
-            for (int y = 0; y < height; y++) {
+            for (var y = 0; y < height; y++) {
                 if (y >= floor) {
                     level.setBlock(x, y, (byte) (1 + 9 * 16));
                 } else {
@@ -190,12 +190,12 @@ public class LevelGenerator {
     }
 
     private int buildHillStraight(int xo, int maxLength) {
-        int length = random.nextInt(10) + 10;
+        var length = random.nextInt(10) + 10;
         if (length > maxLength) length = maxLength;
 
-        int floor = height - 1 - random.nextInt(4);
-        for (int x = xo; x < xo + length; x++) {
-            for (int y = 0; y < height; y++) {
+        var floor = height - 1 - random.nextInt(4);
+        for (var x = xo; x < xo + length; x++) {
+            for (var y = 0; y < height; y++) {
                 if (y >= floor) {
                     level.setBlock(x, y, (byte) (1 + 9 * 16));
                 }
@@ -204,19 +204,19 @@ public class LevelGenerator {
 
         addEnemyLine(xo + 1, xo + length - 1, floor - 1);
 
-        int h = floor;
+        var h = floor;
 
-        boolean keepGoing = true;
+        var keepGoing = true;
 
-        boolean[] occupied = new boolean[length];
+        var occupied = new boolean[length];
         while (keepGoing) {
             h = h - 2 - random.nextInt(3);
 
             if (h <= 0) {
                 keepGoing = false;
             } else {
-                int l = random.nextInt(5) + 3;
-                int xxo = random.nextInt(length - l - 2) + xo + 1;
+                var l = random.nextInt(5) + 3;
+                var xxo = random.nextInt(length - l - 2) + xo + 1;
 
                 if (occupied[xxo - xo] || occupied[xxo - xo + l] || occupied[xxo - xo - 1] || occupied[xxo - xo + l + 1]) {
                     keepGoing = false;
@@ -228,12 +228,12 @@ public class LevelGenerator {
                         decorate(xxo - 1, xxo + l + 1, h);
                         keepGoing = false;
                     }
-                    for (int x = xxo; x < xxo + l; x++) {
-                        for (int y = h; y < floor; y++) {
-                            int xx = 5;
+                    for (var x = xxo; x < xxo + l; x++) {
+                        for (var y = h; y < floor; y++) {
+                            var xx = 5;
                             if (x == xxo) xx = 4;
                             if (x == xxo + l - 1) xx = 6;
-                            int yy = 9;
+                            var yy = 9;
                             if (y == h) yy = 8;
 
                             if (level.getBlock(x, y) == 0) {
@@ -254,9 +254,9 @@ public class LevelGenerator {
     }
 
     private void addEnemyLine(int x0, int x1, int y) {
-        for (int x = x0; x < x1; x++) {
+        for (var x = x0; x < x1; x++) {
             if (random.nextInt(35) < difficulty + 1) {
-                int type = random.nextInt(4);
+                var type = random.nextInt(4);
                 if (difficulty < 1) {
                     type = Enemy.ENEMY_GOOMBA;
                 } else if (difficulty < 3) {
@@ -268,13 +268,13 @@ public class LevelGenerator {
     }
 
     private int buildTubes(int xo, int maxLength) {
-        int length = random.nextInt(10) + 5;
+        var length = random.nextInt(10) + 5;
         if (length > maxLength) length = maxLength;
 
-        int floor = height - 1 - random.nextInt(4);
-        int xTube = xo + 1 + random.nextInt(4);
-        int tubeHeight = floor - random.nextInt(2) - 2;
-        for (int x = xo; x < xo + length; x++) {
+        var floor = height - 1 - random.nextInt(4);
+        var xTube = xo + 1 + random.nextInt(4);
+        var tubeHeight = floor - random.nextInt(2) - 2;
+        for (var x = xo; x < xo + length; x++) {
             if (x > xTube + 1) {
                 xTube += 3 + random.nextInt(4);
                 tubeHeight = floor - random.nextInt(2) - 2;
@@ -285,12 +285,12 @@ public class LevelGenerator {
                 level.setSpriteTemplate(x, tubeHeight, new SpriteTemplate(Enemy.ENEMY_FLOWER, false));
             }
 
-            for (int y = 0; y < height; y++) {
+            for (var y = 0; y < height; y++) {
                 if (y >= floor) {
                     level.setBlock(x, y, (byte) (1 + 9 * 16));
                 } else {
                     if ((x == xTube || x == xTube + 1) && y >= tubeHeight) {
-                        int xPic = 10 + x - xTube;
+                        var xPic = 10 + x - xTube;
                         if (y == tubeHeight) {
                             level.setBlock(x, y, (byte) (xPic + 0 * 16));
                         } else {
@@ -305,13 +305,13 @@ public class LevelGenerator {
     }
 
     private int buildStraight(int xo, int maxLength, boolean safe) {
-        int length = random.nextInt(10) + 2;
+        var length = random.nextInt(10) + 2;
         if (safe) length = 10 + random.nextInt(5);
         if (length > maxLength) length = maxLength;
 
-        int floor = height - 1 - random.nextInt(4);
-        for (int x = xo; x < xo + length; x++) {
-            for (int y = 0; y < height; y++) {
+        var floor = height - 1 - random.nextInt(4);
+        for (var x = xo; x < xo + length; x++) {
+            for (var y = 0; y < height; y++) {
                 if (y >= floor) {
                     level.setBlock(x, y, (byte) (1 + 9 * 16));
                 }
@@ -333,12 +333,12 @@ public class LevelGenerator {
 
         addEnemyLine(x0 + 1, x1 - 1, floor - 1);
 
-        int s = random.nextInt(4);
-        int e = random.nextInt(4);
+        var s = random.nextInt(4);
+        var e = random.nextInt(4);
 
         if (floor - 2 > 0) {
             if ((x1 - 1 - e) - (x0 + 1 + s) > 1) {
-                for (int x = x0 + 1 + s; x < x1 - 1 - e; x++) {
+                for (var x = x0 + 1 + s; x < x1 - 1 - e; x++) {
                     level.setBlock(x, floor - 2, (byte) (2 + 2 * 16));
                 }
             }
@@ -347,10 +347,10 @@ public class LevelGenerator {
         s = random.nextInt(4);
         e = random.nextInt(4);
 
-        boolean rocks = true;
+        var rocks = true;
         if (floor - 4 > 0) {
             if ((x1 - 1 - e) - (x0 + 1 + s) > 2) {
-                for (int x = x0 + 1 + s; x < x1 - 1 - e; x++) {
+                for (var x = x0 + 1 + s; x < x1 - 1 - e; x++) {
                     if (rocks) {
                         if (x != x0 + 1 && x != x1 - 2 && random.nextInt(3) == 0) {
                             if (random.nextInt(4) == 0) {
@@ -373,7 +373,7 @@ public class LevelGenerator {
         }
 
         @SuppressWarnings("unused")
-        int length = x1 - x0 - 2;
+        var length = x1 - x0 - 2;
 
                 if (length > 5 && rocks)
          {
@@ -382,12 +382,12 @@ public class LevelGenerator {
     }
 
     private void fixWalls() {
-        boolean[][] blockMap = new boolean[width + 1][height + 1];
-        for (int x = 0; x < width + 1; x++) {
-            for (int y = 0; y < height + 1; y++) {
-                int blocks = 0;
-                for (int xx = x - 1; xx < x + 1; xx++) {
-                    for (int yy = y - 1; yy < y + 1; yy++) {
+        var blockMap = new boolean[width + 1][height + 1];
+        for (var x = 0; x < width + 1; x++) {
+            for (var y = 0; y < height + 1; y++) {
+                var blocks = 0;
+                for (var xx = x - 1; xx < x + 1; xx++) {
+                    for (var yy = y - 1; yy < y + 1; yy++) {
                         if (level.getBlockCapped(xx, yy) == (byte) (1 + 9 * 16)) blocks++;
                     }
                 }
@@ -398,7 +398,7 @@ public class LevelGenerator {
     }
 
     private void blockify(Level level, boolean[][] blocks, int width, int height) {
-        int to = 0;
+        var to = 0;
         switch (type) {
             case LevelGenerator.TYPE_CASTLE:
                 to = 4 * 2;
@@ -408,13 +408,13 @@ public class LevelGenerator {
                 break;
         }
 
-        boolean[][] b = new boolean[2][2];
-        for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
-                for (int xx = x; xx <= x + 1; xx++) {
-                    for (int yy = y; yy <= y + 1; yy++) {
-                        int _xx = xx;
-                        int _yy = yy;
+        var b = new boolean[2][2];
+        for (var x = 0; x < width; x++) {
+            for (var y = 0; y < height; y++) {
+                for (var xx = x; xx <= x + 1; xx++) {
+                    for (var yy = y; yy <= y + 1; yy++) {
+                        var _xx = xx;
+                        var _yy = yy;
                         if (_xx < 0) _xx = 0;
                         if (_yy < 0) _yy = 0;
                         if (_xx > width - 1) _xx = width - 1;

@@ -14,7 +14,7 @@ public class SpaceInvaders {
     }
 
     public static void run() throws Exception {
-        Memory mem = new Memory();
+        var mem = new Memory();
 
         load(mem, "invaders.h", 0);
         load(mem, "invaders.g", 2048);
@@ -22,15 +22,15 @@ public class SpaceInvaders {
         load(mem, "invaders.e", 6144);
 
 
-        CPU cpu = new CPU(mem);
+        var cpu = new CPU(mem);
         cpu.run();
 
     }
 
     public static void showCodes() throws Exception {
-        ArrayList<String> arr = new ArrayList<>();
+        var arr = new ArrayList<String>();
         InputStream is = new FileInputStream("invaders.rom");
-        int x = is.read();
+        var x = is.read();
         arr.add(toHexString((byte) x));
         while (x != -1) {
             x = is.read();
@@ -43,8 +43,8 @@ public class SpaceInvaders {
     }
 
     public static void load(Memory mem, String filename, int beginIndex) throws Exception {
-        InputStream is = SpaceInvaders.class.getResourceAsStream(filename);
-        int x = is.read();
+        var is = SpaceInvaders.class.getResourceAsStream(filename);
+        var x = is.read();
         mem.addMem(x, beginIndex);
         while (x != -1) {
             x = is.read();

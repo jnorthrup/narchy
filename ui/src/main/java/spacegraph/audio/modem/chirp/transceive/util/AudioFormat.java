@@ -80,7 +80,7 @@ public class AudioFormat {
     }
 
     public String toString() {
-        String var1 = "";
+        var var1 = "";
         if (this.encoding != null) {
             var1 = this.encoding + " ";
         }
@@ -122,7 +122,7 @@ public class AudioFormat {
             var5 = this.frameSize + " bytes/frame, ";
         }
 
-        String var6 = "";
+        var var6 = "";
         if ((double) Math.abs(this.sampleRate - this.frameRate) > 1.0E-5D) {
             if (this.frameRate == -1.0F) {
                 var6 = "unknown frame rate, ";
@@ -131,7 +131,7 @@ public class AudioFormat {
             }
         }
 
-        String var7 = "";
+        var var7 = "";
         if ((this.encoding.equals(AudioFormat.Encoding.PCM_SIGNED) || this.encoding.equals(AudioFormat.Encoding.PCM_UNSIGNED)) && (this.sampleSizeInBits > 8 || this.sampleSizeInBits == -1)) {
             if (this.bigEndian) {
                 var7 = "big-endian";

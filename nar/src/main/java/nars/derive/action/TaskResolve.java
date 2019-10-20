@@ -28,9 +28,9 @@ public class TaskResolve extends NativeHow {
 
 	@Override
 	protected void run(RuleCause why, Derivation d) {
-		TaskLink x = (TaskLink)d._task;
+		var x = (TaskLink)d._task;
 
-		Task y = get(x, d);
+		var y = get(x, d);
 		if (y != null) // && !x.equals(y))
 			d.add(new AbstractPremise(y, why.whyLazy(x, y)));
 	}
@@ -53,7 +53,7 @@ public class TaskResolve extends NativeHow {
 		if (punc == 0)
 			punc = TaskLink.randomPunc(x, w.x.random()); //flat-lined tasklink
 
-		TaskTable table =
+		var table =
 			//n.concept(t);
 			//n.conceptualizeDynamic(x);
 			//beliefOrGoal ? n.conceptualizeDynamic(x) : n.beliefDynamic(x);

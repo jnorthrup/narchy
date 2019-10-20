@@ -95,8 +95,8 @@ public class Optimize<S, E> extends Lab<E>  {
     public static <X> FloatFunction<X> repeat(FloatFunction<X> f, int repeats) {
         return (x) -> {
             double sum = 0;
-            for (int i = 0; i < repeats; i++) {
-                float y = f.floatValueOf(x);
+            for (var i = 0; i < repeats; i++) {
+                var y = f.floatValueOf(x);
                 if (!Float.isFinite(y))
                     return y;
                 sum += y;
@@ -124,28 +124,28 @@ public class Optimize<S, E> extends Lab<E>  {
     public void run(OptimizationStrategy strategy) {
 
         //initialize numeric or numeric-able variables
-        int numVars = var.size();
+        var numVars = var.size();
 
         mid = new double[numVars];
         min = new double[numVars];
         max = new double[numVars];
         inc = new double[numVars];
 
-        S example = subj.get();
-        int i = 0;
+        var example = subj.get();
+        var i = 0;
         for (Var w: var) {
-            FloatVar s = (FloatVar) w;
+            var s = (FloatVar) w;
 
 
-            Object guess = s.get(example);
+            var guess = s.get(example);
 
 
-            double mi = min[i] = s.getMin();
-            double ma = max[i] = s.getMax();
-            double inc = this.inc[i] = s.getInc();
+            var mi = min[i] = s.getMin();
+            var ma = max[i] = s.getMax();
+            var inc = this.inc[i] = s.getInc();
 
             if (guess!=null && (mi!=mi || ma!=ma || inc!=inc)) {
-                float x = (float)guess;
+                var x = (float)guess;
                 //HACK assumption
                 mi = min[i] = x/2;
                 ma = max[i] = x*2;
@@ -164,13 +164,13 @@ public class Optimize<S, E> extends Lab<E>  {
 
 
         goal.addToSchema(data);
-        for (Sensor<S, ?> varSensor : varSensors) {
+        for (var varSensor : varSensors) {
             varSensor.addToSchema(data);
         }
         sensors.forEach(s -> s.addToSchema(data));
 
         if (logger.isTraceEnabled()) {
-            String s = data.columnNames().toString();
+            var s = data.columnNames().toString();
             logger.trace("{}", s.substring(1, s.length()-1));
         }
 
@@ -196,19 +196,19 @@ public class Optimize<S, E> extends Lab<E>  {
          */
 
         try {
-            Object[] copy = new Object[1];
-            E y = experiment.apply(() -> {
-                S s = subject(subj.get(), point);
+            var copy = new Object[1];
+            var y = experiment.apply(() -> {
+                var s = subject(subj.get(), point);
                 copy[0] = s; //for measurement
                 return s;
             });
 
-            double score = goal.apply(y).doubleValue();
+            var score = goal.apply(y).doubleValue();
 
-            Object[] row = row(copy[0], y, score);
+            var row = row(copy[0], y, score);
 
             if (logger.isTraceEnabled()) {
-                String rs = Arrays.toString(row);
+                var rs = Arrays.toString(row);
                 logger.trace("{}", rs.substring(1, rs.length()-1));
             }
 
@@ -218,7 +218,7 @@ public class Optimize<S, E> extends Lab<E>  {
         } catch (Throwable t) {
             //System.err.println(t.getMessage());
             /** enable to print exceptions */
-            boolean debug = false;
+            var debug = false;
             if (debug)
                 t.printStackTrace();
             return Double.NEGATIVE_INFINITY;
@@ -227,10 +227,10 @@ public class Optimize<S, E> extends Lab<E>  {
     }
 
     private Object[] row(Object o, E y, double score) {
-        Object[] row = new Object[1 + var.size() + sensors.size()];
-        int j = 0;
+        var row = new Object[1 + var.size() + sensors.size()];
+        var j = 0;
         row[j++] = score;
-        S x = (S) o;
+        var x = (S) o;
         for (Sensor v: varSensors)
             row[j++] = v.apply(x);
         for (Sensor s: sensors)
@@ -353,14 +353,14 @@ public class Optimize<S, E> extends Lab<E>  {
 //            func = new ObjectiveFunction( cache( func.getObjectiveFunction() ) );
 
             try {
-                int dim = o.inc.length;
+                var dim = o.inc.length;
                 //double[] range = new double[dim];
-                double[] step = new double[dim];
-                double[] init = new double[dim];
-                for (int i = 0; i < dim; i++) {
-                    double min = o.min[i];
-                    double max = o.max[i];
-                    double range = max - min;
+                var step = new double[dim];
+                var init = new double[dim];
+                for (var i = 0; i < dim; i++) {
+                    var min = o.min[i];
+                    var max = o.max[i];
+                    var range = max - min;
                     step[i] = range / o.inc[i];
                     init[i] = (Math.random() * range) + min;
                 }
@@ -406,13 +406,13 @@ public class Optimize<S, E> extends Lab<E>  {
         @Override
         protected void run(Optimize o, ObjectiveFunction func) {
 
-            int popSize =
+            var popSize =
                     (int) Math.ceil(4 + 3 * Math.log(o.var.size()));
 
 
-            double[] sigma = MathArrays.scale(1f, o.inc);
+            var sigma = MathArrays.scale(1f, o.inc);
 
-            MyCMAESOptimizer m = new MyCMAESOptimizer(maxIter, Double.NaN,
+            var m = new MyCMAESOptimizer(maxIter, Double.NaN,
                     true, 0,
                     1, new XoRoShiRo128PlusRandom(), //new MersenneTwister(System.nanoTime())
                     true, null, popSize, sigma);

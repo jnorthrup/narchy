@@ -43,11 +43,11 @@ public class SV_GAME {
         if (ent == null)
             return;
 
-        int p = ent.index;
+        var p = ent.index;
         if (p < 1 || p > SV_MAIN.maxclients.value)
             return;
 
-        client_t client = SV_INIT.svs.clients[p - 1];
+        var client = SV_INIT.svs.clients[p - 1];
 
         if (reliable)
             SZ.Write(client.netchan.message, SV_INIT.sv.multicast.data,
@@ -83,7 +83,7 @@ public class SV_GAME {
      */
     public static void PF_cprintf(edict_t ent, int level, String fmt) {
 
-        int n = 0;
+        var n = 0;
 
         if (ent != null) {
             n = ent.index;
@@ -104,7 +104,7 @@ public class SV_GAME {
      */
     public static void PF_centerprintf(edict_t ent, String fmt) {
 
-        int n = ent.index;
+        var n = ent.index;
         if (n < 1 || n > SV_MAIN.maxclients.value)
             return; 
 
@@ -136,13 +136,13 @@ public class SV_GAME {
         if (name == null)
             Com.Error(Defines.ERR_DROP, "PF_setmodel: NULL");
 
-        int i = SV_INIT.SV_ModelIndex(name);
+        var i = SV_INIT.SV_ModelIndex(name);
 
         ent.s.modelindex = i;
 
         
         if (name.startsWith("*")) {
-            cmodel_t mod = CM.InlineModel(name);
+            var mod = CM.InlineModel(name);
             Math3D.VectorCopy(mod.mins, ent.mins);
             Math3D.VectorCopy(mod.maxs, ent.maxs);
             SV_WORLD.SV_LinkEdict(ent);
@@ -217,14 +217,14 @@ public class SV_GAME {
      */
     public static boolean PF_inPVS(float[] p1, float[] p2) {
 
-        int leafnum = CM.CM_PointLeafnum(p1);
-        int cluster = CM.CM_LeafCluster(leafnum);
-        int area1 = CM.CM_LeafArea(leafnum);
-        byte[] mask = CM.CM_ClusterPVS(cluster);
+        var leafnum = CM.CM_PointLeafnum(p1);
+        var cluster = CM.CM_LeafCluster(leafnum);
+        var area1 = CM.CM_LeafArea(leafnum);
+        var mask = CM.CM_ClusterPVS(cluster);
 
         leafnum = CM.CM_PointLeafnum(p2);
         cluster = CM.CM_LeafCluster(leafnum);
-        int area2 = CM.CM_LeafArea(leafnum);
+        var area2 = CM.CM_LeafArea(leafnum);
 
         
         if (cluster == -1)
@@ -243,14 +243,14 @@ public class SV_GAME {
      */
     public static boolean PF_inPHS(float[] p1, float[] p2) {
 
-        int leafnum = CM.CM_PointLeafnum(p1);
-        int cluster = CM.CM_LeafCluster(leafnum);
-        int area1 = CM.CM_LeafArea(leafnum);
-        byte[] mask = CM.CM_ClusterPHS(cluster);
+        var leafnum = CM.CM_PointLeafnum(p1);
+        var cluster = CM.CM_LeafCluster(leafnum);
+        var area1 = CM.CM_LeafArea(leafnum);
+        var mask = CM.CM_ClusterPHS(cluster);
 
         leafnum = CM.CM_PointLeafnum(p2);
         cluster = CM.CM_LeafCluster(leafnum);
-        int area2 = CM.CM_LeafArea(leafnum);
+        var area2 = CM.CM_LeafArea(leafnum);
 
         
         if (cluster == -1)
@@ -293,7 +293,7 @@ public class SV_GAME {
         
         SV_ShutdownGameProgs();
 
-        game_import_t gimport = new game_import_t();
+        var gimport = new game_import_t();
 
         
         GameBase.GetGameApi(gimport);

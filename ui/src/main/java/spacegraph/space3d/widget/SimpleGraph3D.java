@@ -97,7 +97,7 @@ public class SimpleGraph3D<X> extends DynamicListSpace<X> {
 
         @Override
         public Body3D newBody(boolean collidesWithOthersLikeThis) {
-            Body3D d = super.newBody(collidesWithOthersLikeThis);
+            var d = super.newBody(collidesWithOthersLikeThis);
             d.setMass(100);
             d.setDamping(0.9f, 0.1f);
             return d;
@@ -124,7 +124,7 @@ public class SimpleGraph3D<X> extends DynamicListSpace<X> {
     }
 
     public SimpleGraph3D<X> commit(MapNodeGraph<X,Object> g) {
-        List<X> list = g.nodes().stream().map(Node::id).collect(Collectors.toList());
+        var list = g.nodes().stream().map(Node::id).collect(Collectors.toList());
         return commit(
                 list,
                 x-> StreamSupport.stream(g.node(x).edges(false, true).spliterator(), false).map(zz -> zz.to().id())
@@ -138,10 +138,10 @@ public class SimpleGraph3D<X> extends DynamicListSpace<X> {
     private SimpleGraph3D<X> update(Iterable<X> nodes, Function<X, Iterable<X>> edges, boolean addOrReplace) {
         List<Spatial<X>> n2 = new FasterList();
 
-        for (X x : nodes) {
-            DefaultSpaceWidget<X> src = cache.computeIfAbsent(x, DefaultSpaceWidget::new);
+        for (var x : nodes) {
+            var src = cache.computeIfAbsent(x, DefaultSpaceWidget::new);
 
-            for (X edge : edges.apply(x)) {
+            for (var edge : edges.apply(x)) {
                 src.edges.add(new EDraw<>(
                         src, cache.computeIfAbsent(edge, DefaultSpaceWidget::new)
                         , 0.5f));

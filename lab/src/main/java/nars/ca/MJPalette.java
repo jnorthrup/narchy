@@ -188,18 +188,18 @@ public class MJPalette {
 		int r;
 		int g;
 		int b;
-        int r1 = c1.getRed();
-        int r2 = c2.getRed();
-        int g1 = c1.getGreen();
-        int g2 = c2.getGreen();
-        int b1 = c1.getBlue();
-        int b2 = c2.getBlue();
-		int dr = (r2 - r1) / (iSttCnt - 1);
-		int dg = (g2 - g1) / (iSttCnt - 1);
-		int db = (b2 - b1) / (iSttCnt - 1);
+		var r1 = c1.getRed();
+		var r2 = c2.getRed();
+		var g1 = c1.getGreen();
+		var g2 = c2.getGreen();
+		var b1 = c1.getBlue();
+		var b2 = c2.getBlue();
+		var dr = (r2 - r1) / (iSttCnt - 1);
+		var dg = (g2 - g1) / (iSttCnt - 1);
+		var db = (b2 - b1) / (iSttCnt - 1);
 
 		
-		for (int i = 1; i < iSttCnt; i++) {
+		for (var i = 1; i < iSttCnt; i++) {
 			Palette[i] = (i == iSttCnt - 1) && (iSttCnt > 2) ? MakeRGB(r2, g2,
 					b2) : MakeRGB(r1 + (i - 1) * dr, g1 + (i - 1) * dg, b1
 					+ (i - 1) * db);

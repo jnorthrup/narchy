@@ -108,7 +108,7 @@ public class CL_input {
 	static void KeyDown(kbutton_t b) {
 		int k;
 
-        String c = Cmd.Argv(1);
+		var c = Cmd.Argv(1);
 		if (c.length() > 0)
 			k = Lib.atoi(c);
 		else
@@ -141,7 +141,7 @@ public class CL_input {
 	static void KeyUp(kbutton_t b) {
 		int k;
 
-        String c = Cmd.Argv(1);
+		var c = Cmd.Argv(1);
 		if (c.length() > 0)
 			k = Lib.atoi(c);
 		else {
@@ -166,7 +166,7 @@ public class CL_input {
 
 		
 		c = Cmd.Argv(2);
-        int uptime = Lib.atoi(c);
+		var uptime = Lib.atoi(c);
 		if (uptime != 0)
 			b.msec += uptime - b.downtime;
 		else
@@ -309,7 +309,7 @@ public class CL_input {
 
         key.state &= 1;
 
-        long msec = key.msec;
+		var msec = key.msec;
 		key.msec = 0;
 
 		if (key.state != 0) {
@@ -318,7 +318,7 @@ public class CL_input {
 			key.downtime = Globals.sys_frame_time;
 		}
 
-        float val = (float) msec / frame_msec;
+		var val = (float) msec / frame_msec;
 		if (val < 0)
 			val = 0;
 		if (val > 1)
@@ -351,8 +351,8 @@ public class CL_input {
 			Globals.cl.viewangles[Defines.PITCH] += speed * Globals.cl_pitchspeed.value * KeyState(in_back);
 		}
 
-        float up = KeyState(in_lookup);
-        float down = KeyState(in_lookdown);
+		var up = KeyState(in_lookup);
+		var down = KeyState(in_lookdown);
 
 		Globals.cl.viewangles[Defines.PITCH] -= speed * Globals.cl_pitchspeed.value * up;
 		Globals.cl.viewangles[Defines.PITCH] += speed * Globals.cl_pitchspeed.value * down;
@@ -399,7 +399,7 @@ public class CL_input {
 
 	static void ClampPitch() {
 
-        float pitch = Math3D.SHORT2ANGLE(Globals.cl.frame.playerstate.pmove.delta_angles[Defines.PITCH]);
+		var pitch = Math3D.SHORT2ANGLE(Globals.cl.frame.playerstate.pmove.delta_angles[Defines.PITCH]);
 		if (pitch > 180)
 			pitch -= 360;
 
@@ -432,13 +432,13 @@ public class CL_input {
 			cmd.buttons |= Defines.BUTTON_ANY;
 
 
-        int ms = (int) (Globals.cls.frametime * 1000);
+		var ms = (int) (Globals.cls.frametime * 1000);
 		if (ms > 250)
 			ms = 100; 
 		cmd.msec = (byte) ms;
 
 		ClampPitch();
-		for (int i = 0; i < 3; i++)
+		for (var i = 0; i < 3; i++)
 			cmd.angles[i] = (short) Math3D.ANGLE2SHORT(Globals.cl.viewangles[i]);
 
 		cmd.impulse = (byte) in_impulse;
@@ -683,8 +683,8 @@ public class CL_input {
 	static void SendCmd() {
 
 
-        int i = Globals.cls.netchan.outgoing_sequence & (Defines.CMD_BACKUP - 1);
-        usercmd_t cmd = Globals.cl.cmds[i];
+		var i = Globals.cls.netchan.outgoing_sequence & (Defines.CMD_BACKUP - 1);
+		var cmd = Globals.cl.cmds[i];
 		Globals.cl.cmd_time[i] = Globals.cls.realtime; 
 															 
 
@@ -726,7 +726,7 @@ public class CL_input {
 		MSG.WriteByte(buf, Defines.clc_move);
 
 
-        int checksumIndex = buf.cursize;
+		var checksumIndex = buf.cursize;
 		MSG.WriteByte(buf, 0);
 
 		
@@ -744,7 +744,7 @@ public class CL_input {
 		nullcmd.clear();
 
 		MSG.WriteDeltaUsercmd(buf, nullcmd, cmd);
-        usercmd_t oldcmd = cmd;
+		var oldcmd = cmd;
 
 		i = (Globals.cls.netchan.outgoing_sequence - 1) & (Defines.CMD_BACKUP - 1);
 		cmd = Globals.cl.cmds[i];

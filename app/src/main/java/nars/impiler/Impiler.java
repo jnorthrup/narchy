@@ -111,7 +111,7 @@ public class Impiler {
      * try to add/update a task in the graph
      */
     public static boolean impile(Task i, NAR n) {
-        boolean result = false;
+        var result = false;
         if (i.isBelief() && filter(i.term())) {
             _impile(i, n);
             result = true;
@@ -120,19 +120,19 @@ public class Impiler {
     }
 
     private static void _impile(Task t, NAR nar) {
-        Term i = t.term();
-        Subterms ii = i.subterms();
+        var i = t.term();
+        var ii = i.subterms();
 
 
         Term subj = ii.sub(0).concept(), pred = ii.sub(1).concept();
         if (!subj.equals(pred)) {
 
 
-            Concept sc =
+            var sc =
                     nar.conceptualize(subj.unneg());
 
             if (sc != null) {
-                Concept pc =
+                var pc =
                         nar.conceptualize(pred);
 
                 if (pc != null) {
@@ -155,7 +155,7 @@ public class Impiler {
     static class ImpilerDeducer {
 
         ImpilerDeducer(NAR n) {
-            CauseChannel<Task> in = n.newChannel(this);
+            var in = n.newChannel(this);
         }
 
 
@@ -228,9 +228,9 @@ public class Impiler {
         public Iterable<FromTo<Node<Term, Task>, Task>> edges(boolean in, boolean out) {
             assert (in ^ out);
             return tasks.isEmpty() ? Collections.EMPTY_LIST : Iterables.filter(Iterables.transform(tasks, (tLink) -> {
-                boolean td = tLink.direction;
+                var td = tLink.direction;
                 if ((out && td) || (in && !td)) {
-                    Task tt = tLink.get();
+                    var tt = tLink.get();
 
 
                     Node otherNode = node(tLink.target, false);

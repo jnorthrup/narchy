@@ -58,7 +58,7 @@ public class Occurrify extends TimeGraph {
 
     static {
         MutableMap<Term, OccurrenceSolver> tm = new UnifiedMap<>(8);
-        for (OccurrenceSolver m : OccurrenceSolver.values()) {
+        for (var m : OccurrenceSolver.values()) {
             tm.put(Atomic.the(m.name()), m);
         }
         solvers = tm.toImmutable();
@@ -95,7 +95,7 @@ public class Occurrify extends TimeGraph {
     public static boolean temporal(Term x) {
         if (x instanceof Compound && x.hasAny(Op.Temporal)) {
             if (x.op().temporal) {
-                int dt = x.dt();
+                var dt = x.dt();
                 return (dt != DTERNAL && dt != XTERNAL);
             }
             return ((Compound)x).subtermsDirect().OR(Occurrify::temporal);
@@ -106,14 +106,14 @@ public class Occurrify extends TimeGraph {
 
     private static long[] rangeCombine(Derivation d, OccMerge mode) {
 
-        long taskEnd = d.taskEnd;
-        long taskStart = d.taskStart;
-        long beliefStart = d.beliefStart;
+        var taskEnd = d.taskEnd;
+        var taskStart = d.taskStart;
+        var beliefStart = d.beliefStart;
 
         if (/*d.single ||*/ beliefStart == TIMELESS ||  beliefStart == ETERNAL)
             return new long[] { taskStart, taskEnd};
         else {
-            long beliefEnd = d.beliefEnd;
+            var beliefEnd = d.beliefEnd;
             if (taskStart == ETERNAL) {
     //            assert(d.beliefStart!=TIMELESS);
                 return new long[]{ beliefStart, beliefEnd};
@@ -150,14 +150,14 @@ public class Occurrify extends TimeGraph {
 //                        return i;
 
                     case UnionDilute: {
-                        long[] u = Longerval.unionArray(taskStart, taskEnd, beliefStart, beliefEnd);
+                        var u = Longerval.unionArray(taskStart, taskEnd, beliefStart, beliefEnd);
                         if (!d.isBeliefOrGoal()) {
                             return u; //questions or quests
                         } else {
                             long tRange = 1 + taskEnd - taskStart, bRange = 1 + beliefEnd - beliefStart;
-                            double uRange = 1.0 + u[1] - u[0];
+                            var uRange = 1.0 + u[1] - u[0];
                             //long iRange = LongInterval.intersectLength(taskStart, taskEnd, beliefStart, beliefEnd);
-                            double pct = Math.max(tRange, bRange) / (uRange);
+                            var pct = Math.max(tRange, bRange) / (uRange);
                             //assert(pct <= 1.0);
 
                             if (d.doubt(pct))
@@ -187,21 +187,21 @@ public class Occurrify extends TimeGraph {
 
 
     private @Nullable Event selectSolution(boolean occ, ArrayHashSet<Event> s) {
-        int ss = s.size();
+        var ss = s.size();
         if (ss == 0)
             return null;
-        Event s0 = s.get(0);
+        var s0 = s.get(0);
         if (ss == 1)
             return s0;
 
-        float[] score = new float[ss];
-        for (int i = 0; i < ss; i++)
+        var score = new float[ss];
+        for (var i = 0; i < ss; i++)
             score[i] = score(s.get(i), occ);
         return solutions.get(Roulette.selectRoulette(ss, i->score[i], random()));
     }
 
     private static float score(Event e, boolean occ) {
-        Term st = e.id;
+        var st = e.id;
         float points = 1;
         if (e instanceof Absolute) {
             points += occ ? (absolutePoints*2) : absolutePoints;
@@ -278,11 +278,10 @@ public class Occurrify extends TimeGraph {
 //        }
 
 
+        var taskTerm = d.retransform(d.taskTerm);
+        var beliefTerm = d.beliefTerm.equals(d.taskTerm) ? taskTerm : d.retransform(d.beliefTerm);
 
-        Term taskTerm = d.retransform(d.taskTerm);
-        Term beliefTerm = d.beliefTerm.equals(d.taskTerm) ? taskTerm : d.retransform(d.beliefTerm);
-
-        Event taskEvent = (taskStart != TIMELESS) ?
+        var taskEvent = (taskStart != TIMELESS) ?
                 know(taskTerm, taskStart, taskEnd) :
                 know(taskTerm);
 
@@ -290,8 +289,8 @@ public class Occurrify extends TimeGraph {
         imageNormalize(taskEvent);
 
         if (beliefTerm.op().eventable) {
-            boolean equalBT = beliefTerm.equals(taskTerm);
-            Event beliefEvent = (beliefStart != TIMELESS) ?
+            var equalBT = beliefTerm.equals(taskTerm);
+            var beliefEvent = (beliefStart != TIMELESS) ?
                     know(beliefTerm, beliefStart, beliefEnd) :
                     ((!equalBT) ? know(beliefTerm) : taskEvent) /* same target, reuse the same event */;
             if (!equalBT)
@@ -306,12 +305,12 @@ public class Occurrify extends TimeGraph {
     }
 
     private void imageNormalize(Event p) {
-        Term ip = Image.imageNormalize(p.id);
+        var ip = Image.imageNormalize(p.id);
         if (!p.id.equals(ip))
             link(p, 0, shadow(ip));
     }
     private void imageNormalize(Term p) {
-        Term ip = Image.imageNormalize(p);
+        var ip = Image.imageNormalize(p);
         if (!p.equals(ip))
             link(shadow(p), 0, shadow(ip));
     }
@@ -326,7 +325,7 @@ public class Occurrify extends TimeGraph {
     @Override
     protected boolean validPotentialSolution(Term y) {
         if (super.validPotentialSolution(y)) {
-            int v = y.volume();
+            var v = y.volume();
             return
                     v <= patternVolumeMax && v >= patternVolumeMin;
         } else
@@ -354,14 +353,14 @@ public class Occurrify extends TimeGraph {
     }
 
     private Term solveDT(Term x, Derivation d, boolean decomposeEvents,OccurrenceSolver occ) {
-        Event e = selectSolution(false, d.occ.know(x,  true,true, decomposeEvents, occ).solutions(x));
+        var e = selectSolution(false, d.occ.know(x,  true,true, decomposeEvents, occ).solutions(x));
         if (e == null) {
             if (d.taskTerm.hasAny(NEG) || d.beliefTerm.hasAny(NEG) || x.hasAny(NEG)) {
 
                 //HACK for deficiencies in TimeGraph, try again solving for the negative
                 /* some XTERNAL's may have been solved */
                 /* some XTERNAL's may have been solved */
-                Event e2 = selectSolution(false, solutions(x.neg()));
+                var e2 = selectSolution(false, solutions(x.neg()));
                 if (e2!=null)
                     return e2.id.neg();
             }
@@ -412,7 +411,7 @@ public class Occurrify extends TimeGraph {
                 if (x.hasXternal()) {
                     return solveDT(d, x, true);
                 } else {
-                    long[] o = occurrence(d);
+                    var o = occurrence(d);
                     return o != null ? pair(x, o) : null;
                 }
             }
@@ -500,7 +499,7 @@ public class Occurrify extends TimeGraph {
 
             @Override
             public @Nullable Pair<Term, long[]> occurrence(Term x, Derivation d) {
-                @Nullable Pair<Term, long[]> p = solve(x, d, true, false);
+                @Nullable var p = solve(x, d, true, false);
                 if (p!=null)
                     filter(d, p.getTwo());
                 return p;
@@ -508,20 +507,20 @@ public class Occurrify extends TimeGraph {
 
             @Override
             long[] occurrence(Derivation d) {
-                long[] x = rangeCombine(d, OccMerge.Task);
+                var x = rangeCombine(d, OccMerge.Task);
                 filter(d, x);
                 return x;
             }
 
             private void filter(Derivation d, long[] x) {
                 if (x!=null && x[0]!=ETERNAL && x[0]!=TIMELESS) {
-                    long imm = d.taskStart;
+                    var imm = d.taskStart;
                     if (imm == ETERNAL) imm = d.time;
                     //if (taskStart != ETERNAL) { // && taskStart > x[0]){
 
-                    long delta = imm - x[0];
+                    var delta = imm - x[0];
 
-                    long r = x[1] - x[0];
+                    var r = x[1] - x[0];
                     x[0] = imm;
                     x[1] = imm + r;
 
@@ -574,8 +573,8 @@ public class Occurrify extends TimeGraph {
             @Override
             public Pair<Term, long[]> occurrence(Term x, Derivation d) {
 
-                Term tt = d.taskTerm;
-                Term bb = d.beliefTerm;
+                var tt = d.taskTerm;
+                var bb = d.beliefTerm;
 
                 if (!d.retransform.isEmpty()) {
                     //HACK re-apply variable introduction
@@ -603,7 +602,7 @@ public class Occurrify extends TimeGraph {
                     occ = new long[]{tTime, d.taskEnd};
                 } else {
 
-                    long earlyStart = Math.min(tTime, bTime);
+                    var earlyStart = Math.min(tTime, bTime);
 
                     Term a, b;
                     long  dt;
@@ -618,7 +617,7 @@ public class Occurrify extends TimeGraph {
                     y = terms.conjMerge(a, Tense.occToDT(dt), b);
 
                     //dont dither occ[] here, since it will be done in Taskify
-                    long range = Math.max(Math.min((1 + d.taskEnd - tTime), (1 + d.beliefEnd - bTime)) - 1, 0);
+                    var range = Math.max(Math.min((1 + d.taskEnd - tTime), (1 + d.beliefEnd - bTime)) - 1, 0);
                     occ = new long[]{earlyStart, earlyStart + range};
                 }
 
@@ -694,7 +693,7 @@ public class Occurrify extends TimeGraph {
         }
 
         @Nullable Pair<Term, long[]> solveDT(Derivation d, Term x, boolean decomposeEvents) {
-            long[] occ = occurrence(d);
+            var occ = occurrence(d);
             if (occ == null)
                 return null;
 
@@ -703,7 +702,7 @@ public class Occurrify extends TimeGraph {
                 y = x;
             } else {
 
-                boolean neg = false;
+                var neg = false;
                 if (preUnneg(x, d)) { x = x.unneg();neg = true; }
 
                 d.occ.clear();
@@ -718,7 +717,7 @@ public class Occurrify extends TimeGraph {
         }
 
         protected @Nullable Pair<Term, long[]> solve(Term x0, Derivation d, boolean taskOccurr, boolean beliefOccurr) {
-            Term x = x0;
+            var x = x0;
             if (nonTemporal(x) && nonTemporal(d.taskTerm) && nonTemporal(d.beliefTerm))
                 return pair(x, occurrence(d));
 
@@ -727,16 +726,16 @@ public class Occurrify extends TimeGraph {
             if (!beliefOccurr && taskOccurr && (d.taskStart == ETERNAL) && (d.beliefStart != ETERNAL && d.beliefStart != TIMELESS))
                 beliefOccurr = true; //allow belief occurrence
 
-            boolean neg = false;if (preUnneg(x, d)) { x = x.unneg();neg = true; }
+            var neg = false;if (preUnneg(x, d)) { x = x.unneg();neg = true; }
 
             d.occ.clear();
-            Occurrify o = d.occ.know(x, taskOccurr, beliefOccurr, true, this);
-            Event e = o.selectSolution(true, o.solutions(x));
+            var o = d.occ.know(x, taskOccurr, beliefOccurr, true, this);
+            var e = o.selectSolution(true, o.solutions(x));
 
             if (e == null && (d.taskTerm.hasAny(NEG) || d.beliefTerm.hasAny(NEG) || x.hasAny(NEG)) ) {
                 //HACK for deficiencies in TimeGraph, try again solving for the negative
 //                Occurrify o2 = d.occ.know(x.neg(), taskOccurr, beliefOccurr, true, this);
-                Event e2 = o.selectSolution(true, o.solutions(x.neg()));
+                var e2 = o.selectSolution(true, o.solutions(x.neg()));
                 if (e2!=null) {
                     e = e2.neg();
                 }
@@ -754,7 +753,7 @@ public class Occurrify extends TimeGraph {
                 return pair(x0, occurrence(d)); //fail-safe
 
             } else {
-                long es = e.start();
+                var es = e.start();
                 return pair(e.id.negIf(neg),
                         es == TIMELESS ?
                                 occurrence(d) :
@@ -778,7 +777,7 @@ public class Occurrify extends TimeGraph {
                     if (term.op().temporal) {
                         if (suuper==null)
                             return false;
-                        Op suo = suuper.op();
+                        var suo = suuper.op();
                         return suo == INH || suo == SIM;
                     }
                     return true;

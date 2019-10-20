@@ -21,14 +21,14 @@ public class PrologImpl implements java.io.Serializable {
     }
 
     public void getTheory(ObjectInputStream in,ObjectOutputStream out) throws java.io.IOException {
-        Theory th=core.getTheory();
+        var th=core.getTheory();
         out.writeObject(Boolean.FALSE);
         out.writeObject(th);
     }
 
     public void setTheory(ObjectInputStream in,ObjectOutputStream out) throws java.io.IOException, ClassNotFoundException {
         try {
-            Theory th=(Theory)in.readObject();
+            var th=(Theory)in.readObject();
             core.setTheory(th);
             out.writeObject(Boolean.TRUE);
         } catch (InvalidTheoryException ex){
@@ -38,7 +38,7 @@ public class PrologImpl implements java.io.Serializable {
 
     public void addTheory(ObjectInputStream in,ObjectOutputStream out) throws java.io.IOException, ClassNotFoundException {
         try {
-            Theory th=(Theory)in.readObject();
+            var th=(Theory)in.readObject();
             core.input(th);
             out.writeObject(Boolean.TRUE);
         } catch (InvalidTheoryException ex){
@@ -48,8 +48,8 @@ public class PrologImpl implements java.io.Serializable {
 
     public void solveString(ObjectInputStream in,ObjectOutputStream out) throws java.io.IOException, ClassNotFoundException {
         try {
-            String st=(String)in.readObject();
-            Solution info=core.solve(st);
+            var st=(String)in.readObject();
+            var info=core.solve(st);
             out.writeObject(Boolean.TRUE);
             out.writeObject(info);
         } catch (MalformedGoalException ex){
@@ -62,8 +62,8 @@ public class PrologImpl implements java.io.Serializable {
     }
 
     public void solveTerm(ObjectInputStream in,ObjectOutputStream out) throws java.io.IOException, ClassNotFoundException {
-        Term th=(Term)in.readObject();
-        Solution info=core.solve(th);
+        var th=(Term)in.readObject();
+        var info=core.solve(th);
         out.writeObject(Boolean.TRUE);
         out.writeObject(info);
     }
@@ -89,7 +89,7 @@ public class PrologImpl implements java.io.Serializable {
 
     public void loadLibrary(ObjectInputStream in,ObjectOutputStream out) throws java.io.IOException, ClassNotFoundException {
         try {
-            String st=(String)in.readObject();
+            var st=(String)in.readObject();
             core.addLibrary(st);
             out.writeObject(Boolean.TRUE);
         } catch (InvalidLibraryException ex){
@@ -99,7 +99,7 @@ public class PrologImpl implements java.io.Serializable {
 
     public void unloadLibrary(ObjectInputStream in,ObjectOutputStream out) throws java.io.IOException, ClassNotFoundException {
         try {
-            String st=(String)in.readObject();
+            var st=(String)in.readObject();
             core.removeLibrary(st);
             out.writeObject(Boolean.TRUE);
         } catch (InvalidLibraryException ex){

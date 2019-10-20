@@ -45,9 +45,9 @@ public abstract class Pitch {
      * @return adjusted pitch.
      */
     private static int forceToScale(int pitch, int[] scale, int notesPerOctave) {
-        int pitchClass = pitch % notesPerOctave;
-        int newPitchClass = -1;
-        for (int i = scale.length - 1; i >= 0; i--) {
+        var pitchClass = pitch % notesPerOctave;
+        var newPitchClass = -1;
+        for (var i = scale.length - 1; i >= 0; i--) {
             if (pitchClass >= scale[i]) {
                 newPitchClass = scale[i];
                 break;
@@ -56,7 +56,7 @@ public abstract class Pitch {
         if (newPitchClass == -1) {
             newPitchClass = pitchClass;
         }
-        int register = pitch / notesPerOctave;
+        var register = pitch / notesPerOctave;
         return register * notesPerOctave + newPitchClass;
     }
 

@@ -22,7 +22,7 @@ public class FloatCached implements FloatSupplier {
 
     @Override
     public float asFloat() {
-        long next = clock.getAsLong();
+        var next = clock.getAsLong();
         if (next != lastTime.getAndSet(next)) {
             current = in.asFloat();
         }

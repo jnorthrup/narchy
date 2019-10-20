@@ -159,7 +159,7 @@ public class OOLibrary extends PrologLib {
     public void onSolveBegin(Term goal) {
         currentObjects.clear();
         currentObjects_inverse.clear();
-        for (Map.Entry<Object, Struct> en : staticObjects_inverse.entrySet()) {
+        for (var en : staticObjects_inverse.entrySet()) {
             bindDynamicObject(en.getValue(), en.getKey());
         }
         preregisterObjects();
@@ -197,40 +197,40 @@ public class OOLibrary extends PrologLib {
      */
     public boolean new_object_3(Term className, Term argl, Term id) throws JavaException {
         className = className.term();
-        Struct arg = (Struct) argl.term();
+        var arg = (Struct) argl.term();
         id = id.term();
         try {
             if (!className.isAtomic()) {
                 throw new JavaException(new ClassNotFoundException(
                         "Java class not found: " + className));
             }
-            String clName = ((Struct) className).name();
+            var clName = ((Struct) className).name();
             
             if (clName.endsWith("[]")) {
-                Object[] list = getArrayFromList(arg);
-                int nargs = ((NumberTerm) list[0]).intValue();
+                var list = getArrayFromList(arg);
+                var nargs = ((NumberTerm) list[0]).intValue();
                 if (java_array(clName, nargs, id))
                     return true;
                 else
                     throw new JavaException(new Exception());
             }
-            Signature args = parseArg(getArrayFromList(arg));
+            var args = parseArg(getArrayFromList(arg));
             if (args == null) {
                 throw new IllegalArgumentException(
                         "Illegal constructor arguments  " + arg);
             }
             
             try {
-            	Class<?> cl = Class.forName(clName, true, dynamicLoader);
-                Object[] args_value = args.getValues();
-                Constructor<?> co = lookupConstructor(cl, args.getTypes(),args_value);
+                var cl = Class.forName(clName, true, dynamicLoader);
+                var args_value = args.getValues();
+                var co = lookupConstructor(cl, args.getTypes(),args_value);
                 if (co == null) {
                     Prolog.warn("Constructor not found: class " + clName);
                     throw new JavaException(new NoSuchMethodException(
                             "Constructor not found: class " + clName));
                 }
 
-                Object obj = co.newInstance(args_value);
+                var obj = co.newInstance(args_value);
                 if (bindDynamicObject(id, obj))
                     return true;
                 else
@@ -341,15 +341,15 @@ public class OOLibrary extends PrologLib {
      * @throws JavaException
      */
 	public boolean new_class_4(Term clSource, Term clName, Term clPathes,Term id) throws JavaException {
-		Struct classSource = (Struct) clSource.term();
-		Struct className = (Struct) clName.term();
-		Struct classPathes = (Struct) clPathes.term();
+        var classSource = (Struct) clSource.term();
+        var className = (Struct) clName.term();
+        var classPathes = (Struct) clPathes.term();
 		id = id.term();
 		try {
-            String fullClassName = alice.util.Tools.removeApostrophes(className.toString());
+            var fullClassName = alice.util.Tools.removeApostrophes(className.toString());
 
             Iterator<? extends Term> it = classPathes.listIterator();
-            String cp = "";
+            var cp = "";
             while (it.hasNext()) {
                 if (!cp.isEmpty()) {
                     cp += ";";
@@ -361,10 +361,10 @@ public class OOLibrary extends PrologLib {
                 cp = " -classpath " + cp;
             }
 
-            String text = alice.util.Tools.removeApostrophes(classSource.toString());
-            String fullClassPath = fullClassName.replace('.', '/');
+            var text = alice.util.Tools.removeApostrophes(classSource.toString());
+            var fullClassPath = fullClassName.replace('.', '/');
             try {
-                FileWriter file = new FileWriter(fullClassPath + ".java");
+                var file = new FileWriter(fullClassPath + ".java");
                 file.write(text);
                 file.close();
             } catch (IOException ex) {
@@ -373,11 +373,11 @@ public class OOLibrary extends PrologLib {
                         "(creation of " + fullClassPath + ".java fail failed)");
                 throw new JavaException(ex);
             }
-            String cmd = "javac " + cp + ' ' + fullClassPath + ".java";
+            var cmd = "javac " + cp + ' ' + fullClassPath + ".java";
 
             try {
-                Process jc = Runtime.getRuntime().exec(cmd);
-                int res = jc.waitFor();
+                var jc = Runtime.getRuntime().exec(cmd);
+                var res = jc.waitFor();
                 if (res != 0) {
                     Prolog.warn("Compilation of java sources failed");
                     Prolog.warn(
@@ -398,7 +398,7 @@ public class OOLibrary extends PrologLib {
             	 * On Dalvik VM we can only use the DexClassLoader.
             	 */
 
-                Class<?> the_class = Class.forName(fullClassName, true, "Dalvik".equals(System.getProperty("java.vm.name")) ? dynamicLoader : new ClassLoader());
+                var the_class = Class.forName(fullClassName, true, "Dalvik".equals(System.getProperty("java.vm.name")) ? dynamicLoader : new ClassLoader());
 
                 if (bindDynamicObject(id, the_class))
                     return true;
@@ -427,7 +427,7 @@ public class OOLibrary extends PrologLib {
 			throws JavaException {
 		objId = objId.term();
 		idResult = idResult.term();
-		Struct method = (Struct) method_name.term();
+        var method = (Struct) method_name.term();
         Signature args = null;
 		String methodName = null;
 		try {
@@ -437,7 +437,7 @@ public class OOLibrary extends PrologLib {
 					throw new JavaException(new IllegalArgumentException(objId
 							.toString()));
 				}
-				Struct sel = (Struct) objId;
+                var sel = (Struct) objId;
 				if (".".equals(sel.name()) && sel.subs() == 2
 						&& method.subs() == 1) {
                     switch (methodName) {
@@ -458,14 +458,14 @@ public class OOLibrary extends PrologLib {
 			if (args == null) {
 				throw new JavaException(new IllegalArgumentException());
 			}
-			String objName = alice.util.Tools.removeApostrophes(objId.toString());
-            Object obj = staticObjects.containsKey(objName) ? staticObjects.get(objName) : currentObjects.get(objName);
+            var objName = alice.util.Tools.removeApostrophes(objId.toString());
+            var obj = staticObjects.containsKey(objName) ? staticObjects.get(objName) : currentObjects.get(objName);
             Object res = null;
 
 			if (obj != null) {
-				Class<?> cl = obj.getClass();
-				Object[] args_values = args.getValues();
-				Method m = lookupMethod(cl, methodName, args.getTypes(),args_values);
+                var cl = obj.getClass();
+                var args_values = args.getValues();
+                var m = lookupMethod(cl, methodName, args.getTypes(),args_values);
 				if (m != null) {
 					try {
 						m.setAccessible(true);
@@ -480,15 +480,15 @@ public class OOLibrary extends PrologLib {
 				}
 			} else {
 				if (objId.isCompound()) {
-					Struct id = (Struct) objId;
+                    var id = (Struct) objId;
 
 					if (id.subs() == 1 && "class".equals(id.name())) {
 						try {
-							String clName = alice.util.Tools
+                            var clName = alice.util.Tools
 									.removeApostrophes(id.sub(0).toString());
-							Class<?> cl = Class.forName(clName, true, dynamicLoader);
-							
-							Method m = InspectionUtils.searchForMethod(cl, methodName, args.getTypes());
+                            var cl = Class.forName(clName, true, dynamicLoader);
+
+                            var m = InspectionUtils.searchForMethod(cl, methodName, args.getTypes());
 							m.setAccessible(true);
 							res = m.invoke(null, args.getValues());
 						} catch (ClassNotFoundException ex) {
@@ -499,14 +499,14 @@ public class OOLibrary extends PrologLib {
 						}
 					}
 					else {
-						
-						Method m = java.lang.String.class.getMethod(methodName, args.getTypes());
+
+                        var m = java.lang.String.class.getMethod(methodName, args.getTypes());
 						m.setAccessible(true);
 						res = m.invoke(objName, args.getValues());
 					}
 				} else {
-					
-					Method m = java.lang.String.class.getMethod(methodName,
+
+                    var m = java.lang.String.class.getMethod(methodName,
 							args.getTypes());
 					m.setAccessible(true);
 					res = m.invoke(objName, args.getValues());
@@ -553,7 +553,7 @@ public class OOLibrary extends PrologLib {
     		paths = paths.term();
         	if(!paths.isList())
         		throw new IllegalArgumentException();
-        	String[] listOfPaths = getStringArrayFromStruct((Struct) paths);
+            var listOfPaths = getStringArrayFromStruct((Struct) paths);
         	dynamicLoader.removeAllURLs();
         	dynamicLoader.addURLs(getURLsFromStringArray(listOfPaths));
         	return true;
@@ -582,14 +582,14 @@ public class OOLibrary extends PrologLib {
     		paths = paths.term();
     		if(!(paths instanceof Var))
     			throw new IllegalArgumentException();
-    		URL[] urls = dynamicLoader.getURLs();
+            var urls = dynamicLoader.getURLs();
         	String stringURLs = null;
             if(urls.length > 0)
         	{
 	        	stringURLs = "[";
 	     
-	        	for (URL url : urls) {
-	        		File file = new File(java.net.URLDecoder.decode(url.getFile(), StandardCharsets.UTF_8));
+	        	for (var url : urls) {
+                    var file = new File(java.net.URLDecoder.decode(url.getFile(), StandardCharsets.UTF_8));
 	        		stringURLs = stringURLs + '\'' + file.getPath() + "',";
 				}
 	        	
@@ -598,7 +598,7 @@ public class OOLibrary extends PrologLib {
         	}
         	else
         		stringURLs = "[]";
-            Term pathTerm = Term.term(stringURLs);
+            var pathTerm = Term.term(stringURLs);
             return unify(paths, pathTerm);
     	}catch(IllegalArgumentException e)
         {
@@ -617,7 +617,7 @@ public class OOLibrary extends PrologLib {
         what = what.term();
         if (!fieldTerm.isAtomic() || what instanceof Var)
             return false;
-        String fieldName = ((Struct) fieldTerm).name();
+        var fieldName = ((Struct) fieldTerm).name();
         try {
             Class<?> cl = null;
             Object obj = null;
@@ -647,7 +647,7 @@ public class OOLibrary extends PrologLib {
             	}
             }
             else {
-                String objName = alice.util.Tools
+                var objName = alice.util.Tools
                         .removeApostrophes(objId.toString());
                 obj = currentObjects.get(objName);
                 if (obj != null) {
@@ -657,10 +657,10 @@ public class OOLibrary extends PrologLib {
                 }
             }
 
-            
-            Field field = cl.getField(fieldName);
+
+            var field = cl.getField(fieldName);
             if (what instanceof NumberTerm) {
-                NumberTerm wn = (NumberTerm) what;
+                var wn = (NumberTerm) what;
                 if (wn instanceof NumberTerm.Int) {
                     field.setInt(obj, wn.intValue());
                 } else if (wn instanceof NumberTerm.Double) {
@@ -673,9 +673,9 @@ public class OOLibrary extends PrologLib {
                     return false;
                 }
             } else {
-                String what_name = alice.util.Tools.removeApostrophes(what
+                var what_name = alice.util.Tools.removeApostrophes(what
                         .toString());
-                Object obj2 = currentObjects.get(what_name);
+                var obj2 = currentObjects.get(what_name);
                 if (obj2 != null) {
                     field.set(obj, obj2);
                 } else {
@@ -700,7 +700,7 @@ public class OOLibrary extends PrologLib {
         if (!fieldTerm.isAtomic()) {
             return false;
         }
-        String fieldName = ((Struct) fieldTerm).name();
+        var fieldName = ((Struct) fieldTerm).name();
         try {
             Class<?> cl = null;
             Object obj = null;
@@ -729,7 +729,7 @@ public class OOLibrary extends PrologLib {
             	}
             }
             else {
-                String objName = alice.util.Tools.removeApostrophes(objId.toString());
+                var objName = alice.util.Tools.removeApostrophes(objId.toString());
                 obj = currentObjects.get(objName);
                 if (obj == null) {
                     return false;
@@ -737,24 +737,24 @@ public class OOLibrary extends PrologLib {
                 cl = obj.getClass();
             }
 
-            Field field = cl.getField(fieldName);
-            Class<?> fc = field.getType();
+            var field = cl.getField(fieldName);
+            var fc = field.getType();
             field.setAccessible(true);
             if (fc == Integer.TYPE || fc == Byte.TYPE) {
-                int value = field.getInt(obj);
+                var value = field.getInt(obj);
                 return unify(what, new NumberTerm.Int(value));
             } else if (fc == Long.TYPE) {
-                long value = field.getLong(obj);
+                var value = field.getLong(obj);
                 return unify(what, new NumberTerm.Long(value));
             } else if (fc == Float.TYPE) {
-                float value = field.getFloat(obj);
+                var value = field.getFloat(obj);
                 return unify(what, new NumberTerm.Float(value));
             } else if (fc == Double.TYPE) {
-                double value = field.getDouble(obj);
+                var value = field.getDouble(obj);
                 return unify(what, new NumberTerm.Double(value));
             } else {
-                
-                Object res = field.get(obj);
+
+                var res = field.get(obj);
                 return bindDynamicObject(what, res);
             }
             
@@ -770,16 +770,16 @@ public class OOLibrary extends PrologLib {
     
     public boolean java_array_set_primitive_3(Term obj_id, Term i, Term what)
             throws JavaException {
-        Struct objId = (Struct) obj_id.term();
-        NumberTerm index = (NumberTerm) i.term();
+        var objId = (Struct) obj_id.term();
+        var index = (NumberTerm) i.term();
         what = what.term();
         if (!index.isInteger()) {
             throw new JavaException(new IllegalArgumentException(index
                     .toString()));
         }
         try {
-            String objName = alice.util.Tools.removeApostrophes(objId.toString());
-            Object obj = currentObjects.get(objName);
+            var objName = alice.util.Tools.removeApostrophes(objId.toString());
+            var obj = currentObjects.get(objName);
             Class<?> cl = null;
             if (obj != null) {
                 cl = obj.getClass();
@@ -792,14 +792,14 @@ public class OOLibrary extends PrologLib {
                 throw new JavaException(new IllegalArgumentException(objId
                         .toString()));
             }
-            String name = cl.toString();
+            var name = cl.toString();
             switch (name) {
                 case "class [I": {
                     if (!(what instanceof NumberTerm)) {
                         throw new JavaException(new IllegalArgumentException(what
                                 .toString()));
                     }
-                    byte v = (byte) ((NumberTerm) what).intValue();
+                    var v = (byte) ((NumberTerm) what).intValue();
                     Array.setInt(obj, index.intValue(), v);
                     break;
                 }
@@ -808,7 +808,7 @@ public class OOLibrary extends PrologLib {
                         throw new JavaException(new IllegalArgumentException(what
                                 .toString()));
                     }
-                    double v = ((NumberTerm) what).doubleValue();
+                    var v = ((NumberTerm) what).doubleValue();
                     Array.setDouble(obj, index.intValue(), v);
                     break;
                 }
@@ -817,7 +817,7 @@ public class OOLibrary extends PrologLib {
                         throw new JavaException(new IllegalArgumentException(what
                                 .toString()));
                     }
-                    float v = ((NumberTerm) what).floatValue();
+                    var v = ((NumberTerm) what).floatValue();
                     Array.setFloat(obj, index.intValue(), v);
                     break;
                 }
@@ -826,17 +826,17 @@ public class OOLibrary extends PrologLib {
                         throw new JavaException(new IllegalArgumentException(what
                                 .toString()));
                     }
-                    long v = ((NumberTerm) what).longValue();
+                    var v = ((NumberTerm) what).longValue();
                     Array.setFloat(obj, index.intValue(), v);
                     break;
                 }
                 case "class [C": {
-                    String s = what.toString();
+                    var s = what.toString();
                     Array.setChar(obj, index.intValue(), s.charAt(0));
                     break;
                 }
                 case "class [Z":
-                    String s = what.toString();
+                    var s = what.toString();
                     switch (s) {
                         case "true":
                             Array.setBoolean(obj, index.intValue(), true);
@@ -854,7 +854,7 @@ public class OOLibrary extends PrologLib {
                         throw new JavaException(new IllegalArgumentException(what
                                 .toString()));
                     }
-                    int v = ((NumberTerm) what).intValue();
+                    var v = ((NumberTerm) what).intValue();
                     Array.setByte(obj, index.intValue(), (byte) v);
                     break;
                 }
@@ -863,7 +863,7 @@ public class OOLibrary extends PrologLib {
                         throw new JavaException(new IllegalArgumentException(what
                                 .toString()));
                     }
-                    short v = (short) ((NumberTerm) what).intValue();
+                    var v = (short) ((NumberTerm) what).intValue();
                     Array.setShort(obj, index.intValue(), v);
                     break;
                 default:
@@ -885,15 +885,15 @@ public class OOLibrary extends PrologLib {
      * @throws JavaException
      */
     public boolean java_array_get_primitive_3(Term obj_id, Term i, Term what) throws JavaException {
-        Struct objId = (Struct) obj_id.term();
-        NumberTerm index = (NumberTerm) i.term();
+        var objId = (Struct) obj_id.term();
+        var index = (NumberTerm) i.term();
         what = what.term();
         if (!index.isInteger()) {
             throw new JavaException(new IllegalArgumentException(index.toString()));
         }
         try {
-            String objName = alice.util.Tools.removeApostrophes(objId.toString());
-            Object obj = currentObjects.get(objName);
+            var objName = alice.util.Tools.removeApostrophes(objId.toString());
+            var obj = currentObjects.get(objName);
             Class<?> cl = null;
             if (obj != null) {
                 cl = obj.getClass();
@@ -904,7 +904,7 @@ public class OOLibrary extends PrologLib {
             if (!cl.isArray()) {
                 throw new JavaException(new IllegalArgumentException(objId.toString()));
             }
-            String name = cl.toString();
+            var name = cl.toString();
             switch (name) {
                 case "class [I": {
                     Term value = new NumberTerm.Int(Array.getInt(obj, index.intValue()));
@@ -948,7 +948,7 @@ public class OOLibrary extends PrologLib {
                                 .toString()));
                 }
                 case "class [Z":
-                    boolean b = Array.getBoolean(obj, index.intValue());
+                    var b = Array.getBoolean(obj, index.intValue());
                     if (b) {
                         if (unify(what, Term.TRUE))
                             return true;
@@ -992,7 +992,7 @@ public class OOLibrary extends PrologLib {
     private boolean java_array(String type, int nargs, Term id) {
         try {
             Object array = null;
-            String obtype = type.substring(0, type.length() - 2);
+            var obtype = type.substring(0, type.length() - 2);
 
             switch (obtype) {
                 case "boolean":
@@ -1020,7 +1020,7 @@ public class OOLibrary extends PrologLib {
                     array = new double[nargs];
                     break;
                 default:
-                    Class<?> cl = Class.forName(obtype, true, dynamicLoader);
+                    var cl = Class.forName(obtype, true, dynamicLoader);
                     array = Array.newInstance(cl, nargs);
                     break;
             }
@@ -1043,14 +1043,14 @@ public class OOLibrary extends PrologLib {
     	{
 	    	urls = new URL[paths.length];
 			
-			for (int i = 0; i < paths.length; i++) 
+			for (var i = 0; i < paths.length; i++)
 			{
 				if(paths[i] == null)
 					continue;
 				if(paths[i].contains("http") || paths[i].contains("https") || paths[i].contains("ftp"))
 					urls[i] = new URL(paths[i]);
 				else{
-					File file = new File(paths[i]);
+                    var file = new File(paths[i]);
 					urls[i] = (file.toURI().toURL());
 				}
 			}
@@ -1065,11 +1065,11 @@ public class OOLibrary extends PrologLib {
      */
     
     private static String[] getStringArrayFromStruct(Struct list) {
-        String[] args = new String[list.listSize()];
+        var args = new String[list.listSize()];
         Iterator<? extends Term> it = list.listIterator();
-        int count = 0;
+        var count = 0;
         while (it.hasNext()) {
-        	String path = alice.util.Tools.removeApostrophes(it.next().toString());
+            var path = alice.util.Tools.removeApostrophes(it.next().toString());
             args[count++] = path;
         }
         return args;
@@ -1080,9 +1080,9 @@ public class OOLibrary extends PrologLib {
      * creation of method signature from prolog data
      */
     private Signature parseArg(Struct method) {
-        Object[] values = new Object[method.subs()];
+        var values = new Object[method.subs()];
         Class<?>[] types = new Class[method.subs()];
-        for (int i = 0; i < method.subs(); i++) {
+        for (var i = 0; i < method.subs(); i++) {
             if (!parse_arg(values, types, i, method.subResolve(i)))
                 return null;
         }
@@ -1090,9 +1090,9 @@ public class OOLibrary extends PrologLib {
     }
 
     private Signature parseArg(Object... objs) {
-        Object[] values = new Object[objs.length];
+        var values = new Object[objs.length];
         Class<?>[] types = new Class[objs.length];
-        for (int i = 0; i < objs.length; i++) {
+        for (var i = 0; i < objs.length; i++) {
             if (!parse_arg(values, types, i, (Term) objs[i]))
                 return null;
         }
@@ -1105,7 +1105,7 @@ public class OOLibrary extends PrologLib {
                 values[i] = null;
                 types[i] = null;
             } else if (term.isAtomic()) {
-                String name = alice.util.Tools.removeApostrophes(term.toString());
+                var name = alice.util.Tools.removeApostrophes(term.toString());
                 switch (name) {
                     case "true":
                         values[i] = Boolean.TRUE;
@@ -1116,13 +1116,13 @@ public class OOLibrary extends PrologLib {
                         types[i] = Boolean.TYPE;
                         break;
                     default:
-                        Object obj = currentObjects.get(name);
+                        var obj = currentObjects.get(name);
                         values[i] = obj == null ? name : obj;
                         types[i] = values[i].getClass();
                         break;
                 }
             } else if (term instanceof NumberTerm) {
-                NumberTerm t = (NumberTerm) term;
+                var t = (NumberTerm) term;
                 if (t instanceof NumberTerm.Int) {
                     values[i] = t.intValue();
                     types[i] = java.lang.Integer.TYPE;
@@ -1137,13 +1137,13 @@ public class OOLibrary extends PrologLib {
                     types[i] = java.lang.Float.TYPE;
                 }
             } else if (term instanceof Struct) {
-                
-                Struct tc = (Struct) term;
+
+                var tc = (Struct) term;
                 if ("as".equals(tc.name())) {
                     return parse_as(values, types, i, tc.subResolve(0), tc
                             .subResolve(1));
                 } else {
-                    Object obj = currentObjects.get(alice.util.Tools
+                    var obj = currentObjects.get(alice.util.Tools
                             .removeApostrophes(tc.toString()));
                     values[i] = obj == null ? alice.util.Tools
                             .removeApostrophes(tc.toString()) : obj;
@@ -1171,9 +1171,9 @@ public class OOLibrary extends PrologLib {
             Term castWhat, Term castTo) {
         try {
             if (!(castWhat instanceof NumberTerm)) {
-                String castTo_name = alice.util.Tools
+                var castTo_name = alice.util.Tools
                         .removeApostrophes(((Struct) castTo).name());
-                String castWhat_name = alice.util.Tools.removeApostrophes(castWhat
+                var castWhat_name = alice.util.Tools.removeApostrophes(castWhat
                         .term().toString());
                 
                 if ("java.lang.String".equals(castTo_name)
@@ -1220,7 +1220,7 @@ public class OOLibrary extends PrologLib {
                     }
                 }
                 if (!"null".equals(castWhat_name)) {
-                    Object obj_to_cast = currentObjects.get(castWhat_name);
+                    var obj_to_cast = currentObjects.get(castWhat_name);
                     if (obj_to_cast == null) {
                         if ("boolean".equals(castTo_name)) {
                             switch (castWhat_name) {
@@ -1287,8 +1287,8 @@ public class OOLibrary extends PrologLib {
                     }
                 }
             } else {
-                NumberTerm num = (NumberTerm) castWhat;
-                String castTo_name = ((Struct) castTo).name();
+                var num = (NumberTerm) castWhat;
+                var castTo_name = ((Struct) castTo).name();
                 switch (castTo_name) {
                     case "byte":
                         values[i] = (byte) num.intValue();
@@ -1365,9 +1365,9 @@ public class OOLibrary extends PrologLib {
     }
 
     private static Object[] getArrayFromList(Struct list) {
-        Object[] args = new Object[list.listSize()];
+        var args = new Object[list.listSize()];
         Iterator<? extends Term> it = list.listIterator();
-        int count = 0;
+        var count = 0;
         while (it.hasNext()) {
             args[count++] = it.next();
         }
@@ -1404,7 +1404,7 @@ public class OOLibrary extends PrologLib {
                 
                 return false;
             } else {
-                String raw_name = alice.util.Tools.removeApostrophes(id.term()
+                var raw_name = alice.util.Tools.removeApostrophes(id.term()
                         .toString());
                 staticObjects.put(raw_name, obj);
                 staticObjects_inverse.put(obj, id);
@@ -1431,7 +1431,7 @@ public class OOLibrary extends PrologLib {
     	id = id.term();
         try
         {
-            Object obj = getRegisteredDynamicObject((Struct) id);
+            var obj = getRegisteredDynamicObject((Struct) id);
             return register((Struct)id, obj);
         }catch(InvalidObjectIdException e)
         {
@@ -1477,11 +1477,11 @@ public class OOLibrary extends PrologLib {
     public Struct register(Object obj) {
     	
         synchronized (staticObjects) {
-            Struct aKey = staticObjects_inverse.get(obj);
+            var aKey = staticObjects_inverse.get(obj);
             if (aKey != null) {
                 return aKey;
             } else {
-                Struct id = generateFreshId();
+                var id = generateFreshId();
                 staticObjects.put(id.name(), obj);
                 staticObjects_inverse.put(obj, id);
                 return id;
@@ -1523,8 +1523,8 @@ public class OOLibrary extends PrologLib {
             throw new InvalidObjectIdException();
         }
         synchronized (staticObjects) {
-            String raw_name = alice.util.Tools.removeApostrophes(id.toString());
-            Object obj = staticObjects.remove(raw_name);
+            var raw_name = alice.util.Tools.removeApostrophes(id.toString());
+            var obj = staticObjects.remove(raw_name);
             if (obj != null) {
                 staticObjects_inverse.remove(obj);
                 return true;
@@ -1544,7 +1544,7 @@ public class OOLibrary extends PrologLib {
      */
     public void registerDynamic(Struct id, Object obj) {
         synchronized (currentObjects) {
-            String raw_name = alice.util.Tools.removeApostrophes(id.toString());
+            var raw_name = alice.util.Tools.removeApostrophes(id.toString());
             currentObjects.put(raw_name, obj);
             currentObjects_inverse.put(obj, id);
         }
@@ -1565,11 +1565,11 @@ public class OOLibrary extends PrologLib {
 
         
         synchronized (currentObjects) {
-            Struct aKey = currentObjects_inverse.get(obj);
+            var aKey = currentObjects_inverse.get(obj);
             if (aKey != null) {
                 return aKey;
             } else {
-                Struct id = generateFreshId();
+                var id = generateFreshId();
                 currentObjects.put(id.name(), obj);
                 currentObjects_inverse.put(obj, id);
                 return id;
@@ -1600,8 +1600,8 @@ public class OOLibrary extends PrologLib {
      */
     public boolean unregisterDynamic(Struct id) {
         synchronized (currentObjects) {
-            String raw_name = alice.util.Tools.removeApostrophes(id.toString());
-            Object obj = currentObjects.remove(raw_name);
+            var raw_name = alice.util.Tools.removeApostrophes(id.toString());
+            var obj = currentObjects.remove(raw_name);
             if (obj != null) {
                 currentObjects_inverse.remove(obj);
                 return true;
@@ -1623,23 +1623,23 @@ public class OOLibrary extends PrologLib {
         }
         
         synchronized (currentObjects) {
-            Struct aKey = currentObjects_inverse.get(obj);
+            var aKey = currentObjects_inverse.get(obj);
             if (aKey != null) {
                 return unify(id, aKey);
             } else {
                 
                 if (id instanceof Var) {
-                    
-                    Struct idTerm = generateFreshId();
+
+                    var idTerm = generateFreshId();
                     unify(id, idTerm);
                     registerDynamic(idTerm, obj);
                     
                     return true;
                 } else {
-                    
-                    String raw_name = alice.util.Tools.removeApostrophes(id
+
+                    var raw_name = alice.util.Tools.removeApostrophes(id
                             .term().toString());
-                    Object linkedobj = currentObjects.get(raw_name);
+                    var linkedobj = currentObjects.get(raw_name);
                     if (linkedobj == null) {
                         registerDynamic((Struct) (id.term()), obj);
                         
@@ -1668,8 +1668,8 @@ public class OOLibrary extends PrologLib {
      * serializable, 'nullyfing' eventually objects registered in maps
      */
     private void writeObject(java.io.ObjectOutputStream out) throws IOException {
-        HashMap<String,Object> bak00 = currentObjects;
-        IdentityHashMap<Object,Struct> bak01 = currentObjects_inverse;
+        var bak00 = currentObjects;
+        var bak01 = currentObjects_inverse;
         try {
             currentObjects = null;
             currentObjects_inverse = null;
@@ -1710,10 +1710,10 @@ public class OOLibrary extends PrologLib {
             }
         }
 
-        
-        Method[] methods = target.getMethods();
-        Vector<Method> goodMethods = new Vector<>();
-        for (int i = 0; i != methods.length; i++) {
+
+        var methods = target.getMethods();
+        var goodMethods = new Vector<Method>();
+        for (var i = 0; i != methods.length; i++) {
             if (name.equals(methods[i].getName())
                     && matchClasses(methods[i].getParameterTypes(), argClasses))
                 goodMethods.addElement(methods[i]);
@@ -1728,14 +1728,14 @@ public class OOLibrary extends PrologLib {
             
             
 
-            for (int i = 0; i != methods.length; i++) {
+            for (var i = 0; i != methods.length; i++) {
                 if (name.equals(methods[i].getName())) {
-                    Class<?>[] types = methods[i].getParameterTypes();
-                    Object[] val = matchClasses(types, argClasses, argValues);
+                    var types = methods[i].getParameterTypes();
+                    var val = matchClasses(types, argClasses, argValues);
                     if (val != null) {
                         
                         
-                        for (int j = 0; j < types.length; j++) {
+                        for (var j = 0; j < types.length; j++) {
                             argClasses[j] = types[j];
                             argValues[j] = val[j];
                         }
@@ -1765,10 +1765,10 @@ public class OOLibrary extends PrologLib {
             }
         }
 
-        
-        Constructor<?>[] constructors = target.getConstructors();
-        Vector<Constructor<?>> goodConstructors = new Vector<>();
-        for (int i = 0; i != constructors.length; i++) {
+
+        var constructors = target.getConstructors();
+        var goodConstructors = new Vector<Constructor<?>>();
+        for (var i = 0; i != constructors.length; i++) {
             if (matchClasses(constructors[i].getParameterTypes(), argClasses))
                 goodConstructors.addElement(constructors[i]);
         }
@@ -1782,13 +1782,13 @@ public class OOLibrary extends PrologLib {
             
             
 
-            for (int i = 0; i != constructors.length; i++) {
-                Class<?>[] types = constructors[i].getParameterTypes();
-                Object[] val = matchClasses(types, argClasses, argValues);
+            for (var i = 0; i != constructors.length; i++) {
+                var types = constructors[i].getParameterTypes();
+                var val = matchClasses(types, argClasses, argValues);
                 if (val != null) {
                     
                     
-                    for (int j = 0; j < types.length; j++) {
+                    for (var j = 0; j < types.length; j++) {
                         argClasses[j] = types[j];
                         argValues[j] = val[j];
                     }
@@ -1813,7 +1813,7 @@ public class OOLibrary extends PrologLib {
     }
 
     private static boolean matchClass(Class<?> mclass, Class<?> pclass) {
-        boolean assignable = mclass.isAssignableFrom(pclass);
+        var assignable = mclass.isAssignableFrom(pclass);
         if (assignable) {
             return true;
         } else {
@@ -1824,8 +1824,8 @@ public class OOLibrary extends PrologLib {
 
     private static Method mostSpecificMethod(Vector<Method> methods)
             throws NoSuchMethodException {
-        for (int i = 0; i != methods.size(); i++) {
-            for (int j = 0; j != methods.size(); j++) {
+        for (var i = 0; i != methods.size(); i++) {
+            for (var j = 0; j != methods.size(); j++) {
                 if ((i != j)
                         && (moreSpecific(methods.elementAt(i),
                         methods.elementAt(j)))) {
@@ -1844,17 +1844,17 @@ public class OOLibrary extends PrologLib {
 
     
     private static boolean moreSpecific(Method c1, Method c2) {
-        Class<?>[] p1 = c1.getParameterTypes();
-        Class<?>[] p2 = c2.getParameterTypes();
-        int n = p1.length;
+        var p1 = c1.getParameterTypes();
+        var p2 = c2.getParameterTypes();
+        var n = p1.length;
         return IntStream.range(0, n).allMatch(i -> matchClass(p2[i], p1[i]));
     }
 
     private static Constructor<?> mostSpecificConstructor(Vector<Constructor<?>> constructors)
             throws NoSuchMethodException {
-        int cs = constructors.size();
-        for (int i = 0; i != cs; i++) {
-            for (int j = 0; j != cs; j++) {
+        var cs = constructors.size();
+        for (var i = 0; i != cs; i++) {
+            for (var j = 0; j != cs; j++) {
                 if ((i != j) && (moreSpecific(constructors.elementAt(i), constructors.elementAt(j)))) {
                     constructors.removeElementAt(j);
                     cs--;
@@ -1872,9 +1872,9 @@ public class OOLibrary extends PrologLib {
 
     
     private static boolean moreSpecific(Constructor<?> c1, Constructor<?> c2) {
-        Class<?>[] p1 = c1.getParameterTypes();
-        Class<?>[] p2 = c2.getParameterTypes();
-        int n = p1.length;
+        var p1 = c1.getParameterTypes();
+        var p2 = c2.getParameterTypes();
+        var n = p1.length;
         return IntStream.range(0, n).allMatch(i -> matchClass(p2[i], p1[i]));
     }
 
@@ -1899,10 +1899,10 @@ public class OOLibrary extends PrologLib {
     private static Object[] matchClasses(Class<?>[] mclasses, Class<?>[] pclasses,
                                          Object... values) {
         if (mclasses.length == pclasses.length) {
-            Object[] newvalues = new Object[mclasses.length];
+            var newvalues = new Object[mclasses.length];
 
-            for (int i = 0; i != mclasses.length; i++) {
-                boolean assignable = mclasses[i].isAssignableFrom(pclasses[i]);
+            for (var i = 0; i != mclasses.length; i++) {
+                var assignable = mclasses[i].isAssignableFrom(pclasses[i]);
                 if (assignable
                         || (mclasses[i] == Long.TYPE && pclasses[i] == Integer.TYPE)) {
                     newvalues[i] = values[i];
@@ -1958,8 +1958,8 @@ class Signature implements Serializable {
     }
 
     public String toString() {
-        String st = "";
-        for (int i = 0; i < types.length; i++) {
+        var st = "";
+        for (var i = 0; i < types.length; i++) {
             st = st + "\n  Argument " + i + " -  VALUE: " + values[i]
                     + " TYPE: " + types[i];
         }

@@ -50,7 +50,7 @@ public class MarkovSentence extends MarkovChain<String> {
      * @param is InputStream to parse
      */
     public void parseSentence(String sentence)  {
-        List<Twokenize.Span> phrase = Twokenize.twokenize(sentence);
+        var phrase = Twokenize.twokenize(sentence);
         learn(Iterables.transform(phrase, Twokenize.Span::toString));
     }
 
@@ -66,17 +66,17 @@ public class MarkovSentence extends MarkovChain<String> {
      * @return String of our Markov phrase
      */
     public String generateSentence(int len) {
-        
-        List<String> phrase = sample().generate(len);
+
+        var phrase = sample().generate(len);
+
+
+        var sb = new StringBuilder();
+        var sz = phrase.size();
 
         
-        StringBuilder sb = new StringBuilder();
-        int sz = phrase.size();
+        for (var i = 0; i < sz; i++) {
 
-        
-        for (int i = 0; i < sz; i++) {
-            
-            String word = phrase.get(i);
+            var word = phrase.get(i);
 
             
             if (i == 0) word = word.substring(0, 1).toUpperCase() + word.substring(1);

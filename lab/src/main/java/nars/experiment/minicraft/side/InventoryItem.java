@@ -31,7 +31,7 @@ public class InventoryItem implements java.io.Serializable {
         if (this.getItem().item_id != item.item_id) {
             return count;
         }
-        int maxCount = InventoryItem.maxCount;
+        var maxCount = InventoryItem.maxCount;
         if (this.getItem().getClass() == Tool.class) {
             maxCount = 1;
         }
@@ -39,7 +39,7 @@ public class InventoryItem implements java.io.Serializable {
             this.setCount(this.getCount() + count);
             return 0;
         } else {
-            int leftOver = count - (maxCount - this.getCount());
+            var leftOver = count - (maxCount - this.getCount());
             this.setCount(maxCount);
             return leftOver;
         }
@@ -54,7 +54,7 @@ public class InventoryItem implements java.io.Serializable {
             this.setEmpty();
             return 0;
         } else {
-            int leftOver = count - this.getCount();
+            var leftOver = count - this.getCount();
             this.setEmpty();
             return leftOver;
         }
@@ -75,7 +75,7 @@ public class InventoryItem implements java.io.Serializable {
 
     public void stack(InventoryItem other) {
         if (other.getItem().getClass() != Tool.class) {
-            int result = this.add(other.getItem(), other.getCount());
+            var result = this.add(other.getItem(), other.getCount());
             other.remove(other.getCount() - result);
         }
     }
@@ -90,13 +90,13 @@ public class InventoryItem implements java.io.Serializable {
             g.drawString(String.valueOf(this.getCount()), x, y + tileSize / 2);
         }
         if (item.getClass() == Tool.class) {
-            Tool tool = (Tool) item;
+            var tool = (Tool) item;
             if (tool.uses != 0) {
-                int width = (int) (((float) (tool.totalUses - tool.uses) / tool.totalUses) * (tileSize));
+                var width = (int) (((float) (tool.totalUses - tool.uses) / tool.totalUses) * (tileSize));
                 g.setColor(Color.green);
-                int height = 2;
-                int top = y + tileSize - 4;
-                int left = x + 2;
+                var height = 2;
+                var top = y + tileSize - 4;
+                var left = x + 2;
                 g.fillRect(left, top, width, height);
             }
         }

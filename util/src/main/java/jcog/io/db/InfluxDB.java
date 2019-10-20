@@ -50,7 +50,7 @@ public class InfluxDB {
     $ echo "cpu value=1"> /dev/udp/localhost/8089
          */
     public void send() {
-        String s = "cpu,host=server01,region=uswest load=" + (Math.random() * 100) + ' ' + System.currentTimeMillis();
+        var s = "cpu,host=server01,region=uswest load=" + (Math.random() * 100) + ' ' + System.currentTimeMillis();
 
         
         
@@ -79,15 +79,15 @@ public class InfluxDB {
     static final DateFormat RFCTime = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
 
     public float[] get(String measurement, String value, long from, long to) {
-        char c = value.charAt(0);
+        var c = value.charAt(0);
         if ((c !='*') && (c!='\"'))
             value = '"' + value + '"';
 
-        String query = "SELECT " + value + " FROM \"" + measurement + "\" WHERE \"time\" >= \"" + rfc(from) + "\" AND \"time\" <= \"" + rfc(to) + '"';
+        var query = "SELECT " + value + " FROM \"" + measurement + "\" WHERE \"time\" >= \"" + rfc(from) + "\" AND \"time\" <= \"" + rfc(to) + '"';
 
         URL u = null;
         try {
-            String epoch = "ms";
+            var epoch = "ms";
             u = new URL("http://" + host + ':' + port + "/query?db=" + db + "&epoch=" + epoch + "&q=" + UrlEscapers.urlFragmentEscaper().escape( query) );
             System.out.println(u);
         } catch (MalformedURLException e) {
@@ -97,7 +97,7 @@ public class InfluxDB {
 
         try {
 
-            JsonNode x = Util.jsonMapper.readTree(new InputStreamReader(u.openStream()));
+            var x = Util.jsonMapper.readTree(new InputStreamReader(u.openStream()));
             System.out.println(x);
         } catch (IOException e) {
             e.printStackTrace();

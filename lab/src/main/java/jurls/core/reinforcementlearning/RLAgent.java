@@ -64,7 +64,7 @@ public class RLAgent extends LearnerAndActor {
         stateAction = new double[s0.length + 1];
         memory = new double[memorySize][];
 
-        for (int i = 0; i < memory.length; ++i) {
+        for (var i = 0; i < memory.length; ++i) {
             memory[i] = new double[s0.length];
         }
         stateMin = new double[s0.length];
@@ -78,9 +78,9 @@ public class RLAgent extends LearnerAndActor {
 
     @Override
     public int learnAndAction(double[] state, double reward, double[] previousState, int previousAction) {
-        final double U = 0.01; 
+        final var U = 0.01;
 
-        for (int i = 0; i < state.length; ++i) {
+        for (var i = 0; i < state.length; ++i) {
             if (state[i] > stateMax[i]) {
                 stateMax[i] = state[i];
             }
@@ -99,8 +99,8 @@ public class RLAgent extends LearnerAndActor {
             memoryIndex = 0;
         }
 
-        double nextFactor1 = Arrays.stream(memory).mapToDouble(m -> {
-            double sum = IntStream.range(0, m.length).mapToDouble(j -> normalizedState[j] - m[j]).map(d -> d * d).sum();
+        var nextFactor1 = Arrays.stream(memory).mapToDouble(m -> {
+            var sum = IntStream.range(0, m.length).mapToDouble(j -> normalizedState[j] - m[j]).map(d -> d * d).sum();
             return sum;
         }).map(sum2 -> 1 / (1 + sum2 * factor1ComponentDivisor)).sum();
         nextFactor1 /= memory.length;
@@ -114,9 +114,9 @@ public class RLAgent extends LearnerAndActor {
         if (rewardMin == rewardMax) {
             rewardMax = rewardMin + U;
         }
-        double r = (reward - rewardMin) / (rewardMax - rewardMin);
+        var r = (reward - rewardMin) / (rewardMax - rewardMin);
         rSum = r + rSum * rLParameters.getGamma();
-        double referenceQ = 1 / (1 - rLParameters.getGamma());
+        var referenceQ = 1 / (1 - rLParameters.getGamma());
 
         factor1 = nextFactor1;
         factor2 = 1 - rSum / referenceQ;
@@ -141,8 +141,8 @@ public class RLAgent extends LearnerAndActor {
     }
 
     public ActionValuePair[] getActionProbabilities(double[] state) {
-        int bound = numActions;
-        ActionValuePair[] actionValuePairs = IntStream.range(0, bound).mapToObj(i -> new ActionValuePair(
+        var bound = numActions;
+        var actionValuePairs = IntStream.range(0, bound).mapToObj(i -> new ActionValuePair(
                 i,
                 Utils.q(parameterizedFunction, stateAction, state, i)
         )).toArray(ActionValuePair[]::new);
@@ -151,11 +151,11 @@ public class RLAgent extends LearnerAndActor {
     }
 
     public int chooseAction(double[] state) {
-        ActionValuePair[] actionProbabilityPairs = getActionProbabilities(state);
+        var actionProbabilityPairs = getActionProbabilities(state);
         Arrays.sort(actionProbabilityPairs, (o1, o2) -> (int) Math.signum(o1.getV() - o2.getV()));
 
-        
-        int i = actionProbabilityPairs.length-1; 
+
+        var i = actionProbabilityPairs.length-1;
 
 
         
@@ -170,7 +170,7 @@ public class RLAgent extends LearnerAndActor {
 
     @Override
     public String getDebugString(int indent) {
-        String ind = Utils.makeIndent(indent);
+        var ind = Utils.makeIndent(indent);
         return ind + "Q/SARSA(lambda)\n"
                 + ind + "factor1 = " + factor1 + "\n"
                 + ind + "factor2 = " + factor2 + "\n"

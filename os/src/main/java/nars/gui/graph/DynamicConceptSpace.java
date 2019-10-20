@@ -140,12 +140,12 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
 
         if (updated.get()) {
 
-            List<ConceptWidget> w = next.write();
+            var w = next.write();
                 w.clear();
 
-            for (PriReference<Concept> clink : concepts) {
-                Concept cc = clink.get();
-                ConceptWidget cw = cc.meta(spaceID, () -> new ConceptWidget(cc) {
+            for (var clink : concepts) {
+                var cc = clink.get();
+                var cw = cc.meta(spaceID, () -> new ConceptWidget(cc) {
                     @Override
                     protected void onClicked(PushButton b) {
                         SpaceGraph.window(new ConceptSurface(id.term(), nar), 800, 700);
@@ -179,9 +179,9 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
             public void color(ConceptWidget cw, NAR nar) {
 
 
-                float p = cw.pri;
+                var p = cw.pri;
                 p = 0.25f + 0.75f * p;
-                float[] sc = cw.shapeColor;
+                var sc = cw.shapeColor;
                 sc[0] = sc[1] = sc[2] = p;
             }
         },
@@ -189,9 +189,9 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
         Belief {
             @Override
             public void color(ConceptWidget cw, NAR nar) {
-                Truth beliefTruth = cw.id.beliefs().truth(nar.time(), nar);
+                var beliefTruth = cw.id.beliefs().truth(nar.time(), nar);
                 if (beliefTruth != null) {
-                    float beliefTruthFreq = beliefTruth.freq();
+                    var beliefTruthFreq = beliefTruth.freq();
                     Draw.colorUnipolarHue(cw.shapeColor, beliefTruthFreq, 0.25f, 0.75f, 0.1f + beliefTruth.conf() * 0.9f);
                 } else {
                     Draw.colorRGBA(cw.shapeColor, 0.5f, 0.5f, 0.5f, 0.1f);
@@ -214,7 +214,7 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
         Complexity {
             @Override
             public void color(ConceptWidget cw, NAR nar) {
-                float c = Util.unitize(cw.id.term().volume() / 32f);
+                var c = Util.unitize(cw.id.term().volume() / 32f);
                 Draw.colorUnipolarHue(cw.shapeColor, c, 0.1f, 0.9f);
             }
         };
@@ -279,12 +279,12 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
         @Override
         public void accept(List<ConceptWidget> pending) {
 
-            for (ConceptWidget widget : pending) {
+            for (var widget : pending) {
                 preCollect(widget);
             }
 
 
-            for (ConceptWidget conceptWidget : pending) {
+            for (var conceptWidget : pending) {
                 conceptWidget.edges.write().forEachValue(x -> x.inactive = true);
             }
 
@@ -294,35 +294,35 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
                     return;
                 }
 
-                ConceptWidget src = e.src();
+                var src = e.src();
                 Map<Concept, ConceptWidget.ConceptEdge> eee = src.edges.write();
-                ConceptWidget tgt = e.tgt();
+                var tgt = e.tgt();
                 eee.computeIfAbsent(tgt.id, (t) ->
                     new ConceptWidget.ConceptEdge(src, tgt, 0)
                 ).merge(e);
             });
-            float termlinkOpac = termlinkOpacity.floatValue();
-            float tasklinkOpac = tasklinkOpacity.floatValue();
-            float separation = this.separation.floatValue();
-            float minLineWidth = this.lineWidthMin.floatValue();
-            float MaxEdgeWidth = this.lineWidthMax.floatValue();
-            float _lineAlphaMax = this.lineAlphaMax.floatValue();
-            float _lineAlphaMin = this.lineAlphaMin.floatValue();
-            float lineAlphaMin = Math.min(_lineAlphaMin, _lineAlphaMax);
-            float lineAlphaMax = Math.max(lineAlphaMin, _lineAlphaMax);
-            for (ConceptWidget c : pending) {
-                float srcRad = c.radius();
+            var termlinkOpac = termlinkOpacity.floatValue();
+            var tasklinkOpac = tasklinkOpacity.floatValue();
+            var separation = this.separation.floatValue();
+            var minLineWidth = this.lineWidthMin.floatValue();
+            var MaxEdgeWidth = this.lineWidthMax.floatValue();
+            var _lineAlphaMax = this.lineAlphaMax.floatValue();
+            var _lineAlphaMin = this.lineAlphaMin.floatValue();
+            var lineAlphaMin = Math.min(_lineAlphaMin, _lineAlphaMax);
+            var lineAlphaMax = Math.max(lineAlphaMin, _lineAlphaMax);
+            for (var c : pending) {
+                var srcRad = c.radius();
                 c.edges.write().removeIf(e -> {
                     if (e.inactive || !e.connected()) {
                         e.delete();
                         return true;
                     }
 
-                    float edgeSum = (e.termlinkPri + e.tasklinkPri);
+                    var edgeSum = (e.termlinkPri + e.tasklinkPri);
 
                     if (edgeSum >= 0) {
 
-                        float p = e.priElseZero();
+                        var p = e.priElseZero();
                         if (p != p)
                             return true;
 
@@ -343,7 +343,7 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
 
 
                         e.attraction = 0.5f * e.width / 2f;
-                        float totalRad = srcRad + e.tgt().radius();
+                        var totalRad = srcRad + e.tgt().radius();
                         e.attractionDist =
 
                                 (totalRad * separation) + totalRad;
@@ -362,14 +362,14 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
 
         @Override
         public void accept(ConceptWidget src, PriReference<? extends Termed> link) {
-            float pri = link.priElseNeg1();
+            var pri = link.priElseNeg1();
             if (pri < 0)
                 return;
             accept(src, link.get().term(), pri, TERMLINK);
         }
 
         public void accept(ConceptWidget src, TaskLink link) {
-            float pri = link.priElseNeg1();
+            var pri = link.priElseNeg1();
             if (pri < 0)
                 return;
             accept(src, link.to(), pri, TASKLINK);
@@ -378,9 +378,9 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
         public void accept(ConceptWidget src, Term term, float pri, int type) {
 
             if (term.op().conceptualizable) {
-                Term tt = term.concept();
+                var tt = term.concept();
                 if (!tt.equals(src.id.term())) {
-                    @Deprecated Concept cc = nar.concept(tt); 
+                    @Deprecated var cc = nar.concept(tt);
                     if (cc != null) {
                         ConceptWidget tgt = cc.meta(spaceID);
                         if (tgt != null && tgt.active()) {
@@ -402,40 +402,33 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
 
 
         void preCollect(ConceptWidget cw) {
-            float p = cw.pri;
+            var p = cw.pri;
 
 
-            
-
-
-
-
-            
-
-            float volume = 1f / (1f + cw.id.term().complexity());
-            float ep = 1 + p;
-            float minSize = this.minSize.floatValue();
-            float nodeScale = minSize + (ep * ep) * maxSizeMult.floatValue()
+            var volume = 1f / (1f + cw.id.term().complexity());
+            var ep = 1 + p;
+            var minSize = this.minSize.floatValue();
+            var nodeScale = minSize + (ep * ep) * maxSizeMult.floatValue()
                     ;
-            
 
-            boolean atomic = (cw.id.op().atomic);
+
+            var atomic = (cw.id.op().atomic);
             if (atomic)
                 nodeScale /= 2f;
 
             if (cw.shape instanceof SphereShape) {
-                float r = nodeScale;
+                var r = nodeScale;
                 cw.scale(r, r, 0.5f);
             } else {
-                float l = nodeScale * Util.PHIf;
-                float w = nodeScale;
+                var l = nodeScale * Util.PHIf;
+                var w = nodeScale;
                 float h = 1; 
                 cw.scale(l, w, h);
             }
 
 
             if (cw.body != null) {
-                float density = 5f / (1f + volume);
+                var density = 5f / (1f + volume);
                 cw.body.setMass(nodeScale * nodeScale * nodeScale /* approx */ * density);
                 cw.body.setDamping(0.99f, 0.9f);
 

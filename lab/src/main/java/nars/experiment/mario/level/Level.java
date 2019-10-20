@@ -60,17 +60,17 @@ public class Level {
     }
 
     public static Level load(DataInputStream dis) throws IOException {
-        long header = dis.readLong();
+        var header = dis.readLong();
         if (header != Level.FILE_HEADER) throw new IOException("Bad level header");
         @SuppressWarnings("unused")
-        int version = dis.read() & 0xff;
+        var version = dis.read() & 0xff;
 
-        int width = dis.readShort() & 0xffff;
-        int height = dis.readShort() & 0xffff;
-        Level level = new Level(width, height);
+        var width = dis.readShort() & 0xffff;
+        var height = dis.readShort() & 0xffff;
+        var level = new Level(width, height);
         level.map = new byte[width][height];
         level.data = new byte[width][height];
-        for (int i = 0; i < width; i++) {
+        for (var i = 0; i < width; i++) {
             dis.readFully(level.map[i]);
             dis.readFully(level.data[i]);
         }
@@ -84,15 +84,15 @@ public class Level {
         dos.writeShort((short) width);
         dos.writeShort((short) height);
 
-        for (int i = 0; i < width; i++) {
+        for (var i = 0; i < width; i++) {
             dos.write(map[i]);
             dos.write(data[i]);
         }
     }
 
     public void tick() {
-        for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
+        for (var x = 0; x < width; x++) {
+            for (var y = 0; y < height; y++) {
                 if (data[x][y] > 0) data[x][y]--;
             }
         }
@@ -131,8 +131,8 @@ public class Level {
     }
 
     public boolean isBlocking(int x, int y, float xa, float ya) {
-        byte block = getBlock(x, y);
-        boolean blocking = ((TILE_BEHAVIORS[block & 0xff]) & BIT_BLOCK_ALL) > 0;
+        var block = getBlock(x, y);
+        var blocking = ((TILE_BEHAVIORS[block & 0xff]) & BIT_BLOCK_ALL) > 0;
         blocking |= (ya > 0) && ((TILE_BEHAVIORS[block & 0xff]) & BIT_BLOCK_UPPER) > 0;
         blocking |= (ya < 0) && ((TILE_BEHAVIORS[block & 0xff]) & BIT_BLOCK_LOWER) > 0;
 

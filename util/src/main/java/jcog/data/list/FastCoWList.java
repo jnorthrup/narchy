@@ -106,7 +106,7 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
 
     //@Override
     public final int size() {
-        X[] x = this.array();
+        var x = this.array();
         //return (this.size = (x != null ? x.length : 0));
         return x.length;
     }
@@ -125,8 +125,8 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
                 }
                 return null;
             } else {
-                X[] ii = list.array();
-                X old = ii[index];
+                var ii = list.array();
+                var old = ii[index];
                 if (old!=element) {
                     ii[index] = element;
                     commit();
@@ -159,24 +159,24 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
 
     //@Override
     public void forEach(Consumer<? super X> c) {
-        for (X x : array())
+        for (var x : array())
             c.accept(x);
     }
 
     public void forEachNonNull(Consumer<? super X> c) {
-        for (X x : array()) {
+        for (var x : array()) {
             if (x!=null)
                 c.accept(x);
         }
     }
 
     public final <Y> void forEachWith(BiConsumer<? super X, ? super Y> c, Y y) {
-        for (X x : array())
+        for (var x : array())
             c.accept(x, y);
     }
 
     public final <Y> void forEachWith(Procedure2<? super X, ? super Y> c, Y y) {
-        for (X x : array())
+        for (var x : array())
             c.accept(x, y);
     }
 
@@ -188,9 +188,9 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
 
 
     public void reverseForEach(Procedure<X> c) {
-        X[] copy = array();
+        var copy = array();
 //        if (copy != null) {
-            for (int i = copy.length-1; i >= 0; i--) {
+            for (var i = copy.length-1; i >= 0; i--) {
                 c.accept(copy[i]);
             }
 //        }
@@ -198,13 +198,13 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
 
     public final X[] array() {
         //modified updateAndGet: //return copy.updateAndGet(this);
-        X[] prev = copy.getOpaque();
+        var prev = copy.getOpaque();
         return prev != null ? prev : commit(null);
     }
 
     private X[] commit(X[] prev) {
         X[] next = null;
-        boolean haveNext = false;
+        var haveNext = false;
         while(true) {
             if (!haveNext)
                 next = apply(prev);
@@ -233,7 +233,7 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
     }
     public X remove(int index) {
         synchronized (list) {
-            X removed = list.remove(index);
+            var removed = list.remove(index);
             if (removed!=null) {
                 commit();
             }
@@ -313,19 +313,19 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
 
     //@Override
     public final X get(int index) {
-        X[] c = array();
+        var c = array();
         return c.length > index ? c[index] : null;
     }
 
     public float[] map(FloatFunction<X> f, float[] target) {
-        X[] c = this.array();
+        var c = this.array();
         if (c == null)
             return ArrayUtil.EMPTY_FLOAT_ARRAY;
-        int n = c.length;
+        var n = c.length;
         if (n != target.length) {
             target = new float[n];
         }
-        for (int i = 0; i < n; i++) {
+        for (var i = 0; i < n; i++) {
             target[i] = f.floatValueOf(c[i]);
         }
         return target;
@@ -368,7 +368,7 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
         return Arrays.stream(array()).noneMatch(x -> x != null && !o.test(x));
     }
     public boolean whileEachReverse(Predicate<X> o) {
-        @Nullable X[] xx = this.array();
+        @Nullable var xx = this.array();
         return IntStream.iterate(xx.length - 1, i -> i >= 0, i -> i - 1).mapToObj(i -> xx[i]).noneMatch(x -> x != null && !o.test(x));
     }
 
@@ -382,9 +382,9 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
     /** NaN valued items are not included */
     public double meanBy(ToDoubleFunction<X> each) {
         double s =  0;
-        int i = 0;
-        for (X x : array()) {
-            double v = each.applyAsDouble(x);
+        var i = 0;
+        for (var x : array()) {
+            var v = each.applyAsDouble(x);
             if (v==v) {
                 s += v;
                 i++;
@@ -395,9 +395,9 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
     /** NaN valued items are not included */
     public double meanByFloat(FloatFunction<X> each) {
         double s =  0;
-        int i = 0;
-        for (X x : array()) {
-            float v = each.floatValueOf(x);
+        var i = 0;
+        for (var x : array()) {
+            var v = each.floatValueOf(x);
             if (v==v) {
                 s += v;
                 i++;
@@ -407,14 +407,14 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
     }
 
     public <Y> Y[] toArray(Y[] _target, Function<X, Y> f) {
-        int s = size();
+        var s = size();
         if (s == 0) return _target.length == 0 ? _target : null;
 
-        Y[] target = _target == null || _target.length < s ? Arrays.copyOf(_target, s) : _target;
+        var target = _target == null || _target.length < s ? Arrays.copyOf(_target, s) : _target;
 
-        int i = 0; //HACK this is not good. use a AND predicate iteration or just plain iterator?
+        var i = 0; //HACK this is not good. use a AND predicate iteration or just plain iterator?
 
-        for (X x : array()) {
+        for (var x : array()) {
             if (x!=null) {
                 target[i++] = f.apply(x);
                 if (i >= s)
@@ -435,7 +435,7 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
     }
 
 	public @Nullable X get(Random random) {
-        X[] c = array();
+        var c = array();
         if (c.length == 0)
             return null;
         return c[random.nextInt(c.length)];

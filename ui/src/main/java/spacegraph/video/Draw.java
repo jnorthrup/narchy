@@ -105,7 +105,7 @@ public enum Draw {
 
 
 	public static void drawCoordSystem(GL gl) {
-        ImmModeSink vbo = ImmModeSink.createFixed(3 * 4,
+        var vbo = ImmModeSink.createFixed(3 * 4,
                 3, GL.GL_FLOAT,
                 4, GL.GL_FLOAT,
                 0, GL.GL_FLOAT,
@@ -139,16 +139,16 @@ public enum Draw {
     public static void draw(GL2 gl, CollisionShape shape) {
 
 
-        BroadphaseNativeType shapeType = shape.getShapeType();
+        var shapeType = shape.getShapeType();
         if (shapeType == BroadphaseNativeType.COMPOUND_SHAPE_PROXYTYPE) {
-            CompoundShape compoundShape = (CompoundShape) shape;
+            var compoundShape = (CompoundShape) shape;
             //Transform childTrans = new Transform();
-            for (int i = compoundShape.size() - 1; i >= 0; i--) {
+            for (var i = compoundShape.size() - 1; i >= 0; i--) {
 //                stack.transforms.get(
 //                    compoundShape.getChildTransform(i)
 //                );
 
-                CollisionShape colShape = compoundShape.getChildShape(i);
+                var colShape = compoundShape.getChildShape(i);
 
                 push(gl);
                 stack.pushCommonMath();
@@ -157,11 +157,11 @@ public enum Draw {
                 pop(gl);
             }
         } else {
-            boolean useWireframeFallback = true;
+            var useWireframeFallback = true;
             switch (shapeType) {
                 case BOX_SHAPE_PROXYTYPE:
-                    SimpleBoxShape boxShape = (SimpleBoxShape) shape;
-                    v3 a = boxShape.implicitShapeDimensions;
+                    var boxShape = (SimpleBoxShape) shape;
+                    var a = boxShape.implicitShapeDimensions;
 
                     gl.glScalef(2f * a.x, 2f * a.y, 2f * a.z);
 
@@ -175,13 +175,13 @@ public enum Draw {
 
 
                     if (shape.isConvex()) {
-                        ConvexShape convexShape = (ConvexShape) shape;
+                        var convexShape = (ConvexShape) shape;
                         if (shape.getUserPointer() == null) {
 
-                            ShapeHull hull = new ShapeHull(convexShape);
+                            var hull = new ShapeHull(convexShape);
 
 
-                            float margin = shape.getMargin();
+                            var margin = shape.getMargin();
                             hull.buildHull(margin);
                             convexShape.setUserPointer(hull);
 
@@ -189,25 +189,25 @@ public enum Draw {
                         }
 
                         if (shape.getUserPointer() != null) {
-                            ShapeHull hull = (ShapeHull) shape.getUserPointer();
+                            var hull = (ShapeHull) shape.getUserPointer();
 
-                            int tris = hull.numTriangles();
+                            var tris = hull.numTriangles();
                             if (tris > 0) {
-                                spacegraph.space3d.phys.util.IntArrayList idx = hull.getIndexPointer();
-                                FasterList<v3> vtx = hull.getVertexPointer();
+                                var idx = hull.getIndexPointer();
+                                var vtx = hull.getVertexPointer();
 
-                                v3 normal = v();
-                                v3 tmp1 = v();
-                                v3 tmp2 = v();
+                                var normal = v();
+                                var tmp1 = v();
+                                var tmp2 = v();
 
                                 gl.glBegin(GL.GL_TRIANGLES);
 
-                                int index = 0;
-                                for (int i = 0; i < tris; i++) {
+                                var index = 0;
+                                for (var i = 0; i < tris; i++) {
 
-                                    v3 v1 = vtx.get(idx.get(index++));
-                                    v3 v2 = vtx.get(idx.get(index++));
-                                    v3 v3 = vtx.get(idx.get(index++));
+                                    var v1 = vtx.get(idx.get(index++));
+                                    var v2 = vtx.get(idx.get(index++));
+                                    var v3 = vtx.get(idx.get(index++));
 
                                     tmp1.sub(v3, v1);
                                     tmp2.sub(v2, v1);
@@ -229,8 +229,8 @@ public enum Draw {
                     useWireframeFallback = false;
                     break;
                 case SPHERE_SHAPE_PROXYTYPE: {
-                    SphereShape sphereShape = (SphereShape) shape;
-                    float radius = sphereShape.getMargin();
+                    var sphereShape = (SphereShape) shape;
+                    var radius = sphereShape.getMargin();
 
 
                     glsrt.drawSphere(gl, radius);
@@ -245,10 +245,10 @@ public enum Draw {
                     break;
                 }
                 case CAPSULE_SHAPE_PROXYTYPE: {
-                    CapsuleShape capsuleShape = (CapsuleShape) shape;
-                    float radius = capsuleShape.getRadius();
-                    float halfHeight = capsuleShape.getHalfHeight();
-                    int upAxis = 1;
+                    var capsuleShape = (CapsuleShape) shape;
+                    var radius = capsuleShape.getRadius();
+                    var halfHeight = capsuleShape.getHalfHeight();
+                    var upAxis = 1;
 
                     glsrt.drawCylinder(gl, radius, halfHeight, upAxis);
 
@@ -273,11 +273,11 @@ public enum Draw {
 
                 case CONVEX_SHAPE_PROXYTYPE:
                 case CYLINDER_SHAPE_PROXYTYPE:
-                    CylinderShape cylinder = (CylinderShape) shape;
-                    int upAxis = cylinder.getUpAxis();
+                    var cylinder = (CylinderShape) shape;
+                    var upAxis = cylinder.getUpAxis();
 
-                    float radius = cylinder.getRadius();
-                    float halfHeight = VectorUtil.coord(cylinder.getHalfExtentsWithMargin(new v3()), upAxis);
+                    var radius = cylinder.getRadius();
+                    var halfHeight = VectorUtil.coord(cylinder.getHalfExtentsWithMargin(new v3()), upAxis);
 
                     glsrt.drawCylinder(gl, radius, halfHeight, upAxis);
 
@@ -290,9 +290,9 @@ public enum Draw {
             if (useWireframeFallback) {
 
                 if (shape.isPolyhedral()) {
-                    PolyhedralConvexShape polyshape = (PolyhedralConvexShape) shape;
+                    var polyshape = (PolyhedralConvexShape) shape;
 
-                    ImmModeSink vbo = ImmModeSink.createFixed(polyshape.getNumEdges() + 3,
+                    var vbo = ImmModeSink.createFixed(polyshape.getNumEdges() + 3,
                             3, GL.GL_FLOAT,
                             0, GL.GL_FLOAT,
                             0, GL.GL_FLOAT,
@@ -301,7 +301,7 @@ public enum Draw {
                     vbo.glBegin(GL.GL_LINES);
 
 
-                    for (int i = 0; i < polyshape.getNumEdges(); i++) {
+                    for (var i = 0; i < polyshape.getNumEdges(); i++) {
                         polyshape.getEdge(i, a, b);
 
                         vbo.glVertex3f(a.x, a.y, a.z);
@@ -315,13 +315,13 @@ public enum Draw {
 
 
             if (shape.isConcave()) {
-                ConcaveShape concaveMesh = (ConcaveShape) shape;
+                var concaveMesh = (ConcaveShape) shape;
 
 
                 a.set(1e30f, 1e30f, 1e30f);
                 b.set(-1e30f, -1e30f, -1e30f);
 
-                GlDrawcallback drawCallback = new GlDrawcallback(gl);
+                var drawCallback = new GlDrawcallback(gl);
                 drawCallback.wireframe = false;
 
                 concaveMesh.processAllTriangles(drawCallback, b, a);
@@ -416,13 +416,13 @@ public enum Draw {
      *  wo,ho - outer width/height
      *  */
     public static void rectFrame(float cx, float cy, float wi, float hi, float wo, float ho, GL2 gl) {
-        float vthick = (ho - hi) / 2;
+        var vthick = (ho - hi) / 2;
         //N
         Draw.rect(cx-wo/2, cy-ho/2, wo, vthick, gl );
         //S
         Draw.rect(cx-wo/2, cy+ho/2 - vthick, wo, vthick, gl );
 
-        float hthick = (wo - wi) / 2;
+        var hthick = (wo - wi) / 2;
         //W
         Draw.rect(cx-wo/2, cy - hi/2, hthick, hi, gl );
         //E
@@ -433,9 +433,9 @@ public enum Draw {
      * TODO rotation angle param
      * */
     public static void rectCross(float cx, float cy, float wi, float hi, float wo, float ho, GL2 gl) {
-        float vthick = (ho - hi) / 2;
+        var vthick = (ho - hi) / 2;
         Draw.rect(cx-wo/2, cy-vthick/2, wo, vthick, gl ); //horiz
-        float hthick = (wo - wi) / 2;
+        var hthick = (wo - wi) / 2;
         Draw.rect(cx-hthick/2, cy - hi/2, hthick, hi, gl ); //vert
     }
 
@@ -443,19 +443,19 @@ public enum Draw {
     public static void circle(GL2 gl, v2 center, boolean solid, float radius, int NUM_CIRCLE_POINTS) {
 
 
-        float theta = 2 * MathUtils.PI / NUM_CIRCLE_POINTS;
-        float c = (float) Math.cos(theta);
-        float s = (float) Math.sin(theta);
-        float cx = center.x;
-        float cy = center.y;
+        var theta = 2 * MathUtils.PI / NUM_CIRCLE_POINTS;
+        var c = (float) Math.cos(theta);
+        var s = (float) Math.sin(theta);
+        var cx = center.x;
+        var cy = center.y;
         gl.glBegin(solid ? GL_TRIANGLE_FAN : GL_LINE_LOOP);
 
         float y = 0;
-        float x = radius;
-        for (int i = 0; i < NUM_CIRCLE_POINTS; i++) {
+        var x = radius;
+        for (var i = 0; i < NUM_CIRCLE_POINTS; i++) {
             gl.glVertex3f(x + cx, y + cy, 0);
 
-            float temp = x;
+            var temp = x;
             x = c * x - s * y;
             y = s * temp + c * y;
         }
@@ -466,27 +466,27 @@ public enum Draw {
     public static void particles(GL2 gl, v2[] centers, float radius, int NUM_CIRCLE_POINTS, ParticleColor[] colors, int count) {
 
 
-        float theta = 2 * MathUtils.PI / NUM_CIRCLE_POINTS;
-        float c = (float) Math.cos(theta);
-        float s = (float) Math.sin(theta);
+        var theta = 2 * MathUtils.PI / NUM_CIRCLE_POINTS;
+        var c = (float) Math.cos(theta);
+        var s = (float) Math.sin(theta);
 
-        float x = radius;
+        var x = radius;
         float y = 0;
 
-        for (int i = 0; i < count; i++) {
-            v2 center = centers[i];
-            float cx = center.x;
-            float cy = center.y;
+        for (var i = 0; i < count; i++) {
+            var center = centers[i];
+            var cx = center.x;
+            var cy = center.y;
             gl.glBegin(GL_TRIANGLE_FAN);
             if (colors == null) {
                 gl.glColor4f(1, 1, 1, .4f);
             } else {
-                ParticleColor color = colors[i];
+                var color = colors[i];
                 gl.glColor4b(color.r, color.g, color.b, color.a);
             }
-            for (int j = 0; j < NUM_CIRCLE_POINTS; j++) {
+            for (var j = 0; j < NUM_CIRCLE_POINTS; j++) {
                 gl.glVertex3f(x + cx, y + cy, 0);
-                float temp = x;
+                var temp = x;
                 x = c * x - s * y;
                 y = s * temp + c * y;
             }
@@ -558,7 +558,7 @@ public enum Draw {
             gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         }
 
-        boolean repeat = repeatScale > 0;
+        var repeat = repeatScale > 0;
         if (repeat) {
             gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
             gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -570,7 +570,7 @@ public enum Draw {
 
         gl.glBegin(GL2ES3.GL_QUADS);
 
-        float s = repeatScale;
+        var s = repeatScale;
         if (!inverted) {
             gl.glTexCoord2f(0.0f, s);
             gl.glVertex3f(x, y, z);
@@ -600,29 +600,29 @@ public enum Draw {
     public static void renderHalfTriEdge(GL2 gl, SimpleSpatial src, EDraw<?> e, float width, float twist, Quat4f tmpQ) {
 
 
-        Transform st = src.transform;
+        var st = src.transform;
 
         st.getRotation(tmpQ);
 
         if (twist != 0)
             tmpQ.setAngle(0, 1, 0, twist);
 
-        v3 ww = new v3(0, 0, 1);
+        var ww = new v3(0, 0, 1);
         tmpQ.rotateVector(ww, ww);
 
 
-        Transform tt = e.tgt().transform;
+        var tt = e.tgt().transform;
 
-        float sx = st.x;
-        float tx = tt.x;
-        float dx = tx - sx;
-        float sy = st.y;
-        float ty = tt.y;
-        float dy = ty - sy;
-        float sz = st.z;
-        float tz = tt.z;
-        float dz = tz - sz;
-        v3 vv = new v3(dx, dy, dz).cross(ww).normalized(width);
+        var sx = st.x;
+        var tx = tt.x;
+        var dx = tx - sx;
+        var sy = st.y;
+        var ty = tt.y;
+        var dy = ty - sy;
+        var sz = st.z;
+        var tz = tt.z;
+        var dz = tz - sz;
+        var vv = new v3(dx, dy, dz).cross(ww).normalized(width);
 
 
         gl.glBegin(GL_TRIANGLES);
@@ -656,7 +656,7 @@ public enum Draw {
     }
 
     public static void hsb(GL2 gl, float hue, float saturation, float brightness, float a) {
-        float[] f = new float[4];
+        var f = new float[4];
 
         //hsb(f, hue, saturation, brightness, a);
 
@@ -667,7 +667,7 @@ public enum Draw {
     }
 
     public static int hsb(float hue, float saturation, float brightness) {
-        float[] f = new float[4];
+        var f = new float[4];
         hsb(f, hue, saturation, brightness, 1);
         return rgbInt(f[0], f[1], f[2]);
     }
@@ -680,11 +680,11 @@ public enum Draw {
         if (saturation == 0) {
             r = g = b = (int) (brightness * 255.0f + 0.5f);
         } else {
-            float h = (hue - (float) Math.floor(hue)) * 6.0f;
-            float f = h - (float) Math.floor(h);
-            float p = brightness * (1.0f - saturation);
-            float q = brightness * (1.0f - saturation * f);
-            float t = brightness * (1.0f - (saturation * (1.0f - f)));
+            var h = (hue - (float) Math.floor(hue)) * 6.0f;
+            var f = h - (float) Math.floor(h);
+            var p = brightness * (1.0f - saturation);
+            var q = brightness * (1.0f - saturation * f);
+            var t = brightness * (1.0f - (saturation * (1.0f - f)));
             switch ((int) h) {
                 case 0:
                     r = (brightness);
@@ -734,11 +734,11 @@ public enum Draw {
         } else if (brightness < Float.MIN_NORMAL) {
             return 0;
         } else {
-            float h = (hue - (float) Math.floor(hue)) * 6.0f;
-            float f = h - (float) Math.floor(h);
-            float p = brightness * (1.0f - saturation);
-            float q = brightness * (1.0f - saturation * f);
-            float t = brightness * (1.0f - (saturation * (1.0f - f)));
+            var h = (hue - (float) Math.floor(hue)) * 6.0f;
+            var f = h - (float) Math.floor(h);
+            var p = brightness * (1.0f - saturation);
+            var q = brightness * (1.0f - saturation * f);
+            var t = brightness * (1.0f - (saturation * (1.0f - f)));
             switch ((int) h) {
                 case 0:
                     r = (brightness);
@@ -793,8 +793,8 @@ public enum Draw {
         if (s == 0f) {
             r = g = b = l; // achromatic
         } else {
-            float q = l < 0.5f ? l * (1 + s) : l + s - l * s;
-            float p = 2 * l - q;
+            var q = l < 0.5f ? l * (1 + s) : l + s - l * s;
+            var p = 2 * l - q;
             r = hueToRgb(p, q, h + 1f/3f);
             g = hueToRgb(p, q, h);
             b = hueToRgb(p, q, h - 1f/3f);
@@ -809,8 +809,8 @@ public enum Draw {
         if (s == 0f) {
             r = g = b = l; // achromatic
         } else {
-            float q = l < 0.5f ? l * (1 + s) : l + s - l * s;
-            float p = 2 * l - q;
+            var q = l < 0.5f ? l * (1 + s) : l + s - l * s;
+            var p = 2 * l - q;
             r = hueToRgb(p, q, h + 1f/3f);
             g = hueToRgb(p, q, h);
             b = hueToRgb(p, q, h - 1f/3f);
@@ -913,7 +913,7 @@ public enum Draw {
     }
 
     public static void colorHash(GL2 gl, int hash, float sat, float bri, float alpha) {
-        float[] f = new float[4];
+        var f = new float[4];
         colorHash(hash, f, sat, bri, alpha);
         gl.glColor4fv(f, 0);
     }
@@ -922,7 +922,7 @@ public enum Draw {
         colorHash(gl, hash, 0.7f, 0.7f, alpha);
     }
     public static void colorHashRange(GL2 gl, int hash, float hueStart, float hueEnd, float alpha) {
-        float h = Util.lerpSafe( ((float)Math.abs(hash))/Integer.MAX_VALUE, hueStart, hueEnd);
+        var h = Util.lerpSafe( ((float)Math.abs(hash))/Integer.MAX_VALUE, hueStart, hueEnd);
         Draw.hsb(gl, h, 0.7f, 0.7f, alpha);
     }
 
@@ -978,13 +978,13 @@ public enum Draw {
     }
 
     public static void poly(Body2D body, GL2 gl, float preScale, PolygonShape shape) {
-        PolygonShape poly = shape;
+        var poly = shape;
 
         gl.glBegin(GL_TRIANGLE_FAN);
-        int n = poly.vertices;
-        v2[] pv = poly.vertex;
+        var n = poly.vertices;
+        var pv = poly.vertex;
 
-        for (int i = 0; i < n; ++i)
+        for (var i = 0; i < n; ++i)
             body.getWorldPointToGL(pv[i], preScale, gl);
 
         body.getWorldPointToGL(pv[0], preScale, gl);
@@ -1004,7 +1004,7 @@ public enum Draw {
 
         gl.glBegin(fill ? GL_TRIANGLE_FAN : GL_LINE_LOOP);
 
-        for (int i = 0; i < n; ++i) {
+        for (var i = 0; i < n; ++i) {
             double theta = angle + (i/((float)n)) * (float)(2*Math.PI);
             gl.glVertex2f(rad * (float)Math.cos(theta), rad * (float)Math.sin(theta) );
         }
@@ -1130,8 +1130,8 @@ public enum Draw {
     }
 
     public static void halfTriEdge2D(float fx, float fy, float tx, float ty, float base, GL2 gl) {
-        float len = (float) Math.sqrt(sqr(fx - tx) + sqr(fy - ty));
-        float theta = (float) (Math.atan2(ty - fy, tx - fx) * 180 / Math.PI) + 270f;
+        var len = (float) Math.sqrt(sqr(fx - tx) + sqr(fy - ty));
+        var theta = (float) (Math.atan2(ty - fy, tx - fx) * 180 / Math.PI) + 270f;
 
         //isosceles triangle
         gl.glPushMatrix();
@@ -1163,7 +1163,7 @@ public enum Draw {
 
         @Override
         public void processTriangle(v3[] triangle, int partId, int triangleIndex) {
-            ImmModeSink vbo = ImmModeSink.createFixed(10,
+            var vbo = ImmModeSink.createFixed(10,
                     3, GL.GL_FLOAT,
                     4, GL.GL_FLOAT,
                     0, GL.GL_FLOAT,

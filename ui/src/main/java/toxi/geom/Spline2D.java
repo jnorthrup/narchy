@@ -158,8 +158,8 @@ public class Spline2D {
         bi[1] = -tightness;
         coeffA[1].set((points[2].x - points[0].x - delta[0].x) * tightness,
                 (points[2].y - points[0].y - delta[0].y) * tightness);
-        int numP = getNumPoints();
-        for (int i = 2; i < numP - 1; i++) {
+        var numP = getNumPoints();
+        for (var i = 2; i < numP - 1; i++) {
             bi[i] = -1 / (invTightness + bi[i - 1]);
             coeffA[i].set(
                     -(points[i + 1].x - points[i - 1].x - coeffA[i - 1].x)
@@ -167,7 +167,7 @@ public class Spline2D {
                     -(points[i + 1].y - points[i - 1].y - coeffA[i - 1].y)
                             * bi[i]);
         }
-        for (int i = numP - 2; i > 0; i--) {
+        for (var i = numP - 2; i > 0; i--) {
             delta[i].set(coeffA[i].x + delta[i + 1].x * bi[i], coeffA[i].y
                     + delta[i + 1].y * bi[i]);
         }
@@ -261,19 +261,19 @@ public class Spline2D {
             bernstein = new BernsteinPolynomial(res);
         }
         findCPoints();
-        Vec2D deltaP = new Vec2D();
-        Vec2D deltaQ = new Vec2D();
+        var deltaP = new Vec2D();
+        var deltaQ = new Vec2D();
         res--;
-        LineStrip2D strip = new LineStrip2D();
+        var strip = new LineStrip2D();
         for (int i = 0, numP = getNumPoints(); i < numP - 1; i++) {
-            Vec2D p = points[i];
-            Vec2D q = points[i + 1];
+            var p = points[i];
+            var q = points[i + 1];
             deltaP.set(delta[i]).addSelf(p);
             deltaQ.set(q).subSelf(delta[i + 1]);
-            for (int k = 0; k < res; k++) {
-                float x = p.x * bernstein.b0[k] + deltaP.x * bernstein.b1[k]
+            for (var k = 0; k < res; k++) {
+                var x = p.x * bernstein.b0[k] + deltaP.x * bernstein.b1[k]
                         + deltaQ.x * bernstein.b2[k] + q.x * bernstein.b3[k];
-                float y = p.y * bernstein.b0[k] + deltaP.y * bernstein.b1[k]
+                var y = p.y * bernstein.b0[k] + deltaP.y * bernstein.b1[k]
                         + deltaQ.y * bernstein.b2[k] + q.y * bernstein.b3[k];
                 strip.add(new Vec2D(x, y));
             }
@@ -283,12 +283,12 @@ public class Spline2D {
     }
 
     public void updateCoefficients() {
-        int numP = getNumPoints();
+        var numP = getNumPoints();
         if (points == null || points.length != numP) {
             coeffA = new Vec2D[numP];
             delta = new Vec2D[numP];
             bi = new float[numP];
-            for (int i = 0; i < numP; i++) {
+            for (var i = 0; i < numP; i++) {
                 coeffA[i] = new Vec2D();
                 delta[i] = new Vec2D();
             }

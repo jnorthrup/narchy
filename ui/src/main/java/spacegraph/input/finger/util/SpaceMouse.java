@@ -36,9 +36,9 @@ public abstract class SpaceMouse extends MouseAdapter {
     }
 
     public @Nullable Collidable pickCollidable(float x, float y) {
-        ClosestRay c = pickRay(x, y);
+        var c = pickRay(x, y);
         if (c.hasHit()) {
-            Collidable co = c.collidable;
+            var co = c.collidable;
             return co;
         }
 
@@ -48,13 +48,13 @@ public abstract class SpaceMouse extends MouseAdapter {
 
     public ClosestRay pickRay(float x, float y) {
 
-        v3 in = space.camFwd.clone();
+        var in = space.camFwd.clone();
         in.normalize();
 
-        v3 up = space.camUp.clone();
+        var up = space.camUp.clone();
         up.normalize();
 
-        v3 right = new v3();
+        var right = new v3();
         right.cross(space.camFwd, up);
         right.normalize();
 
@@ -83,7 +83,7 @@ public abstract class SpaceMouse extends MouseAdapter {
 
 //        System.out.println(origin + " " + target);
 
-        ClosestRay r = new ClosestRay(origin, target);
+        var r = new ClosestRay(origin, target);
         space.dyn.rayTest(origin, target, r, simplexSolver);
 
         pickedBody = null;
@@ -91,7 +91,7 @@ public abstract class SpaceMouse extends MouseAdapter {
 
         if (r.hasHit()) {
 //            System.out.println("ray: " + x + "," + y  + "\t => " + target + " " + r.hitPointWorld);
-            Body3D body = Body3D.ifDynamic(r.collidable);
+            var body = Body3D.ifDynamic(r.collidable);
             if (body != null && (!(body.isStaticObject() || body.isKinematicObject()))) {
                 pickedBody = body;
                 hitPoint = r.hitPointWorld;

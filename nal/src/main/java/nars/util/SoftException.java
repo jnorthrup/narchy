@@ -33,14 +33,14 @@ public class SoftException extends RuntimeException {
 
     @Override
     public String toString() {
-        String m = getMessage();
+        var m = getMessage();
         return (m!=null ? m + '\n' : "") + (stack!=null ? Joiner.on("\n").join(stack) : "");
     }
 
     @Override
     public void printStackTrace() {
         if (stack!=null) {
-            for (StackWalker.StackFrame stackFrame : stack) {
+            for (var stackFrame : stack) {
                 System.err.println(stackFrame);
             }
         }

@@ -23,7 +23,7 @@ public class RuleGenBin {
 		iClo = 2; 
 		isHist = false;
 		iNgh = MJRules.NGHTYP_MOOR; 
-		for (int i = 0; i <= 255; i++) {
+		for (var i = 0; i <= 255; i++) {
 			rulesS[i] = rulesB[i] = false;
 		}
 	}
@@ -33,18 +33,18 @@ public class RuleGenBin {
 	private static String ExpandIt(String sStr) {
 
         sStr = sStr.trim();
-        int iNum = 0;
-        String sRetString = "";
-        for (int i = 0; i < sStr.length(); i++) {
-            char cChar = sStr.charAt(i);
+		var iNum = 0;
+		var sRetString = "";
+        for (var i = 0; i < sStr.length(); i++) {
+			var cChar = sStr.charAt(i);
             if (Character.isDigit(cChar)) {
-                int iCharVal = cChar - '0';
+				var iCharVal = cChar - '0';
                 iNum = iNum * 10 + iCharVal;
 			} else {
 				if (iNum == 0)
 					iNum = 1;
 				if ((sStr.charAt(i) == 'a') || (sStr.charAt(i) == 'b')) {
-					for (int j = 0; j < iNum; j++) {
+					for (var j = 0; j < iNum; j++) {
                         sRetString += ((sStr.charAt(i) == 'a') ? "0" : "1");
 					}
 					iNum = 0;
@@ -62,9 +62,9 @@ public class RuleGenBin {
 
         ResetToDefaults();
 
-        StringTokenizer st = new StringTokenizer(sStr, ",", true);
+		var st = new StringTokenizer(sStr, ",", true);
 		while (st.hasMoreTokens()) {
-            String sTok = st.nextToken();
+			var sTok = st.nextToken();
 
             int i;
             if (sTok.length() > 0 && sTok.charAt(0) == 'S')
@@ -111,9 +111,9 @@ public class RuleGenBin {
 	
 	private static String OneToken(int iVal, int iCnt) {
 
-        String sRetStr = "";
+		var sRetStr = "";
 		if (iCnt > 0) {
-            String sChr = iVal == 0 ? "a" : "b";
+			var sChr = iVal == 0 ? "a" : "b";
 
             switch (iCnt) {
                 case 1:
@@ -132,11 +132,11 @@ public class RuleGenBin {
 
 	
 	private static String CompactIt(String sStr) {
-        String sResult = "";
+		var sResult = "";
 
-        int iLast = -1;
-        int iCnt = 0;
-		for (int i = 0; i < sStr.length(); i++) {
+		var iLast = -1;
+		var iCnt = 0;
+		for (var i = 0; i < sStr.length(); i++) {
             int iThis = Integer.valueOf(sStr.substring(i, i + 1));
             if ((iThis != 0) && (iThis != 1))
 				iThis = 0;
@@ -159,8 +159,8 @@ public class RuleGenBin {
         Validate();
 
 
-        int ih = isHist ? iClo : 0;
-        String sBff = 'C' + String.valueOf(ih);
+		var ih = isHist ? iClo : 0;
+		var sBff = 'C' + String.valueOf(ih);
 
 
         int maxIdx;
@@ -175,7 +175,7 @@ public class RuleGenBin {
 		}
 
 
-        String sTmp = "";
+		var sTmp = "";
         int i;
         for (i = 0; i < maxIdx; i++) {
             sTmp += (rulesS[i] ? '1' : '0');
@@ -209,21 +209,21 @@ public class RuleGenBin {
 	
 	public int OnePass(int sizX, int sizY, boolean isWrap, int ColoringMethod,
 			short[][] crrState, short[][] tmpState, MJBoard mjb) {
-		int modCnt = 0;
-        int[] lurd = new int[4];
+		var modCnt = 0;
+		var lurd = new int[4];
 
-		for (int i = 0; i < sizX; ++i) {
+		for (var i = 0; i < sizX; ++i) {
 			
 			lurd[0] = (i > 0) ? i - 1 : (isWrap) ? sizX - 1 : sizX;
 			lurd[2] = (i < sizX - 1) ? i + 1 : (isWrap) ? 0 : sizX;
-			for (int j = 0; j < sizY; ++j) {
+			for (var j = 0; j < sizY; ++j) {
 				
 				lurd[1] = (j > 0) ? j - 1 : (isWrap) ? sizY - 1 : sizY;
 				lurd[3] = (j < sizY - 1) ? j + 1 : (isWrap) ? 0 : sizY;
-                short bOldVal = crrState[i][j];
-                short bNewVal = bOldVal;
+				var bOldVal = crrState[i][j];
+				var bNewVal = bOldVal;
 
-                int iCnt = 0;
+				var iCnt = 0;
                 if (isHist)
 				{
 					if (bOldVal <= 1) 

@@ -26,11 +26,11 @@ public class SamplePlayer implements SoundProducer {
     }
 
     private boolean readDirect(float[] out) {
-        int remain = sample.end - pos;
+        var remain = sample.end - pos;
         if (remain <= 0)
             return false;
 
-        int toCopy = Math.min(out.length, remain);
+        var toCopy = Math.min(out.length, remain);
         arraycopy(sample.buf, pos, out, 0, toCopy);
         pos += toCopy;
 
@@ -38,17 +38,17 @@ public class SamplePlayer implements SoundProducer {
     }
 
     private boolean readResampled(float[] out, int readRate) {
-        float step = (sample.rate) / readRate;
+        var step = (sample.rate) / readRate;
         float pos = this.pos;
 
-        float[] in = sample.buf;
-        float end = sample.end - 0.5f;
+        var in = sample.buf;
+        var end = sample.end - 0.5f;
 
-        for (int i = 0; i < out.length; i++) {
+        for (var i = 0; i < out.length; i++) {
             if (pos >= end)
                 return false;
 
-            float next = in[Math.round(pos)];
+            var next = in[Math.round(pos)];
             out[i] = next;
             pos = Math.min(end, pos + step);
         }
@@ -58,7 +58,7 @@ public class SamplePlayer implements SoundProducer {
 
     @Override
     public void skip(int samplesToSkip, int readRate) {
-        float step = sample.rate / readRate;
+        var step = sample.rate / readRate;
         pos += step * samplesToSkip;
     }
 

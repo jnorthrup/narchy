@@ -100,7 +100,7 @@ public class Dynamics3D<X> extends Collisions<X> {
 
     public static Body3D newBody(float mass, CollisionShape shape, Transform t, int group, int mask) {
 
-        Body3D body = new Body3D(mass, t, shape);
+        var body = new Body3D(mass, t, shape);
         body.group = (short) group;
         body.mask = (short) mask;
         if (mass != 0f) { 
@@ -118,8 +118,8 @@ public class Dynamics3D<X> extends Collisions<X> {
     private void synchronizeMotionStates(boolean clear) {
 
 
-        for (Collidable ccc : collidable) {
-            Body3D body = ifDynamic(ccc);
+        for (var ccc : collidable) {
+            var body = ifDynamic(ccc);
             if (body == null) {
                 continue;
             }
@@ -139,7 +139,7 @@ public class Dynamics3D<X> extends Collisions<X> {
 
 
         try {
-            int numSimulationSubSteps = 0;
+            var numSimulationSubSteps = 0;
 
             if (maxSubSteps != 0) {
                 
@@ -166,10 +166,10 @@ public class Dynamics3D<X> extends Collisions<X> {
 
             if (numSimulationSubSteps != 0) {
 
-                
-                int clampedSimulationSteps = Math.min(numSimulationSubSteps, maxSubSteps);
 
-                for (int i = 0; i < clampedSimulationSteps; i++) {
+                var clampedSimulationSteps = Math.min(numSimulationSubSteps, maxSubSteps);
+
+                for (var i = 0; i < clampedSimulationSteps; i++) {
                     internalSingleStepSimulation(fixedTimeStep);
                     synchronizeMotionStates(i == clampedSimulationSteps - 1);
                 }
@@ -194,18 +194,18 @@ public class Dynamics3D<X> extends Collisions<X> {
 
     private void updateObjects(float dt) {
 
-        List<Collidable> nextCollidables = coll.write();
+        var nextCollidables = coll.write();
         nextCollidables.clear();
 
         short[] i = {0};
-        for (Spatial<X> s : spatials) {
+        for (var s : spatials) {
             s.order = i[0]++;
 
             s.update(this);
 
             s.forEachBody(c -> {
 
-                Body3D d = ifDynamic(c);
+                var d = ifDynamic(c);
                 if (d != null) {
 
                     on(d);
@@ -227,9 +227,9 @@ public class Dynamics3D<X> extends Collisions<X> {
                 }
             });
 
-            List<TypedConstraint> cc = s.constraints();
+            var cc = s.constraints();
             if (cc != null) {
-                for (TypedConstraint typedConstraint : cc) {
+                for (var typedConstraint : cc) {
                     addConstraint(typedConstraint);
                 }
             }
@@ -360,11 +360,11 @@ public class Dynamics3D<X> extends Collisions<X> {
 
     private void updateActivationState(float timeStep) {
 
-        
-		float deactivationTime = isDeactivationDisabled() ? 0 : getDeactivationTime();
 
-        for (Collidable colObj : collidable) {
-            Body3D body = ifDynamic(colObj);
+        var deactivationTime = isDeactivationDisabled() ? 0 : getDeactivationTime();
+
+        for (var colObj : collidable) {
+            var body = ifDynamic(colObj);
             if (body != null) {
                 body.updateDeactivation(timeStep);
 
@@ -421,7 +421,7 @@ public class Dynamics3D<X> extends Collisions<X> {
             
             predictUnconstraintMotion(timeStep);
 
-            DispatcherInfo dispatchInfo = getDispatchInfo();
+        var dispatchInfo = getDispatchInfo();
             dispatchInfo.timeStep = timeStep;
             dispatchInfo.stepCount = 0;
 
@@ -443,7 +443,7 @@ public class Dynamics3D<X> extends Collisions<X> {
     }
 
     private void solveBroadConstraints(float timeStep) {
-        for (BroadConstraint b : broadConstraints) {
+        for (var b : broadConstraints) {
             b.solve(broadphase, collidable, timeStep);
         }
     }
@@ -458,8 +458,8 @@ public class Dynamics3D<X> extends Collisions<X> {
 
 
     private static int getConstraintIslandId(TypedConstraint lhs) {
-        int rcolObj0 = lhs.getRigidBodyA().tag();
-        int rcolObj1 = lhs.getRigidBodyB().tag();
+        var rcolObj0 = lhs.getRigidBodyA().tag();
+        var rcolObj1 = lhs.getRigidBodyB().tag();
         return rcolObj0 >= 0 ? rcolObj0 : rcolObj1;
     }
 
@@ -482,7 +482,7 @@ public class Dynamics3D<X> extends Collisions<X> {
             MiscUtil.quickSort(sortedConstraints, sortConstraintOnIslandPredicate);
         }
 
-        int num = sortedConstraints.size();
+        var num = sortedConstraints.size();
         solverCallback.init(solverInfo,
                 constrainer,
                 sortedConstraints,
@@ -500,11 +500,11 @@ public class Dynamics3D<X> extends Collisions<X> {
         islands.updateActivationState(this);
 
         forEachConstraint(constraint -> {
-            Body3D colObj0 = constraint.getRigidBodyA();
+            var colObj0 = constraint.getRigidBodyA();
             if (colObj0 == null || !colObj0.isActive() || colObj0.isStaticOrKinematicObject())
                 return;
 
-            Body3D colObj1 = constraint.getRigidBodyB();
+            var colObj1 = constraint.getRigidBodyB();
             if (colObj1 == null || !colObj1.isActive() || colObj1.isStaticOrKinematicObject())
                 return;
 
@@ -517,43 +517,43 @@ public class Dynamics3D<X> extends Collisions<X> {
     }
 
     private void forEachConstraint(Consumer<TypedConstraint> e) {
-        for (TypedConstraint constraint : constraints) {
+        for (var constraint : constraints) {
             e.accept(constraint);
         }
     }
 
     private void integrateTransforms(float timeStep) {
 
-        v3 tmp = new v3();
-        Transform predictedTrans = new Transform();
-        SphereShape tmpSphere = new SphereShape(1);
+        var tmp = new v3();
+        var predictedTrans = new Transform();
+        var tmpSphere = new SphereShape(1);
 
-        for (Collidable colObj : collidable) {
-            Body3D body = ifDynamic(colObj);
+        for (var colObj : collidable) {
+            var body = ifDynamic(colObj);
             if (body != null) {
                 body.setHitFraction(1f);
 
                 if (body.isActive() && (!body.isStaticOrKinematicObject())) {
                     body.predictIntegratedTransform(timeStep, predictedTrans);
 
-                    Transform BW = body.transform;
+                    var BW = body.transform;
 
                     tmp.sub(predictedTrans, BW);
-                    float squareMotion = tmp.lengthSquared();
+                    var squareMotion = tmp.lengthSquared();
 
-                    float motionThresh = body.getCcdSquareMotionThreshold();
+                    var motionThresh = body.getCcdSquareMotionThreshold();
 
                     if (motionThresh != 0f && motionThresh < squareMotion) {
 
                         if (body.shape().isConvex()) {
                             BulletStats.gNumClampedCcdMotions++;
 
-                            ClosestNotMeConvexResultCallback sweepResults = new ClosestNotMeConvexResultCallback(body, BW, predictedTrans, broadphase.getOverlappingPairCache(), intersecter);
+                            var sweepResults = new ClosestNotMeConvexResultCallback(body, BW, predictedTrans, broadphase.getOverlappingPairCache(), intersecter);
 
 
                             tmpSphere.setRadius(body.getCcdSweptSphereRadius());
 
-                            Broadphasing bph = body.broadphase;
+                            var bph = body.broadphase;
                             sweepResults.collisionFilterGroup = bph.collisionFilterGroup;
                             sweepResults.collisionFilterMask = bph.collisionFilterMask;
 
@@ -591,20 +591,20 @@ public class Dynamics3D<X> extends Collisions<X> {
     }
 
     protected static void debugDrawSphere(IDebugDraw debugDrawer, float radius, Transform transform, v3 color) {
-        v3 start = new v3(transform);
+        var start = new v3(transform);
 
-        v3 xoffs = new v3();
+        var xoffs = new v3();
         xoffs.set(radius, 0, 0);
         transform.basis.transform(xoffs);
-        v3 yoffs = new v3();
+        var yoffs = new v3();
         yoffs.set(0, radius, 0);
         transform.basis.transform(yoffs);
-        v3 zoffs = new v3();
+        var zoffs = new v3();
         zoffs.set(0, 0, radius);
         transform.basis.transform(zoffs);
 
-        v3 tmp1 = new v3();
-        v3 tmp2 = new v3();
+        var tmp1 = new v3();
+        var tmp2 = new v3();
 
         
         tmp1.sub(start, xoffs);
@@ -650,15 +650,15 @@ public class Dynamics3D<X> extends Collisions<X> {
     }
 
     public static void debugDrawObject(IDebugDraw debugDrawer, Transform worldTransform, CollisionShape shape, v3 color) {
-        v3 tmp = new v3();
-        v3 tmp2 = new v3();
+        var tmp = new v3();
+        var tmp2 = new v3();
 
-        
-        v3 start = new v3(worldTransform);
+
+        var start = new v3(worldTransform);
 
         tmp.set(1f, 0f, 0f);
 
-        Matrix3f transformBasis = worldTransform.basis;
+        var transformBasis = worldTransform.basis;
 
         transformBasis.transform(tmp);
         tmp.add(start);
@@ -868,14 +868,14 @@ public class Dynamics3D<X> extends Collisions<X> {
         @Override
         public void processIsland(Collection<Collidable> bodies, FasterList<PersistentManifold> manifolds, int manifolds_offset, int numManifolds, int islandId) {
 
-            FasterList<TypedConstraint> sc = this.sortedConstraints;
+            var sc = this.sortedConstraints;
             if (islandId < 0) {
                 
                 solver.solveGroup(bodies, bodies.size(), manifolds, manifolds_offset, numManifolds, sc, 0, numConstraints, solverInfo/*,m_stackAlloc*/, intersecter);
             } else {
-                
-                
-                int startConstraint_idx = -1;
+
+
+                var startConstraint_idx = -1;
                 int i;
 
                 
@@ -889,7 +889,7 @@ public class Dynamics3D<X> extends Collisions<X> {
                     }
                 }
 
-                int numCurConstraints = 0;
+                var numCurConstraints = 0;
                 for (; i < numConstraints; i++) {
                     
                     if (getConstraintIslandId(sc.get(i)) == islandId) {
@@ -928,7 +928,7 @@ public class Dynamics3D<X> extends Collisions<X> {
             linVelA.sub(convexToWorld, convexFromWorld);
             linVelB.set(0f, 0f, 0f);
 
-            v3 relativeVelocity = new v3();
+            var relativeVelocity = new v3();
             relativeVelocity.sub(linVelA, linVelB);
             
             if (convexResult.hitNormalLocal.dot(relativeVelocity) >= -allowedPenetration) {
@@ -950,16 +950,16 @@ public class Dynamics3D<X> extends Collisions<X> {
                 return false;
             }
 
-            Collidable otherObj = proxy0.data;
+            var otherObj = proxy0.data;
 
             
             if (intersecter.needsResponse(me, otherObj)) {
-                
-                BroadphasePair collisionPair = pairCache.findPair(me.broadphase, proxy0);
+
+                var collisionPair = pairCache.findPair(me.broadphase, proxy0);
                 if (collisionPair != null) {
                     if (collisionPair.algorithm != null) {
-                        
-                        OArrayList<PersistentManifold> manifoldArray = new OArrayList<>();
+
+                        var manifoldArray = new OArrayList<PersistentManifold>();
                         collisionPair.algorithm.getAllContactManifolds(manifoldArray);
                         return manifoldArray.stream().noneMatch(aManifoldArray -> aManifoldArray.numContacts() > 0);
                     }

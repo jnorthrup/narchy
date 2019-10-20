@@ -32,7 +32,7 @@ public abstract class AtomicRandom extends Random {
     public final long nextLong() {
         enter();
 
-        long l = _nextLong();
+        var l = _nextLong();
 
         exit();
 

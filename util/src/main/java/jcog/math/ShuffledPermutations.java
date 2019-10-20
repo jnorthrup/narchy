@@ -23,12 +23,12 @@ public class ShuffledPermutations extends Permutations {
 
         super.restart(size);
 
-        
-        byte[] shuffle = this.shuffle;
+
+        var shuffle = this.shuffle;
         if (shuffle == null || shuffle.length < size)
             this.shuffle = shuffle = new byte[size];
 
-        for (int i = 0; i < size; i++)
+        for (var i = 0; i < size; i++)
             shuffle[i] = (byte)i;
         ArrayUtil.shuffle(shuffle, size, random);
 
@@ -43,8 +43,8 @@ public class ShuffledPermutations extends Permutations {
 
     int[] nextPermute(int[] target) {
         next();
-        int l = size;
-        for (int i = 0; i < l; i++)
+        var l = size;
+        for (var i = 0; i < l; i++)
             target[i] = permute(i);
         return target;
     }
@@ -54,7 +54,7 @@ public class ShuffledPermutations extends Permutations {
      *  TODO make re-shuffling optional on each new iteration, currently this will shuffle once and it will get repeated if re-iterated
      * */
     public static <X> Iterable<X> shuffle(Iterable<X> i, Random rng) {
-        FasterList<X> f = new FasterList<>(i);
+        var f = new FasterList<X>(i);
         if (f.size() <= 1)
             return i; //unchanged
         else {

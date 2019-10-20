@@ -34,16 +34,16 @@ import java.nio.ByteBuffer;
 public class client_state_t {
 
 	public client_state_t() {
-		for (int n = 0; n < Defines.CMD_BACKUP; n++)
+		for (var n = 0; n < Defines.CMD_BACKUP; n++)
 			cmds[n] = new usercmd_t();
-		for (int i = 0; i < frames.length; i++) {
+		for (var i = 0; i < frames.length; i++) {
 			frames[i] = new frame_t();
 		}
 
-		for (int n = 0; n < Defines.MAX_CONFIGSTRINGS; n++)
+		for (var n = 0; n < Defines.MAX_CONFIGSTRINGS; n++)
 			configstrings[n] = "";
 			
-		for (int n=0; n < Defines.MAX_CLIENTS; n++)
+		for (var n = 0; n < Defines.MAX_CLIENTS; n++)
 			clientinfo[n] = new clientinfo_t();
 	}
 	

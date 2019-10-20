@@ -59,9 +59,9 @@ public class NARHear extends Loop {
 
     public static Loop hearText(NAR nar, String msg, String src, int wordDelayMS, float pri) {
         assert (wordDelayMS > 0);
-        List<Term> tokens = tokenize(msg);
+        var tokens = tokenize(msg);
         if (!tokens.isEmpty()) {
-            NARHear hear = new NARHear(nar, tokens, src, wordDelayMS);
+            var hear = new NARHear(nar, tokens, src, wordDelayMS);
             hear.priorityFactor = pri;
             return hear;
         } else {
@@ -102,7 +102,7 @@ public class NARHear extends Loop {
         }
             
             Term prev = null;
-            for (Term x : msg) {
+            for (var x : msg) {
                 hear(prev, x);
                 prev = x;
             }
@@ -116,7 +116,7 @@ public class NARHear extends Loop {
 
 
     public static @NotNull List<Term> tokenize(String msg) {
-        List<Term> list = Twokenize.tokenize(msg).stream().map(Twenglish::spanToTerm).collect(Collectors.toList());
+        var list = Twokenize.tokenize(msg).stream().map(Twenglish::spanToTerm).collect(Collectors.toList());
         return list;
     }
 
@@ -137,12 +137,12 @@ public class NARHear extends Loop {
 
     private void hear(Term prev, Term next) {
 
-        Term term =
+        var term =
                 context != null ?
                         $.func("hear", next, context) :
                         $.func("hear", next);
 
-        long now = nar.time();
+        var now = nar.time();
 		//            new TruthletTask(
 		//                target,
 		//                BELIEF,
@@ -160,7 +160,7 @@ public class NARHear extends Loop {
     public static void readURL(NAR nar) {
         nar.setOp(Atomic.atom("readURL"), (t, n) -> {
 
-            Term[] args = Functor.args(t.term()).arrayClone();
+            var args = Functor.args(t.term()).arrayClone();
             try {
 
 
@@ -176,11 +176,10 @@ public class NARHear extends Loop {
     public static @NotNull Task readURL(NAR n, String url) throws IOException {
 
 
-
-        String html = com.google.common.io.Resources.toString(new URL(url), Charset.defaultCharset());
+        var html = com.google.common.io.Resources.toString(new URL(url), Charset.defaultCharset());
 
         html = StringEscapeUtils.unescapeHtml4(html);
-        String strippedText = html.replaceAll("(?s)<[^>]*>(\\s*<[^>]*>)*", " ").toLowerCase();
+        var strippedText = html.replaceAll("(?s)<[^>]*>(\\s*<[^>]*>)*", " ").toLowerCase();
 
 
         NARHear.hear(n, strippedText, url, 250, 0.1f);

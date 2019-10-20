@@ -41,10 +41,10 @@ public class DbvtLeafCollider extends Dbvt.ICollide {
 
 	@Override
 	public void process(Dbvt.Node na) {
-		Dbvt.Node nb = ppx.leaf;
+		var nb = ppx.leaf;
 		if (nb != na) {
-			DbvtProxy pa = na.data;
-			DbvtProxy pb = nb.data;
+			var pa = na.data;
+			var pb = nb.data;
 			
 			
 			if (DbvtAabbMm.intersect(pa.aabb, pb.aabb))
@@ -52,7 +52,7 @@ public class DbvtLeafCollider extends Dbvt.ICollide {
 			{
 				
 				if (pa.hashCode() > pb.hashCode()) {
-					DbvtProxy tmp = pa;
+					var tmp = pa;
 					pa = pb;
 					pb = tmp;
 				}

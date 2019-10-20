@@ -12,7 +12,7 @@ public class World {
 
 	public World() {
 		obstacles = new Obstacle[OBSTACLES_NO];
-		for (int i = 0; i < obstacles.length; i++) {
+		for (var i = 0; i < obstacles.length; i++) {
 			obstacles[i] = new Obstacle();
 		}
 		player = new Player(this);
@@ -40,7 +40,7 @@ public class World {
 			return true;
 		}
             
-		for (int i = 0; i < obstacles.length; i++) {
+		for (var i = 0; i < obstacles.length; i++) {
 			if(obstacles[i].circleCollides(player.x, player.y, player.r)) {
 				obstacles[i].c = Color.gray;
 				return true;
@@ -53,7 +53,7 @@ public class World {
 		if(!inside(x, SIZE) || !inside(y, SIZE)) {
 			return true;
 		}
-        int bound = obstacles.length;
+		var bound = obstacles.length;
 		return IntStream.range(0, bound).anyMatch(i -> obstacles[i].pointCollides(x, y));
 	}
 

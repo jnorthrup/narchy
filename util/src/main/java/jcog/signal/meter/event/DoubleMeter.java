@@ -49,7 +49,7 @@ public class DoubleMeter extends SourceFunctionMeter<Double> implements DoubleCo
     
     /** returns the previous value, or NaN if none were set  */
     public double set(double newValue) {
-        double oldValue = val;
+        var oldValue = val;
         val = (newValue);
         return oldValue;
     }
@@ -60,7 +60,7 @@ public class DoubleMeter extends SourceFunctionMeter<Double> implements DoubleCo
     
     @Override
     public Double getValue(Object key, int index) {
-        double c = val;
+        var c = val;
         if (autoReset) {
             reset();
         }

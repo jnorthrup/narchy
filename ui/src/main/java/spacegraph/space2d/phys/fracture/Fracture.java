@@ -61,7 +61,7 @@ public final class Fracture {
      * @param dyn
      */
     public void smash(Smasher smasher, float dt, Dynamics2D dyn) {
-        Shape s = f1.shape;
+        var s = f1.shape;
         if (s == null)
             return;
 
@@ -70,34 +70,34 @@ public final class Fracture {
             return;
         }
 
-        Dynamics2D w = b1.W;
+        var w = b1.W;
         Polygon p = f1.polygon;
 
         if (p == null) {
             switch (s.m_type) {
                 case POLYGON:
-                    PolygonShape ps = (PolygonShape) s;
-                    v2[] vertices = ps.vertex;
-                    int n = ps.vertices;
+                    var ps = (PolygonShape) s;
+                    var vertices = ps.vertex;
+                    var n = ps.vertices;
                     p = new Polygon(n);
-                    for (int i = 0; i < n; ++i) {
+                    for (var i = 0; i < n; ++i) {
                         p.add(vertices[n - i - 1]);
                     }
                     break;
                 case CIRCLE:
-                    CircleShape cs = (CircleShape) s;
+                    var cs = (CircleShape) s;
                     p = new Polygon(CIRCLEVERTICES);
-                    float radius = cs.skinRadius;
+                    var radius = cs.skinRadius;
 
-                    double u = Math.PI * 2 / CIRCLEVERTICES;
-                    radius = (float) Math.sqrt(u / Math.sin(u)) * radius; 
+                    var u = Math.PI * 2 / CIRCLEVERTICES;
+                    radius = (float) Math.sqrt(u / Math.sin(u)) * radius;
 
-                    v2 center = cs.center;
-                    for (int i = 0; i < CIRCLEVERTICES; ++i) {
-                        double j = u * i; 
-                        float sin = (float) Math.sin(j);
-                        float cos = (float) Math.cos(j);
-                        v2 v = new v2(sin, cos).scaled(radius).added(center);
+                    var center = cs.center;
+                    for (var i = 0; i < CIRCLEVERTICES; ++i) {
+                        var j = u * i;
+                        var sin = (float) Math.sin(j);
+                        var cos = (float) Math.cos(j);
+                        var v = new v2(sin, cos).scaled(radius).added(center);
                         p.add(v);
                     }
                     break;
@@ -106,11 +106,11 @@ public final class Fracture {
             }
         }
 
-        float mConst = f1.material.m_rigidity / normalImpulse; 
+        var mConst = f1.material.m_rigidity / normalImpulse;
 
-        boolean fixA = f1 == contact.aFixture; 
-        float oldAngularVelocity = fixA ? contact.m_angularVelocity_bodyA : contact.m_angularVelocity_bodyB;
-        v2 oldLinearVelocity = fixA ? contact.m_linearVelocity_bodyA : contact.m_linearVelocity_bodyB;
+        var fixA = f1 == contact.aFixture;
+        var oldAngularVelocity = fixA ? contact.m_angularVelocity_bodyA : contact.m_angularVelocity_bodyB;
+        var oldLinearVelocity = fixA ? contact.m_linearVelocity_bodyA : contact.m_linearVelocity_bodyB;
 
         //if (b1.type==DYNAMIC) {
             b1.setAngularVelocity((b1.velAngular - oldAngularVelocity) * mConst + oldAngularVelocity);
@@ -129,27 +129,27 @@ public final class Fracture {
             b2.m_fractureTransformUpdate = true;
         }
 
-        v2 localPoint = Transform.mulTrans(b1, point);
-        v2 b1Vec = b1.getLinearVelocityFromWorldPoint(point);
-        v2 b2Vec = b2.getLinearVelocityFromWorldPoint(point);
-        v2 localVelocity = b2Vec.subbed(b1Vec);
+        var localPoint = Transform.mulTrans(b1, point);
+        var b1Vec = b1.getLinearVelocityFromWorldPoint(point);
+        var b2Vec = b2.getLinearVelocityFromWorldPoint(point);
+        var localVelocity = b2Vec.subbed(b1Vec);
 
         localVelocity.scaled(dt);
 
-        Polygon[] fragment = m.split(smasher, p, localPoint, localVelocity, normalImpulse); 
+        var fragment = m.split(smasher, p, localPoint, localVelocity, normalImpulse);
         if (fragment.length <= 1) { 
             return;
         }
 
-        
-        BodyDef bodyDef = new BodyDef();
+
+        var bodyDef = new BodyDef();
         bodyDef.position.set(b1.pos); 
         bodyDef.angle = b1.angle(); 
         bodyDef.fixedRotation = b1.isFixedRotation();
         bodyDef.angularDamping = b1.m_angularDamping;
         bodyDef.allowSleep = b1.isSleepingAllowed();
 
-        FixtureDef fd = new FixtureDef();
+        var fd = new FixtureDef();
         fd.friction = f1.friction; 
         fd.restitution = f1.restitution; 
         fd.isSensor = f1.isSensor;
@@ -163,7 +163,7 @@ public final class Fracture {
             fixtures.add(f1);
         }
 
-        for (Fixture f : fixtures) {
+        for (var f : fixtures) {
             b1.removeFixture(f);
         }
 
@@ -171,17 +171,17 @@ public final class Fracture {
             w.removeBody(b1);
         }
 
-        
-        MyList<Body2D> newbodies = new MyList<>();
-        for (Polygon pg : fragment) { 
+
+        var newbodies = new MyList<Body2D>();
+        for (var pg : fragment) {
             if (pg.isCorrect()) {
                 if (pg instanceof Fragment) {
-                    Polygon[] convex = pg.convexDecomposition();
+                    var convex = pg.convexDecomposition();
                     bodyDef.type = DYNAMIC;
-                    for (Polygon pgx : convex) {
-                        Body2D f_body = w.addBody(bodyDef);
+                    for (var pgx : convex) {
+                        var f_body = w.addBody(bodyDef);
                         pgx.flip();
-                        PolygonShape ps = new PolygonShape();
+                        var ps = new PolygonShape();
                         ps.set(pgx.vertices(), pgx.size());
                         fd.shape = ps;
                         fd.polygon = null;
@@ -198,8 +198,8 @@ public final class Fracture {
                     fd.material =
                             f1.material;
                     bodyDef.type = b1.getType();
-                    Body2D f_body = w.addBody(bodyDef);
-                    PolygonFixture pf = new PolygonFixture(pg);
+                    var f_body = w.addBody(bodyDef);
+                    var pf = new PolygonFixture(pg);
 
                     f_body.addFixture(pf, fd);
                     f_body.setLinearVelocity(b1.getLinearVelocityFromLocalPoint(f_body.getLocalCenter()));
@@ -209,8 +209,8 @@ public final class Fracture {
             }
         }
 
-        
-        FractureListener fl = w.getContactManager().m_fractureListener;
+
+        var fl = w.getContactManager().m_fractureListener;
         if (fl != null) {
             fl.action(m, normalImpulse, newbodies);
         }
@@ -226,8 +226,8 @@ public final class Fracture {
 
 
     private static boolean equals(Fixture f1, Fixture f2) {
-        PolygonFixture p1 = f1.polygon;
-        PolygonFixture p2 = f2.polygon;
+        var p1 = f1.polygon;
+        var p2 = f2.polygon;
         if (p1 != null && p2 != null) {
             return p1 == p2;
         } else {
@@ -239,10 +239,10 @@ public final class Fracture {
     public boolean equals(Object obj) {
         if (this == obj) return true;
         if (obj instanceof Fracture) {
-            Fracture f = (Fracture) obj;
+            var f = (Fracture) obj;
             return equals(f.f1, f1);
         } else if (obj instanceof Fixture) {
-            Fixture f = (Fixture) obj;
+            var f = (Fixture) obj;
             return equals(f, f1);
         }
         return false;

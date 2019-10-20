@@ -173,8 +173,7 @@ public class SimpleSpatial<X> extends AbstractSpatial<X> {
     public void rotate(Quaternion target, float speed, Quaternion tmp) {
 
 
-
-        Quaternion current = transform.getRotation(tmp);
+        var current = transform.getRotation(tmp);
         current.setSlerp(current, target, speed);
         transform.setRotation(current);
 
@@ -182,7 +181,7 @@ public class SimpleSpatial<X> extends AbstractSpatial<X> {
     }
 
     public SimpleSpatial rotate(float tx, float ty, float tz, float angle, float speed) {
-        Quaternion q = transform.getRotation(new Quaternion());
+        var q = transform.getRotation(new Quaternion());
         q.rotateByAngleNormalAxis(angle, tx, ty, tz);
         rotate(q, speed);
         return this;
@@ -255,7 +254,7 @@ public class SimpleSpatial<X> extends AbstractSpatial<X> {
     }
 
     public Body3D newBody(boolean collidesWithOthersLikeThis) {
-        Body3D b = Dynamics3D.newBody(
+        var b = Dynamics3D.newBody(
                 mass(), 
                 shape, transform,
                 +1, 
@@ -327,7 +326,7 @@ public class SimpleSpatial<X> extends AbstractSpatial<X> {
 
 
     protected Body3D create(Dynamics3D world) {
-        Body3D b = newBody(collidable());
+        var b = newBody(collidable());
         b.setData(this);
         return b;
     }
@@ -353,7 +352,7 @@ public class SimpleSpatial<X> extends AbstractSpatial<X> {
 
     @Override
     public void forEachBody(Consumer<Collidable> c) {
-        Body3D b = this.body;
+        var b = this.body;
         if (b !=null)
             c.accept(b);
     }

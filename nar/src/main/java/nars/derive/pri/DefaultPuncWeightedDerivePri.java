@@ -37,13 +37,13 @@ public class DefaultPuncWeightedDerivePri extends DefaultDerivePri {
     /** repurposes nar's default punctuation priorities (for input) as the derivation punctuation weighting */
     private void cache(NAR nar) {
 
-        float beliefPri = nar.beliefPriDefault.pri();
-        float goalPri = nar.goalPriDefault.pri();
-        float questionPri = nar.questionPriDefault.pri();
-        float questPri = nar.questPriDefault.pri();
+        var beliefPri = nar.beliefPriDefault.pri();
+        var goalPri = nar.goalPriDefault.pri();
+        var questionPri = nar.questionPriDefault.pri();
+        var questPri = nar.questPriDefault.pri();
 
         //normalize to 1.0, for postAmp usage
-        float sum = Util.sum(beliefPri, goalPri, questionPri, questPri);
+        var sum = Util.sum(beliefPri, goalPri, questionPri, questPri);
         if (sum < ScalarValue.EPSILON) {
             //flat
             this.beliefPri = this.goalPri = this.questionPri = this.questPri = 1f;

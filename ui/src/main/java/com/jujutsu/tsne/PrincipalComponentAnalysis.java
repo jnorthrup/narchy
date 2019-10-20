@@ -102,7 +102,7 @@ public class PrincipalComponentAnalysis {
         if( sampleIndex >= A.getNumRows() )
             throw new IllegalArgumentException("Too many samples");
 
-        for( int i = 0; i < sampleData.length; i++ ) {
+        for(var i = 0; i < sampleData.length; i++ ) {
             A.set(sampleIndex,i,sampleData[i]);
         }
         sampleIndex++;
@@ -117,7 +117,7 @@ public class PrincipalComponentAnalysis {
     private void computeBasis(int numComponents) {
         if( numComponents > A.getNumCols() )
             throw new IllegalArgumentException("More components requested that the data's length.");
-        int rows = A.getNumRows();
+        var rows = A.getNumRows();
         if( sampleIndex != rows)
             throw new IllegalArgumentException("Not all the data has been added");
         if( numComponents > sampleIndex )
@@ -126,16 +126,16 @@ public class PrincipalComponentAnalysis {
         this.numComponents = numComponents;
 
         
-        for(int i = 0; i < rows; i++ )
-            for( int j = 0; j < mean.length; j++ )
+        for(var i = 0; i < rows; i++ )
+            for(var j = 0; j < mean.length; j++ )
                 mean[j] += A.get(i,j);
 
-        for( int j = 0; j < mean.length; j++ )
+        for(var j = 0; j < mean.length; j++ )
             mean[j] /= rows;
 
         
-        for(int i = 0; i < rows; i++ )
-            for( int j = 0; j < mean.length; j++ )
+        for(var i = 0; i < rows; i++ )
+            for(var j = 0; j < mean.length; j++ )
                 A.add(i, j, -mean[j]);
 
         
@@ -145,7 +145,7 @@ public class PrincipalComponentAnalysis {
             throw new RuntimeException("SVD failed");
 
         V_t = svd.getV(null,true);
-        DMatrixRMaj W = svd.getW(null);
+        var W = svd.getW(null);
 
         
         descendingOrder(null,false,W,V_t,true);
@@ -164,7 +164,7 @@ public class PrincipalComponentAnalysis {
         if( which < 0 || which >= numComponents )
             throw new IllegalArgumentException("Invalid component");
 
-        DMatrixRMaj v = new DMatrixRMaj(1,A.numCols);
+        var v = new DMatrixRMaj(1,A.numCols);
         extract(V_t,which,which+1,0,A.numCols,v,0,0);
 
         return v.data;
@@ -179,10 +179,10 @@ public class PrincipalComponentAnalysis {
     private double[] sampleToEigenSpace(double[] sampleData) {
         if( sampleData.length != A.getNumCols() )
             throw new IllegalArgumentException("Unexpected sample length");
-        DMatrixRMaj mean = DMatrixRMaj.wrap(A.getNumCols(),1,this.mean);
+        var mean = DMatrixRMaj.wrap(A.getNumCols(),1,this.mean);
 
-        DMatrixRMaj s = new DMatrixRMaj(A.getNumCols(),1,true,sampleData);
-        DMatrixRMaj r = new DMatrixRMaj(numComponents,1);
+        var s = new DMatrixRMaj(A.getNumCols(),1,true,sampleData);
+        var r = new DMatrixRMaj(numComponents,1);
 
         subtract(s, mean, s);
 
@@ -201,12 +201,12 @@ public class PrincipalComponentAnalysis {
         if( eigenData.length != numComponents )
             throw new IllegalArgumentException("Unexpected sample length");
 
-        DMatrixRMaj s = new DMatrixRMaj(A.getNumCols(),1);
-        DMatrixRMaj r = DMatrixRMaj.wrap(numComponents,1,eigenData);
+        var s = new DMatrixRMaj(A.getNumCols(),1);
+        var r = DMatrixRMaj.wrap(numComponents,1,eigenData);
         
         multTransA(V_t,r,s);
 
-        DMatrixRMaj mean = DMatrixRMaj.wrap(A.getNumCols(),1,this.mean);
+        var mean = DMatrixRMaj.wrap(A.getNumCols(),1,this.mean);
         add(s,mean,s);
 
         return s.data;
@@ -227,11 +227,11 @@ public class PrincipalComponentAnalysis {
      * @return Its membership error.
      */
     public double errorMembership( double[] sampleA ) {
-        double[] eig = sampleToEigenSpace(sampleA);
-        double[] reproj = eigenToSampleSpace(eig);
+        var eig = sampleToEigenSpace(sampleA);
+        var reproj = eigenToSampleSpace(eig);
 
 
-        double total = IntStream.range(0, reproj.length).mapToDouble(i -> sampleA[i] - reproj[i]).map(d -> d * d).sum();
+        var total = IntStream.range(0, reproj.length).mapToDouble(i -> sampleA[i] - reproj[i]).map(d -> d * d).sum();
 
         return Math.sqrt(total);
     }
@@ -247,8 +247,8 @@ public class PrincipalComponentAnalysis {
         if( sample.length != A.numCols )
             throw new IllegalArgumentException("Expected input vector to be in sample space");
 
-        DMatrixRMaj dots = new DMatrixRMaj(numComponents,1);
-        DMatrixRMaj s = DMatrixRMaj.wrap(A.numCols,1,sample);
+        var dots = new DMatrixRMaj(numComponents,1);
+        var s = DMatrixRMaj.wrap(A.numCols,1,sample);
 
         mult(V_t,s,dots);
 
@@ -256,17 +256,17 @@ public class PrincipalComponentAnalysis {
     }
     
     public double [][] pca(double [][]matrix, int no_dims) {
-		double [][] trafoed = new double[matrix.length][matrix[0].length];
+        var trafoed = new double[matrix.length][matrix[0].length];
 		setup(matrix.length, matrix[0].length);
-        for (double[] aMatrix : matrix) {
+        for (var aMatrix : matrix) {
             addSample(aMatrix);
         }
 
         computeBasis(no_dims);
 
-		for (int i = 0; i < matrix.length; i++) {
-            double[] ti = trafoed[i] = sampleToEigenSpace(matrix[i]);
-			for (int j = 0; j < ti.length; j++)
+		for (var i = 0; i < matrix.length; i++) {
+            var ti = trafoed[i] = sampleToEigenSpace(matrix[i]);
+			for (var j = 0; j < ti.length; j++)
 				ti[j] *= -1;
 		}
 		return trafoed;

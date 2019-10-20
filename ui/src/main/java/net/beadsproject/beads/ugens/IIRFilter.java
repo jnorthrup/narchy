@@ -80,15 +80,15 @@ public abstract class IIRFilter extends UGen {
     static IIRFilterAnalysis calculateFilterResponse(float[] bs,
                                                      float[] as, float freq, float samplingFreq) {
 
-        IIRFilterAnalysis ret = analyzeFilter(bs, as, freq, samplingFreq);
+        var ret = analyzeFilter(bs, as, freq, samplingFreq);
         ret.groupDelay = calculateGroupDelay(bs, as, freq, samplingFreq);
         return ret;
     }
 
     private static double calculateGroupDelay(float[] bs, float[] as,
                                               float freq, float samplingFreq) {
-        IIRFilterAnalysis a = analyzeFilter(bs, as, freq - .01f, samplingFreq);
-        IIRFilterAnalysis b = analyzeFilter(bs, as, freq + .01f, samplingFreq);
+        var a = analyzeFilter(bs, as, freq - .01f, samplingFreq);
+        var b = analyzeFilter(bs, as, freq + .01f, samplingFreq);
         return ((b.phaseResponse - a.phaseResponse) / (a.w - b.w));
     }
 
@@ -100,13 +100,13 @@ public abstract class IIRFilter extends UGen {
     private static IIRFilterAnalysis analyzeFilter(float[] bs, float[] as,
                                                    float freq, float samplingFreq) {
 
-        double w = -2 * freq * Math.PI / samplingFreq;
+        var w = -2 * freq * Math.PI / samplingFreq;
 
         double nr = 0, ni = 0;
 
         if (bs.length > 0) {
             nr = bs[0];
-            for (int i = 1; i < bs.length; i++) {
+            for (var i = 1; i < bs.length; i++) {
                 nr += bs[i] * Math.cos(w * i);
                 ni += bs[i] * Math.sin(w * i);
             }
@@ -115,15 +115,15 @@ public abstract class IIRFilter extends UGen {
         double dr = 1;
         if (as.length > 0) {
             dr = as[0];
-            for (int i = 1; i < as.length; i++) {
+            for (var i = 1; i < as.length; i++) {
                 dr += as[i] * Math.cos(w * i);
                 di += as[i] * Math.sin(w * i);
             }
         }
 
-        double md2 = dr * dr + di * di;
+        var md2 = dr * dr + di * di;
 
-        IIRFilterAnalysis ret = new IIRFilterAnalysis();
+        var ret = new IIRFilterAnalysis();
 
         ret.amplitudeResponse = Math.sqrt((nr * nr + ni * ni) / md2);
         ret.phaseResponse = (Math.atan2(ni, nr) - Math.atan2(di, dr));

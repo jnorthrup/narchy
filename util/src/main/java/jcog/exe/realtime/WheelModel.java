@@ -37,7 +37,7 @@ abstract class WheelModel {
     public abstract boolean reschedule(int wheel, TimedFuture r);
 
     public final boolean schedule(TimedFuture r, int c, HashedWheelTimer timer) {
-        int offset = r.offset(resolution);
+        var offset = r.offset(resolution);
 //            if (offset <= 0)
 //                System.out.println(r);
         if (offset > -1 || r.isPeriodic()) {

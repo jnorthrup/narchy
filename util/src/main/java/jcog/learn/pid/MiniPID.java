@@ -121,7 +121,7 @@ public class MiniPID {
      * @see {@link #setMaxIOutput(double) setMaxIOutput} for how to restrict
      */
     private void i(double i) {
-        float I = this.I.floatValue();
+        var I = this.I.floatValue();
         if (I != 0) {
             errSum = errSum * I / i;
         }
@@ -320,33 +320,33 @@ public class MiniPID {
         }
 
 
-        double error = setpoint - actual;
+        var error = setpoint - actual;
 
 
-        double Foutput = f() * setpoint;
+        var Foutput = f() * setpoint;
 
 
-        double Poutput = p() * error;
+        var Poutput = p() * error;
 
 
-        boolean initialIter = (this.actual != this.actual);
+        var initialIter = (this.actual != this.actual);
         if (initialIter) {
             this.actual = actual;
             out = Poutput + Foutput;
         }
 
 
-        double Doutput = -d() * (actual - this.actual);
+        var Doutput = -d() * (actual - this.actual);
         this.actual = actual;
 
 
-        double Ioutput = i() * errSum;
+        var Ioutput = i() * errSum;
         if (maxIOutput != 0) {
             Ioutput = Util.clamp(Ioutput, -maxIOutput, maxIOutput);
         }
 
 
-        double output = Foutput + Poutput + Ioutput + Doutput;
+        var output = Foutput + Poutput + Ioutput + Doutput;
 
 
         if (!Util.equals(outMin, outMax) && !isInclusive(output, outMin, outMax)) {
@@ -356,7 +356,7 @@ public class MiniPID {
         } else if (outRampRate != 0 && !isInclusive(output, out - outRampRate, out + outRampRate)) {
             errSum = error;
         } else if (maxIOutput != 0) {
-            double min = -errMax;
+            var min = -errMax;
             errSum = Util.clamp(errSum + error, min, errMax);
 
 

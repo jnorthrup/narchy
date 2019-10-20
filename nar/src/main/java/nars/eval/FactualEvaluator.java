@@ -37,14 +37,14 @@ public class FactualEvaluator extends Evaluator {
 
     @Deprecated
     private static FactualEvaluator query(Term x, NAR n) {
-        FactualEvaluator f = new FactualEvaluator(n::axioms, n.facts(0.75f, true));
+        var f = new FactualEvaluator(n::axioms, n.facts(0.75f, true));
         f.eval((y) -> true, true, false, x);
         return f;
     }
 
     public static Set<Term> queryAll(Term x, NAR n) {
         Set<Term> solutions = new ArrayHashSet(1);
-        FactualEvaluator f = new FactualEvaluator(n::axioms, n.facts(0.75f, true));
+        var f = new FactualEvaluator(n::axioms, n.facts(0.75f, true));
         f.eval((y) -> {
             solutions.add(y);
             return true;
@@ -211,10 +211,10 @@ public class FactualEvaluator extends Evaluator {
 
         //TODO cache
         if (x.op() == CONJ && (x.dt() == DTERNAL || x.dt() == XTERNAL)) {
-            int n = x.subterms().subs();
+            var n = x.subterms().subs();
             List<List<Term>> matches = new FasterList<>(n);
-            for (Term xx : x.subterms()) {
-                List<Term> m = resolve(xx);
+            for (var xx : x.subterms()) {
+                var m = resolve(xx);
                 if (m.isEmpty())
                     m = Collections.EMPTY_LIST;
                 //TODO trim list?
@@ -225,7 +225,7 @@ public class FactualEvaluator extends Evaluator {
                     e.canBe(x.sub(i), matches.get(i));
             }
         } else {
-            List<Term> m = resolve(x);
+            var m = resolve(x);
             if (!m.isEmpty()) {
                 e.canBe(x, m);
             }
@@ -247,16 +247,16 @@ public class FactualEvaluator extends Evaluator {
         u.commonVariables = false;
         //TODO neg, temporal
         factResolver.apply(x.normalize()).forEach(y1 -> {
-            boolean neg = y1 instanceof Neg;
+            var neg = y1 instanceof Neg;
             if (neg) y1 = y1.unneg();
             if (y1.op() == IMPL) {
 
 
-                Term pre = y1.sub(1);
+                var pre = y1.sub(1);
                 if (pre.unify(x, u.clear())) {
 
                     //ifs.get(k).forEach(v->{
-                    Term z = u.apply(y1.sub(0));
+                    var z = u.apply(y1.sub(0));
                     if (z.op().conceptualizable) {
 //                                //facts.addAt($.func("ifThen", vv, k));
 //                                //facts.put(vv, True);
@@ -281,7 +281,7 @@ public class FactualEvaluator extends Evaluator {
 //                            nx.add(y);
 //                        }
                 if (x.unify(y1, u.clear())) {
-                    Term z = u.apply(x);
+                    var z = u.apply(x);
                     if (z.op().conceptualizable) {
                         if (!z.equals(x)) {
                             matches.add(z.negIf(neg));

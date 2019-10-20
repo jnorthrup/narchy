@@ -47,11 +47,11 @@ public class CompactArrayMap<K, V> {
     }
 
     public V get(Object key) {
-        Object[] a = ITEMS.get(this);
+        var a = ITEMS.get(this);
         if (a != null) {
-            int s = a.length;
-            for (int i = 0; i < s; ) {
-                Object k = a[i];
+            var s = a.length;
+            for (var i = 0; i < s; ) {
+                var k = a[i];
                 if (k != null) {
                     if (keyEquals(k, key))
                         return (V) a[i + 1];
@@ -63,7 +63,7 @@ public class CompactArrayMap<K, V> {
     }
 
     public int size() {
-        Object[] o = ITEMS.get(this);
+        var o = ITEMS.get(this);
         return o != null ? o.length / 2 : 0;
     }
 
@@ -72,16 +72,16 @@ public class CompactArrayMap<K, V> {
      * interpets value==null as removal
      */
     public V put(Object key, V value) {
-        Object[] returned = new Object[1];
+        var returned = new Object[1];
         ITEMS.accumulateAndGet(this, new Object[]{key, value}, (a, kv) -> {
             if (a == null) {
                 return kv;
             } else {
-                int s = a.length;
+                var s = a.length;
 
                 Object k = kv[0], v = kv[1];
-                int found = -1;
-                for (int i = 0; i < s; i += 2) {
+                var found = -1;
+                for (var i = 0; i < s; i += 2) {
                     if (keyEquals(k, a[i])) {
                         found = i+1;
                         break;
@@ -97,7 +97,7 @@ public class CompactArrayMap<K, V> {
                         if (a.length == 2) {
                             return null; //map emptied
                         } else {
-                            Object[] b = Arrays.copyOf(a, a.length-2);
+                            var b = Arrays.copyOf(a, a.length-2);
                             if (found-1 < a.length-2) {
                                 //TODO test
                                 System.arraycopy(a, found+1, b, found-1, a.length - (found-1) - 2);
@@ -107,7 +107,7 @@ public class CompactArrayMap<K, V> {
                     }
                 } else {
                     if (v!=null) {
-                        Object[] b = Arrays.copyOf(a, s + 2);
+                        var b = Arrays.copyOf(a, s + 2);
                         returned[0] = -1;
                         b[s++] = k;
                         b[s] = v;
@@ -124,11 +124,11 @@ public class CompactArrayMap<K, V> {
     }
 
     public V computeIfAbsent(K key, Function<? super K, ? extends V> mappingFunction) {
-        V e = get(key);
+        var e = get(key);
         if (e != null)
             return e;
 
-        V v = mappingFunction.apply(key);
+        var v = mappingFunction.apply(key);
         put(key, v);
         return v;
     }
@@ -160,10 +160,10 @@ public class CompactArrayMap<K, V> {
     }
 
     public boolean whileEach(BiPredicate<K, V> each) {
-        Object[] ii = ITEMS.get(this);
+        var ii = ITEMS.get(this);
         for (int i = 0, iiLength = ii.length; i < iiLength; ) {
-            K k = (K) ii[i++];
-            V v = (V) ii[i++];
+            var k = (K) ii[i++];
+            var v = (V) ii[i++];
             if (!each.test(k,v))
                 return false;
         }

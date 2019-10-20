@@ -17,11 +17,11 @@ public class LazyTerm implements Termed {
 
 	@Override
 	public final Term term() {
-		Object x = this.x;
+		var x = this.x;
 		if (x instanceof Term)
 			return ((Term)x);
 		else {
-			Term y = build();
+			var y = build();
 			this.x = y;
 			return y;
 		}

@@ -15,9 +15,9 @@ public class RampWave extends WaveFactory {
 
     @Override
     public ArrayTensor get(int bufferSize) {
-        int size = bufferSize;
-        ArrayTensor b = new ArrayTensor(size);
-        for (int i = 0; i < bufferSize; i++) {
+        var size = bufferSize;
+        var b = new ArrayTensor(size);
+        for (var i = 0; i < bufferSize; i++) {
             b.data[i] = ramp((i + 0.5f) / bufferSize) / bufferSize;
         }
         return b;

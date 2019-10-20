@@ -15,7 +15,7 @@ public class ViolinString extends VariableDeltaString {
     /* Pluck the guitar string by replacing the buffer with white noise. */
     public void pluck() {
         clear();
-        for (int i = 0; i < buffer.capacity(); i++) {
+        for (var i = 0; i < buffer.capacity(); i++) {
             buffer.enqueue((Math.random() - 0.5) * 2 * getInitialVolume());
         }
         resetTics();
@@ -28,7 +28,7 @@ public class ViolinString extends VariableDeltaString {
     public void tic() {
         double first = buffer.dequeue();
         double second = buffer.peek();
-		double last = (first + second) * (deltaVolume / 2);
+        var last = (first + second) * (deltaVolume / 2);
         last = checkMax(last);
         buffer.enqueue(last);
         oneTic();

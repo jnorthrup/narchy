@@ -21,10 +21,10 @@ public class TaskListView extends AbstractTaskView<Task> {
 
 	@Override
 	public Surface apply(int x, int y, PriReference<Task> t) {
-		Task tt = t.get();
-		VectorLabel l = new VectorLabel(tt.toStringWithoutBudget());
-		Color4f color = l.fgColor;
-		float linkPri = t.pri();
+		var tt = t.get();
+		var l = new VectorLabel(tt.toStringWithoutBudget());
+		var color = l.fgColor;
+		var linkPri = t.pri();
 		color.x = linkPri;
 		color.y = 1 - linkPri;
 		color.z = tt.priElseZero();

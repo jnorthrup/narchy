@@ -25,7 +25,7 @@ public class Grid1DDiscrete implements World {
     public Grid1DDiscrete(int size, int totalTime) {
         this.time = 1;
         this.size = size;
-        double VISUALIZE_PERIOD = Math.pow(10, 4);
+        var VISUALIZE_PERIOD = Math.pow(10, 4);
         this.ENERGY_COST_FACTOR = 0.5;
         this.MATCH_REWARD_FACTOR = size*1.1;
         this.REWARD_MAGNITUDE = 1;
@@ -73,18 +73,18 @@ public class Grid1DDiscrete implements World {
                   
         double match = 0;        
         double energyCost = 0;
-        for (int i = 0; i < size; i++) {
+        for (var i = 0; i < size; i++) {
             match += Math.abs( sensor[i] * action[i] );
             energyCost += action[i];
         }
+
+
+        var reward = REWARD_MAGNITUDE * ((MATCH_REWARD_FACTOR * match) - (energyCost * ENERGY_COST_FACTOR));
         
         
-        double reward = REWARD_MAGNITUDE * ((MATCH_REWARD_FACTOR * match) - (energyCost * ENERGY_COST_FACTOR));
         
-        
-        
-        for (int i = 0; i < size; i++) {
-            final double exp = 3.0; 
+        for (var i = 0; i < size; i++) {
+            final var exp = 3.0;
             if (i == focusPosition)
                 sensor[i] = 1.0;
             else
@@ -103,8 +103,8 @@ public class Grid1DDiscrete implements World {
 
     @Override
     public String toString() {
-        String s = "";
-        for (int i = 0; i < size; i++) {
+        var s = "";
+        for (var i = 0; i < size; i++) {
             char c;
             if (i == (int)focusPosition)
                 c = 'O';
@@ -113,7 +113,7 @@ public class Grid1DDiscrete implements World {
             s += c;
         }
         s += "\n";
-        for (int i = 0; i < size; i++) {
+        for (var i = 0; i < size; i++) {
             char c;
             if (action[i] > 0)
                 c = 'X';

@@ -66,20 +66,20 @@ public class Sketch2DBitmap extends PaintSurface implements MenuSupplier {
     public Surface finger(Finger finger) {
 
         if (finger.pressed(0)) {
-            v2 hitPoint = finger.posRelative(this);
+            var hitPoint = finger.posRelative(this);
             if (hitPoint.inUnit()) {
 
-                int ax = Math.round(hitPoint.x * pw);
+                var ax = Math.round(hitPoint.x * pw);
 
-                int ay = Math.round((1f - hitPoint.y) * ph);
+                var ay = Math.round((1f - hitPoint.y) * ph);
 
 
-                float w = this.brushWidth * this.brushWidth;
-                float a = brushAlpha * brushAlpha * 10;
-                for (int i = 0; i < a; i++) {
-                    int px = (int) (ax + rng.nextGaussian() * w);
+                var w = this.brushWidth * this.brushWidth;
+                var a = brushAlpha * brushAlpha * 10;
+                for (var i = 0; i < a; i++) {
+                    var px = (int) (ax + rng.nextGaussian() * w);
                     if (px >= 0 && px < pw) {
-                        int py = (int) (ay + rng.nextGaussian() * w);
+                        var py = (int) (ay + rng.nextGaussian() * w);
                         if (py >= 0 && py < ph) {
                             mix(pix, py * pw + px);
                         }
@@ -96,11 +96,11 @@ public class Sketch2DBitmap extends PaintSurface implements MenuSupplier {
     }
 
     private void mix(int[] pix, int i) {
-        int e = pix[i];
-        float r = Bitmap2D.decode8bRed(e) * 0.5f + paintR * 0.5f;
-        float g = Bitmap2D.decode8bGreen(e) * 0.5f + paintG * 0.5f;
-        float b = Bitmap2D.decode8bBlue(e) * 0.5f + paintB * 0.5f;
-        int f = Bitmap2D.encodeRGB8b(r, g, b);
+        var e = pix[i];
+        var r = Bitmap2D.decode8bRed(e) * 0.5f + paintR * 0.5f;
+        var g = Bitmap2D.decode8bGreen(e) * 0.5f + paintG * 0.5f;
+        var b = Bitmap2D.decode8bBlue(e) * 0.5f + paintB * 0.5f;
+        var f = Bitmap2D.encodeRGB8b(r, g, b);
         pix[i] = f;
 
 
@@ -128,7 +128,7 @@ public class Sketch2DBitmap extends PaintSurface implements MenuSupplier {
 
     @Override
     public Surface menu() {
-        ButtonSet<ColorToggle> colorMenu = new ButtonSet<>(ButtonSet.Mode.One,
+        var colorMenu = new ButtonSet<ColorToggle>(ButtonSet.Mode.One,
                 new ColorToggle(0f, 0, 0),
                 new ColorToggle(1f, 0, 0),
                 new ColorToggle(1f, 0.5f, 0),

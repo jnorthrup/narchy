@@ -18,7 +18,7 @@ public class EchoFilter {
     }
 
     public double apply(double input) {
-        double output = previousFrames[frameIndex];
+        var output = previousFrames[frameIndex];
         previousFrames[frameIndex] = input * volumeFraction;
         frameIndex = (frameIndex + 1) % frameOffset;
         return output;

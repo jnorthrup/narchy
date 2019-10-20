@@ -45,8 +45,8 @@ public class PrologToNAL {
 
     private static Term N(alice.tuprolog.Term t) {
         if (t instanceof alice.tuprolog.Struct) {
-            Struct s = (Struct) t;
-            String name = s.name();
+            var s = (Struct) t;
+            var name = s.name();
             switch (name) {
                 /* "=:=": identity(X,Y) */
                 /* "=\=": --identity(X,Y) */
@@ -55,11 +55,11 @@ public class PrologToNAL {
 
                 case ":-":
                     assert(s.subs()==2);
-                    Term pre = N(s.sub(1));
-                    Term post = N(s.sub(0));
+                    var pre = N(s.sub(1));
+                    var post = N(s.sub(0));
 
-                    
-                    Term impl = $.impl(pre, post);
+
+                    var impl = $.impl(pre, post);
                     pre = impl.sub(0);
                     post = impl.sub(1);
 
@@ -77,11 +77,11 @@ public class PrologToNAL {
                             return true;
                         }, null);
 
-                        MutableSet<Variable> common = prev.intersect(posv);
-                        int cs = common.size();
+                        var common = prev.intersect(posv);
+                        var cs = common.size();
                         if (cs > 0) {
                             Map<Term, Term> x = new UnifiedMap(cs);
-                            for (Variable c : common) {
+                            for (var c : common) {
                                 x.put(c, $.varIndep(c.toString().substring(1)));
                             }
                             impl = impl.replace(x);
@@ -93,7 +93,7 @@ public class PrologToNAL {
                     return CONJ.the(N(s.sub(0)), N(s.sub(1)));
                 default:
                     Term atom = $.the(name);
-                    int arity = s.subs();
+                    var arity = s.subs();
                     if (arity == 0) {
                         return atom;
                     } else {

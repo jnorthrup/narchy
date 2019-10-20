@@ -58,7 +58,7 @@ public abstract class BitmapTextGrid extends AbstractConsoleSurface {
             synchronized (BitmapTextGrid.class) {
                 if (defaultFont == null) {
                     Font f;
-                    try (InputStream in = BitmapTextGrid.class.getClassLoader()
+                    try (var in = BitmapTextGrid.class.getClassLoader()
                             .getResourceAsStream(
                                     "font/CourierPrimeCode.ttf"
                                     //"font/ObliviousFont.ttf"
@@ -88,21 +88,21 @@ public abstract class BitmapTextGrid extends AbstractConsoleSurface {
 
     private void allocate() {
 
-        BufferedImage bPrev = this.backbuffer;
-        int pw = pixelWidth();
-        int ph = pixelHeight();
+        var bPrev = this.backbuffer;
+        var pw = pixelWidth();
+        var ph = pixelHeight();
         if (bPrev != null) {
             if (bPrev.getWidth() == pw && bPrev.getHeight() == ph) return;
         }
 
-        BufferedImage b = new BufferedImage(pw, ph, BufferedImage.TYPE_INT_ARGB);
+        var b = new BufferedImage(pw, ph, BufferedImage.TYPE_INT_ARGB);
 
         b.setAccelerationPriority(1f);
 
-        Graphics2D next = b.createGraphics();
+        var next = b.createGraphics();
 //        System.out.println(cols + "," + rows + "\t" + b + "\t" + g);
 
-        boolean antialias = false;
+        var antialias = false;
         if (antialias) {
             next.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
                 RenderingHints.VALUE_TEXT_ANTIALIAS_ON
@@ -113,7 +113,7 @@ public abstract class BitmapTextGrid extends AbstractConsoleSurface {
             );
 
         }
-        boolean quality = false;
+        var quality = false;
         if (quality)
             next.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION,
                     RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY
@@ -136,7 +136,7 @@ public abstract class BitmapTextGrid extends AbstractConsoleSurface {
         );
 
 
-        Graphics2D prev = this.backbufferGraphics;
+        var prev = this.backbufferGraphics;
         if (prev != null)
             prev.dispose();
 
@@ -308,8 +308,8 @@ public abstract class BitmapTextGrid extends AbstractConsoleSurface {
         if (g == null)
             return;
 
-        int x = columnIndex * fontWidth;
-        int y = rowIndex * fontHeight;
+        var x = columnIndex * fontWidth;
+        var y = rowIndex * fontHeight;
 
         if (backgroundColor.getAlpha()>0) {
             g.setColor(backgroundColor);
@@ -318,23 +318,23 @@ public abstract class BitmapTextGrid extends AbstractConsoleSurface {
 
         g.setColor(foregroundColor);
 
-        int descent = font.getSize() / 4; //estimate
+        var descent = font.getSize() / 4; //estimate
         if (c != ' ')
             g.drawChars(new char[]{c}, 0, 1, x, y + fontHeight + 1 - descent);
 
         if (crossedOut) {
-            int lineStartY = y + fontHeight / 2;
-            int lineEndX = x + characterWidth;
+            var lineStartY = y + fontHeight / 2;
+            var lineEndX = x + characterWidth;
             g.drawLine(x, lineStartY, lineEndX, lineStartY);
         }
 
         if (underlined) {
-            int lineStartY = y + fontHeight - descent + 1;
-            int lineEndX = x + characterWidth;
+            var lineStartY = y + fontHeight - descent + 1;
+            var lineEndX = x + characterWidth;
             g.drawLine(x, lineStartY, lineEndX, lineStartY);
         }
 
-        boolean drawCursor = (columnIndex == cursorCol) && (rowIndex == cursorRow);
+        var drawCursor = (columnIndex == cursorCol) && (rowIndex == cursorRow);
         if (drawCursor) {
             g.setColor(cursorColor == null ? foregroundColor : cursorColor);
             g.fillRect(x, y + 1, characterWidth, fontHeight - 2);

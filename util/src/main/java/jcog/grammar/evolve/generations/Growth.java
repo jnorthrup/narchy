@@ -53,8 +53,8 @@ public class Growth implements Generation {
     public List<Node> generate(int popSize) {
         List<Node> population = new ArrayList<>(popSize);
 
-        for (int i = 0; i < popSize;) {
-            Node candidate = grow(1);
+        for (var i = 0; i < popSize;) {
+            var candidate = grow(1);
             if (candidate.isValid()) {
                 population.add(candidate);
                 i++;
@@ -65,26 +65,26 @@ public class Growth implements Generation {
     }
 
     private Node grow(int depth) {
-        Node _tree = randomFunction();
+        var _tree = randomFunction();
         if (_tree.getMaxChildrenCount() > 0) {
-            ParentNode tree = (ParentNode) _tree;
+            var tree = (ParentNode) _tree;
 
             if (depth >= this.maxDepth - 1) {
 
-                for (int i = tree.getMaxChildrenCount() - tree.getMinChildrenCount(); i < tree.getMaxChildrenCount(); i++) {
-                    Leaf leaf = randomLeaf();
+                for (var i = tree.getMaxChildrenCount() - tree.getMinChildrenCount(); i < tree.getMaxChildrenCount(); i++) {
+                    var leaf = randomLeaf();
                     add(tree, leaf);
                 }
 
             } else {
 
-                for (int i = tree.getMaxChildrenCount() - tree.getMinChildrenCount(); i < tree.getMaxChildrenCount(); i++) {
+                for (var i = tree.getMaxChildrenCount() - tree.getMinChildrenCount(); i < tree.getMaxChildrenCount(); i++) {
 
                     if (rng.nextBoolean()) {
-                        Node node = grow(depth + 1);
+                        var node = grow(depth + 1);
                         add(tree, node);
                     } else {
-                        Leaf leaf = randomLeaf();
+                        var leaf = randomLeaf();
                         add(tree, leaf);
                     }
                 }
@@ -100,12 +100,12 @@ public class Growth implements Generation {
 
     private Node randomFunction() {
 
-        List<Node> functionSet = context.getConfiguration().getNodeFactory().getFunctionSet();
+        var functionSet = context.getConfiguration().getNodeFactory().getFunctionSet();
         return functionSet.get(rng.nextInt(functionSet.size())).cloneTree();
     }
 
     private Leaf randomLeaf() {
-        List<Leaf> terminalSet = context.getConfiguration().getNodeFactory().getTerminalSet();
+        var terminalSet = context.getConfiguration().getNodeFactory().getTerminalSet();
         return terminalSet.get(rng.nextInt(terminalSet.size())).cloneTree();
     }
 }

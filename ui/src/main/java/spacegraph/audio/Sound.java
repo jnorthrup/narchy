@@ -31,17 +31,17 @@ public class Sound<S extends SoundProducer> implements SoundSource, Comparable
 
         if (volume > 0) {
 
-            float x = source.getX(alpha) - listener.getX(alpha);
-            float y = source.getY(alpha) - listener.getY(alpha);
+            var x = source.getX(alpha) - listener.getX(alpha);
+            var y = source.getY(alpha) - listener.getY(alpha);
 
-            float distSqr = x * x + y * y + z * z;
-            float dist = (float) Math.sqrt(distSqr);
+            var distSqr = x * x + y * y + z * z;
+            var dist = (float) Math.sqrt(distSqr);
 
             float REFERENCE_DISTANCE = 1;
             float ROLLOFF_FACTOR = 2;
 
 
-            float dB = (float) (volume - 20 * Math.log(1 + ROLLOFF_FACTOR * (dist - REFERENCE_DISTANCE) / REFERENCE_DISTANCE) / l10);
+            var dB = (float) (volume - 20 * Math.log(1 + ROLLOFF_FACTOR * (dist - REFERENCE_DISTANCE) / REFERENCE_DISTANCE) / l10);
             if (dB != dB) dB = 0;
 
             dB = Math.min(dB, +6);
@@ -50,7 +50,7 @@ public class Sound<S extends SoundProducer> implements SoundSource, Comparable
             score = dB * priority;
 
 
-            float p = -x;
+            var p = -x;
             if (p < -1) p = -1;
             if (p > 1) p = 1;
 
@@ -77,7 +77,7 @@ public class Sound<S extends SoundProducer> implements SoundSource, Comparable
     @Override
     public int compareTo(Object o) {
         if (this == o) return 0;
-        int s = Double.compare(score, ((Sound)o).score);
+        var s = Double.compare(score, ((Sound)o).score);
         return s == 0 ? Integer.compare(hashCode(), o.hashCode()) : s;
     }
 

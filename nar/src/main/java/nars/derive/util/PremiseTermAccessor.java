@@ -54,7 +54,7 @@ public abstract class PremiseTermAccessor implements Function<PreDerivation, Ter
         public boolean equals(Object obj) {
             if (this == obj) return true;
             if (!(obj instanceof SubRootTermAccessor)) return false;
-            SubRootTermAccessor s = (SubRootTermAccessor)obj;
+            var s = (SubRootTermAccessor)obj;
             return hash == s.hash && rootID == s.rootID() && Arrays.equals(path, s.path);
         }
 

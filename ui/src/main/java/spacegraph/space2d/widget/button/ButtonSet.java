@@ -37,9 +37,9 @@ public class ButtonSet<T extends ToggleButton> extends Gridding {
 
         /** TODO */
 
-        for (T b : buttons) {
+        for (var b : buttons) {
             this.buttons.add(b);
-            @Nullable ObjectBooleanProcedure<ToggleButton> outerAction = b.action;
+            @Nullable var outerAction = b.action;
             b.on((bb,e) -> {
                 if (e) {
                     switch (mode) {
@@ -47,7 +47,7 @@ public class ButtonSet<T extends ToggleButton> extends Gridding {
 
                             break;
                         case One:
-                            for (T cc : this.buttons) {
+                            for (var cc : this.buttons) {
                                 if (cc != bb) {
                                     cc.on(false);
                                 }

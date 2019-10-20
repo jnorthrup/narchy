@@ -41,7 +41,7 @@ public class SubUnify extends Unify {
     protected final boolean match() {
 
         if (transformed != null) {
-            Term result = apply(transformed);
+            var result = apply(transformed);
 //            assert(result!=null); //HACK TEMPORARY
             if (result != Null && accept(result)) {
 

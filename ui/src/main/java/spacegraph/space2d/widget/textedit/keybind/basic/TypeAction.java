@@ -12,7 +12,7 @@ public class TypeAction implements Action {
 
   @Override
   public void execute(TextEditModel editor, String... args) {
-    for (String string : args) {
+    for (var string : args) {
       editor.buffer().insert(string);
     }
   }

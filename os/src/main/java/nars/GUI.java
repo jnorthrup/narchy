@@ -24,7 +24,7 @@ public class GUI {
 
     public static void main(String[] args) {
 
-        NAR n = NARchy.ui();
+        var n = NARchy.ui();
 
         logger.info("start SpaceGraph UI");
 
@@ -51,7 +51,7 @@ public class GUI {
         try {
 
                 try {
-                    TaskLinkWhat w = n.fork(new TaskLinkWhat($$("demo"), new TaskLinks(1024),
+                    var w = n.fork(new TaskLinkWhat($$("demo"), new TaskLinks(1024),
                         new PriBuffer.DirectTaskBuffer<>()));
 
                     n.input(KIF.file("/home/me/sumo/FinancialOntology.kif"));

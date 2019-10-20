@@ -25,9 +25,9 @@ public class WorldGenerator {
 
     public static TileID[][] generate(int width, int height, Random random) {
         visibility = new boolean[width][height];
-        TileID[][] world = new TileID[width][height];
-        for (int i = 0; i < visibility.length; i++) {
-            for (int j = 0; j < visibility[0].length; j++) {
+        var world = new TileID[width][height];
+        for (var i = 0; i < visibility.length; i++) {
+            for (var j = 0; j < visibility[0].length; j++) {
                 visibility[i][j] = true;
                 world[i][j] = TileID.NONE;
             }
@@ -35,27 +35,27 @@ public class WorldGenerator {
 
         playerLocation = new Int2(width / 2, 5);
 
-        int seed = random.nextInt();
+        var seed = random.nextInt();
         System.out.println("Seed: " + seed);
         random.setSeed(seed);
-        int median = (int) (.5 * height);
+        var median = (int) (.5 * height);
 
-        int minDirtDepth = 2;
-        int maxDirtDepth = 5;
-        int minSurface = (int) (.25 * height);
-        int maxSurface = (int) (.75 * height);
+        var minDirtDepth = 2;
+        var maxDirtDepth = 5;
+        var minSurface = (int) (.25 * height);
+        var maxSurface = (int) (.75 * height);
 
-        int surface = median;
-        int dirtDepth = 3;
+        var surface = median;
+        var dirtDepth = 3;
 
         List<Int2> trees = new ArrayList<>();
 
-        int surfaceSum = 0;
+        var surfaceSum = 0;
 
-        boolean playerLocFound = false;
+        var playerLocFound = false;
         double chance;
 
-        for (int i = 0; i < width; i++) {
+        for (var i = 0; i < width; i++) {
             if (surface > median) {
                 surfaceSum++;
             } else {
@@ -94,7 +94,7 @@ public class WorldGenerator {
                 playerLocFound = true;
             }
 
-            for (int j = 0; j <= surface; j++) {
+            for (var j = 0; j <= surface; j++) {
                 setVisible(i + 1, j);
                 setVisible(i, j + 1);
                 setVisible(i - 1, j);
@@ -102,24 +102,24 @@ public class WorldGenerator {
             }
 
             world[i][surface] = TileID.GRASS;
-            for (int j = 1; j <= dirtDepth; j++) {
+            for (var j = 1; j <= dirtDepth; j++) {
                 world[i][surface + j] = TileID.DIRT;
                 visibility[i][surface + j] = false;
             }
-            for (int j = dirtDepth; surface + j < height; j++) {
+            for (var j = dirtDepth; surface + j < height; j++) {
                 world[i][surface + j] = TileID.STONE;
                 visibility[i][surface + j] = false;
             }
         }
 
 
-        for (int i = 0; i < width; i++) {
+        for (var i = 0; i < width; i++) {
             if (world[i][median] != TileID.NONE) {
                 continue;
             }
 
 
-            for (int j = median; j < height; j++) {
+            for (var j = median; j < height; j++) {
 
 
                 if (world[i][j] != TileID.NONE) {
@@ -144,14 +144,14 @@ public class WorldGenerator {
         TileID[] caveIgnore = {TileID.DIRT, TileID.COAL_ORE, TileID.WATER,
                 TileID.GRASS, TileID.SAND, TileID.NONE};
 
-        int caveCount = (int) (width / 16 + random.nextDouble() * 3);
-        for (int i = 0; i < caveCount; i++) {
-            int posX = random.nextInt(width);
-            int posY = random.nextInt(height / 8) + height * 7 / 8;
-            int caveLength = random.nextInt(width);
-            int directionX = -1 + random.nextInt(3);
-            int directionY = -1 + random.nextInt(3);
-            for (int j = 0; j < caveLength; j++) {
+        var caveCount = (int) (width / 16 + random.nextDouble() * 3);
+        for (var i = 0; i < caveCount; i++) {
+            var posX = random.nextInt(width);
+            var posY = random.nextInt(height / 8) + height * 7 / 8;
+            var caveLength = random.nextInt(width);
+            var directionX = -1 + random.nextInt(3);
+            var directionY = -1 + random.nextInt(3);
+            for (var j = 0; j < caveLength; j++) {
                 chance = random.nextDouble();
 
                 if (chance > .9) {
@@ -163,12 +163,12 @@ public class WorldGenerator {
                 if (posX < 0 || posX >= width || posY <= median || posY >= height) {
                     break;
                 }
-                double caveSize = 1 + random.nextDouble() * .45;
+                var caveSize = 1 + random.nextDouble() * .45;
                 carve(world, posX, posY, caveSize, TileID.NONE, caveIgnore, false);
             }
         }
 
-        for (Int2 pos : trees) {
+        for (var pos : trees) {
             if (world[pos.x][pos.y + 1] == TileID.GRASS) {
                 addTemplate(world, TileTemplate.tree, pos);
             }
@@ -180,17 +180,17 @@ public class WorldGenerator {
 
     private static void uniformlyAddMinerals(TileID[][] world, TileID mineral, float density,
                                              int minDepth, int maxDepth, TileID[] ignoreTypes, Random random) {
-        int missesAllowed = 100;
-        int width = world.length;
-        int totalHeight = maxDepth - minDepth;
-        int desired = (int) (density * width * totalHeight);
-        int added = 0;
-        int iterations = 0;
+        var missesAllowed = 100;
+        var width = world.length;
+        var totalHeight = maxDepth - minDepth;
+        var desired = (int) (density * width * totalHeight);
+        var added = 0;
+        var iterations = 0;
         while (added < desired && added - iterations < missesAllowed) {
-            int posX = random.nextInt(width);
-            int posY = random.nextInt(totalHeight) + minDepth;
+            var posX = random.nextInt(width);
+            var posY = random.nextInt(totalHeight) + minDepth;
             if (world[posX][posY] == TileID.STONE) {
-                double mineralSize = 1 + random.nextDouble() * .6;
+                var mineralSize = 1 + random.nextDouble() * .6;
                 carve(world, posX, posY, mineralSize, mineral, ignoreTypes, false);
                 added++;
             }
@@ -207,17 +207,17 @@ public class WorldGenerator {
 
     private static void carve(TileID[][] world, int x, int y, double distance, TileID type,
                               TileID[] ignoreTypes, boolean left) {
-        for (int i = -(int) distance; i <= (left ? 0 : (int) distance); i++) {
-            int currentX = x + i;
+        for (var i = -(int) distance; i <= (left ? 0 : (int) distance); i++) {
+            var currentX = x + i;
             if (currentX < 0 || currentX >= world.length) {
                 continue;
             }
-            for (int j = -(int) distance; j <= (int) distance; j++) {
-                int currentY = y + j;
+            for (var j = -(int) distance; j <= (int) distance; j++) {
+                var currentY = y + j;
                 if (currentY < 0 || currentY >= world[0].length) {
                     continue;
                 }
-                boolean ignoreThis = Arrays.stream(ignoreTypes).anyMatch(ignore -> world[currentX][currentY] == ignore);
+                var ignoreThis = Arrays.stream(ignoreTypes).anyMatch(ignore -> world[currentX][currentY] == ignore);
                 if (ignoreThis) {
                     continue;
                 }
@@ -229,8 +229,8 @@ public class WorldGenerator {
     }
 
     private static void addTemplate(TileID[][] world, TileTemplate tileTemplate, Int2 position) {
-        for (int i = 0; i < tileTemplate.template.length; i++) {
-            for (int j = 0; j < tileTemplate.template[0].length; j++) {
+        for (var i = 0; i < tileTemplate.template.length; i++) {
+            for (var j = 0; j < tileTemplate.template[0].length; j++) {
                 if (tileTemplate.template[i][j] != TileID.NONE
                         && position.x - tileTemplate.spawnY + i >= 0
                         && position.x - tileTemplate.spawnY + i < world.length

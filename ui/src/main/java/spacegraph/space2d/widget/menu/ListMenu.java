@@ -21,14 +21,14 @@ public class ListMenu extends Menu {
      */
     public ListMenu(Map<String, Supplier<Surface>> menu, MenuView view) {
         super(menu, view);
-        ButtonSet index = new ButtonSet(ButtonSet.Mode.One, menu.entrySet().stream().map(e -> new CheckBox(e.getKey()).on(() -> view(e.getValue())))::iterator);
+        var index = new ButtonSet(ButtonSet.Mode.One, menu.entrySet().stream().map(e -> new CheckBox(e.getKey()).on(() -> view(e.getValue())))::iterator);
         index.vertical();
         wrap = Splitting.row(index, 0.2f, new EmptySurface());
         set(wrap);
     }
 
     private void view(Supplier<Surface> value) {
-        Surface v = value.get();
+        var v = value.get();
         wrap.R(v);
     }
 

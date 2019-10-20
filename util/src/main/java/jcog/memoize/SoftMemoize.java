@@ -19,7 +19,7 @@ public class SoftMemoize<X, Y> extends CustomConcurrentHashMap<X, Object> implem
     public SoftMemoize(Function<X, Y> g, int expSize, Strength keyStrength, Strength valueStrength) {
         super(keyStrength, EQUALS, valueStrength, EQUALS, expSize);
         this.f = (x) -> {
-            Y y = g.apply(x);
+            var y = g.apply(x);
             return y == null ?
                     NULL :
                     y;
@@ -33,7 +33,7 @@ public class SoftMemoize<X, Y> extends CustomConcurrentHashMap<X, Object> implem
 
     @Override
     public Y apply(X x) {
-        Object y = computeIfAbsent(x, f);
+        var y = computeIfAbsent(x, f);
         if (y == NULL)
             return null;
         else

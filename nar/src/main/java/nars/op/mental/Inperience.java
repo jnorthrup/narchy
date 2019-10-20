@@ -60,9 +60,9 @@ public class Inperience extends TaskTransformAction {
 
     static Term reifyBeliefOrGoal(Task t, Term self) {
 
-        Term y = describe(t.term());
+        var y = describe(t.term());
 
-        Atomic verb = verb(t.punc());
+        var verb = verb(t.punc());
 
         //return $.funcImg(verb, self, y.negIf(t.isNegative()));
         return $.func(verb, self, y.negIf(t.isNegative()));
@@ -89,13 +89,13 @@ public class Inperience extends TaskTransformAction {
     @Override
     protected Task transform(Task x, Derivation d) {
 
-        NAR n = d.nar;
+        var n = d.nar;
 
-        int volMax = n.termVolMax.intValue();
+        var volMax = n.termVolMax.intValue();
 //        int volMaxPre = volMax-VOL_SAFETY_MARGIN;
 //        Random rng = d.random;
 
-        Term self = n.self();
+        var self = n.self();
 
         //Predicate<Task> taskFilter = t -> accept(volMaxPre, t);
         //StableBloomFilter<Task> filter = Terms.newTaskBloomFilter(rng, ((TaskLinkWhat) w).links.links.size());
@@ -129,7 +129,7 @@ public class Inperience extends TaskTransformAction {
     }
 
     private @Nullable Task reflect(int volMax, Term self, Task t, Derivation d) {
-        When<What> when = d.when;
+        var when = d.when;
         long s, e;
         if (PROPAGATE_ETERNAL || !t.isEternal()) {
             s = t.start(); e = t.end();
@@ -139,9 +139,9 @@ public class Inperience extends TaskTransformAction {
 
         Task u = null;
         if (t.isBeliefOrGoal()) {
-            Term r = reifyBeliefOrGoal(t, self);
+            var r = reifyBeliefOrGoal(t, self);
             if ((r = validReification(r, volMax)) != null) {
-                Truth tt = t.truth();
+                var tt = t.truth();
                 u = new InperienceTask(r, $.t(1,
                     Math.max(d.confMin,
                         tt.conf() * tt.polarity()
@@ -151,9 +151,9 @@ public class Inperience extends TaskTransformAction {
             }
 
         } else {
-            Term r = reifyQuestion(t.term(), t.punc(), self);
+            var r = reifyQuestion(t.term(), t.punc(), self);
             if ((r = validReification(r, volMax)) != null) {
-                float beliefConfDefault = d.nar.confDefault(BELIEF);
+                var beliefConfDefault = d.nar.confDefault(BELIEF);
                 u = new InperienceTask(r, $.t(1,
                     Math.max(d.confMin, beliefConfDefault * t.priElseZero())
                 ), t, s, e);
@@ -168,9 +168,9 @@ public class Inperience extends TaskTransformAction {
 
     /** attempt to filter believe(believe(.... */
     private static boolean isRecursive(Task t, Term self) {
-        Term x = t.term();
+        var x = t.term();
          if (x.hasAll(INH.bit | PROD.bit) && x.op()==INH && x.sub(0).op()==PROD && x.sub(1).equals(verb(t.punc()))) {
-             Term inperiencer = x.sub(0).sub(0);
+             var inperiencer = x.sub(0).sub(0);
              return inperiencer instanceof nars.term.Variable || inperiencer.equals(self);
          }
          return false;

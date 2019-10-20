@@ -57,7 +57,7 @@ public class CommunicationMonitor {
         if (locker == null)
             locker = o;
         else {
-            int p = 0;
+            var p = 0;
             while (locker != null) {
 
                     

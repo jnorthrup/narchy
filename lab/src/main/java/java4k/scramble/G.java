@@ -19,12 +19,12 @@ public class G extends Applet implements Runnable
     public void run()
     {
         try {
-        enableEvents( -1 ); 
+        enableEvents( -1 );
 
-        BufferedImage screen = new BufferedImage(224, 256, BufferedImage.TYPE_INT_RGB);
-        Graphics2D g2 = (Graphics2D)screen.getGraphics();
+            var screen = new BufferedImage(224, 256, BufferedImage.TYPE_INT_RGB);
+            var g2 = (Graphics2D)screen.getGraphics();
 
-        Graphics2D appletG = (Graphics2D)getGraphics();
+            var appletG = (Graphics2D)getGraphics();
         appletG.scale( 2, 2 );
 
         String[] s_levelData =
@@ -177,13 +177,13 @@ public class G extends Applet implements Runnable
             "",
         };
 
-        for( int i = 0; i < s_levelData.length; i += 2 )
+        for(var i = 0; i < s_levelData.length; i += 2 )
         {
             while( s_levelData[i + 1].length() < s_levelData[i].length() )
                 s_levelData[i + 1] += "\01";
         }
 
-        int[] colorTable = new int[6];
+            var colorTable = new int[6];
         
         colorTable[1] = 0xffffffff;
         colorTable[2] = 0xffff0000;
@@ -191,10 +191,10 @@ public class G extends Applet implements Runnable
         colorTable[4] = 0xffff5500;
         colorTable[5] = 0xffff00ff;
 
-            BufferedImage data = new BufferedImage(54, 43, BufferedImage.TYPE_INT_ARGB);
+            var data = new BufferedImage(54, 43, BufferedImage.TYPE_INT_ARGB);
         {
-            int c = 0;
-            String graphicData = "\01\01\01\02\06\01\01\01\01\01\03\05\01\01\01" +
+            var c = 0;
+            var graphicData = "\01\01\01\02\06\01\01\01\01\01\03\05\01\01\01" +
                     "\01\01\01\03\01\01\01\01\01\01\01\05\01\01\01" +
                     "\01\01\01\01\02\01\03\01\04\01\01\01\01\01\01" +
                     "\01\01\01\01\04\01\01\04\01\01\01\02\03\05\06" +
@@ -349,28 +349,28 @@ public class G extends Applet implements Runnable
                     "\01\06\01\01\04\01\01\05\01\01\01\01\01\01\01" +
                     "\01\01\01\01\01\01\01\01\01\01\05\01\01\03\01" +
                     "\01\01\01\01\01\01\01\01\01\01\01\01";
-            for(int idx = 0; idx < 43 * 54; idx++ )
+            for(var idx = 0; idx < 43 * 54; idx++ )
             {
-                int delta = graphicData.charAt(idx) - 1;
+                var delta = graphicData.charAt(idx) - 1;
                 c = (c + delta) % 6;
                 data.setRGB( idx % 54, idx / 54, colorTable[c] );
             }
         }
 
-            final int G_FLAT    = 15;
-            final int G_HOLE    = 19;
-        final int GT_FLAT   = 20;
+            final var G_FLAT    = 15;
+            final var G_HOLE    = 19;
+        final var GT_FLAT   = 20;
 
-            final int N_IMG = 23;
-        BufferedImage[] sii = new BufferedImage[N_IMG];
-        int[] siox = new int[N_IMG];
-        int[] sioy = new int[N_IMG];
-        int[] sibl = new int[N_IMG];
-        int[] sibt = new int[N_IMG];
-        int[] sibr = new int[N_IMG];
-        int[] sibb = new int[N_IMG];
+            final var N_IMG = 23;
+            var sii = new BufferedImage[N_IMG];
+            var siox = new int[N_IMG];
+            var sioy = new int[N_IMG];
+            var sibl = new int[N_IMG];
+            var sibt = new int[N_IMG];
+            var sibr = new int[N_IMG];
+            var sibb = new int[N_IMG];
 
-        String siData =
+            var siData =
             "\15\40\23\13\10" + 
 
             "\04\04\01\01\04" + 
@@ -400,16 +400,16 @@ public class G extends Applet implements Runnable
 
             "\56\42\10\10\10" + 
             "\46\10\10\10\10" + 
-            "\36\10\10\10\10";  
+            "\36\10\10\10\10";
 
-        int idx = 0;
-        for( int i = 1; i < N_IMG; i++ )
+            var idx = 0;
+        for(var i = 1; i < N_IMG; i++ )
         {
             int x = siData.charAt(idx++);
             int y = siData.charAt(idx++);
             int w = siData.charAt(idx++);
             int h = siData.charAt(idx++);
-            int b = siData.charAt(idx++) - 6;
+            var b = siData.charAt(idx++) - 6;
             
 
             siox[i] = -w / 2;
@@ -426,65 +426,65 @@ public class G extends Applet implements Runnable
                     sibt[i] -= 256;
         }
 
-        final int MAX_S = 100;
+        final var MAX_S = 100;
 
-            final int MODE_GAMEOVER     = 0;
+            final var MODE_GAMEOVER     = 0;
 
-            final int VIEW_TOP = 30;
-        final int VIEW_BOT = VIEW_TOP + 25 * 8;
+            final var VIEW_TOP = 30;
+        final var VIEW_BOT = VIEW_TOP + 25 * 8;
 
 
-            long    start   = System.nanoTime();
-            boolean hitBase = false;
-            int bombCount = 0;
-            int sceneryTH = 0;
-            int sceneryBH = 0;
+            var start   = System.nanoTime();
+            var hitBase = false;
+            var bombCount = 0;
+            var sceneryTH = 0;
+            var sceneryBH = 0;
             String levelTopData = null;
             String levelBotData = null;
-            int mode = MODE_GAMEOVER;
-            int ships = 0;
-            int fuel = 0;
-            int hiscore = 10000;
-            int score = 0;
-            int level = 0;
-            final int VIEW_MID = (VIEW_TOP + VIEW_BOT) / 2;
-            final int MODE_PLAYING = 3;
-            final int MODE_RETRYLEVEL = 2;
-            final int MODE_NEWGAME = 1;
-            boolean bomb = false;
-            boolean shot = false;
-            int shipy = 0;
-            int shipx = 0;
-            int x = 0;
-            int[] sd = new int[MAX_S];
-            int[] sy = new int[MAX_S];
-            int[] sx = new int[MAX_S];
-            int[] st = new int[MAX_S];
-            final int GT_DOWN = 22;
-            final int GT_UP = 21;
-            final int G_PEAK = 18;
-            final int G_DOWN = 17;
-            final int G_UP = 16;
-            final int METEOR = 14;
-            final int SAUCER = 13;
-            final int BASE = 12;
-            final int MYSTERY = 11;
-            final int FUEL = 10;
-            final int ROCKET_FLYING = 9;
-            final int ROCKET = 8;
-            final int EXPLODE = 7;
-            final int SHIP_FLAME = 6;
-            final int BOMB_V = 5;
-            final int BOMB_D = 4;
-            final int BOMB_H = 3;
-            final int SHOT = 2;
-            final int SHIP = 1;
-            for(int count = 0; ;)
+            var mode = MODE_GAMEOVER;
+            var ships = 0;
+            var fuel = 0;
+            var hiscore = 10000;
+            var score = 0;
+            var level = 0;
+            final var VIEW_MID = (VIEW_TOP + VIEW_BOT) / 2;
+            final var MODE_PLAYING = 3;
+            final var MODE_RETRYLEVEL = 2;
+            final var MODE_NEWGAME = 1;
+            var bomb = false;
+            var shot = false;
+            var shipy = 0;
+            var shipx = 0;
+            var x = 0;
+            var sd = new int[MAX_S];
+            var sy = new int[MAX_S];
+            var sx = new int[MAX_S];
+            var st = new int[MAX_S];
+            final var GT_DOWN = 22;
+            final var GT_UP = 21;
+            final var G_PEAK = 18;
+            final var G_DOWN = 17;
+            final var G_UP = 16;
+            final var METEOR = 14;
+            final var SAUCER = 13;
+            final var BASE = 12;
+            final var MYSTERY = 11;
+            final var FUEL = 10;
+            final var ROCKET_FLYING = 9;
+            final var ROCKET = 8;
+            final var EXPLODE = 7;
+            final var SHIP_FLAME = 6;
+            final var BOMB_V = 5;
+            final var BOMB_D = 4;
+            final var BOMB_H = 3;
+            final var SHOT = 2;
+            final var SHIP = 1;
+            for(var count = 0; ;)
         {
 
             g2.setColor( new Color(0f, 0f, 0f) );
-            int dh = getHeight();
-            int dw = getWidth();
+            var dh = getHeight();
+            var dw = getWidth();
             g2.fillRect( 0, 0, dw, dh );
 
             g2.setColor( new Color(1f, 1f, 1f) );
@@ -514,9 +514,9 @@ public class G extends Applet implements Runnable
                 shipx = 50;
                 shipy = VIEW_TOP + 48;
                 hitBase = false;
-                for( int i = 1; i < MAX_S; i++ )
+                for(var i = 1; i < MAX_S; i++ )
                     st[i] = 0;
-                for( int i = 0; i < 29; i++ )
+                for(var i = 0; i < 29; i++ )
                     addSprite( st, sx, sy, sd, G_FLAT, i * 8 - 4, VIEW_BOT - 5 * 8 + 4 );
                 sceneryBH = 5;
                 sceneryTH = 26;
@@ -533,14 +533,14 @@ public class G extends Applet implements Runnable
 
             if( st[0] == SHIP )
             {
-                boolean newShot = m_keysDown[KeyEvent.VK_SHIFT] || m_keysDown[' '];
+                var newShot = m_keysDown[KeyEvent.VK_SHIFT] || m_keysDown[' '];
                 if( !shot && newShot )
                 {
                     addSprite( st, sx, sy, sd, SHOT, x + shipx + 9, shipy );
                 }
                 shot = newShot;
-    
-                boolean newBomb = m_keysDown[KeyEvent.VK_CONTROL] ||
+
+                var newBomb = m_keysDown[KeyEvent.VK_CONTROL] ||
                                   m_keysDown['\\'] || m_keysDown['/'];
                 if( !bomb && newBomb )
                 {
@@ -556,7 +556,7 @@ public class G extends Applet implements Runnable
 
                 if( (x & 7) == 0 )
                 {
-                    int c = x / 8;
+                    var c = x / 8;
                     if( c >= levelBotData.length() )
                     {
                         
@@ -566,15 +566,15 @@ public class G extends Applet implements Runnable
                         levelTopData += s_levelData[level * 2 + 1];
                     }
 
-                    char bch = levelBotData.charAt(c);
-                    char tch = levelTopData.charAt(c);
+                    var bch = levelBotData.charAt(c);
+                    var tch = levelTopData.charAt(c);
 
 
-                    int X = x + 28 * 8;
-                    int YB = VIEW_BOT - sceneryBH * 8;
-                    int YT = VIEW_BOT - sceneryTH * 8;
-    
-                    int spriteB = (bch >> 3);
+                    var X = x + 28 * 8;
+                    var YB = VIEW_BOT - sceneryBH * 8;
+                    var YT = VIEW_BOT - sceneryTH * 8;
+
+                    var spriteB = (bch >> 3);
                     if( spriteB != 0 )
                     {
                         if( (c & 1) == 0 )
@@ -583,19 +583,19 @@ public class G extends Applet implements Runnable
                             sceneryBH = spriteB + 1;
                     }
 
-                    int spriteT = (tch >> 3);
+                    var spriteT = (tch >> 3);
                     if( spriteT != 0 )
                     {
                             sceneryTH = spriteT + 1;
                     }
 
-                    int sceneryB = (bch & 7) - 1 + G_FLAT;
+                    var sceneryB = (bch & 7) - 1 + G_FLAT;
                     if( sceneryB == G_UP || sceneryB == G_PEAK )
                         addSprite( st, sx, sy, sd, sceneryB, X + 4, YB - 4 );
                     else
                         addSprite( st, sx, sy, sd, sceneryB, X + 4, YB + 4 );
 
-                    int sceneryT = (tch & 7) - 1 + GT_FLAT;
+                    var sceneryT = (tch & 7) - 1 + GT_FLAT;
                     if( sceneryT == GT_DOWN )
                         addSprite( st, sx, sy, sd, GT_DOWN, X + 4, YT + 12 );
                     else
@@ -647,7 +647,7 @@ public class G extends Applet implements Runnable
             g2.drawString( "SCORE " + score, 30, 10 );
             g2.drawString( "HI " + hiscore, 150, 10 );
 
-            for( int i = 0; i < 6; i++ )
+            for(var i = 0; i < 6; i++ )
             {
                 g2.setColor( new Color(1f, 0f, 0f) );
                 if( i > level )
@@ -686,15 +686,15 @@ public class G extends Applet implements Runnable
             g2.setColor( new Color(1f, 0f, 0f) );
 
             bombCount = 0;
-            for( int i = st.length - 1; i >= 0; i-- )
+            for(var i = st.length - 1; i >= 0; i-- )
             {
-                int t = st[i];
+                var t = st[i];
                 
                 if( t != 0 )
                 {
-                    for( int j = 0; j < st.length; j++ )
+                    for(var j = 0; j < st.length; j++ )
                     {
-                        int tj = st[j];
+                        var tj = st[j];
                         if(i == j || t >= EXPLODE || tj <= EXPLODE)
                             continue;
 
@@ -714,7 +714,7 @@ public class G extends Applet implements Runnable
                             st[j] = EXPLODE;
                             sd[j] = 0;
                         }
-                        int oldScore = score;
+                        var oldScore = score;
                         if( tj == ROCKET )
                             score += 50;
                         if( tj == ROCKET_FLYING )
@@ -804,7 +804,7 @@ public class G extends Applet implements Runnable
 
                     if( t == SAUCER )
                     {
-                        float ang = 3.1415926f * ++sd[i] / 35;
+                        var ang = 3.1415926f * ++sd[i] / 35;
                         sy[i] = (int)(126 - 34 * Math.sin(ang));
                         sx[i] = (int)(x + 224 - sd[i] + 5 * Math.sin(ang * 2));
                     }
@@ -846,7 +846,7 @@ public class G extends Applet implements Runnable
             g2.setColor( new Color(0.5f, 1f, 0f) );
             g2.fillRect( 58, VIEW_BOT + 4, fuel / 25, 8 );
 
-            for( int i = 1; i < ships; i++ )
+            for(var i = 1; i < ships; i++ )
             {
                 g2.drawImage( sii[SHIP], i * 20 - 16, VIEW_BOT + 13, null );
             }
@@ -856,11 +856,11 @@ public class G extends Applet implements Runnable
 
 
 
-            final int FRAME_PERIOD  = 16666667; 
+            final var FRAME_PERIOD  = 16666667;
 
 
-            long    now = System.nanoTime();
-            long elapsed = now - start;
+            var now = System.nanoTime();
+            var elapsed = now - start;
             if( elapsed < -FRAME_PERIOD )
                 start = now;
             else
@@ -897,8 +897,8 @@ public class G extends Applet implements Runnable
 
     public static int addSprite(int[] st, int[] sx, int[] sy, int[] sd, int t, int x, int y)
     {
-        final int G_FLAT    = 15;
-        for( int i = t < G_FLAT ? 0 : 40; i < st.length; i++ )
+        final var G_FLAT    = 15;
+        for(var i = t < G_FLAT ? 0 : 40; i < st.length; i++ )
         {
             if( st[i] == 0 )
             {
@@ -918,13 +918,13 @@ public class G extends Applet implements Runnable
     {
         if( e.getID() == KeyEvent.KEY_PRESSED )
         {
-            int code = ((KeyEvent)e).getKeyCode();
+            var code = ((KeyEvent)e).getKeyCode();
             m_keysDown[code] = true;
         }
 
         if( e.getID() == KeyEvent.KEY_RELEASED )
         {
-            int code = ((KeyEvent)e).getKeyCode();
+            var code = ((KeyEvent)e).getKeyCode();
             m_keysDown[code] = false;
         }
 /*

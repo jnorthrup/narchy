@@ -73,7 +73,7 @@ public abstract class AbstractOff<V> implements Off {
 
         @Override
         public void accept(V v) {
-            Consumer<V> c = reaction.get();
+            var c = reaction.get();
             if (c != null) {
                 try {
                     c.accept(v);

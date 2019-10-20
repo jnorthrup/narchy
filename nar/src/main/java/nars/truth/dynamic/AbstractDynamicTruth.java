@@ -54,8 +54,8 @@ public abstract class AbstractDynamicTruth {
 	}
 
 	public static Task subTask(BeliefTable table, Term subTerm, long subStart, long subEnd, Predicate<Task> filter, DynTaskify d) {
-		NAR nar = d.nar;
-		float dur = d.dur;
+		var nar = d.nar;
+		var dur = d.dur;
 		Task x;
 		switch (NAL.DYN_TASK_MATCH_MODE) {
 			case 0:
@@ -67,7 +67,7 @@ public abstract class AbstractDynamicTruth {
 				x = table.match(subStart, subEnd, subTerm, filter, dur, nar);
 				break;
 			case 2:
-				@Nullable Answer a = table.sampleAnswer(subStart, subEnd, subTerm, filter, dur, nar);
+				@Nullable var a = table.sampleAnswer(subStart, subEnd, subTerm, filter, dur, nar);
 				x = a!=null ? a.sample() : null;
 				break;
 			default:
@@ -89,7 +89,7 @@ public abstract class AbstractDynamicTruth {
 	public abstract int componentsEstimate();
 
 	public @Nullable Task task(Compound template, long earliest, long s, long e, DynTaskify d) {
-		Term y = reconstruct(template, s, e, d);
+		var y = reconstruct(template, s, e, d);
 		if (y == null || !y.unneg().op().taskable /*|| y.hasXternal()*/) { //quick tests
 //			if (NAL.DEBUG) {
 //				//TEMPORARY for debug
@@ -104,19 +104,19 @@ public abstract class AbstractDynamicTruth {
 			return null;
 		}
 
-		NAR nar = d.nar;
+		var nar = d.nar;
 
 
-		boolean absolute = !temporal() || s == LongInterval.ETERNAL || earliest == LongInterval.ETERNAL;
+		var absolute = !temporal() || s == LongInterval.ETERNAL || earliest == LongInterval.ETERNAL;
 		if (!absolute) {
 			for (int i = 0, dSize = d.size(); i < dSize; i++) {
-				Task x = d.get(i);
-				long xStart = x.start();
+				var x = d.get(i);
+				var xStart = x.start();
 				if (xStart != ETERNAL) {
-					long shift = xStart - earliest;
+					var shift = xStart - earliest;
 					long ss = s + shift, ee = e + shift;
 					if (xStart != ss || x.end() != ee) {
-						Task tt = Task.project(x, ss, ee,
+						var tt = Task.project(x, ss, ee,
 							NAL.truth.EVI_MIN, //minimal truth threshold for accumulating evidence
 							false,
 							1, //no need to dither truth or time here.  maybe in the final calculation though.
@@ -132,7 +132,7 @@ public abstract class AbstractDynamicTruth {
 		}
 
 
-		Truth t = this.truth(d);
+		var t = this.truth(d);
 		if (t == null)
 			return null;
 
@@ -145,7 +145,7 @@ public abstract class AbstractDynamicTruth {
 
 		if (d.model == DynamicConjTruth.ConjIntersection) {
 			//adjust sequence length
-			int r = y.eventRange();
+			var r = y.eventRange();
 			if (s!=ETERNAL && r > 0) {
 				if (e - s > r)
 					e -= r;

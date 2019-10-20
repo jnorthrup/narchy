@@ -20,7 +20,7 @@ public abstract class AbstractSectTruth extends AbstractDynamicTruth {
     private static Truth apply(DynTaskify d, boolean negComponents, boolean negResult) {
         MutableTruth y = null;
         for (int i = 0, dSize = d.size(); i < dSize; i++) {
-            Truth x = d.truth(i);
+            var x = d.truth(i);
 //            if (x == null)
 //                return null;
 
@@ -30,7 +30,7 @@ public abstract class AbstractSectTruth extends AbstractDynamicTruth {
             if (y == null) {
                 y = new MutableTruth(x);
             } else {
-                Truth yy = NALTruth.Intersection.apply(y, x, null);
+                var yy = NALTruth.Intersection.apply(y, x, null);
                 if (yy == null)
                     return null;
                 y.set(yy);

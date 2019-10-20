@@ -26,12 +26,12 @@ public class UnipolarMotor implements ActionSignal.MotorFunction {
 
     @Override
     public @Nullable Truth apply(@Nullable Truth b, @Nullable Truth g) {
-        float goal = (g != null) ?
+        var goal = (g != null) ?
                 (freqOrExp ? g.freq() : g.expectation()) : ifGoalMissing.valueOf(lastF);
 
         lastF = goal;
 
-        float feedbackFreq = (goal == goal) ? update.valueOf(goal) : Float.NaN;
+        var feedbackFreq = (goal == goal) ? update.valueOf(goal) : Float.NaN;
 
         return feedbackFreq == feedbackFreq ? truther.value(feedbackFreq, g!=null ? g.conf() : 0) : null;
     }

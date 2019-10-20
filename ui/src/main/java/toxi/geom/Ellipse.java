@@ -70,7 +70,7 @@ public class Ellipse extends Vec2D implements Shape2D {
     }
 
     public boolean containsPoint(ReadonlyVec2D p) {
-        Vec2D[] foci = getFoci();
+        var foci = getFoci();
         return p.distanceTo(foci[0]) + p.distanceTo(foci[1]) < 2 * MathUtils
                 .max(radius.x, radius.y);
     }
@@ -124,7 +124,7 @@ public class Ellipse extends Vec2D implements Shape2D {
      * @return the focus
      */
     public Vec2D[] getFoci() {
-        Vec2D[] foci = new Vec2D[2];
+        var foci = new Vec2D[2];
         if (radius.x > radius.y) {
             foci[0] = sub(focus, 0);
             foci[1] = add(focus, 0);
@@ -192,9 +192,9 @@ public class Ellipse extends Vec2D implements Shape2D {
      * @return ellipse as polygon
      */
     public Polygon2D toPolygon2D(int res) {
-        Polygon2D poly = new Polygon2D();
-        float step = MathUtils.TWO_PI / res;
-        for (int i = 0; i < res; i++) {
+        var poly = new Polygon2D();
+        var step = MathUtils.TWO_PI / res;
+        for (var i = 0; i < res; i++) {
             poly.add(Vec2D.fromTheta(i * step).scaleSelf(radius).addSelf(this));
         }
         return poly;

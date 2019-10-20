@@ -36,7 +36,7 @@ class WebSocketSelector extends WebSocketAdapter {
 
 
     private boolean registerNext() {
-        NewChannel newChannel = newChannels.poll();
+        var newChannel = newChannels.poll();
         if (newChannel == null) {
             return false;
         }
@@ -51,7 +51,7 @@ class WebSocketSelector extends WebSocketAdapter {
 
     private boolean readable(WebSocketImpl conn) throws IOException {
         buffer.clear();
-        int read = conn.getChannel().read(buffer);
+        var read = conn.getChannel().read(buffer);
         buffer.flip();
 
         switch (read) {
@@ -84,7 +84,7 @@ class WebSocketSelector extends WebSocketAdapter {
     }
 
     void stop() {
-        for (WebSocket ws : connections) {
+        for (var ws : connections) {
             ws.close(CloseFrame.NORMAL);
         }
         connections.clear();
@@ -102,10 +102,10 @@ class WebSocketSelector extends WebSocketAdapter {
         while (registerNext()) {
         }
 
-        Iterator<SelectionKey> it = selector.selectedKeys().iterator();
+        var it = selector.selectedKeys().iterator();
         while (it.hasNext()) {
 
-            SelectionKey key = it.next();
+            var key = it.next();
 
             if (!key.isValid()) {
                 continue;
@@ -200,7 +200,7 @@ class WebSocketSelector extends WebSocketAdapter {
 
     @Override
     public final void onWriteDemand(WebSocket w) {
-        WebSocketImpl conn = (WebSocketImpl) w;
+        var conn = (WebSocketImpl) w;
         conn.getSelectionKey().interestOps(SelectionKey.OP_READ | SelectionKey.OP_WRITE);
         try {
             selector.wakeup();

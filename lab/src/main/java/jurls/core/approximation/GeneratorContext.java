@@ -22,7 +22,7 @@ public class GeneratorContext {
 
     public GeneratorContext(int numInputs) {
         inputScalars = new Scalar[numInputs];
-        for (int i = 0; i < numInputs; ++i) {
+        for (var i = 0; i < numInputs; ++i) {
             inputScalars[i] = new Scalar(i);
         }
     }
@@ -44,7 +44,7 @@ public class GeneratorContext {
     }
 
     public Scalar newParameter(double lower, double upper) {
-        Scalar s = new Scalar(inputScalars.length + parameterIndex);
+        var s = new Scalar(inputScalars.length + parameterIndex);
         parameterData.add(Math.random() * (upper - lower) + lower);
         parameterScalars.add(s);
         parameterIndex++;
@@ -52,7 +52,7 @@ public class GeneratorContext {
     }
 
     public Scalar newBoundedParameter(double lower, double upper) {
-        Scalar s = newParameter(lower, upper);
+        var s = newParameter(lower, upper);
         s.setLowerBound(lower);
         s.setUpperBound(upper);
         return s;

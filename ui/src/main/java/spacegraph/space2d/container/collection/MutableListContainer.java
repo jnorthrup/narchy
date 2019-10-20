@@ -89,7 +89,7 @@ public abstract class MutableListContainer extends AbstractMutableContainer<Surf
         if (s.length == 0) return;
 
         synchronized (children.list) {
-            for (Surface x : s) {
+            for (var x : s) {
                 if (x != null) {
                     _add(x);
                 }
@@ -136,7 +136,7 @@ public abstract class MutableListContainer extends AbstractMutableContainer<Surf
                     return this;
                 } else {
 
-                    int numExisting = size();
+                    var numExisting = size();
                     if (numExisting == 0) {
 
 
@@ -145,19 +145,19 @@ public abstract class MutableListContainer extends AbstractMutableContainer<Surf
                     } else {
 
 
-                        Surface[] ee = children.array();
+                        var ee = children.array();
                         if (!ArrayUtil.equalsIdentity(ee, next)) {
-                            IntSet pi = Util.intSet(x -> x.id, ee);
-                            IntSet ni = Util.intSet(x -> x.id, next);
-                            IntHashSet unchanged = new IntHashSet(ee.length + next.length).withAll(pi.select(ni::contains));
+                            var pi = Util.intSet(x -> x.id, ee);
+                            var ni = Util.intSet(x -> x.id, next);
+                            var unchanged = new IntHashSet(ee.length + next.length).withAll(pi.select(ni::contains));
 
 //                    Sets.SetView unchanged = Sets.intersection(
 //                            Set.of(cc), Set.of(next)
 //                    );
                             if (unchanged.isEmpty()) unchanged = null;
 
-                            int ei = 0;
-                            for (Surface e : ee) {
+                            var ei = 0;
+                            for (var e : ee) {
                                 if (unchanged == null || !unchanged.contains(e.id)) {
                                     e.stop();
                                     detachChild(ei);
@@ -166,7 +166,7 @@ public abstract class MutableListContainer extends AbstractMutableContainer<Surf
                                 ei++;
                             }
 
-                            for (Surface n : next) {
+                            for (var n : next) {
                                 if (unchanged == null || !unchanged.contains(n.id))
                                     add(n);
                             }
@@ -221,7 +221,7 @@ public abstract class MutableListContainer extends AbstractMutableContainer<Surf
                 children.clear();
             } else {
                 if (!children.isEmpty()) {
-                    for (Surface child : children) {
+                    for (var child : children) {
                         child.stop();
                     }
                     children.clear();

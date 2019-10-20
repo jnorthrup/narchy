@@ -34,14 +34,14 @@ public class BufferLine implements Comparable<BufferLine> {
         if (length()==0)
             return "";
 
-        String sb = chars.stream().map(bc -> String.valueOf(bc.getChar())).collect(Collectors.joining());
-        String buf = sb;
+        var sb = chars.stream().map(bc -> String.valueOf(bc.getChar())).collect(Collectors.joining());
+        var buf = sb;
         return buf;
     }
 
     void insertChar(char c, int col) {
 
-        BufferChar bc = new BufferChar(c);
+        var bc = new BufferChar(c);
         insertChar(col, bc);
     }
 
@@ -54,13 +54,13 @@ public class BufferLine implements Comparable<BufferLine> {
     /** returns the right=most substring intended to be moved to the new line */
     List<BufferChar> splitReturn(int col) {
 
-        int cs = chars.size();
+        var cs = chars.size();
         if (col == cs)
             return Collections.EMPTY_LIST; //EOL, nothing
 
-        FasterList<BufferChar> results = new FasterList<>(cs-col);
+        var results = new FasterList<BufferChar>(cs-col);
         while (cs-- > col) {
-            BufferChar c = removeChar(col);
+            var c = removeChar(col);
             results.addFast(c);
         }
         update();
@@ -72,7 +72,7 @@ public class BufferLine implements Comparable<BufferLine> {
     }
 
     BufferChar removeChar(int col) {
-        BufferChar removedChar = chars.remove(col);
+        var removedChar = chars.remove(col);
         observer.removeChar(removedChar);
         return removedChar;
     }

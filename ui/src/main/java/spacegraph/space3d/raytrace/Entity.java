@@ -29,7 +29,7 @@ public abstract class Entity {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            double hs = sideLength / 2;
+            var hs = sideLength / 2;
             faces = new Ray3[]{
                 new Ray3(
                     position.add(new vv3(-hs, 0, 0)),
@@ -62,14 +62,14 @@ public abstract class Entity {
         public Ray3 collide(Ray3 ray) {
             Ray3 closestNormal = null;
             double distanceSquared = 0;
-            for (Ray3 face : faces) {
-                vv3 faceNormal = face.direction;
-                double distance = ray.position.minus(face.position).dot(faceNormal);
+            for (var face : faces) {
+                var faceNormal = face.direction;
+                var distance = ray.position.minus(face.position).dot(faceNormal);
                 if (distance < 0) {
                     faceNormal = faceNormal.scale(-1);
                     distance = -distance;
                 }
-                Ray3 normal = new Ray3(
+                var normal = new Ray3(
                     ray.position.minus(
                         ray.direction.scale(distance / ray.direction.dot(faceNormal))
                     ),
@@ -78,8 +78,8 @@ public abstract class Entity {
                 if (normal.position.minus(ray.position).dot(ray.direction) < Scene.Epsilon) {
                     continue;
                 }
-                vv3 fp = normal.position.minus(face.position);
-                double hs = sideLength / 2;
+                var fp = normal.position.minus(face.position);
+                var hs = sideLength / 2;
                 if (Math.abs(fp.x) > hs || Math.abs(fp.y) > hs || Math.abs(fp.z) > hs) {
                     continue;
                 }
@@ -111,22 +111,22 @@ public abstract class Entity {
 
         @Override
         public Ray3 collide(Ray3 ray) {
-            vv3 closestPoint = ray.direction.scale(
+            var closestPoint = ray.direction.scale(
                 position.minus(ray.position).dot(ray.direction)
             ).add(ray.position);
 
-            vv3 perpendicular = closestPoint.minus(position);
+            var perpendicular = closestPoint.minus(position);
             if (perpendicular.lengthSquared() >= radius * radius)
                 return null;
 
-            vv3 opposite = ray.direction.scale(
+            var opposite = ray.direction.scale(
                 Math.sqrt(radius*radius - perpendicular.lengthSquared())
             );
-            vv3 posPerp = position.add(perpendicular);
-            vv3 intersection1 = posPerp.minus(opposite);
-            vv3 intersection2 = posPerp.add(opposite);
-            double distance1 = intersection1.minus(ray.position).dot(ray.direction);
-            double distance2 = intersection2.minus(ray.position).dot(ray.direction);
+            var posPerp = position.add(perpendicular);
+            var intersection1 = posPerp.minus(opposite);
+            var intersection2 = posPerp.add(opposite);
+            var distance1 = intersection1.minus(ray.position).dot(ray.direction);
+            var distance2 = intersection2.minus(ray.position).dot(ray.direction);
 
             if (distance1 <= Scene.Epsilon && distance2 <= Scene.Epsilon)
                 return null;
@@ -141,7 +141,7 @@ public abstract class Entity {
             } else {
                 intersection = intersection2;
             }
-            Ray3 normal = new Ray3(intersection, intersection.minus(position));
+            var normal = new Ray3(intersection, intersection.minus(position));
 
             if (ray.position.minus(position).lengthSquared() < radius * radius)
                 normal.direction.invertThis();

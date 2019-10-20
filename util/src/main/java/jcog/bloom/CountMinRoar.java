@@ -25,12 +25,12 @@ public class CountMinRoar extends CountMinSketch {
     }
 
     public void whileEachInt(IntIntPredicate each) {
-        PeekableIntIterator s = set.getIntIterator();
+        var s = set.getIntIterator();
         int next;
         while (s.hasNext() && each.accept(next = s.next(), count(next)));
     }
     public void whileEachShort(ShortIntPredicate each) {
-        PeekableIntIterator s = set.getIntIterator();
+        var s = set.getIntIterator();
         short next;
         while (s.hasNext() && each.accept(next = (short) s.next(), count(next)));
     }
@@ -41,7 +41,7 @@ public class CountMinRoar extends CountMinSketch {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder(uniques() * 6 /* estimate */);
+        var sb = new StringBuilder(uniques() * 6 /* estimate */);
         whileEachInt((i, c) -> {
             sb.append(i).append('x').append(c).append(',');
             return true;

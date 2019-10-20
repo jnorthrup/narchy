@@ -32,7 +32,7 @@ public abstract class EventIntroduction extends Introduction {
 
     @Override
     protected final @Nullable Term apply(Term xx, What what) {
-        Term y = applyAndNormalize(xx, what);
+        var y = applyAndNormalize(xx, what);
         return y != xx ? y : null;
     }
 
@@ -43,7 +43,7 @@ public abstract class EventIntroduction extends Introduction {
     }
 
     private Term applyAndNormalize(Term x, What w) {
-        Term y = applyUnnormalized(x, w);
+        var y = applyUnnormalized(x, w);
         return y!=null && !x.equals(y) && y.volume() <= volMax ? y.normalize() : x;
     }
 
@@ -54,11 +54,11 @@ public abstract class EventIntroduction extends Introduction {
         if (volMax <= 0 || x instanceof Sequence)
             return x; //HACK incompatible with sequences for now
 
-        Op xo = x.op();
+        var xo = x.op();
         switch (xo) {
             case NEG:
-                Term xu = x.unneg();
-                Term y = applyUnnormalized(xu, volMax-1, w);
+                var xu = x.unneg();
+                var y = applyUnnormalized(xu, volMax-1, w);
                 return y != null && y != xu ? y.neg() : x;
             case IMPL:
                 return x; //HACK dont support IMPL since they can conflict when &&'d with the factor
@@ -72,7 +72,7 @@ public abstract class EventIntroduction extends Introduction {
                         Map<Term, Term> replacement = new UnifiedMap(1);
                         if (!x.eventsAND((when, what) -> {
                             if (what instanceof Compound && what.op() == CONJ && !Conj.isSeq(what) && what.dt()!=XTERNAL && !replacement.containsKey(what)) {
-                                Term what2 = applyUnnormalized(what, volMax - (x.volume() - what.volume()) - 1, w);
+                                var what2 = applyUnnormalized(what, volMax - (x.volume() - what.volume()) - 1, w);
                                 if (what2 != null)
                                     replacement.put(what, what2);
                             }
@@ -80,7 +80,7 @@ public abstract class EventIntroduction extends Introduction {
                         }, 0, false, true /* xternal disabled */))
                             return x; //fail
                         if (!replacement.isEmpty()) {
-                            Term xx = x.replace(replacement);
+                            var xx = x.replace(replacement);
                             if (!(xx instanceof Bool))
                                 return xx;
                         }

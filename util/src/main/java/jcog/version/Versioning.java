@@ -48,11 +48,11 @@ public class Versioning<X> {
     public final void forEach(Consumer<Versioned<X>> each) {
 
 
-        int s = size;
+        var s = size;
         if (s <= 0)
             return;
 
-        Versioned<X>[] i = this.items;
+        var i = this.items;
 
         while (s>0) {
             each.accept(i[--s]);
@@ -94,12 +94,12 @@ public class Versioning<X> {
         if ((sizePrev = size) <= when)
             return false;
 
-        int sizeNext = sizePrev;
+        var sizeNext = sizePrev;
         Versioned[] i = this.items;
 
         if (each!=null) {
             while (sizeNext > when) {
-                Versioned victim = i[--sizeNext];
+                var victim = i[--sizeNext];
                 each.accept(victim);
                 victim.pop();
             }
@@ -125,7 +125,7 @@ public class Versioning<X> {
         //if (newItem == null)
         //    throw new NullPointerException();
 
-        Versioned<X>[] ii = this.items;
+        var ii = this.items;
         if (ii.length > this.size) {
             ii[this.size++] = newItem;
             return true;
@@ -147,7 +147,7 @@ public class Versioning<X> {
     }
 
     public final int ttlGetAndSet(int ttl) {
-        int t = this.ttl;
+        var t = this.ttl;
         this.ttl = ttl;
         return t;
     }

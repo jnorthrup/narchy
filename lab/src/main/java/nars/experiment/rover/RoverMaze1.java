@@ -18,7 +18,7 @@ public class RoverMaze1 {
 
 
     public static void main(String[] args) {
-        Rover r = new Rover(new NARS().get()) {
+        var r = new Rover(new NARS().get()) {
 
             @Override
             protected void create(Dynamics3D world) {
@@ -51,8 +51,8 @@ public class RoverMaze1 {
                     protected Body3D create(Dynamics3D world) {
                         torso.body.clearForces();
 
-                        Body3D n = super.create(world);
-                        HingeConstraint p = new HingeConstraint(torso.body, body, v(0, 0.2f, 0), v(0, -1f, 0), v(1, 0, 0), v(1, 0, 0));
+                        var n = super.create(world);
+                        var p = new HingeConstraint(torso.body, body, v(0, 0.2f, 0), v(0, -1f, 0), v(1, 0, 0), v(1, 0, 0));
                         p.setLimit(-1.0f, 1.0f);
                         add(p);
                         return n;
@@ -68,15 +68,15 @@ public class RoverMaze1 {
                 neck.shapeColor[2] = 0.5f;
                 neck.shapeColor[3] = 1f;
 
-                RetinaGrid rg = new RetinaGrid("cam1", v(), v(0, 0, 1), v(0.1f, 0, 0), v(0, 0.1f, 0), 6, 6, 4f) {
+                var rg = new RetinaGrid("cam1", v(), v(0, 0, 1), v(0.1f, 0, 0), v(0, 0.1f, 0), 6, 6, 4f) {
                     @Override
                     protected Body3D create(Dynamics3D world) {
 
-                        Body3D l = super.create(world);
+                        var l = super.create(world);
 
 
                         l.clearForces();
-                        HingeConstraint p = new HingeConstraint(neck.body, body, v(0, 0.6f, 0), v(0, -0.6f, 0), v(0, 1, 0), v(0, 1, 0));
+                        var p = new HingeConstraint(neck.body, body, v(0, 0.6f, 0), v(0, -0.6f, 0), v(0, 1, 0), v(0, 1, 0));
                         p.setLimit(-0.75f, 0.75f);
 
 

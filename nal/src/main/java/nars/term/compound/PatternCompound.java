@@ -37,8 +37,8 @@ public abstract class PatternCompound extends CachedCompound.TemporalCachedCompo
 
     /*@NotNull*/
     public static PatternCompound ellipsis(/*@NotNull*/ Compound seed, /*@NotNull*/ Subterms v, /*@NotNull*/ Ellipsis e) {
-        Op op = seed.op();
-        int dt = seed.dt();
+        var op = seed.op();
+        var dt = seed.dt();
 
         if ((op.commutative)) {
             return new PatternCompoundEllipsisCommutive(op, dt, e, v);
@@ -208,19 +208,19 @@ public abstract class PatternCompound extends CachedCompound.TemporalCachedCompo
 
             //uc==null ? y.toSetSorted() : y.toSetSorted(yy -> MatchConstraint.valid(yy, uc, u));
             //y.toSetSorted();
-            boolean seq = op() == CONJ && dt() == XTERNAL && Conj.isSeq(Y);
-            SortedSet<Term> yFree = seq ? Y.eventSet() : Y.subterms().toSetSorted((UnaryOperator<Term>) u::resolveTerm);
+            var seq = op() == CONJ && dt() == XTERNAL && Conj.isSeq(Y);
+            var yFree = seq ? Y.eventSet() : Y.subterms().toSetSorted((UnaryOperator<Term>) u::resolveTerm);
 
-            Subterms xx = subterms();
-            int s = xx.subs();
-            TermList xMatch = new TermList(s);
+            var xx = subterms();
+            var s = xx.subs();
+            var xMatch = new TermList(s);
 
-            Ellipsis ellipsis = this.ellipsis;
-            boolean finished = false;
-            for (int k = 0; k < s; k++) {
+            var ellipsis = this.ellipsis;
+            var finished = false;
+            for (var k = 0; k < s; k++) {
 
-                Term xk = xx.sub(k);
-                Term xxk = u.resolveTermRecurse(xk);
+                var xk = xx.sub(k);
+                var xxk = u.resolveTermRecurse(xk);
 
                 if (xk.equals(ellipsis)) {
                     if (xxk.equals(xk))
@@ -228,7 +228,7 @@ public abstract class PatternCompound extends CachedCompound.TemporalCachedCompo
 
                     ellipsis = null;
                     if (xxk instanceof Fragment) {
-                        for (Term ex : xxk.subterms()) {
+                        for (var ex : xxk.subterms()) {
                             if (!include(ex, xMatch, yFree, u)) {
                                 finished = true;
                                 break;
@@ -247,10 +247,10 @@ public abstract class PatternCompound extends CachedCompound.TemporalCachedCompo
                 }
 
             }
-            boolean result = false;
+            var result = false;
             if (!finished) {
-                int xs = xMatch.size();
-                int ys = yFree.size();
+                var xs = xMatch.size();
+                var ys = yFree.size();
 
                 if (ellipsis == null) {
                     //ellipsis assigned already; match the remainder as usual
@@ -276,17 +276,17 @@ public abstract class PatternCompound extends CachedCompound.TemporalCachedCompo
                     }
                 }
                 if (!finished) {
-                    int numRemainingForEllipsis = ys - xs;
+                    var numRemainingForEllipsis = ys - xs;
                     if (ellipsis.validSize(numRemainingForEllipsis)) {
                         if (xs > 0 && ys > 0) {
                             //test matches against the one constant target
-                            for (Iterator<Term> xi = xMatch.iterator(); xi.hasNext(); ) {
-                                Term ix = xi.next();
+                            for (var xi = xMatch.iterator(); xi.hasNext(); ) {
+                                var ix = xi.next();
                                 if (u.var(ix)) continue;
 
-                                boolean canMatch = false;
+                                var canMatch = false;
                                 Term onlyY = null;
-                                for (Term yy : yFree) {
+                                for (var yy : yFree) {
                                     if (Subterms.possiblyUnifiable(ix, yy, u.varBits)) {
                                         canMatch = true;
                                         if (onlyY == null)
@@ -329,7 +329,7 @@ public abstract class PatternCompound extends CachedCompound.TemporalCachedCompo
                                     } else {
                                         //no matches possible but need one
                                         if (ys >= 1) {
-                                            @Nullable Termutator t = Choose1.choose1(ellipsis, xMatch.get(0), yFree, u);
+                                            @Nullable var t = Choose1.choose1(ellipsis, xMatch.get(0), yFree, u);
                                             if (t == null) {
                                                 break;
                                             } else {
@@ -344,7 +344,7 @@ public abstract class PatternCompound extends CachedCompound.TemporalCachedCompo
 
                                 case 2: {
                                     if (ys >= 2) {
-                                        @Nullable Termutator t = Choose2.choose2(ellipsis, xMatch, yFree, u);
+                                        @Nullable var t = Choose2.choose2(ellipsis, xMatch, yFree, u);
                                         if (t == null) {
                                             break;
                                         } else {
@@ -373,13 +373,13 @@ public abstract class PatternCompound extends CachedCompound.TemporalCachedCompo
 
         private static boolean include(Term x, List<Term> xMatch, SortedSet<Term> yFree, Unify u) {
             if (!u.varIn(x)) {
-                boolean rem = yFree.remove(x);
+                var rem = yFree.remove(x);
                 if (rem)
                     return true;
 
                 if (x.hasAny(Op.Temporal)) {
-                    for (Iterator<Term> iterator = yFree.iterator(); iterator.hasNext(); ) {
-                        Term y = iterator.next();
+                    for (var iterator = yFree.iterator(); iterator.hasNext(); ) {
+                        var y = iterator.next();
                         if (!u.varIn(y)) {
                             //at this point volume, structure, etc can be compared
                             if (x.unify(y, u)) {

@@ -74,9 +74,9 @@ public class Art {
     }
 
     private static Image getImage(GraphicsConfiguration gc, String imageName) throws IOException {
-        BufferedImage source = ImageIO.read(Art.class.getResourceAsStream(imageName));
+        var source = ImageIO.read(Art.class.getResourceAsStream(imageName));
         Image image = gc.createCompatibleImage(source.getWidth(), source.getHeight(), Transparency.BITMASK);
-        Graphics2D g = (Graphics2D) image.getGraphics();
+        var g = (Graphics2D) image.getGraphics();
         g.setComposite(AlphaComposite.Src);
         g.drawImage(source, 0, 0, null);
         g.dispose();
@@ -84,12 +84,12 @@ public class Art {
     }
 
     private static Image[][] cutImage(GraphicsConfiguration gc, String imageName, int xSize, int ySize) throws IOException {
-        Image source = getImage(gc, imageName);
-        Image[][] images = new Image[source.getWidth(null) / xSize][source.getHeight(null) / ySize];
-        for (int x = 0; x < source.getWidth(null) / xSize; x++) {
-            for (int y = 0; y < source.getHeight(null) / ySize; y++) {
+        var source = getImage(gc, imageName);
+        var images = new Image[source.getWidth(null) / xSize][source.getHeight(null) / ySize];
+        for (var x = 0; x < source.getWidth(null) / xSize; x++) {
+            for (var y = 0; y < source.getHeight(null) / ySize; y++) {
                 Image image = gc.createCompatibleImage(xSize, ySize, Transparency.BITMASK);
-                Graphics2D g = (Graphics2D) image.getGraphics();
+                var g = (Graphics2D) image.getGraphics();
                 g.setComposite(AlphaComposite.Src);
                 g.drawImage(source, -x * xSize, -y * ySize, null);
                 g.dispose();

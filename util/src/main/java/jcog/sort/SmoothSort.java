@@ -44,7 +44,7 @@ public enum SmoothSort {
 
 		while (pshift != 1 || p != 1) {
 			if (pshift <= 1) {
-				int trail = Integer.numberOfTrailingZeros(p & ~1);
+				var trail = Integer.numberOfTrailingZeros(p & ~1);
 				p >>>= trail;
 				pshift += trail;
 			} else {
@@ -61,16 +61,16 @@ public enum SmoothSort {
 	}
 
 	private static <X> void trinkle(X[] m, int p, int pshift, int head, boolean trusty, Comparator<X> compare) {
-		X val = m[head];
+		var val = m[head];
 
 		while (p != 1) {
-			int stepson = head - LP[pshift];
-            X mstepson = m[stepson];
+			var stepson = head - LP[pshift];
+			var mstepson = m[stepson];
 			if (compare.compare(mstepson, val) <= 0) break;
 
 			if (!trusty && pshift > 1) {
-				int rt = head - 1;
-                int lf = head - 1 - LP[pshift - 2];
+				var rt = head - 1;
+				var lf = head - 1 - LP[pshift - 2];
 				if (compare.compare(m[rt], mstepson) >= 0 || compare.compare(m[lf], mstepson) >= 0)
 					break;
 			}
@@ -78,7 +78,7 @@ public enum SmoothSort {
 			m[head] = mstepson;
 
 			head = stepson;
-			int trail = Integer.numberOfTrailingZeros(p & ~1);
+			var trail = Integer.numberOfTrailingZeros(p & ~1);
 			p >>>= trail;
 			pshift += trail;
 			trusty = false;
@@ -91,11 +91,11 @@ public enum SmoothSort {
 	}
 
 	private static <X> void sift(X[] m, int pshift, int head, Comparator<X> compare) {
-		X val = m[head];
+		var val = m[head];
 
 		while (pshift > 1) {
-			int rt = head - 1;
-			int lf = head - 1 - LP[pshift - 2];
+			var rt = head - 1;
+			var lf = head - 1 - LP[pshift - 2];
 			X mlf = m[lf], mrt = m[rt];
 
 			if (compare.compare(val, mlf) >= 0 && compare.compare(val, mrt) >= 0)

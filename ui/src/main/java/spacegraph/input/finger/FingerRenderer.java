@@ -24,9 +24,9 @@ import static com.jogamp.opengl.GL.GL_EQUIV;
 
             float smx = posPixel.x, smy = posPixel.y;
 
-            float speed = lastPixel.distance(posPixel);
+            var speed = lastPixel.distance(posPixel);
 
-            float cw = 32f + speedFilter.valueOf(speed)/1f;
+            var cw = 32f + speedFilter.valueOf(speed)/1f;
 
             gl.glPushMatrix();
 
@@ -47,13 +47,13 @@ import static com.jogamp.opengl.GL.GL_EQUIV;
 
                 gl.glLineWidth(2f);
                 //Draw.rectStroke(gl, smx - cw / 2f, smy - ch / 2f, cw, ch);
-                float theta = (posPixel.x + posPixel.y) / 100f;
+                var theta = (posPixel.x + posPixel.y) / 100f;
                 Draw.poly(6 /* 6 */, cw / 2, theta, false, gl);
 
                 gl.glColor4f(0.5f, 0.5f, 0.5f, 0.75f);
                 gl.glLineWidth(3f);
                 gl.glColor4f(0.5f, 0.5f, 0.5f, 0.75f);
-                float ch = cw;
+                var ch = cw;
                 Draw.line(0, -ch, 0, -ch / 2, gl);
                 Draw.line(0, ch / 2, 0, ch, gl);
                 Draw.line(-cw, 0, -cw / 2, 0, gl);
@@ -97,8 +97,8 @@ import static com.jogamp.opengl.GL.GL_EQUIV;
 
             timeMS += dtS*1000;
 
-            float freq = 8f;
-            float phaseSec = (float) Math.sin(freq * timeMS / (2 * Math.PI * 1000));
+            var freq = 8f;
+            var phaseSec = (float) Math.sin(freq * timeMS / (2 * Math.PI * 1000));
 
             gl.glPushMatrix();
             {
@@ -113,7 +113,7 @@ import static com.jogamp.opengl.GL.GL_EQUIV;
                     gl.glColor4f((phaseSec * 0.5f) + 0.5f, 0.25f, ((1-phaseSec) * 0.5f) + 0.5f, alpha);
                 }
 
-                float r = smoothedRad.valueOf(this.rad + (pixelDistSq / 50));
+                var r = smoothedRad.valueOf(this.rad + (pixelDistSq / 50));
                 renderOutside(r, gl);
                 renderInside(r, gl);
             }
@@ -121,14 +121,14 @@ import static com.jogamp.opengl.GL.GL_EQUIV;
         }
 
         protected static void drawTri(float rad, GL2 gl) {
-            float w = rad/2;
-            float x1 = rad * 0.5f;
-            float x2 = rad * 1f;
+            var w = rad/2;
+            var x1 = rad * 0.5f;
+            var x2 = rad * 1f;
             Draw.tri2f(gl, x1, -w/2, x1, +w/2,   x2, 0);
         }
 
         protected void renderInside(float rad, GL2 gl) {
-            float radh = rad * 0.75f;
+            var radh = rad * 0.75f;
             if (renderHorizontal())
                 Draw.line(0, -radh, 0, +radh, gl);
             if (renderVertical())

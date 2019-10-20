@@ -45,7 +45,7 @@ class ContactPositionConstraint {
     int pointCount;
 
     public ContactPositionConstraint() {
-        for (int i = 0; i < localPoints.length; i++) {
+        for (var i = 0; i < localPoints.length; i++) {
             localPoints[i] = new v2();
         }
     }

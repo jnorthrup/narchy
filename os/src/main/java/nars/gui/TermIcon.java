@@ -18,7 +18,7 @@ public class TermIcon extends VectorLabel {
 
     public static void update(Concept c, long time) {
 
-        Concept cc = c;
+        var cc = c;
         if (cc == null)
             return;
 

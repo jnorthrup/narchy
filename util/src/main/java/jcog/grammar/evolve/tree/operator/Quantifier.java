@@ -36,7 +36,7 @@ public abstract class Quantifier extends UnaryOperator{
 
     @Override
     public boolean isValid(){
-        Node child = children().get(0);
+        var child = children().get(0);
         return child.isValid() && !(child instanceof Quantifier || child instanceof MatchMinMax || child instanceof MatchMinMaxGreedy || child instanceof Anchor || child instanceof Lookaround);
     }
 

@@ -149,10 +149,10 @@ public class Color4b extends Tuple4b {
      * @since vecmath 1.2
      */
     public final Color get() {
-	int r = x & 0xff;
-	int g = y & 0xff;
-	int b = z & 0xff;
-	int a = w & 0xff;
+        var r = x & 0xff;
+        var g = y & 0xff;
+        var b = z & 0xff;
+        var a = w & 0xff;
 
 	return new Color(r, g, b, a);
     }

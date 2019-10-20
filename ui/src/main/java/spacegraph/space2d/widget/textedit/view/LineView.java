@@ -21,11 +21,11 @@ public class LineView extends TextEditRenderable implements BufferLineListener, 
     LineView(BufferLine bufferLine) {
         this.bufferLine = bufferLine;
         bufferLine.addListener(this);
-        List<BufferChar> bufferChars = bufferLine.getChars();
+        var bufferChars = bufferLine.getChars();
         chars = new FastCoWList<>(bufferChars.size(), CharView[]::new);
         if (!bufferChars.isEmpty()) {
             update((c) -> {
-                for (BufferChar bc : bufferChars)
+                for (var bc : bufferChars)
                     c.add(new CharView(bc));
                 //return true;
             });
@@ -42,7 +42,7 @@ public class LineView extends TextEditRenderable implements BufferLineListener, 
 
     @Override
     public void innerDraw(GL2 gl) {
-        for (CharView c : chars) {
+        for (var c : chars) {
             if (c != null)
                 c.draw(gl);
         }
@@ -61,8 +61,8 @@ public class LineView extends TextEditRenderable implements BufferLineListener, 
 //                cc.sortThis();
 
             float width = 0;
-            for (CharView c : cc) {
-                float w = CharView.width() / 2;
+            for (var c : cc) {
+                var w = CharView.width() / 2;
                 width += w;
                 c.position.set(width, 0, 0);
                 width += w;
@@ -103,9 +103,9 @@ public class LineView extends TextEditRenderable implements BufferLineListener, 
 
     CharView leaveChar(BufferChar bc) {
 
-        CharView[] leaved = new CharView[1];
+        var leaved = new CharView[1];
         update((chars) -> {
-            CharView leave = chars.stream().filter(c -> c.bufferChar() == bc).findFirst().orElse(null);
+            var leave = chars.stream().filter(c -> c.bufferChar() == bc).findFirst().orElse(null);
             leaved[0] = leave;
             chars.remove(leave);
         });
@@ -141,8 +141,8 @@ public class LineView extends TextEditRenderable implements BufferLineListener, 
         gl.glColor4f(color.x, color.y, color.z, color.w);
 
         //TODO line height, margin etc
-        for (int x = x1; x < x2; x++) {
-            CharView c = chars.get(x);
+        for (var x = x1; x < x2; x++) {
+            var c = chars.get(x);
             if (c != null)
                 c.draw(gl);
         }

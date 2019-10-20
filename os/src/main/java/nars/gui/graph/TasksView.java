@@ -31,8 +31,7 @@ public class TasksView implements Timeline2D.EventBuffer<Task> {
     public static void main(String[] args) {
 
 
-
-        NAR n = NARS.tmp();
+        var n = NARS.tmp();
         n.log();
         //n.inputAt(0, "(x &&+1 y). |");
         n.inputAt(0, "(x ==>+1 y). |");
@@ -42,7 +41,7 @@ public class TasksView implements Timeline2D.EventBuffer<Task> {
 
         Iterable<Task> tasks = ()->n.tasks().filter(x->!x.isEternal()).iterator();
 
-        Timeline2D t = timeline(tasks).setTime(0, n.time());
+        var t = timeline(tasks).setTime(0, n.time());
         SpaceGraph.window(t.withControls(),
                 1200, 500);
     }
@@ -83,7 +82,7 @@ public class TasksView implements Timeline2D.EventBuffer<Task> {
 
             switch (x.punc()) {
                 case BELIEF: {
-                    float f = x.freq();
+                    var f = x.freq();
                     r = 0.8f * (1f - f);
                     g = 0.8f * f;
                     b = 0.2f + 0.8f * x.conf();
@@ -91,7 +90,7 @@ public class TasksView implements Timeline2D.EventBuffer<Task> {
                     break;
                 }
                 case GOAL: {
-                    float f = x.freq();
+                    var f = x.freq();
                     g = 0.8f * f;
                     b = r = 0;
                     a = 0.2f + 0.8f * x.conf();

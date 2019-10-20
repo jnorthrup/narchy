@@ -48,15 +48,15 @@ public class CameraGasNet<P extends Bitmap2D> implements Consumer<NAR> {
 
         };
 
-        int width = src.width();
-        int height = src.height();
+        var width = src.width();
+        var height = src.height();
 
-        for (int j = 0; j < blobs; j++) {
-            int i = j;
-            Term base = $.func("blob", $.the(i), root);
+        for (var j = 0; j < blobs; j++) {
+            var i = j;
+            var base = $.func("blob", $.the(i), root);
 
             FloatSupplier v2 = () -> {
-                Centroid node = net.node(i);
+                var node = net.node(i);
                 if (node != null)
                     return (float) node.getEntry(0);
                 else
@@ -64,7 +64,7 @@ public class CameraGasNet<P extends Bitmap2D> implements Consumer<NAR> {
             };
             agent.sense($.inh(base, Atomic.the("x")), new FloatNormalized(v2, 0f, 1f));
             FloatSupplier v1 = () -> {
-                Centroid node = net.node(i);
+                var node = net.node(i);
                 if (node != null)
                     return (float) node.getEntry(1);
                 else
@@ -72,7 +72,7 @@ public class CameraGasNet<P extends Bitmap2D> implements Consumer<NAR> {
             };
             agent.sense($.inh(base, Atomic.the("y")), new FloatNormalized(v1, 0f, 1f));
             FloatSupplier v = () -> {
-                Centroid node = net.node(i);
+                var node = net.node(i);
                 if (node != null)
                     return (float) node.getEntry(2);
                 else
@@ -89,15 +89,15 @@ public class CameraGasNet<P extends Bitmap2D> implements Consumer<NAR> {
         SpaceGraph.window(new PaintSurface() {
             @Override
             protected void paint(GL2 gl, ReSurface reSurface) {
-                int nodes = net.size();
-                for (int i = 0; i < nodes; i++) {
-                    Centroid n = net.node(i);
-                    float e = (float) ((1f + n.localDistance()) * (1f + n.localError()));
-                    float x = (float) n.getEntry(0);
-                    float y = (float) n.getEntry(1);
-                    float c = (float) n.getEntry(2);
+                var nodes = net.size();
+                for (var i = 0; i < nodes; i++) {
+                    var n = net.node(i);
+                    var e = (float) ((1f + n.localDistance()) * (1f + n.localError()));
+                    var x = (float) n.getEntry(0);
+                    var y = (float) n.getEntry(1);
+                    var c = (float) n.getEntry(2);
                     gl.glColor4f(c, 0, (0.25f * (1f-c)), 0.75f );
-                    float r = 0.1f / (1f + e);
+                    var r = 0.1f / (1f + e);
                     Draw.rect(x, 1f - y, r, r, gl);
                 }
             }
@@ -111,10 +111,10 @@ public class CameraGasNet<P extends Bitmap2D> implements Consumer<NAR> {
 
         src.updateBitmap();
 
-        int width = src.width();
-        int height = src.height();
+        var width = src.width();
+        var height = src.height();
 
-        int pixels = width * height;
+        var pixels = width * height;
 
         net.alpha.set(0.005f);
 
@@ -123,9 +123,9 @@ public class CameraGasNet<P extends Bitmap2D> implements Consumer<NAR> {
         net.setWinnerUpdateRate(0.05f, 0.01f);
 
 
-        for (int w = 0; w < width; w++) {
-            for (int h = 0; h < height; h++) {
-                float color = src.brightness(w, h);
+        for (var w = 0; w < width; w++) {
+            for (var h = 0; h < height; h++) {
+                var color = src.brightness(w, h);
                 if (timed.random().nextFloat() - 0.05f <= color)
                 
                     net.put(w/((float)width), h/((float)height), color );

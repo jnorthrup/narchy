@@ -20,14 +20,14 @@ public class MutableUnitContainer<S extends Surface> extends AbstractUnitContain
     }
 
     @Override protected void renderContent(ReSurface r) {
-        Surface t = the.getOpaque();
+        var t = the.getOpaque();
         if (t!=null)
             t.renderIfVisible(r);
     }
 
     public final MutableUnitContainer<S> set(S next) {
 
-        Surface prev = this.the.getAndSet(next);
+        var prev = this.the.getAndSet(next);
         if (prev == next)
             return this; //same instance
 

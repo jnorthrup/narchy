@@ -36,11 +36,11 @@ public class OmniBox extends Widget {
 
         content = new Gridding();
 
-        Gridding results = new Gridding() {
+        var results = new Gridding() {
             @Override
             public void add(Surface... s) {
                 synchronized (content) {
-                    int sizeBefore = size();
+                    var sizeBefore = size();
 
                     super.add(s);
 
@@ -89,7 +89,7 @@ public class OmniBox extends Widget {
         //                TerminalPosition cp = getCursorPosition();
         //                cursorChange(next, cp);
         //            }
-        TextEdit edit = new TextEdit(40, 1) {
+        var edit = new TextEdit(40, 1) {
 
 //            @Override
 //            public TextEdit onKey(Consumer<KeyEvent> e) {
@@ -261,9 +261,9 @@ public class OmniBox extends Widget {
                 if (query.get() != this)
                     return false;
                 else {
-                    Document d = docObj.doc();
-                    Result r = new Result(d);
-                    Surface s = result(r);
+                    var d = docObj.doc();
+                    var r = new Result(d);
+                    var s = result(r);
                     if (query.get() == this) {
                         results.add(r);
                         target.add(s);
@@ -324,9 +324,9 @@ public class OmniBox extends Widget {
                 prev = query.getAndSet(null);
             } else {
 
-                Querying q = query.get();
+                var q = query.get();
                 if (q == null || !q.q.equals(next)) {
-                    Querying qq = new Querying(next, target);
+                    var qq = new Querying(next, target);
                     prev = query.getAndSet(qq);
                     qq.start();
                 }

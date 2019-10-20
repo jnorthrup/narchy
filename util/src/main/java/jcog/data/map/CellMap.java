@@ -50,7 +50,7 @@ public class CellMap<K, V> {
 
     public final void forEachValue(Consumer<? super V> each) {
         map.forEachValueWith((e, EACH) -> {
-            V s = e.value;
+            var s = e.value;
             if (s != null)
                 EACH.accept(s);
         }, each);
@@ -58,7 +58,7 @@ public class CellMap<K, V> {
 
     public void forEachKeyValue(BiConsumer<K,? super V> each) {
         map.forEachValueWith((e, EACH) -> {
-            V s = e.value;
+            var s = e.value;
             if (s != null)
                 EACH.accept(e.key, s);
         }, each);
@@ -86,7 +86,7 @@ public class CellMap<K, V> {
 
     public void removeAll(Iterable<K> x) {
         boolean[] changed = {false};
-        for (K xx : x) {
+        for (var xx : x) {
             changed[0] |= removeSilently(xx);
         }
         if (changed[0])
@@ -94,12 +94,12 @@ public class CellMap<K, V> {
     }
 
     public @Nullable V getValue(Object x) {
-        CacheCell<K, V> y = map.get(x);
+        var y = map.get(x);
         return y != null ? y.value : null;
     }
 
     public CacheCell<K, V> compute(K key, BiFunction<K, V, V> builder) {
-        CacheCell<K, V> entry = map.computeIfAbsent(key, k -> cellPool.get());
+        var entry = map.computeIfAbsent(key, k -> cellPool.get());
         entry.update(key, builder);
         return update(key, entry, entry.key!=null);
     }
@@ -115,7 +115,7 @@ public class CellMap<K, V> {
 
 
     public CacheCell<K, V> remove(Object key) {
-        CacheCell<K, V> entry = map.remove(key);
+        var entry = map.remove(key);
         if (entry != null) {
             removed(entry);
             invalidated();
@@ -126,7 +126,7 @@ public class CellMap<K, V> {
 
     /** removes without immediately signaling invalidation, for use in batch updates */
     public boolean removeSilently(K key) {
-        CacheCell<K, V> entry = map.remove(key);
+        var entry = map.remove(key);
         if (entry != null) {
             removed(entry);
             return true;
@@ -168,13 +168,13 @@ public class CellMap<K, V> {
     }
 
     public @Nullable V get(Object from) {
-        CacheCell<K, V> v = map.get(from);
+        var v = map.get(from);
         return v != null ? v.value : null;
     }
 
     /** find first corresponding key to the provided value */
     public @Nullable K first(Predicate v) {
-        for (CacheCell<K, V> kvCacheCell : map.valueArray()) {
+        for (var kvCacheCell : map.valueArray()) {
             if (v.test(kvCacheCell.value)) {
                 return Optional.of(kvCacheCell).map(c -> c.key).orElse(null);
             }
@@ -183,7 +183,7 @@ public class CellMap<K, V> {
     }
 
     public @Nullable K firstByIdentity(V x) {
-        for (CacheCell<K, V> kvCacheCell : map.valueArray()) {
+        for (var kvCacheCell : map.valueArray()) {
             if (kvCacheCell.value == x) {
                 return Optional.of(kvCacheCell).map(c -> c.key).orElse(null);
             }
@@ -220,9 +220,9 @@ public class CellMap<K, V> {
 
         public void update(K nextKey, BiFunction<K, V, V> update) {
 
-            V prev = value;
+            var prev = value;
 
-            V next = update.apply(nextKey, prev);
+            var next = update.apply(nextKey, prev);
             if (next == prev) {
                 key = next == null ? null : nextKey;
             } else {

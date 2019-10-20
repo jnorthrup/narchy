@@ -36,12 +36,12 @@ public class Agenterator implements FloatSupplier {
 
         this._sensors = _sensors;
         sensorsNow = new TensorSerial(_sensors);
-        int numSensors = sensorsNow.volume();
+        var numSensors = sensorsNow.volume();
 
         this.sensorsHistory = new TensorRing(numSensors, history);
 
-        int sum = actions.stream().mapToInt(IntObjectPair::getOne).sum();
-        int numActions = sum + (NOP_ACTION ? 1 : 0);
+        var sum = actions.stream().mapToInt(IntObjectPair::getOne).sum();
+        var numActions = sum + (NOP_ACTION ? 1 : 0);
 
         this.action = action;
 
@@ -52,7 +52,7 @@ public class Agenterator implements FloatSupplier {
     @Override public float asFloat() {
 
         /* @Deprecated  */
-        for (Tensor _sensor : _sensors) {
+        for (var _sensor : _sensors) {
             _sensor.snapshot();
         }
         sensorsNow.update(); sensorsHistory.setSpin(sensorsNow.snapshot()); //HACK bad

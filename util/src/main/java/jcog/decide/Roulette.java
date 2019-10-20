@@ -35,7 +35,7 @@ public enum Roulette {
         if (weightCount == 1)
             return 0;
 
-        float weight_sum = Util.sumIfPositive(weightCount, weight);
+        var weight_sum = Util.sumIfPositive(weightCount, weight);
 
         if (weight_sum < ScalarValue.EPSILON) {
             //flat
@@ -57,7 +57,7 @@ public enum Roulette {
 
         switch (weightCount) {
             case 1: {
-                float w = weight.valueOf(0);
+                var w = weight.valueOf(0);
                 return valid(w) ? 0 : -1;
             }
             case 2:
@@ -74,10 +74,10 @@ public enum Roulette {
 
             default: {
 
-                float[] w = new float[weightCount];
-                int lastValid = -1;
-                for (int i = 0; i < weightCount; i++) {
-                    float wi = weight.valueOf(i);
+                var w = new float[weightCount];
+                var lastValid = -1;
+                for (var i = 0; i < weightCount; i++) {
+                    var wi = weight.valueOf(i);
                     if (valid(wi)) {
                         w[i] = wi;
                         if (lastValid == -1)
@@ -108,10 +108,10 @@ public enum Roulette {
     }
 
     private static int selectRouletteUnidirectionally(int count, IntToFloatFunction weight, float weight_sum, FloatSupplier rng) {
-        float distance = rng.asFloat() * weight_sum;
-        int i = Util.bin(rng.asFloat() * count, count);
+        var distance = rng.asFloat() * weight_sum;
+        var i = Util.bin(rng.asFloat() * count, count);
 
-        int safetyLimit = count;
+        var safetyLimit = count;
         while ((distance -= Math.max(0, weight.valueOf(i))) > Float.MIN_NORMAL && --safetyLimit > 0) {
 
             if (++i == count) i = 0; //wrap-around
@@ -125,7 +125,7 @@ public enum Roulette {
     /** not sure if this offers any improvement over the simpler unidirectional iieration.
      * might also be biased to the edges or middle because it doesnt start at random index though this can be tried */
     private static int selectRouletteBidirectionally(int count, IntToFloatFunction weight, float weight_sum, FloatSupplier rng) {
-        float x = rng.asFloat();
+        var x = rng.asFloat();
         int i;
         boolean dir;
         if (x <= 0.5f) {
@@ -137,9 +137,9 @@ public enum Roulette {
             x = 1 - x;
         }
 
-        float distance = x * weight_sum;
+        var distance = x * weight_sum;
 
-        int limit = count;
+        var limit = count;
         while ((distance -= weight.valueOf(i)) > Float.MIN_NORMAL) {
             if (dir) {
                 if (++i == count) i = 0;

@@ -20,16 +20,16 @@ public class LoseScene extends Scene {
     public void render(Graphics g, float alpha) {
         g.setColor(Color.decode("#a07070"));
         g.fillRect(0, 0, 320, 240);
-        int f = tick / 3 % 10;
+        var f = tick / 3 % 10;
         if (f >= 6) f = 10 - f;
         g.drawImage(Art.gameOver[f][0], 160 - 48, 100 - 32, null);
-        String scrollMessage = "Game over!";
+        var scrollMessage = "Game over!";
         drawString(g, scrollMessage, 160 - scrollMessage.length() * 4, 160, 0);
     }
 
     private static void drawString(Graphics g, String text, int x, int y, int c) {
-        char[] ch = text.toCharArray();
-        for (int i = 0; i < ch.length; i++) {
+        var ch = text.toCharArray();
+        for (var i = 0; i < ch.length; i++) {
             g.drawImage(Art.font[ch[i] - 32][c], x + i * 8, y, null);
         }
     }

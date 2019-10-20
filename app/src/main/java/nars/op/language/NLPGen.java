@@ -54,9 +54,9 @@ public class NLPGen {
 
 
     private void train(String natural, String narsese) {
-        final int maxVars = 6;
-        for (int i = 0; i < maxVars; i++) {
-            String v = String.valueOf((char) ('A' + i));
+        final var maxVars = 6;
+        for (var i = 0; i < maxVars; i++) {
+            var v = String.valueOf((char) ('A' + i));
             narsese = narsese.replaceAll(v, '%' + v);
         }
 
@@ -69,7 +69,7 @@ public class NLPGen {
     }
 
     private void train(String natural, Task t) {
-        Compound pattern = (Compound)(PatternTermBuilder.patternify(t.term()).term());
+        var pattern = (Compound)(PatternTermBuilder.patternify(t.term()).term());
 
         rules.add((tt, freq, conf, tense) -> {
             if (timeMatch(t, tense)) {
@@ -78,17 +78,17 @@ public class NLPGen {
 
                         String[] result = {null};
 
-                        Unify u = new Unify(VAR_PATTERN, terminal.random(), NAL.unify.UNIFICATION_STACK_CAPACITY, terminal.deriveBranchTTL.intValue()) {
+                        var u = new Unify(VAR_PATTERN, terminal.random(), NAL.unify.UNIFICATION_STACK_CAPACITY, terminal.deriveBranchTTL.intValue()) {
 
                             @Override
                             public boolean match() {
 
 
                                 String[] r = {natural};
-                                for (Map.Entry<Variable, Term> entry : xy.entrySet()) {
-                                    Variable x = entry.getKey();
-                                    Term y = entry.getValue();
-                                    String var = x.toString();
+                                for (var entry : xy.entrySet()) {
+                                    var x = entry.getKey();
+                                    var y = entry.getValue();
+                                    var var = x.toString();
                                     if (!var.startsWith("%"))
                                         continue;
                                     var = String.valueOf(((char) (var.charAt(1) - '1' + 'A')));
@@ -122,8 +122,8 @@ public class NLPGen {
     }*/
 
     public String toString(@NotNull Term x, float freq, float conf, Tense tense) {
-        for (Rule r : rules) {
-            String y = r.get(x, freq, conf, tense);
+        for (var r : rules) {
+            var y = r.get(x, freq, conf, tense);
             if (y != null)
                 return y;
         }

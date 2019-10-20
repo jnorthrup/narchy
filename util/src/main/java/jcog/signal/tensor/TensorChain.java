@@ -20,17 +20,17 @@ public class TensorChain extends TensorSerial {
         if (t.length == 1)
             return t[0];
 
-        int[] shape = t[0].shape().clone();
+        var shape = t[0].shape().clone();
         shape[0] = 0;
-        for (Tensor x : t) {
-            int[] xs = x.shape();
+        for (var x : t) {
+            var xs = x.shape();
             assert (xs.length == shape.length);
-            for (int d = 1; d < xs.length; d++) {
+            for (var d = 1; d < xs.length; d++) {
                 assert (xs[d] == shape[d]);
             }
             shape[0] += xs[0];
         }
-        TensorChain tt = new TensorChain(shape, t);
+        var tt = new TensorChain(shape, t);
         tt.update();
         return tt;
     }

@@ -24,7 +24,7 @@ public class TermList extends FasterList<Term> implements Subterms {
 
     public TermList(Subterms copied) {
         super(0, new Term[copied.subs()]);
-        for (Term term : copied) {
+        for (var term : copied) {
             addFast(term);
         }
     }
@@ -34,7 +34,7 @@ public class TermList extends FasterList<Term> implements Subterms {
     }
 
     public final void addAllNegated(Iterable<Term> x) {
-        for (Term term : x) {
+        for (var term : x) {
             addNegated(term);
         }
     }
@@ -54,8 +54,8 @@ public class TermList extends FasterList<Term> implements Subterms {
     }
 
     void ensureExtraCapacityExact(int num) {
-        int oldCap = this.items.length;
-        int minCapacity = oldCap + num;
+        var oldCap = this.items.length;
+        var minCapacity = oldCap + num;
         if (minCapacity > oldCap)
             this.items = Arrays.copyOf(items, minCapacity);
     }
@@ -102,8 +102,8 @@ public class TermList extends FasterList<Term> implements Subterms {
 
     /** use this only if a (disposable) TermList is done being modified */
     public Term[] arrayKeep() {
-        Term[] x = items;
-        int s = size;
+        var x = items;
+        var s = size;
         return x.length == s ? x : Arrays.copyOf(x, s);
     }
 
@@ -114,7 +114,7 @@ public class TermList extends FasterList<Term> implements Subterms {
 
     /** finalization step on constructing a Subterm */
     public @Nullable Subterms commit(Subterms src) {
-        int ys = size;
+        var ys = size;
 
 
 //        if (volume() > NAL.term.COMPOUND_VOLUME_MAX) {
@@ -127,9 +127,9 @@ public class TermList extends FasterList<Term> implements Subterms {
             //replace prefix nulls with the input's values
             //any other modifications specific to the superOp type
 
-            Term[] ii = items;
+            var ii = items;
 
-            for (int i = 0; i < ys; i++) {
+            for (var i = 0; i < ys; i++) {
                 if (ii[i] == null)
                     ii[i] = src.sub(i);
                 else
@@ -153,7 +153,7 @@ public class TermList extends FasterList<Term> implements Subterms {
     }
 
     public Term[] sort() {
-        int s = size;
+        var s = size;
         if (s > 1)
             Arrays.sort(this.items, 0, s);
 
@@ -169,18 +169,18 @@ public class TermList extends FasterList<Term> implements Subterms {
 //                sl.toArrayRecycled(Term[]::new) : t;
 
 
-        Term[] ii = this.items;
+        var ii = this.items;
 
-        int s = size;
+        var s = size;
         if (s > 1) {
             //TODO pre-sort by volume since this is the first condition for comparison.  if there are N unique volumes then it will be sorted without needing compareTo
 
             Arrays.sort(ii, 0, s);
 
-            Term prev = ii[0];
-            boolean dedup = false;
-            for (int i = 1; i < s; i++) {
-                Term next = ii[i];
+            var prev = ii[0];
+            var dedup = false;
+            for (var i = 1; i < s; i++) {
+                var next = ii[i];
                 if (prev.equals(next)) {
                     ii[i] = null;
                     dedup = true;

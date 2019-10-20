@@ -23,14 +23,14 @@ public class RandomWave extends KarplusStrongString {
     public void pluck() {
         setDeltaVolume(pluckDelta);
         clear();
-        for (int i = 0; i < buffer.capacity(); i++) {
+        for (var i = 0; i < buffer.capacity(); i++) {
             buffer.enqueue((Math.random() - 0.5) * 2 * getMaxVolume());
         }
     }
 
     public void tic() {
         double first = buffer.dequeue();
-        double x = first * deltaVolume;
+        var x = first * deltaVolume;
 		filterOut = C * x + filterIn - C * filterOut; // allpass tuning filter
         filterIn = x;
         buffer.enqueue(filterOut * deltaVolume);

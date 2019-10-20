@@ -21,15 +21,15 @@ public class SandTile extends Tile {
 
     @Override
     public void render(Screen screen, Level level, int x, int y) {
-        int col = Color.get(level.sandColor + 2, level.sandColor, level.sandColor - 110, level.sandColor - 110);
-        int transitionColor = Color.get(level.sandColor - 110, level.sandColor, level.sandColor - 110, level.dirtColor);
+        var col = Color.get(level.sandColor + 2, level.sandColor, level.sandColor - 110, level.sandColor - 110);
+        var transitionColor = Color.get(level.sandColor - 110, level.sandColor, level.sandColor - 110, level.dirtColor);
 
-        boolean u = !level.getTile(x, y - 1).connectsToSand;
-        boolean d = !level.getTile(x, y + 1).connectsToSand;
-        boolean l = !level.getTile(x - 1, y).connectsToSand;
-        boolean r = !level.getTile(x + 1, y).connectsToSand;
+        var u = !level.getTile(x, y - 1).connectsToSand;
+        var d = !level.getTile(x, y + 1).connectsToSand;
+        var l = !level.getTile(x - 1, y).connectsToSand;
+        var r = !level.getTile(x + 1, y).connectsToSand;
 
-        boolean steppedOn = level.getData(x, y) > 0;
+        var steppedOn = level.getData(x, y) > 0;
 
         if (!u && !l) {
             if (!steppedOn)
@@ -60,7 +60,7 @@ public class SandTile extends Tile {
 
     @Override
     public void tick(Level level, int x, int y) {
-        int d = level.getData(x, y);
+        var d = level.getData(x, y);
         if (d > 0) level.setData(x, y, d - 1);
     }
 
@@ -74,7 +74,7 @@ public class SandTile extends Tile {
     @Override
     public boolean interact(Level level, int xt, int yt, Player player, Item item, int attackDir) {
         if (item instanceof ToolItem) {
-            ToolItem tool = (ToolItem) item;
+            var tool = (ToolItem) item;
             if (tool.type == ToolType.shovel) {
                 if (player.payStamina(4 - tool.level)) {
                     level.setTile(xt, yt, Tile.dirt, 0);

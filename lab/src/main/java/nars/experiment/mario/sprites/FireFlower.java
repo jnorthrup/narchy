@@ -34,8 +34,8 @@ public class FireFlower extends Sprite {
 
     @Override
     public void collideCheck() {
-        float xMarioD = world.mario.x - x;
-        float yMarioD = world.mario.y - y;
+        var xMarioD = world.mario.x - x;
+        var yMarioD = world.mario.y - y;
         float w = 16;
         if (xMarioD > -w && xMarioD < w) {
             if (yMarioD > -height && yMarioD < world.mario.height) {

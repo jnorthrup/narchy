@@ -164,7 +164,7 @@ public final class Netchan extends SV_MAIN {
     public static boolean Netchan_NeedReliable(netchan_t chan) {
 
 
-        boolean send_reliable = chan.incoming_acknowledged > chan.last_reliable_sequence
+        var send_reliable = chan.incoming_acknowledged > chan.last_reliable_sequence
                 && chan.incoming_reliable_acknowledged != chan.reliable_sequence;
 
         
@@ -193,7 +193,7 @@ public final class Netchan extends SV_MAIN {
             return;
         }
 
-        int send_reliable = Netchan_NeedReliable(chan) ? 1 : 0;
+        var send_reliable = Netchan_NeedReliable(chan) ? 1 : 0;
 
         if (chan.reliable_length == 0 && chan.message.cursize != 0) {
             System.arraycopy(chan.message_buf, 0, chan.reliable_buf, 0,
@@ -206,8 +206,8 @@ public final class Netchan extends SV_MAIN {
         
         SZ.Init(send, send_buf, send_buf.length);
 
-        int w1 = (chan.outgoing_sequence & ~(1 << 31)) | (send_reliable << 31);
-        int w2 = (chan.incoming_sequence & ~(1 << 31))
+        var w1 = (chan.outgoing_sequence & ~(1 << 31)) | (send_reliable << 31);
+        var w2 = (chan.incoming_sequence & ~(1 << 31))
                 | (chan.incoming_reliable_sequence << 31);
 
         chan.outgoing_sequence++;
@@ -259,16 +259,16 @@ public final class Netchan extends SV_MAIN {
     public static boolean Process(netchan_t chan, sizebuf_t msg) {
         
         MSG.BeginReading(msg);
-        int sequence = MSG.ReadLong(msg);
-        int sequence_ack = MSG.ReadLong(msg);
+        var sequence = MSG.ReadLong(msg);
+        var sequence_ack = MSG.ReadLong(msg);
 
         
         if (chan.sock == Defines.NS_SERVER)
             MSG.ReadShort(msg);
 
-        
-        int reliable_message = sequence >>> 31;
-        int reliable_ack = sequence_ack >>> 31;
+
+        var reliable_message = sequence >>> 31;
+        var reliable_ack = sequence_ack >>> 31;
 
         sequence &= ~(1 << 31);
         sequence_ack &= ~(1 << 31);

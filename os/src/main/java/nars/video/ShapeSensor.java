@@ -77,20 +77,20 @@ public class ShapeSensor extends NARPart {
 
     public static boolean isConvex(List<PointIndex_I32> poly) {
 
-        int n = poly.size();
+        var n = poly.size();
         if (n < 4)
             return true;
 
-        boolean sign = false;
-        for (int i = 0; i < n; i++) {
-            PointIndex_I32 a = poly.get((i + 2) % n);
-            PointIndex_I32 b = poly.get((i + 1) % n);
+        var sign = false;
+        for (var i = 0; i < n; i++) {
+            var a = poly.get((i + 2) % n);
+            var b = poly.get((i + 1) % n);
             double dx1 = a.x - b.x;
             double dy1 = a.y - b.y;
-            PointIndex_I32 c = poly.get(i);
+            var c = poly.get(i);
             double dx2 = c.x - b.x;
             double dy2 = c.y - b.y;
-            double zcrossproduct = dx1 * dy2 - dy1 * dx2;
+            var zcrossproduct = dx1 * dy2 - dy1 * dx2;
             if (i == 0)
                 sign = zcrossproduct > 0;
             else if (sign != (zcrossproduct > 0))
@@ -100,7 +100,7 @@ public class ShapeSensor extends NARPart {
     }
 
     public static <T extends Point2D_I32> void drawPolygon(List<T> vertexes, boolean loop, Graphics2D g2) {
-        for (int i = 0; i < vertexes.size() - 1; i++) {
+        for (var i = 0; i < vertexes.size() - 1; i++) {
             Point2D_I32 p0 = vertexes.get(i);
             Point2D_I32 p1 = vertexes.get(i + 1);
             g2.drawLine(p0.x, p0.y, p1.x, p1.y);
@@ -120,7 +120,7 @@ public class ShapeSensor extends NARPart {
 
     public void update() {
 
-        long last = now;
+        var last = now;
         now = nar.time();
         if (last == ETERNAL)
             last = now;
@@ -132,48 +132,48 @@ public class ShapeSensor extends NARPart {
             img = new GrayU8(input.width(), input.height());
         }
 
-        int w = imgF.width;
-        int h = imgF.height;
-        for (int x = 0; x < w; x++) {
-            for (int y = 0; y < h; y++) {
-                float b1 = 1f;
-                float g = 1f;
-                float r = 1f;
-                float b = input.brightness(x, y, r, g, b1);
+        var w = imgF.width;
+        var h = imgF.height;
+        for (var x = 0; x < w; x++) {
+            for (var y = 0; y < h; y++) {
+                var b1 = 1f;
+                var g = 1f;
+                var r = 1f;
+                var b = input.brightness(x, y, r, g, b1);
                 imgF.unsafe_set(x, y, b);
 
             }
         }
 
 
-        float mean = ImageStatistics.mean(imgF);
+        var mean = ImageStatistics.mean(imgF);
 
 
         ThresholdImageOps.threshold(imgF, img, mean, true);
 
 
-        GrayU8 filtered = BinaryImageOps.dilate8(img, 1, null);
+        var filtered = BinaryImageOps.dilate8(img, 1, null);
         filtered = BinaryImageOps.erode8(filtered, 1, null);
 
 
-        GrayU8 filteredShown = filtered.clone();
-        byte[] data = filteredShown.data;
+        var filteredShown = filtered.clone();
+        var data = filteredShown.data;
         for (int i = 0, dataLength = data.length; i < dataLength; i++) {
             data[i] *= 255;
         }
         filteredRGB = filteredTex.set(filteredShown, filteredRGB);
 
 
-        List<Contour> contours = BinaryImageOps.contour(filtered, ConnectRule.FOUR, null);
-        Grid g = new Grid(id, 12, 12, w, h) {
+        var contours = BinaryImageOps.contour(filtered, ConnectRule.FOUR, null);
+        var g = new Grid(id, 12, 12, w, h) {
 
 
         };
 
-        int k = 0;
-        for (Contour c : contours) {
+        var k = 0;
+        for (var c : contours) {
 
-            List<PointIndex_I32> outer = ShapeFittingOps.fitPolygon(c.external,
+            var outer = ShapeFittingOps.fitPolygon(c.external,
                     false, Math.min(g.w / g.gx, g.h / g.gy),
                     minimumSideFraction);
 
@@ -241,24 +241,24 @@ public class ShapeSensor extends NARPart {
         }
 
         public Term point(int px, int py) {
-            int x = Math.round(px * sx);
-            int y = Math.round(py * sy);
+            var x = Math.round(px * sx);
+            var y = Math.round(py * sy);
             return $.p($.the(x), $.the(y));
         }
 
         public Term line(int ax, int ay, int bx, int by) {
-            Term a = point(ax, ay);
-            Term b = point(bx, by);
+            var a = point(ax, ay);
+            var b = point(bx, by);
 
 
-            int ab = a.compareTo(b);
+            var ab = a.compareTo(b);
             return ab <= 0 ? $.p(a, b) : $.p(b, a);
         }
 
         public void input(CauseChannel<Task> t, long last, What what) {
-            NAR n = what.nar;
-            long now = n.time();
-            for (Term x : image) {
+            var n = what.nar;
+            var now = n.time();
+            for (var x : image) {
                 Task xx = ((Task) new SeriesBeliefTable.SeriesTask($.inh(x, id), BELIEF, $.t(1f, n.confDefault(BELIEF)),
 					last, now, new long[]{n.time.nextStamp()})).pri(n.priDefault(BELIEF));
                 t.accept(xx, what);
@@ -267,11 +267,11 @@ public class ShapeSensor extends NARPart {
 
         public void addPoly(int polyID, List<PointIndex_I32> poly, boolean outerOrInner) {
             TreeSet<Term> ts = new TreeSet();
-            int ps = poly.size();
-            for (int i = 0; i < ps; i++) {
-                PointIndex_I32 a = poly.get(i);
-                PointIndex_I32 b = poly.get((i + 1) % ps);
-                Term ll = line(a.x, a.y, b.x, b.y);
+            var ps = poly.size();
+            for (var i = 0; i < ps; i++) {
+                var a = poly.get(i);
+                var b = poly.get((i + 1) % ps);
+                var ll = line(a.x, a.y, b.x, b.y);
 
                 ts.add(ll.sub(0));
                 ts.add(ll.sub(1));
@@ -313,20 +313,20 @@ public class ShapeSensor extends NARPart {
 
             if (grid != null) {
                 int[] i = {0};
-                for (Term pSet : grid.image) {
-                    float scale = Math.max(w(), h()) / Math.max(grid.gx, grid.gy);
+                for (var pSet : grid.image) {
+                    var scale = Math.max(w(), h()) / Math.max(grid.gx, grid.gy);
 
-                    float dx = x();
-                    float dy = y();
+                    var dx = x();
+                    var dy = y();
                     gl.glLineWidth(2f);
 
 
                     gl.glBegin(GL_POLYGON);
 
                     Draw.colorHash(gl, i[0], 0.75f);
-                    for (Term xy : pSet.subterms()) {
-                        int x = ((Int) xy.sub(0)).i;
-                        int y = grid.gy - ((Int) xy.sub(1)).i;
+                    for (var xy : pSet.subterms()) {
+                        var x = ((Int) xy.sub(0)).i;
+                        var y = grid.gy - ((Int) xy.sub(1)).i;
                         gl.glVertex2f(dx + x * scale, dy + y * scale);
                     }
                     gl.glEnd();

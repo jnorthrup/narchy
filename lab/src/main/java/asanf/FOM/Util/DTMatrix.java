@@ -36,7 +36,7 @@ public class DTMatrix<E> {
 	 */
 	protected double[][] allocateMatrix(int size)
 	{
-		double[][] tmp = IntStream.range(0, size).mapToObj(i -> new double[i + 1]).toArray(double[][]::new);
+		var tmp = IntStream.range(0, size).mapToObj(i -> new double[i + 1]).toArray(double[][]::new);
         return tmp;
 	}
 	
@@ -48,9 +48,9 @@ public class DTMatrix<E> {
 	 */
 	protected double[][] growSize(double[][] matrix)
 	{
-		int newSize = matrix.length * 2;
-		double[][] newMatrix = allocateMatrix(newSize);
-		for(int i = 0; i < matrix.length; i++){
+		var newSize = matrix.length * 2;
+		var newMatrix = allocateMatrix(newSize);
+		for(var i = 0; i < matrix.length; i++){
 			System.arraycopy(matrix[i], 0, newMatrix[i], 0, matrix[i].length);
 		}
 		return newMatrix;
@@ -72,7 +72,7 @@ public class DTMatrix<E> {
 	 * @return Il valore associato al termine target
 	 */
 	protected double getValue(E term){
-		int i = index(term);
+		var i = index(term);
 		return values[i][i];
 	}
 	
@@ -83,11 +83,11 @@ public class DTMatrix<E> {
 	 * @return Il valore associato a first e second 
 	 */
 	protected double getValue(E first, E second){
-        int i = index(first);
-        int j = index(second);
+		var i = index(first);
+		var j = index(second);
 
 		if (i < j) {
-			int tmp = i;
+			var tmp = i;
 			i = j;
 			j = tmp;
 		}
@@ -101,12 +101,12 @@ public class DTMatrix<E> {
 	 * @param value il valore da associare a target
 	 */
 	protected void setValue(E term, double value){
-		int i = index(term);
+		var i = index(term);
 		values[i][i] = value;
 	}
 
 	public int index(E term) {
-		int i = terms.getIfAbsent(term, -1);
+		var i = terms.getIfAbsent(term, -1);
 		if(i ==-1){
 			i = terms.size();
 			terms.put(term, i);
@@ -122,11 +122,11 @@ public class DTMatrix<E> {
 	 * @param value il valore da associare alla coppia
 	 */
 	protected void setValue(E first, E second, double value){
-		int i = index(first);
-		int j = index(second);
+		var i = index(first);
+		var j = index(second);
 
 		if (i < j) {
-			int tmp = i;
+			var tmp = i;
 			i = j;
 			j = tmp;
 		}
@@ -140,7 +140,7 @@ public class DTMatrix<E> {
 	 * @param increment incremento
 	 */
 	protected void add(E term, double increment){
-		int i = index(term);
+		var i = index(term);
 		values[i][i] += increment;
 	}
 	
@@ -151,10 +151,10 @@ public class DTMatrix<E> {
 	 * @param increment incremento
 	 */
 	protected void add(E first, E second, double increment){
-		int i = index(first);
-		int j = index(second);
+		var i = index(first);
+		var j = index(second);
 		if (i < j) {
-			int tmp = i;
+			var tmp = i;
 			i = j;
 			j = tmp;
 		}
@@ -162,8 +162,8 @@ public class DTMatrix<E> {
 	}
 	
 	protected void normalizeBy(double value){
-        for(int i = 0; i < values.length; i++)
-			for(int j = 0; j < values[i].length; j++){
+        for(var i = 0; i < values.length; i++)
+			for(var j = 0; j < values[i].length; j++){
 				values[i][j] /= value;
 			}
 	}

@@ -100,9 +100,9 @@ public class ArrayPool<T> extends FasterList<T> {
 
         @Override
         public int compare(Object o1, Object o2) {
-            boolean isOne = (o1 == this);
-            int len1 = isOne ? value : len(o1);
-            int len2 = !isOne ? value : len(o2);
+            var isOne = (o1 == this);
+            var len1 = isOne ? value : len(o1);
+            var len2 = !isOne ? value : len(o2);
             return Integer.compare(len1, len2);
         }
 
@@ -198,9 +198,9 @@ public class ArrayPool<T> extends FasterList<T> {
 //        return remove(index);
 
         //HACK TODO use binary selection
-        int s = this.size;
-        for (int i = s-1; i >= 0; i--) {
-            T t = get(i);
+        var s = this.size;
+        for (var i = s-1; i >= 0; i--) {
+            var t = get(i);
             if (len(t) >= minLength) {
                 removeFast(i);
                 return t;
@@ -217,7 +217,7 @@ public class ArrayPool<T> extends FasterList<T> {
     @SuppressWarnings("unchecked")
     public void put(T array) {
 
-        int s = this.size;
+        var s = this.size;
         if (s+1 > capacity) {
             //remove middle element to preserve dynamic range
             removeFast(s/2);
@@ -238,8 +238,8 @@ public class ArrayPool<T> extends FasterList<T> {
 
 
                 //TODO use binary insertion
-                int l = len(array);
-                int index = IntStream.range(0, s).filter(i -> l > len(i)).findFirst().orElse(s);
+                var l = len(array);
+                var index = IntStream.range(0, s).filter(i -> l > len(i)).findFirst().orElse(s);
                 add(index, array);
                 //assertSorted();
                 break;
@@ -253,7 +253,7 @@ public class ArrayPool<T> extends FasterList<T> {
 
     private void assertSorted() {
         if (size > 1) {
-            for (int i = 1; i < size; i++) {
+            for (var i = 1; i < size; i++) {
                 if (len(i) > len(i - 1))
                     throw new WTF();
             }

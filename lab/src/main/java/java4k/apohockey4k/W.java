@@ -123,10 +123,10 @@ public class W extends GamePanel {
 
 	@Override
 	public void paintComponent(Graphics appletGraphics) {
-		
 
-		long now = System.nanoTime();
-		long delta = now - lastTime;
+
+		var now = System.nanoTime();
+		var delta = now - lastTime;
 		think += delta;
 
 		
@@ -135,7 +135,7 @@ public class W extends GamePanel {
 			think -= 10000000L;
 
 			if (p[7] <= 0) {
-				float[] oldValues = new float[6];
+				var oldValues = new float[6];
                 System.arraycopy(playerspaddle, 0, oldValues, 0, 6);
 				playerspaddle[0] = p[0] - 30;
 				playerspaddle[1] = p[1] - 30;
@@ -144,7 +144,7 @@ public class W extends GamePanel {
                     playerspaddle[3] += playerspaddle[7] * (float) Math.sin(Math.toRadians(playerspaddle[6]));
                     playerspaddle[4] -= playerspaddle[7] * (float) Math.cos(Math.toRadians(playerspaddle[6]));
 				}
-				for (int i = 0; i < 5; i += 3) {
+				for (var i = 0; i < 5; i += 3) {
 					if (playerspaddle[i] < 18) {
 						playerspaddle[i] = 18;
 					}
@@ -152,7 +152,7 @@ public class W extends GamePanel {
 						playerspaddle[i] = 424 - 60;
 					}
 
-					int add = -287;
+					var add = -287;
 					if (i == 0) {
 						add = 0;
 					}
@@ -165,14 +165,14 @@ public class W extends GamePanel {
 				}
 
 				
-				for (int i = 1; i < colors.length; i += 2) {
+				for (var i = 1; i < colors.length; i += 2) {
 					if (colors[i] > 0) {
 						colors[i] -= 10;
 					}
 				}
 
 				
-				for (int i = 2; i < 6; i += 3) {
+				for (var i = 2; i < 6; i += 3) {
 					playerspaddle[i] -= 10;
 					if (playerspaddle[i] < 0) {
 						playerspaddle[i] = 0;
@@ -185,14 +185,14 @@ public class W extends GamePanel {
 				}
 
 				
-				for (int i = 0; i < 4; i += 3) {
-					double angle = 0.0d;
-					double angle1 = 0.0d;
-					double angle2 = 0.0d;
-					float newX = ((paddleVec[0] + 15 - (playerspaddle[i] + 30)) * (paddleVec[0] + 15 - (playerspaddle[i] + 30)));
-					float newY = ((paddleVec[1] + 15 - (playerspaddle[i + 1] + 30)) * (paddleVec[1] + 15 - (playerspaddle[i + 1] + 30)));
+				for (var i = 0; i < 4; i += 3) {
+					var angle = 0.0d;
+					var angle1 = 0.0d;
+					var angle2 = 0.0d;
+					var newX = ((paddleVec[0] + 15 - (playerspaddle[i] + 30)) * (paddleVec[0] + 15 - (playerspaddle[i] + 30)));
+					var newY = ((paddleVec[1] + 15 - (playerspaddle[i + 1] + 30)) * (paddleVec[1] + 15 - (playerspaddle[i + 1] + 30)));
 
-                    for (int j = 0; j < 2; j++) {
+                    for (var j = 0; j < 2; j++) {
 						double dx = paddleVec[0] + 15 - (playerspaddle[i] + 30);
 						double dy = paddleVec[1] + 15 - (playerspaddle[i + 1] + 30);
 
@@ -262,7 +262,7 @@ public class W extends GamePanel {
                     if (newX + newY <= newRadius) {
 						playerspaddle[i + 2] = 3000;
 						paddleVec[2] = (float) (angle);
-						float speed = (Math.abs(oldValues[i] - playerspaddle[i]) + Math.abs(oldValues[i + 1] - playerspaddle[i + 1])) * 0.015f;
+						var speed = (Math.abs(oldValues[i] - playerspaddle[i]) + Math.abs(oldValues[i + 1] - playerspaddle[i + 1])) * 0.015f;
 						if (speed > 0.022) {
 							speed = 0.022f;
 						}
@@ -273,8 +273,8 @@ public class W extends GamePanel {
 					}
 				}
 
-				
-				float speed = paddleVec[3] * 10 * 30;
+
+				var speed = paddleVec[3] * 10 * 30;
 				double alpha = paddleVec[2];
 				if (alpha > 360) {
 					alpha = 360 - alpha;
@@ -282,11 +282,11 @@ public class W extends GamePanel {
 					alpha = 360 + alpha;
 				}
 				if (speed > 0.001f) {
-					float newX = paddleVec[0] + 15 + speed * (float) Math.sin(Math.toRadians(alpha));
-					float newY = paddleVec[1] + 15 - speed * (float) Math.cos(Math.toRadians(alpha));
+					var newX = paddleVec[0] + 15 + speed * (float) Math.sin(Math.toRadians(alpha));
+					var newY = paddleVec[1] + 15 - speed * (float) Math.cos(Math.toRadians(alpha));
 					paddleVec[0] = (newX - 15);
 					paddleVec[1] = (newY - 15);
-					float next = 0.000002f * 10;
+					var next = 0.000002f * 10;
                     paddleVec[3] -= next;
 					if (paddleVec[3] < 0) {
 						paddleVec[3] = 0;
@@ -304,18 +304,18 @@ public class W extends GamePanel {
 							p[10] = 0;
 						}
 					} else if (paddleVec[3] != 0) {
-						
-						float los = paddleVec[2];
-						for (int i = 0; i < WALLS.length; i += 4) {
+
+						var los = paddleVec[2];
+						for (var i = 0; i < WALLS.length; i += 4) {
 							if (new Rectangle2D.Float(WALLS[i], WALLS[i + 1], WALLS[i + 2], WALLS[i + 3]).intersects(paddleVec[0], paddleVec[1], 30, 30)) {
-								boolean bPaddle = false;
+								var bPaddle = false;
 								if (WALLS[i + 2] < WALLS[i + 3]) {
 									if ((los >= 90) && (los <= 270)) {
 										if (los < 180) {
-											float dif = los - 90;
+											var dif = los - 90;
 											paddleVec[2] = (90 - dif);
 										} else {
-											float dif = 270 - los;
+											var dif = 270 - los;
 											paddleVec[2] = (270 + dif);
 										}
 										bPaddle = true;
@@ -323,7 +323,7 @@ public class W extends GamePanel {
 										if (los < 180) {
 											paddleVec[2] = (180 - los);
 										} else {
-											float dif = 270 - los;
+											var dif = 270 - los;
 											paddleVec[2] = (270 + dif);
 										}
 										bPaddle = true;
@@ -333,7 +333,7 @@ public class W extends GamePanel {
 										if (los >= 270) {
 											paddleVec[2] = (360 - los);
 										} else {
-											float dif = 180 - los;
+											var dif = 180 - los;
 											paddleVec[2] = (180 + dif);
 										}
 										bPaddle = true;
@@ -341,18 +341,18 @@ public class W extends GamePanel {
 										if (los < 90) {
 											paddleVec[2] = (360 - los);
 										} else {
-											float dif = 180 - los;
+											var dif = 180 - los;
 											paddleVec[2] = (180 + dif);
 										}
 										bPaddle = true;
 									}
 								}
 								if (bPaddle) {
-									
-									int count = 0;
+
+									var count = 0;
 									while ((count < 30) && (new Rectangle2D.Float(WALLS[i], WALLS[i + 1], WALLS[i + 2], WALLS[i + 3]).intersects(paddleVec[0], paddleVec[1], 30, 30))) {
                                         count++;
-                                        float radiusOne = 0.5f;
+										var radiusOne = 0.5f;
                                         paddleVec[0] -= radiusOne * (float) Math.sin(Math.toRadians(paddleVec[2]));
                                         paddleVec[1] += radiusOne * (float) Math.cos(Math.toRadians(paddleVec[2]));
 									}
@@ -368,17 +368,17 @@ public class W extends GamePanel {
 										if (new Rectangle2D.Float(WALLS[i], WALLS[i + 1], WALLS[i + 2], WALLS[i + 3]).intersects(paddleVec[0], paddleVec[1], 30, 30)) {
 											if ((paddleVec[2] >= 90) && (paddleVec[2] <= 270)) {
 												if (paddleVec[2] < 180) {
-													float dif = paddleVec[2] - 90;
+													var dif = paddleVec[2] - 90;
 													paddleVec[2] = (90 - dif);
 												} else {
-													float dif = 270 - paddleVec[2];
+													var dif = 270 - paddleVec[2];
 													paddleVec[2] = (270 + dif);
 												}
 											} else {
 												if (paddleVec[2] < 180) {
 													paddleVec[2] = (180 - paddleVec[2]);
 												} else {
-													float dif = 270 - paddleVec[2];
+													var dif = 270 - paddleVec[2];
 													paddleVec[2] = (270 + dif);
 												}
 											}
@@ -403,7 +403,7 @@ public class W extends GamePanel {
 				}
 
 				colors = new int[16];
-				for (int i = 0; i < WALLS.length; i += 4) {
+				for (var i = 0; i < WALLS.length; i += 4) {
 					colors[i / 2] = (int) (Math.random() * COLOR_ORDER.length);
 				}
 				playerspaddle = new float[8];
@@ -436,7 +436,7 @@ public class W extends GamePanel {
 		offscreenGraphics.drawLine(0, 600 / 2 - 2, 440, 600 / 2 - 2);
 		offscreenGraphics.drawLine(0, 600 / 2 + 1, 440, 600 / 2 + 1);
 
-		int width = 100;
+		var width = 100;
 		offscreenGraphics.drawOval(440 / 2 - width / 2, 600 / 2 - width / 2, width, width);
 		width = 94;
 		offscreenGraphics.drawOval(440 / 2 - width / 2, 600 / 2 - width / 2, width, width);
@@ -445,16 +445,16 @@ public class W extends GamePanel {
 		offscreenGraphics.drawOval(440 / 2 - width / 2, 0 - width / 2, width, width);
 		offscreenGraphics.drawOval(440 / 2 - width / 2, 600 - width / 2, width, width);
 
-		for (int i = 0; i < WALLS.length; i += 4) {
+		for (var i = 0; i < WALLS.length; i += 4) {
 			if (colors[i / 2] >= COLOR_ORDER.length) {
 				colors[i / 2] = 0;
 			}
-			Color c = COLOR_ORDER[colors[i / 2]];
+			var c = COLOR_ORDER[colors[i / 2]];
 
 			width = 10 - Math.abs(1500 - colors[i / 2 + 1]) / 150 + 14;
-			for (int w = 0; w < width / 2 - 2; w++) {
-				float add = 200f / (width / 2f - 2f);
-				int alpha = 255 - ((int) ((width / 2 - 2 - w) * add));
+			for (var w = 0; w < width / 2 - 2; w++) {
+				var add = 200f / (width / 2f - 2f);
+				var alpha = 255 - ((int) ((width / 2 - 2 - w) * add));
 				offscreenGraphics.setColor(new Color(c.getRed(), c.getGreen(), c.getBlue(), alpha));
 				if (WALLS[i + 2] < WALLS[i + 3]) {
 					offscreenGraphics.fillRect(WALLS[i] + WALLS[i + 2] / 2 - width / 2 + w, WALLS[i + 1], 1, WALLS[i + 3]);
@@ -469,17 +469,17 @@ public class W extends GamePanel {
 			offscreenGraphics.fillRect(WALLS[i], WALLS[i + 1], WALLS[i + 2], WALLS[i + 3]);
 		}
 
-		Color c = Color.BLUE;
+		var c = Color.BLUE;
 		
-		for (int i = 0; i < 6; i += 3) {
+		for (var i = 0; i < 6; i += 3) {
 			if (i == 3)
 				c = Color.RED;
 
 			offscreenGraphics.setStroke(new BasicStroke(1));
 			width = (int) (10 - Math.abs(1500 - playerspaddle[i + 2]) / 150 + 14);
-			for (int w = 0; w < width / 2 - 2; w++) {
-				float add = 200f / (width / 2f - 2f);
-				int alpha = 255 - ((int) ((width / 2 - 2 - w) * add));
+			for (var w = 0; w < width / 2 - 2; w++) {
+				var add = 200f / (width / 2f - 2f);
+				var alpha = 255 - ((int) ((width / 2 - 2 - w) * add));
 				offscreenGraphics.setColor(new Color(c.getRed(), c.getGreen(), c.getBlue(), alpha));
 				offscreenGraphics.drawOval((int) (playerspaddle[i] - width / 2 + 2 + w), (int) (playerspaddle[i + 1] - width / 2 + 2 + w), 60 + 2 * (width / 2 - 2 - w),
 						60 + 2 * (width / 2 - 2 - w));
@@ -496,9 +496,9 @@ public class W extends GamePanel {
 		c = COLOR_ORDER[(int) (paddleVec[5])];
 		
 		width = (int) (10 - Math.abs(1500 - paddleVec[4]) / 150 + 14);
-		for (int w = 0; w < width / 2 - 2; w++) {
-			float add = 200f / (width / 2f - 2f);
-			int alpha = 255 - ((int) ((width / 2 - 2 - w) * add));
+		for (var w = 0; w < width / 2 - 2; w++) {
+			var add = 200f / (width / 2f - 2f);
+			var alpha = 255 - ((int) ((width / 2 - 2 - w) * add));
 			offscreenGraphics.setColor(new Color(c.getRed(), c.getGreen(), c.getBlue(), alpha));
 			offscreenGraphics.drawOval((int) (paddleVec[0] - width / 2 + 2 + w), (int) (paddleVec[1] - width / 2 + 2 + w), 30 + 2 * (width / 2 - 2 - w), 30 + 2 * (width / 2 - 2 - w));
 			offscreenGraphics.drawOval((int) (paddleVec[0] + width / 2 - 2 - w), (int) (paddleVec[1] + width / 2 - 2 - w), 30 - 2 * (width / 2 - 2 - w), 30 - 2 * (width / 2 - 2 - w));
@@ -511,14 +511,14 @@ public class W extends GamePanel {
 		offscreenGraphics.setStroke(new BasicStroke(1));
 
 		offscreenGraphics.setFont(offscreenGraphics.getFont().deriveFont(30f).deriveFont(1));
-		for (int i = 8; i < 10; i++) {
-			String s = String.valueOf(p[i]);
-			int w = offscreenGraphics.getFontMetrics().stringWidth(s);
+		for (var i = 8; i < 10; i++) {
+			var s = String.valueOf(p[i]);
+			var w = offscreenGraphics.getFontMetrics().stringWidth(s);
 			offscreenGraphics.drawString(s, 410 - w / 2, 280 + (i - 8) * 60);
 		}
 		if (p[7] > 0) {
-			String s = "ApoHockey4k";
-			int w = offscreenGraphics.getFontMetrics().stringWidth(s);
+			var s = "ApoHockey4k";
+			var w = offscreenGraphics.getFontMetrics().stringWidth(s);
 			offscreenGraphics.drawString(s, 220 - w / 2, 60);
 
 			offscreenGraphics.setFont(offscreenGraphics.getFont().deriveFont(25f).deriveFont(1));

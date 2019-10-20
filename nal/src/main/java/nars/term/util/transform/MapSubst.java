@@ -15,19 +15,19 @@ public enum MapSubst { ;
 
     public static Term replace(Term x, Map<? extends Term, Term> m) {
 
-        Term y = m.get(x);
+        var y = m.get(x);
         if (y!=null)
             return y;
         else if (x instanceof Atomic)
             return x; //no subterms that could be changed
 
 
-        int ms = m.size();
+        var ms = m.size();
         switch (ms) {
             case 0:
                 return x;
             case 1: {
-                Map.Entry<? extends Term, Term> e = m.entrySet().iterator().next();
+                var e = m.entrySet().iterator().next();
                 Term src = e.getKey(), target = e.getValue();
                 return x.replace(src, target);
             }
@@ -39,8 +39,8 @@ public enum MapSubst { ;
                 Term a = A.getKey(), b = B.getKey();
 
 
-                Term aa = A.getValue();
-                Term bb = B.getValue();
+                var aa = A.getValue();
+                var bb = B.getValue();
 
 
 //                //HACK detect cyclic interlock
@@ -57,11 +57,11 @@ public enum MapSubst { ;
             }
             default: {
                 List<Term> valid = null;
-                int kStruct = 0;
+                var kStruct = 0;
                 for (Map.Entry<? extends Term,? extends Term> e : m.entrySet()) {
-                    Term k = e.getKey();
+                    var k = e.getKey();
 
-                    int ks = k.structure();
+                    var ks = k.structure();
                     if (!x.impossibleSubStructure(ks) && !x.impossibleSubVolume(k.volume())) {
                         if (valid == null) valid = new FasterList<>(ms);
                         //TODO else if (valid.size() >=2) //.. the list wont be used for MapN
@@ -72,10 +72,10 @@ public enum MapSubst { ;
                 }
                 if (valid==null)
                     return x;
-                int validN = valid.size();
+                var validN = valid.size();
                 switch (validN) {
                     case 1: {
-                        Term a = valid.get(0);
+                        var a = valid.get(0);
                         return x.replace(a, m.get(a));
                     } case 2: {
                         Term a = valid.get(0), b = valid.get(1);
@@ -157,10 +157,10 @@ public enum MapSubst { ;
         if (from.equals(x))
             return to;
 
-        int fromVol = from.volume();
+        var fromVol = from.volume();
         if (x.impossibleSubVolume(fromVol))
             return x;
-        int fromStruct = from.structure();
+        var fromStruct = from.structure();
         if (x.impossibleSubStructure(fromStruct))
             return x;
 

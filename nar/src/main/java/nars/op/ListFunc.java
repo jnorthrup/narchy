@@ -69,9 +69,9 @@ public enum ListFunc {
 
         @Override
         protected Term compute(Evaluation e, Term x, Term y) {
-            Term[] xx = x.op() == PROD ? x.subterms().arrayShared() : new Term[]{x};
+            var xx = x.op() == PROD ? x.subterms().arrayShared() : new Term[]{x};
             if (xx.length == 0) return y;
-            Term[] yy = y.op() == PROD ? y.subterms().arrayShared() : new Term[]{y};
+            var yy = y.op() == PROD ? y.subterms().arrayShared() : new Term[]{y};
             if (yy.length == 0) return x;
             return $.pFast(Terms.concat(xx, yy));
         }
@@ -79,16 +79,16 @@ public enum ListFunc {
         @Override
         protected Term computeFromXY(Evaluation e, Term x, Term y, Term xy) {
 
-            int l = xy.subs();
+            var l = xy.subs();
             switch (l) {
                 case 0:
                     return e.is(x, Op.EmptyProduct, y, Op.EmptyProduct) ? null : Bool.Null;
                 case 1:
                     return e.is(x, Op.EmptyProduct, y, xy) && e.is(x, xy, y, Op.EmptyProduct) ? null : Bool.Null;
                 default:
-                    Subterms xys = xy.subterms();
+                    var xys = xy.subterms();
 
-                    List<Predicate<Termerator>> list = IntStream.range(-1, l).mapToObj(finalI -> Termerator.assign(
+                    var list = IntStream.range(-1, l).mapToObj(finalI -> Termerator.assign(
                             x, $.pFast(xys.terms((xyi, ii) -> xyi <= finalI)),
                             y, $.pFast(xys.terms((xyi, ii) -> xyi > finalI)))).collect(toList());
                     e.canBe(list);
@@ -101,11 +101,11 @@ public enum ListFunc {
         @Override
         protected Term computeXfromYandXY(Evaluation e, Term x, Term y, Term xy) {
 
-            Term yy = y.op() != PROD ? $.pFast(y) : y;
+            var yy = y.op() != PROD ? $.pFast(y) : y;
 
-            int ys = yy.subs();
+            var ys = yy.subs();
 
-            int remainderLength = xy.subs() - ys;
+            var remainderLength = xy.subs() - ys;
             if (remainderLength >= 0)
                 if (yy.subterms().ANDi((yi, yii) -> xy.sub(remainderLength + yii).equals(yi)))
                     return e.is(x, remainderLength == 0 ?
@@ -121,10 +121,10 @@ public enum ListFunc {
         @Override
         protected Term computeYfromXandXY(Evaluation e, Term x, Term y, Term xy) {
 
-            Term xx = x.op() != PROD ? $.pFast(x) : x;
+            var xx = x.op() != PROD ? $.pFast(x) : x;
 
-            int xs = xx.subs();
-            int remainderLength = xy.subs() - xs;
+            var xs = xx.subs();
+            var remainderLength = xy.subs() - xs;
             if (remainderLength >= 0)
                 if (xx.subterms().ANDi((xi, xii) -> xy.sub(xii).equals(xi)))
                     return e.is(y, (remainderLength == 0) ? Op.EmptyProduct : $.pFast(xy.subterms().terms((i, ii) -> i >= xs))) ? null : Bool.Null;
@@ -138,7 +138,7 @@ public enum ListFunc {
 
         @Override
         protected Term compute(Term x) {
-            Op o = x.op();
+            var o = x.op();
             switch (o) {
                 case PROD:
                     if (x.subs() > 1)
@@ -148,7 +148,7 @@ public enum ListFunc {
                 case IMPL:
                     return o.the(x.dt(),x.subterms().reversed());
                 case CONJ:
-                    int dt = x.dt();
+                    var dt = x.dt();
                     if (!Conj.concurrent(dt))
                         return ((Compound)x).dt(-dt);
                     break;
@@ -167,11 +167,11 @@ public enum ListFunc {
 
     public static final Functor subs = Functor.f2Or3("subs", args -> {
         if (args.subs() == 2) {
-            Term n = args.sub(1);
+            var n = args.sub(1);
             if (n.op() == INT) {
-                int nn = ((Int) n).i;
-                Subterms xx = args.sub(0).subterms();
-                int m = xx.subs();
+                var nn = ((Int) n).i;
+                var xx = args.sub(0).subterms();
+                var m = xx.subs();
                 return nn < m ? PROD.the(xx.subRangeArray(nn, m)) : Bool.Null;
             } else {
                 return null;

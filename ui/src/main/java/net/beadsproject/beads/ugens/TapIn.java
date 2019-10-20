@@ -47,16 +47,16 @@ public class TapIn extends UGen {
 
     @Override
     public void gen() {
-        float[] bi = bufIn[0];
-        for (int i = 0; i < bufferSize; i++) {
+        var bi = bufIn[0];
+        for (var i = 0; i < bufferSize; i++) {
             mem[counter] = bi[i];
             counter = (counter + 1) % memLength;
         }
     }
 
     public void fillBufferLinear(float[] buf, UGen env) {
-        int base = (counter - bufferSize + memLength) % memLength;
-        for (int i = 0; i < buf.length; i++) {
+        var base = (counter - bufferSize + memLength) % memLength;
+        for (var i = 0; i < buf.length; i++) {
             float numSamplesBack;
             if ((numSamplesBack = env.getValue(0, i) * sampsPerMS) < 0) {
                 numSamplesBack = 0;
@@ -64,10 +64,10 @@ public class TapIn extends UGen {
                 numSamplesBack = maxDelay;
             }
 
-            float frac = numSamplesBack % 1;
-            int d1 = ((base + i - ((int) numSamplesBack) - 1) + memLength)
+            var frac = numSamplesBack % 1;
+            var d1 = ((base + i - ((int) numSamplesBack) - 1) + memLength)
                     % memLength;
-            int d2 = (d1 + 1) % memLength;
+            var d2 = (d1 + 1) % memLength;
 
             buf[i] = mem[d1] * frac + mem[d2] * (1 - frac);
 
@@ -80,21 +80,21 @@ public class TapIn extends UGen {
         } else if (numSamplesBack > maxDelay) {
             numSamplesBack = maxDelay;
         }
-        float frac = numSamplesBack % 1;
+        var frac = numSamplesBack % 1;
 
-        int base = (counter - bufferSize - ((int) numSamplesBack) - 1
+        var base = (counter - bufferSize - ((int) numSamplesBack) - 1
                 + memLength + memLength);
 
-        for (int i = 0; i < buf.length; i++) {
-            int d1 = (base + i) % memLength;
+        for (var i = 0; i < buf.length; i++) {
+            var d1 = (base + i) % memLength;
             buf[i] = mem[d1] * frac + mem[(d1 + 1) % memLength] * (1 - frac);
         }
 
     }
 
     public void fillBufferNoInterp(float[] buf, UGen env) {
-        int base = (counter - bufferSize + memLength + memLength);
-        for (int i = 0; i < buf.length; i++) {
+        var base = (counter - bufferSize + memLength + memLength);
+        for (var i = 0; i < buf.length; i++) {
             int numSamplesBack;
             if ((numSamplesBack = (int) (env.getValue(0, i) * sampsPerMS + .5)) < 0) {
                 numSamplesBack = 0;
@@ -112,15 +112,15 @@ public class TapIn extends UGen {
         } else if (numSamplesBack > maxDelay) {
             numSamplesBack = maxDelay;
         }
-        int base = (counter - bufferSize - numSamplesBack + memLength + memLength);
-        for (int i = 0; i < buf.length; i++) {
+        var base = (counter - bufferSize - numSamplesBack + memLength + memLength);
+        for (var i = 0; i < buf.length; i++) {
             buf[i] = mem[(base + i) % memLength];
         }
     }
 
     public float fillBufferAllpass(float[] buf, UGen env, float lastY) {
-        int base = counter - bufferSize + memLength + memLength;
-        for (int i = 0; i < buf.length; i++) {
+        var base = counter - bufferSize + memLength + memLength;
+        for (var i = 0; i < buf.length; i++) {
             float numSamplesBack;
             if ((numSamplesBack = env.getValue(0, i) * sampsPerMS) < 0) {
                 numSamplesBack = 0;
@@ -128,9 +128,9 @@ public class TapIn extends UGen {
                 numSamplesBack = maxDelay;
             }
 
-            float frac = numSamplesBack % 1;
-            float g = (1 - frac) / (1 + frac);
-            int d1 = ((base + i - ((int) numSamplesBack) - 1) + memLength)
+            var frac = numSamplesBack % 1;
+            var g = (1 - frac) / (1 + frac);
+            var d1 = ((base + i - ((int) numSamplesBack) - 1) + memLength)
                     % memLength;
 
             buf[i] = lastY = mem[d1] + g * (mem[(d1 + 1) % memLength] - lastY);
@@ -154,10 +154,10 @@ public class TapIn extends UGen {
         } else if (sampDel > maxDelay) {
             sampDel = maxDelay;
         }
-        int base = counter - bufferSize - sampDel - 1 + memLength + memLength;
+        var base = counter - bufferSize - sampDel - 1 + memLength + memLength;
 
-        for (int i = 0; i < buf.length; i++) {
-            int d1 = (base + i) % memLength;
+        for (var i = 0; i < buf.length; i++) {
+            var d1 = (base + i) % memLength;
             buf[i] = lastY = mem[d1] + g * (mem[(d1 + 1) % memLength] - lastY);
         }
         return lastY;

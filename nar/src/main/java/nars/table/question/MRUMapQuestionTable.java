@@ -34,9 +34,9 @@ public class MRUMapQuestionTable extends MRUMap<Task, Task> implements QuestionT
 
     @Override
     public void remember(/*@NotNull*/ Remember r) {
-        Task t = r.input;
+        var t = r.input;
         synchronized (this) {
-            Task u = merge(t, t, (prev, next) -> {
+            var u = merge(t, t, (prev, next) -> {
                 r.merge(prev);
                 return next;
             });
@@ -56,7 +56,7 @@ public class MRUMapQuestionTable extends MRUMap<Task, Task> implements QuestionT
 
     public Task[] taskArray() {
 
-        int s = size();
+        var s = size();
         if (s == 0) {
             return Task.EmptyArray;
         } else {
@@ -69,8 +69,8 @@ public class MRUMapQuestionTable extends MRUMap<Task, Task> implements QuestionT
 
     @Override
     public void forEachTask(Consumer<? super Task> x) {
-        Task[] t = taskArray();
-        for (Task y : t) {
+        var t = taskArray();
+        for (var y : t) {
             if (y == null)
                 continue;
             if (y.isDeleted()) {
@@ -83,7 +83,7 @@ public class MRUMapQuestionTable extends MRUMap<Task, Task> implements QuestionT
 
     @Override
     public synchronized boolean removeTask(Task x, boolean delete) {
-        Task r = remove(x);
+        var r = remove(x);
         if (r != null) {
             if (delete)
                 r.delete();

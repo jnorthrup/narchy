@@ -57,8 +57,8 @@ public class Full implements Generation {
     public List<Node> generate(int popSize) {
         List<Node> population = new ArrayList<>(popSize);
 
-        for (int i = 0; i < popSize;) {
-            Node candidate = full(1);
+        for (var i = 0; i < popSize;) {
+            var candidate = full(1);
             if (candidate.isValid()) {
                 population.add(candidate);
                 i++;
@@ -69,20 +69,20 @@ public class Full implements Generation {
     }
 
     private Node full(int depth) {
-        Node _tree = randomFunction();
+        var _tree = randomFunction();
         if (_tree.getMaxChildrenCount() > 0) {
-            ParentNode tree = (ParentNode) _tree;
+            var tree = (ParentNode) _tree;
             if (depth >= this.maxDepth - 1) {
 
-                for (int i = tree.getMaxChildrenCount() - tree.getMinChildrenCount(); i < tree.getMaxChildrenCount(); i++) {
-                    Leaf leaf = randomLeaf();
+                for (var i = tree.getMaxChildrenCount() - tree.getMinChildrenCount(); i < tree.getMaxChildrenCount(); i++) {
+                    var leaf = randomLeaf();
                     leaf.setParent(tree);
                     tree.add(leaf);
                 }
 
             } else {
-                for (int i = tree.getMaxChildrenCount() - tree.getMinChildrenCount(); i < tree.getMaxChildrenCount(); i++) {
-                    Node node = full(depth + 1);
+                for (var i = tree.getMaxChildrenCount() - tree.getMinChildrenCount(); i < tree.getMaxChildrenCount(); i++) {
+                    var node = full(depth + 1);
                     node.setParent(tree);
                     tree.add(node);
                 }
@@ -92,12 +92,12 @@ public class Full implements Generation {
     }
 
     private Node randomFunction() {
-        List<Node> functionSet = factory.getFunctionSet();
+        var functionSet = factory.getFunctionSet();
         return functionSet.get(rng.nextInt(functionSet.size())).cloneTree();
     }
 
     private Leaf randomLeaf() {
-        List<Leaf> terminalSet = context.getConfiguration().getNodeFactory().getTerminalSet();
+        var terminalSet = context.getConfiguration().getNodeFactory().getTerminalSet();
         return terminalSet.get(context.getRandom().nextInt(terminalSet.size())).cloneTree();
     }
 }

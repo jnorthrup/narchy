@@ -54,7 +54,7 @@ public class ObjectSurface2 extends MutableUnitContainer {
     }
 
     public void set(Object x) {
-        Surface y = build(x);
+        var y = build(x);
         set(y);
     }
 
@@ -69,7 +69,7 @@ public class ObjectSurface2 extends MutableUnitContainer {
                 y = xy.get(0).apply(x);
                 break;
             default:
-                List<Function<AnyOf, Surface>> xyz = the.applicable(AnyOf.class, Surface.class); //warning, could recurse
+                var xyz = the.applicable(AnyOf.class, Surface.class); //warning, could recurse
                 assert(xyz.size()==1): "multiple materializations of " + AnyOf.class;
                 y = xyz.get(0).apply(new AnyOf(x, xy));
                 break;
@@ -139,10 +139,10 @@ public class ObjectSurface2 extends MutableUnitContainer {
         @Override
         public X get() {
             clear();
-            X[] xx = how.get();
+            var xx = how.get();
             if (xx.length == 0)
                 return null;
-            for (X x : xx)
+            for (var x : xx)
                 add(x);
             return (X) top();
         }
@@ -171,7 +171,7 @@ public class ObjectSurface2 extends MutableUnitContainer {
 
         @Override
         public X get() {
-            int c = this.which;
+            var c = this.which;
             return c >=0 ? way[c].get() : null;
         }
     }

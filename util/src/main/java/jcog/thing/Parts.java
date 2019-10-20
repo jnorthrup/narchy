@@ -28,7 +28,7 @@ public abstract class Parts<T extends Thing<T, ?>> extends Part<T>  {
 
     //    /** register a future deactivation 'off' of an instance which has been switched 'on'. */
     protected final void on(Off... x) {
-        for (Off xx : x)
+        for (var xx : x)
             whenDeleted.add(xx);
     }
 

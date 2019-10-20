@@ -37,7 +37,7 @@ public class CommutativeConstantPreFilter extends AbstractPred<PreDerivation> {
 
     public static void tryFilter(boolean commInTaskOrBelief, Term taskPattern, Term beliefPattern, Collection<PREDICATE<PreDerivation>> pre) {
 
-        Term commutiveContainer = (commInTaskOrBelief) ? taskPattern : beliefPattern;
+        var commutiveContainer = (commInTaskOrBelief) ? taskPattern : beliefPattern;
 
         if (commutiveContainer instanceof Compound /* && concPattern.hasAny(Op.commutative)*/) {
             //target.pathsTo((Term t)->true, (Term t)->true, (ByteList ss, Term x)-> {
@@ -45,15 +45,15 @@ public class CommutativeConstantPreFilter extends AbstractPred<PreDerivation> {
 
                 if (x!=commutiveContainer && x.op().commutative) {
                 //if (x instanceof PatternIndex.PremisePatternCompound.PremisePatternCompoundWithEllipsisCommutive) {
-                    byte[] commPath = Terms.pathConstant(commutiveContainer, x);
+                    var commPath = Terms.pathConstant(commutiveContainer, x);
                     if (commPath != null) {
 
-                        for (Term s : ((Compound)x).subtermsDirect()) {
+                        for (var s : ((Compound)x).subtermsDirect()) {
                             if (s instanceof Ellipsislike) continue; //skip ellipsis terms
 
                             //s is constant:
-                            Term contentHolder = commInTaskOrBelief ? beliefPattern : taskPattern;
-                            byte[] contentPath = Terms.pathConstant(contentHolder, s); //try the belief
+                            var contentHolder = commInTaskOrBelief ? beliefPattern : taskPattern;
+                            var contentPath = Terms.pathConstant(contentHolder, s); //try the belief
                             if (contentPath != null)
                                 pre.add(new CommutativeConstantPreFilter(
                                         commPath, contentPath, commInTaskOrBelief)
@@ -74,13 +74,13 @@ public class CommutativeConstantPreFilter extends AbstractPred<PreDerivation> {
 	@Override
     public boolean test(PreDerivation d) {
 
-        Term contentHolder = ellipsisInTaskOrBelief ? d.beliefTerm : d.taskTerm;
-        Term content = contentHolder.subPath(this.contentPath);
+        var contentHolder = ellipsisInTaskOrBelief ? d.beliefTerm : d.taskTerm;
+        var content = contentHolder.subPath(this.contentPath);
         if (content == null)
             return false;
 
-        Term containerHolder = ellipsisInTaskOrBelief ?  d.taskTerm : d.beliefTerm;
-        Term ellipsisContainer = containerHolder.subPath(this.ellipsisPath);
+        var containerHolder = ellipsisInTaskOrBelief ?  d.taskTerm : d.beliefTerm;
+        var ellipsisContainer = containerHolder.subPath(this.ellipsisPath);
 
         return ellipsisContainer!=null && ellipsisContainer.contains(content);
     }

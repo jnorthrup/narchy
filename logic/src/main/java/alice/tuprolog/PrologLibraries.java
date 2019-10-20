@@ -64,7 +64,7 @@ public class PrologLibraries {
     public synchronized PrologLib loadClass(String className)
             throws InvalidLibraryException {
 
-        PrologLib alib = getLibrary(className);
+        var alib = getLibrary(className);
         if (alib != null) {
             if (prolog.isWarning()) {
                 prolog.notifyWarning(new WarningEvent(prolog,
@@ -74,7 +74,7 @@ public class PrologLibraries {
         }
 
         try {
-            PrologLib lib = (PrologLib) Class.forName(className).getConstructor().newInstance();
+            var lib = (PrologLib) Class.forName(className).getConstructor().newInstance();
             bindLibrary(lib);
             prolog.notifyLoadedLibrary(new LibraryEvent(prolog, className));
             return lib;
@@ -113,7 +113,7 @@ public class PrologLibraries {
                  * and therefore getResource() method can't be used to locate the files at runtime.
                  */
 
-                String dexPath = paths[0];
+                var dexPath = paths[0];
 
                 /**
                  * Description of DexClassLoader
@@ -139,10 +139,10 @@ public class PrologLibraries {
                         .newInstance(dexPath, optimizedDirectory, null, getClass().getClassLoader());
                 lib = (PrologLib) Class.forName(className, true, loader).getConstructor().newInstance();
             } else {
-                URL[] urls = new URL[paths.length];
+                var urls = new URL[paths.length];
 
-                for (int i = 0; i < paths.length; i++) {
-                    File file = new File(paths[i]);
+                for (var i = 0; i < paths.length; i++) {
+                    var file = new File(paths[i]);
                     if (paths[i].contains(".class"))
                         file = new File(paths[i].substring(0,
                                 paths[i].lastIndexOf(File.separator) + 1));
@@ -158,11 +158,11 @@ public class PrologLibraries {
 
             }
 
-            String name = lib.getName();
-            PrologLib alib = getLibrary(name);
+            var name = lib.getName();
+            var alib = getLibrary(name);
             if (alib != null) {
                 if (prolog.isWarning()) {
-                    String msg = "library " + alib.getName()
+                    var msg = "library " + alib.getName()
                             + " already loaded.";
                     prolog.notifyWarning(new WarningEvent(prolog, msg));
                 }
@@ -185,8 +185,8 @@ public class PrologLibraries {
                  * getResource() can't be used with dex files.
                  */
 
-                File file = new File(paths[0]);
-                URL url = (file.toURI().toURL());
+                var file = new File(paths[0]);
+                var url = (file.toURI().toURL());
                 externalLibraries.put(className, url);
             } catch (MalformedURLException e) {
                 e.printStackTrace();
@@ -196,7 +196,7 @@ public class PrologLibraries {
         }
 
         bindLibrary(lib);
-        LibraryEvent ev = new LibraryEvent(prolog, lib.getName());
+        var ev = new LibraryEvent(prolog, lib.getName());
         prolog.notifyLoadedLibrary(ev);
         return lib;
     }
@@ -213,17 +213,17 @@ public class PrologLibraries {
      */
     public synchronized void load(PrologLib lib)
             throws InvalidLibraryException {
-        String name = lib.getName();
-        PrologLib alib = getLibrary(name);
+        var name = lib.getName();
+        var alib = getLibrary(name);
         if (alib != null) {
             if (prolog.isWarning()) {
-                String msg = "library " + alib.getName() + " already loaded.";
+                var msg = "library " + alib.getName() + " already loaded.";
                 prolog.notifyWarning(new WarningEvent(prolog, msg));
             }
             unload(name);
         }
         bindLibrary(lib);
-        LibraryEvent ev = new LibraryEvent(prolog, lib.getName());
+        var ev = new LibraryEvent(prolog, lib.getName());
         prolog.notifyLoadedLibrary(ev);
     }
 
@@ -235,7 +235,7 @@ public class PrologLibraries {
      * @throws InvalidLibraryException if name is not a valid loaded library
      */
     public synchronized void unload(String name) throws InvalidLibraryException {
-        boolean found = currentLibraries.removeIf(lib -> {
+        var found = currentLibraries.removeIf(lib -> {
             if (lib.getName().equals(name)) {
                 lib.dismiss();
                 prims.stop(lib);
@@ -264,13 +264,13 @@ public class PrologLibraries {
      */
     private PrologLib bindLibrary(PrologLib lib) throws InvalidLibraryException {
         try {
-            String name = lib.getName();
+            var name = lib.getName();
             lib.setProlog(prolog);
             currentLibraries.add(lib);
 
             prims.start(lib);
 
-            String th = lib.getTheory();
+            var th = lib.getTheory();
             if (th != null) {
                 theories.consult(new Theory(th), false, name);
                 theories.solveTheoryGoal();
@@ -302,19 +302,19 @@ public class PrologLibraries {
     }
 
     public void onSolveBegin(Term g) {
-        for (PrologLib alib : currentLibraries) {
+        for (var alib : currentLibraries) {
             alib.onSolveBegin(g);
         }
     }
 
     public void onSolveHalt() {
-        for (PrologLib currentLibrary : currentLibraries) {
+        for (var currentLibrary : currentLibraries) {
             currentLibrary.onSolveHalt();
         }
     }
 
     public void onSolveEnd() {
-        for (PrologLib currentLibrary : currentLibraries) {
+        for (var currentLibrary : currentLibraries) {
             currentLibrary.onSolveEnd();
         }
     }

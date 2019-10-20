@@ -139,7 +139,7 @@ public class VID extends Globals {
 	public static boolean GetModeInfo(Dimension dim, int mode) {
 		if (fs_modes == null) initModeList();
 
-		vidmode_t[] modes = vid_modes;
+		var modes = vid_modes;
 		if (vid_fullscreen.value != 0.0f) modes = fs_modes;
 		
 		if (mode < 0 || mode >= modes.length) 
@@ -188,8 +188,8 @@ public class VID extends Globals {
 
 		Com.Printf( "------- Loading " + name + " -------\n");
 
-        String[] driverNames = Renderer.getDriverNames();
-        boolean found = Arrays.asList(driverNames).contains(name);
+		var driverNames = Renderer.getDriverNames();
+		var found = Arrays.asList(driverNames).contains(name);
 
 		if (!found) {
 			Com.Printf( "LoadLibrary(\"" + name +"\") failed\n");
@@ -401,21 +401,21 @@ public class VID extends Globals {
 
 	static void ScreenSizeCallback( Object s )
 	{
-		Menu.menuslider_s slider = (Menu.menuslider_s) s;
+		var slider = (Menu.menuslider_s) s;
 
 		Cvar.SetValue( "viewsize", slider.curvalue * 10 );
 	}
 
 	static void BrightnessCallback( Object s )
 	{
-		Menu.menuslider_s slider = (Menu.menuslider_s) s;
+		var slider = (Menu.menuslider_s) s;
 
 		
 		
 		if ( "soft".equalsIgnoreCase(vid_ref.string) ||
 			 "softx".equalsIgnoreCase(vid_ref.string) )
 		{
-			float gamma = ( 0.8f - ( slider.curvalue/10.0f - 0.5f ) ) + 0.5f;
+			var gamma = ( 0.8f - ( slider.curvalue/10.0f - 0.5f ) ) + 0.5f;
 
 			Cvar.SetValue( "vid_gamma", gamma );
 		}
@@ -432,12 +432,11 @@ public class VID extends Globals {
 		/*
 		** invert sense so greater = brighter, and scale to a range of 0.5 to 1.3
 		*/
-		
-		
-		
-		float gamma = ( 0.4f - ( s_brightness_slider.curvalue/20.0f - 0.25f ) ) + 0.7f;
-		
-		float modulate = s_brightness_slider.curvalue * 0.2f;
+
+
+		var gamma = ( 0.4f - ( s_brightness_slider.curvalue/20.0f - 0.25f ) ) + 0.7f;
+
+		var modulate = s_brightness_slider.curvalue * 0.2f;
 
 		Cvar.SetValue( "vid_gamma", gamma );
 		Cvar.SetValue( "gl_modulate", modulate);
@@ -485,16 +484,16 @@ public class VID extends Globals {
 	};
 
 	static void initModeList() {
-	        List<MonitorMode> modes = re.getModeList();
-                ArrayList<String> fs_resolutions_list = new ArrayList<>();
-                ArrayList<vidmode_t> fs_modes_list = new ArrayList<>();
-                HashSet<DimensionImmutable> resSet = new HashSet<>();
-		for (int i = 0; i < modes.size(); i++) {
-		    MonitorMode mm = modes.get(modes.size() - 1 - i);
-                    SurfaceSize ss = mm.getSurfaceSize();
-                    DimensionImmutable m = ss.getResolution();
+		var modes = re.getModeList();
+		var fs_resolutions_list = new ArrayList<String>();
+		var fs_modes_list = new ArrayList<vidmode_t>();
+		var resSet = new HashSet<DimensionImmutable>();
+		for (var i = 0; i < modes.size(); i++) {
+			var mm = modes.get(modes.size() - 1 - i);
+			var ss = mm.getSurfaceSize();
+			var m = ss.getResolution();
                     if( resSet.add(m) ) {
-                        StringBuilder sb = new StringBuilder();
+						var sb = new StringBuilder();
 			sb.append('[');
 			sb.append(m.getWidth());
 			sb.append(' ');
@@ -521,8 +520,8 @@ public class VID extends Globals {
 	private static void initRefs() {
 		drivers = Renderer.getDriverNames();
 		refs = new String[drivers.length];
-		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < drivers.length; i++) {
+		var sb = new StringBuilder();
+		for (var i = 0; i < drivers.length; i++) {
 			sb.setLength(0);
 			sb.append("[OpenGL ").append(drivers[i]);
 			while (sb.length() < 16) sb.append(' ');
@@ -570,7 +569,7 @@ public class VID extends Globals {
 
 		s_screensize_slider.curvalue = (int)(SCR.scr_viewsize.value/10);
 
-		for (int i = 0; i < drivers.length; i++) {
+		for (var i = 0; i < drivers.length; i++) {
 			if (vid_ref.string.equals(drivers[i])) {
 				s_ref_list.curvalue = i;
 			}
@@ -631,15 +630,15 @@ public class VID extends Globals {
 		s_fs_box.callback = new Menu.mcallback() {
 			@Override
             public void execute(Object o) {
-				int fs = ((Menu.menulist_s)o).curvalue;
+				var fs = ((Menu.menulist_s)o).curvalue;
 				if (fs == 0) {
 					s_mode_list.itemnames = resolutions;
-					int i = vid_modes.length - 2;
+					var i = vid_modes.length - 2;
 					while (i > 0 && vid_modes[i].width > mode_x) i--;
 					s_mode_list.curvalue = i;
 				} else {
 					s_mode_list.itemnames = fs_resolutions;
-					int i = fs_modes.length - 1;
+					var i = fs_modes.length - 1;
 					while (i > 0 && fs_modes[i].width > mode_x) i--;						
 					s_mode_list.curvalue = i;						
 				}
@@ -720,7 +719,7 @@ public class VID extends Globals {
 		/*
 		** draw the banner
 		*/
-		Dimension dim = new Dimension();
+		var dim = new Dimension();
 		re.DrawGetPicSize( dim, "m_banner_video" );
 		re.DrawPic( viddef.getWidth() / 2 - dim.getWidth() / 2, viddef.getHeight() /2 - 110, "m_banner_video" );
 
@@ -742,7 +741,7 @@ public class VID extends Globals {
 	*/
 	static String MenuKey( int key )
 	{
-		Menu.menuframework_s m = s_current_menu;
+		var m = s_current_menu;
 
         switch ( key )
 		{
@@ -768,7 +767,7 @@ public class VID extends Globals {
 			break;
 		}
 
-        final String sound = "misc/menu1.wav";
+        final var sound = "misc/menu1.wav";
         return sound;
 	}
 

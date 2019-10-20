@@ -36,10 +36,10 @@ import spacegraph.util.math.Vector4f;
 class GeometryUtil {
 
 	public static boolean isPointInsidePlanes(OArrayList<Vector4f> planeEquations, v3 point, float margin) {
-		int numbrushes = planeEquations.size();
-        for (Vector4f N1 : planeEquations) {
+		var numbrushes = planeEquations.size();
+        for (var N1 : planeEquations) {
 
-            float dist = VectorUtil.dot3(N1, point) + N1.w - margin;
+			var dist = VectorUtil.dot3(N1, point) + N1.w - margin;
             if (dist > 0f) {
                 return false;
             }
@@ -48,10 +48,10 @@ class GeometryUtil {
 	}
 
 	private static boolean areVerticesBehindPlane(Vector4f planeNormal, OArrayList<v3> vertices, float margin) {
-		int numvertices = vertices.size();
-        for (v3 N1 : vertices) {
+		var numvertices = vertices.size();
+        for (var N1 : vertices) {
 
-            float dist = VectorUtil.dot3(planeNormal, N1) + planeNormal.w - margin;
+			var dist = VectorUtil.dot3(planeNormal, N1) + planeNormal.w - margin;
             if (dist > 0f) {
                 return false;
             }
@@ -60,33 +60,33 @@ class GeometryUtil {
 	}
 
 	private static boolean notExist(Vector4f planeEquation, OArrayList<Vector4f> planeEquations) {
-		int numbrushes = planeEquations.size();
+		var numbrushes = planeEquations.size();
 		return planeEquations.stream().noneMatch(N1 -> VectorUtil.dot3(planeEquation, N1) > 0.999f);
 	}
 
 	public static void getPlaneEquationsFromVertices(OArrayList<v3> vertices, OArrayList<Vector4f> planeEquationsOut) {
-		Vector4f planeEquation = new Vector4f();
+		var planeEquation = new Vector4f();
 		v3 edge0 = new v3(), edge1 = new v3();
-		v3 tmp = new v3();
+		var tmp = new v3();
 
-		int numvertices = vertices.size();
+		var numvertices = vertices.size();
 		
-		for (int i = 0; i < numvertices; i++) {
-            
-            v3 N1 = vertices.get(i);
+		for (var i = 0; i < numvertices; i++) {
 
-			for (int j = i + 1; j < numvertices; j++) {
-                
-                v3 N2 = vertices.get(j);
+			var N1 = vertices.get(i);
 
-				for (int k = j + 1; k < numvertices; k++) {
-                    
-                    v3 N3 = vertices.get(k);
+			for (var j = i + 1; j < numvertices; j++) {
+
+				var N2 = vertices.get(j);
+
+				for (var k = j + 1; k < numvertices; k++) {
+
+					var N3 = vertices.get(k);
 
 					edge0.sub(N2, N1);
 					edge1.sub(N3, N1);
-					float normalSign = 1f;
-					for (int ww = 0; ww < 2; ww++) {
+					var normalSign = 1f;
+					for (var ww = 0; ww < 2; ww++) {
 						tmp.cross(edge0, edge1);
 						planeEquation.x = normalSign * tmp.x;
 						planeEquation.y = normalSign * tmp.y;

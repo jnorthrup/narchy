@@ -40,14 +40,14 @@ public class AI {
     public void compute() {
 
 
-        int temp = alphaBeta(true, SEARCH_LEVEL, Integer.MIN_VALUE, Integer.MAX_VALUE);
+        var temp = alphaBeta(true, SEARCH_LEVEL, Integer.MIN_VALUE, Integer.MAX_VALUE);
 
 
-        int x = temp % MainPanel.MASU;
-        int y = temp / MainPanel.MASU;
+        var x = temp % MainPanel.MASU;
+        var y = temp / MainPanel.MASU;
 
 
-        Undo undo = new Undo(x, y);
+        var undo = new Undo(x, y);
 
         panel.putDownStone(x, y, false);
 
@@ -93,12 +93,12 @@ public class AI {
         }
 
 
-        int bestY = 0;
-        int bestX = 0;
-        for (int y = 0; y < MainPanel.MASU; y++) {
-            for (int x = 0; x < MainPanel.MASU; x++) {
+        var bestY = 0;
+        var bestX = 0;
+        for (var y = 0; y < MainPanel.MASU; y++) {
+            for (var x = 0; x < MainPanel.MASU; x++) {
                 if (panel.canPutDown(x, y)) {
-                    Undo undo = new Undo(x, y);
+                    var undo = new Undo(x, y);
 
                     panel.putDownStone(x, y, true);
 
@@ -107,7 +107,7 @@ public class AI {
                     panel.nextTurn();
 
 
-                    int childValue = minMax(!flag, level - 1);
+                    var childValue = minMax(!flag, level - 1);
 
                     if (flag) {
 
@@ -170,12 +170,12 @@ public class AI {
         }
 
 
-        int bestY = 0;
-        int bestX = 0;
-        for (int y = 0; y < MainPanel.MASU; y++) {
-            for (int x = 0; x < MainPanel.MASU; x++) {
+        var bestY = 0;
+        var bestX = 0;
+        for (var y = 0; y < MainPanel.MASU; y++) {
+            for (var x = 0; x < MainPanel.MASU; x++) {
                 if (panel.canPutDown(x, y)) {
-                    Undo undo = new Undo(x, y);
+                    var undo = new Undo(x, y);
 
                     panel.putDownStone(x, y, true);
 
@@ -184,7 +184,7 @@ public class AI {
                     panel.nextTurn();
 
 
-                    int childValue = alphaBeta(!flag, level - 1, alpha, beta);
+                    var childValue = alphaBeta(!flag, level - 1, alpha, beta);
 
                     if (flag) {
 
@@ -242,10 +242,10 @@ public class AI {
      * @return �Ֆʂ̕]���l�B
      */
     private int valueBoard() {
-        int value = 0;
+        var value = 0;
 
-        for (int y = 0; y < MainPanel.MASU; y++) {
-            for (int x = 0; x < MainPanel.MASU; x++) {
+        for (var y = 0; y < MainPanel.MASU; y++) {
+            for (var x = 0; x < MainPanel.MASU; x++) {
 
                 value += panel.getBoard(x, y) * valueOfPlace[y][x];
             }

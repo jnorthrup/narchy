@@ -54,7 +54,7 @@ public class TextEditModel extends Widget /* TODO Surface */ implements ScrollXY
     @Override
     public final boolean key(KeyEvent e, boolean pressedOrReleased) {
         //TODO anything from super.key(..) ?
-        boolean b = keys.key(e, pressedOrReleased, this);
+        var b = keys.key(e, pressedOrReleased, this);
         if (b) {
             if (pressedOrReleased)
                 keyPress.emit(e); //release
@@ -68,8 +68,8 @@ public class TextEditModel extends Widget /* TODO Surface */ implements ScrollXY
 
         //calculate min,max scales, with appropriate aspect ratio restrictions
 
-        int w = Math.max(1, Math.min(buffer.width(), 80));
-        int h = Math.max(1, Math.min(buffer.height(), 20));
+        var w = Math.max(1, Math.min(buffer.width(), 80));
+        var h = Math.max(1, Math.min(buffer.height(), 20));
         s.viewMinMax(new v2(1, 1), new v2(w, h));
 
         s.scroll(0, 0, w, h);
@@ -97,7 +97,7 @@ public class TextEditModel extends Widget /* TODO Surface */ implements ScrollXY
 
     public void paint(RectFloat bounds, RectFloat viewed, boolean cursorVisible, GL2 gl) {
 
-        TextEditView v = view;
+        var v = view;
         if (v!=null) {
             Draw.bounds(bounds, gl, gg ->
                 Draw.stencilMask(gg, true, Draw::rectUnit,

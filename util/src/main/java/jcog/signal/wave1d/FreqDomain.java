@@ -18,7 +18,7 @@ public class FreqDomain {
         dft = new SlidingDFTTensor( fftSize);
         freq = history > 1 ? new TensorRing(dft.volume(), history) : new ArrayTensor(dft.volume());
 
-        ArrayTensor next = new ArrayTensor(1); //empty
+        var next = new ArrayTensor(1); //empty
 
     }
 

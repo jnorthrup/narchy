@@ -23,8 +23,8 @@ class ParserCollector {
 	}
 
 	private void collect(Parser parent, Set<Parser> collector) {
-		Iterable<Parser> newEntries = collectable.apply(parent);
-		for (Parser each : newEntries) {
+		var newEntries = collectable.apply(parent);
+		for (var each : newEntries) {
 			if (collector.add(each))
 				collect(each, collector);
 		}

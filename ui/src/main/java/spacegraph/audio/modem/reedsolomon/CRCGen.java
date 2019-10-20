@@ -47,13 +47,13 @@ public class CRCGen implements Settings {
      * source: http://introcs.cs.princeton.edu/java/51data/CRC16CCITT.java.html
      */
     public static int crc_16_ccitt(byte[] msg, int len) {
-        int crc = 0xFFFF; // initial value
-        int polynomial = 0x1021; // 0001 0000 0010 0001 (0, 5, 12)
+        var crc = 0xFFFF; // initial value
+        var polynomial = 0x1021; // 0001 0000 0010 0001 (0, 5, 12)
 
-        for (int b = 0; b < len; b++) {
-            for (int i = 0; i < 8; i++) {
-                boolean bit = ((msg[b] >> (7 - i) & 1) == 1);
-                boolean c15 = ((crc >> 15 & 1) == 1);
+        for (var b = 0; b < len; b++) {
+            for (var i = 0; i < 8; i++) {
+                var bit = ((msg[b] >> (7 - i) & 1) == 1);
+                var c15 = ((crc >> 15 & 1) == 1);
                 crc <<= 1;
                 if (c15 ^ bit)
                     crc ^= polynomial;
@@ -67,12 +67,12 @@ public class CRCGen implements Settings {
     /* Computes the CRC-8-CCITT checksum on array of byte data, length len */
     public static byte crc_8_ccitt(byte[] msg, int len) {
         int crc = (byte) 0xFF; // initial value
-        int polynomial = 0x07; // (0, 1, 2) : 0x07 / 0xE0 / 0x83
+        var polynomial = 0x07; // (0, 1, 2) : 0x07 / 0xE0 / 0x83
 
-        for (int b = 0; b < len; b++) {
-            for (int i = 0; i < 8; i++) {
-                boolean bit = ((msg[b] >> (7 - i) & 1) == 1);
-                boolean c7 = ((crc >> 7 & 1) == 1);
+        for (var b = 0; b < len; b++) {
+            for (var i = 0; i < 8; i++) {
+                var bit = ((msg[b] >> (7 - i) & 1) == 1);
+                var c7 = ((crc >> 7 & 1) == 1);
                 crc <<= 1;
                 if (c7 ^ bit)
                     crc ^= polynomial;

@@ -25,12 +25,12 @@ public class GarbageMap<K, V> {
     }
 
     public V get(K key) {
-        GarbageReference<K, V> ref = map.get(key);
+        var ref = map.get(key);
         return ref == null ? null : ref.value;
     }
 
     public Object getGarbageObject(K key){
-        GarbageReference<K,V> ref=map.get(key);
+        var ref=map.get(key);
         return ref == null ? null : ref.get();
     }
 
@@ -45,7 +45,7 @@ public class GarbageMap<K, V> {
         if (value == garbageObject)
             throw new IllegalArgumentException("value can't be equal to garbageObject for gc to work");
 
-        GarbageReference reference = new GarbageReference(garbageObject, key, value, map);
+        var reference = new GarbageReference(garbageObject, key, value, map);
         map.put(key, reference);
     }
 
@@ -72,7 +72,7 @@ public class GarbageMap<K, V> {
         public void run() {
             while (true) {
                 try {
-                    GarbageReference ref = (GarbageReference) referenceQueue.remove();
+                    var ref = (GarbageReference) referenceQueue.remove();
                     while (true) {
                         ref.map.remove(ref.key);
                         ref = (GarbageReference) referenceQueue.remove();

@@ -131,14 +131,14 @@ public class TermFrequencies<E> extends DTMatrix<E> implements Iterable<E> {
 
 		List<E> toRemove = new ArrayList();
 		terms.forEachKeyValue((term, i) -> {
-			double f = values[i][i]; 
+			var f = values[i][i];
 			if((f < lower || f > upper)){
 				
 				toRemove.add(term);
 			}
 		});
-		ObjectIntHashMap<E> eObjectIntHashMap = terms;
-		for (E e : toRemove) {
+		var eObjectIntHashMap = terms;
+		for (var e : toRemove) {
 			eObjectIntHashMap.remove(e);
 		}
 		terms.compact();

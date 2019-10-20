@@ -84,7 +84,7 @@ public class DbvtBroadphase extends Broadphase {
 		sets[1] = new Dbvt();
 
 
-		boolean releasepaircache = (paircache == null);
+		var releasepaircache = (paircache == null);
 		predictedframes = 2;
 		stageCurrent = 0;
 		fupdates = 1;
@@ -93,7 +93,7 @@ public class DbvtBroadphase extends Broadphase {
 		gid = 0;
 		pid = 0;
 
-		for (int i=0; i<=STAGECOUNT; i++) {
+		for (var i = 0; i<=STAGECOUNT; i++) {
 			stageRoots[i] = null;
 		}
 		
@@ -112,9 +112,9 @@ public class DbvtBroadphase extends Broadphase {
 	}
 
 	private static DbvtProxy listremove(DbvtProxy item, DbvtProxy list) {
-		DbvtProxy[] itemLinks = item.links;
-		DbvtProxy i0 = itemLinks[0];
-		DbvtProxy i1 = itemLinks[1];
+		var itemLinks = item.links;
+		var i0 = itemLinks[0];
+		var i1 = itemLinks[1];
 		if (i0 != null) {
 			i0.links[1] = i1;
 		}
@@ -130,7 +130,7 @@ public class DbvtBroadphase extends Broadphase {
 
 	@Override
     public Broadphasing createProxy(v3 aabbMin, v3 aabbMax, BroadphaseNativeType shapeType, Collidable userPtr, short collisionFilterGroup, short collisionFilterMask, Intersecter intersecter, Object multiSapProxy) {
-		DbvtProxy proxy = new DbvtProxy(userPtr, collisionFilterGroup, collisionFilterMask, aabbMin, aabbMax);
+		var proxy = new DbvtProxy(userPtr, collisionFilterGroup, collisionFilterMask, aabbMin, aabbMax);
 		DbvtAabbMm.FromMM(aabbMin, aabbMax, proxy.aabb);
 		proxy.leaf = sets[0].insert(proxy.aabb, proxy);
 		proxy.stage = stageCurrent;
@@ -141,8 +141,8 @@ public class DbvtBroadphase extends Broadphase {
 
 	@Override
     public void destroyProxy(Broadphasing absproxy, Intersecter intersecter) {
-		DbvtProxy proxy = (DbvtProxy)absproxy;
-		int stage = proxy.stage;
+		var proxy = (DbvtProxy)absproxy;
+		var stage = proxy.stage;
 		sets[(stage == STAGECOUNT) ? 1 : 0].remove(proxy.leaf);
 		stageRoots[stage] = listremove(proxy, stageRoots[stage]);
 		paircache.removeOverlappingPairsContainingProxy(proxy, intersecter);
@@ -150,11 +150,11 @@ public class DbvtBroadphase extends Broadphase {
 	}
 
 	@Override public void forEach(int maxClusterPopulation, List<Collidable> all, Consumer<List<Collidable>> each) {
-		Node root = sets[0].root;
+		var root = sets[0].root;
 		if (root == null)
 			return;
 
-		int population = all.size();
+		var population = all.size();
 		if (population == 1) {
 			
 			each.accept(all);
@@ -167,21 +167,19 @@ public class DbvtBroadphase extends Broadphase {
 	private static int forEach(Node node, int maxClusterPopulation, int unvisited, int level, Consumer<List<Collidable>> each) {
 
 
-		
-
-		int nodePop = unvisited >> level;
+		var nodePop = unvisited >> level;
 
 		if (node.data==null && nodePop > maxClusterPopulation /* x2 for the two children */) {
-			
-			Node[] x = node.childs;
-			for (Node n : x) {
+
+			var x = node.childs;
+			for (var n : x) {
 				unvisited -= forEach(n, maxClusterPopulation, unvisited, level+1, each);
 			}
 		} else {
 			
 			List<Collidable> l = new FasterList(nodePop);
 			node.leaves(l);
-			int ls = l.size();
+			var ls = l.size();
 			if (ls > 0) {
 				each.accept(l);
 			}
@@ -194,8 +192,8 @@ public class DbvtBroadphase extends Broadphase {
 
 	@Override
     public void setAabb(Broadphasing absproxy, v3 aabbMin, v3 aabbMax, Intersecter intersecter) {
-		DbvtProxy proxy = (DbvtProxy)absproxy;
-		DbvtAabbMm aabb = DbvtAabbMm.FromMM(aabbMin, aabbMax, new DbvtAabbMm());
+		var proxy = (DbvtProxy)absproxy;
+		var aabb = DbvtAabbMm.FromMM(aabbMin, aabbMax, new DbvtAabbMm());
 		if (proxy.stage == STAGECOUNT) {
 			
 			sets[1].remove(proxy.leaf);
@@ -204,7 +202,7 @@ public class DbvtBroadphase extends Broadphase {
 		else {
 			
 			if (DbvtAabbMm.intersect(proxy.leaf.volume, aabb)) {/* Moving				*/
-				v3 delta = new v3();
+				var delta = new v3();
 				delta.add(aabbMin, aabbMax);
 				delta.scaled(0.5f);
 				delta.sub(proxy.aabb.center(new v3()));
@@ -229,23 +227,22 @@ public class DbvtBroadphase extends Broadphase {
 
 	@Override
     public void update(Intersecter intersecter) {
-		
 
-		
-		Dbvt s0 = sets[0];
+
+		var s0 = sets[0];
 		s0.optimizeIncremental(1 + (s0.leaves * dupdates) / 100);
-		Dbvt s1 = sets[1];
+		var s1 = sets[1];
 		s1.optimizeIncremental(1 + (s1.leaves * fupdates) / 100);
 
 		
 		stageCurrent = (stageCurrent + 1) % STAGECOUNT;
-		DbvtProxy[] stageRoots = this.stageRoots;
-		DbvtProxy current = stageRoots[stageCurrent];
+		var stageRoots = this.stageRoots;
+		var current = stageRoots[stageCurrent];
 
 		if (current != null) {
-			DbvtTreeCollider collider = new DbvtTreeCollider(this);
+			var collider = new DbvtTreeCollider(this);
 			do {
-				DbvtProxy next = current.links[1];
+				var next = current.links[1];
 				stageRoots[current.stage] = listremove(current, stageRoots[current.stage]);
 				stageRoots[STAGECOUNT] = listappend(current, stageRoots[STAGECOUNT]);
 				collideTT(s1.root, current.leaf, collider, collideStack);
@@ -256,25 +253,24 @@ public class DbvtBroadphase extends Broadphase {
 			} while (current != null);
 		}
 
-		
-		DbvtTreeCollider collider = new DbvtTreeCollider(this);
+
+		var collider = new DbvtTreeCollider(this);
 		
 		collideTT(s0.root, s1.root, collider, collideStack);
 		
 		collideTT(s0.root, s0.root, collider, collideStack);
 
-		
-		
-		FasterList<BroadphasePair> pairs = paircache.getOverlappingPairArray();
+
+		var pairs = paircache.getOverlappingPairArray();
 			for (int i=0, ni=pairs.size(); i<ni; i++) {
-				
-				BroadphasePair p = pairs.get(i);
-				DbvtProxy pa = (DbvtProxy) p.pProxy0;
-				DbvtProxy pb = (DbvtProxy) p.pProxy1;
+
+				var p = pairs.get(i);
+				var pa = (DbvtProxy) p.pProxy0;
+				var pb = (DbvtProxy) p.pProxy1;
 				if (!DbvtAabbMm.intersect(pa.aabb, pb.aabb)) {
 					
 					if (pa.hashCode() > pb.hashCode()) {
-						DbvtProxy tmp = pa;
+						var tmp = pa;
 						pa = pb;
 						pb = tmp;
 					}

@@ -25,7 +25,7 @@ public interface NARCondition extends Serializable {
 	long getFinalCycle();
 
 	default void log(String label, boolean successCondition, Logger logger) {
-		String msg = (isTrue() == successCondition ? " OK" : "ERR");
+		var msg = (isTrue() == successCondition ? " OK" : "ERR");
 		if (successCondition) {
 			logger.info("{} {} {}", label, this, msg);
 		} else {

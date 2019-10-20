@@ -15,26 +15,26 @@ public class Taxonomy<E> implements Iterable<E>{
     
     public Taxonomy(ArrayList<E> concepts){
     	this.concepts = concepts;
-    	int size = concepts.size();
+		var size = concepts.size();
     	relations = new double[size][size];
     }
     
     
     public void setSpecificity(E subConcept, E concept, double specificity){
-        int i = concepts.indexOf(subConcept);
-        int j = concepts.indexOf(concept);
+		var i = concepts.indexOf(subConcept);
+		var j = concepts.indexOf(concept);
     	relations[i][j] = specificity;
     }
     
     public double getSpecificity(E subConcept, E concept){
-        int i = concepts.indexOf(subConcept);
-        int j = concepts.indexOf(concept);
+		var i = concepts.indexOf(subConcept);
+		var j = concepts.indexOf(concept);
     	return relations[i][j];
     }
 
     public void taxonomyPruning(){
         int i,j;
-        int numConcepts = concepts.size();
+		var numConcepts = concepts.size();
 
         /* conservo solo le relazioni più forti:
     	 * ovvero la relazione più alta fra rel(i,j) e rel(j,i)
@@ -50,8 +50,8 @@ public class Taxonomy<E> implements Iterable<E>{
     	}
 
 
-        double[][] distance = new double[numConcepts][numConcepts];
-        int bigNum = 10000;
+		var distance = new double[numConcepts][numConcepts];
+		var bigNum = 10000;
         for(i = 0; i < numConcepts; i++)
     		for(j = 0; j < numConcepts; j++){
     			
@@ -67,7 +67,7 @@ public class Taxonomy<E> implements Iterable<E>{
     	 * Ciò che segue è una leggera modifica dell'algoritmo di 
     	 * Floyd Warshall per all-pairs shortest path.
     	 */
-    	for(int k = 0; k < numConcepts; k++){
+    	for(var k = 0; k < numConcepts; k++){
     		for(i = 0; i < numConcepts; i++){
     			for (j = 0; j < numConcepts; j++) {
     				
@@ -81,7 +81,7 @@ public class Taxonomy<E> implements Iterable<E>{
     				 * e quindi decidere se esso va eliminato o meno.
     				 */
 					if(relations[i][k] > relations[i][j] && relations[k][j] > relations[i][j]){
-                        double sumDist = distance[i][k] + distance[k][j];
+						var sumDist = distance[i][k] + distance[k][j];
                         if(  sumDist < distance[i][j])
 							distance[i][j] = sumDist;
 					}

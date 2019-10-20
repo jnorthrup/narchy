@@ -13,22 +13,22 @@ import java.util.function.Supplier;
 public interface PriReference<X> extends Prioritizable, Supplier<X>, FloatSupplier {
 
     static float[] histogram(Iterable<? extends Prioritized> pp, float[] x) {
-        int bins = x.length;
+        var bins = x.length;
         double[] total = {0};
 
         for (Prioritized y : pp) {
             if (y == null)
                 continue;
-            float p = y.priElseZero();
+            var p = y.priElseZero();
             if (p > 1f) p = 1f;
-            int b = Util.bin(p, bins);
+            var b = Util.bin(p, bins);
             x[b]++;
             total[0]++;
         }
 
-        double t = total[0];
+        var t = total[0];
         if (t > 0) {
-            for (int i = 0; i < bins; i++)
+            for (var i = 0; i < bins; i++)
                 x[i] /= t;
         }
         return x;
@@ -39,15 +39,15 @@ public interface PriReference<X> extends Prioritizable, Supplier<X>, FloatSuppli
      */
     static <X, Y> double[][] histogram( Iterable<PriReference<Y>> pp,  BiConsumer<PriReference<Y>, double[][]> each,  double[][] d) {
 
-        for (PriReference<Y> y : pp) {
+        for (var y : pp) {
             each.accept(y, d);
         }
 
-        for (double[] e : d) {
-            double total = Arrays.stream(e).sum();
+        for (var e : d) {
+            var total = Arrays.stream(e).sum();
             if (total > 0) {
                 for (int i = 0, eLength = e.length; i < eLength; i++) {
-                    double f = e[i];
+                    var f = e[i];
                     e[i] /= total;
                 }
             }

@@ -241,8 +241,8 @@ public class QuadtreeIndex<V extends Vec2D> extends Rect implements SpatialIndex
             switch (type) {
                 case LEAF:
                     if (values != null) {
-                        float rsquare = radius * radius;
-                        for (V value : values) {
+                        var rsquare = radius * radius;
+                        for (var value : values) {
                             if (value.distanceToSquared(p) < rsquare) {
                                 results.accept(value);
                             }
@@ -326,14 +326,14 @@ public class QuadtreeIndex<V extends Vec2D> extends Rect implements SpatialIndex
     }
 
     private void split(float x, float y, float w, float h) {
-        Set<V> oldPoints = values;
+        var oldPoints = values;
         values = null;
 
         type = Type.BRANCH;
 
         QuadtreeIndex<V> nw = this.nw, ne = this.ne, se = this.se, sw = this.sw;
-        float h2 = h / 2;
-        float w2 = w / 2;
+        var h2 = h / 2;
+        var w2 = w / 2;
         this.nw = new QuadtreeIndex(this, x, y, w2, h2);
         this.ne = new QuadtreeIndex(this, mx, y, w2, h2);
         this.sw = new QuadtreeIndex(this, x, my, w2, h2);
@@ -346,7 +346,7 @@ public class QuadtreeIndex<V extends Vec2D> extends Rect implements SpatialIndex
 //                        throw new WTF();
 //                }
 //            });
-            for (V oldPoint : oldPoints) {
+            for (var oldPoint : oldPoints) {
                 index(oldPoint);
             }
         }
@@ -359,7 +359,7 @@ public class QuadtreeIndex<V extends Vec2D> extends Rect implements SpatialIndex
 
     public void forEach(Consumer<V> v) {
         if (values!=null) {
-            for (V value : values) {
+            for (var value : values) {
                 v.accept(value);
             }
         }
@@ -376,9 +376,9 @@ public class QuadtreeIndex<V extends Vec2D> extends Rect implements SpatialIndex
 
     @Override
     public boolean unindex(V p) {
-        QuadtreeIndex node = findNode(p);
+        var node = findNode(p);
         if (node != null) {
-            boolean removed = node.values.remove(p);
+            var removed = node.values.remove(p);
             assert(removed);
             if (node.values.isEmpty()) {
                 node.type = Type.EMPTY;

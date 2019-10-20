@@ -34,7 +34,7 @@ public class Digit extends Terminal {
 	 */
 	@Override
 	public boolean qualifies(Object o) {
-		Character c = (Character) o;
+		var c = (Character) o;
 		return Character.isDigit(c);
 	}
 
@@ -43,7 +43,7 @@ public class Digit extends Terminal {
 	 */
 	@Override
 	public List<String> randomExpansion(int maxDepth, int depth) {
-		char c = (char) (10 * Math.random() + '0');
+		var c = (char) (10 * Math.random() + '0');
 		List<String> v = new ArrayList<>();
 		v.add(new String(new char[] { c }));
 		return v;

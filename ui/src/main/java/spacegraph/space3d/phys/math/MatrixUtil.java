@@ -41,32 +41,32 @@ import static spacegraph.space3d.phys.math.VectorUtil.setCoord;
 public class MatrixUtil {
 	
 	public static void scale(Matrix3f dest, Matrix3f mat, v3 s) {
-		float sx = s.x;
+		var sx = s.x;
 		dest.m00 = mat.m00 * sx;
 		dest.m10 = mat.m10 * sx;
 		dest.m20 = mat.m20 * sx;
-		float sy = s.y;
+		var sy = s.y;
 		dest.m01 = mat.m01 * sy;
 		dest.m11 = mat.m11 * sy;
 		dest.m21 = mat.m21 * sy;
-		float sz = s.z;
+		var sz = s.z;
 		dest.m02 = mat.m02 * sz;
 		dest.m12 = mat.m12 * sz;
 		dest.m22 = mat.m22 * sz;
 	}
 	private static void scale(Matrix3f dest, v3 s) {
 
-		float matm00 = dest.m00;
-		float matm01 = dest.m01;
-		float matm02 = dest.m02;
+		var matm00 = dest.m00;
+		var matm01 = dest.m01;
+		var matm02 = dest.m02;
 		dest.m00 = matm00 * s.x;   dest.m01 = matm01 * s.y;   dest.m02 = matm02 * s.z;
-		float matm10 = dest.m10;
-		float matm11 = dest.m11;
-		float matm12 = dest.m12;
+		var matm10 = dest.m10;
+		var matm11 = dest.m11;
+		var matm12 = dest.m12;
 		dest.m10 = matm10 * s.x;   dest.m11 = matm11 * s.y;   dest.m12 = matm12 * s.z;
-		float matm20 = dest.m20;
-		float matm21 = dest.m21;
-		float matm22 = dest.m22;
+		var matm20 = dest.m20;
+		var matm21 = dest.m21;
+		var matm22 = dest.m22;
 		dest.m20 = matm20 * s.x;   dest.m21 = matm21 * s.y;   dest.m22 = matm22 * s.z;
 	}
 	public static void scale(Matrix3f dest, float s) {
@@ -110,16 +110,16 @@ public class MatrixUtil {
 	 * order. This means a vector is first rotated about X then Y and then Z axis.
 	 */
 	public static void setEulerZYX(Matrix3f mat, float eulerX, float eulerY, float eulerZ) {
-		float ci = (float) Math.cos(eulerX);
-		float cj = (float) Math.cos(eulerY);
-		float ch = (float) Math.cos(eulerZ);
-		float si = (float) Math.sin(eulerX);
-		float sj = (float) Math.sin(eulerY);
-		float sh = (float) Math.sin(eulerZ);
-		float cc = ci * ch;
-		float cs = ci * sh;
-		float sc = si * ch;
-		float ss = si * sh;
+		var ci = (float) Math.cos(eulerX);
+		var cj = (float) Math.cos(eulerY);
+		var ch = (float) Math.cos(eulerZ);
+		var si = (float) Math.sin(eulerX);
+		var sj = (float) Math.sin(eulerY);
+		var sh = (float) Math.sin(eulerZ);
+		var cc = ci * ch;
+		var cs = ci * sh;
+		var sc = si * ch;
+		var ss = si * sh;
 
 		mat.setRow(0, cj * ch, sj * sc - cs, sj * cc + ss);
 		mat.setRow(1, cj * sh, sj * ss + cc, sj * cs - sc);
@@ -147,57 +147,57 @@ public class MatrixUtil {
 	}
 	
 	public static void setRotation(Matrix3f dest, Quat4f q) {
-		float x = q.x;
-		float y = q.y;
-		float z = q.z;
-		float w = q.w;
-		float d = x * x + y * y + z * z + w * w;
+		var x = q.x;
+		var y = q.y;
+		var z = q.z;
+		var w = q.w;
+		var d = x * x + y * y + z * z + w * w;
 		assert (d != 0f);
-		float s = 2f / d;
+		var s = 2f / d;
 		float ys = y * s, zs = z * s;
 		float yy = y * ys, zz = z * zs;
 		dest.m00 = 1f - (yy + zz);
-		float xy = x * ys;
-		float wz = w * zs;
+		var xy = x * ys;
+		var wz = w * zs;
 		dest.m01 = xy - wz;
-		float xz = x * zs;
-		float wy = w * ys;
+		var xz = x * zs;
+		var wy = w * ys;
 		dest.m02 = xz + wy;
 		dest.m10 = xy + wz;
-        float xs = x * s;
-        float xx = x * xs;
+		var xs = x * s;
+		var xx = x * xs;
 		dest.m11 = 1f - (xx + zz);
-		float yz = y * zs;
-		float wx = w * xs;
+		var yz = y * zs;
+		var wx = w * xs;
 		dest.m12 = yz - wx;
 		dest.m20 = xz - wy;
 		dest.m21 = yz + wx;
 		dest.m22 = 1f - (xx + yy);
 	}
 	public static void setRotation(Matrix3f dest, Quaternion q) {
-		float w = q.getW();
-		float x = q.getX();
-		float y = q.getY();
-		float z = q.getZ();
+		var w = q.getW();
+		var x = q.getX();
+		var y = q.getY();
+		var z = q.getZ();
 
-		float d = x * x + y * y + z * z + w * w;
+		var d = x * x + y * y + z * z + w * w;
 		assert (d != 0f);
-		float s = 2f / d;
+		var s = 2f / d;
 		float ys = y * s, zs = z * s;
 		float yy = y * ys, zz = z * zs;
 		dest.m00 = 1f - (yy + zz);
-		float xy = x * ys;
-		float wz = w * zs;
+		var xy = x * ys;
+		var wz = w * zs;
 		dest.m01 = xy - wz;
-		float xz = x * zs;
-		float wy = w * ys;
+		var xz = x * zs;
+		var wy = w * ys;
 		dest.m02 = xz + wy;
 		dest.m10 = xy + wz;
-        float xs = x * s;
-        float xx = x * xs;
+		var xs = x * s;
+		var xx = x * xs;
 		dest.m11 = 1f - (xx + zz);
-		float yz = y * zs;
-		float wx = w * xs;
+		var yz = y * zs;
+		var wx = w * xs;
 		dest.m12 = yz - wx;
 		dest.m20 = xz - wy;
 		dest.m21 = yz + wx;
@@ -205,13 +205,13 @@ public class MatrixUtil {
 	}
 
 	public static void getRotation(Matrix3f mat, Quat4f dest) {
-		
-		
-		float trace = mat.m00 + mat.m11 + mat.m22;
+
+
+		var trace = mat.m00 + mat.m11 + mat.m22;
 		
 
 		if (trace > 0f) {
-			float s = (float) Math.sqrt(trace + 1f);
+			var s = (float) Math.sqrt(trace + 1f);
 			dest.w = (s * 0.5f);
 			s = 0.5f / s;
 
@@ -220,11 +220,11 @@ public class MatrixUtil {
 			dest.z = ((mat.m10 - mat.m01) * s);
 		}
 		else {
-			int i = mat.m00 < mat.m11 ? (mat.m11 < mat.m22 ? 2 : 1) : (mat.m00 < mat.m22 ? 2 : 0);
-			int j = (i + 1) % 3;
-			int k = (i + 2) % 3;
+			var i = mat.m00 < mat.m11 ? (mat.m11 < mat.m22 ? 2 : 1) : (mat.m00 < mat.m22 ? 2 : 0);
+			var j = (i + 1) % 3;
+			var k = (i + 2) % 3;
 
-			float s = (float) Math.sqrt(mat.get(i, i) - mat.get(j, j) - mat.get(k, k) + 1f);
+			var s = (float) Math.sqrt(mat.get(i, i) - mat.get(j, j) - mat.get(k, k) + 1f);
 			dest.set(i, s * 0.5f);
 			s = 0.5f / s;
 
@@ -246,13 +246,13 @@ public class MatrixUtil {
 		}
 	}
 	public static void getRotation(Matrix3f mat, Quaternion q) {
-		
 
-		float trace = mat.m00 + mat.m11 + mat.m22;
+
+		var trace = mat.m00 + mat.m11 + mat.m22;
 		
 
 		if (trace > 0f) {
-			float s = (float) Math.sqrt(trace + 1f);
+			var s = (float) Math.sqrt(trace + 1f);
 			q.setW(s * 0.5f);
 			s = 0.5f / s;
 
@@ -261,11 +261,11 @@ public class MatrixUtil {
 			q.setZ(((mat.m10 - mat.m01) * s) );
 		}
 		else {
-			int i = mat.m00 < mat.m11 ? (mat.m11 < mat.m22 ? 2 : 1) : (mat.m00 < mat.m22 ? 2 : 0);
-			int j = (i + 1) % 3;
-			int k = (i + 2) % 3;
+			var i = mat.m00 < mat.m11 ? (mat.m11 < mat.m22 ? 2 : 1) : (mat.m00 < mat.m22 ? 2 : 0);
+			var j = (i + 1) % 3;
+			var k = (i + 2) % 3;
 
-			float s = (float) Math.sqrt(mat.get(i, i) - mat.get(j, j) - mat.get(k, k) + 1f);
+			var s = (float) Math.sqrt(mat.get(i, i) - mat.get(j, j) - mat.get(k, k) + 1f);
 			setQuat(q, i, s * 0.5f);
 			s = 0.5f / s;
 
@@ -281,30 +281,30 @@ public class MatrixUtil {
 	}
 	
 	public static void invert(Matrix3f mat) {
-		float co_x = cofac(mat, 1, 1, 2, 2);
-		float co_y = cofac(mat, 1, 2, 2, 0);
-		float co_z = cofac(mat, 1, 0, 2, 1);
-		
-		float det = mat.m00*co_x + mat.m01*co_y + mat.m02*co_z;
+		var co_x = cofac(mat, 1, 1, 2, 2);
+		var co_y = cofac(mat, 1, 2, 2, 0);
+		var co_z = cofac(mat, 1, 0, 2, 1);
+
+		var det = mat.m00*co_x + mat.m01*co_y + mat.m02*co_z;
 		assert (det != 0f);
-		
-		float s = 1f / det;
-		float m00 = co_x * s;
-		float m01 = cofac(mat, 0, 2, 2, 1) * s;
-		float m02 = cofac(mat, 0, 1, 1, 2) * s;
-		float m11 = cofac(mat, 0, 0, 2, 2) * s;
-		float m12 = cofac(mat, 0, 2, 1, 0) * s;
-		float m21 = cofac(mat, 0, 1, 2, 0) * s;
-		float m22 = cofac(mat, 0, 0, 1, 1) * s;
+
+		var s = 1f / det;
+		var m00 = co_x * s;
+		var m01 = cofac(mat, 0, 2, 2, 1) * s;
+		var m02 = cofac(mat, 0, 1, 1, 2) * s;
+		var m11 = cofac(mat, 0, 0, 2, 2) * s;
+		var m12 = cofac(mat, 0, 2, 1, 0) * s;
+		var m21 = cofac(mat, 0, 1, 2, 0) * s;
+		var m22 = cofac(mat, 0, 0, 1, 1) * s;
 		
 		mat.m00 = m00;
 		mat.m01 = m01;
 		mat.m02 = m02;
-		float m10 = co_y * s;
+		var m10 = co_y * s;
 		mat.m10 = m10;
 		mat.m11 = m11;
 		mat.m12 = m12;
-		float m20 = co_z * s;
+		var m20 = co_z * s;
 		mat.m20 = m20;
 		mat.m21 = m21;
 		mat.m22 = m22;
@@ -320,22 +320,22 @@ public class MatrixUtil {
 	 */
 	
 	public static void diagonalize(Matrix3f mat, Matrix3f rot, float threshold, int maxSteps) {
-		v3 row = new v3();
+		var row = new v3();
 
 		rot.setIdentity();
-		for (int step = maxSteps; step > 0; step--) {
-			
-			int q = 1;
-			int r = 2;
-			float max = Math.abs(mat.m01);
-			float v = Math.abs(mat.m02);
+		for (var step = maxSteps; step > 0; step--) {
+
+			var q = 1;
+			var r = 2;
+			var max = Math.abs(mat.m01);
+			var v = Math.abs(mat.m02);
 			if (v > max) {
 				q = 2;
 				r = 1;
 				max = v;
 			}
 			v = Math.abs(mat.m12);
-			int p = 0;
+			var p = 0;
 			if (v > max) {
 				p = 1;
 				q = 2;
@@ -343,7 +343,7 @@ public class MatrixUtil {
 				max = v;
 			}
 
-			float t = threshold * (Math.abs(mat.m00) + Math.abs(mat.m11) + Math.abs(mat.m22));
+			var t = threshold * (Math.abs(mat.m00) + Math.abs(mat.m11) + Math.abs(mat.m22));
 			if (max <= t) {
 				if (max <= BulletGlobals.SIMD_EPSILON * t) {
 					return;
@@ -351,10 +351,10 @@ public class MatrixUtil {
 				step = 1;
 			}
 
-			
-			float mpq = mat.get(p, q);
-			float theta = (mat.get(q, q) - mat.get(p, p)) / (2 * mpq);
-			float theta2 = theta * theta;
+
+			var mpq = mat.get(p, q);
+			var theta = (mat.get(q, q) - mat.get(p, p)) / (2 * mpq);
+			var theta2 = theta * theta;
 			float cos;
             if ((theta2 * theta2) < (10f / BulletGlobals.SIMD_EPSILON)) {
 				t = 1f / (theta >= 0f ? theta + (float) Math.sqrt(1f + theta2) : theta - (float) Math.sqrt(1f + theta2));
@@ -365,22 +365,22 @@ public class MatrixUtil {
 				t = 1 / (theta * (2 + 0.5f / theta2));
 				cos = 1 - 0.5f * t * t;
 			}
-            float sin = cos * t;
+			var sin = cos * t;
 
 
             mat.setElement(p, q, 0f);
 			mat.setElement(q, p, 0f);
 			mat.setElement(p, p, mat.get(p, p) - t * mpq);
 			mat.setElement(q, q, mat.get(q, q) + t * mpq);
-			float mrp = mat.get(r, p);
-			float mrq = mat.get(r, q);
+			var mrp = mat.get(r, p);
+			var mrq = mat.get(r, q);
 			mat.setElement(r, p, cos * mrp - sin * mrq);
 			mat.setElement(p, r, cos * mrp - sin * mrq);
 			mat.setElement(r, q, cos * mrq + sin * mrp);
 			mat.setElement(q, r, cos * mrq + sin * mrp);
 
 			
-			for (int i=0; i<3; i++) {
+			for (var i = 0; i<3; i++) {
 				rot.getRow(i, row);
 
 				mrp = coord(row, p);

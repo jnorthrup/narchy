@@ -128,9 +128,9 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
     private static AbstractBytes getCommonPrefix(AbstractBytes first, AbstractBytes second) {
         if (first == second) return first;
 
-        int minLength = Math.min(first.length(), second.length());
+        var minLength = Math.min(first.length(), second.length());
 
-        for (int i = 0; i < minLength; ++i) {
+        for (var i = 0; i < minLength; ++i) {
             if (first.at(i) != second.at(i)) {
                 return first.subSequence(0, i);
             }
@@ -140,8 +140,8 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
     }
 
     private static AbstractBytes subtractPrefix(AbstractBytes main, AbstractBytes prefix) {
-        int startIndex = prefix.length();
-        int mainLength = main.length();
+        var startIndex = prefix.length();
+        var mainLength = main.length();
         return (startIndex > mainLength ? AbstractBytes.EMPTY : main.subSequence(startIndex, mainLength));
     }
 
@@ -157,7 +157,7 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
 
     private static int linearSearch(byte key, Node[] a) {
         for (int i = 0, aLength = a.length; i < aLength; i++) {
-            Node x = a[i];
+            var x = a[i];
             if (x == null)
                 break;
             if (x.getIncomingEdgeFirstCharacter() == key)
@@ -167,11 +167,11 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
     }
 
     private static int binarySearch(byte key, int size, Node[] a) {
-        int high = size - 1;
-        int low = 0;
+        var high = size - 1;
+        var low = 0;
         while (low <= high) {
-            int midIndex = (low + high) >>> 1;
-            int cmp = a[midIndex].getIncomingEdgeFirstCharacter() - key;
+            var midIndex = (low + high) >>> 1;
+            var cmp = a[midIndex].getIncomingEdgeFirstCharacter() - key;
 
             if (cmp < 0) low = midIndex + 1;
             else if (cmp > 0) high = midIndex - 1;
@@ -189,21 +189,21 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
     }
 
     private static AbstractBytes concatenate(AbstractBytes a, AbstractBytes b) {
-        int aLen = a.length();
-        int bLen = b.length();
-        byte[] c = new byte[aLen + bLen];
+        var aLen = a.length();
+        var bLen = b.length();
+        var c = new byte[aLen + bLen];
         a.toArray(c, 0);
         b.toArray(c, aLen);
         return new ArrayBytes(c);
     }
 
     private static int _size(Node n) {
-        int sum = 0;
-        Object v = n.getValue();
+        var sum = 0;
+        var v = n.getValue();
         if (aValue(v))
             sum++;
 
-        List<Node> l = n.getOutgoingEdges();
+        var l = n.getOutgoingEdges();
         for (int i = 0, lSize = l.size(); i < lSize; i++) {
             sum += _size(l.get(i));
         }
@@ -215,14 +215,14 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
      * as soon as the limit is exceeded, it returns -1 to cancel the recursion iteration
      */
     private static int _sizeIfLessThan(Node n, int limit) {
-        int sum = 0;
-        Object v = n.getValue();
+        var sum = 0;
+        var v = n.getValue();
         if (aValue(v))
             sum++;
 
-        List<Node> l = n.getOutgoingEdges();
+        var l = n.getOutgoingEdges();
         for (int i = 0, lSize = l.size(); i < lSize; i++) {
-            int s = _size(l.get(i));
+            var s = _size(l.get(i));
             if (s < 0)
                 return -1;
             sum += s;
@@ -239,7 +239,7 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
 
     private static void prettyPrint(Node node, Appendable sb, String prefix, boolean isTail, boolean isRoot) {
         try {
-            StringBuilder ioException = new StringBuilder();
+            var ioException = new StringBuilder();
             if (isRoot) {
                 ioException.append('○');
                 if (node.getIncomingEdge().length() > 0) {
@@ -255,7 +255,7 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
             sb.append(prefix).append(isTail ? (isRoot ? "" : "└── ○ ") : "├── ○ ").append(ioException).append("\n");
             List children = node.getOutgoingEdges();
 
-            for (int i = 0; i < children.size() - 1; ++i) {
+            for (var i = 0; i < children.size() - 1; ++i) {
                 prettyPrint((Node) children.get(i), sb, prefix + (isTail ? (isRoot ? "" : "    ") : "│   "), false, false);
             }
 
@@ -314,10 +314,10 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
     private X getValueForExactKey(AbstractBytes key) {
         acquireReadLockIfNecessary();
         try {
-            SearchResult searchResult = searchTree(key);
+            var searchResult = searchTree(key);
             if (searchResult.classification.equals(SearchResult.Classification.EXACT_MATCH)) {
                 @SuppressWarnings({"unchecked", "UnnecessaryLocalVariable"})
-                X value = (X) searchResult.found.getValue();
+                var value = (X) searchResult.found.getValue();
                 return value;
             }
             return null;
@@ -348,15 +348,15 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
     public Iterable<AbstractBytes> getKeysStartingWith(AbstractBytes prefix) {
         acquireReadLockIfNecessary();
         try {
-            SearchResult searchResult = searchTree(prefix);
-            Node nodeFound = searchResult.found;
+            var searchResult = searchTree(prefix);
+            var nodeFound = searchResult.found;
             switch (searchResult.classification) {
                 case EXACT_MATCH:
                     return getDescendantKeys(prefix, nodeFound);
                 case KEY_ENDS_MID_EDGE:
 
 
-                    AbstractBytes edgeSuffix = getSuffix(nodeFound.getIncomingEdge(), searchResult.charsMatchedInNodeFound);
+                    var edgeSuffix = getSuffix(nodeFound.getIncomingEdge(), searchResult.charsMatchedInNodeFound);
                     prefix = concatenate(prefix, edgeSuffix);
                     return getDescendantKeys(prefix, nodeFound);
                 default:
@@ -374,8 +374,8 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
     private Iterable<X> getValuesForKeysStartingWith(AbstractBytes prefix) {
         acquireReadLockIfNecessary();
         try {
-            SearchResult searchResult = searchTree(prefix);
-            Node Found = searchResult.found;
+            var searchResult = searchTree(prefix);
+            var Found = searchResult.found;
             switch (searchResult.classification) {
                 case EXACT_MATCH:
                     return getDescendantValues(prefix, Found);
@@ -404,16 +404,16 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
     public Iterable<Pair<AbstractBytes, X>> getKeyValuePairsForKeysStartingWith(AbstractBytes prefix) {
         acquireReadLockIfNecessary();
         try {
-            SearchResult searchResult = searchTree(prefix);
-            SearchResult.Classification classification = searchResult.classification;
-            Node f = searchResult.found;
+            var searchResult = searchTree(prefix);
+            var classification = searchResult.classification;
+            var f = searchResult.found;
             switch (classification) {
                 case EXACT_MATCH:
                     return getDescendantKeyValuePairs(prefix, f);
                 case KEY_ENDS_MID_EDGE:
 
 
-                    AbstractBytes edgeSuffix = getSuffix(f.getIncomingEdge(), searchResult.charsMatchedInNodeFound);
+                    var edgeSuffix = getSuffix(f.getIncomingEdge(), searchResult.charsMatchedInNodeFound);
                     prefix = concatenate(prefix, edgeSuffix);
                     return getDescendantKeyValuePairs(prefix, f);
                 default:
@@ -431,7 +431,7 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
     public boolean remove(AbstractBytes key) {
         acquireWriteLock();
         try {
-            SearchResult searchResult = searchTree(key);
+            var searchResult = searchTree(key);
             return removeWithWriteLock(searchResult, false);
         } finally {
             releaseWriteLock();
@@ -456,13 +456,13 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
     }
 
     public boolean removeWithWriteLock(SearchResult searchResult, boolean recurse) {
-        SearchResult.Classification classification = searchResult.classification;
+        var classification = searchResult.classification;
         switch (classification) {
             case EXACT_MATCH:
-                Node found = searchResult.found;
-                Node parent = searchResult.parentNode;
+                var found = searchResult.found;
+                var parent = searchResult.parentNode;
 
-                Object v = found.getValue();
+                var v = found.getValue();
                 if (!recurse && ((v == null) || (v == VoidValue.the))) {
 
 
@@ -472,8 +472,8 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
                 List<X> reinsertions = new FasterList<>(0);
 
                 if (v != null && v != VoidValue.the) {
-                    X xv = (X) v;
-                    boolean removed = tryRemove(xv);
+                    var xv = (X) v;
+                    var removed = tryRemove(xv);
                     if (!recurse) {
                         if (!removed)
                             return false;
@@ -485,30 +485,30 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
                 }
 
 
-                List<Node> childEdges = found.getOutgoingEdges();
-                int numChildren = childEdges.size();
+                var childEdges = found.getOutgoingEdges();
+                var numChildren = childEdges.size();
                 if (numChildren > 0) {
                     if (!recurse) {
                         if (numChildren > 1) {
 
 
                             @SuppressWarnings("NullableProblems")
-                            Node cloned = createNode(found.getIncomingEdge(), null, found.getOutgoingEdges(), false);
+                            var cloned = createNode(found.getIncomingEdge(), null, found.getOutgoingEdges(), false);
 
                             parent.updateOutgoingEdge(cloned);
                         } else /*if (numChildren == 1)*/ {
 
 
-                            Node child = childEdges.get(0);
-                            AbstractBytes concatenatedEdges = concatenate(found.getIncomingEdge(), child.getIncomingEdge());
-                            Node mergedNode = createNode(concatenatedEdges, child.getValue(), child.getOutgoingEdges(), false);
+                            var child = childEdges.get(0);
+                            var concatenatedEdges = concatenate(found.getIncomingEdge(), child.getIncomingEdge());
+                            var mergedNode = createNode(concatenatedEdges, child.getValue(), child.getOutgoingEdges(), false);
 
                             parent.updateOutgoingEdge(mergedNode);
                         }
                     } else {
 
                         forEach(found, (k, f) -> {
-                            boolean removed = tryRemove(f);
+                            var removed = tryRemove(f);
                             if (!removed) {
                                 reinsertions.add(f);
                             }
@@ -526,15 +526,15 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
                     }
 
 
-                    List<Node> currentEdgesFromParent = parent.getOutgoingEdges();
+                    var currentEdgesFromParent = parent.getOutgoingEdges();
 
 
-                    int cen = currentEdgesFromParent.size();
+                    var cen = currentEdgesFromParent.size();
 
                     List<Node> newEdgesOfParent = new FasterList<>(0, new Node[cen]);
-                    boolean differs = false;
-                    for (int i = 0; i < cen; i++) {
-                        Node node = currentEdgesFromParent.get(i);
+                    var differs = false;
+                    for (var i = 0; i < cen; i++) {
+                        var node = currentEdgesFromParent.get(i);
                         if (node != found) {
                             newEdgesOfParent.add(node);
                         } else {
@@ -545,13 +545,13 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
                         newEdgesOfParent = currentEdgesFromParent;
 
 
-                    boolean parentIsRoot = (parent == root);
+                    var parentIsRoot = (parent == root);
                     Node newParent;
                     if (newEdgesOfParent.size() == 1 && parent.getValue() == null && !parentIsRoot) {
 
-                        Node parentsRemainingChild = newEdgesOfParent.get(0);
+                        var parentsRemainingChild = newEdgesOfParent.get(0);
 
-                        AbstractBytes concatenatedEdges = concatenate(parent.getIncomingEdge(), parentsRemainingChild.getIncomingEdge());
+                        var concatenatedEdges = concatenate(parent.getIncomingEdge(), parentsRemainingChild.getIncomingEdge());
                         newParent = createNode(concatenatedEdges, parentsRemainingChild.getValue(), parentsRemainingChild.getOutgoingEdges(),
                             false /*parentIsRoot*/);
                     } else {
@@ -570,7 +570,7 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
                 }
 
 
-                for (X reinsertion : reinsertions) {
+                for (var reinsertion : reinsertions) {
                     put(reinsertion);
                 }
 
@@ -591,22 +591,22 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
     public Iterable<AbstractBytes> getClosestKeys(AbstractBytes candidate) {
         acquireReadLockIfNecessary();
         try {
-            SearchResult searchResult = searchTree(candidate);
-            SearchResult.Classification classification = searchResult.classification;
+            var searchResult = searchTree(candidate);
+            var classification = searchResult.classification;
             switch (classification) {
                 case EXACT_MATCH:
                     return getDescendantKeys(candidate, searchResult.found);
                 case KEY_ENDS_MID_EDGE:
 
 
-                    AbstractBytes edgeSuffix = getSuffix(searchResult.found.getIncomingEdge(), searchResult.charsMatchedInNodeFound);
+                    var edgeSuffix = getSuffix(searchResult.found.getIncomingEdge(), searchResult.charsMatchedInNodeFound);
                     candidate = concatenate(candidate, edgeSuffix);
                     return getDescendantKeys(candidate, searchResult.found);
                 case INCOMPLETE_MATCH_TO_MIDDLE_OF_EDGE: {
 
 
-                    AbstractBytes keyOfParentNode = getPrefix(candidate, searchResult.charsMatched - searchResult.charsMatchedInNodeFound);
-                    AbstractBytes keyOfNodeFound = concatenate(keyOfParentNode, searchResult.found.getIncomingEdge());
+                    var keyOfParentNode = getPrefix(candidate, searchResult.charsMatched - searchResult.charsMatchedInNodeFound);
+                    var keyOfNodeFound = concatenate(keyOfParentNode, searchResult.found.getIncomingEdge());
                     return getDescendantKeys(keyOfNodeFound, searchResult.found);
                 }
                 case INCOMPLETE_MATCH_TO_END_OF_EDGE:
@@ -616,7 +616,7 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
                     }
 
 
-                    AbstractBytes keyOfNodeFound = getPrefix(candidate, searchResult.charsMatched);
+                    var keyOfNodeFound = getPrefix(candidate, searchResult.charsMatched);
                     return getDescendantKeys(keyOfNodeFound, searchResult.found);
             }
             return Collections.emptySet();
@@ -631,22 +631,22 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
     public Iterable<X> getValuesForClosestKeys(AbstractBytes candidate) {
         acquireReadLockIfNecessary();
         try {
-            SearchResult searchResult = searchTree(candidate);
-            SearchResult.Classification classification = searchResult.classification;
+            var searchResult = searchTree(candidate);
+            var classification = searchResult.classification;
             switch (classification) {
                 case EXACT_MATCH:
                     return getDescendantValues(candidate, searchResult.found);
                 case KEY_ENDS_MID_EDGE:
 
 
-                    AbstractBytes edgeSuffix = getSuffix(searchResult.found.getIncomingEdge(), searchResult.charsMatchedInNodeFound);
+                    var edgeSuffix = getSuffix(searchResult.found.getIncomingEdge(), searchResult.charsMatchedInNodeFound);
                     candidate = concatenate(candidate, edgeSuffix);
                     return getDescendantValues(candidate, searchResult.found);
                 case INCOMPLETE_MATCH_TO_MIDDLE_OF_EDGE: {
 
 
-                    AbstractBytes keyOfParentNode = getPrefix(candidate, searchResult.charsMatched - searchResult.charsMatchedInNodeFound);
-                    AbstractBytes keyOfNodeFound = concatenate(keyOfParentNode, searchResult.found.getIncomingEdge());
+                    var keyOfParentNode = getPrefix(candidate, searchResult.charsMatched - searchResult.charsMatchedInNodeFound);
+                    var keyOfNodeFound = concatenate(keyOfParentNode, searchResult.found.getIncomingEdge());
                     return getDescendantValues(keyOfNodeFound, searchResult.found);
                 }
                 case INCOMPLETE_MATCH_TO_END_OF_EDGE:
@@ -656,7 +656,7 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
                     }
 
 
-                    AbstractBytes keyOfNodeFound = getPrefix(candidate, searchResult.charsMatched);
+                    var keyOfNodeFound = getPrefix(candidate, searchResult.charsMatched);
                     return getDescendantValues(keyOfNodeFound, searchResult.found);
             }
             return Collections.emptySet();
@@ -671,22 +671,22 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
     public Iterable<Pair<AbstractBytes, Object>> getKeyValuePairsForClosestKeys(AbstractBytes candidate) {
         acquireReadLockIfNecessary();
         try {
-            SearchResult searchResult = searchTree(candidate);
-            SearchResult.Classification classification = searchResult.classification;
+            var searchResult = searchTree(candidate);
+            var classification = searchResult.classification;
             switch (classification) {
                 case EXACT_MATCH:
                     return getDescendantKeyValuePairs(candidate, searchResult.found);
                 case KEY_ENDS_MID_EDGE:
 
 
-                    AbstractBytes edgeSuffix = getSuffix(searchResult.found.getIncomingEdge(), searchResult.charsMatchedInNodeFound);
+                    var edgeSuffix = getSuffix(searchResult.found.getIncomingEdge(), searchResult.charsMatchedInNodeFound);
                     candidate = concatenate(candidate, edgeSuffix);
                     return getDescendantKeyValuePairs(candidate, searchResult.found);
                 case INCOMPLETE_MATCH_TO_MIDDLE_OF_EDGE: {
 
 
-                    AbstractBytes keyOfParentNode = getPrefix(candidate, searchResult.charsMatched - searchResult.charsMatchedInNodeFound);
-                    AbstractBytes keyOfNodeFound = concatenate(keyOfParentNode, searchResult.found.getIncomingEdge());
+                    var keyOfParentNode = getPrefix(candidate, searchResult.charsMatched - searchResult.charsMatchedInNodeFound);
+                    var keyOfNodeFound = concatenate(keyOfParentNode, searchResult.found.getIncomingEdge());
                     return getDescendantKeyValuePairs(keyOfNodeFound, searchResult.found);
                 }
                 case INCOMPLETE_MATCH_TO_END_OF_EDGE:
@@ -696,7 +696,7 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
                     }
 
 
-                    AbstractBytes keyOfNodeFound = getPrefix(candidate, searchResult.charsMatched);
+                    var keyOfNodeFound = getPrefix(candidate, searchResult.charsMatched);
                     return getDescendantKeyValuePairs(keyOfNodeFound, searchResult.found);
             }
             return Collections.emptySet();
@@ -743,21 +743,21 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
     }
 
     public final void forEach(Node start, Consumer<? super X> action) {
-        Object v = start.getValue();
+        var v = start.getValue();
         if (aValue(v))
             action.accept((X) v);
 
-        List<Node> l = start.getOutgoingEdges();
-        for (Node child : l)
+        var l = start.getOutgoingEdges();
+        for (var child : l)
             forEach(child, action);
     }
 
     public final void forEach(Node start, BiConsumer<AbstractBytes, ? super X> action) {
-        Object v = start.getValue();
+        var v = start.getValue();
         if (aValue(v))
             action.accept(start.getIncomingEdge(), (X) v);
 
-        List<Node> l = start.getOutgoingEdges();
+        var l = start.getOutgoingEdges();
         for (int i = 0, lSize = l.size(); i < lSize; i++) {
             forEach(l.get(i), action);
         }
@@ -777,9 +777,9 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
 
     public static SearchResult random(SearchResult at, float descendProb, Random rng) {
 
-        Node current = at.found;
-        Node parent = at.parentNode;
-        Node parentParent = at.parentNodesParent;
+        var current = at.found;
+        var parent = at.parentNode;
+        var parentParent = at.parentNodesParent;
         return random(current, parent, parentParent, descendProb, rng);
     }
 
@@ -787,14 +787,14 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
 
 
         while (true) {
-            List<Node> c = current.getOutgoingEdges();
-            int s = c.size();
+            var c = current.getOutgoingEdges();
+            var s = c.size();
             if (s == 0) {
                 break;
             } else {
                 if (rng.nextFloat() < descendProb) {
-                    int which = rng.nextInt(s);
-                    Node next = c.get(which);
+                    var which = rng.nextInt(s);
+                    var next = c.get(which);
 
                     parentParent = parent;
                     parent = current;
@@ -825,18 +825,18 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
         try {
 
 
-            SearchResult result = searchTree(key);
-            Node found = result.found;
-            int matched = result.charsMatched;
-            Object foundValue = found != null ? found.getValue() : null;
-            X foundX = ((matched == key.length()) && (foundValue != VoidValue.the)) ? ((X) foundValue) : null;
+            var result = searchTree(key);
+            var found = result.found;
+            var matched = result.charsMatched;
+            var foundValue = found != null ? found.getValue() : null;
+            var foundX = ((matched == key.length()) && (foundValue != VoidValue.the)) ? ((X) foundValue) : null;
 
-            X newValue = computeFunc.apply(key, result, foundX, value);
+            var newValue = computeFunc.apply(key, result, foundX, value);
 
             if (newValue != foundX) {
 
-                int version = beforeWrite();
-                int version2 = acquireWriteLock();
+                var version = beforeWrite();
+                var version2 = acquireWriteLock();
                 try {
 
 //                    if (version + 1 != version2) {
@@ -850,12 +850,12 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
 //                            return newValue;
 //                    }
 
-                    SearchResult.Classification classification = result.classification;
+                    var classification = result.classification;
 
                     if (foundX == null)
                         estSize.incrementAndGet();
 
-                    List<Node> oedges = found.getOutgoingEdges();
+                    var oedges = found.getOutgoingEdges();
                     switch (classification) {
                         case EXACT_MATCH:
                             if (newValue != foundValue) {
@@ -865,14 +865,14 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
                         case KEY_ENDS_MID_EDGE: {
 
 
-                            AbstractBytes keyCharsFromStartOfNodeFound = key.subSequence(matched - result.charsMatchedInNodeFound, key.length());
-                            AbstractBytes commonPrefix = getCommonPrefix(keyCharsFromStartOfNodeFound, found.getIncomingEdge());
-                            AbstractBytes suffixFromExistingEdge = subtractPrefix(found.getIncomingEdge(), commonPrefix);
+                            var keyCharsFromStartOfNodeFound = key.subSequence(matched - result.charsMatchedInNodeFound, key.length());
+                            var commonPrefix = getCommonPrefix(keyCharsFromStartOfNodeFound, found.getIncomingEdge());
+                            var suffixFromExistingEdge = subtractPrefix(found.getIncomingEdge(), commonPrefix);
 
 
-                            Node newChild = createNode(suffixFromExistingEdge, foundValue, oedges, false);
+                            var newChild = createNode(suffixFromExistingEdge, foundValue, oedges, false);
 
-                            Node newParent = createNode(commonPrefix, newValue, new FasterList(new Node[]{newChild}), false);
+                            var newParent = createNode(commonPrefix, newValue, new FasterList(new Node[]{newChild}), false);
 
 
                             result.parentNode.updateOutgoingEdge(newParent);
@@ -882,12 +882,12 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
                         case INCOMPLETE_MATCH_TO_END_OF_EDGE:
 
 
-                            AbstractBytes keySuffix = key.subSequence(matched, key.length());
+                            var keySuffix = key.subSequence(matched, key.length());
 
-                            Node newChild = createNode(keySuffix, newValue, emptyList, false);
+                            var newChild = createNode(keySuffix, newValue, emptyList, false);
 
 
-                            int numEdges = oedges.size();
+                            var numEdges = oedges.size();
                             Node[] edgesArray;
                             if (numEdges > 0) {
                                 edgesArray = new Node[numEdges + 1];
@@ -904,18 +904,18 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
                         case INCOMPLETE_MATCH_TO_MIDDLE_OF_EDGE:
 
 
-                            AbstractBytes suffixFromKey = key.subSequence(matched, key.length());
+                            var suffixFromKey = key.subSequence(matched, key.length());
 
 
-                            Node n1 = createNode(suffixFromKey, newValue, emptyList, false);
+                            var n1 = createNode(suffixFromKey, newValue, emptyList, false);
 
-                            AbstractBytes keyCharsFromStartOfNodeFound = key.subSequence(matched - result.charsMatchedInNodeFound, key.length());
-                            AbstractBytes commonPrefix = getCommonPrefix(keyCharsFromStartOfNodeFound, found.getIncomingEdge());
-                            AbstractBytes suffixFromExistingEdge = subtractPrefix(found.getIncomingEdge(), commonPrefix);
+                            var keyCharsFromStartOfNodeFound = key.subSequence(matched - result.charsMatchedInNodeFound, key.length());
+                            var commonPrefix = getCommonPrefix(keyCharsFromStartOfNodeFound, found.getIncomingEdge());
+                            var suffixFromExistingEdge = subtractPrefix(found.getIncomingEdge(), commonPrefix);
 
-                            Node n2 = createNode(suffixFromExistingEdge, foundValue, oedges, false);
+                            var n2 = createNode(suffixFromExistingEdge, foundValue, oedges, false);
                             @SuppressWarnings("NullableProblems")
-                            Node n3 = createNode(commonPrefix, null, new FasterList(2, new Node[]{n1, n2}), false);
+                            var n3 = createNode(commonPrefix, null, new FasterList(2, new Node[]{n1, n2}), false);
 
                             result.parentNode.updateOutgoingEdge(n3);
 
@@ -941,10 +941,10 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
     }
 
     private void cloneAndReattach(SearchResult searchResult, Node found, Object foundValue, List<Node> edges) {
-        AbstractBytes ie = found.getIncomingEdge();
-        boolean root = ie.length() == 0;
+        var ie = found.getIncomingEdge();
+        var root = ie.length() == 0;
 
-        Node clonedNode = createNode(ie, foundValue, edges, root);
+        var clonedNode = createNode(ie, foundValue, edges, root);
 
 
         if (root) {
@@ -983,8 +983,8 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
                 }
 
                 while (descendantNodes.hasNext()) {
-                    NodeKeyPair nodeKeyPair = descendantNodes.next();
-                    Object value = nodeKeyPair.node.getValue();
+                    var nodeKeyPair = descendantNodes.next();
+                    var value = nodeKeyPair.node.getValue();
                     if (value != null) {
                         return (O) value;
                     }
@@ -1015,8 +1015,8 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
                     descendantNodes = lazyTraverseDescendants(startKey, startNode).iterator();
 
                 while (descendantNodes.hasNext()) {
-                    NodeKeyPair nodeKeyPair = descendantNodes.next();
-                    Object value = nodeKeyPair.node.getValue();
+                    var nodeKeyPair = descendantNodes.next();
+                    var value = nodeKeyPair.node.getValue();
                     if (value != null) {
 
 
@@ -1055,12 +1055,12 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
                 if (stack.isEmpty()) {
                     return endOfData();
                 }
-                NodeKeyPair current = stack.pop();
-                List<Node> childNodes = current.node.getOutgoingEdges();
+                var current = stack.pop();
+                var childNodes = current.node.getOutgoingEdges();
 
 
-                for (int i = childNodes.size() - 1; i >= 0; i--) {
-                    Node child = childNodes.get(i);
+                for (var i = childNodes.size() - 1; i >= 0; i--) {
+                    var child = childNodes.get(i);
                     stack.push(new NodeKeyPair(child,
                             concatenate(current.key, child.getIncomingEdge())
                     ));
@@ -1146,13 +1146,13 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
     private SearchResult searchTree(AbstractBytes key) {
         Node parentNodesParent = null;
         Node parentNode = null;
-        Node currentNode = root;
+        var currentNode = root;
         int charsMatched = 0, charsMatchedInNodeFound = 0;
 
-        int keyLength = key.length();
+        var keyLength = key.length();
         outer_loop:
         while (charsMatched < keyLength) {
-            Node nextNode = currentNode.getOutgoingEdge(key.at(charsMatched));
+            var nextNode = currentNode.getOutgoingEdge(key.at(charsMatched));
             if (nextNode == null) {
 
 
@@ -1163,7 +1163,7 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
             parentNode = currentNode;
             currentNode = nextNode;
             charsMatchedInNodeFound = 0;
-            AbstractBytes currentNodeEdgeCharacters = currentNode.getIncomingEdge();
+            var currentNodeEdgeCharacters = currentNode.getIncomingEdge();
             for (int i = 0, numEdgeChars = currentNodeEdgeCharacters.length(); i < numEdgeChars && charsMatched < keyLength; i++) {
                 if (currentNodeEdgeCharacters.at(i) != key.at(charsMatched)) {
                     break outer_loop;
@@ -1181,7 +1181,7 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
     }
 
     public String prettyPrint() {
-        StringBuilder sb = new StringBuilder(4096);
+        var sb = new StringBuilder(4096);
         prettyPrint(root.getOutgoingEdges().size() == 1 ? root.getOutgoingEdges().get(0) : root, sb, "", true, true);
         return sb.toString();
     }
@@ -1310,8 +1310,8 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
         public final @Nullable Node getOutgoingEdge(byte edgeFirstCharacter) {
 
 
-            Node[] a = array();
-            int index = MyRadixTree.search(a, size(), edgeFirstCharacter);
+            var a = array();
+            var index = MyRadixTree.search(a, size(), edgeFirstCharacter);
             if (index < 0)
                 return null;
             return a[index];
@@ -1321,7 +1321,7 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
         public final void updateOutgoingEdge(Node childNode) {
 
 
-            int index = MyRadixTree.search(array(), size(), childNode.getIncomingEdgeFirstCharacter());
+            var index = MyRadixTree.search(array(), size(), childNode.getIncomingEdgeFirstCharacter());
             if (index < 0) {
                 throw new IllegalStateException("Cannot update the reference to the following child node for the edge starting with \'" + childNode.getIncomingEdgeFirstCharacter() + "\', no such edge already exists: " + childNode);
             } else {
@@ -1454,8 +1454,8 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
         }
 
         protected static SearchResult.Classification classify(AbstractBytes key, Node nodeFound, int charsMatched, int charsMatchedInNodeFound) {
-            int len = nodeFound.getIncomingEdge().length();
-            int keyLen = key.length();
+            var len = nodeFound.getIncomingEdge().length();
+            var keyLen = key.length();
             if (charsMatched == keyLen) {
                 if (charsMatchedInNodeFound == len) {
                     return SearchResult.Classification.EXACT_MATCH;
@@ -1513,10 +1513,10 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
         @Override
         protected AbstractBytes computeNext() {
 
-            Iterator<NodeKeyPair> nodes = this.descendantNodes;
+            var nodes = this.descendantNodes;
             while (nodes.hasNext()) {
-                NodeKeyPair nodeKeyPair = nodes.next();
-                Object value = nodeKeyPair.node.getValue();
+                var nodeKeyPair = nodes.next();
+                var value = nodeKeyPair.node.getValue();
                 if (value != null) {
 
 

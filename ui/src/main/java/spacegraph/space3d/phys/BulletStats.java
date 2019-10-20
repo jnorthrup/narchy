@@ -76,7 +76,7 @@ public class BulletStats {
 
 	
 	public static long profileGetTicks() {
-		long ticks = gProfileClock.getTimeMicroseconds();
+		var ticks = gProfileClock.getTimeMicroseconds();
 		return ticks;
 	}
 

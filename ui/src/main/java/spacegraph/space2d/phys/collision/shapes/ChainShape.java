@@ -76,15 +76,15 @@ public final class ChainShape extends Shape {
         assert (0 <= index && index < m_count - 1);
         edge.skinRadius = skinRadius;
 
-        v2 v0 = m_vertices[index];
-        v2 v1 = m_vertices[index + 1];
+        var v0 = m_vertices[index];
+        var v1 = m_vertices[index + 1];
         edge.m_vertex1.x = v0.x;
         edge.m_vertex1.y = v0.y;
         edge.m_vertex2.x = v1.x;
         edge.m_vertex2.y = v1.y;
 
         if (index > 0) {
-            v2 v = m_vertices[index - 1];
+            var v = m_vertices[index - 1];
             edge.m_vertex0.x = v.x;
             edge.m_vertex0.y = v.y;
             edge.m_hasVertex0 = true;
@@ -95,7 +95,7 @@ public final class ChainShape extends Shape {
         }
 
         if (index < m_count - 2) {
-            v2 v = m_vertices[index + 2];
+            var v = m_vertices[index + 2];
             edge.m_vertex3.x = v.x;
             edge.m_vertex3.y = v.y;
             edge.m_hasVertex3 = true;
@@ -108,7 +108,7 @@ public final class ChainShape extends Shape {
 
     @Override
     public float distance(Transform xf, v2 p, int childIndex, v2 normalOut) {
-        EdgeShape edge = pool0;
+        var edge = pool0;
         getChildEdge(edge, childIndex);
         return edge.distance(xf, p, 0, normalOut);
     }
@@ -122,17 +122,17 @@ public final class ChainShape extends Shape {
     public boolean raycast(RayCastOutput output, RayCastInput input, Transform xf, int childIndex) {
         assert (childIndex < m_count);
 
-        EdgeShape edgeShape = pool0;
+        var edgeShape = pool0;
 
-        int i2 = childIndex + 1;
+        var i2 = childIndex + 1;
         if (i2 == m_count) {
             i2 = 0;
         }
-        int i1 = childIndex;
-        v2 v = m_vertices[i1];
+        var i1 = childIndex;
+        var v = m_vertices[i1];
         edgeShape.m_vertex1.x = v.x;
         edgeShape.m_vertex1.y = v.y;
-        v2 v1 = m_vertices[i2];
+        var v1 = m_vertices[i2];
         edgeShape.m_vertex2.x = v1.x;
         edgeShape.m_vertex2.y = v1.y;
 
@@ -142,23 +142,23 @@ public final class ChainShape extends Shape {
     @Override
     public void computeAABB(AABB aabb, Transform xf, int childIndex) {
         assert (childIndex < m_count);
-        v2 lower = aabb.lowerBound;
-        v2 upper = aabb.upperBound;
+        var lower = aabb.lowerBound;
+        var upper = aabb.upperBound;
 
-        int i2 = childIndex + 1;
+        var i2 = childIndex + 1;
         if (i2 == m_count) {
             i2 = 0;
         }
 
-        int i1 = childIndex;
-        v2 vi1 = m_vertices[i1];
-        v2 vi2 = m_vertices[i2];
+        var i1 = childIndex;
+        var vi1 = m_vertices[i1];
+        var vi2 = m_vertices[i2];
         Rot xfq = xf;
-        v2 xfp = xf.pos;
-        float v1x = (xfq.c * vi1.x - xfq.s * vi1.y) + xfp.x;
-        float v1y = (xfq.s * vi1.x + xfq.c * vi1.y) + xfp.y;
-        float v2x = (xfq.c * vi2.x - xfq.s * vi2.y) + xfp.x;
-        float v2y = (xfq.s * vi2.x + xfq.c * vi2.y) + xfp.y;
+        var xfp = xf.pos;
+        var v1x = (xfq.c * vi1.x - xfq.s * vi1.y) + xfp.x;
+        var v1y = (xfq.s * vi1.x + xfq.c * vi1.y) + xfp.y;
+        var v2x = (xfq.c * vi2.x - xfq.s * vi2.y) + xfp.x;
+        var v2y = (xfq.s * vi2.x + xfq.c * vi2.y) + xfp.y;
 
         lower.x = Math.min(v1x, v2x);
         lower.y = Math.min(v1y, v2y);
@@ -175,7 +175,7 @@ public final class ChainShape extends Shape {
 
     @Override
     public Shape clone() {
-        ChainShape clone = new ChainShape();
+        var clone = new ChainShape();
         clone.createChain(m_vertices, m_count);
         clone.m_prevVertex.set(m_prevVertex);
         clone.m_nextVertex.set(m_nextVertex);
@@ -195,15 +195,15 @@ public final class ChainShape extends Shape {
         assert (count >= 3);
         m_count = count + 1;
         m_vertices = new v2[m_count];
-        for (int i = 1; i < count; i++) {
-            v2 v1 = vertices[i - 1];
-            v2 v2 = vertices[i];
+        for (var i = 1; i < count; i++) {
+            var v1 = vertices[i - 1];
+            var v2 = vertices[i];
             
             if (MathUtils.distanceSquared(v1, v2) < Settings.linearSlop * Settings.linearSlop) {
                 throw new RuntimeException("Vertices of chain shape are too close together");
             }
         }
-        for (int i = 0; i < count; i++) {
+        for (var i = 0; i < count; i++) {
             m_vertices[i] = new v2(vertices[i]);
         }
         m_vertices[count] = new v2(m_vertices[0]);
@@ -224,15 +224,15 @@ public final class ChainShape extends Shape {
         assert (count >= 2);
         m_count = count;
         m_vertices = new v2[m_count];
-        for (int i = 1; i < m_count; i++) {
-            v2 v1 = vertices[i - 1];
-            v2 v2 = vertices[i];
+        for (var i = 1; i < m_count; i++) {
+            var v1 = vertices[i - 1];
+            var v2 = vertices[i];
             
             if (MathUtils.distanceSquared(v1, v2) < Settings.linearSlop * Settings.linearSlop) {
                 throw new RuntimeException("Vertices of chain shape are too close together");
             }
         }
-        for (int i = 0; i < m_count; i++) {
+        for (var i = 0; i < m_count; i++) {
             m_vertices[i] = new v2(vertices[i]);
         }
         m_hasPrevVertex = false;

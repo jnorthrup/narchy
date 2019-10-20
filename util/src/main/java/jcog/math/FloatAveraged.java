@@ -40,7 +40,7 @@ public class FloatAveraged implements FloatToFloatFunction {
 
             float p = prev, next;
             if (p == p) {
-                float alpha = this.alpha.get();
+                var alpha = this.alpha.get();
                 next = (alpha) * x + (1f - alpha) * p;
             } else {
                 next = x;

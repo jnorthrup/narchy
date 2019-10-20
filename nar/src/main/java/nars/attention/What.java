@@ -207,7 +207,7 @@ public abstract class What extends PriNARPart implements Sampler<TaskLink>, Iter
 	}
 
 	public final TaskLink link(Task t, float p) {
-		AbstractTaskLink x = AtomicTaskLink.link(t.term()).priSet(t.punc(), p);
+		var x = AtomicTaskLink.link(t.term()).priSet(t.punc(), p);
 		x.why = t.why();
 		link(x);
 		return x;
@@ -223,11 +223,11 @@ public abstract class What extends PriNARPart implements Sampler<TaskLink>, Iter
 	private final AtomicBoolean busy = new AtomicBoolean(false);
 
 	public boolean tryCommit() {
-		long nextUpdate = this.nextUpdate.getOpaque();
-		long now = time();
+		var nextUpdate = this.nextUpdate.getOpaque();
+		var now = time();
 		if (now > nextUpdate) {
-			float durBase = nar.dur();
-			long nextNextUpdate = now + (long) Math.ceil(durBase * commitDurs.floatValue());
+			var durBase = nar.dur();
+			var nextNextUpdate = now + (long) Math.ceil(durBase * commitDurs.floatValue());
 			if (this.nextUpdate.compareAndSet(nextUpdate, nextNextUpdate)) {
 				if (busy.compareAndSet(false, true)) {
 					try {

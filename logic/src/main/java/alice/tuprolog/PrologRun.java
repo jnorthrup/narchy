@@ -134,7 +134,7 @@ public class PrologRun implements java.io.Serializable, Runnable {
 
             freeze();
 
-            StateEnd result = (solve = new PrologSolve(this, query)).run();
+            var result = (solve = new PrologSolve(this, query)).run();
 
             defreeze();
 
@@ -194,7 +194,7 @@ public class PrologRun implements java.io.Serializable, Runnable {
         if (hasOpenAlternatives()) {
             refreeze();
             solve.nextState = BACKTRACK;
-            StateEnd result = solve.run();
+            var result = solve.run();
             defreeze();
             sinfo = new Solution(
                     solve.query,
@@ -250,7 +250,7 @@ public class PrologRun implements java.io.Serializable, Runnable {
 
     private void defreeze() {
         last_env = solve;
-        PrologSolve last = stackEnv.poll();
+        var last = stackEnv.poll();
         if (last!=null)
             solve = last;
     }

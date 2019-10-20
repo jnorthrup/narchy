@@ -63,26 +63,26 @@ public class Berlekamp implements Settings {
      * From Cain, Clark, "Error-Correction Coding For Digital Communications", pp. 216.
      */
     static void Modified_Berlekamp_Massey(RS rs) {
-        int[] gamma = new int[Settings.kMaxDeg];
+        var gamma = new int[Settings.kMaxDeg];
 
         /* initialize Gamma, the erasure locator polynomial */
         init_gamma(gamma);
 
         /* initialize to z */
-        int[] D = new int[Settings.kMaxDeg];
+        var D = new int[Settings.kMaxDeg];
         copy_poly(D, gamma);
         mul_z_poly(D);
 
-        int[] psi = new int[Settings.kMaxDeg];
+        var psi = new int[Settings.kMaxDeg];
         copy_poly(psi, gamma);
-        int k = -1;
-        int L = NErasures;
+        var k = -1;
+        var L = NErasures;
 
-        int[] psi2 = new int[Settings.kMaxDeg];
+        var psi2 = new int[Settings.kMaxDeg];
         int i;
-        for (int n = NErasures; n < Settings.kParityBytes; n++) {
+        for (var n = NErasures; n < Settings.kParityBytes; n++) {
 
-            int d = compute_discrepancy(psi, rs.synBytes, L, n);
+            var d = compute_discrepancy(psi, rs.synBytes, L, n);
 
             if (d != 0) {
 
@@ -91,7 +91,7 @@ public class Berlekamp implements Settings {
                     psi2[i] = psi[i] ^ Galois.gmult(d, D[i]);
 
                 if (L < (n - k)) {
-                    int L2 = n - k;
+                    var L2 = n - k;
                     k = n - L;
                     /* D = scale_poly(Galois.ginv(d), psi); */
                     for (i = 0; i < Settings.kMaxDeg; i++)
@@ -119,7 +119,7 @@ public class Berlekamp implements Settings {
      * compute the combined erasure/error evaluator polynomial as Psi*S mod z^4
      */
     static void compute_modified_omega(RS rs) {
-        int[] product = new int[Settings.kMaxDeg * 2];
+        var product = new int[Settings.kMaxDeg * 2];
 
         mult_polys(product, Lambda, rs.synBytes);
         zero_poly(Omega);
@@ -134,7 +134,7 @@ public class Berlekamp implements Settings {
         for (i = 0; i < (Settings.kMaxDeg * 2); i++)
             dst[i] = 0;
 
-        int[] tmp1 = new int[Settings.kMaxDeg * 2];
+        var tmp1 = new int[Settings.kMaxDeg * 2];
         for (i = 0; i < Settings.kMaxDeg; i++) {
             int j;
             for (j = Settings.kMaxDeg; j < (Settings.kMaxDeg * 2); j++)
@@ -159,11 +159,11 @@ public class Berlekamp implements Settings {
     static void init_gamma(int[] gamma) {
 
         zero_poly(gamma);
-        int[] tmp = new int[Settings.kMaxDeg];
+        var tmp = new int[Settings.kMaxDeg];
         zero_poly(tmp);
         gamma[0] = 1;
 
-        for (int e = 0; e < NErasures; e++) {
+        for (var e = 0; e < NErasures; e++) {
             copy_poly(tmp, gamma);
             scale_poly(Galois.gexp[ErasureLocs[e]], tmp);
             mul_z_poly(tmp);
@@ -172,15 +172,15 @@ public class Berlekamp implements Settings {
     }
 
     static void compute_next_omega(int d, int[] A, int[] dst, int[] src) {
-        for (int i = 0; i < Settings.kMaxDeg; i++) {
+        for (var i = 0; i < Settings.kMaxDeg; i++) {
             dst[i] = src[i] ^ Galois.gmult(d, A[i]);
         }
     }
 
     static int compute_discrepancy(int[] lambda, int[] S, int L, int n) {
-        int sum = 0;
+        var sum = 0;
 
-        for (int i = 0; i <= L; i++)
+        for (var i = 0; i <= L; i++)
             sum ^= Galois.gmult(lambda[i], S[n - i]);
         return (sum);
     }
@@ -188,7 +188,7 @@ public class Berlekamp implements Settings {
     /********** polynomial arithmetic *******************/
 
     static void add_polys(int[] dst, int[] src) {
-        for (int i = 0; i < Settings.kMaxDeg; i++)
+        for (var i = 0; i < Settings.kMaxDeg; i++)
             dst[i] ^= src[i];
     }
 
@@ -197,12 +197,12 @@ public class Berlekamp implements Settings {
     }
 
     static void scale_poly(int k, int[] poly) {
-        for (int i = 0; i < Settings.kMaxDeg; i++)
+        for (var i = 0; i < Settings.kMaxDeg; i++)
             poly[i] = Galois.gmult(k, poly[i]);
     }
 
     static void zero_poly(int[] poly) {
-        for (int i = 0; i < Settings.kMaxDeg; i++)
+        for (var i = 0; i < Settings.kMaxDeg; i++)
             poly[i] = 0;
     }
 
@@ -222,10 +222,10 @@ public class Berlekamp implements Settings {
     static void Find_Roots() {
         NErrors = 0;
 
-        for (int r = 1; r < 256; r++) {
-            int sum = 0;
+        for (var r = 1; r < 256; r++) {
+            var sum = 0;
             /* evaluate lambda at r */
-            for (int k = 0; k < Settings.kParityBytes + 1; k++) {
+            for (var k = 0; k < Settings.kParityBytes + 1; k++) {
                 sum ^= Galois.gmult(Galois.gexp[(k * r) % 255], Lambda[k]);
             }
             if (sum == 0) {
@@ -280,7 +280,7 @@ public class Berlekamp implements Settings {
                 i = ErrorLocs[r];
                 /* evaluate Omega at alpha^(-i) */
 
-                int num = 0;
+                var num = 0;
                 int j;
                 for (j = 0; j < Settings.kMaxDeg; j++)
                     num ^= Galois.gmult(Omega[j],
@@ -290,13 +290,13 @@ public class Berlekamp implements Settings {
                  * evaluate Lambda' (derivative) at alpha^(-i) ; all odd powers
                  * disappear
                  */
-                int denom = 0;
+                var denom = 0;
                 for (j = 1; j < Settings.kMaxDeg; j += 2) {
                     denom ^= Galois.gmult(Lambda[j],
                             Galois.gexp[((255 - i) * (j - 1)) % 255]);
                 }
 
-                int err = Galois.gmult(num, Galois.ginv(denom));
+                var err = Galois.gmult(num, Galois.ginv(denom));
                 if (Settings.kDebug)
                     System.err.println("Error magnitude 0x"
                             + Integer.toHexString(err) + " at loc "

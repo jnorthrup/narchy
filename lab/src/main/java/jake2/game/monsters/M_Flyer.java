@@ -934,7 +934,7 @@ public class M_Flyer {
             if (GameBase.skill.value == 3)
                 return;
 
-            int n = Lib.rand() % 3;
+            var n = Lib.rand() % 3;
             switch (n) {
                 case 0:
                     game_import_t.sound(self, Defines.CHAN_VOICE, sound_pain1, 1,
@@ -972,7 +972,7 @@ public class M_Flyer {
 
         int effect;
 
-        boolean b = IntStream.of(FRAME_attak204, FRAME_attak207, FRAME_attak210).anyMatch(i -> (self.s.frame == i));
+        var b = IntStream.of(FRAME_attak204, FRAME_attak207, FRAME_attak210).anyMatch(i -> (self.s.frame == i));
         if (b)
             effect = Defines.EF_HYPERBLASTER;
         else

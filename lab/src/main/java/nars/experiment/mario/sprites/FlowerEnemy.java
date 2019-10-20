@@ -26,7 +26,7 @@ public class FlowerEnemy extends Enemy {
 
         this.layer = 0;
 
-        for (int i = 0; i < 4; i++) {
+        for (var i = 0; i < 4; i++) {
             move();
         }
     }
@@ -38,7 +38,7 @@ public class FlowerEnemy extends Enemy {
 
             if (deadTime == 0) {
                 deadTime = 1;
-                for (int i = 0; i < 8; i++) {
+                for (var i = 0; i < 8; i++) {
                     world.addSprite(new Sparkle((int) (x + Math.random() * 16 - 8) + 4, (int) (y - Math.random() * 8) + 4, (float) (Math.random() * 2 - 1), (float) Math.random() * -1, 0, 1, 5));
                 }
                 spriteContext.removeSprite(this);
@@ -57,7 +57,7 @@ public class FlowerEnemy extends Enemy {
         if (y >= yStart) {
             y = yStart;
 
-            int xd = (int) (Math.abs(world.mario.x - x));
+            var xd = (int) (Math.abs(world.mario.x - x));
             jumpTime++;
             if (jumpTime > 40 && xd > 24) {
                 ya = -8;

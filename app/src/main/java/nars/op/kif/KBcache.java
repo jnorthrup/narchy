@@ -138,13 +138,13 @@ public class KBcache implements Serializable {
             this.instTransRels = Sets.newHashSet(kbCacheIn.instTransRels);
         }
         if (kbCacheIn.parents != null) {
-            for (Map.Entry<String, HashMap<String, HashSet<String>>> outerEntry : kbCacheIn.parents.entrySet()) {
-                String outerKey = outerEntry.getKey();
+            for (var outerEntry : kbCacheIn.parents.entrySet()) {
+                var outerKey = outerEntry.getKey();
 
                 HashMap<String, HashSet<String>> newInnerMap = Maps.newHashMap();
-                HashMap<String, HashSet<String>> oldInnerMap = outerEntry.getValue();
-                for (Map.Entry<String, HashSet<String>> innerEntry : oldInnerMap.entrySet()) {
-                    String innerKey = innerEntry.getKey();
+                var oldInnerMap = outerEntry.getValue();
+                for (var innerEntry : oldInnerMap.entrySet()) {
+                    var innerKey = innerEntry.getKey();
 
                     HashSet newInnerSet = Sets.newHashSet(innerEntry.getValue());
                     newInnerMap.put(innerKey, newInnerSet);
@@ -153,9 +153,9 @@ public class KBcache implements Serializable {
             }
         }
         if (kbCacheIn.instances != null) {
-            for (Map.Entry<String, HashSet<String>> entry : kbCacheIn.instances.entrySet()) {
-                String key = entry.getKey();
-                HashSet<String> newSet = Sets.newHashSet(entry.getValue());
+            for (var entry : kbCacheIn.instances.entrySet()) {
+                var key = entry.getKey();
+                var newSet = Sets.newHashSet(entry.getValue());
                 this.instances.put(key, newSet);
             }
         }
@@ -163,13 +163,13 @@ public class KBcache implements Serializable {
             this.insts = Sets.newHashSet(kbCacheIn.insts);
         }
         if (kbCacheIn.children != null) {
-            for (Map.Entry<String, HashMap<String, HashSet<String>>> outerEntry : kbCacheIn.children.entrySet()) {
-                String outerKey = outerEntry.getKey();
+            for (var outerEntry : kbCacheIn.children.entrySet()) {
+                var outerKey = outerEntry.getKey();
 
                 HashMap<String, HashSet<String>> newInnerMap = Maps.newHashMap();
-                HashMap<String, HashSet<String>> oldInnerMap = outerEntry.getValue();
-                for (Map.Entry<String, HashSet<String>> innerEntry : oldInnerMap.entrySet()) {
-                    String innerKey = innerEntry.getKey();
+                var oldInnerMap = outerEntry.getValue();
+                for (var innerEntry : oldInnerMap.entrySet()) {
+                    var innerKey = innerEntry.getKey();
 
                     HashSet newInnerSet = Sets.newHashSet(innerEntry.getValue());
                     newInnerMap.put(innerKey, newInnerSet);
@@ -179,9 +179,9 @@ public class KBcache implements Serializable {
         }
 
         if (kbCacheIn.signatures != null) {
-            for (Map.Entry<String, ArrayList<String>> entry : kbCacheIn.signatures.entrySet()) {
-                String key = entry.getKey();
-                ArrayList<String> newSet = Lists.newArrayList(entry.getValue());
+            for (var entry : kbCacheIn.signatures.entrySet()) {
+                var key = entry.getKey();
+                var newSet = Lists.newArrayList(entry.getValue());
                 this.signatures.put(key, newSet);
             }
         }
@@ -189,9 +189,9 @@ public class KBcache implements Serializable {
             this.valences = Maps.newHashMap(kbCacheIn.valences);
         }
         if (kbCacheIn.explicitDisjointRelations != null) {
-            for (Map.Entry<String, HashSet<String>> entry : kbCacheIn.explicitDisjointRelations.entrySet()) {
-                String key = entry.getKey();
-                HashSet<String> newSet = Sets.newHashSet(entry.getValue());
+            for (var entry : kbCacheIn.explicitDisjointRelations.entrySet()) {
+                var key = entry.getKey();
+                var newSet = Sets.newHashSet(entry.getValue());
                 this.explicitDisjointRelations.put(key, newSet);
             }
         }
@@ -230,10 +230,10 @@ public class KBcache implements Serializable {
         if (parent.equals(child)) {
             return false;
         }
-        HashMap<String,HashSet<String>> childMap = children.get(rel);
+        var childMap = children.get(rel);
         if (childMap == null)
             return false;
-        HashSet<String> childSet = childMap.get(parent);
+        var childSet = childMap.get(parent);
         if (debug) System.out.println("INFO in KBcache.childOfP(): children of " + parent + " : " + childSet);
         if (childSet == null) {
         	if (debug) System.out.println("INFO in KBcache.childOfP(): null childset for relation, parent, child: "
@@ -254,7 +254,7 @@ public class KBcache implements Serializable {
     public boolean isInstanceOf(String i, String c) {
 
         if (instances.containsKey(i)) {
-            HashSet<String> hashSet = instances.get(i);
+            var hashSet = instances.get(i);
             return hashSet.contains(c);
         }
         else
@@ -269,8 +269,8 @@ public class KBcache implements Serializable {
      * Return false if they are equal.
      */
     public boolean transInstOf(String child, String parent) {
-    
-        HashSet<String> prents = instances.get(child);
+
+        var prents = instances.get(child);
         if (prents != null)
             return prents.contains(parent);
         else
@@ -281,10 +281,10 @@ public class KBcache implements Serializable {
      * Find whether the given class has the given parent class.  
      */
     public boolean subclassOf(String child, String parent) {
-    
-    	HashMap<String,HashSet<String>> prentsForRel = parents.get("subclass");
+
+        var prentsForRel = parents.get("subclass");
     	if (prentsForRel != null) {
-	    	HashSet<String> prents = prentsForRel.get(child);
+            var prents = prentsForRel.get(child);
 	        if (prents != null)
 	            return prents.contains(parent);
 	        else
@@ -298,9 +298,9 @@ public class KBcache implements Serializable {
      */
     public boolean subAttributeOf(String child, String parent) {
 
-        HashMap<String,HashSet<String>> prentsForRel = parents.get("subAttribute");
+        var prentsForRel = parents.get("subAttribute");
         if (prentsForRel != null) {
-            HashSet<String> prents = prentsForRel.get(child);
+            var prents = prentsForRel.get(child);
             if (prents != null)
                 return prents.contains(parent);
             else
@@ -313,13 +313,13 @@ public class KBcache implements Serializable {
      * Record instances and their explicitly defined parent classes
      */
     public void buildDirectInstances() {
-    	
-        ArrayList<Formula> forms = kb.ask("arg", 0, "instance");
-        for (Formula f : forms) {
-            String child = f.getArgument(1);
-            String parent = f.getArgument(2);
-            HashMap<String, HashSet<String>> superclasses = parents.get("subclass");
-            HashSet<String> iset = new HashSet<>();
+
+        var forms = kb.ask("arg", 0, "instance");
+        for (var f : forms) {
+            var child = f.getArgument(1);
+            var parent = f.getArgument(2);
+            var superclasses = parents.get("subclass");
+            var iset = new HashSet<String>();
             if (instances.get(child) != null)
                 iset = instances.get(child);
             iset.add(parent);
@@ -341,29 +341,29 @@ public class KBcache implements Serializable {
         explicitDisjontFormulae.addAll(kb.ask("arg", 0, "disjoint"));
         explicitDisjontFormulae.addAll(kb.ask("arg", 0, "disjointDecomposition"));
         explicitDisjontFormulae.addAll(kb.ask("arg", 0, "exhaustiveDecomposition"));
-        for (Formula f : explicitDisjontFormulae) {
-            ArrayList<String> arguments = f.argumentsToArrayList(0);
+        for (var f : explicitDisjontFormulae) {
+            var arguments = f.argumentsToArrayList(0);
 
             if (arguments != null && !arguments.isEmpty()) {
-                int i = 2;
+                var i = 2;
                 if ("disjoint".equals(f.getArgument(0))) {
                     i = 1;
                 }
                 for ( ; i < arguments.size(); i++) {
-                    String key = arguments.get(i);
-                    int j = 2;
+                    var key = arguments.get(i);
+                    var j = 2;
                     if ("disjoint".equals(f.getArgument(0)))
                         j = 1;
                     for ( ; j < arguments.size(); j++) {
                         if (j != i) {
-                            String val = arguments.get(j);
+                            var val = arguments.get(j);
                             if (!explicitDisjointRelations.containsKey(key)) {
-                                HashSet<String> vals = new HashSet<>();
+                                var vals = new HashSet<String>();
                                 vals.add(val);
                                 explicitDisjointRelations.put(key, vals);
                             }
                             else {
-                                HashSet<String> vals = explicitDisjointRelations.get(key);
+                                var vals = explicitDisjointRelations.get(key);
                                 vals.add(val);
                                 explicitDisjointRelations.put(key, vals);
                             }
@@ -379,10 +379,10 @@ public class KBcache implements Serializable {
      */
     public static boolean checkDisjoint(KB kb, HashSet<String> typeSet) {
 
-        ArrayList<String> typeList = new ArrayList<>(typeSet);
-        int size = typeList.size();
-        for (int i = 0; i < size; i++) {
-            String rel1 = typeList.get(i);
+        var typeList = new ArrayList<String>(typeSet);
+        var size = typeList.size();
+        for (var i = 0; i < size; i++) {
+            var rel1 = typeList.get(i);
             if (IntStream.range(i + 1, size).mapToObj(typeList::get).anyMatch(rel2 -> checkDisjoint(kb, rel1, rel2) == true)) {
                 return true;
             }
@@ -396,15 +396,15 @@ public class KBcache implements Serializable {
      */
     public static boolean checkDisjoint(KB kb, String rel1, String rel2) {
 
-        HashSet<String> ancestors_rel1 = kb.kbCache.getParentClasses(rel1);
-        HashSet<String> ancestors_rel2 = kb.kbCache.getParentClasses(rel2);
+        var ancestors_rel1 = kb.kbCache.getParentClasses(rel1);
+        var ancestors_rel2 = kb.kbCache.getParentClasses(rel2);
         if (ancestors_rel1 == null || ancestors_rel2 == null)
             return false;
 
         ancestors_rel1.add(rel1);
         ancestors_rel2.add(rel2);
-        for (String s1 : ancestors_rel1) {
-            for (String s2 : ancestors_rel2) {
+        for (var s1 : ancestors_rel1) {
+            for (var s2 : ancestors_rel2) {
                 if (KBcache.isExplicitDisjoint(kb.kbCache.explicitDisjointRelations, s1, s2)) {
                     if (debug)
                         System.out.println(rel1 + " and " + rel2 +
@@ -442,21 +442,21 @@ public class KBcache implements Serializable {
      */
     public void buildTransInstOf() {
 
-        for (String child : insts) {
-            ArrayList<Formula> forms = kb.ask("arg", 1, child);
-            for (Formula f : forms) {
-                String rel = f.getArgument(0);
+        for (var child : insts) {
+            var forms = kb.ask("arg", 1, child);
+            for (var f : forms) {
+                var rel = f.getArgument(0);
                 if (instTransRels.contains(rel) && !"subclass".equals(rel)) {
-                    HashMap<String, HashSet<String>> prentList = parents.get(rel);
+                    var prentList = parents.get(rel);
                     if (prentList != null) {
-                        HashSet<String> prents = prentList.get(f.getArgument(1));
+                        var prents = prentList.get(f.getArgument(1));
                         if (prents != null) {
-                            for (String p : prents) {
-                                ArrayList<Formula> forms2 = kb.askWithRestriction(0, "instance", 1, p);
-                                for (Formula f2 : forms2) {
-                                    String cl = f2.getArgument(2);
-                                    HashMap<String, HashSet<String>> superclasses = parents.get("subclass");
-                                    HashSet<String> pset = new HashSet<>();
+                            for (var p : prents) {
+                                var forms2 = kb.askWithRestriction(0, "instance", 1, p);
+                                for (var f2 : forms2) {
+                                    var cl = f2.getArgument(2);
+                                    var superclasses = parents.get("subclass");
+                                    var pset = new HashSet<String>();
                                     if (instances.get(child) != null)
                                         pset = instances.get(child);
                                     pset.add(cl);
@@ -469,9 +469,9 @@ public class KBcache implements Serializable {
                 } else if ("instance".equals(rel)) {
                     if ("exhaustiveAttribute".equals(child))
                         System.out.println("INFO in KBcache.buildTransInstOf(): f: " + f);
-                    String cl = f.getArgument(2);
-                    HashMap<String, HashSet<String>> superclasses = parents.get("subclass");
-                    HashSet<String> iset = new HashSet<>();
+                    var cl = f.getArgument(2);
+                    var superclasses = parents.get("subclass");
+                    var iset = new HashSet<String>();
                     if (instances.get(child) != null)
                         iset = instances.get(child);
                     iset.add(cl);
@@ -488,14 +488,14 @@ public class KBcache implements Serializable {
      */
     public String mostSpecificParent(Set<String> p1) {
 
-        HashMap<String,HashSet<String>> subclasses = children.get("subclass");
+        var subclasses = children.get("subclass");
         SortedSet<AVPair> countIndex = new TreeSet<>();
-        for (String cl : p1) {
-            HashSet<String> classes = subclasses.get(cl);
-            int count = classes.size();
-            String countString = Integer.toString(count);
+        for (var cl : p1) {
+            var classes = subclasses.get(cl);
+            var count = classes.size();
+            var countString = Integer.toString(count);
             countString = StringUtil.fillString(countString, '0', 10, true);
-            AVPair avp = new AVPair(countString, cl);
+            var avp = new AVPair(countString, cl);
             countIndex.add(avp);
         }
         return countIndex.first().value;
@@ -508,25 +508,25 @@ public class KBcache implements Serializable {
      */
     public String getCommonParent(String t1, String t2) {
 
-        HashSet<String> p1 = new HashSet<>();
+        var p1 = new HashSet<String>();
         if (kb.isInstance(t1)) {
-            HashSet<String> temp = getParentClassesOfInstance(t1);
+            var temp = getParentClassesOfInstance(t1);
             if (temp != null)
                 p1.addAll(temp);
         }
         else {
-            HashSet<String> temp = getParentClasses(t1);
+            var temp = getParentClasses(t1);
             if (temp != null)
                 p1.addAll(temp);
         }
         Collection<String> p2 = new HashSet<>();
         if (kb.isInstance(t2)) {
-            HashSet<String> temp = getParentClassesOfInstance(t2);
+            var temp = getParentClassesOfInstance(t2);
             if (temp != null)
                 p2.addAll(temp);
         }
         else {
-            HashSet<String> temp = getParentClasses(t2);
+            var temp = getParentClasses(t2);
             if (temp != null)
                 p2.addAll(temp);
         }
@@ -543,8 +543,8 @@ public class KBcache implements Serializable {
      * return parent classes for the given cl from subclass expressions.
      */
     public HashSet<String> getParentClasses(String cl) {
-        
-        HashMap<String,HashSet<String>> ps = parents.get("subclass");
+
+        var ps = parents.get("subclass");
         if (ps != null)
             return ps.get(cl);
         else
@@ -555,8 +555,8 @@ public class KBcache implements Serializable {
      * return child classes for the given cl from subclass expressions.
      */
     public HashSet<String> getChildClasses(String cl) {
-        
-        HashMap<String,HashSet<String>> ps = children.get("subclass");
+
+        var ps = children.get("subclass");
         if (ps != null)
             return ps.get(cl);
         else
@@ -568,7 +568,7 @@ public class KBcache implements Serializable {
      */
     public HashSet<String> getChildTerms(String cl, String rel) {
 
-        HashMap<String,HashSet<String>> ps = children.get(rel);
+        var ps = children.get(rel);
         if (ps != null)
             return ps.get(cl);
         else
@@ -580,11 +580,11 @@ public class KBcache implements Serializable {
      */
     public HashSet<String> getChildInstances(String cl) {
 
-        HashMap<String,HashSet<String>> ps = children.get("subclass");
+        var ps = children.get("subclass");
         if (ps != null && ps.values() != null) {
-            HashSet<String> result = new HashSet<>();
-            for (String cc : ps.get(cl)) {
-                HashSet<String> insts = getInstancesForType(cc);
+            var result = new HashSet<String>();
+            for (var cc : ps.get(cl)) {
+                var insts = getInstancesForType(cc);
                 if (insts != null)
                     result.addAll(insts);
             }
@@ -602,8 +602,8 @@ public class KBcache implements Serializable {
      * super claasses from subclass expressions.
      */
     public HashSet<String> getParentClassesOfInstance(String cl) {
-        
-        HashSet<String> ps = instances.get(cl);
+
+        var ps = instances.get(cl);
         if (ps != null)
             return ps;
         else
@@ -618,9 +618,9 @@ public class KBcache implements Serializable {
      */
     public HashSet<String> getInstancesForType(String cl) {
 
-        HashSet<String> instancesForType = new HashSet<>();
-        for (Map.Entry<String, HashSet<String>> entry : instances.entrySet()) {
-            HashSet<String> parents = entry.getValue();
+        var instancesForType = new HashSet<String>();
+        for (var entry : instances.entrySet()) {
+            var parents = entry.getValue();
             if (parents.contains(cl))
                 instancesForType.add(entry.getKey());
         }
@@ -632,7 +632,7 @@ public class KBcache implements Serializable {
      */
     public static HashSet<String> collectArgFromFormulas(int arg, ArrayList<Formula> forms) {
 
-        HashSet<String> subs = forms.stream().map(f -> f.getArgument(arg)).collect(Collectors.toCollection(HashSet::new));
+        var subs = forms.stream().map(f -> f.getArgument(arg)).collect(Collectors.toCollection(HashSet::new));
         return subs;
     }
    
@@ -643,14 +643,14 @@ public class KBcache implements Serializable {
      * tracing back through subclasses as well.
      */
     public void buildTransitiveRelationsSet() {
-        
-        HashSet<String> rels = new HashSet<>();
+
+        var rels = new HashSet<String>();
         rels.add("TransitiveRelation");
         while (!rels.isEmpty()) {
-            HashSet<String> relSubs = new HashSet<>();
-            for (String rel : rels) {
+            var relSubs = new HashSet<String>();
+            for (var rel : rels) {
                 relSubs = new HashSet<>();
-                ArrayList<Formula> forms = kb.askWithRestriction(0, "subclass", 2, rel);
+                var forms = kb.askWithRestriction(0, "subclass", 2, rel);
 
                 if (forms != null) {
                     if (debug)
@@ -676,13 +676,13 @@ public class KBcache implements Serializable {
      * tracing back through subclasses as well.
      */
     public void buildRelationsSet() {
-        
-        HashSet<String> rels = new HashSet<>();
+
+        var rels = new HashSet<String>();
         rels.add("Relation");
         while (!rels.isEmpty()) {
             Collection<String> relSubs = new HashSet<>();
-            for (String rel : rels) {
-                ArrayList<Formula> forms = kb.askWithRestriction(0, "subclass", 2, rel);
+            for (var rel : rels) {
+                var forms = kb.askWithRestriction(0, "subclass", 2, rel);
                 if (forms != null)
                     relSubs.addAll(collectArgFromFormulas(1, forms));
 
@@ -707,11 +707,11 @@ public class KBcache implements Serializable {
      */
     private HashSet<String> findRoots(String rel) {
 
-        ArrayList<Formula> forms = kb.ask("arg",0,rel);
-        HashSet<String> arg1s = collectArgFromFormulas(1,forms);
-        HashSet<String> arg2s = collectArgFromFormulas(2,forms);
+        var forms = kb.ask("arg",0,rel);
+        var arg1s = collectArgFromFormulas(1,forms);
+        var arg2s = collectArgFromFormulas(2,forms);
         arg2s.removeAll(arg1s);
-        HashSet<String> result = new HashSet<>(arg2s);
+        var result = new HashSet<String>(arg2s);
         return result;
     }
     
@@ -721,11 +721,11 @@ public class KBcache implements Serializable {
      */
     private HashSet<String> findLeaves(String rel) {
 
-        ArrayList<Formula> forms = kb.ask("arg",0,rel);
-        HashSet<String> arg1s = collectArgFromFormulas(1,forms);
-        HashSet<String> arg2s = collectArgFromFormulas(2,forms);
+        var forms = kb.ask("arg",0,rel);
+        var arg1s = collectArgFromFormulas(1,forms);
+        var arg2s = collectArgFromFormulas(2,forms);
         arg1s.removeAll(arg2s);
-        HashSet<String> result = new HashSet<>(arg1s);
+        var result = new HashSet<String>(arg1s);
         return result;
     }
     
@@ -733,28 +733,28 @@ public class KBcache implements Serializable {
      * Build "parent" relations based on breadth first search algorithm.
      */
     private void breadthFirstBuildParents(String root, String rel) {
-        
-        HashMap<String,HashSet<String>> relParents = parents.get(rel);
+
+        var relParents = parents.get(rel);
         if (relParents == null) {
             System.out.println("Error in KBcache.breadthFirstBuildParents(): no relation " + rel);
             return;
         }
-        ArrayDeque<String> Q = new ArrayDeque<>();
+        var Q = new ArrayDeque<String>();
         Q.add(root);
-        HashMap<String, Integer> appearanceCount = new HashMap<>();
-        int threshold = 10;
+        var appearanceCount = new HashMap<String, Integer>();
+        var threshold = 10;
         while (!Q.isEmpty()) {
-            String t = Q.remove();
-            
-            ArrayList<Formula> forms = kb.askWithRestriction(0,rel,2,t);
-            if (forms != null) {
-                HashSet<String> relSubs = collectArgFromFormulas(1,forms);
+            var t = Q.remove();
 
-                for (String newTerm : relSubs) {
-                    HashSet<String> oldParents = relParents.computeIfAbsent(t, k -> new HashSet<>());
-                    HashSet<String> newParents = new HashSet<>(oldParents);
+            var forms = kb.askWithRestriction(0,rel,2,t);
+            if (forms != null) {
+                var relSubs = collectArgFromFormulas(1,forms);
+
+                for (var newTerm : relSubs) {
+                    var oldParents = relParents.computeIfAbsent(t, k -> new HashSet<>());
+                    var newParents = new HashSet<String>(oldParents);
                     newParents.add(t);
-                    HashSet<String> newTermParents = relParents.get(newTerm);
+                    var newTermParents = relParents.get(newTerm);
                     if (newTermParents != null)
                         newParents.addAll(newTermParents);
                     relParents.put(newTerm, newParents);
@@ -775,29 +775,29 @@ public class KBcache implements Serializable {
      * Build "children" relations based on breadth first search algorithm.
      */
     private void breadthFirstBuildChildren(String root, String rel) {
-        
-        HashMap<String,HashSet<String>> relChildren = children.get(rel);
+
+        var relChildren = children.get(rel);
         if (relChildren == null) {
             System.out.println("Error in KBcache.breadthFirstBuildChildren(): no relation " + rel);
             return;
         }
         if (debug) System.out.println("INFO in KBcache.breadthFirst(): trying relation " + rel);
-        ArrayDeque<String> Q = new ArrayDeque<>();
+        var Q = new ArrayDeque<String>();
         Q.add(root);
         Set<String> V = new HashSet<>();
         V.add(root);
         while (!Q.isEmpty()) {
-            String t = Q.remove();
+            var t = Q.remove();
             if (debug) System.out.println("visiting " + t);
-            ArrayList<Formula> forms = kb.askWithRestriction(0,rel,1,t);
+            var forms = kb.askWithRestriction(0,rel,1,t);
             if (forms != null) {
-                HashSet<String> relSubs = collectArgFromFormulas(2,forms);
+                var relSubs = collectArgFromFormulas(2,forms);
                 if (debug) System.out.println("visiting subs of t: " + relSubs);
-                for (String newTerm : relSubs) {
-                    HashSet<String> oldChildren = relChildren.computeIfAbsent(t, k -> new HashSet<>());
-                    HashSet<String> newChildren = new HashSet<>(oldChildren);
+                for (var newTerm : relSubs) {
+                    var oldChildren = relChildren.computeIfAbsent(t, k -> new HashSet<>());
+                    var newChildren = new HashSet<String>(oldChildren);
                     newChildren.add(t);
-                    HashSet<String> newTermChildren = relChildren.get(newTerm);
+                    var newTermChildren = relChildren.get(newTerm);
                     if (newTermChildren != null)
                         newChildren.addAll(newTermChildren);
                     relChildren.put(newTerm, newChildren);
@@ -818,11 +818,11 @@ public class KBcache implements Serializable {
      */
     public void buildParents() {
 
-        for (String rel : transRels) {
-            HashMap<String, HashSet<String>> value = new HashMap<>();
-            HashSet<String> roots = findRoots(rel);
+        for (var rel : transRels) {
+            var value = new HashMap<String, HashSet<String>>();
+            var roots = findRoots(rel);
             parents.put(rel, value);
-            for (String root : roots) {
+            for (var root : roots) {
                 breadthFirstBuildParents(root, rel);
             }
         }
@@ -835,11 +835,11 @@ public class KBcache implements Serializable {
      */
     public void buildChildren() {
 
-        for (String rel : transRels) {
-            HashMap<String, HashSet<String>> value = new HashMap<>();
-            HashSet<String> leaves = findLeaves(rel);
+        for (var rel : transRels) {
+            var value = new HashMap<String, HashSet<String>>();
+            var leaves = findLeaves(rel);
             children.put(rel, value);
-            for (String root : leaves) {
+            for (var root : leaves) {
                 breadthFirstBuildChildren(root, rel);
             }
         }
@@ -852,7 +852,7 @@ public class KBcache implements Serializable {
      */
     private static void fillArray(String st, String[] ar, int start, int end) {
     
-        for (int i = start; i < end; i++) 
+        for (var i = start; i < end; i++)
             if (StringUtil.emptyString(ar[i]))
                 ar[i] = st;        
     }
@@ -863,7 +863,7 @@ public class KBcache implements Serializable {
      */
     private static void fillArrayList(String st, List<String> ar, int start, int end) {
     
-        for (int i = start; i < end; i++) 
+        for (var i = start; i < end; i++)
             if (i > ar.size()-1 || StringUtil.emptyString(ar.get(i)))
                 ar.add(st);        
     }
@@ -881,15 +881,15 @@ public class KBcache implements Serializable {
      */
     public void collectDomains() {
 
-        for (String rel : relations) {
-            String[] domainArray = new String[Formula.MAX_PREDICATE_ARITY];
+        for (var rel : relations) {
+            var domainArray = new String[Formula.MAX_PREDICATE_ARITY];
             domainArray[0] = "";
-            ArrayList<Formula> forms = kb.askWithRestriction(0, "domain", 1, rel);
-            int maxIndex = 0;
+            var forms = kb.askWithRestriction(0, "domain", 1, rel);
+            var maxIndex = 0;
             if (forms != null) {
-                for (Formula form : forms) {
-                    int arg = Integer.parseInt(form.getArgument(2));
-                    String type = form.getArgument(3);
+                for (var form : forms) {
+                    var arg = Integer.parseInt(form.getArgument(2));
+                    var type = form.getArgument(3);
                     domainArray[arg] = type;
                     if (arg > maxIndex)
                         maxIndex = arg;
@@ -898,9 +898,9 @@ public class KBcache implements Serializable {
 
             forms = kb.askWithRestriction(0, "domainSubclass", 1, rel);
             if (forms != null) {
-                for (Formula form : forms) {
-                    int arg = Integer.parseInt(form.getArgument(2));
-                    String type = form.getArgument(3);
+                for (var form : forms) {
+                    var arg = Integer.parseInt(form.getArgument(2));
+                    var type = form.getArgument(3);
                     domainArray[arg] = type + '+';
                     if (arg > maxIndex)
                         maxIndex = arg;
@@ -911,8 +911,8 @@ public class KBcache implements Serializable {
             if (forms != null) {
                 if (forms.size() > 1)
                     System.out.println("Warning in KBcache.collectDomains(): more than one range statement" + forms);
-                for (Formula form : forms) {
-                    String type = form.getArgument(2);
+                for (var form : forms) {
+                    var type = form.getArgument(2);
                     domainArray[0] = type;
                 }
             }
@@ -921,14 +921,14 @@ public class KBcache implements Serializable {
             if (forms != null) {
                 if (forms.size() > 1)
                     System.out.println("Warning in KBcache.collectDomains(): more than one rangeSubclass statement" + forms);
-                for (Formula form : forms) {
-                    String type = form.getArgument(2);
+                for (var form : forms) {
+                    var type = form.getArgument(2);
                     domainArray[0] = type + '+';
                 }
             }
 
             fillArray("Entity", domainArray, 1, maxIndex);
-            ArrayList<String> domains = new ArrayList<>(Arrays.asList(domainArray).subList(0, maxIndex + 1));
+            var domains = new ArrayList<String>(Arrays.asList(domainArray).subList(0, maxIndex + 1));
             signatures.put(rel, domains);
             valences.put(rel, maxIndex);
         }
@@ -941,24 +941,24 @@ public class KBcache implements Serializable {
      */
     private void breadthFirstInheritDomains(String root) {
 
-        HashMap<String,HashSet<String>> relParents = parents.get("subrelation");
+        var relParents = parents.get("subrelation");
         if (relParents == null) {
             System.out.println("Error in KBcache.breadthFirstInheritDomains(): no relation subrelation");
             return;
         }
-        ArrayDeque<String> Q = new ArrayDeque<>();
+        var Q = new ArrayDeque<String>();
         Q.add(root);
         Set<String> V = new HashSet<>();
         V.add(root);
-        String rel = "subrelation";
+        var rel = "subrelation";
         while (!Q.isEmpty()) {
-            String t = Q.remove();
-            ArrayList<String> tdomains = signatures.get(t);
-            ArrayList<Formula> forms = kb.askWithRestriction(0,rel,2,t);
+            var t = Q.remove();
+            var tdomains = signatures.get(t);
+            var forms = kb.askWithRestriction(0,rel,2,t);
             if (forms != null) {
-                HashSet<String> relSubs = collectArgFromFormulas(1,forms);
-                for (String newTerm : relSubs) {
-                    ArrayList<String> newDomains = signatures.get(newTerm);
+                var relSubs = collectArgFromFormulas(1,forms);
+                for (var newTerm : relSubs) {
+                    var newDomains = signatures.get(newTerm);
                     if (valences.get(t) == null) {
                         System.out.println("Error in KBcache.breadthFirstInheritDomains(): no valence for " + t);
                         continue;
@@ -966,9 +966,9 @@ public class KBcache implements Serializable {
                         fillArrayList("Entity", newDomains, valences.get(newTerm) + 1, valences.get(t) + 1);
                         valences.put(newTerm, valences.get(t));
                     }
-                    for (int i = 1; i < valences.get(t); i++) {
-                        String childArgType = newDomains.get(i);
-                        String parentArgType = tdomains.get(i);
+                    for (var i = 1; i < valences.get(t); i++) {
+                        var childArgType = newDomains.get(i);
+                        var parentArgType = tdomains.get(i);
 
 
                         if (kb.askWithTwoRestrictions(0, "domain", 1, newTerm, 3, childArgType).isEmpty()) {
@@ -992,20 +992,20 @@ public class KBcache implements Serializable {
                            
         FileWriter fw = null;
         try {
-            File dir = new File(KBmanager.manager.getPref("kbDir"));
-            File f = new File(dir, (kb.name + _cacheFileSuffix));
+            var dir = new File(KBmanager.manager.getPref("kbDir"));
+            var f = new File(dir, (kb.name + _cacheFileSuffix));
             System.out.println("INFO in KBcache.writeCacheFile(): " + f.getName());
             if (f.exists()) 
                 f.delete();
             fw = new FileWriter(f, true);
-            Iterator<String> it = parents.keySet().iterator();
+            var it = parents.keySet().iterator();
             while (it.hasNext()) {
-                String rel = it.next();
-                HashMap<String,HashSet<String>> valSet = parents.get(rel);
-                for (String child : valSet.keySet()) {
-                    HashSet<String> prents = valSet.get(child);
-                    for (String parent : prents) {
-                        String tuple = '(' + rel + ' ' + child + ' ' + parent + ')';
+                var rel = it.next();
+                var valSet = parents.get(rel);
+                for (var child : valSet.keySet()) {
+                    var prents = valSet.get(child);
+                    for (var parent : prents) {
+                        var tuple = '(' + rel + ' ' + child + ' ' + parent + ')';
                         if (!kb.formulaMap.containsKey(tuple)) {
                             fw.write(tuple);
                             fw.write(System.getProperty("line.separator"));
@@ -1015,10 +1015,10 @@ public class KBcache implements Serializable {
             }
             it = instances.keySet().iterator();
             while (it.hasNext()) {
-                String inst = it.next();
-                HashSet<String> valSet = instances.get(inst);
-                for (String parent : valSet) {
-                    String tuple = "(instance " + inst + ' ' + parent + ')';
+                var inst = it.next();
+                var valSet = instances.get(inst);
+                for (var parent : valSet) {
+                    var tuple = "(instance " + inst + ' ' + parent + ')';
                     if (!kb.formulaMap.containsKey(tuple)) {
                         fw.write(tuple);
                         fw.write(System.getProperty("line.separator"));
@@ -1029,7 +1029,7 @@ public class KBcache implements Serializable {
                 fw.close();
                 fw = null;
             }
-            String filename = f.getCanonicalPath();
+            var filename = f.getCanonicalPath();
             kb.constituents.remove(filename);
             kb.addConstituent(filename);
             
@@ -1055,9 +1055,9 @@ public class KBcache implements Serializable {
      * the same type of a parent's argument, use that of the parent.
      */
     public void inheritDomains() {
-        
-        HashSet<String> roots = findRoots("subrelation");
-        for (String root : roots) {
+
+        var roots = findRoots("subrelation");
+        for (var root : roots) {
             breadthFirstInheritDomains(root);
         }
     }
@@ -1067,13 +1067,13 @@ public class KBcache implements Serializable {
      */
     public void buildInstTransRels() {
 
-        for (String rel : transRels) {
-            ArrayList<String> sig = signatures.get(rel);
+        for (var rel : transRels) {
+            var sig = signatures.get(rel);
             if (sig == null) {
                 System.out.println("Error in KBcache.buildInstTransRels(): Error " + rel + " not found.");
             } else {
-                boolean b = sig.stream().noneMatch(s -> s.endsWith("+"));
-                boolean instrel = b;
+                var b = sig.stream().noneMatch(s -> s.endsWith("+"));
+                var instrel = b;
                 if (instrel)
                     instTransRels.add(rel);
             }
@@ -1115,7 +1115,7 @@ public class KBcache implements Serializable {
     public void showState() {
 
         System.out.println("-------------- relations ----------------");
-        Iterator<String> it = this.relations.iterator();
+        var it = this.relations.iterator();
         while (it.hasNext())
             System.out.print(it.next() + ' ');
         System.out.println();
@@ -1129,10 +1129,10 @@ public class KBcache implements Serializable {
         
         it = this.parents.keySet().iterator();
         while (it.hasNext()) {
-            String rel = it.next();
+            var rel = it.next();
             System.out.println("Relation: " + rel);
-            HashMap<String,HashSet<String>> relmap = this.parents.get(rel);
-            for (String term : relmap.keySet()) {
+            var relmap = this.parents.get(rel);
+            for (var term : relmap.keySet()) {
                 System.out.println(term + ": " + relmap.get(term));
             }
             System.out.println();
@@ -1142,10 +1142,10 @@ public class KBcache implements Serializable {
         
         it = this.children.keySet().iterator();
         while (it.hasNext()) {
-            String rel = it.next();
+            var rel = it.next();
             System.out.println("Relation: " + rel);
-            HashMap<String,HashSet<String>> relmap = this.children.get(rel);
-            for (String term : relmap.keySet()) {
+            var relmap = this.children.get(rel);
+            for (var term : relmap.keySet()) {
                 System.out.println(term + ": " + relmap.get(term));
             }
             System.out.println();
@@ -1153,25 +1153,25 @@ public class KBcache implements Serializable {
         System.out.println();
         System.out.println("-------------- domains ----------------");
 
-        for (String rel : this.relations) {
-            ArrayList<String> domains = this.signatures.get(rel);
+        for (var rel : this.relations) {
+            var domains = this.signatures.get(rel);
             System.out.println(rel + ": " + domains);
         }
         System.out.println();
         System.out.println("-------------- valences ----------------");
-        for (String rel : this.valences.keySet()) {
-            Integer arity = this.valences.get(rel);
+        for (var rel : this.valences.keySet()) {
+            var arity = this.valences.get(rel);
             System.out.println(rel + ": " + arity);
         }
         System.out.println();
         System.out.println("-------------- insts ----------------");
-        for (String inst : this.insts) {
+        for (var inst : this.insts) {
             System.out.print(inst + ", ");
         }
         System.out.println();
         System.out.println();
         System.out.println("-------------- instances ----------------");
-        for (String inst : this.instances.keySet()) {
+        for (var inst : this.instances.keySet()) {
             System.out.println(inst + ": " + this.instances.get(inst));
         }
     }
@@ -1181,12 +1181,12 @@ public class KBcache implements Serializable {
     public static void main(String[] args) {
 
         KBmanager.manager.initializeOnce();
-        KB kb = KBmanager.manager.getKB(KBmanager.manager.getPref("sumokbname"));
+        var kb = KBmanager.manager.getKB(KBmanager.manager.getPref("sumokbname"));
         System.out.println("**** Finished loading KB ***");
-        KBcache nkbc = kb.kbCache;
-        String term = "Object";
-        HashSet<String> classes = nkbc.getChildClasses(term);
-        HashSet<String> instances = nkbc.getChildInstances(term);
+        var nkbc = kb.kbCache;
+        var term = "Object";
+        var classes = nkbc.getChildClasses(term);
+        var instances = nkbc.getChildInstances(term);
         System.out.println("number of child classes of " + term + ": " + classes.size());
         System.out.println("KBcache.main(): children of " + term + ": " +
                 classes);

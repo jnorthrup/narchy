@@ -72,16 +72,16 @@ public class HyperRectDouble implements HyperRegion, Serializable {
     }
 
     public HyperRectDouble(DoubleND a, DoubleND b) {
-        int dim = a.dim();
+        var dim = a.dim();
 
-        double[] min = new double[dim];
-        double[] max = new double[dim];
+        var min = new double[dim];
+        var max = new double[dim];
 
-        double[] ad = a.coord;
-        double[] bd = b.coord;
-        for (int i = 0; i < dim; i++) {
-            double ai = ad[i];
-            double bi = bd[i];
+        var ad = a.coord;
+        var bd = b.coord;
+        for (var i = 0; i < dim; i++) {
+            var ai = ad[i];
+            var bi = bd[i];
             min[i] = Math.min(ai, bi);
             max[i] = Math.max(ai, bi);
         }
@@ -123,19 +123,19 @@ public class HyperRectDouble implements HyperRegion, Serializable {
 
     @Override
     public double cost() {
-        int dim = dim();
-        double sigma = IntStream.range(0, dim).mapToDouble(i -> rangeIfFinite(i, 1 /* an infinite dimension can not be compared, so just ignore it */)).reduce(1f, (a, b) -> a * b);
+        var dim = dim();
+        var sigma = IntStream.range(0, dim).mapToDouble(i -> rangeIfFinite(i, 1 /* an infinite dimension can not be compared, so just ignore it */)).reduce(1f, (a, b) -> a * b);
         return sigma;
     }
 
     @Override
     public HyperRegion mbr(HyperRegion r) {
-        HyperRectDouble x = (HyperRectDouble) r;
+        var x = (HyperRectDouble) r;
 
-        int dim = dim();
-        double[] newMin = new double[dim];
-        double[] newMax = new double[dim];
-        for (int i = 0; i < dim; i++) {
+        var dim = dim();
+        var newMin = new double[dim];
+        var newMax = new double[dim];
+        for (var i = 0; i < dim; i++) {
             newMin[i] = Math.min(min.coord[i], x.min.coord[i]);
             newMax[i] = Math.max(max.coord[i], x.max.coord[i]);
         }
@@ -148,8 +148,8 @@ public class HyperRectDouble implements HyperRegion, Serializable {
     }
 
     public double centerF(int dim) {
-        double min = this.min.coord[dim];
-        double max = this.max.coord[dim];
+        var min = this.min.coord[dim];
+        var max = this.max.coord[dim];
         if ((min == NEGATIVE_INFINITY) && (max == Double.POSITIVE_INFINITY))
             return 0;
         if (min == NEGATIVE_INFINITY)
@@ -161,11 +161,11 @@ public class HyperRectDouble implements HyperRegion, Serializable {
     }
 
     public DoubleND center() {
-        int dim = dim();
-        double[] c = new double[10];
-        int count = 0;
-        for (int i = 0; i < dim; i++) {
-            double v = centerF(i);
+        var dim = dim();
+        var c = new double[10];
+        var count = 0;
+        for (var i = 0; i < dim; i++) {
+            var v = centerF(i);
             if (c.length == count) c = Arrays.copyOf(c, count * 2);
             c[count++] = v;
         }
@@ -181,8 +181,8 @@ public class HyperRectDouble implements HyperRegion, Serializable {
 
     @Override
     public double range(int dim) {
-        double min = this.min.coord[dim];
-        double max = this.max.coord[dim];
+        var min = this.min.coord[dim];
+        var max = this.max.coord[dim];
         if (min == max)
             return 0;
         if ((min == NEGATIVE_INFINITY) || (max == Double.POSITIVE_INFINITY))
@@ -195,13 +195,13 @@ public class HyperRectDouble implements HyperRegion, Serializable {
         if (this == o) return true;
         if (o == null /*|| getClass() != o.getClass()*/) return false;
 
-        HyperRectDouble r = (HyperRectDouble) o;
+        var r = (HyperRectDouble) o;
         return min.equals(r.min) && max.equals(r.max);
     }
 
     @Override
     public int hashCode() {
-        int result = min.hashCode();
+        var result = min.hashCode();
         result = 31 * result + max.hashCode();
         return result;
     }

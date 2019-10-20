@@ -12,7 +12,7 @@ public class Sigmoid
     }
 
     public static double expFast(double val) {
-        long tmp = (long) (1512775 * val + (1072693248 - 60801));
+        var tmp = (long) (1512775 * val + (1072693248 - 60801));
         return Double.longBitsToDouble(tmp << 32);
     }
 

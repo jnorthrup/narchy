@@ -38,9 +38,9 @@ public interface ImpurityCalculator {
      * @return Empirical probability.
      */
     static <K, V> double empiricalProb(K value, Stream<Function<K, V>> splitData, V positive) {
-        int[] ratio = new int[2];
+        var ratio = new int[2];
         splitData.map(d -> d.apply(value)).forEach(v -> {
-            boolean eqP = v.equals(positive);
+            var eqP = v.equals(positive);
             ratio[eqP ? 1 : 0]++;
         });
         return ratio[1] / ((double)(ratio[0] + ratio[1]));

@@ -75,19 +75,19 @@ public abstract class Draw extends Image {
 	
 		if ( (num&127) == 32 ) return; 
 
-		if (y <= -8) return; 
+		if (y <= -8) return;
 
-		int row = num>>4;
-		int col = num&15;
+		var row = num>>4;
+		var col = num&15;
 
         GL_Bind(draw_chars.texnum);
 
 		gl.glBegin (GL_QUADS);
-        float fcol = col * 0.0625f;
-        float frow = row * 0.0625f;
+		var fcol = col * 0.0625f;
+		var frow = row * 0.0625f;
         gl.glTexCoord2f (fcol, frow);
 		gl.glVertex2f (x, y);
-        float size = 0.0625f;
+		var size = 0.0625f;
         gl.glTexCoord2f (fcol + size, frow);
 		gl.glVertex2f (x+8, y);
 		gl.glTexCoord2f (fcol + size, frow + size);
@@ -109,7 +109,7 @@ public abstract class Draw extends Image {
 
         if (!name.startsWith("/") && !name.startsWith("\\"))
 		{
-            String fullname = "pics/" + name + ".pcx";
+			var fullname = "pics/" + name + ".pcx";
             image = GL_FindImage(fullname, it_pic);
 		} else {
 			image = GL_FindImage(name.substring(1), it_pic);
@@ -126,7 +126,7 @@ public abstract class Draw extends Image {
 	@Override
     public void Draw_GetPicSize(Dimension dim, String pic)	{
 
-		image_t image = Draw_FindPic(pic);
+		var image = Draw_FindPic(pic);
 		dim.setWidth((image != null) ? image.width : -1);
 		dim.setHeight((image != null) ? image.height : -1);
 	}
@@ -139,7 +139,7 @@ public abstract class Draw extends Image {
 	@Override
     public void Draw_StretchPic (int x, int y, int w, int h, String pic) {
 
-        image_t image = Draw_FindPic(pic);
+		var image = Draw_FindPic(pic);
 		if (image == null)
 		{
 			VID.Printf (Defines.PRINT_ALL, "Can't find pic: " + pic +'\n');
@@ -178,7 +178,7 @@ public abstract class Draw extends Image {
     public void Draw_Pic(int x, int y, String pic)
 	{
 
-        image_t image = Draw_FindPic(pic);
+		var image = Draw_FindPic(pic);
 		if (image == null)
 		{
 			VID.Printf(Defines.PRINT_ALL, "Can't find pic: " +pic + '\n');
@@ -218,7 +218,7 @@ public abstract class Draw extends Image {
 	@Override
     public void Draw_TileClear(int x, int y, int w, int h, String pic) {
 
-        image_t image = Draw_FindPic(pic);
+		var image = Draw_FindPic(pic);
 		if (image == null)
 		{
 			VID.Printf(Defines.PRINT_ALL, "Can't find pic: " + pic + '\n');
@@ -260,7 +260,7 @@ public abstract class Draw extends Image {
 
 		gl.glDisable(GL_TEXTURE_2D);
 
-		int color = d_8to24table[colorIndex]; 
+		var color = d_8to24table[colorIndex];
 
 		gl.glColor3ub(
 			(byte)((color >> 0) & 0xff), 
@@ -332,7 +332,7 @@ final IntBuffer image32=Lib.newIntBuffer(256*256);
 			hscale = rows/256.0f;
 			trows = 256;
 		}
-        float t = rows * hscale / 256;
+		var t = rows * hscale / 256;
 
         int row;
         int fracstep;
@@ -343,7 +343,7 @@ final IntBuffer image32=Lib.newIntBuffer(256*256);
         if ( !qglColorTableEXT )
 		{
 			image32.clear();
-            int destIndex = 0;
+			var destIndex = 0;
 
 			for (i=0 ; i<trows ; i++)
 			{
@@ -365,7 +365,7 @@ final IntBuffer image32=Lib.newIntBuffer(256*256);
 		else
 		{
 			image8.clear();
-			int destIndex = 0;
+			var destIndex = 0;
 
 			for (i=0 ; i<trows ; i++)
 			{

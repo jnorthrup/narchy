@@ -22,18 +22,18 @@ public class MyPerception  {
     public double[] updateInputValues(double[] input) {
         if (input == null)
             input = new double[RADAR_DISTS * (RADAR_ANGLES*2+1) + 1];
-        
-        int j = 0;
+
+        var j = 0;
 
 
         
 
         input[j++] = 0.8f * (MathUtils.normalizeAngle(player.angle,0)/(Math.PI) - 1.0);
 
-        for (int d = RADAR_D0; d <= RADAR_DISTS; d++) {
-            for (int a = -RADAR_ANGLES; a <= RADAR_ANGLES; a++) {
-                double xPerc = xPerc(d, a);
-                double yPerc = yPerc(d, a);
+        for (var d = RADAR_D0; d <= RADAR_DISTS; d++) {
+            for (var a = -RADAR_ANGLES; a <= RADAR_ANGLES; a++) {
+                var xPerc = xPerc(d, a);
+                var yPerc = yPerc(d, a);
                 input[j++] = player.getWorld().pointInObstacle(xPerc, yPerc) ? 1.0 : -1.0;
             }
         }

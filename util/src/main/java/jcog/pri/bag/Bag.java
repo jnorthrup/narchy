@@ -54,7 +54,7 @@ public abstract class Bag<X, Y> implements Table<X, Y>, Sampler<Y>, jcog.pri.Pre
 
     private static <Y> void forEach(MetalAtomicReferenceArray<Y> map, Predicate<Y> accept, Consumer<? super Y> e) {
         for (int c = map.length(), j = 0; j < c; j++) {
-            Y v = map.getFast(j);
+            var v = map.getFast(j);
             if (v != null && accept.test(v)) {
                 e.accept(v);
             }
@@ -62,7 +62,7 @@ public abstract class Bag<X, Y> implements Table<X, Y>, Sampler<Y>, jcog.pri.Pre
     }
     protected static <Y> void forEach(MetalAtomicReferenceArray<Y> map, int max, Consumer<? super Y> e) {
         for (int c = map.length(), j = 0; j < c; j++) {
-            Y v = map.getFast(j);
+            var v = map.getFast(j);
             if (v != null) {
                 e.accept(v);
                 if (--max <= 0)
@@ -73,8 +73,8 @@ public abstract class Bag<X, Y> implements Table<X, Y>, Sampler<Y>, jcog.pri.Pre
 
     /**TODO make version of this which optionally tests for deletion */
     protected static <Y> void forEach(IntToObjectFunction<Y> accessor, int capacity, int max, Consumer<? super Y> e) {
-        for (int j = 0; j < capacity; j++) {
-            Y v = accessor.apply(j);
+        for (var j = 0; j < capacity; j++) {
+            var v = accessor.apply(j);
             if (v != null) {
                 e.accept(v);
                 if (--max <= 0)
@@ -85,7 +85,7 @@ public abstract class Bag<X, Y> implements Table<X, Y>, Sampler<Y>, jcog.pri.Pre
 
     public static <Y> void forEach(AtomicReferenceArray<Y> map, Consumer<? super Y> e) {
         for (int c = map.length(), j = -1; ++j < c; ) {
-            Y v = map
+            var v = map
                     .getOpaque(j);
 
             if (v != null) {
@@ -226,10 +226,10 @@ public abstract class Bag<X, Y> implements Table<X, Y>, Sampler<Y>, jcog.pri.Pre
 
     /** subclasses may have more efficient ways of doing this */
     public <Z> Z[] toArray(@Nullable Z[] _target, Function<Y,Z> apply) {
-        int s = size();
+        var s = size();
         if (s == 0) return (Z[]) ArrayUtil.EMPTY_OBJECT_ARRAY;
 
-        Z[] target = _target == null || _target.length < s ? Arrays.copyOf(_target, s) : _target;
+        var target = _target == null || _target.length < s ? Arrays.copyOf(_target, s) : _target;
 
         int[] i = {0}; //HACK this is not good. use a AND predicate iteration or just plain iterator?
 
@@ -240,8 +240,8 @@ public abstract class Bag<X, Y> implements Table<X, Y>, Sampler<Y>, jcog.pri.Pre
     }
 
     public @Nullable X reduce(BiFunction<Y,X,X> each, X init) {
-        X x = init;
-        for (Y y : this)
+        var x = init;
+        for (var y : this)
             x = each.apply(y, x);
         return x;
     }
@@ -300,13 +300,13 @@ public abstract class Bag<X, Y> implements Table<X, Y>, Sampler<Y>, jcog.pri.Pre
      * true if an item is not deleted
      */
     public final boolean active(Y key) {
-        float x = pri(key);
+        var x = pri(key);
         return (x == x);
 
     }
 
     public float priElse(Y key, float valueIfMissing) {
-        float p = pri(key);
+        var p = pri(key);
         return (p == p) ? p : valueIfMissing;
     }
 
@@ -320,7 +320,7 @@ public abstract class Bag<X, Y> implements Table<X, Y>, Sampler<Y>, jcog.pri.Pre
     }
 
     public void print(PrintStream p) {
-        for (Y y : this) {
+        for (var y : this) {
             p.println(y);
         }
     }
@@ -332,8 +332,8 @@ public abstract class Bag<X, Y> implements Table<X, Y>, Sampler<Y>, jcog.pri.Pre
      */
     public float priIfyNonDeleted(float initial, FloatFloatToFloatFunction reduce) {
         float[] x = {initial};
-        for (Y y : this) {
-            float p = pri(y);
+        for (var y : this) {
+            var p = pri(y);
             if (p == p)
                 x[0] = reduce.apply(x[0], p);
         }
@@ -355,7 +355,7 @@ public abstract class Bag<X, Y> implements Table<X, Y>, Sampler<Y>, jcog.pri.Pre
      * returns a value between 0..1.0. if empty, returns 0
      */
     @Deprecated public float priMin() {
-        float m = priIfyNonDeleted(Float.POSITIVE_INFINITY, Math::min);
+        var m = priIfyNonDeleted(Float.POSITIVE_INFINITY, Math::min);
         return Float.isFinite(m) ? m : 0;
     }
 
@@ -364,7 +364,7 @@ public abstract class Bag<X, Y> implements Table<X, Y>, Sampler<Y>, jcog.pri.Pre
      * returns a value between 0..1.0. if empty, returns 0
      */
     @Deprecated public float priMax() {
-        float m = priIfyNonDeleted(Float.NEGATIVE_INFINITY, Math::max);
+        var m = priIfyNonDeleted(Float.NEGATIVE_INFINITY, Math::max);
         return Float.isFinite(m) ? m : 0;
     }
 
@@ -372,7 +372,7 @@ public abstract class Bag<X, Y> implements Table<X, Y>, Sampler<Y>, jcog.pri.Pre
 
     public final void setCapacity(int capNext) {
         assert(capNext >= 0);
-        int capBefore = CAPACITY.getAndSet(this, capNext);
+        var capBefore = CAPACITY.getAndSet(this, capNext);
         if (capBefore!=capNext)
             onCapacityChange(capBefore, capNext);
     }
@@ -383,18 +383,18 @@ public abstract class Bag<X, Y> implements Table<X, Y>, Sampler<Y>, jcog.pri.Pre
     }
 
     public float[] histogram(float[] x) {
-        int bins = x.length;
-        for (Y budget : this) {
-            float p = priElse(budget, 0);
-            int b = Util.bin(p, bins - 1);
+        var bins = x.length;
+        for (var budget : this) {
+            var p = priElse(budget, 0);
+            var b = Util.bin(p, bins - 1);
             x[b]++;
         }
         double total = 0;
-        for (float e : x) {
+        for (var e : x) {
             total += e;
         }
         if (total > 0) {
-            for (int i = 0; i < bins; i++)
+            for (var i = 0; i < bins; i++)
                 x[i] /= total;
         }
         return x;
@@ -424,7 +424,7 @@ public abstract class Bag<X, Y> implements Table<X, Y>, Sampler<Y>, jcog.pri.Pre
 
     @Override
     public void forEachKey(Consumer<? super X> each) {
-        for (Y b : this) {
+        for (var b : this) {
             each.accept(key(b));
         }
     }
@@ -506,11 +506,11 @@ public abstract class Bag<X, Y> implements Table<X, Y>, Sampler<Y>, jcog.pri.Pre
             return 0; //remove nothing
         }
 
-        float percentToRemain = 1-percentToRemove;
+        var percentToRemain = 1-percentToRemove;
 
-        float[] delta = new float[1];
+        var delta = new float[1];
         PRESSURE.update(this, (priBefore, f) -> {
-            float priAfter = priBefore * f;
+            var priAfter = priBefore * f;
             delta[0] = priBefore - priAfter;
             return priAfter;
         }, percentToRemain);

@@ -19,11 +19,11 @@ public class HanningWindow extends WaveFactory {
      */
     @Override
     public ArrayTensor get(int bufferSize) {
-        int size = bufferSize;
-        ArrayTensor b = new ArrayTensor(size);
-        int lowerThresh = bufferSize / 4;
-        int upperThresh = bufferSize - lowerThresh;
-        for (int i = 0; i < bufferSize; i++) {
+        var size = bufferSize;
+        var b = new ArrayTensor(size);
+        var lowerThresh = bufferSize / 4;
+        var upperThresh = bufferSize - lowerThresh;
+        for (var i = 0; i < bufferSize; i++) {
             b.data[i] = i < lowerThresh || i > upperThresh ? 0.5f * (1.0f + (float) Math.cos((Math.PI + Math.PI * 4.0f * i / (float) (bufferSize - 1)))) : 1.0f;
         }
         return b;

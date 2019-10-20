@@ -35,10 +35,10 @@ public class RangeLimiter extends UGen {
     @Override
     public void gen() {
 
-        for (int j = 0; j < ins; j++) {
-            float[] bi = bufIn[j];
-            float[] bo = bufOut[j];
-            for (int i = 0; i < bufferSize; i++) {
+        for (var j = 0; j < ins; j++) {
+            var bi = bufIn[j];
+            var bo = bufOut[j];
+            for (var i = 0; i < bufferSize; i++) {
                 float y;
                 if ((y = bi[i]) > 1.0f) {
                     bo[i] = 1f;

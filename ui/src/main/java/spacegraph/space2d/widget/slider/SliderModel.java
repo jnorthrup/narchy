@@ -89,7 +89,7 @@ public class SliderModel extends PaintSurface {
     }
 
     private void setPoint(Finger f) {
-        v2 rel = f.posRelative(this);
+        var rel = f.posRelative(this);
 //        System.out.println(rel);
         setPoint(ui.p(rel));
     }
@@ -97,7 +97,7 @@ public class SliderModel extends PaintSurface {
     private void setPoint(float pNext) {
         Util.assertFinite(pNext);
 
-        float pPrev = this.p;
+        var pPrev = this.p;
         if (Util.equals(pPrev, pNext, Spatialization.EPSILONf))
             return;
 
@@ -115,7 +115,7 @@ public class SliderModel extends PaintSurface {
 //    }
 
     private void _onChanged() {
-        ObjectFloatProcedure<SliderModel> c = this.change;
+        var c = this.change;
         if (c != null)
             c.value(this, value());
     }
@@ -181,7 +181,7 @@ public class SliderModel extends PaintSurface {
 
             gl.glColor4f(0f, 0f, 0f, 0.5f);
             float W = 1;
-            float barSize = W * p;
+            var barSize = W * p;
             float H = 1;
             Draw.rect(barSize, 0, W - barSize, H, gl);
 
@@ -222,7 +222,7 @@ public class SliderModel extends PaintSurface {
         @Override
         public void paint(float p, GL2 gl) {
 
-            float y = H * (1-p);
+            var y = H * (1-p);
 
             gl.glColor4f(0f, 0f, 0f, 0.5f);
             Draw.rect(0, 0, W, H, gl);
@@ -241,7 +241,7 @@ public class SliderModel extends PaintSurface {
 
         @Override
         public void paint(float p, GL2 gl) {
-            float x = W * p;
+            var x = W * p;
 
             gl.glColor4f(0f, 0f, 0f, 0.5f);
             Draw.rect(0, 0, W, H, gl);

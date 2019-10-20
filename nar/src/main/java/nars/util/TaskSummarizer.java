@@ -55,9 +55,9 @@ public class TaskSummarizer extends NARPart implements Consumer<Task> {
         final AtomicInteger[][][] val = new AtomicInteger[4][Op.values().length][3];
 
         TaskSummary() {
-            for (AtomicInteger[][] a : val) {
-                for (AtomicInteger[] b : a) {
-                    for (int k = 0; k < 3; k++)
+            for (var a : val) {
+                for (var b : a) {
+                    for (var k = 0; k < 3; k++)
                         b[k] = new AtomicInteger(0);
                 }
             }
@@ -69,11 +69,11 @@ public class TaskSummarizer extends NARPart implements Consumer<Task> {
 
         @Override
         public void accept(Task task) {
-            int p = puncToIndex(task.punc());
+            var p = puncToIndex(task.punc());
             if (p < 0) return;
-            Term tt = task.term();
-            int o = tt.op().ordinal();
-            AtomicInteger[] v = val[p][o];
+            var tt = task.term();
+            var o = tt.op().ordinal();
+            var v = val[p][o];
             v[NUM].incrementAndGet();
             v[VOL].addAndGet(tt.volume());
             v[PRI].addAndGet(1 + pri(task.priElseZero()));
@@ -93,15 +93,15 @@ public class TaskSummarizer extends NARPart implements Consumer<Task> {
 
         public void forEach(CellConsumer c) {
             for (int pi = 0, valLength = val.length; pi < valLength; pi++) {
-                AtomicInteger[][] a = val[pi];
-                byte punc = indexToPunc(pi);
+                var a = val[pi];
+                var punc = indexToPunc(pi);
                 for (int oi = 0, aLength = a.length; oi < aLength; oi++) {
-                    AtomicInteger[] x = a[oi];
-                    int num = x[0].get();
+                    var x = a[oi];
+                    var num = x[0].get();
                     if (num > 0) {
-                        Op o = Op.the(oi);
-                        float volMean = x[1].floatValue() / num;
-                        float priMean = Math.max(0, ((x[2].floatValue()-1)/PRI_DIGITS) / num);
+                        var o = Op.the(oi);
+                        var volMean = x[1].floatValue() / num;
+                        var priMean = Math.max(0, ((x[2].floatValue()-1)/PRI_DIGITS) / num);
                         c.accept(punc, num, o, volMean, priMean);
                     }
                 }

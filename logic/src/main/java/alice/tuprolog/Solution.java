@@ -163,7 +163,7 @@ public class Solution implements Serializable/*, ISolution<Term,Term,Term>*/  {
      * @throws Var.UnknownVarException if the variable does not appear in the substitution.
      */
     public Term getTerm(String varName) throws NoSolutionException, Var.UnknownVarException {
-        Term t = getVarValue(varName);
+        var t = getVarValue(varName);
         if (t == null)
             throw new Var.UnknownVarException();
         return t;
@@ -175,7 +175,7 @@ public class Solution implements Serializable/*, ISolution<Term,Term,Term>*/  {
      */
     public Term getVarValue(String varName) throws NoSolutionException {
         if (isSuccess) {
-            for (Var v : bindings) {
+            for (var v : bindings) {
                 if (v != null && v.name().equals(varName)) {
                     return Optional.of(v).map(Var::term).orElse(null);
                 }
@@ -194,13 +194,13 @@ public class Solution implements Serializable/*, ISolution<Term,Term,Term>*/  {
      */    
     public String toString() {
         if (isSuccess) {
-            StringBuilder st = new StringBuilder("yes");
+            var st = new StringBuilder("yes");
             if (!bindings.isEmpty()) {
                 st.append(".\n");
             } else {
                 st.append(". ");
             }
-            for (Var v : bindings) {
+            for (var v : bindings) {
                 if (v != null && !v.isAnonymous() && v.isBound() &&
                         (!(v.term() instanceof Var) || (!((Var) (v.term())).name().startsWith("_")))) {
                     st.append(v);

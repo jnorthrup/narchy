@@ -20,12 +20,12 @@ public class QuestionAnswering extends NativeHow {
 	@Override
 	protected void run(RuleCause why, Derivation d) {
 
-		Task q = d._task;
+		var q = d._task;
 		//assert(q.isQuestionOrQuest());
 
-		BeliefTable answerTable = d.nar.tableDynamic(q, !q.isQuest());
+		var answerTable = d.nar.tableDynamic(q, !q.isQuest());
 		if (answerTable != null && !answerTable.isEmpty()) {
-			Task a = answer(q, answerTable, d);
+			var a = answer(q, answerTable, d);
 			if (a!=null) {
 				d.add(new AbstractPremise(a, why.whyLazy(q, a)));
 			}
@@ -37,7 +37,7 @@ public class QuestionAnswering extends NativeHow {
 
 		//assert (task.isQuest() || match.punc() == BELIEF) : "quest answered with a belief but should be a goal";
 
-		Task answer = MatchBelief.task(answerTable, question.term(),
+		var answer = MatchBelief.task(answerTable, question.term(),
 			d.deriver.timing.premise(d.x, question), null, d);
 
 		if (answer == null)
@@ -57,11 +57,11 @@ public class QuestionAnswering extends NativeHow {
 ////                d.what.accept(x);
 ////            else
 		float qPri = q.priElseZero(), aPri = a.priElseZero();
-		float pri =
+		var pri =
 			qPri * aPri;
 			//Util.or(qPri, aPri);
 //
-		What w = d.x;
+		var w = d.x;
 ////		((AbstractTask)a).why(q.why()); //merge question reason into answer
 		w.link(a, pri);
 		w.emit(a);

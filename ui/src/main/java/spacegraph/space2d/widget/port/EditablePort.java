@@ -33,7 +33,7 @@ public abstract class EditablePort<X> extends TypedPort<X> {
 
     @Override
     public boolean out(X _next) {
-        X next = process(_next);
+        var next = process(_next);
         if (next!=null)
             return super.out(next);
 

@@ -188,13 +188,13 @@ public final class B extends GamePanel {
 	private static final Image[] BLOCK_GFX = new Image[9];
 
 	static {
-		int[] imageData = new int[BLOCK_SIZE / 2 * BLOCK_SIZE / 2];
-		for (int i = 0; i < BLOCK_GFX.length; i++) {
+		var imageData = new int[BLOCK_SIZE / 2 * BLOCK_SIZE / 2];
+		for (var i = 0; i < BLOCK_GFX.length; i++) {
 			getData(IMAGE_DATA, BLOCK_GFX_CONFIG[i][3], imageData);
 			Image image = new BufferedImage(BLOCK_SIZE, BLOCK_SIZE, BufferedImage.TYPE_INT_ARGB);
-			Graphics2D g = (Graphics2D) image.getGraphics();
-			for (int x = 0; x < BLOCK_SIZE / 2; x++) {
-				for (int y = 0; y < BLOCK_SIZE / 2; y++) {
+			var g = (Graphics2D) image.getGraphics();
+			for (var x = 0; x < BLOCK_SIZE / 2; x++) {
+				for (var y = 0; y < BLOCK_SIZE / 2; y++) {
 					g.setBackground(new Color(BLOCK_GFX_CONFIG[i][imageData[BLOCK_SIZE / 2 * y + x]], true));
 					g.clearRect(x * 2, y * 2, 2, 2);
 				}
@@ -235,10 +235,10 @@ public final class B extends GamePanel {
 
 	@Override
 	public void paintComponent(Graphics g) {
-		Graphics buffer = screenBuffer.getGraphics();
-		for (int i = 0; i < 3; i++) { 
-			for (int x = 0; x < TABLE_WIDTH; x++) {
-				for (int y = 0; y < TABLE_HEIGHT; y++) {
+		var buffer = screenBuffer.getGraphics();
+		for (var i = 0; i < 3; i++) {
+			for (var x = 0; x < TABLE_WIDTH; x++) {
+				for (var y = 0; y < TABLE_HEIGHT; y++) {
 					if (!gameStarted) {
 						buffer.drawImage(BLOCK_GFX[OUTER_FLOOR], x * BLOCK_SIZE, y * BLOCK_SIZE, null);
 					} else if (i == 0 && table[TABLE_WIDTH * y + x] <= 2) { 
@@ -261,7 +261,7 @@ public final class B extends GamePanel {
 		buffer.setColor(FONT_COLOR);
 
 		if (!gameStarted) {
-			int shift = (TABLE_HEIGHT * BLOCK_SIZE - buffer.getFontMetrics().getHeight() * 9) / 2;
+			var shift = (TABLE_HEIGHT * BLOCK_SIZE - buffer.getFontMetrics().getHeight() * 9) / 2;
 			buffer.drawString(GAME_TITLE, TABLE_WIDTH * BLOCK_SIZE / 2 - buffer.getFontMetrics().stringWidth(GAME_TITLE) / 2, buffer.getFontMetrics().getHeight() + shift);
 			buffer.drawString(GAME_CONTROLS, TABLE_WIDTH * BLOCK_SIZE / 2 - buffer.getFontMetrics().stringWidth(GAME_CONTROLS) / 2, buffer.getFontMetrics().getHeight() * 3 + shift);
 			buffer.drawString(GAME_CONTROL_ARROWS, TABLE_WIDTH * BLOCK_SIZE / 2 - buffer.getFontMetrics().stringWidth(GAME_CONTROL_ARROWS) / 2, buffer.getFontMetrics().getHeight() * 4 + shift);
@@ -273,7 +273,7 @@ public final class B extends GamePanel {
 			if (levelSolved) {
 				buffer.drawString(COMPLETED_TEXT, TABLE_WIDTH * BLOCK_SIZE / 2 - buffer.getFontMetrics().stringWidth(COMPLETED_TEXT) / 2, buffer.getFontMetrics().getHeight());
 			}
-			String text = String.format(STATUS_TEXT, String.valueOf(level + 1), String.valueOf(moves), String.valueOf(pushes));
+			var text = String.format(STATUS_TEXT, String.valueOf(level + 1), String.valueOf(moves), String.valueOf(pushes));
 			buffer.drawString(text, TABLE_WIDTH * BLOCK_SIZE / 2 - buffer.getFontMetrics().stringWidth(text) / 2, TABLE_HEIGHT * BLOCK_SIZE - BLOCK_SIZE / 4);
 		}
 
@@ -290,8 +290,8 @@ public final class B extends GamePanel {
 		pushes = 0;
 		levelSolved = false;
 		getData(LEVEL_DATA, level, table);
-		for (int x = 0; x < TABLE_WIDTH; x++) {
-			for (int y = 0; y < TABLE_HEIGHT; y++) {
+		for (var x = 0; x < TABLE_WIDTH; x++) {
+			for (var y = 0; y < TABLE_HEIGHT; y++) {
 				if (table[TABLE_WIDTH * y + x] == PLAYER) {
 					table[TABLE_WIDTH * y + x] = FLOOR;
 					playerX = x;
@@ -314,8 +314,8 @@ public final class B extends GamePanel {
 			return;
 		}
 
-		int dirX = 0;
-		int dirY = 0;
+		var dirX = 0;
+		var dirY = 0;
 
 		switch (event.getKeyCode()) {
 		case KeyEvent.VK_UP:
@@ -350,8 +350,8 @@ public final class B extends GamePanel {
 		}
 
 		if ((dirX != 0 || dirY != 0) && !levelSolved) {
-			int firstStep = TABLE_WIDTH * (playerY + dirY) + playerX + dirX;
-			int secondStep = TABLE_WIDTH * (playerY + dirY * 2) + playerX + dirX * 2;
+			var firstStep = TABLE_WIDTH * (playerY + dirY) + playerX + dirX;
+			var secondStep = TABLE_WIDTH * (playerY + dirY * 2) + playerX + dirX * 2;
 			if (table[firstStep] == FLOOR || table[firstStep] == GOAL) {
 				playerX += dirX;
 				playerY += dirY;
@@ -366,7 +366,7 @@ public final class B extends GamePanel {
 			}
 		}
 
-		boolean boxesOnGoal = IntStream.range(0, table.length).noneMatch(i -> table[i] == BOX);
+		var boxesOnGoal = IntStream.range(0, table.length).noneMatch(i -> table[i] == BOX);
 		levelSolved = boxesOnGoal;
 
 		repaint();
@@ -416,7 +416,7 @@ public final class B extends GamePanel {
 	 * @param output the array to be filled
 	 */
 	private static void getData(String input, int index, int[] output) {
-		int counter = 0;
+		var counter = 0;
 		while (counter < output.length) {
 			output[counter] = input.charAt(index * output.length + counter) - 0x20;
 			counter++;

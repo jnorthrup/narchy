@@ -23,7 +23,7 @@ public class CraftingMenu extends Menu {
         this.recipes = new ArrayList<>(recipes);
         this.player = player;
 
-        for (int i = 0; i < recipes.size(); i++) {
+        for (var i = 0; i < recipes.size(); i++) {
             this.recipes.get(i).checkCanCraft(player);
         }
 
@@ -41,20 +41,20 @@ public class CraftingMenu extends Menu {
         if (input.up.clicked) selected--;
         if (input.down.clicked) selected++;
 
-        int len = recipes.size();
+        var len = recipes.size();
         if (len == 0) selected = 0;
         if (selected < 0) selected += len;
         if (selected >= len) selected -= len;
 
         if (input.attack.clicked && len > 0) {
-            Recipe r = recipes.get(selected);
+            var r = recipes.get(selected);
             r.checkCanCraft(player);
             if (r.canCraft) {
                 r.deductCost(player);
                 r.craft(player);
                 Sound.craft.play();
             }
-            for (int i = 0; i < recipes.size(); i++) {
+            for (var i = 0; i < recipes.size(); i++) {
                 recipes.get(i).checkCanCraft(player);
             }
         }
@@ -68,23 +68,23 @@ public class CraftingMenu extends Menu {
         renderItemList(screen, 0, 1, 11, 11, recipes, selected);
 
         if (!recipes.isEmpty()) {
-            Recipe recipe = recipes.get(selected);
-            int hasResultItems = player.inventory.count(recipe.resultTemplate);
-            int xo = 13 * 8;
+            var recipe = recipes.get(selected);
+            var hasResultItems = player.inventory.count(recipe.resultTemplate);
+            var xo = 13 * 8;
             screen.render(xo, 2 * 8, recipe.resultTemplate.getSprite(), recipe.resultTemplate.getColor(), 0);
             Font.draw(String.valueOf(hasResultItems), screen, xo + 8, 2 * 8, Color.get(-1, 555, 555, 555));
 
-            List<Item> costs = recipe.costs;
-            for (int i = 0; i < costs.size(); i++) {
-                Item item = costs.get(i);
-                int yo = (5 + i) * 8;
+            var costs = recipe.costs;
+            for (var i = 0; i < costs.size(); i++) {
+                var item = costs.get(i);
+                var yo = (5 + i) * 8;
                 screen.render(xo, yo, item.getSprite(), item.getColor(), 0);
-                int requiredAmt = 1;
+                var requiredAmt = 1;
                 if (item instanceof ResourceItem) {
                     requiredAmt = ((ResourceItem) item).count;
                 }
-                int has = player.inventory.count(item);
-                int color = Color.get(-1, 555, 555, 555);
+                var has = player.inventory.count(item);
+                var color = Color.get(-1, 555, 555, 555);
                 if (has < requiredAmt) {
                     color = Color.get(-1, 222, 222, 222);
                 }

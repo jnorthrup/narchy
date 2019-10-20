@@ -20,8 +20,8 @@ public class SquareHarmonicsVariableString extends VariableDeltaString {
 
     public void pluck() {
         clear();
-        int capacity = buffer.capacity();
-        for (int i = 0; i < capacity; i++) {
+        var capacity = buffer.capacity();
+        for (var i = 0; i < capacity; i++) {
             buffer.enqueue(getSample(i));
         }
         resetTics();
@@ -31,7 +31,7 @@ public class SquareHarmonicsVariableString extends VariableDeltaString {
     public void tic() {
         double first = buffer.dequeue();
         double second = buffer.peek();
-		double last = (first + second) * (deltaVolume / 2);
+        var last = (first + second) * (deltaVolume / 2);
         last = checkMax(last);
         buffer.enqueue(last);
         oneTic();
@@ -55,8 +55,8 @@ public class SquareHarmonicsVariableString extends VariableDeltaString {
     private double getSample(int index) {
         double position = index / buffer.capacity();
         double sample = 0;
-        for (Map.Entry<Integer, Double> integerDoubleEntry : harmonics.entrySet()) {
-            int lowHigh = lowHigh(integerDoubleEntry.getKey(), index);
+        for (var integerDoubleEntry : harmonics.entrySet()) {
+            var lowHigh = lowHigh(integerDoubleEntry.getKey(), index);
             double factor = integerDoubleEntry.getValue();
             if (lowHigh == 0) {
                 sample -= factor;
@@ -68,10 +68,10 @@ public class SquareHarmonicsVariableString extends VariableDeltaString {
     }
 
     private int lowHigh(int harmonic, int index) {
-        double position = (double) index / buffer.capacity();
-        double relPos = position * 2 * harmonic;
-        int floored = (int) Math.round(Math.floor(relPos));
-        int modded = floored % 2;
+        var position = (double) index / buffer.capacity();
+        var relPos = position * 2 * harmonic;
+        var floored = (int) Math.round(Math.floor(relPos));
+        var modded = floored % 2;
         return modded;
     }
 }

@@ -127,13 +127,13 @@ public class A extends Applet implements Runnable {
 							
 		g = (Graphics2D) getGraphics();
 
-        int _SMLSPRIT = 184;
+		var _SMLSPRIT = 184;
         buf = new BufferedImage[_SMLSPRIT];
 		bg = new Graphics2D[_SMLSPRIT];
 		for (i = 0; i < _SMLSPRIT; i++) {
-            int _SPECIAL = 151;
-            int _MIDSPRIT = 150;
-            int _BIGSPRIT = 10;
+			var _SPECIAL = 151;
+			var _MIDSPRIT = 150;
+			var _BIGSPRIT = 10;
             if (i < _BIGSPRIT)
 				buf[i] = new BufferedImage(800, 600, 2);
 			else if (i < _MIDSPRIT)
@@ -151,7 +151,7 @@ public class A extends Applet implements Runnable {
 			buf[MAP1T].setRGB(rand.nextInt(800), rand.nextInt(600), 0x00FFFFFF | (rand.nextInt(255) << 24));
 		}
 
-        int TMP = 151;
+		var TMP = 151;
         bg[TMP].setColor(WHITE);
 		bg[TMP].drawOval(12, 2, 8, 20);
 		bg[TMP].setColor(BLACK);
@@ -199,7 +199,7 @@ public class A extends Applet implements Runnable {
 		for (i = 0; i < 5; i++) {
 			bg[E_SHOOT + 2 * i].setColor(color[i][34]);
 			bg[E_SHOOT + 2 * i].fillOval(8, 4, 18, 24);
-            int e_SHOOT2 = 161;
+			var e_SHOOT2 = 161;
             bg[e_SHOOT2 + 2 * i].setColor(color[i][50]);
 			bg[e_SHOOT2 + 2 * i].fillOval(6, 6, 20, 20);
 			bg[e_SHOOT2 + 2 * i].setColor(WHITE);
@@ -286,7 +286,7 @@ public class A extends Applet implements Runnable {
 				firestatus2 = SHOOT2;
 		if (e.getID() == 502) 
 		{
-            int NOFIRE = 0;
+			var NOFIRE = 0;
             if (e.getButton() == 1)
 				firestatus1 = NOFIRE;
 			firestatus2 = NOFIRE;
@@ -304,10 +304,10 @@ public class A extends Applet implements Runnable {
     public void run() { 
 		while (r) {
 
-            int BKBUFFER = 0;
+			var BKBUFFER = 0;
             bg[BKBUFFER].setColor(BLACK);
 			bg[BKBUFFER].fillRect(0, 0, 800, 600);
-            long timer = System.nanoTime();
+			var timer = System.nanoTime();
 			frame++;
 			
 			if (dx > x + movespeed)
@@ -331,7 +331,7 @@ public class A extends Applet implements Runnable {
 			if (x < 0)
 				x = 0;
 
-            int MAP1 = 2;
+			var MAP1 = 2;
             clear(MAP1);
 			bg[MAP1].drawImage(buf[MAP1T], 0, 6, this);
 			for (i = 0; i < 12; i++)
@@ -340,10 +340,10 @@ public class A extends Applet implements Runnable {
 			bg[MAP1T].drawImage(buf[MAP1], null, this);
 			bg[BKBUFFER].drawImage(buf[MAP1], null, this);
 
-            int baselife = 18;
-			int addlife = 4;
-			int HOLDFIRE = 1;
-            final int GAMELOOSE = 3;
+			var baselife = 18;
+			var addlife = 4;
+			var HOLDFIRE = 1;
+            final var GAMELOOSE = 3;
             switch (gamestatus) {
 			case GAMESTART:
 				
@@ -391,7 +391,7 @@ public class A extends Applet implements Runnable {
 				rand.setSeed(10);
 				if (level == 1)
 					score = 0;
-				int energyboost = 16;
+				var energyboost = 16;
 				emax = 80 + energyboost * level;
 				movespeed = 8;
 				shootdmg = 8;
@@ -431,7 +431,7 @@ public class A extends Applet implements Runnable {
 								for (j = 0; j < 128; j++)
 									if (enemy[4][j] == 0) {
 										boss = (wave == lastwave);
-                                        int nextship = (boss ? (i < 7 && level != 1 ? level - 2 : level - 1) : rand
+										var nextship = (boss ? (i < 7 && level != 1 ? level - 2 : level - 1) : rand
                                                 .nextInt(level));
 										
 										enemy[0][j] = 50 * i;
@@ -440,7 +440,7 @@ public class A extends Applet implements Runnable {
 										enemy[3][j] = rand.nextInt(3) + 1;
 										enemy[4][j] = FOE + nextship;
 										enemy[6][j] = (boss ? 1 : 0);
-                                        int bossmul = 64;
+										var bossmul = 64;
                                         enemy[5][j] = (baselife + addlife * nextship) + (enemy[6][j] * bossmul * level);
 										enemy[7][j] = enemy[5][j];
 										break;
@@ -459,7 +459,7 @@ public class A extends Applet implements Runnable {
 				if (frame % regeneration_div == 0)
 					if (energy < emax)
 						energy++;
-				int firerate_div = 6;
+				var firerate_div = 6;
 				if (firestatus1 == HOLDFIRE && frame % firerate_div == 0)
 					firestatus1 = SHOOT1;
 				
@@ -530,7 +530,7 @@ public class A extends Applet implements Runnable {
 									break;
 								}
 							}
-                        int shootspeed = 10;
+						var shootspeed = 10;
                         firetable[_Y][i] -= shootspeed;
 						
 					} else if (firestatus1 == SHOOT1) {
@@ -550,7 +550,7 @@ public class A extends Applet implements Runnable {
 								l++;
 							if (chalenge > 300)
 								l++;
-                            int nextshoot = enemy[4][i] % 2;
+							var nextshoot = enemy[4][i] % 2;
 							for (j = 0; j < 128; j++)
 								if (enemy_fire[4][j] == 0) {
 									enemy_fire[0][j] = enemy[0][i];
@@ -572,7 +572,7 @@ public class A extends Applet implements Runnable {
 										enemy_fire[3][j] = l * d2;
 									}
 									enemy_fire[4][j] = E_SHOOT + enemy[4][i] - FOE;
-                                    int boss_dmg_div = 8;
+									var boss_dmg_div = 8;
                                     enemy_fire[5][j] = enemy[5][i] / (1 + enemy[6][i] * boss_dmg_div);
 									break;
 								}
@@ -692,8 +692,8 @@ public class A extends Applet implements Runnable {
 	
 	private void blur(int spriteIndex, int number) {
 
-		Kernel kernel = new Kernel(3, 3, BLUR);
-		ConvolveOp cop = new ConvolveOp(kernel);
+		var kernel = new Kernel(3, 3, BLUR);
+		var cop = new ConvolveOp(kernel);
 		for (j = 0; j < number; j++)
 			buf[spriteIndex] = cop.filter(buf[spriteIndex], null);
 		bg[spriteIndex] = (Graphics2D) buf[spriteIndex].getGraphics();
@@ -708,7 +708,7 @@ public class A extends Applet implements Runnable {
 
 	
 	private void makeexp(int picindex, int colorindex, int size) {
-		float[] lng = new float[300];
+		var lng = new float[300];
 		for (i = picindex; i < 10 + picindex; i++) {
 			for (j = 0; j < 300; j++) {
 				if (lng[j] == 0)

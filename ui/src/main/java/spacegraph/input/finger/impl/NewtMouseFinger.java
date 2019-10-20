@@ -23,7 +23,7 @@ public class NewtMouseFinger extends MouseFinger implements MouseListener, Windo
         super(MAX_BUTTONS);
         this.space = s;
 
-        JoglWindow win = s.video;
+        var win = s.video;
         win.addMouseListenerPre(this);
         win.addWindowListener(this);
         if (win.window.hasFocus())
@@ -34,7 +34,7 @@ public class NewtMouseFinger extends MouseFinger implements MouseListener, Windo
 
 
     private void updatePosition() {
-        JoglWindow win = space.video;
+        var win = space.video;
 
         float pmx = posEvent.x, pmy = win.getHeight() - posEvent.y;
 
@@ -86,7 +86,7 @@ public class NewtMouseFinger extends MouseFinger implements MouseListener, Windo
         if (e.isConsumed())
             return;
 
-        short[] bd = e.getButtonsDown();
+        var bd = e.getButtonsDown();
         for (int i = 0, bdLength = bd.length; i < bdLength; i++)
             bd[i] = (short) +bd[i];
 
@@ -101,7 +101,7 @@ public class NewtMouseFinger extends MouseFinger implements MouseListener, Windo
     public void mouseReleased(MouseEvent e) {
         if (e.isConsumed()) return;
 
-        short[] bd = e.getButtonsDown();
+        var bd = e.getButtonsDown();
         for (int i = 0, bdLength = bd.length; i < bdLength; i++)
             bd[i] = (short) -bd[i];
 

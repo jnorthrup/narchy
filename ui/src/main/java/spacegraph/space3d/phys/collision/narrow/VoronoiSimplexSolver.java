@@ -69,7 +69,7 @@ public class VoronoiSimplexSolver extends SimplexSolverInterface {
 	private boolean needsUpdate;
 	
 	{
-		for (int i=0; i<VORONOI_SIMPLEX_MAX_VERTS; i++) {
+		for (var i = 0; i<VORONOI_SIMPLEX_MAX_VERTS; i++) {
 			simplexVectorW[i] = new v3();
 			simplexPointsP[i] = new v3();
 			simplexPointsQ[i] = new v3();
@@ -117,24 +117,24 @@ public class VoronoiSimplexSolver extends SimplexSolverInterface {
                 cachedValidClosest = cachedBC.isValid();
                 break;
                 case 2:
-                v3 tmp = new v3();
-
-                
-                v3 from = simplexVectorW[0];
-                v3 to = simplexVectorW[1];
-                v3 nearest = new v3();
+					var tmp = new v3();
 
 
-                v3 diff = new v3();
+					var from = simplexVectorW[0];
+					var to = simplexVectorW[1];
+					var nearest = new v3();
+
+
+					var diff = new v3();
                 diff.setNegative(from);
 
-                v3 v = new v3();
+					var v = new v3();
                 v.sub(to, from);
 
-                float t = v.dot(diff);
+					var t = v.dot(diff);
 
                 if (t > 0) {
-                    float dotVV = v.dot(v);
+					var dotVV = v.dot(v);
                     if (t < dotVV) {
                         t /= dotVV;
                         tmp.scale(t, v);
@@ -172,18 +172,18 @@ public class VoronoiSimplexSolver extends SimplexSolverInterface {
                 cachedValidClosest = cachedBC.isValid();
                 break;
                 case 3:
-				{ 
-					v3 tmp1 = new v3();
-					v3 tmp2 = new v3();
-					v3 tmp3 = new v3();
+				{
+					var tmp1 = new v3();
+					var tmp2 = new v3();
+					var tmp3 = new v3();
 
-					
-					v3 p = new v3();
+
+					var p = new v3();
 					p.set(0f, 0f, 0f);
 
-					v3 a = simplexVectorW[0];
-					v3 b = simplexVectorW[1];
-					v3 c = simplexVectorW[2];
+					var a = simplexVectorW[0];
+					var b = simplexVectorW[1];
+					var c = simplexVectorW[2];
 
 					closestPtPointTriangle(p,a,b,c,cachedBC);
 
@@ -205,20 +205,20 @@ public class VoronoiSimplexSolver extends SimplexSolverInterface {
 					break; 
 				}
 			case 4:
-				v3 tmp1 = new v3();
-				v3 tmp2 = new v3();
-				v3 tmp3 = new v3();
-				v3 tmp4 = new v3();
+				var tmp1 = new v3();
+				var tmp2 = new v3();
+				var tmp3 = new v3();
+				var tmp4 = new v3();
 
-				v3 p = new v3();
+				var p = new v3();
 				p.set(0f, 0f, 0f);
 
-				v3 a = simplexVectorW[0];
-				v3 b = simplexVectorW[1];
-				v3 c = simplexVectorW[2];
-				v3 d = simplexVectorW[3];
+				var a = simplexVectorW[0];
+				var b = simplexVectorW[1];
+				var c = simplexVectorW[2];
+				var d = simplexVectorW[3];
 
-				boolean hasSeperation = closestPtPointTetrahedron(p,a,b,c,d,cachedBC);
+				var hasSeperation = closestPtPointTetrahedron(p,a,b,c,d,cachedBC);
 
 				if (hasSeperation)
                 {
@@ -269,18 +269,18 @@ public class VoronoiSimplexSolver extends SimplexSolverInterface {
 	private static boolean closestPtPointTriangle(v3 p, v3 a, v3 b, v3 c, SubSimplexClosestResult result) {
 		result.reset();
 
-		
-		v3 ab = new v3();
+
+		var ab = new v3();
 		ab.sub(b, a);
 
-		v3 ac = new v3();
+		var ac = new v3();
 		ac.sub(c, a);
 
-		v3 ap = new v3();
+		var ap = new v3();
 		ap.sub(p, a);
 
-		float d1 = ab.dot(ap);
-		float d2 = ac.dot(ap);
+		var d1 = ab.dot(ap);
+		var d2 = ac.dot(ap);
 
 		if (d1 <= 0f && d2 <= 0f) 
 		{
@@ -290,12 +290,12 @@ public class VoronoiSimplexSolver extends SimplexSolverInterface {
 			return true; 
 		}
 
-		
-		v3 bp = new v3();
+
+		var bp = new v3();
 		bp.sub(p, b);
 
-		float d3 = ab.dot(bp);
-		float d4 = ac.dot(bp);
+		var d3 = ab.dot(bp);
+		var d4 = ac.dot(bp);
 
 		if (d3 >= 0f && d4 <= d3) 
 		{
@@ -306,10 +306,10 @@ public class VoronoiSimplexSolver extends SimplexSolverInterface {
 			return true; 
 		}
 
-		
-		float vc = d1*d4 - d3*d2;
+
+		var vc = d1*d4 - d3*d2;
 		if (vc <= 0f && d1 >= 0f && d3 <= 0f) {
-			float v = d1 / (d1 - d3);
+			var v = d1 / (d1 - d3);
 			result.closestPointOnSimplex.scaleAdd(v, ab, a);
 			result.usedVertexA = true;
 			result.usedVertexB = true;
@@ -318,12 +318,12 @@ public class VoronoiSimplexSolver extends SimplexSolverInterface {
 			
 		}
 
-		
-		v3 cp = new v3();
+
+		var cp = new v3();
 		cp.sub(p, c);
 
-		float d5 = ab.dot(cp);
-		float d6 = ac.dot(cp);
+		var d5 = ab.dot(cp);
+		var d6 = ac.dot(cp);
 
 		if (d6 >= 0f && d5 <= d6) 
 		{
@@ -333,10 +333,10 @@ public class VoronoiSimplexSolver extends SimplexSolverInterface {
 			return true;
 		}
 
-		
-		float vb = d5*d2 - d1*d6;
+
+		var vb = d5*d2 - d1*d6;
 		if (vb <= 0f && d2 >= 0f && d6 <= 0f) {
-			float w = d2 / (d2 - d6);
+			var w = d2 / (d2 - d6);
 			result.closestPointOnSimplex.scaleAdd(w, ac, a);
 			result.usedVertexA = true;
 			result.usedVertexC = true;
@@ -345,13 +345,13 @@ public class VoronoiSimplexSolver extends SimplexSolverInterface {
 			
 		}
 
-		
-		float va = d3*d6 - d5*d4;
+
+		var va = d3*d6 - d5*d4;
 		if (va <= 0f && (d4 - d3) >= 0f && (d5 - d6) >= 0f) {
 
-			v3 tmp = new v3();
+			var tmp = new v3();
 			tmp.sub(c, b);
-			float w = (d4 - d3) / ((d4 - d3) + (d5 - d6));
+			var w = (d4 - d3) / ((d4 - d3) + (d5 - d6));
 			result.closestPointOnSimplex.scaleAdd(w, tmp, b);
 
 			result.usedVertexB = true;
@@ -361,15 +361,15 @@ public class VoronoiSimplexSolver extends SimplexSolverInterface {
 		   
 		}
 
-		
-		float denom = 1f / (va + vb + vc);
-		float v = vb * denom;
 
-		v3 tmp1 = new v3();
-		v3 tmp2 = new v3();
+		var denom = 1f / (va + vb + vc);
+		var v = vb * denom;
+
+		var tmp1 = new v3();
+		var tmp2 = new v3();
 
 		tmp1.scale(v, ab);
-		float w = vc * denom;
+		var w = vc * denom;
 		tmp2.scale(w, ac);
 		VectorUtil.add(result.closestPointOnSimplex, a, tmp1, tmp2);
 		result.usedVertexA = true;
@@ -385,18 +385,18 @@ public class VoronoiSimplexSolver extends SimplexSolverInterface {
 
 	private static int pointOutsideOfPlane(v3 p, v3 a, v3 b, v3 c, v3 d)
 	{
-		v3 tmp = new v3();
+		var tmp = new v3();
 
-		v3 normal = new v3();
+		var normal = new v3();
 		normal.sub(b, a);
 		tmp.sub(c, a);
 		normal.cross(normal, tmp);
 
 		tmp.sub(p, a);
-		float signp = tmp.dot(normal); 
+		var signp = tmp.dot(normal);
 
 		tmp.sub(d, a);
-		float signd = tmp.dot(normal); 
+		var signd = tmp.dot(normal);
 
 	
 
@@ -419,20 +419,20 @@ public class VoronoiSimplexSolver extends SimplexSolverInterface {
 	
 
 	private static boolean closestPtPointTetrahedron(v3 p, v3 a, v3 b, v3 c, v3 d, SubSimplexClosestResult finalResult) {
-		SubSimplexClosestResult tempResult = new SubSimplexClosestResult();
+		var tempResult = new SubSimplexClosestResult();
 		tempResult.reset();
 
-		v3 tmp = new v3();
-		v3 q = new v3();
+		var tmp = new v3();
+		var q = new v3();
 
 		
 		finalResult.closestPointOnSimplex.set(p);
 		finalResult.reset(true);
 
-		int pointOutsideABC = pointOutsideOfPlane(p, a, b, c, d);
-		int pointOutsideACD = pointOutsideOfPlane(p, a, c, d, b);
-		int pointOutsideADB = pointOutsideOfPlane(p, a, d, b, c);
-		int pointOutsideBDC = pointOutsideOfPlane(p, b, d, c, a);
+		var pointOutsideABC = pointOutsideOfPlane(p, a, b, c, d);
+		var pointOutsideACD = pointOutsideOfPlane(p, a, c, d, b);
+		var pointOutsideADB = pointOutsideOfPlane(p, a, d, b, c);
+		var pointOutsideBDC = pointOutsideOfPlane(p, b, d, c, a);
 
 		if (pointOutsideABC < 0 || pointOutsideACD < 0 || pointOutsideADB < 0 || pointOutsideBDC < 0) {
 			finalResult.degenerate = true;
@@ -444,14 +444,14 @@ public class VoronoiSimplexSolver extends SimplexSolverInterface {
 		}
 
 
-		float bestSqDist = Float.MAX_VALUE;
+		var bestSqDist = Float.MAX_VALUE;
 		
 		if (pointOutsideABC != 0) {
 			closestPtPointTriangle(p, a, b, c, tempResult);
 			q.set(tempResult.closestPointOnSimplex);
 
 			tmp.sub(q, p);
-			float sqDist = tmp.dot(tmp);
+			var sqDist = tmp.dot(tmp);
 			
 			if (sqDist < bestSqDist) {
 				bestSqDist = sqDist;
@@ -479,7 +479,7 @@ public class VoronoiSimplexSolver extends SimplexSolverInterface {
 			
 
 			tmp.sub(q, p);
-			float sqDist = tmp.dot(tmp);
+			var sqDist = tmp.dot(tmp);
 			if (sqDist < bestSqDist) {
 				bestSqDist = sqDist;
 				finalResult.closestPointOnSimplex.set(q);
@@ -506,7 +506,7 @@ public class VoronoiSimplexSolver extends SimplexSolverInterface {
 			
 
 			tmp.sub(q, p);
-			float sqDist = tmp.dot(tmp);
+			var sqDist = tmp.dot(tmp);
 			if (sqDist < bestSqDist) {
 				bestSqDist = sqDist;
 				finalResult.closestPointOnSimplex.set(q);
@@ -532,7 +532,7 @@ public class VoronoiSimplexSolver extends SimplexSolverInterface {
 			q.set(tempResult.closestPointOnSimplex);
 			
 			tmp.sub(q, p);
-			float sqDist = tmp.dot(tmp);
+			var sqDist = tmp.dot(tmp);
 			if (sqDist < bestSqDist) {
 				
 				finalResult.closestPointOnSimplex.set(q);
@@ -583,7 +583,7 @@ public class VoronoiSimplexSolver extends SimplexSolverInterface {
 		lastW.set(w);
 		needsUpdate = true;
 
-		int nv = this.numVertices;
+		var nv = this.numVertices;
 		simplexVectorW[nv].set(w);
 		simplexPointsP[nv].set(p);
 		simplexPointsQ[nv].set(q);
@@ -596,18 +596,18 @@ public class VoronoiSimplexSolver extends SimplexSolverInterface {
 	 */
 	@Override
 	public boolean closest(v3 v) {
-		boolean succes = updateClosestVectorAndPoints();
+		var succes = updateClosestVectorAndPoints();
 		v.set(cachedV);
 		return succes;
 	}
 
 	@Override
 	public float maxVertex() {
-		int numverts = numVertices();
-		float maxV = 0f;
-		v3[] vv = this.simplexVectorW;
-		for (int i = 0; i < numverts; i++) {
-			float curLen2 = vv[i].lengthSquared();
+		var numverts = numVertices();
+		var maxV = 0f;
+		var vv = this.simplexVectorW;
+		for (var i = 0; i < numverts; i++) {
+			var curLen2 = vv[i].lengthSquared();
 			if (maxV < curLen2) {
 				maxV = curLen2;
 			}
@@ -622,7 +622,7 @@ public class VoronoiSimplexSolver extends SimplexSolverInterface {
 
 	@Override
 	public int getSimplex(v3[] pBuf, v3[] qBuf, v3[] yBuf) {
-		for (int i = 0; i < numVertices(); i++) {
+		for (var i = 0; i < numVertices(); i++) {
 			yBuf[i].set(simplexVectorW[i]);
 			pBuf[i].set(simplexPointsP[i]);
 			qBuf[i].set(simplexPointsQ[i]);
@@ -632,12 +632,12 @@ public class VoronoiSimplexSolver extends SimplexSolverInterface {
 
 	@Override
 	public boolean inSimplex(v3 w) {
-		boolean found = false;
-		int numverts = numVertices();
+		var found = false;
+		var numverts = numVertices();
 		
 
 		
-		for (int i = 0; i < numverts; i++) {
+		for (var i = 0; i < numverts; i++) {
 			if (simplexVectorW[i].equals(w)) {
 				found = true;
 			}
@@ -707,7 +707,7 @@ public class VoronoiSimplexSolver extends SimplexSolverInterface {
 		}
 
 		boolean isValid() {
-            boolean valid = IntStream.of(0, 1, 2, 3).noneMatch(i -> (!(barycentricCoords[i] >= 0f)));
+			var valid = IntStream.of(0, 1, 2, 3).noneMatch(i -> (!(barycentricCoords[i] >= 0f)));
 			return valid;
 		}
 

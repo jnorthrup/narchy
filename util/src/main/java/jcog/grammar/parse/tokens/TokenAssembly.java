@@ -78,8 +78,8 @@ public class TokenAssembly extends Assembly {
 	 */
 	@Override
 	public String consumed(String delimiter) {
-		StringBuilder buf = new StringBuilder();
-		for (int i = 0; i < elementsConsumed(); i++) {
+		var buf = new StringBuilder();
+		for (var i = 0; i < elementsConsumed(); i++) {
 			if (i > 0) {
 				buf.append(delimiter);
 			}
@@ -148,8 +148,8 @@ public class TokenAssembly extends Assembly {
 	 */
 	@Override
 	public String remainder(String delimiter) {
-		StringBuilder buf = new StringBuilder();
-		for (int i = elementsConsumed(); i < tokenString.length(); i++) {
+		var buf = new StringBuilder();
+		for (var i = elementsConsumed(); i < tokenString.length(); i++) {
 
 			if (i > elementsConsumed()) {
 				buf.append(delimiter);

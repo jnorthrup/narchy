@@ -399,7 +399,7 @@ public abstract class Tuple4d implements java.io.Serializable, Cloneable {
     public boolean equals(Object t1) {
         try {
 
-            Tuple4d t2 = (Tuple4d) t1;
+            var t2 = (Tuple4d) t1;
             return (this.x == t2.x && this.y == t2.y &&
                     this.z == t2.z && this.w == t2.w);
         } catch (NullPointerException | ClassCastException e2) {
@@ -421,7 +421,7 @@ public abstract class Tuple4d implements java.io.Serializable, Cloneable {
      */
     public boolean epsilonEquals(Tuple4d t1, double epsilon) {
 
-        double diff = x - t1.x;
+        var diff = x - t1.x;
         if (Double.isNaN(diff)) return false;
         if ((diff < 0 ? -diff : diff) > epsilon) return false;
 
@@ -450,7 +450,7 @@ public abstract class Tuple4d implements java.io.Serializable, Cloneable {
      * @return the integer hash code value
      */
     public int hashCode() {
-        long bits = 1L;
+        var bits = 1L;
         bits = 31L * bits + VecMathUtil.doubleToLongBits(x);
         bits = 31L * bits + VecMathUtil.doubleToLongBits(y);
         bits = 31L * bits + VecMathUtil.doubleToLongBits(z);
@@ -693,7 +693,7 @@ public abstract class Tuple4d implements java.io.Serializable, Cloneable {
      * @param alpha the alpha interpolation parameter
      */
     public void interpolate(Tuple4d t1, double alpha) {
-        double s = 1 - alpha;
+        var s = 1 - alpha;
         this.x = s * this.x + alpha * t1.x;
         this.y = s * this.y + alpha * t1.y;
         this.z = s * this.z + alpha * t1.z;

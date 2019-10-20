@@ -92,8 +92,8 @@ public class SV_INIT {
      */
     public static void SV_CreateBaseline() {
 
-        for (int entnum = 1; entnum < GameBase.num_edicts; entnum++) {
-            edict_t svent = GameBase.g_edicts[entnum];
+        for (var entnum = 1; entnum < GameBase.num_edicts; entnum++) {
+            var svent = GameBase.g_edicts[entnum];
 
             if (!svent.inuse)
                 continue;
@@ -120,7 +120,7 @@ public class SV_INIT {
         if (Cvar.VariableValue("deathmatch") != 0)
             return;
 
-        String name = FS.Gamedir() + "/save/current/" + sv.name + ".sav";
+        var name = FS.Gamedir() + "/save/current/" + sv.name + ".sav";
         RandomAccessFile f;
         try {
             f = new RandomAccessFile(name, "r");
@@ -144,9 +144,9 @@ public class SV_INIT {
         if (!sv.loadgame) {
 
 
-            int previousState = sv.state;
+            var previousState = sv.state;
             sv.state = Defines.ss_loading; 
-            for (int i = 0; i < 100; i++)
+            for (var i = 0; i < 100; i++)
                 GameBase.G_RunFrame();
 
             sv.state = previousState; 
@@ -218,7 +218,7 @@ public class SV_INIT {
         sv.name = server;
         sv.configstrings[Defines.CS_NAME] = server;
 
-        int checksum = 0;
+        var checksum = 0;
         int[] iw = {checksum};
 
         if (serverstate != Defines.ss_game) {
@@ -331,7 +331,7 @@ public class SV_INIT {
 
         svs.spawncount = Lib.rand();        
         svs.clients = new client_t[(int) SV_MAIN.maxclients.value];
-        for (int n = 0; n < svs.clients.length; n++) {
+        for (var n = 0; n < svs.clients.length; n++) {
             svs.clients[n] = new client_t();
             svs.clients[n].serverindex = n;
         }
@@ -339,7 +339,7 @@ public class SV_INIT {
                 * Defines.UPDATE_BACKUP * 64; 
 
         svs.client_entities = new entity_state_t[svs.num_client_entities];
-        for (int n = 0; n < svs.client_entities.length; n++)
+        for (var n = 0; n < svs.client_entities.length; n++)
             svs.client_entities[n] = new entity_state_t(null);
 
         
@@ -347,14 +347,14 @@ public class SV_INIT {
 
         
         svs.last_heartbeat = -99999;
-        String idmaster = "192.246.40.37:" + Defines.PORT_MASTER;
+        var idmaster = "192.246.40.37:" + Defines.PORT_MASTER;
         NET.StringToAdr(idmaster, SV_MAIN.master_adr[0]);
 
         
         SV_GAME.SV_InitGameProgs();
 
-        for (int i = 0; i < SV_MAIN.maxclients.value; i++) {
-            edict_t ent = GameBase.g_edicts[i + 1];
+        for (var i = 0; i < SV_MAIN.maxclients.value; i++) {
+            var ent = GameBase.g_edicts[i + 1];
             svs.clients[i].edict = ent;
             svs.clients[i].lastcmd = new usercmd_t();
         }
@@ -386,11 +386,10 @@ public class SV_INIT {
         if (sv.state == Defines.ss_dead && !sv.loadgame)
             SV_InitGame();
 
-        String level = levelstring;
+        var level = levelstring;
 
-        
 
-        int c = level.indexOf('+');
+        var c = level.indexOf('+');
         if (c != -1) {
             Cvar.Set("nextserver", "gamemap \"" + level.substring(c + 1) + '"');
             level = level.substring(0, c);
@@ -401,10 +400,10 @@ public class SV_INIT {
         
         if (firstmap.length() == 0)
         {
-            boolean b = Stream.of(".cin", ".pcx", ".dm2").noneMatch(levelstring::endsWith);
+            var b = Stream.of(".cin", ".pcx", ".dm2").noneMatch(levelstring::endsWith);
             if (b)
         	{
-        		int pos = levelstring.indexOf('+');
+                var pos = levelstring.indexOf('+');
         		firstmap = levelstring.substring(pos + 1);
         	}
         }
@@ -413,8 +412,8 @@ public class SV_INIT {
         if (Cvar.VariableValue("coop") != 0 && "victory.pcx".equals(level))
             Cvar.Set("nextserver", "gamemap \"*" + firstmap + '"');
 
-        
-        int pos = level.indexOf('$');
+
+        var pos = level.indexOf('$');
         String spawnpoint;
         if (pos != -1) {
             spawnpoint = level.substring(pos + 1);
@@ -427,7 +426,7 @@ public class SV_INIT {
         if (level.charAt(0) == '*')
             level = level.substring(1);
 
-        int l = level.length();
+        var l = level.length();
         if (l > 4 && level.endsWith(".cin")) {
             SCR.BeginLoadingPlaque(); 
             SV_SEND.SV_BroadcastCommand("changing\n");

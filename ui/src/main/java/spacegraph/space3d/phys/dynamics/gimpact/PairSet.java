@@ -40,7 +40,7 @@ class PairSet {
 	
 	public PairSet() {
 		array = new Pair[32];
-		for (int i=0; i<array.length; i++) {
+		for (var i = 0; i<array.length; i++) {
 			array[i] = new Pair();
 		}
 	}
@@ -60,8 +60,8 @@ class PairSet {
 	
 	@SuppressWarnings("unchecked")
 	private void expand() {
-		int bound = array.length << 1;
-		Pair[] newArray = IntStream.range(array.length, bound).mapToObj(i -> new Pair()).toArray(Pair[]::new);
+		var bound = array.length << 1;
+		var newArray = IntStream.range(array.length, bound).mapToObj(i -> new Pair()).toArray(Pair[]::new);
         System.arraycopy(array, 0, newArray, 0, array.length);
 		array = newArray;
 	}

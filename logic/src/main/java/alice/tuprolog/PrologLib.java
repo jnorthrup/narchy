@@ -126,14 +126,14 @@ public abstract class PrologLib implements Serializable {
     protected Term evalExpression(Term term) throws Throwable {
         if (term == null)
             return null;
-        Term val = term.term();
+        var val = term.term();
         if (val instanceof Struct) {
-            Struct t = (Struct) val;
-            boolean primitive = t.isPrimitive();
+            var t = (Struct) val;
+            var primitive = t.isPrimitive();
             if (!primitive && term != t) {
                 prolog.prims.identify(t, FUNCTOR);
             } else if (primitive) {
-                PrologPrim bt = t.getPrimitive();
+                var bt = t.getPrimitive();
                 if ((bt.type == FUNCTOR)) 
                     return bt.evalAsFunctor(t);
             }
@@ -170,19 +170,19 @@ public abstract class PrologLib implements Serializable {
      */
     public Map<Integer,List<PrologPrim>> primitives() {
         try {
-            java.lang.reflect.Method[] mlist = this.getClass().getMethods();
+            var mlist = this.getClass().getMethods();
             Map<Integer,List<PrologPrim>> mapPrimitives = new HashMap<>();
             mapPrimitives.put(PrologPrim.DIRECTIVE, new FasterList<>());
             mapPrimitives.put(FUNCTOR, new FasterList<>());
             mapPrimitives.put(PrologPrim.PREDICATE, new FasterList<>());
 
 
-            for (Method aMlist : mlist) {
-                String name = aMlist.getName();
+            for (var aMlist : mlist) {
+                var name = aMlist.getName();
 
-                Class<?>[] clist = aMlist.getParameterTypes();
-                Class<?> rclass = aMlist.getReturnType();
-                String returnTypeName = rclass.getName();
+                var clist = aMlist.getParameterTypes();
+                var rclass = aMlist.getReturnType();
+                var returnTypeName = rclass.getName();
 
                 int type;
                 switch (returnTypeName) {
@@ -199,23 +199,23 @@ public abstract class PrologLib implements Serializable {
                         continue;
                 }
 
-                int index = name.lastIndexOf('_');
+                var index = name.lastIndexOf('_');
                 if (index != -1) {
                     try {
-                        int arity = Integer.parseInt(name.substring(index + 1));
+                        var arity = Integer.parseInt(name.substring(index + 1));
 
                         if (clist.length == arity) {
-                            boolean valid = IntStream.range(0, arity).allMatch(j -> Term.class.isAssignableFrom(clist[j]));
+                            var valid = IntStream.range(0, arity).allMatch(j -> Term.class.isAssignableFrom(clist[j]));
                             if (valid) {
-                                String rawName = name.substring(0, index);
-                                String key = rawName + '/' + arity;
-                                PrologPrim prim = new PrologPrim(type, key, this, aMlist, arity);
+                                var rawName = name.substring(0, index);
+                                var key = rawName + '/' + arity;
+                                var prim = new PrologPrim(type, key, this, aMlist, arity);
                                 mapPrimitives.get(type).add(prim);
 
 
                                 if (synonyms != null) {
                                     String[] stringFormat = {"directive", "predicate", "functor"};
-                                    for (String[] map : synonyms) {
+                                    for (var map : synonyms) {
                                         if (map[1].equals(rawName) && map[2].equals(stringFormat[type])) {
                                             key = map[0] + '/' + arity;
                                             prim = new PrologPrim(type, key, this, aMlist, arity);

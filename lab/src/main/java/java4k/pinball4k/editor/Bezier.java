@@ -37,19 +37,18 @@ public class Bezier extends LevelObject {
 		float y1 = p2.y;
 		float x2 = p3.x;
 		float y2 = p3.y;
-		
-		
-		
-		float prevx = x0;
-		float prevy = y0;
-		for (int i=1; i<=subdivs; i++) {
-			float t = i / (float) (subdivs);
-			float t2 = t*t;
-			float tinv = 1-t;
-			float tinv2 = tinv*tinv;
-			
-			float x = tinv2 * x0 + 2*t*tinv*x1 + t2*x2; 
-			float y = tinv2 * y0 + 2*t*tinv*y1 + t2*y2;
+
+
+		var prevx = x0;
+		var prevy = y0;
+		for (var i = 1; i<=subdivs; i++) {
+			var t = i / (float) (subdivs);
+			var t2 = t*t;
+			var tinv = 1-t;
+			var tinv2 = tinv*tinv;
+
+			var x = tinv2 * x0 + 2*t*tinv*x1 + t2*x2;
+			var y = tinv2 * y0 + 2*t*tinv*y1 + t2*y2;
 			g.drawLine((int) prevx, (int) prevy, (int) x, (int) y);
 			prevx = x;
 			prevy = y;
@@ -57,12 +56,12 @@ public class Bezier extends LevelObject {
 	}	
 	
 	public Point2D.Float interpolate(float t) {
-		float t2 = t*t;
-		float tinv = 1-t;
-		float tinv2 = tinv*tinv;
-		
-		float x = tinv2 * p.x + 2*t*tinv*p2.x + t2*p3.x; 
-		float y = tinv2 * p.y + 2*t*tinv*p2.y + t2*p3.y;
+		var t2 = t*t;
+		var tinv = 1-t;
+		var tinv2 = tinv*tinv;
+
+		var x = tinv2 * p.x + 2*t*tinv*p2.x + t2*p3.x;
+		var y = tinv2 * p.y + 2*t*tinv*p2.y + t2*p3.y;
 		return new Point2D.Float(x, y);
 	}
 	

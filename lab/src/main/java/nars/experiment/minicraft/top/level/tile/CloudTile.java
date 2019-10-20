@@ -18,18 +18,18 @@ public class CloudTile extends Tile {
 
     @Override
     public void render(Screen screen, Level level, int x, int y) {
-        int col = Color.get(444, 444, 555, 555);
-        int transitionColor = Color.get(333, 444, 555, -1);
+        var col = Color.get(444, 444, 555, 555);
+        var transitionColor = Color.get(333, 444, 555, -1);
 
-        boolean u = level.getTile(x, y - 1) == Tile.infiniteFall;
-        boolean d = level.getTile(x, y + 1) == Tile.infiniteFall;
-        boolean l = level.getTile(x - 1, y) == Tile.infiniteFall;
-        boolean r = level.getTile(x + 1, y) == Tile.infiniteFall;
+        var u = level.getTile(x, y - 1) == Tile.infiniteFall;
+        var d = level.getTile(x, y + 1) == Tile.infiniteFall;
+        var l = level.getTile(x - 1, y) == Tile.infiniteFall;
+        var r = level.getTile(x + 1, y) == Tile.infiniteFall;
 
-        boolean ul = level.getTile(x - 1, y - 1) == Tile.infiniteFall;
-        boolean dl = level.getTile(x - 1, y + 1) == Tile.infiniteFall;
-        boolean ur = level.getTile(x + 1, y - 1) == Tile.infiniteFall;
-        boolean dr = level.getTile(x + 1, y + 1) == Tile.infiniteFall;
+        var ul = level.getTile(x - 1, y - 1) == Tile.infiniteFall;
+        var dl = level.getTile(x - 1, y + 1) == Tile.infiniteFall;
+        var ur = level.getTile(x + 1, y - 1) == Tile.infiniteFall;
+        var dr = level.getTile(x + 1, y + 1) == Tile.infiniteFall;
 
         if (!u && !l) {
             if (!ul)
@@ -66,12 +66,12 @@ public class CloudTile extends Tile {
     @Override
     public boolean interact(Level level, int xt, int yt, Player player, Item item, int attackDir) {
         if (item instanceof ToolItem) {
-            ToolItem tool = (ToolItem) item;
+            var tool = (ToolItem) item;
             if (tool.type == ToolType.shovel) {
                 if (player.payStamina(5)) {
 
-                    int count = random.nextInt(2) + 1;
-                    for (int i = 0; i < count; i++) {
+                    var count = random.nextInt(2) + 1;
+                    for (var i = 0; i < count; i++) {
                         level.add(new ItemEntity(new ResourceItem(Resource.cloud), xt * 16 + random.nextInt(10) + 3, yt * 16 + random.nextInt(10) + 3));
                     }
                     return true;

@@ -45,8 +45,8 @@ public class DiversityElitarismStrategy extends DefaultStrategy{
     
     @Override
     protected void readParameters(Configuration configuration) {
-        super.readParameters(configuration); 
-         Map<String, String> parameters = configuration.getStrategyParameters();
+        super.readParameters(configuration);
+        var parameters = configuration.getStrategyParameters();
         if (parameters != null) {
             
             if (parameters.containsKey("deepDiversity")) {
@@ -57,8 +57,8 @@ public class DiversityElitarismStrategy extends DefaultStrategy{
     
     @Override
     protected void evolve() {
-        int popSize = population.size();
-        int oldPopSize = (int) (popSize * 0.9); 
+        var popSize = population.size();
+        var oldPopSize = (int) (popSize * 0.9);
 
         List<Node> newPopulation = new UniqueList<>(popSize);
         
@@ -67,50 +67,48 @@ public class DiversityElitarismStrategy extends DefaultStrategy{
         }
 
 
-        boolean allPerfect = Arrays.stream(rankings.first().getFitness()).noneMatch(fitness -> Math.round(fitness * 10000) != 0);
+        var allPerfect = Arrays.stream(rankings.first().getFitness()).noneMatch(fitness -> Math.round(fitness * 10000) != 0);
         if (allPerfect) {
                 return;
             }
 
 
+        var stepPopSize = deepDiversity? popSize+oldPopSize : oldPopSize;
+
+        var rng = context.getRandom();
+        var crossoverProb = param.getCrossoverProbability();
+        var sel = this.selection;
+        var r = this.rankings;
 
 
-        int stepPopSize = deepDiversity? popSize+oldPopSize : oldPopSize;
-
-        Random rng = context.getRandom();
-        float crossoverProb = param.getCrossoverProbability();
-        Selection sel = this.selection;
-        TreeSet<Ranking> r = this.rankings;
-
-
-        Ranking[] rr = r.toArray(new Ranking[0]);
+        var rr = r.toArray(new Ranking[0]);
 
 
         while (newPopulation.size() < stepPopSize) {
 
-            double random = rng.nextDouble();
+            var random = rng.nextDouble();
 
             if (random <= crossoverProb && oldPopSize - newPopulation.size() >= 2) {
-                Node selectedA = sel.select(rr);
-                Node selectedB = sel.select(rr);
+                var selectedA = sel.select(rr);
+                var selectedB = sel.select(rr);
 
-                Twin<Node> newIndividuals = variation.crossover(selectedA, selectedB, maxCrossoverTries);
+                var newIndividuals = variation.crossover(selectedA, selectedB, maxCrossoverTries);
                 if (newIndividuals != null) {
                     newPopulation.add(newIndividuals.getOne());
                     newPopulation.add(newIndividuals.getTwo());
                 }
             } else if (random <= crossoverProb + param.getMutationPobability()) {
-                Node mutant = sel.select(rr);
+                var mutant = sel.select(rr);
                 mutant = variation.mutate(mutant);
                 newPopulation.add(mutant);
             } else {
-                Node duplicated = sel.select(rr);
+                var duplicated = sel.select(rr);
                 newPopulation.add(duplicated);
             }
         }
 
         Generation ramped = new Ramped(maxDepth, context);
-        List<Node> generated = ramped.generate(popSize - oldPopSize);
+        var generated = ramped.generate(popSize - oldPopSize);
         newPopulation.addAll(generated);
         
         if(!deepDiversity){
@@ -121,14 +119,14 @@ public class DiversityElitarismStrategy extends DefaultStrategy{
         MutableMap<Node,double[]> remaining = new UnifiedMap(newPopulation.size());
         eachRankings(newPopulation, objective, remaining);
 
-        int maxPopulation = param.getPopulationSize();
-        int nextPopSize =
+        var maxPopulation = param.getPopulationSize();
+        var nextPopSize =
                 Math.min( remaining.size(),
                           maxPopulation ); 
 
         do {
 
-            MutableMap<Node, double[]> nextRemaining = Utils.getFirstParetoFront(remaining, nextPopSize);
+            var nextRemaining = Utils.getFirstParetoFront(remaining, nextPopSize);
 
             if (nextRemaining == null) break;
 

@@ -272,10 +272,10 @@ public class AxisAngle4f implements java.io.Serializable, Cloneable {
      * @param q1 the Quat4f
      */
     public final void set(Quaternion q1, boolean angle) {
-        float qz = q1.getZ();
-        float qy = q1.getY() * q1.getY();
-        float qx = q1.getX() * q1.getX();
-        float mag = qx + qy + qz * qz;
+        var qz = q1.getZ();
+        var qy = q1.getY() * q1.getY();
+        var qx = q1.getX() * q1.getX();
+        var mag = qx + qy + qz * qz;
 
         if (mag > EPS) {
             mag = (float)Math.sqrt(mag);
@@ -481,7 +481,7 @@ public class AxisAngle4f implements java.io.Serializable, Cloneable {
      */
     public boolean equals(Object o1) {
         try {
-            AxisAngle4f a2 = (AxisAngle4f) o1;
+            var a2 = (AxisAngle4f) o1;
             return (this.x == a2.x && this.y == a2.y && this.z == a2.z
                     && this.angle == a2.angle);
         } catch (NullPointerException | ClassCastException e2) {
@@ -502,7 +502,7 @@ public class AxisAngle4f implements java.io.Serializable, Cloneable {
      */
     public boolean epsilonEquals(AxisAngle4f a1, float epsilon) {
 
-        float diff = x - a1.x;
+        var diff = x - a1.x;
         if ((diff < 0 ? -diff : diff) > epsilon) return false;
 
         diff = y - a1.y;
@@ -527,7 +527,7 @@ public class AxisAngle4f implements java.io.Serializable, Cloneable {
      * @return the integer hash code value
      */
     public int hashCode() {
-        long bits = 1L;
+        var bits = 1L;
         bits = 31L * bits + VecMathUtil.floatToIntBits(x);
         bits = 31L * bits + VecMathUtil.floatToIntBits(y);
         bits = 31L * bits + VecMathUtil.floatToIntBits(z);

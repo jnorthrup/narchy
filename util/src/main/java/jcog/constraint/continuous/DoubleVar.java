@@ -21,7 +21,7 @@ public class DoubleVar implements DoubleSupplier {
     }
 
     public boolean valueIfChanged(double next, double tolerance) {
-        double prev = this.value;
+        var prev = this.value;
         if (!Util.equals(prev, next, tolerance)) {
             this.value = next;
             return true;

@@ -141,11 +141,11 @@ public class VerletSpring2D {
      * @param applyConstraints
      */
     public final boolean update(boolean applyConstraints) {
-        float am = a.mass;
+        var am = a.mass;
         if (am != am)
             return false; //a deleted
 
-        float bm = b.mass;
+        var bm = b.mass;
         if (bm != bm)
             return false; // b deleted
 
@@ -154,13 +154,13 @@ public class VerletSpring2D {
     }
 
     protected void updateSpring(boolean applyConstraints, float am, float bm) {
-        Vec2D delta = b.sub(a);
+        var delta = b.sub(a);
         // add minute offset to avoid div-by-zero errors
-        float dist = delta.magnitude() + EPS;
-        float aInvMass = 1/ am;
+        var dist = delta.magnitude() + EPS;
+        var aInvMass = 1/ am;
 
-        float bInvMass = 1/ bm;
-        float normDistStrength = (dist - restLength)
+        var bInvMass = 1/ bm;
+        var normDistStrength = (dist - restLength)
                 / (dist * (aInvMass + bInvMass)) * strength;
         if (!a.isLocked && !isALocked) {
             a.next.addSelf(delta.scale(normDistStrength * aInvMass));

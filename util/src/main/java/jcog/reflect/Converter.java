@@ -46,9 +46,9 @@ public class Converter<X,Y> extends MutableWeightedCaster<X,Y> implements Priori
     protected Function F;
 
     public static <X,Y> Converter<X,Y> the(Path<Class, Function> path) {
-        int steps = path.nodeCount();
-        FasterList<Function> functions = new FasterList<>(steps);
-        for (FromTo<jcog.data.graph.Node<Class, Function>, Function> ed : path.fetch(0, steps)) {
+        var steps = path.nodeCount();
+        var functions = new FasterList<Function>(steps);
+        for (var ed : path.fetch(0, steps)) {
             if (ed != null) {
                 functions.add(ed.id());
             }
@@ -64,11 +64,11 @@ public class Converter<X,Y> extends MutableWeightedCaster<X,Y> implements Priori
                 this.functionsArray = new Function[] { this.F = functions.get(0) };
                 break;
             default: {
-                Function[] ff = functions.toArrayRecycled(Function[]::new);
+                var ff = functions.toArrayRecycled(Function[]::new);
                 this.functionsArray = ff;
                 this.F = (x) -> {
-                    Object y = x;
-                    for (Function f : ff)
+                    var y = x;
+                    for (var f : ff)
                         y = f.apply(y);
 
                     return y;
@@ -82,7 +82,7 @@ public class Converter<X,Y> extends MutableWeightedCaster<X,Y> implements Priori
 //            this.convertors.addAt(ed.getEdge());
 //        });
 
-        for (Function c : functions) {
+        for (var c : functions) {
             if (c instanceof WeightChangeSender) {
                 WeightChangeListener listener = event -> {
                     Double oldw = Converter.this.weight;
@@ -108,13 +108,13 @@ public class Converter<X,Y> extends MutableWeightedCaster<X,Y> implements Priori
 
     @Override
     public double weight() {
-        double weight = this.weight;
+        var weight = this.weight;
         if (weight==weight) return weight;
 
         double w = 0;
-        for (Function conv : functionsArray) {
+        for (var conv : functionsArray) {
             if (conv instanceof PrioritizedDouble) {
-                double wc = ((PrioritizedDouble) conv).weight();
+                var wc = ((PrioritizedDouble) conv).weight();
                 w += wc == wc ? wc : defaultItemWeight;
             } else {
                 w += defaultItemWeight;
@@ -128,12 +128,12 @@ public class Converter<X,Y> extends MutableWeightedCaster<X,Y> implements Priori
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
+        var sb = new StringBuilder();
         Object w = weight();
         sb.append("Sequence");
         sb.append(" w=").append(w);
         sb.append(" {");
-        int i = -1;
+        var i = -1;
         for (Object conv : getConvertors()) {
             i++;
             Object wc = defaultItemWeight;

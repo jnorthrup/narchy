@@ -45,7 +45,7 @@ public enum ConjMatch { ;
 
         event = Image.imageNormalize(event);
 
-        int varBits = ConjMatch.varBits;
+        var varBits = ConjMatch.varBits;
         if (!Term.commonStructure( event.structure()&(~varBits), conj.subStructure()&(~varBits)))
             return Null;
 
@@ -55,15 +55,15 @@ public enum ConjMatch { ;
 
     private static Term beforeOrAfterSeq(Term conj, Term event, boolean includeBefore, boolean includeMatched, boolean includeAfter, int varBits, UnifyTransform s, int ttl) {
 
-        boolean eVar = event.hasAny(varBits);
-        boolean unify = eVar || conj.hasAny(varBits);
+        var eVar = event.hasAny(varBits);
+        var unify = eVar || conj.hasAny(varBits);
 
         if (!unify && (!(event instanceof Compound) || event.opID()!=CONJ.id)) {
             if (!Conj.isSeq(conj)) {
                 if (!includeMatched) {
                     //simple parallel remove match case
-                    Subterms cs = conj.subterms();
-                    Subterms csNext = cs.remove(event);
+                    var cs = conj.subterms();
+                    var csNext = cs.remove(event);
                     if (csNext==cs)
                         return Null;
                     return cs != csNext ? (csNext.subs() > 1 ? CONJ.the(csNext) : csNext.sub(0)) : Null;
@@ -76,21 +76,21 @@ public enum ConjMatch { ;
         }
 
         //TODO only include events that actually can be returned
-        ConjList seq = ConjList.events(conj);
+        var seq = ConjList.events(conj);
 
-        int n = seq.size();
+        var n = seq.size();
 
 
-        MetalBitSet matches = includeMatched ? null : MetalBitSet.bits(n); //only necessary if they are to be removed
+        var matches = includeMatched ? null : MetalBitSet.bits(n); //only necessary if they are to be removed
         s.clear(varBits, false);
         s.setTTL(ttl);
 
-        boolean forward = (includeAfter != includeBefore) ? includeAfter : ThreadLocalRandom.current().nextBoolean();
+        var forward = (includeAfter != includeBefore) ? includeAfter : ThreadLocalRandom.current().nextBoolean();
 
-        ConjList ee = ConjList.events(event);
-        EventUnifier u = unify ? new EventUnifier(s) : null;
+        var ee = ConjList.events(event);
+        var u = unify ? new EventUnifier(s) : null;
 
-        int[] at = seq.contains(ee, unify ? u : Term::equals, 1, forward, matches, s.dtTolerance);
+        var at = seq.contains(ee, unify ? u : Term::equals, 1, forward, matches, s.dtTolerance);
         if (at.length == 0)
             return Null;
 
@@ -106,7 +106,7 @@ public enum ConjMatch { ;
             seq.removeIf((w,x)-> w > matchStart);
 
 
-        Term ss = seq.term();
+        var ss = seq.term();
         if (u!=null && ss.hasAny(varBits)) {
             ss = u.apply(ss); //transform any unified vars
             if (u.u instanceof UniSubst.MyUnifyTransform)

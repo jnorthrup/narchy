@@ -49,7 +49,7 @@ public class RdpMenu extends MenuBar {
     public RdpMenu(RdesktopFrame parent) {
         this.parent = parent;
 
-        Menu m = new Menu("File");
+        var m = new Menu("File");
         m.add(new MenuItem("Exit"));
         this.add(m);
 

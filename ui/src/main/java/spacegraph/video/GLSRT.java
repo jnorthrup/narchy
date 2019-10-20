@@ -170,7 +170,7 @@ public class GLSRT {
 		@Override
 		public boolean equals(Object obj) {
 			if (!(obj instanceof SphereKey)) return false;
-			SphereKey other = (SphereKey)obj;
+			var other = (SphereKey)obj;
 			return radius == other.radius;
 		}
 
@@ -189,7 +189,7 @@ public class GLSRT {
             sphere.setImmMode(!VBO_CACHE);
         }
 		sphereKey.radius = radius;
-		ImmModeSink vbo = sphereDisplayLists.get(sphereKey);
+		var vbo = sphereDisplayLists.get(sphereKey);
 		if (vbo == null) {
 			glu.gluSphere(sphere, radius, 8, 8);
             if(VBO_CACHE) {
@@ -226,14 +226,14 @@ public class GLSRT {
 		@Override
 		public boolean equals(Object obj) {
 			if (!(obj instanceof CylinderKey)) return false;
-			CylinderKey other = (CylinderKey) obj;
+			var other = (CylinderKey) obj;
 			if (radius != other.radius) return false;
             return halfHeight == other.halfHeight;
         }
 
 		@Override
 		public int hashCode() {
-			int hash = 7;
+			var hash = 7;
 			hash = 23 * hash + Float.floatToIntBits(radius);
 			hash = 23 * hash + Float.floatToIntBits(halfHeight);
 			return hash;
@@ -270,7 +270,7 @@ public class GLSRT {
 		
 
 		cylinderKey.set(radius, halfHeight);
-		ImmModeSink vbo = cylinderDisplayLists.get(cylinderKey);
+		var vbo = cylinderDisplayLists.get(cylinderKey);
 		if (vbo == null) {
 			glu.gluQuadricDrawStyle(cylinder, GLU.GLU_FILL);
 			glu.gluQuadricNormals(cylinder, GLU.GLU_SMOOTH);

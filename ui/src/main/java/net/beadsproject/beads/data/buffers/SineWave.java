@@ -20,10 +20,10 @@ public class SineWave extends WaveFactory {
      */
     @Override
     public ArrayTensor get(int bufferSize) {
-        int size = bufferSize;
-        ArrayTensor b = new ArrayTensor(size);
-        float[] bd = b.data;
-        for (int i = 0; i < bufferSize; i++) {
+        var size = bufferSize;
+        var b = new ArrayTensor(size);
+        var bd = b.data;
+        for (var i = 0; i < bufferSize; i++) {
             bd[i] = (float) Math.sin(2.0 * Math.PI * i / bufferSize);
         }
         return b;

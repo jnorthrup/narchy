@@ -13,7 +13,7 @@ public class Connection<N extends Centroid>  {
     public Connection(N from, N to) {
         
         if (from.id > to.id) {
-            N t = to;
+            var t = to;
             to = from;
             from = t;
         }
@@ -28,7 +28,7 @@ public class Connection<N extends Centroid>  {
     @Override
     public final boolean equals(Object obj) {
         if (obj == this) return true;
-        Connection c = (Connection)obj;
+        var c = (Connection)obj;
         return (from.id == c.from.id && to.id == c.to.id);
     }
 

@@ -54,7 +54,7 @@ public class AnimVector2f extends v2 implements Animated {
     }
 
     private void interpLERP(float dt) {
-        float rate = Util.unitize(speed.floatValue() * dt);
+        var rate = Util.unitize(speed.floatValue() * dt);
         super.set(
                 Util.lerp(rate, x, target.x),
                 Util.lerp(rate, y, target.y)
@@ -70,7 +70,7 @@ public class AnimVector2f extends v2 implements Animated {
 
     @Override
     public v2 set(float x, float y) {
-        float px = this.x;
+        var px = this.x;
         if (px != px || x!=x)
             super.set(x, y); 
 

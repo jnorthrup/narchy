@@ -90,21 +90,21 @@ public abstract class TruthProjection extends TaskList {
 	}
 
 	public static @Nullable Task merge(Supplier<Task[]> tasks, Term x, Truth t, Supplier<long[]> stamp, boolean beliefOrGoal, long start, long end, NAL n) {
-		Term y = Task.taskTerm(x, beliefOrGoal ? BELIEF : GOAL, !NAL.test.DEBUG_EXTRA);
+		var y = Task.taskTerm(x, beliefOrGoal ? BELIEF : GOAL, !NAL.test.DEBUG_EXTRA);
 		if (y == null)
 			return null;
 
 		Truth T;
-		boolean neg = y instanceof Neg;
+		var neg = y instanceof Neg;
 		if (neg) {
 			y = y.unneg();
 			T = t.neg();
 		} else
 			T = t;
 
-		Task[] tt = tasks.get();
+		var tt = tasks.get();
 		if (tt.length == 1) {
-			Task only = tt[0];
+			var only = tt[0];
 
 			//wrap the only task wtih Special proxy task
 			if (only.start() == start && only.end() == end && only.truth().equals(T))
@@ -117,7 +117,7 @@ public abstract class TruthProjection extends TaskList {
 
 		}
 
-		DynamicTruthTask z = new DynamicTruthTask(
+		var z = new DynamicTruthTask(
 			y, beliefOrGoal,
 			(T instanceof MutableTruth) ? ((MutableTruth)T).clone() : T,
 			n, start, end,
@@ -153,7 +153,7 @@ public abstract class TruthProjection extends TaskList {
 	public abstract @Nullable Truth get(double eviMin, boolean dither, NAL nar);
 
 	private boolean update(int i) {
-		Task t = items[i];
+		var t = items[i];
 		return sane(evi[i] = evi(t));
 	}
 
@@ -167,7 +167,7 @@ public abstract class TruthProjection extends TaskList {
 	 * should be called after all entries are added
 	 */
 	public final boolean commit(boolean shrink, NAL n) {
-		int s = size;
+		var s = size;
 		if (s < minComponents) return false;
 
 		//quick short-circuiting 2-ary test for overlap
@@ -181,7 +181,7 @@ public abstract class TruthProjection extends TaskList {
 			}
 		}
 
-		int r = refocus(shrink);
+		var r = refocus(shrink);
 		if (r < minComponents) return false;
 
 		return r == 1 ? commit1() : commitN(shrink, r, n);
@@ -195,7 +195,7 @@ public abstract class TruthProjection extends TaskList {
 				return false;
 			}
 
-		int active = active();
+		var active = active();
 			if (active!=activeBefore) {
 				activeBefore = refocus(shrink);
 				if (activeBefore==1)
@@ -224,21 +224,21 @@ public abstract class TruthProjection extends TaskList {
 
 
 	public int active() {
-		int s = this.size;
+		var s = this.size;
 		return s == 0 ? 0 : (int) IntStream.range(0, s).filter(i -> sane(this.evi[i])).count();
 	}
 
 	private int update() {
-		int s = size;
+		var s = size;
 		if (s <= 0)
 			return 0;
 
-		double[] evi = this.evi;
+		var evi = this.evi;
 		if (evi == null || evi.length < s)
 			this.evi = new double[s];
 
-		long result = IntStream.range(0, s).filter(this::update).count();
-		int count = (int) result;
+		var result = IntStream.range(0, s).filter(this::update).count();
+		var count = (int) result;
 
         if (count > 0) {
 			if (count!=s)
@@ -253,18 +253,18 @@ public abstract class TruthProjection extends TaskList {
 
 	private void sortAndShuffle() {
 		IntIntProcedure swapper = this::swap;
-		int s = size;
+		var s = size;
 
 		QuickSort.quickSort(0, s, this::eviComparator, swapper); //descending
 
 
-		double[] evi = this.evi;
+		var evi = this.evi;
 
 		//shuffle spans of equivalent items
-		double last = evi[0];
-		int contig = 0;
-		for (int i = 1; i <= s; i++) {
-			double ei = i < s ? evi[i] : Double.NaN;
+		var last = evi[0];
+		var contig = 0;
+		for (var i = 1; i <= s; i++) {
+			var ei = i < s ? evi[i] : Double.NaN;
 			if (ei != last) {
 				if (contig > 0) {
 					if (i == s) i--;
@@ -284,32 +284,32 @@ public abstract class TruthProjection extends TaskList {
 	public boolean filter() {
 
 
-		int activeBefore = active();
+		var activeBefore = active();
 		if (activeBefore < minComponents)
 			return false;
 
-		int remain = activeBefore;
+		var remain = activeBefore;
 
 		//int iterations = 0;
 		//main: while ((remain = (iterations++ > 0 ? refocus(shrink) : active())) >= minComponents) {
 
-		double[] evi = this.evi;
-		Task[] items = this.items;
+		var evi = this.evi;
+		var items = this.items;
 
-		int ss = size;
-		MetalBitSet.IntBitSet conflict = new MetalBitSet.IntBitSet(); //max 32
-		for (int i = 0; i < ss - 1; i++) { //descending
+		var ss = size;
+		var conflict = new MetalBitSet.IntBitSet(); //max 32
+		for (var i = 0; i < ss - 1; i++) { //descending
 
-			double ie = evi[i];
+			var ie = evi[i];
 			if (!sane(ie))
 				continue;
-			Task ii = items[i];
+			var ii = items[i];
 
 			conflict.x = 0;
 
 			double eviConflict = 0;
-			for (int j = ss - 1; j > i; j--) { //ascending, j will be weaker
-				double je = evi[j];
+			for (var j = ss - 1; j > i; j--) { //ascending, j will be weaker
+				var je = evi[j];
 				if (!sane(je))
 					continue;
 				if (Stamp.overlap(ii, items[j])) {
@@ -335,7 +335,7 @@ public abstract class TruthProjection extends TaskList {
 						return false; //fail
 					}
 
-					for (int k = ss - 1; k > i; k--) {
+					for (var k = ss - 1; k > i; k--) {
 						if (conflict.getFast(k))
 							nullify(k);
 					}
@@ -361,7 +361,7 @@ public abstract class TruthProjection extends TaskList {
 
 
 		//TODO calculate exact threshold necessary to not dilute further
-		Task[] items = this.items;
+		var items = this.items;
 
 //		long[] uu = unionInterval();
 //		final long us = uu[0], ue = uu[1];
@@ -376,30 +376,31 @@ public abstract class TruthProjection extends TaskList {
 
 
 		//first non-eternal
-		int rootIndex = 0;
-		int size = this.size;
+		var rootIndex = 0;
+		var size = this.size;
 		while (items[rootIndex].isEternal()) {
 			rootIndex++;
 			if (rootIndex >= size)
 				return; //all eternal
 		}
 
-		Task root = items[rootIndex];
-		long rs = root.start(); long re = root.end();
+		var root = items[rootIndex];
+		var rs = root.start();
+		var re = root.end();
 
 		if (rs!=us || re!=ue) {
-			double[] evi = this.evi;
+			var evi = this.evi;
 
 			double eviSum = 0, eviRoot = 0;
-			for (int i = rootIndex; i < size; i++) {
-				Task ti = items[i];
-				long tis = ti.start();
+			for (var i = rootIndex; i < size; i++) {
+				var ti = items[i];
+				var tis = ti.start();
 				if (tis!=ETERNAL) {
-					double ei = evi[i];
+					var ei = evi[i];
 					eviSum += ei;
 				 	if (i>rootIndex) {
 						//eviOther += ei;
-						long tie = ti.end();
+						var tie = ti.end();
 						eviRoot += ei * ((1+LongInterval.intersectLength(tis, tie, rs,re)) / (tie-tis+1.0));
 					} else
 						eviRoot += ei; //root itself
@@ -407,8 +408,8 @@ public abstract class TruthProjection extends TaskList {
 			}
 
 			double ud = 1 + (ue - us);
-			double densityUnion = eviSum / (1 + ud);
-			double densityRoot = eviRoot / (1 + re - rs);
+			var densityUnion = eviSum / (1 + ud);
+			var densityRoot = eviRoot / (1 + re - rs);
 			//System.out.println(Texts.n4(densityRoot) +"/"+ Texts.n4(densityUnion) + " : " + this);
 
 			if (densityUnion / densityRoot < NAL.truth.concentrate_density_threshold) {
@@ -472,11 +473,11 @@ public abstract class TruthProjection extends TaskList {
 	 */
 	public long[] stampSample(int capacity, Random rng) {
 		removeNulls(); //HACK
-		int n = active();
+		var n = active();
 		if (n == 0)
 			throw new NullPointerException();
 
-		@Nullable long[] s0 = stamp(0);
+		@Nullable var s0 = stamp(0);
 		if (n == 1) {
 			assert (s0.length <= capacity);
 			return s0;
@@ -486,16 +487,16 @@ public abstract class TruthProjection extends TaskList {
 			return Stamp.zip(s0, stamp(1), (float) (evi[0] / (evi[0] + evi[1])), capacity);
 		}
 
-		int lenSum = IntStream.range(0, n).map(i1 -> stamp(i1).length).sum();
+		var lenSum = IntStream.range(0, n).map(i1 -> stamp(i1).length).sum();
 
 		if (lenSum <= capacity) {
 			//return Stamp.toMutableSet(maxPossibleStampLen, this::stamp, n).toSortedArray();
 
 
 			//TODO use insertion sort into array
-			LongArrayList l = new LongArrayList(lenSum);
-			for (int i = 0; i < n; i++) {
-				for (long s : stamp(i)) {
+			var l = new LongArrayList(lenSum);
+			for (var i = 0; i < n; i++) {
+				for (var s : stamp(i)) {
 					if (!l.contains(s))
 						l.add(s);
 				}
@@ -536,12 +537,12 @@ public abstract class TruthProjection extends TaskList {
 		if (evi == null)
 			return super.removeNulls(); //just modify the items[]
 
-		int sizeBefore = size;
-		double[] evi = this.evi;
+		var sizeBefore = size;
+		var evi = this.evi;
 		Object[] items = this.items;
-		int sizeAfter = 0;
+		var sizeAfter = 0;
 		//verify that all zero evidence slots also have null tasks, if not then nullify the corresponding task slot
-		for (int i = 0; i < sizeBefore; i++) {
+		for (var i = 0; i < sizeBefore; i++) {
 			if (sane(evi[i]) && items[i] != null) {
 				sizeAfter++;
 			} else {
@@ -553,10 +554,10 @@ public abstract class TruthProjection extends TaskList {
 			return false; //no change
 		this.size = sizeAfter;
 
-		int sizeCurrent = sizeBefore;
-		for (int i = 0; i < sizeCurrent - 1; ) {
+		var sizeCurrent = sizeBefore;
+		for (var i = 0; i < sizeCurrent - 1; ) {
 			if (evi[i] == 0) {
-				int span = (--sizeCurrent) - i;
+				var span = (--sizeCurrent) - i;
 				arraycopy(evi, i + 1, evi, i, span);
 				arraycopy(items, i + 1, items, i, span);
 			} else
@@ -592,13 +593,13 @@ public abstract class TruthProjection extends TaskList {
 	}
 
 	private boolean commit1() {
-		Task only = firstValid();
+		var only = firstValid();
 		term = only.term();
 		return true;
 	}
 
 	private Task firstValid() {
-		int i = firstValidIndex();
+		var i = firstValidIndex();
 		return i != -1 ? get(i) : null;
 	}
 
@@ -641,7 +642,7 @@ public abstract class TruthProjection extends TaskList {
 
 	public final <T extends Tasked> TruthProjection add(int firstN, T[] tasks) {
 		ensureCapacity(firstN);
-		for (int i = 0; i < firstN; i++)
+		for (var i = 0; i < firstN; i++)
 			addFast(tasks[i]);
 		return this;
 	}
@@ -716,20 +717,20 @@ public abstract class TruthProjection extends TaskList {
 	}
 
 	private boolean intermpolate(NAL nar) {
-		Task[] items = this.items;
-		Term term0 = items[0].term();
+		var items = this.items;
+		var term0 = items[0].term();
 
 
-		int n = size; //assumes nulls removed
+		var n = size; //assumes nulls removed
 
 		//TODO special 2-ary case
 
 //		Map<Term, IEntry> roots = null;
-		Term root0 = term0.root();
-		@Nullable double[] evi = this.evi;
-		boolean allEqual = true;
-		for (int i = 1; i < n; i++) {
-			Term termI = items[i].term();
+		var root0 = term0.root();
+		@Nullable var evi = this.evi;
+		var allEqual = true;
+		for (var i = 1; i < n; i++) {
+			var termI = items[i].term();
 			if (!termI.equals(term0)) {
 				allEqual = false;
 				if (!termI.root().equals(root0))
@@ -783,19 +784,19 @@ public abstract class TruthProjection extends TaskList {
 //
 //		removeNulls();
 
-		Compound a = (Compound) items[0].term();
+		var a = (Compound) items[0].term();
 
 		n = size;
 		if (n > 1) {
 			//Term bestRoot = best.root;
-			double ea = evi[0];
-			int remain = n;
-			for (int B = 1; B < n; B++) {
-				Compound b = (Compound) items[B].term();
+			var ea = evi[0];
+			var remain = n;
+			for (var B = 1; B < n; B++) {
+				var b = (Compound) items[B].term();
 				if (!a.equals(b)) {
-					double eb = evi[B];
-					double eab = ea + eb;
-					Term ab = Intermpolate.intermpolate(a, b, (float) (ea / eab), nar);
+					var eb = evi[B];
+					var eab = ea + eb;
+					var ab = Intermpolate.intermpolate(a, b, (float) (ea / eab), nar);
 					double diffA, diffB;
 					if (ab instanceof Bool ||
 						(diffA = dtDiff(ab, a)) >= 1 - Float.MIN_NORMAL ||
@@ -809,17 +810,17 @@ public abstract class TruthProjection extends TaskList {
 					} else {
 
 						if (diffB > 0) {
-							double discB = 1-diffB; //1 / (1 + diffB * (eb / eab));
+							var discB = 1-diffB; //1 / (1 + diffB * (eb / eab));
 							evi[B] *= discB;
 						}
 
 
 						if (diffA > 0) {
-							double discA = 1 - diffA; //1 / ((1 + diffA * (ea / eab)) * B); //estimate: shared between all
+							var discA = 1 - diffA; //1 / ((1 + diffA * (ea / eab)) * B); //estimate: shared between all
 
 							if (remain-1 >= minComponents) {
 								//determine whether to keep B if B can be removed
-								double eviLoss = IntStream.range(0, B).mapToDouble(x -> evi[x] * (1 - discA)).sum();
+								var eviLoss = IntStream.range(0, B).mapToDouble(x -> evi[x] * (1 - discA)).sum();
 								if (eviLoss > evi[B]) {
 									nullify(B); //intermpolating with B is too costly
 									remain--;
@@ -832,7 +833,7 @@ public abstract class TruthProjection extends TaskList {
 							}
 
 							ea = 0;
-							double sum = IntStream.range(0, B).mapToDouble(x -> (evi[x] *= discA)).sum();
+							var sum = IntStream.range(0, B).mapToDouble(x -> (evi[x] *= discA)).sum();
 							ea += sum;
 						}
 
@@ -851,7 +852,7 @@ public abstract class TruthProjection extends TaskList {
 	}
 
 	private void intermpolateRemove(IEntry ii) {
-		PeekableIntIterator ic = ii.id.getIntIterator();
+		var ic = ii.id.getIntIterator();
 		while (ic.hasNext())
 			nullify(ic.next());
 	}
@@ -973,7 +974,7 @@ public abstract class TruthProjection extends TaskList {
 
 	private void nullify(int index) {
 		items[index] = null;
-		@Nullable double[] e = this.evi;
+		@Nullable var e = this.evi;
 		if (e != null)
 			e[index] = 0;
 	}
@@ -1013,14 +1014,14 @@ public abstract class TruthProjection extends TaskList {
 
 		removeNulls();
 
-		int s = size;
+		var s = size;
 		if (s == 0)
 			return 0;
 
 //		if (start!=ETERNAL && start!=TIMELESS && shrink && anySatisfy(x->x.isEternal()))
 //			shrink = false; //disable shrinking any further
 
-		boolean changed = false;
+		var changed = false;
 		if (shrink || start == TIMELESS) {
 			long u0, u1;
 
@@ -1032,10 +1033,10 @@ public abstract class TruthProjection extends TaskList {
 //				u0 = union[0];
 //				u1 = union[1];
 
-				long[] union = this.unionInterval();
+				var union = this.unionInterval();
 				u0 = union[0]; u1 = union[1];
 			} else {
-				Task only = evi != null ? firstValid() : items[firstValidOrNonNullIndex(0)];
+				var only = evi != null ? firstValid() : items[firstValidOrNonNullIndex(0)];
 				u0 = only.start();
 				u1 = only.end();
 			}
@@ -1048,8 +1049,8 @@ public abstract class TruthProjection extends TaskList {
 					changed = time(u0, u1);
 				} else {
 					if (shrink) {
-						long ss = (u0 > start && u0 <= end) ? u0 : start;
-						long ee = (u1 < end && u1 >= ss) ? u1 : end;
+						var ss = (u0 > start && u0 <= end) ? u0 : start;
+						var ee = (u1 < end && u1 >= ss) ? u1 : end;
 						changed = time(ss, ee);
 					}
 				}
@@ -1060,7 +1061,7 @@ public abstract class TruthProjection extends TaskList {
 
 		}
 
-		int active = changed || evi == null ? update() : s;
+		var active = changed || evi == null ? update() : s;
 
 		if (shrink && active>1 && start!=ETERNAL &&  NAL.truth.concentrate)
 			concentrate();
@@ -1070,13 +1071,13 @@ public abstract class TruthProjection extends TaskList {
 
 	protected long[] unionInterval() {
 		long u0 = Long.MAX_VALUE, u1 = Long.MIN_VALUE;
-		Task[] items = this.items;
-		boolean hasEvi = evi != null;
-		int s = size();
-		for (int i = 0; i < s; i++) {
+		var items = this.items;
+		var hasEvi = evi != null;
+		var s = size();
+		for (var i = 0; i < s; i++) {
 			if (hasEvi ? valid(i) : nonNull(i)) {
-				Task t = items[i];
-				long ts = t.start();
+				var t = items[i];
+				var ts = t.start();
 				if (ts != ETERNAL) {
 					u0 = Math.min(u0, ts); u1 = Math.max(u1, t.end());
 				}
@@ -1094,7 +1095,7 @@ public abstract class TruthProjection extends TaskList {
 	 */
 	public boolean time(long s, long e) {
 		if (s != TIMELESS && s!=ETERNAL) {
-			int dith = this.ditherDT;
+			var dith = this.ditherDT;
 			if (dith > 1) {
 				s = Tense.dither(s, dith, -1);
 				e = Tense.dither(e, dith, +1);
@@ -1116,7 +1117,7 @@ public abstract class TruthProjection extends TaskList {
 	 */
 	@Paper
 	public double coherency() {
-		int s = size;
+		var s = size;
 		if (s == 0) return 0;
 		if (s == 1) return 1;
 
@@ -1127,10 +1128,10 @@ public abstract class TruthProjection extends TaskList {
 		}
 		avg /= s;
 
-		double variance = 0.0;
-		for (int i = 0; i < s; i++) {
+		var variance = 0.0;
+		for (var i = 0; i < s; i++) {
 			double p = items[i].freq();
-			double d = p - avg;
+			var d = p - avg;
 			variance += d * d;
 		}
 		variance /= s;
@@ -1144,12 +1145,12 @@ public abstract class TruthProjection extends TaskList {
 	}
 
 	public @Nullable Task task(double eviMin, boolean ditherTruth, boolean beliefOrGoal, boolean forceProject, NAL n) {
-		@Nullable Truth tt = truth(start, end, eviMin, ditherTruth, !forceProject, n);
+		@Nullable var tt = truth(start, end, eviMin, ditherTruth, !forceProject, n);
 		if (tt == null)
 			return null;
 
 		if (active() == 1) {
-			Task only = firstValid();
+			var only = firstValid();
 			return !forceProject ?
 				only :
 				SpecialTruthAndOccurrenceTask.the(only, tt, start, end);

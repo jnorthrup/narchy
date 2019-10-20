@@ -64,12 +64,12 @@ public class WindowToggleButton extends CheckBox implements WindowListener {
 
 //                space.pre(s -> {
                 Exe.runLater(()->{
-                    GLWindow w = space.video.window;
+                    var w = space.video.window;
                     
                         w.addWindowListener(this);
                         if (f!=null) {
-                            int nx = Math.round(f.posPixel.x - width / 2f);
-                            int ny = Math.round(f.posPixel.y - height / 2f);
+                            var nx = Math.round(f.posPixel.x - width / 2f);
+                            var ny = Math.round(f.posPixel.y - height / 2f);
                             space.video.setPosition(nx, ny);
                         }
                     

@@ -53,11 +53,10 @@ public class RecycledSummaryStatistics implements FloatProcedure, StatisticalSum
      */
     public final void accept(double value) {
 
-        
-        
-        double tmpMean = mean;
 
-        double delta = value - tmpMean;
+        var tmpMean = mean;
+
+        var delta = value - tmpMean;
         mean += delta / ++count;
         sSum += delta * (value - mean);
 
@@ -172,9 +171,9 @@ public class RecycledSummaryStatistics implements FloatProcedure, StatisticalSum
 
     /** to 0..1.0 range */
     public final float normalize(float n) {
-        double min = getMin();
-        double max = getMax();
-        double range = max - min;
+        var min = getMin();
+        var max = getMax();
+        var range = max - min;
         if (range < Float.MIN_NORMAL*64f /* estimate of an FP epsilon */)
             return 0.5f;
         else
@@ -191,7 +190,7 @@ public class RecycledSummaryStatistics implements FloatProcedure, StatisticalSum
      */
     @Override
     public double getStandardDeviation() {
-        double v = getVariance();
+        var v = getVariance();
         if (v==v)
             return (float) Math.sqrt(v);
         else
@@ -205,15 +204,15 @@ public class RecycledSummaryStatistics implements FloatProcedure, StatisticalSum
 
     @Override
     public double getVariance() {
-        long c = count;
+        var c = count;
         if (c == 0) return Float.NaN;
         return sSum / (c);
     }
 
     /** returns the proportion that is lies between min and max. if min==max, then returns 0.  clips to 0..1.0 */
     public float norm(float x) {
-        double min = this.min;
-        double max = this.max;
+        var min = this.min;
+        var max = this.max;
         return norm(x, min, max);
     }
 
@@ -226,7 +225,7 @@ public class RecycledSummaryStatistics implements FloatProcedure, StatisticalSum
     }
 
     public static float norm(float x, double min, double max) {
-        double r = max - min;
+        var r = max - min;
         if (r < Double.MIN_NORMAL) return 0;
         return Util.unitize( (float)((x - min) / r) );
     }

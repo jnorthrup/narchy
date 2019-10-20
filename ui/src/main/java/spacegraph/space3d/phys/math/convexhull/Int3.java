@@ -77,7 +77,7 @@ class Int3 {
 	}
 	
 	public boolean equals(Object ii) {
-		Int3 i = (Int3)ii;
+		var i = (Int3)ii;
 		return (x == i.x && y == i.y && z == i.z);
 	}
 	

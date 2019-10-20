@@ -44,11 +44,10 @@ public class GjkEpaPenetrationDepthSolver extends ConvexPenetrationDepthSolver {
                                 v3 v, v3 wWitnessOnA, v3 wWitnessOnB
                                 /*, btStackAlloc* stackAlloc*/)
 	{
-		float radialmargin = 0f;
+		var radialmargin = 0f;
 
-		
-		
-		GjkEpaSolver.Results results = new GjkEpaSolver.Results();
+
+		var results = new GjkEpaSolver.Results();
 		if (gjkEpaSolver.collide(pConvexA, transformA,
 				pConvexB, transformB,
 				radialmargin/*,stackAlloc*/, results)) {

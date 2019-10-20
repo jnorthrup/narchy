@@ -55,7 +55,7 @@ public class TermBuffer {
     private final TermBuilder builder;
 
     public TermBuffer clone() {
-        TermBuffer b = new TermBuffer(builder, sub);
+        var b = new TermBuffer(builder, sub);
         b.code.write(code);
         //TODO volRemain ?
         return b;
@@ -109,7 +109,7 @@ public class TermBuffer {
      * append compound
      */
     TermBuffer appendCompound(Op o, int dt, Term... subs) {
-        int n = subs.length;
+        var n = subs.length;
         assert (n < Byte.MAX_VALUE);
         return compoundStart(o, dt).subsStart((byte) n).subs(subs).compoundEnd(o);
     }
@@ -125,9 +125,9 @@ public class TermBuffer {
     }
 
     private TermBuffer compoundStart(Op o, int dt) {
-        DynBytes c = this.code;
+        var c = this.code;
 
-        byte oid = o.id;
+        var oid = o.id;
 
         if (!o.temporal)
             c.writeByte(oid);
@@ -157,7 +157,7 @@ public class TermBuffer {
     }
 
     private TermBuffer append(Compound x) {
-        Op o = x.op();
+        var o = x.op();
         switch (o) {
             case NEG:
                 return negStart().append(x.unneg()).compoundEnd(NEG);
@@ -189,14 +189,14 @@ public class TermBuffer {
     }
 
     private TermBuffer subs(Iterable<Term> subs) {
-        for (Term term : subs) {
+        for (var term : subs) {
             append(term);
         }
         return this;
     }
 
     final TermBuffer subs(Term... subs) {
-        for (Term x : subs)
+        for (var x : subs)
             append(x);
         return this;
     }
@@ -220,40 +220,40 @@ public class TermBuffer {
         if (range[0] >= range[1])
             throw new WTF("byte range overflow: " + range[0] + " >= " + range[1]);
 
-        int end = range[1];
-        int start = range[0];
-        byte ctl = bytes[range[0]++];
+        var end = range[1];
+        var start = range[0];
+        var ctl = bytes[range[0]++];
         if (ctl >= MAX_CONTROL_CODES)
             return nextInterned(ctl, bytes, range);
         else if (ctl == NEG.id)
             return nextTerm(bytes, range).neg();
 
-        Op op = Op.the(ctl);
+        var op = Op.the(ctl);
 
         if (op.atomic)  //alignment error or something
             throw new TermException(TermBuffer.class + ": atomic found where compound op expected: " + op);
 
-        int dt = op.temporal ? dt(bytes, range) : DTERNAL;
+        var dt = op.temporal ? dt(bytes, range) : DTERNAL;
 
-        int volRemaining = this.volRemain - 1 /* one for the compound itself */;
+        var volRemaining = this.volRemain - 1 /* one for the compound itself */;
 
-        byte len = bytes[range[0]++];
+        var len = bytes[range[0]++];
         if (len == 0)
             return emptySubterms(op);
 
         Term[] subterms = null;
 
-        for (int i = 0; i < len; ) {
+        for (var i = 0; i < len; ) {
             //assert(range[0] <= range[1]) //check if this is < or <=
 
-            Term nextSub = nextTerm(bytes, range);
+            var nextSub = nextTerm(bytes, range);
 
             if (nextSub == Null)
                 return Null;
 
             if (nextSub.op()==FRAG) {
                 //append fragment subterms
-                int fragmentLen = nextSub.subs();
+                var fragmentLen = nextSub.subs();
                 len += fragmentLen - 1;
                 if (len == 0) {
                     //empty fragment was the only subterm; early exit
@@ -282,7 +282,7 @@ public class TermBuffer {
     }
 
     protected Term nextCompound(Op op, int dt, Term[] subterms, byte[] bytes, int[] range, int start) {
-            Term next = newCompound(op, dt, subterms); //assert (next != null);
+        var next = newCompound(op, dt, subterms); //assert (next != null);
 
             if (next != Null) {
                 //replaceAhead(bytes, range, start, next);
@@ -311,7 +311,7 @@ public class TermBuffer {
 
 
     private Term nextInterned(byte ctl, byte[] ii, int[] range) {
-        Term next = nextInterned(ctl);
+        var next = nextInterned(ctl);
         if(next==null)
             throw new NullPointerException();
 
@@ -328,27 +328,27 @@ public class TermBuffer {
     }
 
     private static int dt(byte[] ii, int[] range) {
-        int p = range[0];
+        var p = range[0];
         range[0] += 4;
         return Ints.fromBytes(ii[p++], ii[p++], ii[p++], ii[p/*++*/]);
     }
 
     /** constant propagate matching spans further ahead in the construction process */
     private void replaceAhead(byte[] ii, int[] range, int from, Term next) {
-        int to = range[0];
+        var to = range[0];
 
-        int span = to - from;
+        var span = to - from;
         if (span <= NAL.term.TERM_BUFFER_MIN_REPLACE_AHEAD_SPAN)
             return;
 
-        int end = range[1];
+        var end = range[1];
 
         if (end - to >= span) {
             //search for repeat occurrences of the start..end sequence after this
-            int afterTo = to;
+            var afterTo = to;
             byte n = 0;
             do {
-                int match = ArrayUtil.nextIndexOf(ii, afterTo, end, ii, from, to);
+                var match = ArrayUtil.nextIndexOf(ii, afterTo, end, ii, from, to);
 
                 if (match != -1) {
                     //System.out.println("repeat found");
@@ -401,8 +401,8 @@ public class TermBuffer {
     }
 
     private void rewind(int codePos, int uniques) {
-        FasterList<Term> id2Term = sub.idToTerm;
-        int s = id2Term.size();
+        var id2Term = sub.idToTerm;
+        var s = id2Term.size();
         if (uniques > s) {
             throw new TODO("check this");
 //            ObjectByteHashMap<Term> term2Id = sub.termToId;
@@ -423,7 +423,7 @@ public class TermBuffer {
 
     public boolean append(Term x, UnaryOperator<Term> f) {
         if (x instanceof Compound) {
-            byte interned = this.term(x);
+            var interned = this.term(x);
             if (interned!=Byte.MIN_VALUE) {
                 this.appendInterned(interned);
                 return true;
@@ -431,14 +431,14 @@ public class TermBuffer {
                 return appendCompound((Compound) x, f);
             }
         } else {
-            @Nullable Term y = f.apply(x);
+            @Nullable var y = f.apply(x);
             if (y == null || y == Bool.Null)
                 return false;
             else {
                 if (y instanceof Fragment) {
-                    Subterms s = y.subterms();
+                    var s = y.subterms();
                     if (s.subs() > 0) {
-                        Subterms s2 = s.transformSubs(f, null);
+                        var s2 = s.transformSubs(f, null);
                         if (s2 != s) {
                             if (s2 == null)
                                 return false;
@@ -462,9 +462,9 @@ public class TermBuffer {
 
     private boolean appendCompound(Compound x, UnaryOperator<Term> f) {
         int c = this.change(), u = this.uniques();
-        int p = this.pos();
+        var p = this.pos();
 
-        Op o = x.op();
+        var o = x.op();
         if (o == NEG) {
 
             this.negStart();

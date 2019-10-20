@@ -40,21 +40,21 @@ public class FileCache {
                                           Logger logger
     ) throws IOException {
 
-        long lastModified = f.lastModified();
-        long size = f.length();
-        String suffix = '_' + f.getName() + '_' + lastModified + '_' + size;
+        var lastModified = f.lastModified();
+        var size = f.length();
+        var suffix = '_' + f.getName() + '_' + lastModified + '_' + size;
 
         List<X> buffer = new FasterList(1024 /* estimate */);
 
-        String tempDir = Util.tempDir();
+        var tempDir = Util.tempDir();
 
-        File cached = new File(tempDir, baseName + suffix);
+        var cached = new File(tempDir, baseName + suffix);
         if (cached.exists()) {
             
             try {
 
-                FileInputStream ff = new FileInputStream(cached);
-                DataInputStream din = new DataInputStream(new BufferedInputStream(ff));
+                var ff = new FileInputStream(cached);
+                var din = new DataInputStream(new BufferedInputStream(ff));
                 while (din.available() > 0) {
                     buffer.add(decoder.apply(din));
                 }
@@ -72,9 +72,9 @@ public class FileCache {
         
         buffer.clear();
 
-        Stream<X> instanced = o.get();
+        var instanced = o.get();
 
-        DataOutputStream dout = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(cached.getAbsolutePath())));
+        var dout = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(cached.getAbsolutePath())));
         encoder.accept(instanced.peek(buffer::add), dout);
         dout.close();
         logger.warn("cache saved {}: ({} bytes)", cached.getAbsolutePath(), dout.size());
@@ -88,15 +88,15 @@ public class FileCache {
 
     public static <X> byte[] fileCache(String baseName, Supplier<byte[]> o) throws IOException {
 
-        String tempDir = Util.tempDir();
+        var tempDir = Util.tempDir();
 
-        File cached = new File(tempDir, baseName);
+        var cached = new File(tempDir, baseName);
         if (cached.exists()) {
             
             try {
 
                 InputStream ff = new FileInputStream(cached);
-                byte[] b = ff.readAllBytes();
+                var b = ff.readAllBytes();
                 logger.warn("cache loaded {}: ({} bytes, from {})", cached.getAbsolutePath(), cached.length(), new Date(cached.lastModified()));
                 ff.close();
                 return b;
@@ -107,9 +107,9 @@ public class FileCache {
             }
         }
 
-        byte[] instanced = o.get();
+        var instanced = o.get();
 
-        FileOutputStream dout = new FileOutputStream(cached.getAbsolutePath());
+        var dout = new FileOutputStream(cached.getAbsolutePath());
         dout.write(instanced);
         dout.close();
         logger.warn("cache saved {}: ({} bytes)", cached.getAbsolutePath(), instanced.length);

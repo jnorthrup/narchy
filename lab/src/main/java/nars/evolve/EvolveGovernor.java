@@ -58,7 +58,7 @@ public class EvolveGovernor {
 	}
 
 	public static void main(String[] args) {
-		Engine<ProgramGene<Double>, Double> engine = Engine
+		var engine = Engine
 			.builder(new GovernorProblem())
 			.maximizing()
 			.alterers(
@@ -66,15 +66,15 @@ public class EvolveGovernor {
 				new Mutator<>())
 			.build();
 
-		EvolutionResult<ProgramGene<Double>, Double> result = engine.stream()
+		var result = engine.stream()
 			.limit(Limits.byFixedGeneration(100))
 			.collect(EvolutionResult.toBestEvolutionResult());
 
-		ProgramGene<Double> program = result.getBestPhenotype()
+		var program = result.getBestPhenotype()
 			.getGenotype()
 			.getGene();
 
-		TreeNode<Op<Double>> tree = program.toTreeNode();
+		var tree = program.toTreeNode();
 		MathExpr.rewrite(tree);
 		System.out.println("Generations: " + result.getTotalGenerations());
 		System.out.println("Function:    " + new MathExpr(tree));
@@ -98,7 +98,7 @@ public class EvolveGovernor {
 		private final Codec<Tree<Op<Double>, ?>, ProgramGene<Double>> codec;
 
 		{
-			int depth = 3;
+			var depth = 3;
 			codec = Codec.of(
 				Genotype.of(ProgramChromosome.of(
 					depth,
@@ -113,21 +113,21 @@ public class EvolveGovernor {
 		@Override
 		public Function<Tree<Op<Double>, ?>, Double> fitness() {
 			return (g) -> {
-				NAR n = NARS.tmp(6);
-				Deriver d = n.parts(Deriver.class).findFirst().get();
-				DeductiveMeshTest t = new DeductiveMeshTest(n, new int[]{2, 1}, 100);
+				var n = NARS.tmp(6);
+				var d = n.parts(Deriver.class).findFirst().get();
+				var t = new DeductiveMeshTest(n, new int[]{2, 1}, 100);
 
 //				Op<Double> gov = g.getValue();
-				TreeNode tree = ((ProgramGene) g).toTreeNode();
+				var tree = ((ProgramGene) g).toTreeNode();
 
-				Double[] govParm = new Double[2];
+				var govParm = new Double[2];
 				n.onDur(() -> {
-					for (How a : d.program.branch) {
+					for (var a : d.program.branch) {
 						govParm[0] = Math.abs((double) a.getClass().hashCode()) / Integer.MAX_VALUE;
 						govParm[1] = (double) a.why.value;
 //						govParm[2] = (double) a.why.pri;
-						Double pp = (Double) ((ProgramGene) g).eval(govParm);
-						float p = pp.floatValue(); //<-
+						var pp = (Double) ((ProgramGene) g).eval(govParm);
+						var p = pp.floatValue(); //<-
 						if (!Float.isFinite(p)) p = 0;
 						p = Util.clamp(p, 0.1f, 1f);
 						a.why.pri(p);
@@ -138,7 +138,7 @@ public class EvolveGovernor {
 				} catch (Throwable tt) {
 
 				}
-				float score = t.test.score;
+				var score = t.test.score;
 
 				System.out.println(score + "\t" + tree);
 

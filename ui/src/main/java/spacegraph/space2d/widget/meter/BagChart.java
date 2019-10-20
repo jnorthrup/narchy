@@ -30,7 +30,7 @@ public class BagChart<X> extends Graph2D<X> {
 
 
     protected String label(X i, int MAX_LEN) {
-        String s = i.toString();
+        var s = i.toString();
         if (s.length() > MAX_LEN)
             s = s.substring(0, MAX_LEN);
         return s;

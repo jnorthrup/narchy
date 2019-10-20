@@ -27,11 +27,11 @@ public class TermFrame extends JFrame implements ActionListener{
   public static final ToTree<Term> term2tree= new ToTree<>() {
     @Override
     public Node makeTreeFrom(Term term) {
-        Node node = new Node(String.valueOf(term));
+        var node = new Node(String.valueOf(term));
         node.textcolor = node.bordercolor = Color.BLACK;
         
         if (term instanceof Var) {
-            Var var = (Var) term;
+            var var = (Var) term;
             node.text = var.name();
             node.textcolor = node.bordercolor = Color.BLUE;
             if (var.isBound()) {
@@ -41,11 +41,11 @@ public class TermFrame extends JFrame implements ActionListener{
         } else if (term instanceof NumberTerm) {
             node.textcolor = node.bordercolor = Color.MAGENTA;
         } else if (term instanceof Struct) {
-            Struct struct = (Struct) term;
+            var struct = (Struct) term;
             node.text = struct.name();
-            int n = struct.subs();
+            var n = struct.subs();
             node.kids = new Node[n];
-            for (int i = 0; i < n; i++)
+            for (var i = 0; i < n; i++)
                 node.kids[i] = makeTreeFrom(struct.sub(i));
         }
         return node;
@@ -61,7 +61,7 @@ public class TermFrame extends JFrame implements ActionListener{
   public TermFrame(Term term){
     super("termframe");
     setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-    Container c=getContentPane();
+      var c=getContentPane();
     ptt= new Tree<>(term2tree, term);
     c.add(new JScrollPane(ptt));
     input=new JTextField();
@@ -103,7 +103,7 @@ public class TermFrame extends JFrame implements ActionListener{
     if(args.length!=1)
       System.out.println("Pass exactly one prolog term!");
     else{
-      TermFrame tf=new TermFrame(Term.term(args[0]));
+        var tf=new TermFrame(Term.term(args[0]));
       tf.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     }
   }

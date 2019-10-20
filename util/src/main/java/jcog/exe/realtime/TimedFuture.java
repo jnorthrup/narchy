@@ -26,7 +26,7 @@ public interface TimedFuture<T> extends RunnableScheduledFuture<T>, Runnable {
 
     @Override
     default int compareTo(Delayed o) {
-        TimedFuture other = (TimedFuture) o;
+        var other = (TimedFuture) o;
         if (other == this) return 0;
 
         long r1 = rounds();

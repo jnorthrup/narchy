@@ -28,7 +28,7 @@ public abstract class ConstraintAsPremisePredicate<C extends UnifyConstraint<Der
      */
     public static ConstraintAsPredicate the(Variable x, Variable y, byte[] xInTask, byte[] xInBelief, byte[] yInTask, byte[] yInBelief, UnifyConstraint m) {
 
-        int costPath = 0;
+        var costPath = 0;
 
         BiFunction<Term, Term, Term> extractX;
         Term extractXterm;
@@ -44,7 +44,7 @@ public abstract class ConstraintAsPremisePredicate<C extends UnifyConstraint<Der
         }
 
 
-        float cost = m.cost();
+        var cost = m.cost();
         if (m instanceof RelationConstraint) {
             BiFunction<Term, Term, Term> extractY;
             Term extractYterm;
@@ -57,10 +57,10 @@ public abstract class ConstraintAsPremisePredicate<C extends UnifyConstraint<Der
                 extractYterm = $.func(DerivationFunctors.Belief, $.p(yInBelief));
                 costPath += yInBelief.length;
             }
-            Term t = m.ref.replace(x, extractXterm).replace(y, extractYterm);
+            var t = m.ref.replace(x, extractXterm).replace(y, extractYterm);
             return new RelationConstraintAsPremisePredicate(t, cost + costPath * 0.01f, (RelationConstraint) m, extractX, extractY);
         } else {
-            Term t = m.ref.replace(x, extractXterm);
+            var t = m.ref.replace(x, extractXterm);
             return new UnaryConstraintAsPremisePredicate(t, cost + costPath * 0.01f, (UnaryConstraint) m, extractX);
         }
     }
@@ -73,7 +73,7 @@ public abstract class ConstraintAsPremisePredicate<C extends UnifyConstraint<Der
 
         @Override
         public boolean test(PreDerivation p) {
-            Term x = extractX.apply(p.taskTerm, p.beliefTerm);
+            var x = extractX.apply(p.taskTerm, p.beliefTerm);
             //<- does this happen?
             return x != null ? constraint.valid(x) : true;
         }
@@ -90,9 +90,9 @@ public abstract class ConstraintAsPremisePredicate<C extends UnifyConstraint<Der
 
             Term T = d.taskTerm, B = d.beliefTerm;
 
-            Term x = extractX.apply(T, B);
+            var x = extractX.apply(T, B);
             if (x != null) {
-                Term y = extractY.apply(T, B);
+                var y = extractY.apply(T, B);
                 if (y!=null)
                     return !constraint.invalid(x, y, d.unify);
             }

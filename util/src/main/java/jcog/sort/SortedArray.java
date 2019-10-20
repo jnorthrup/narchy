@@ -76,7 +76,7 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
     }
 
     public void sort(ToIntFunction<X> x, int from, int to) {
-        int size = this.size;
+        var size = this.size;
         if (size == 0)
             return;
         from = Math.max(0, from);
@@ -98,8 +98,8 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
     }
 
     public final X getSafe(int i) {
-        X[] ii = this.items;
-        int s = Math.min(ii.length, size);
+        var ii = this.items;
+        var s = Math.min(ii.length, size);
         return s == 0 || i >= s ? null : ii[i];
     }
 
@@ -121,10 +121,10 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
 
     public X remove(int index) {
 
-        int totalOffset = this.size - index - 1;
+        var totalOffset = this.size - index - 1;
         if (totalOffset >= 0) {
-            X[] list = this.items;
-            X previous = list[index];
+            var list = this.items;
+            var previous = list[index];
             if (totalOffset > 0) {
                 System.arraycopy(list, index + 1, list, index, totalOffset);
             }
@@ -164,9 +164,9 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
 //    }
 
     public final boolean removeFast(X x, int index) {
-        X[] items = this.items;
+        var items = this.items;
         if (items[index] == x) {
-            int totalOffset = this.size - index - 1;
+            var totalOffset = this.size - index - 1;
             if (totalOffset > 0)
                 System.arraycopy(items, index + 1, items, index, totalOffset);
             items[SIZE.decrementAndGet(this)] = null;
@@ -176,7 +176,7 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
     }
 
     public boolean remove(X removed, FloatFunction<X> cmp) {
-        int i = indexOf(removed, cmp);
+        var i = indexOf(removed, cmp);
         return i != -1 && remove(i) != null;
     }
 
@@ -187,7 +187,7 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
 
 
     public void clear() {
-        int s = SIZE.getAndSet(this, 0);
+        var s = SIZE.getAndSet(this, 0);
         if (s > 0)
             Arrays.fill(items, 0, s, null);
     }
@@ -204,7 +204,7 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
     }
 
     public int addRanked(X element, float elementRank, FloatFunction<X> cmp) {
-        int i = (elementRank == elementRank) ? addSafe(element, elementRank, cmp) : -1;
+        var i = (elementRank == elementRank) ? addSafe(element, elementRank, cmp) : -1;
         if (i < 0)
             rejectOnEntry(element);
         return i;
@@ -218,9 +218,9 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
     public final int addSafe(X element, float elementRank, FloatFunction<X> cmp) {
         //assert (elementRank == elementRank);
 
-        int index = indexOf(element, elementRank, cmp, false, true);
+        var index = indexOf(element, elementRank, cmp, false, true);
 
-        int size1 = size;
+        var size1 = size;
 //        assert (index != -1);
         return index == size1 ?
                 addEnd(element, elementRank) :
@@ -238,7 +238,7 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
     }
 
     protected int addEnd(X x, float elementRank) {
-        int s = this.size;
+        var s = this.size;
         if (capacity() <= s) {
             if (!grows())
                 return -1;
@@ -256,15 +256,15 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
 
     protected int addAtIndex(int index, X element, float elementRank, int oldSize) {
 
-        X[] list = this.items;
+        var list = this.items;
         boolean adding;
-        int c = capacity();
+        var c = capacity();
         if (c == oldSize) {
             if (!grows()) {
                 rejectExisting(list[oldSize - 1]); //pop
                 adding = false;
             } else {
-                int newCapacity = grow(oldSize);
+                var newCapacity = grow(oldSize);
                 assert (newCapacity > c);
                 this.items = list = copyOfArray(list, newCapacity);
                 adding = true;
@@ -277,7 +277,7 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
         if (adding)
             SIZE.getAndIncrement(this);
 
-        int ss = Math.min(oldSize - 1, c - 2);
+        var ss = Math.min(oldSize - 1, c - 2);
         if (ss + 1 - index >= 0)
             System.arraycopy(list, index, list, index + 1, ss + 1 - index);
 
@@ -306,9 +306,9 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
     }
 
     public X removeLast() {
-        int s = SIZE.decrementAndGet(this);
-        X[] items = this.items;
-        X x = items[s];
+        var s = SIZE.decrementAndGet(this);
+        var items = this.items;
+        var x = items[s];
         items[s] = null;
         return x;
     }
@@ -322,9 +322,9 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
      * tests for descending sort
      */
     public boolean isSorted(FloatFunction<X> f) {
-        X[] ii = this.items;
+        var ii = this.items;
         //TODO use valueAt(
-        int bound = size;
+        var bound = size;
         return IntStream.range(1, bound).noneMatch(i -> f.floatValueOf(ii[i - 1]) >= f.floatValueOf(ii[i]));
     }
 
@@ -335,17 +335,17 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
 
     public final int indexOf(X element, float elementRank /* can be NaN for forFind */, FloatFunction<X> cmp, boolean eqByIdentity, boolean forInsertionOrFind) {
 
-        int s = size;
+        var s = size;
         if (s == 0)
             return forInsertionOrFind ? 0 : -1;
 
         int left = 0, right = s;
-        X[] items = this.items;
-        int searchThresh = (!forInsertionOrFind && eqByIdentity) ?  BINARY_SEARCH_THRESHOLD_SCAN : BINARY_SEARCH_THRESHOLD;
+        var items = this.items;
+        var searchThresh = (!forInsertionOrFind && eqByIdentity) ?  BINARY_SEARCH_THRESHOLD_SCAN : BINARY_SEARCH_THRESHOLD;
         main:
         while (right - left >= searchThresh) {
 
-            int mid = left + (right - left) / 2;
+            var mid = left + (right - left) / 2;
 
             switch (Float.compare(valueAt(mid, cmp), elementRank)) {
                 case 0:
@@ -365,7 +365,7 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
 
         }
 //        if (right - left <= BINARY_SEARCH_THRESHOLD) {
-        for (int i = left; i < right; i++) {
+        for (var i = left; i < right; i++) {
             if (!forInsertionOrFind) {
                 if (eq(element, items[i], eqByIdentity))
                     return i;
@@ -400,9 +400,9 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
 
     private int indexOfExhaustive(X e, boolean eqByIdentity) {
         Object[] l = this.items;
-        int s = this.size;
-        for (int i = 0; i < s; i++) {
-            Object ll = l[i];
+        var s = this.size;
+        for (var i = 0; i < s; i++) {
+            var ll = l[i];
             if (eqByIdentity ? (e == ll) : e.equals(ll))
                 return i;
         }
@@ -421,14 +421,14 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
      * Returns the last (highest) element currently in this list.
      */
     public final @Nullable X last() {
-        int size = this.size;
+        var size = this.size;
         return size == 0 ? null : items[size - 1];
     }
 
     public void forEach(Consumer<? super X> action) {
-        X[] items = this.items;
-        int s = Math.min(items.length, size);
-        for (int i = 0; i < s; i++)
+        var items = this.items;
+        var s = Math.min(items.length, size);
+        for (var i = 0; i < s; i++)
             action.accept(items[i]);
     }
 
@@ -437,10 +437,10 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
     }
 
     public final boolean whileEach(int n, Predicate<? super X> action) {
-        int s0 = this.size;
-        int s = (n == -1) ? s0 : Math.min(s0, n);
+        var s0 = this.size;
+        var s = (n == -1) ? s0 : Math.min(s0, n);
         if (s > 0) {
-            X[] ii = items;
+            var ii = items;
             //(X) ITEM.getOpaque(ii,i)
             return Arrays.stream(ii, 0, s).filter(Objects::nonNull).allMatch(action);
         }
@@ -455,8 +455,8 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
 //    }
 
     public void removeRangeSafe(int start, int end, Consumer<? super X> action) {
-        X[] l = items;
-        for (int i = start; i < end; i++)
+        var l = items;
+        for (var i = start; i < end; i++)
             action.accept(l[i]);
         removeRange(start, end);
     }
@@ -470,9 +470,9 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
     }
 
     private void shiftTailOverGap(Object[] es, int lo, int hi) {
-        int ne = this.size;
+        var ne = this.size;
         System.arraycopy(es, hi, es, lo, ne - hi);
-        int ns = SIZE.addAndGet(this, -(hi - lo));
+        var ns = SIZE.addAndGet(this, -(hi - lo));
         Arrays.fill(es, ns, ne, null);
     }
 
@@ -489,8 +489,8 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
     public Stream<X> stream() {
         //return ArrayIterator.stream(items, size());
 
-        X[] ii = items;
-        int s = size();
+        var ii = items;
+        var s = size();
         /*(X) ITEM.getOpaque(items, i)*/
         return ArrayIterator.stream(ii, Math.min(capacity(), s));
 //        return s > 0 ?
@@ -512,7 +512,7 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
 
         //only reindex if exceeds threshold to previous or next item
 
-        X[] items = this.items;
+        var items = this.items;
 
         if (delta > 0) {
             if (posBefore > 0) {
@@ -535,13 +535,13 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
         if (!removeFast(existing, posBefore))
             throw new ConcurrentModificationException(); //item order changed
 
-        int inserted = addSafe(existing, -priAfter, cmp);
+        var inserted = addSafe(existing, -priAfter, cmp);
         assert (inserted != -1);
 
     }
     public void replace(UnaryOperator<X> each) {
-        X[] items = this.items;
-        for (int i = 0; i < size; i++) {
+        var items = this.items;
+        for (var i = 0; i < size; i++) {
             items[i] = each.apply(items[i]);
         }
     }

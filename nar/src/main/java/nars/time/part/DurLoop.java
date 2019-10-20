@@ -57,17 +57,17 @@ public abstract class DurLoop extends NARPart {
      * creates a duration-cached float range that is automatically destroyed when its parent context is
      */
     public static FloatRange cache(FloatSupplier o, float min, float max, DurLoop parent, @Deprecated NAR nar) {
-        Pair<FloatRange, Off> p = cache(o, min, max, 1, nar);
+        var p = cache(o, min, max, 1, nar);
         parent.on(p.getTwo());
         return p.getOne();
     }
 
     public static Pair<FloatRange, Off> cache(FloatSupplier o, float min, float max, float durPeriod, NAR n) {
         assert (min < max);
-        FloatRange r = new FloatRange((min + max) / 2, min, max);
+        var r = new FloatRange((min + max) / 2, min, max);
         //r.set(Float.NaN);
-        DurLoop d = n.onDur(() -> {
-            float x = o.asFloat();
+        var d = n.onDur(() -> {
+            var x = o.asFloat();
             if (x == x) {
                 r.set(
                         Util.clampSafe(x, min, max)
@@ -156,14 +156,14 @@ public abstract class DurLoop extends NARPart {
             if (!busy.compareAndSet(false, true))
                 return;
 
-            long atStart = nar.time();
+            var atStart = nar.time();
             try {
 
-                long lastStarted = this.lastStarted;
+                var lastStarted = this.lastStarted;
                 if (lastStarted == Long.MIN_VALUE)
                     lastStarted = atStart;
 
-                long delta = atStart - lastStarted;
+                var delta = atStart - lastStarted;
 
                 this.lastStarted = atStart;
 
@@ -172,7 +172,7 @@ public abstract class DurLoop extends NARPart {
             } finally {
                 //TODO catch Exception, option for auto-stop on exception
 
-                @Deprecated NAR nnar = DurLoop.this.nar; //prevent NPE in durCycles()
+                @Deprecated var nnar = DurLoop.this.nar; //prevent NPE in durCycles()
                 if (nnar!=null && DurLoop.this.isOn()) {
                     this.nextStart = scheduleNext(durCycles());
 
@@ -187,10 +187,10 @@ public abstract class DurLoop extends NARPart {
         }
         long scheduleNext(long durCycles) {
 
-            long now = nar.time();
+            var now = nar.time();
 
-            long idealNext = lastStarted + durCycles;
-            long lag = now - idealNext;
+            var idealNext = lastStarted + durCycles;
+            var lag = now - idealNext;
             if (lag > 0) {
                 /** LAG - compute a correctional shift period, so that it attempts to maintain a steady rhythm and re-synch even if a frame is lagged*/
 

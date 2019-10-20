@@ -47,8 +47,8 @@ public final class Cmd {
     static final xcommand_t List_f = new xcommand_t() {
         @Override
         public void execute() {
-            cmd_function_t cmd = Cmd.cmd_functions;
-            int i = 0;
+            var cmd = Cmd.cmd_functions;
+            var i = 0;
 
             while (cmd != null) {
                 Com.Printf(cmd.name + '\n');
@@ -67,7 +67,7 @@ public final class Cmd {
                 return;
             }
 
-            byte[] f = FS.LoadFile(Cmd.Argv(1));
+            var f = FS.LoadFile(Cmd.Argv(1));
             if (f == null) {
                 Com.Printf("couldn't exec " + Cmd.Argv(1) + '\n');
                 return;
@@ -83,7 +83,7 @@ public final class Cmd {
     static final xcommand_t Echo_f = new xcommand_t() {
         @Override
         public void execute() {
-            for (int i = 1; i < Cmd.Argc(); i++) {
+            for (var i = 1; i < Cmd.Argc(); i++) {
                 Com.Printf(Cmd.Argv(i) + ' ');
             }
             Com.Printf("'\n");
@@ -102,7 +102,7 @@ public final class Cmd {
                 return;
             }
 
-            String s = Cmd.Argv(1);
+            var s = Cmd.Argv(1);
             if (s.length() > Defines.MAX_ALIAS_NAME) {
                 Com.Printf("Alias name is too long\n");
                 return;
@@ -123,10 +123,10 @@ public final class Cmd {
             }
             a.name = s;
 
-            
-            String cmd = "";
-            int c = Cmd.Argc();
-            for (int i = 2; i < c; i++) {
+
+            var cmd = "";
+            var c = Cmd.Argc();
+            for (var i = 2; i < c; i++) {
                 cmd += Cmd.Argv(i);
                 if (i != (c - 1))
                     cmd += ' ';
@@ -185,7 +185,7 @@ public final class Cmd {
      */
     public static char[] MacroExpandString(char[] text, int len) {
 
-        char[] scan = text;
+        var scan = text;
 
         if (len >= Defines.MAX_STRING_CHARS) {
             Com.Printf("Line exceeded " + Defines.MAX_STRING_CHARS
@@ -193,10 +193,10 @@ public final class Cmd {
             return null;
         }
 
-        int count = 0;
+        var count = 0;
 
-        boolean inquote = false;
-        for (int i = 0; i < len; i++) {
+        var inquote = false;
+        for (var i = 0; i < len; i++) {
             if (scan[i] == '"')
                 inquote = !inquote;
 
@@ -206,16 +206,16 @@ public final class Cmd {
             if (scan[i] != '$')
                 continue;
 
-            
-            Com.ParseHelp ph = new Com.ParseHelp(text, i + 1);
-            String token = Com.Parse(ph);
+
+            var ph = new Com.ParseHelp(text, i + 1);
+            var token = Com.Parse(ph);
 
             if (ph.data == null)
                 continue;
 
             token = Cvar.VariableString(token);
 
-            int j = token.length();
+            var j = token.length();
 
             len += j;
 
@@ -257,7 +257,7 @@ public final class Cmd {
         cmd_argc = 0;
         cmd_args = "";
 
-        int len = Lib.strlen(text);
+        var len = Lib.strlen(text);
 
         
         if (macroExpand)
@@ -268,12 +268,12 @@ public final class Cmd {
 
         len = Lib.strlen(text);
 
-        Com.ParseHelp ph = new Com.ParseHelp(text);
+        var ph = new Com.ParseHelp(text);
 
         while (true) {
 
-            
-            char c = ph.skipwhitestoeol();
+
+            var c = ph.skipwhitestoeol();
 
             if (c == '\n') { 
                 c = ph.nextchar();
@@ -289,7 +289,7 @@ public final class Cmd {
                 cmd_args.trim();
             }
 
-            String com_token = Com.Parse(ph);
+            var com_token = Com.Parse(ph);
 
             if (ph.data == null)
                 return;
@@ -335,7 +335,7 @@ public final class Cmd {
     public static void RemoveCommand(String cmd_name) {
         cmd_function_t cmd;
 
-        cmd_function_t back = cmd = cmd_functions;
+        var back = cmd = cmd_functions;
 
         while (true) {
 
@@ -360,7 +360,7 @@ public final class Cmd {
      */
     public static boolean Exists(String cmd_name) {
 
-        for (cmd_function_t cmd = cmd_functions; cmd != null; cmd = cmd.next) {
+        for (var cmd = cmd_functions; cmd != null; cmd = cmd.next) {
             if (cmd.name.equals(cmd_name))
                 return true;
         }
@@ -397,7 +397,7 @@ public final class Cmd {
             return; 
 
         
-        for (cmd_function_t cmd = cmd_functions; cmd != null; cmd = cmd.next) {
+        for (var cmd = cmd_functions; cmd != null; cmd = cmd.next) {
             if (cmd_argv[0].equalsIgnoreCase(cmd.name)) {
                 if (null == cmd.function) { 
                     Cmd.ExecuteString("cmd " + text);
@@ -409,7 +409,7 @@ public final class Cmd {
         }
 
         
-        for (cmdalias_t a = Globals.cmd_alias; a != null; a = a.next) {
+        for (var a = Globals.cmd_alias; a != null; a = a.next) {
 
             if (cmd_argv[0].equalsIgnoreCase(a.name)) {
 
@@ -443,9 +443,9 @@ public final class Cmd {
             return;
         }
 
-        String name = Cmd.Args();
+        var name = Cmd.Args();
 
-        boolean give_all = 0 == Lib.Q_stricmp(name, "all");
+        var give_all = 0 == Lib.Q_stricmp(name, "all");
 
         if (give_all || 0 == Lib.Q_stricmp(Cmd.Argv(1), "health")) {
             if (Cmd.Argc() == 3)
@@ -493,7 +493,7 @@ public final class Cmd {
             ent.client.pers.inventory[GameItems.ITEM_INDEX(it)] = 0;
 
             it = GameItems.FindItem("Body Armor");
-            gitem_armor_t info = it.info;
+            var info = it.info;
             ent.client.pers.inventory[GameItems.ITEM_INDEX(it)] = info.max_count;
 
             if (!give_all)
@@ -541,7 +541,7 @@ public final class Cmd {
             return;
         }
 
-        int index = GameItems.ITEM_INDEX(it);
+        var index = GameItems.ITEM_INDEX(it);
 
         if ((it.flags & Defines.IT_AMMO) != 0) {
             if (Cmd.Argc() == 3)
@@ -640,9 +640,9 @@ public final class Cmd {
      */
     public static void Use_f(edict_t ent) {
 
-        String s = Cmd.Args();
+        var s = Cmd.Args();
 
-        gitem_t it = GameItems.FindItem(s);
+        var it = GameItems.FindItem(s);
         Com.dprintln("using:" + s);
         if (it == null) {
             SV_GAME.PF_cprintfhigh(ent, "unknown item: " + s + '\n');
@@ -652,7 +652,7 @@ public final class Cmd {
             SV_GAME.PF_cprintfhigh(ent, "Item is not usable.\n");
             return;
         }
-        int index = GameItems.ITEM_INDEX(it);
+        var index = GameItems.ITEM_INDEX(it);
         if (0 == ent.client.pers.inventory[index]) {
             SV_GAME.PF_cprintfhigh(ent, "Out of item: " + s + '\n');
             return;
@@ -668,8 +668,8 @@ public final class Cmd {
      */
     public static void Drop_f(edict_t ent) {
 
-        String s = Cmd.Args();
-        gitem_t it = GameItems.FindItem(s);
+        var s = Cmd.Args();
+        var it = GameItems.FindItem(s);
         if (it == null) {
             SV_GAME.PF_cprintfhigh(ent, "unknown item: " + s + '\n');
             return;
@@ -679,7 +679,7 @@ public final class Cmd {
                     "Item is not dropable.\n");
             return;
         }
-        int index = GameItems.ITEM_INDEX(it);
+        var index = GameItems.ITEM_INDEX(it);
         if (0 == ent.client.pers.inventory[index]) {
             SV_GAME.PF_cprintfhigh(ent, "Out of item: " + s + '\n');
             return;
@@ -693,7 +693,7 @@ public final class Cmd {
      */
     public static void Inven_f(edict_t ent) {
 
-        gclient_t cl = ent.client;
+        var cl = ent.client;
 
         cl.showscores = false;
         cl.showhelp = false;
@@ -706,7 +706,7 @@ public final class Cmd {
         cl.showinventory = true;
 
         game_import_t.WriteByte(Defines.svc_inventory);
-        for (int i = 0; i < Defines.MAX_ITEMS; i++) {
+        for (var i = 0; i < Defines.MAX_ITEMS; i++) {
             game_import_t.WriteShort(cl.pers.inventory[i]);
         }
         game_import_t.unicast(ent, true);
@@ -724,7 +724,7 @@ public final class Cmd {
             return;
         }
 
-        gitem_t it = GameItemList.itemlist[ent.client.pers.selected_item];
+        var it = GameItemList.itemlist[ent.client.pers.selected_item];
         if (it.use == null) {
             SV_GAME.PF_cprintfhigh(ent, "Item is not usable.\n");
             return;
@@ -737,20 +737,20 @@ public final class Cmd {
      */
     public static void WeapPrev_f(edict_t ent) {
 
-        gclient_t cl = ent.client;
+        var cl = ent.client;
 
         if (cl.pers.weapon == null)
             return;
 
-        int selected_weapon = GameItems.ITEM_INDEX(cl.pers.weapon);
+        var selected_weapon = GameItems.ITEM_INDEX(cl.pers.weapon);
 
         
-        for (int i = 1; i <= Defines.MAX_ITEMS; i++) {
-            int index = (selected_weapon + i) % Defines.MAX_ITEMS;
+        for (var i = 1; i <= Defines.MAX_ITEMS; i++) {
+            var index = (selected_weapon + i) % Defines.MAX_ITEMS;
             if (0 == cl.pers.inventory[index])
                 continue;
 
-            gitem_t it = GameItemList.itemlist[index];
+            var it = GameItemList.itemlist[index];
             if (it.use == null)
                 continue;
 
@@ -767,23 +767,23 @@ public final class Cmd {
      */
     public static void WeapNext_f(edict_t ent) {
 
-        gclient_t cl = ent.client;
+        var cl = ent.client;
 
         if (null == cl.pers.weapon)
             return;
 
-        int selected_weapon = GameItems.ITEM_INDEX(cl.pers.weapon);
+        var selected_weapon = GameItems.ITEM_INDEX(cl.pers.weapon);
 
         
-        for (int i = 1; i <= Defines.MAX_ITEMS; i++) {
-            int index = (selected_weapon + Defines.MAX_ITEMS - i)
+        for (var i = 1; i <= Defines.MAX_ITEMS; i++) {
+            var index = (selected_weapon + Defines.MAX_ITEMS - i)
                     % Defines.MAX_ITEMS;
 
             if (index == 0)
                 index++;
             if (0 == cl.pers.inventory[index])
                 continue;
-            gitem_t it = GameItemList.itemlist[index];
+            var it = GameItemList.itemlist[index];
             if (null == it.use)
                 continue;
             if (0 == (it.flags & Defines.IT_WEAPON))
@@ -799,15 +799,15 @@ public final class Cmd {
      */
     public static void WeapLast_f(edict_t ent) {
 
-        gclient_t cl = ent.client;
+        var cl = ent.client;
 
         if (null == cl.pers.weapon || null == cl.pers.lastweapon)
             return;
 
-        int index = GameItems.ITEM_INDEX(cl.pers.lastweapon);
+        var index = GameItems.ITEM_INDEX(cl.pers.lastweapon);
         if (0 == cl.pers.inventory[index])
             return;
-        gitem_t it = GameItemList.itemlist[index];
+        var it = GameItemList.itemlist[index];
         if (null == it.use)
             return;
         if (0 == (it.flags & Defines.IT_WEAPON))
@@ -827,7 +827,7 @@ public final class Cmd {
             return;
         }
 
-        gitem_t it = GameItemList.itemlist[ent.client.pers.selected_item];
+        var it = GameItemList.itemlist[ent.client.pers.selected_item];
         if (it.drop == null) {
             SV_GAME.PF_cprintfhigh(ent, "Item is not dropable.\n");
             return;
@@ -911,9 +911,9 @@ public final class Cmd {
     public static void Players_f(edict_t ent) {
         int i;
 
-        Integer[] index = new Integer[256];
+        var index = new Integer[256];
 
-        int count = 0;
+        var count = 0;
         for (i = 0; i < GameBase.maxclients.value; i++) {
             if (GameBase.game.clients[i].pers.connected) {
                 index[count] = i;
@@ -925,10 +925,10 @@ public final class Cmd {
         Arrays.sort(index, 0, count - 1, Cmd.PlayerSort);
 
 
-        String large = "";
+        var large = "";
 
         for (i = 0; i < count; i++) {
-            String small = GameBase.game.clients[index[i]].ps.stats[Defines.STAT_FRAGS]
+            var small = GameBase.game.clients[index[i]].ps.stats[Defines.STAT_FRAGS]
                     + " "
                     + GameBase.game.clients[index[i]].pers.netname
                     + '\n';
@@ -949,7 +949,7 @@ public final class Cmd {
      */
     public static void Wave_f(edict_t ent) {
 
-        int i = Lib.atoi(Cmd.Argv(1));
+        var i = Lib.atoi(Cmd.Argv(1));
 
         
         if ((ent.client.ps.pmove.pm_flags & pmove_t.PMF_DUCKED) != 0)
@@ -1033,7 +1033,7 @@ public final class Cmd {
         text += "\n";
 
         if (GameBase.flood_msgs.value != 0) {
-            gclient_t cl = ent.client;
+            var cl = ent.client;
 
             if (GameBase.level.time < cl.flood_locktill) {
                 SV_GAME.PF_cprintfhigh(ent, "You can't talk for "
@@ -1041,7 +1041,7 @@ public final class Cmd {
                                         + " more seconds\n");
                 return;
             }
-            int i = (int) (cl.flood_whenhead - GameBase.flood_msgs.value + 1);
+            var i = (int) (cl.flood_whenhead - GameBase.flood_msgs.value + 1);
             if (i < 0)
                 i = (10) + i;
             if (cl.flood_when[i] != 0
@@ -1061,8 +1061,8 @@ public final class Cmd {
         if (Globals.dedicated.value != 0)
             SV_GAME.PF_cprintf(null, Defines.PRINT_CHAT, text);
 
-        for (int j = 1; j <= GameBase.game.maxclients; j++) {
-            edict_t other = GameBase.g_edicts[j];
+        for (var j = 1; j <= GameBase.game.maxclients; j++) {
+            var other = GameBase.g_edicts[j];
             if (!other.inuse)
                 continue;
             if (other.client == null)
@@ -1082,14 +1082,14 @@ public final class Cmd {
     public static void PlayerList_f(edict_t ent) {
 
 
-        String text = "";
+        var text = "";
 
-        for (int i = 0; i < GameBase.maxclients.value; i++) {
-            edict_t e2 = GameBase.g_edicts[1 + i];
+        for (var i = 0; i < GameBase.maxclients.value; i++) {
+            var e2 = GameBase.g_edicts[1 + i];
             if (!e2.inuse)
                 continue;
 
-            String st = String.valueOf((GameBase.level.framenum - e2.client.resp.enterframe)
+            var st = String.valueOf((GameBase.level.framenum - e2.client.resp.enterframe)
                     / 600) + ':' + ((GameBase.level.framenum - e2.client.resp.enterframe) % 600)
                     / 10 + ' ' + e2.client.ping + ' ' + e2.client.resp.score + ' ' + e2.client.pers.netname + ' ' + (e2.client.resp.spectator ? " (spectator)" : "") + '\n';
 
@@ -1110,7 +1110,7 @@ public final class Cmd {
      */
     public static void ForwardToServer() {
 
-        String cmd = Cmd.Argv(0);
+        var cmd = Cmd.Argv(0);
         if (Globals.cls.state <= Defines.ca_connected || cmd.charAt(0) == '-'
                 || cmd.charAt(0) == '+') {
             Com.Printf("Unknown command \"" + cmd + "\"\n");
@@ -1145,7 +1145,7 @@ public final class Cmd {
         if (ent.client == null)
             return;
 
-        String cmd = game_import_t.argv(0).toLowerCase();
+        var cmd = game_import_t.argv(0).toLowerCase();
     
         if ("players".equals(cmd)) {
             Players_f(ent);
@@ -1248,8 +1248,8 @@ public final class Cmd {
         }
     }
 
-    public static void ValidateSelectedItem(edict_t ent) {    	
-        gclient_t cl = ent.client;
+    public static void ValidateSelectedItem(edict_t ent) {
+        var cl = ent.client;
     
         if (cl.pers.inventory[cl.pers.selected_item] != 0)
             return; 

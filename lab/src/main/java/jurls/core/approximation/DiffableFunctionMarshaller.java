@@ -48,35 +48,35 @@ public class DiffableFunctionMarshaller implements ParameterizedFunction {
             DiffableFunctionGenerator diffableFunctionGenerator,
             int numInputs
     ) {
-        GeneratorContext gc = diffableFunctionGenerator.generate(numInputs);
-        DiffableFunctionSource fs = gc.getDiffableFunctionSource();
-        int n = numInputs + gc.getParameterScalars().size();
+        var gc = diffableFunctionGenerator.generate(numInputs);
+        var fs = gc.getDiffableFunctionSource();
+        var n = numInputs + gc.getParameterScalars().size();
         inputScalars = new Scalar[n];
         inputValues = new double[n];
         f = compile(fs);
         this.numInputs = numInputs;
 
-        for (int i = 0; i < numInputs; ++i) {
+        for (var i = 0; i < numInputs; ++i) {
             inputScalars[i] = gc.getInputScalars()[i];
             inputValues[i] = 0;
         }
 
-        for (int i = 0; i < gc.getParameterScalars().size(); ++i) {
+        for (var i = 0; i < gc.getParameterScalars().size(); ++i) {
             inputScalars[numInputs + i] = gc.getParameterScalars().get(i);
             inputValues[numInputs + i] = gc.getParameterData().get(i);
         }
     }
 
     private DiffableFunction compile(DiffableFunctionSource dfs) {
-        SourceEnvironment se1 = new SourceEnvironment();
-        String rv1 = dfs.valueToSource(se1);
-        SourceEnvironment se2 = new SourceEnvironment();
-        String rv2 = dfs.partialDeriveToSource(se2);
+        var se1 = new SourceEnvironment();
+        var rv1 = dfs.valueToSource(se1);
+        var se2 = new SourceEnvironment();
+        var rv2 = dfs.partialDeriveToSource(se2);
 
-        String classPackage = getClass().getPackage().getName() + ".compiled";
-        String className = "JaninoCompiledFastexpr" + COMPILED_CLASS_INDEX++;
+        var classPackage = getClass().getPackage().getName() + ".compiled";
+        var className = "JaninoCompiledFastexpr" + COMPILED_CLASS_INDEX++;
 
-        StringBuilder sb = new StringBuilder();
+        var sb = new StringBuilder();
         sb.append("package ").append(classPackage).append(";\n");
         sb.append("import ").append(DiffableFunction.class.getCanonicalName()).append(";\n");
         sb.append("public class ").append(className).append(" implements DiffableFunction {\n");
@@ -91,17 +91,17 @@ public class DiffableFunctionMarshaller implements ParameterizedFunction {
         sb.append("}\n");
 
         try {
-            Scanner scanner = new Scanner(null, new ByteArrayInputStream(
+            var scanner = new Scanner(null, new ByteArrayInputStream(
                     sb.toString().getBytes(StandardCharsets.UTF_8)), "UTF-8");
 
-            JaninoRestrictedClassLoader cl = new JaninoRestrictedClassLoader();
-            UnitCompiler unitCompiler = new UnitCompiler(
+            var cl = new JaninoRestrictedClassLoader();
+            var unitCompiler = new UnitCompiler(
                     new Parser(scanner).parseAbstractCompilationUnit(),
                     new ClassLoaderIClassLoader(cl));
 
-            boolean debug = true;
-            ClassFile[] classFiles = unitCompiler.compileUnit(debug, debug, debug);
-            Class<?> clazz = cl.defineClass(classPackage + "." + className,
+            var debug = true;
+            var classFiles = unitCompiler.compileUnit(debug, debug, debug);
+            var clazz = cl.defineClass(classPackage + "." + className,
                     classFiles[0].toByteArray());
 
             return (DiffableFunction) clazz.newInstance();
@@ -115,11 +115,11 @@ public class DiffableFunctionMarshaller implements ParameterizedFunction {
 
     @Override
     public double value(double[] xs) {
-        for (int i = 0; i < xs.length; ++i) {
+        for (var i = 0; i < xs.length; ++i) {
             inputScalars[i].setValue(inputValues, xs[i]);
         }
 
-        double y = f.value(inputValues);
+        var y = f.value(inputValues);
 
         if (y > maxOutputDebug) {
             maxOutputDebug = y;
@@ -151,11 +151,11 @@ public class DiffableFunctionMarshaller implements ParameterizedFunction {
 
     @Override
     public void parameterGradient(double[] output, double[] xs) {
-        for (int i = 0; i < xs.length; ++i) {
+        for (var i = 0; i < xs.length; ++i) {
             inputScalars[i].setValue(inputValues, xs[i]);
         }
 
-        for (int i = 0; i < numberOfParameters(); ++i) {
+        for (var i = 0; i < numberOfParameters(); ++i) {
             output[i] = f.partialDerive(inputValues, numberOfInputs() + i);
         }
     }
@@ -164,8 +164,8 @@ public class DiffableFunctionMarshaller implements ParameterizedFunction {
 
     @Override
     public void addToParameters(double[] deltas) {
-        for (int i = 0; i < numberOfParameters(); ++i) {
-            Scalar p = inputScalars[numInputs + i];
+        for (var i = 0; i < numberOfParameters(); ++i) {
+            var p = inputScalars[numInputs + i];
 
             p.setValue(inputValues, p.getValue(inputValues) + deltas[i]);
         }

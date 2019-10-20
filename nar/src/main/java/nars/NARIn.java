@@ -9,7 +9,7 @@ public interface NARIn {
     void input(Task t);
 
     default void input(Task... t) {
-        for (Task x : t) input(x);
+        for (var x : t) input(x);
     }
 
     /** parses one and only task */

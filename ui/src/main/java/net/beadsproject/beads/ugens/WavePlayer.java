@@ -111,16 +111,16 @@ public class WavePlayer extends UGen {
     @Override
     public void gen() {
         frequencyEnvelope.update();
-        float[] bo = bufOut[0];
+        var bo = bufOut[0];
         if (phaseEnvelope == null) {
-            for (int i = 0; i < bufferSize; i++) {
+            for (var i = 0; i < bufferSize; i++) {
                 frequency = frequencyEnvelope.getValue(0, i);
                 phase = (((phase + frequency * one_over_sr) % 1.0f) + 1.0f) % 1.0f;
                 bo[i] = tensor.getFractInterp((float) phase);
             }
         } else {
             phaseEnvelope.update();
-            for (int i = 0; i < bufferSize; i++) {
+            for (var i = 0; i < bufferSize; i++) {
                 bo[i] = tensor.getFractInterp(phaseEnvelope.getValue(0, i));
             }
         }

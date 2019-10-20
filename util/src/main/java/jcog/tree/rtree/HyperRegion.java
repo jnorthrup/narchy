@@ -55,16 +55,16 @@ public interface HyperRegion {
 
 
     default HyperRegion mbr(HyperRegion[] h) {
-        HyperRegion b = h[0];
-        for (int k = 1; k < h.length; k++)
+        var b = h[0];
+        for (var k = 1; k < h.length; k++)
             b = b.mbr(h[k]);
         return b;
     }
 
     static HyperRegion mbr(RNode[] h) {
-        HyperRegion b = h[0].bounds();
-        for (int k = 1; k < h.length; k++) {
-            RNode hk = h[k];
+        var b = h[0].bounds();
+        for (var k = 1; k < h.length; k++) {
+            var hk = h[k];
             if (hk == null)
                 break; //null terminator
             b = b.mbr(hk.bounds());
@@ -121,7 +121,7 @@ public interface HyperRegion {
     }
 
     default double rangeIfFinite(int dim, double elseValue) {
-        double r = range(dim);
+        var r = range(dim);
         if (!Double.isFinite(r)) {
             return elseValue;
         } else {
@@ -139,7 +139,7 @@ public interface HyperRegion {
      */
     default boolean contains(HyperRegion x) {
         if (this == x) return true;
-        int d = dim();
+        var d = dim();
         return IntStream.range(0, d).noneMatch(i -> coord(i, false) > x.coord(i, false) ||
                 coord(i, true) < x.coord(i, true));
     }
@@ -153,7 +153,7 @@ public interface HyperRegion {
      */
     default boolean intersects(HyperRegion x) {
         if (this == x) return true;
-        int d = dim();
+        var d = dim();
         return IntStream.range(0, d).noneMatch(i -> coord(i, false) > x.coord(i, true) ||
                 coord(i, true) < x.coord(i, false));
     }
@@ -166,8 +166,8 @@ public interface HyperRegion {
      * @return - cost
      */
     default double cost() {
-        int n = dim();
-        double a = IntStream.range(0, n).mapToDouble(this::cost).reduce(1.0, (a1, b) -> a1 * b);
+        var n = dim();
+        var a = IntStream.range(0, n).mapToDouble(this::cost).reduce(1.0, (a1, b) -> a1 * b);
         return a;
     }
 
@@ -177,9 +177,9 @@ public interface HyperRegion {
      * @return - perimeter
      */
     default double perimeter() {
-        int n = this.dim();
-        int bound = n;
-        double p = IntStream.range(0, bound).mapToDouble(this::cost).sum();
+        var n = this.dim();
+        var bound = n;
+        var p = IntStream.range(0, bound).mapToDouble(this::cost).sum();
         return p;
     }
 

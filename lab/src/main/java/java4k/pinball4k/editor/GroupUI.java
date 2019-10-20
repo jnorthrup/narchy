@@ -33,8 +33,8 @@ public class GroupUI extends JPanel implements ActionListener, ListSelectionList
 		deleteBtn.addActionListener(this);
 		upBtn.addActionListener(this);
 		downBtn.addActionListener(this);
-		
-		JPanel buttonPnl = new JPanel();
+
+		var buttonPnl = new JPanel();
 		buttonPnl.add(upBtn);
 		buttonPnl.add(downBtn);
 		buttonPnl.add(deleteBtn);
@@ -55,13 +55,13 @@ public class GroupUI extends JPanel implements ActionListener, ListSelectionList
 		if (e.getSource() == deleteBtn) {
 			groups.remove((ArrayList<LevelObject>) myList.getSelectedValue());
 		} else if (e.getSource() == upBtn) {
-			int selectedIdx = myList.getSelectedIndex();
+			var selectedIdx = myList.getSelectedIndex();
 			if (selectedIdx > 0) {
 				groups.move(myList.getSelectedIndex(), true);
 				myList.setSelectedIndex(selectedIdx - 1);
 			}
 		} else if (e.getSource() == downBtn) {
-			int selectedIdx = myList.getSelectedIndex();
+			var selectedIdx = myList.getSelectedIndex();
 			if (selectedIdx >= 0 && selectedIdx < groups.getSize() - 1) {
 				groups.move(myList.getSelectedIndex(), false);
 				myList.setSelectedIndex(selectedIdx + 1);
@@ -78,7 +78,7 @@ public class GroupUI extends JPanel implements ActionListener, ListSelectionList
 	    	       boolean isSelected,      
 	    	       boolean cellHasFocus)    
 		 {
-		     String s = value.toString();
+			 var s = value.toString();
 		     setText(s);
 		     
 		     if (isSelected) {
@@ -101,7 +101,7 @@ public class GroupUI extends JPanel implements ActionListener, ListSelectionList
 	@Override
     public void valueChanged(ListSelectionEvent e) {
 		if (myList.getSelectedValue() != null) {
-			ArrayList<LevelObject> group = (ArrayList<LevelObject>) myList.getSelectedValue();
+			var group = (ArrayList<LevelObject>) myList.getSelectedValue();
 			levelPanel.setSelection(group);
 		}
 		

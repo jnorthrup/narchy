@@ -31,7 +31,7 @@ public class SpaceKeys extends KeyAdapter implements Consumer<JoglWindow> {
         this.space = g;
 
 
-        Off on = g.video.onUpdate(this);
+        var on = g.video.onUpdate(this);
     }
 
     @Override
@@ -46,9 +46,9 @@ public class SpaceKeys extends KeyAdapter implements Consumer<JoglWindow> {
         }
 
         if (!queue.isEmpty()) {
-            float dt = j.dtS;
+            var dt = j.dtS;
             queue.clear(k -> {
-                FloatProcedure f = ((k >= 0) ? keyPressed : keyReleased).get((short) Math.abs(k));
+                var f = ((k >= 0) ? keyPressed : keyReleased).get((short) Math.abs(k));
                 if (f != null)
                     f.value(dt);
             });

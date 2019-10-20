@@ -42,8 +42,8 @@ public class DeductiveMeshTest {
 
         coords = new HashSet();
         edges = new HashSet();
-        for (int x = 0; x < dims[0]; x++) {
-            for (int y = 0; y < dims[1]; y++) {
+        for (var x = 0; x < dims[0]; x++) {
+            for (var y = 0; y < dims[1]; y++) {
                 coords.add($.p(x,y));
 
                 /*if (x > y)*/ {
@@ -59,11 +59,11 @@ public class DeductiveMeshTest {
             }
         }
 
-        NAR nar = n.nar;
-        for (Term edge : edges)
+        var nar = n.nar;
+        for (var edge : edges)
             nar.believe(edge);
 
-        Term term = q = edge(0, 0, dims[0] - 1, dims[1] - 1);
+        var term = q = edge(0, 0, dims[0] - 1, dims[1] - 1);
         ask(n, term);
 
         if (timeLimit > 0)

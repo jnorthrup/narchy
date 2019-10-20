@@ -58,21 +58,21 @@ public class MJOpen {
 		m_dMclVsn = 0; 
 
 		sFileName = CorrectFileName(sFileName);
-        String sFilePath = mjUI.sBaseURL + "p/" + sFileName;
+		var sFilePath = mjUI.sBaseURL + "p/" + sFileName;
 
 
-        MJTools mjT = new MJTools();
-		Vector vLines = new Vector();
-		boolean fOk = false;
+		var mjT = new MJTools();
+		var vLines = new Vector();
+		var fOk = false;
 		if (MJTools.LoadTextFile(sFilePath, vLines))
 		{
 			if (!vLines.isEmpty()) 
 			{
 
-				int i = 0;
-				String sFirstLine = "";
+				var i = 0;
+				var sFirstLine = "";
 				while (i < vLines.size()) {
-					String sBff = (String) vLines.elementAt(i);
+					var sBff = (String) vLines.elementAt(i);
 					if ((sBff.isEmpty()) || (sBff.startsWith("#C"))
 							|| (sBff.startsWith("#D"))
 							|| (sBff.length() > 0 && sBff.charAt(0) == '!')) {
@@ -119,7 +119,7 @@ public class MJOpen {
 	
 	
 	private static String CorrectFileName(String sFileName) {
-		String sNew = sFileName.replace(' ', '_');
+		var sNew = sFileName.replace(' ', '_');
 		sNew = sNew.replace('\'', '_');
 		return sNew;
 	}
@@ -129,7 +129,7 @@ public class MJOpen {
 	private void AddPattern() {
 		int minX, maxX, minY, maxY;
 		int state;
-		CACell cell = new CACell();
+		var cell = new CACell();
 
 		
 		mjUI.vDescr.clear();
@@ -137,8 +137,8 @@ public class MJOpen {
 
 		
 		CalcMinRectangle();
-        int sizeX = m_rectMaxX - m_rectMinX;
-        int sizeY = m_rectMaxY - m_rectMinY;
+		var sizeX = m_rectMaxX - m_rectMinX;
+		var sizeY = m_rectMaxY - m_rectMinY;
 		if ((m_BSizeX > 0) && (m_BSizeY > 0)) 
 		{
 			mjb.SetBoardSize(m_BSizeX, m_BSizeY);
@@ -156,12 +156,12 @@ public class MJOpen {
 
 		
 		mjb.Clear(false);
-        int dx = mjb.UnivSize.x / 2 - (m_rectMaxX + m_rectMinX) / 2 - 1;
-        int dy = mjb.GameType == MJRules.GAMTYP_2D ? mjb.UnivSize.y / 2 - (m_rectMaxY + m_rectMinY) / 2 - 1 : 0;
+		var dx = mjb.UnivSize.x / 2 - (m_rectMaxX + m_rectMinX) / 2 - 1;
+		var dy = mjb.GameType == MJRules.GAMTYP_2D ? mjb.UnivSize.y / 2 - (m_rectMaxY + m_rectMinY) / 2 - 1 : 0;
 		for (i = 0; i < m_vCells.size(); i++) {
 			cell = m_vCells.get(i);
-			int x = cell.x + dx;
-			int y = cell.y + dy;
+			var x = cell.x + dx;
+			var y = cell.y + dy;
 			mjb.SetCell(x, y, cell.state);
 		}
 
@@ -196,11 +196,11 @@ public class MJOpen {
 	
 	
 	private void CalcMinRectangle() {
-		CACell cell = new CACell();
+		var cell = new CACell();
 		m_rectMinX = m_rectMinY = 999999;
 		m_rectMaxX = m_rectMaxY = -999999;
 
-		for (CACell m_vCell : m_vCells) {
+		for (var m_vCell : m_vCells) {
 			cell = m_vCell;
 
 			if (m_rectMinX > cell.x)
@@ -225,9 +225,9 @@ public class MJOpen {
 		iRow105 = 0;
 
 
-		boolean fOk = false;
-		for (int i = 0; i < vLines.size(); i++) {
-			String bff = (String) vLines.elementAt(i);
+		var fOk = false;
+		for (var i = 0; i < vLines.size(); i++) {
+			var bff = (String) vLines.elementAt(i);
 			if (ProcessOneLIF105Line(bff))
 				fOk = true; 
 		}
@@ -248,7 +248,7 @@ public class MJOpen {
 
 		bff = bff.trim();
 
-		boolean fOk = false;
+		var fOk = false;
 		if (!bff.isEmpty()) {
 			
 			if ((bff.charAt(0) == '#') || (bff.charAt(0) == '!')
@@ -257,8 +257,8 @@ public class MJOpen {
 				String sTok;
 				if (bff.startsWith("#P"))
 				{
-					
-					StringTokenizer st = new StringTokenizer(bff);
+
+					var st = new StringTokenizer(bff);
 					st.nextToken(); 
 					iRow105 = 0;
 					if (st.hasMoreTokens())
@@ -270,15 +270,15 @@ public class MJOpen {
 					m_sRules = "23/3"; 
 				} else if (bff.startsWith("#R")) 
 				{
-					
-					StringTokenizer st = new StringTokenizer(bff);
+
+					var st = new StringTokenizer(bff);
 					st.nextToken(); 
 					if (st.hasMoreTokens())
 						m_sRules = st.nextToken();
 				} else if (bff.startsWith("#S")) 
 				{
-					
-					StringTokenizer st = new StringTokenizer(bff);
+
+					var st = new StringTokenizer(bff);
 					st.nextToken(); 
 					if (st.hasMoreTokens())
 						m_Speed = Integer.parseInt(st.nextToken());
@@ -299,9 +299,9 @@ public class MJOpen {
 				}
 			} else 
 			{
-				int iCol = 0;
-				int iNum = 0;
-				for (int i = 0; i < bff.length(); i++) {
+				var iCol = 0;
+				var iNum = 0;
+				for (var i = 0; i < bff.length(); i++) {
 					if ((bff.charAt(i) >= '0') && (bff.charAt(i) <= '9')) {
 						iNum = iNum * 10 + (bff.charAt(i) - '0');
 					} else {
@@ -310,7 +310,7 @@ public class MJOpen {
 						
 						if ((bff.charAt(i) == '*') || (bff.charAt(i) == 'o')
 								|| (bff.charAt(i) == 'O')) {
-							for (int j = 0; j <= iNum - 1; j++)
+							for (var j = 0; j <= iNum - 1; j++)
 								m_vCells.add(new CACell(
                                         iCol + j + iBlkX, iRow105 + iBlkY,
                                         (short) 1));
@@ -345,7 +345,7 @@ public class MJOpen {
 		iIniColMCL = 0;
 
 
-        String bff = (String) vLines.elementAt(0);
+		var bff = (String) vLines.elementAt(0);
 		if (bff.startsWith("#MCLife ")) 
 		{
 			bff = bff.substring(8);
@@ -359,8 +359,8 @@ public class MJOpen {
 
 		
 		m_sRules = "";
-		boolean fOk = false;
-		for (int i = 0; i < vLines.size(); i++) {
+		var fOk = false;
+		for (var i = 0; i < vLines.size(); i++) {
 			bff = (String) vLines.elementAt(i);
 			if (ProcessOneMCLLine(bff))
 				fOk = true; 
@@ -378,7 +378,7 @@ public class MJOpen {
 
 		bff = bff.trim();
 
-		boolean fOk = false;
+		var fOk = false;
 		if (!bff.isEmpty()) {
 
 			String sTok;
@@ -406,10 +406,10 @@ public class MJOpen {
 			} else if (bff.startsWith("#BOARD")) 
 			{
 				sTok = bff.substring(6).trim();
-				
-				StringTokenizer st = new StringTokenizer(sTok, "x", false);
+
+				var st = new StringTokenizer(sTok, "x", false);
 				if (st.hasMoreTokens()) {
-					String sTmp = st.nextToken();
+					var sTmp = st.nextToken();
 					m_BSizeX = Integer.valueOf(sTmp);
 					if (st.hasMoreTokens()) {
 						sTmp = st.nextToken();
@@ -439,8 +439,8 @@ public class MJOpen {
 			} else if (bff.startsWith("#L")) 
 			{
 				bff = bff.substring(2).trim();
-				int iAdd = 0;
-				for (int i = 0; i < bff.length(); i++) {
+				var iAdd = 0;
+				for (var i = 0; i < bff.length(); i++) {
 					if ((bff.charAt(i) >= '0') && (bff.charAt(i) <= '9')) {
 						iNumMCL = iNumMCL * 10 + (bff.charAt(i) - '0');
 					} else {
@@ -466,7 +466,7 @@ public class MJOpen {
 							} else if ((bff.charAt(i) >= 'A')
 									&& (bff.charAt(i) <= 'X')) {
 								
-								for (int j = 0; j < iNumMCL; j++) {
+								for (var j = 0; j < iNumMCL; j++) {
 									m_vCells
 											.add(new CACell(
                                                     iColMCL + j,
@@ -515,9 +515,9 @@ public class MJOpen {
 		fXYFound = false;
 
 
-		boolean fOk = false;
-		for (int i = 0; i < vLines.size(); i++) {
-			String bff = (String) vLines.elementAt(i);
+		var fOk = false;
+		for (var i = 0; i < vLines.size(); i++) {
+			var bff = (String) vLines.elementAt(i);
 			if (ProcessOneRLELine(bff))
 				fOk = true; 
 		}
@@ -531,10 +531,10 @@ public class MJOpen {
 
 		bff = bff.trim();
 
-		boolean fOk = false;
+		var fOk = false;
 		if (bff.startsWith("#D") || bff.startsWith("#C"))
 		{
-			String sTok = bff.substring(2);
+			var sTok = bff.substring(2);
 			if (!sTok.isEmpty()) 
 				if (sTok.charAt(0) == ' ')
 					sTok = sTok.substring(1);
@@ -548,17 +548,17 @@ public class MJOpen {
 					if ((!fXYFound) && bff.length() > 0 && bff.charAt(0) == 'x') 
 					{
 						fXYFound = true;
-						fOk = true; 
+						fOk = true;
 
-						
-						StringTokenizer stcomma = new StringTokenizer(bff, ",");
+
+						var stcomma = new StringTokenizer(bff, ",");
 						while (stcomma.hasMoreTokens()) {
-							String t = stcomma.nextToken();
-							
-							StringTokenizer stequal = new StringTokenizer(t,
+							var t = stcomma.nextToken();
+
+							var stequal = new StringTokenizer(t,
 									"= ");
-							String tokenType = stequal.nextToken();
-							String tokenValue = stequal.nextToken();
+							var tokenType = stequal.nextToken();
+							var tokenValue = stequal.nextToken();
 
                             switch (tokenType) {
                                 case "x":
@@ -584,7 +584,7 @@ public class MJOpen {
 						}
 					} else 
 					{
-						for (int i = 0; (i < bff.length()) && (!fEndFlg); i++) {
+						for (var i = 0; (i < bff.length()) && (!fEndFlg); i++) {
 							if ((bff.charAt(i) >= '0')
 									&& (bff.charAt(i) <= '9')) {
 								iNum = iNum * 10 + (bff.charAt(i) - '0');
@@ -633,7 +633,7 @@ public class MJOpen {
 											iTmp = 1;
 											break;
 										}
-										for (int j = 0; j <= iNum - 1; j++)
+										for (var j = 0; j <= iNum - 1; j++)
 											m_vCells.add(new CACell(iCol
                                                     + j, iRow, (short) iTmp));
 
@@ -666,9 +666,9 @@ public class MJOpen {
 		fXYFound = false;
 
 
-		boolean fOk = false;
-		for (int i = 0; i < vLines.size(); i++) {
-			String bff = (String) vLines.elementAt(i);
+		var fOk = false;
+		for (var i = 0; i < vLines.size(); i++) {
+			var bff = (String) vLines.elementAt(i);
 			if (ProcessOneLIF106Line(bff))
 				fOk = true; 
 		}
@@ -685,7 +685,7 @@ public class MJOpen {
 
 		bff = bff.trim();
 
-		boolean fOk = false;
+		var fOk = false;
 		if (!bff.isEmpty()) {
 			
 			if ((bff.charAt(0) == '#') || (bff.charAt(0) == '/')
@@ -697,15 +697,15 @@ public class MJOpen {
 					m_sRules = "23/3"; 
 				} else if (bff.startsWith("#R")) 
 				{
-					
-					StringTokenizer st = new StringTokenizer(bff);
+
+					var st = new StringTokenizer(bff);
 					st.nextToken(); 
 					if (st.hasMoreTokens())
 						m_sRules = st.nextToken();
 				} else if (bff.startsWith("#S")) 
 				{
-					
-					StringTokenizer st = new StringTokenizer(bff);
+
+					var st = new StringTokenizer(bff);
 					st.nextToken(); 
 					if (st.hasMoreTokens())
 						m_Speed = Integer.parseInt(st.nextToken());
@@ -726,12 +726,12 @@ public class MJOpen {
 				}
 			} else 
 			{
-				
-				StringTokenizer st = new StringTokenizer(bff);
+
+				var st = new StringTokenizer(bff);
 				if (st.hasMoreTokens()) {
-					int iCol = Integer.parseInt(st.nextToken());
+					var iCol = Integer.parseInt(st.nextToken());
 					if (st.hasMoreTokens()) {
-						int iRow = Integer.parseInt(st.nextToken());
+						var iRow = Integer.parseInt(st.nextToken());
 						m_vCells.add(new CACell(iCol, iRow, (short) 1));
 						fOk = true;
 					}

@@ -40,10 +40,10 @@ public class EvalTermBuffer extends TermBuffer {
         @Override
 		public Term applyPosCompound(Compound x) {
             if (x instanceof DeferredEval) {
-                DeferredEval e = (DeferredEval) x;
+                var e = (DeferredEval) x;
 
 
-                Term y = e.eval();
+                var y = e.eval();
                 //recurse
                 return y instanceof Bool ? y : apply(y);
             } else
@@ -102,7 +102,7 @@ public class EvalTermBuffer extends TermBuffer {
                 return this.value; //cached
             } else {
 
-                Term argsY = DeferredEvaluator.apply($.pFast(args)); //recurse apply to arguments before eval
+                var argsY = DeferredEvaluator.apply($.pFast(args)); //recurse apply to arguments before eval
                 Term e;
                 if (argsY == Null)
                     e = Null;
@@ -119,18 +119,18 @@ public class EvalTermBuffer extends TermBuffer {
     /** adds a deferred evaluation */
     private Term eval(Term[] s) {
 
-        InlineFunctor func = (InlineFunctor) s[1];
-        Subterms args = s[0].subterms();
+        var func = (InlineFunctor) s[1];
+        var args = s[0].subterms();
 
-        boolean deferred = !(func instanceof InstantFunctor);
+        var deferred = !(func instanceof InstantFunctor);
 
         if (deferred) {
-            DeferredEval e = new DeferredEval(func, args);
+            var e = new DeferredEval(func, args);
             eval.add(e); //TODO check for duplicates?
             return e;
         } else {
 
-            Term e = func.applyInline(args);
+            var e = func.applyInline(args);
             if (e == null)
                 e = Null;
             return e;
@@ -139,7 +139,7 @@ public class EvalTermBuffer extends TermBuffer {
 
     @Override
     public Term term(int volMax) {
-        Term y = super.term(volMax);
+        var y = super.term(volMax);
 
         if (y instanceof Compound && !eval.isEmpty()) {
             y = DeferredEvaluator.apply(y);

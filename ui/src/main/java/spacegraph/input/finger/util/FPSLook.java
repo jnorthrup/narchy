@@ -31,7 +31,7 @@ public class FPSLook extends SpaceMouse {
 
     @Override
     public void mouseDragged(MouseEvent e) {
-        short[] bd = e.getButtonsDown();
+        var bd = e.getButtonsDown();
         if (bd.length > 0 && bd[0] == 3 /* RIGHT */) {
             if (!dragging) {
                 prevX = e.getX();
@@ -39,8 +39,8 @@ public class FPSLook extends SpaceMouse {
                 dragging = true;
             }
 
-            int x = e.getX();
-            int y = e.getY();
+            var x = e.getX();
+            var y = e.getY();
 
             float dx = x - prevX;
             float dy = y - prevY;
@@ -55,11 +55,11 @@ public class FPSLook extends SpaceMouse {
     }
 
     public void drag(float dx, float dy) {
-        float angleSpeed = 0.001f;
+        var angleSpeed = 0.001f;
         h += -dx * angleSpeed;
         v += -dy * angleSpeed;
 
-        v3 direction = v(
+        var direction = v(
                 (float) (cos(this.v) * sin(h)),
                 sin(this.v),
                 (float) (cos(this.v) * cos(h))

@@ -77,8 +77,8 @@ public class XorShift128PlusRandom extends Random {
 
     @Override
     public long nextLong() {
-        long s1 = s0;
-        long s0 = this.s1;
+        var s1 = s0;
+        var s0 = this.s1;
         this.s0 = s0;
         s1 ^= s1 << 23;
         return (this.s1 = (s1 ^ s0 ^ (s1 >>> 17) ^ (s0 >>> 26))) + s0;
@@ -92,7 +92,7 @@ public class XorShift128PlusRandom extends Random {
     @Override
     public int nextInt(int n) {
 
-        int v = Math.abs((int) (nextLong())) % n;
+        var v = Math.abs((int) (nextLong())) % n;
         
         
         return v;
@@ -113,8 +113,8 @@ public class XorShift128PlusRandom extends Random {
             throw new IllegalArgumentException();
         
         while (true) {
-            long bits = nextLong() >>> 1;
-            long value = bits % n;
+            var bits = nextLong() >>> 1;
+            var value = bits % n;
             if (bits - value + (n - 1) >= 0)
                 return value;
         }
@@ -140,7 +140,7 @@ public class XorShift128PlusRandom extends Random {
         int i = bytes.length, n = 0;
         while (i != 0) {
             n = Math.min(i, 8);
-            for (long bits = nextLong(); n-- != 0; bits >>= 8) bytes[--i] = (byte) bits;
+            for (var bits = nextLong(); n-- != 0; bits >>= 8) bytes[--i] = (byte) bits;
         }
     }
 

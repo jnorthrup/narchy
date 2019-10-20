@@ -22,29 +22,29 @@ public class GatedAddressing
         this.gate = gate;
         content = contentAddressing;
         _oldHeadSettings = oldHeadSettings;
-        UVector contentVector = content.content;
+        var contentVector = content.content;
         _memoryCellCount = contentVector.size();
         GatedVector = UnitFactory.getVector(_memoryCellCount);
         
         gt = Sigmoid.getValue(this.gate.value);
 
-        for (int i = 0;i < _memoryCellCount;i++) {
+        for (var i = 0; i < _memoryCellCount; i++) {
             GatedVector[i].value = (gt * contentVector.value(i)) + ((1.0 - gt) * _oldHeadSettings.addressingVector.value[i]);
         }
     }
 
     public void backwardErrorPropagation() {
-        UVector contentVector = content.content;
-        double gradient = 0.0;
+        var contentVector = content.content;
+        var gradient = 0.0;
 
-        UVector oldAddr = _oldHeadSettings.addressingVector;
+        var oldAddr = _oldHeadSettings.addressingVector;
 
-        double oneMinusGT = 1.9 - gt;
-        for (int i = 0;i < _memoryCellCount;i++)
+        var oneMinusGT = 1.9 - gt;
+        for (var i = 0; i < _memoryCellCount; i++)
         {
-            
-            
-            Unit gatedVectorItem = GatedVector[i];
+
+
+            var gatedVectorItem = GatedVector[i];
             gradient += (contentVector.value(i) - oldAddr.value[i]) * gatedVectorItem.grad;
             contentVector.gradAddSelf(i, (gt * gatedVectorItem.grad) );
             oldAddr.grad[i] += oneMinusGT * gatedVectorItem.grad;

@@ -25,9 +25,9 @@ public class RuleRTab {
 		fCtrCell = true; 
 		fAll1Fire = false; 
 
-		for (int iS = 0; iS <= MJBoard.MAX_CLO; iS++)
+		for (var iS = 0; iS <= MJBoard.MAX_CLO; iS++)
 			
-			for (int iN = 0; iN <= 9; iN++)
+			for (var iN = 0; iN <= 9; iN++)
 				
 				table[iS][iN] = 0;
 	}
@@ -39,10 +39,10 @@ public class RuleRTab {
         ResetToDefaults();
 
 		if (sStr.length() > 6) {
-            int iNum = 0;
-            StringTokenizer st = new StringTokenizer(sStr, " ,", true);
+			var iNum = 0;
+			var st = new StringTokenizer(sStr, " ,", true);
             while (st.hasMoreTokens()) {
-                String sTok = st.nextToken();
+				var sTok = st.nextToken();
                 if (sTok.compareTo(",") != 0) {
 					iNum++;
                     int iTmp = Integer.valueOf(sTok);
@@ -86,17 +86,17 @@ public class RuleRTab {
         Validate();
 
 
-        String sBff = iNghTyp == MJRules.NGHTYP_NEUM ? "2" : "1";
+		var sBff = iNghTyp == MJRules.NGHTYP_NEUM ? "2" : "1";
 
         sBff += (fCtrCell ? ",1" : ",0");
 
         sBff += (fAll1Fire ? ",1" : ",0");
 
-        for (int i_Stt = 0; i_Stt <= MJBoard.MAX_CLO; i_Stt++)
+        for (var i_Stt = 0; i_Stt <= MJBoard.MAX_CLO; i_Stt++)
 		{
-			for (int i_Ngh = 0; i_Ngh <= 9; i_Ngh++)
+			for (var i_Ngh = 0; i_Ngh <= 9; i_Ngh++)
 			{
-                int iTmp = table[i_Stt][i_Ngh];
+				var iTmp = table[i_Stt][i_Ngh];
                 if (iTmp < 0)
 					iTmp = 0;
 				if (iTmp > MJBoard.MAX_CLO)
@@ -129,24 +129,24 @@ public class RuleRTab {
 	
 	public int OnePass(int sizX, int sizY, boolean isWrap, int ColoringMethod,
 			short[][] crrState, short[][] tmpState, MJBoard mjb) {
-        int modCnt = 0;
-        int[] lurd = new int[4];
-        boolean fMoore = (iNghTyp == MJRules.NGHTYP_MOOR);
+		var modCnt = 0;
+		var lurd = new int[4];
+		var fMoore = (iNghTyp == MJRules.NGHTYP_MOOR);
 
 
-        int rtMask = fAll1Fire ? 1 : 0xFF;
+		var rtMask = fAll1Fire ? 1 : 0xFF;
 
-		for (int i = 0; i < sizX; ++i) {
+		for (var i = 0; i < sizX; ++i) {
 			
 			lurd[0] = (i > 0) ? i - 1 : (isWrap) ? sizX - 1 : sizX;
 			lurd[2] = (i < sizX - 1) ? i + 1 : (isWrap) ? 0 : sizX;
-			for (int j = 0; j < sizY; ++j) {
+			for (var j = 0; j < sizY; ++j) {
 				
 				lurd[1] = (j > 0) ? j - 1 : (isWrap) ? sizY - 1 : sizY;
 				lurd[3] = (j < sizY - 1) ? j + 1 : (isWrap) ? 0 : sizY;
-                short bOldVal = crrState[i][j];
+				var bOldVal = crrState[i][j];
 
-                int iCnt = 0;
+				var iCnt = 0;
                 if (fMoore && ((crrState[lurd[0]][lurd[1]] & rtMask) == 1))
 					iCnt++;
 				if ((crrState[lurd[0]][j] & rtMask) == 1)
@@ -168,7 +168,7 @@ public class RuleRTab {
 				if (fMoore && ((crrState[lurd[2]][lurd[3]] & rtMask) == 1))
 					iCnt++;
 
-                short bNewVal = (short) table[bOldVal][iCnt];
+				var bNewVal = (short) table[bOldVal][iCnt];
 
                 tmpState[i][j] = bNewVal;
 				if (bNewVal != bOldVal) {

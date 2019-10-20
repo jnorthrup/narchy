@@ -33,16 +33,16 @@ public class TaskRule extends TaskMatch {
 
         this.input = $.$(input);
         /** version of output with the original GenericVariable's, for display or reference purposes */
-        Compound outputRaw = (Compound) Narsese.term(output, false);
+        var outputRaw = (Compound) Narsese.term(output, false);
 
-        VariableNormalization varNorm = new VariableNormalization(outputRaw.subs() /* est */, 0);
+        var varNorm = new VariableNormalization(outputRaw.subs() /* est */, 0);
 
         this.output = compoundOrNull(varNorm.applyCompound(outputRaw));
         if (this.output == null)
             throw new RuntimeException("output pattern is not compound");
 
         /** mapping of input variables to normalized variables */
-        Map<Variable, Variable> io = varNorm.map;
+        var io = varNorm.map;
         this.id = $.impl($.p(this.input, outputRaw, this.output), $.varQuery("what")).normalize();
 
 
@@ -79,7 +79,7 @@ public class TaskRule extends TaskMatch {
     public boolean test(Task x) {
         if (super.test(x)) {
 
-            MySubUnify match = new MySubUnify(x);
+            var match = new MySubUnify(x);
 
             try {
                 match.unify(input, x.term());
@@ -102,7 +102,7 @@ public class TaskRule extends TaskMatch {
     @Override
     protected void accept(Task X, Map<Variable, Term> xy) {
 
-        Term y = output.replace(xy);
+        var y = output.replace(xy);
         if (y instanceof Variable || y instanceof Bool) return;
 
         
@@ -151,7 +151,7 @@ public class TaskRule extends TaskMatch {
         if (!Task.validTaskTerm(y, X.punc(), false))
             return;
 
-        Task Y = Task.clone(X, y);
+        var Y = Task.clone(X, y);
         if (Y != null) {
             logger.info("{}\t{}", X, Y);
             nar.input(Y);

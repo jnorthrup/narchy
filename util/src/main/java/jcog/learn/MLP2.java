@@ -62,7 +62,7 @@ public class MLP2 {
 	
 	private void initMemory(int nLayers){
 		layer = new MLPLayer[nLayers];
-		for (int i = 0; i < nLayers; i++)
+		for (var i = 0; i < nLayers; i++)
 			layer[i] = new MLPLayer();
 	}
 	
@@ -71,10 +71,10 @@ public class MLP2 {
 	// +----------------------------------+
 	
 	private void initCoefficient(){
-		int nLayers = layer.length;
+		var nLayers = layer.length;
 		Expected = new float [layer[nLayers - 1].size];
 		
-		for (int i = 0; i < nLayers; i++){
+		for (var i = 0; i < nLayers; i++){
 			if (i != 0)
 				layer[i].theta = new float [layer[i].size];
 		
@@ -86,11 +86,11 @@ public class MLP2 {
 			}
 		}
 		
-		for (int i = 0; i < nLayers - 1; i++)
-			for (int j = 0; j < layer[i].size; j++)
-				for (int v = 0; v < layer[i + 1].size; v++){
+		for (var i = 0; i < nLayers - 1; i++)
+			for (var j = 0; j < layer[i].size; j++)
+				for (var v = 0; v < layer[i + 1].size; v++){
 					layer[i].weight[j][v] = rng.nextFloat(); // (float)(randomInt(10)) / (10.0f * layer[i + 1].size);
-					int t = randomInt(2);
+					var t = randomInt(2);
 					if (t == 1) layer[i].weight[j][v] = - layer[i].weight[j][v];
 				}
 	}
@@ -233,7 +233,7 @@ public class MLP2 {
 	}
 	
 	public void setLayer(int layerIndex, float[][] weight){
-	    for (int i = 0; i < layer[layerIndex].size; i++)
+	    for (var i = 0; i < layer[layerIndex].size; i++)
 			if (layer[layerIndex + 1].size >= 0)
 				System.arraycopy(weight[i], 0, layer[layerIndex].weight[i], 0, layer[layerIndex + 1].size);
 	}
@@ -297,12 +297,12 @@ public class MLP2 {
     // +----------------------+
 
 	private void Perceptron(){
-		int nLayers = layer.length;
+		var nLayers = layer.length;
 
-		for (int i = 1; i < nLayers; i++)
-			for (int j = 0; j < layer[i].size; j++){
-				float net = 0.0f;
-				for (int v = 0; v < layer[i - 1].size; v++)
+		for (var i = 1; i < nLayers; i++)
+			for (var j = 0; j < layer[i].size; j++){
+				var net = 0.0f;
+				for (var v = 0; v < layer[i - 1].size; v++)
 					net += layer[i - 1].out[v] * layer[i - 1].weight[v][j];
 				layer[i].out[j] = Util.sigmoid(net);
 			}	
@@ -313,10 +313,10 @@ public class MLP2 {
     // +---------------+
 
 	private float SquareError(){
-		float res = 0.0f;
-		int nLayers = layer.length;
-		for (int i = 0; i < layer[nLayers - 1].size; i++){
-			float diff = Expected[i] - layer[nLayers - 1].out[i];
+		var res = 0.0f;
+		var nLayers = layer.length;
+		for (var i = 0; i < layer[nLayers - 1].size; i++){
+			var diff = Expected[i] - layer[nLayers - 1].out[i];
 			res += 0.5 * diff * diff;
 		}
 		
@@ -328,18 +328,18 @@ public class MLP2 {
 	// +-----------------------+
 
     private void initGradients(){
-		int nLayers = layer.length;
-        for (int i = 0; i < layer[nLayers - 1].size; i++){
-			float out = layer[nLayers - 1].out[i];
+		var nLayers = layer.length;
+        for (var i = 0; i < layer[nLayers - 1].size; i++){
+			var out = layer[nLayers - 1].out[i];
 			layer[nLayers - 1].theta[i] = out * (1 - out) * (Expected[i] - out);
 		}
 	
-		for (int i = 1; i < nLayers - 1; i++)
-			for (int j = 0; j < layer[i].size; j++){
-				float sum = 0.0f;
-				for (int v = 0; v < layer[i + 1].size; v++)
+		for (var i = 1; i < nLayers - 1; i++)
+			for (var j = 0; j < layer[i].size; j++){
+				var sum = 0.0f;
+				for (var v = 0; v < layer[i + 1].size; v++)
 					sum += layer[i + 1].theta[v] * layer[i].weight[j][v];
-				float out = layer[i].out[j];
+				var out = layer[i].out[j];
 				layer[i].theta[j] = out * (1 - out) * sum;
 			}
     }
@@ -351,13 +351,13 @@ public class MLP2 {
 	private void StochasticBackPropagation(){		
 		initGradients();
 
-		int nLayers = layer.length;
-		for (int i = 0; i < nLayers - 1; i++)
-			for (int j = 0; j < layer[i].size; j++)
-				for (int v = 0; v < layer[i + 1].size; v++){
-					float delta = layer[i].delta[j][v];
-					float out = layer[i].out[j];
-					float theta = layer[i + 1].theta[v];
+		var nLayers = layer.length;
+		for (var i = 0; i < nLayers - 1; i++)
+			for (var j = 0; j < layer[i].size; j++)
+				for (var v = 0; v < layer[i + 1].size; v++){
+					var delta = layer[i].delta[j][v];
+					var out = layer[i].out[j];
+					var theta = layer[i + 1].theta[v];
 					
 					layer[i].delta[j][v] = LearningRate * theta * out + Momentum * delta;
 					layer[i].weight[j][v] += layer[i].delta[j][v];
@@ -371,20 +371,20 @@ public class MLP2 {
 	public float StochasticLearning(float[] Input, float[] ExpectedOutput){
 		if (layer[0].size >= 0) System.arraycopy(Input, 0, layer[0].out, 0, layer[0].size);
 
-		int nLayers = layer.length;
+		var nLayers = layer.length;
 		if (layer[nLayers - 1].size >= 0) System.arraycopy(ExpectedOutput, 0, Expected, 0, layer[nLayers - 1].size);
 		
-		for (int i = 0; i < nLayers - 1; i++) {
-			for (int j = 0; j < layer[i].size; j++) {
+		for (var i = 0; i < nLayers - 1; i++) {
+			for (var j = 0; j < layer[i].size; j++) {
 				Arrays.fill(layer[i].delta[j], 0f);
 			}
 		}
 
-		for (int iter = 0; iter < Epochs; iter++){
+		for (var iter = 0; iter < Epochs; iter++){
 			Perceptron();
 			StochasticBackPropagation();
-			
-			float error = SquareError();
+
+			var error = SquareError();
 			if (error < Epsilon)
 			    return error;
 		}
@@ -409,12 +409,12 @@ public class MLP2 {
 	private void BatchBackPropagation(int nSamples){
 	    initGradients();
 
-		int nLayers = layer.length;
-		for (int i = 0; i < nLayers - 1; i++)
-			for (int j = 0; j < layer[i].size; j++)
-				for (int v = 0; v < layer[i + 1].size; v++){
-					float out = layer[i].out[j];
-					float theta = layer[i + 1].theta[v];
+		var nLayers = layer.length;
+		for (var i = 0; i < nLayers - 1; i++)
+			for (var j = 0; j < layer[i].size; j++)
+				for (var v = 0; v < layer[i + 1].size; v++){
+					var out = layer[i].out[j];
+					var theta = layer[i + 1].theta[v];
 					
 					layer[i].delta[j][v] += (LearningRate * theta * out) / nSamples;
 				}
@@ -425,21 +425,21 @@ public class MLP2 {
 	// +----------------+
 	
 	public float BatchLearning(int nSamples, float[][] Input, float[][] ExpectedOutput, String WeightsFileName) {
-		int nLayers = layer.length;
-		for (int iter = 0; iter < Epochs; iter++){
+		var nLayers = layer.length;
+		for (var iter = 0; iter < Epochs; iter++){
 	        System.out.print("Iteration " + iter + ": ");
 	        
-	        for (int i = 0; i < nLayers - 1; i++) {
-				for (int j = 0; j < layer[i].size; j++) {
+	        for (var i = 0; i < nLayers - 1; i++) {
+				for (var j = 0; j < layer[i].size; j++) {
 					Arrays.fill(layer[i].delta[j], 0f);
 //					for (int v = 0; v < layer[i + 1].size; v++)
 //						layer[i].delta[j][v] = 0.0f;
 				}
 			}
+
+			var ReconstructionError = 0.0f;
 	        
-	        float ReconstructionError = 0.0f;
-	        
-	        for (int sample = 0; sample < nSamples; sample++){
+	        for (var sample = 0; sample < nSamples; sample++){
 				if (layer[0].size >= 0) System.arraycopy(Input[sample], 0, layer[0].out, 0, layer[0].size);
 
 				if (layer[nLayers - 1].size >= 0)
@@ -451,10 +451,10 @@ public class MLP2 {
 			    BatchBackPropagation(nSamples);
 	        }
 	        
-	        for (int i = 0; i < nLayers - 1; i++)
-			    for (int j = 0; j < layer[i].size; j++)
-				    for (int v = 0; v < layer[i + 1].size; v++){
-					    float RegularizationTerm = LearningRate * Lambda * layer[i].weight[j][v] / nSamples;
+	        for (var i = 0; i < nLayers - 1; i++)
+			    for (var j = 0; j < layer[i].size; j++)
+				    for (var v = 0; v < layer[i + 1].size; v++){
+						var RegularizationTerm = LearningRate * Lambda * layer[i].weight[j][v] / nSamples;
 					    
 					    layer[i].weight[j][v] += layer[i].delta[j][v] - RegularizationTerm;
 					}
@@ -463,8 +463,8 @@ public class MLP2 {
 //		    writeWeights(WeightsFileName);
 		    System.out.println("Reconstruction Error = " + (ReconstructionError));
 	    }
-	    
-	    float ReconstructionError = computeReconstructionError(nSamples, Input, ExpectedOutput);
+
+		var ReconstructionError = computeReconstructionError(nSamples, Input, ExpectedOutput);
 	    System.out.println("Reconstruction Error = " + (ReconstructionError));
 	    
 	    return ReconstructionError;
@@ -486,9 +486,9 @@ public class MLP2 {
 	// +----------------------------------+
 	
 	public float computeReconstructionError(int nSamples, float[][] Input, float[][] ExpectedOutput){
-	    float ReconstructionError = 0.0f;
-		int nLayers = layer.length;
-	    for (int sample = 0; sample < nSamples; sample++){
+		var ReconstructionError = 0.0f;
+		var nLayers = layer.length;
+	    for (var sample = 0; sample < nSamples; sample++){
 			if (layer[0].size >= 0) System.arraycopy(Input[sample], 0, layer[0].out, 0, layer[0].size);
 			        
 			Perceptron();
@@ -511,7 +511,7 @@ public class MLP2 {
 		
 		Perceptron();
 
-		int nLayers = layer.length;
+		var nLayers = layer.length;
 
 		if (layer[nLayers - 1].size >= 0)
 			System.arraycopy(layer[nLayers - 1].out, 0, PredictedOutput, 0, layer[nLayers - 1].size);
@@ -522,7 +522,7 @@ public class MLP2 {
 	// +-------------------------------------------------------------+
 	
 	public float Predict(float[] Input, float[] ExpectedOutput, float[] PredictedOutput){
-		int nLayers = layer.length;
+		var nLayers = layer.length;
 
 		if (layer[0].size >= 0) System.arraycopy(Input, 0, layer[0].out, 0, layer[0].size);
 		
@@ -541,9 +541,9 @@ public class MLP2 {
 	// +-----------------------------------+
 	
 	public void Predict(int nSamples, float[][] Input, float[][] PredictedOutput){
-		int nLayers = layer.length;
+		var nLayers = layer.length;
 
-		for (int sample = 0; sample < nSamples; sample++){
+		for (var sample = 0; sample < nSamples; sample++){
 			if (layer[0].size >= 0) System.arraycopy(Input[sample], 0, layer[0].out, 0, layer[0].size);
 		
 		    Perceptron();
@@ -558,9 +558,9 @@ public class MLP2 {
 	// +----------------------------------------------------------------+
 	
 	public float Predict(int nSamples, float[][] Input, float[][] ExpectedOutput, float[][] PredictedOutput){
-	    float ReconstructionError = 0.0f;
-	    int nLayers = layer.length;
-	    for (int sample = 0; sample < nSamples; sample++){
+		var ReconstructionError = 0.0f;
+		var nLayers = layer.length;
+	    for (var sample = 0; sample < nSamples; sample++){
 			if (layer[0].size >= 0) System.arraycopy(Input[sample], 0, layer[0].out, 0, layer[0].size);
 		
 		    Perceptron();

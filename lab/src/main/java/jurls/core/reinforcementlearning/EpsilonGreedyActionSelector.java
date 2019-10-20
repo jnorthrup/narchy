@@ -15,19 +15,18 @@ public class EpsilonGreedyActionSelector implements ActionSelector {
 
     @Override
     public ActionValuePair[] fromQValuesToProbabilities(double epsilon, ActionValuePair[] actionValuePairs) {
-        int bestPair = 0;
+        var bestPair = 0;
 
-        for (int i = 0; i < actionValuePairs.length; ++i) {
+        for (var i = 0; i < actionValuePairs.length; ++i) {
             if (actionValuePairs[i].getV() > actionValuePairs[bestPair].getV()) {
                 bestPair = i;
             }
         }
 
-        
 
-        ActionValuePair[] ret = new ActionValuePair[actionValuePairs.length];
+        var ret = new ActionValuePair[actionValuePairs.length];
 
-        for (int i = 0; i < actionValuePairs.length; ++i) {
+        for (var i = 0; i < actionValuePairs.length; ++i) {
             ret[i] = new ActionValuePair(
                     actionValuePairs[i].getA(),
                     i == bestPair ? 1 - epsilon : epsilon / (ret.length - 1)

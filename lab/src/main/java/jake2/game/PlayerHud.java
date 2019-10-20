@@ -106,7 +106,7 @@ public class PlayerHud {
                     if (!client.inuse)
                         continue;
                     
-                    for (int n = 1; n < GameItemList.itemlist.length; n++) {
+                    for (var n = 1; n < GameItemList.itemlist.length; n++) {
                         
                         if (GameItemList.itemlist[n] != null)
                             if ((GameItemList.itemlist[n].flags & Defines.IT_KEY) != 0)
@@ -125,7 +125,7 @@ public class PlayerHud {
         GameBase.level.exitintermission = false;
 
 
-        edict_t ent = GameBase.G_FindEdict(null, GameBase.findByClass,
+        var ent = GameBase.G_FindEdict(null, GameBase.findByClass,
                 "info_player_intermission");
         if (ent == null) { 
                            
@@ -166,27 +166,27 @@ public class PlayerHud {
      * ==================
      */
     public static void DeathmatchScoreboardMessage(edict_t ent, edict_t killer) {
-        StringBuilder string = new StringBuilder(1400);
+        var string = new StringBuilder(1400);
 
         int stringlength;
         int i;
-        int[] sorted = new int[Defines.MAX_CLIENTS];
-        int[] sortedscores = new int[Defines.MAX_CLIENTS];
+        var sorted = new int[Defines.MAX_CLIENTS];
+        var sortedscores = new int[Defines.MAX_CLIENTS];
         edict_t cl_ent;
 
 
-        int total = 0;
+        var total = 0;
         for (i = 0; i < GameBase.game.maxclients; i++) {
             cl_ent = GameBase.g_edicts[1 + i];
             if (!cl_ent.inuse || GameBase.game.clients[i].resp.spectator)
                 continue;
-            int score = GameBase.game.clients[i].resp.score;
+            var score = GameBase.game.clients[i].resp.score;
             int j;
             for (j = 0; j < total; j++) {
                 if (score > sortedscores[j])
                     break;
             }
-            for (int k = total; k > j; k--) {
+            for (var k = total; k > j; k--) {
                 sorted[k] = sorted[k - 1];
                 sortedscores[k] = sortedscores[k - 1];
             }
@@ -202,12 +202,12 @@ public class PlayerHud {
             total = 12;
         
         for (i = 0; i < total; i++) {
-            gclient_t cl = GameBase.game.clients[sorted[i]];
+            var cl = GameBase.game.clients[sorted[i]];
             cl_ent = GameBase.g_edicts[1 + sorted[i]];
 
-            int picnum = game_import_t.imageindex("i_fixme");
-            int x = (i >= 6) ? 160 : 0;
-            int y = 32 + 32 * (i % 6);
+            var picnum = game_import_t.imageindex("i_fixme");
+            var x = (i >= 6) ? 160 : 0;
+            var y = 32 + 32 * (i % 6);
 
 
             String tag;
@@ -290,8 +290,8 @@ public class PlayerHud {
     public static void G_SetStats(edict_t ent) {
 
 
-        gclient_t C = ent.client;
-        short[] S = C.ps.stats;
+        var C = ent.client;
+        var S = C.ps.stats;
 
         S[Defines.STAT_HEALTH_ICON] = (short) GameBase.level.pic_health;
         S[Defines.STAT_HEALTH] = (short) ent.health;
@@ -313,8 +313,8 @@ public class PlayerHud {
         }
 
 
-        int power_armor_type = GameItems.PowerArmorType(ent);
-        int cells = 0;
+        var power_armor_type = GameItems.PowerArmorType(ent);
+        var cells = 0;
         if (power_armor_type != 0) {
             cells = C.pers.inventory[GameItems.ITEM_INDEX(GameItems.FindItem("cells"))];
             if (cells == 0) { 
@@ -327,7 +327,7 @@ public class PlayerHud {
             }
         }
 
-        int index = GameItems.ArmorIndex(ent);
+        var index = GameItems.ArmorIndex(ent);
         if (power_armor_type != 0
                 && (0 == index || 0 != (GameBase.level.framenum & 8))) { 
                                                                          
@@ -442,8 +442,8 @@ public class PlayerHud {
      */
     public static void G_CheckChaseStats(edict_t ent) {
 
-        for (int i = 1; i <= GameBase.maxclients.value; i++) {
-            gclient_t cl = GameBase.g_edicts[i].client;
+        for (var i = 1; i <= GameBase.maxclients.value; i++) {
+            var cl = GameBase.g_edicts[i].client;
             if (!GameBase.g_edicts[i].inuse || cl.chase_target != ent)
                 continue;
             
@@ -460,7 +460,7 @@ public class PlayerHud {
      * ===============
      */
     public static void G_SetSpectatorStats(edict_t ent) {
-        gclient_t cl = ent.client;
+        var cl = ent.client;
 
         if (null == cl.chase_target)
             G_SetStats(ent);
@@ -488,7 +488,7 @@ public class PlayerHud {
      * HelpComputer. Draws the help computer.
      */
     public static void HelpComputer(edict_t ent) {
-        StringBuilder sb = new StringBuilder(256);
+        var sb = new StringBuilder(256);
         String sk;
     
         if (GameBase.skill.value == 0)

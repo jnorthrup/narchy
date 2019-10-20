@@ -55,7 +55,7 @@ public class FlaggingNgramsTerminalSetBuilder implements TerminalSetBuilder{
     
     
     public void setup(Configuration configuration, DataSet dataset) {
-        Map<String, String> parameters = configuration.getTerminalSetBuilderParameters();
+        var parameters = configuration.getTerminalSetBuilderParameters();
         if(configuration.getTerminalSetBuilderParameters()!=null){
             if(parameters.containsKey("cumulateScoreMultipliers")){
                 NUMBER_NGRAMS = Integer.parseInt(parameters.get("numberNgrams"));
@@ -64,19 +64,18 @@ public class FlaggingNgramsTerminalSetBuilder implements TerminalSetBuilder{
                 PENALIZE_NEGATIVES_NGRAMS = Boolean.parseBoolean(parameters.get("penalizeNegativeNgrams"));
             }
         }
-        
-        
-        CharHashSet charset = new CharHashSet();
-       
-        
-        
-        NodeFactory nodeFactory = configuration.getNodeFactory(); 
+
+
+        var charset = new CharHashSet();
+
+
+        var nodeFactory = configuration.getNodeFactory();
         Set<Leaf> terminalSet = new HashSet<>(nodeFactory.getTerminalSet());
 
-        List<Example> examples = dataset.getExamples();
+        var examples = dataset.getExamples();
         List<Example> positiveExamples = new ArrayList<>();
         List<Example> negativeExamples = new ArrayList<>();
-        for(Example example : examples){
+        for(var example : examples){
             if(!example.getMatch().isEmpty()){
                 positiveExamples.add(example);
             } else {
@@ -89,15 +88,15 @@ public class FlaggingNgramsTerminalSetBuilder implements TerminalSetBuilder{
          * +1 for each positive example which contains it
          */
         Map<String, Long> ngrams = new HashMap<>();
-        for (Example example : positiveExamples) {
+        for (var example : positiveExamples) {
             
-            for (char c : example.getString().toCharArray()) {
+            for (var c : example.getString().toCharArray()) {
                     charset.add(c);
             }
-            
-            Set<String> subparts = Utils.subparts(example.getString());
-            for (String x : subparts) {
-                long v = ngrams.containsKey(x) ? ngrams.get(x) : 0;
+
+            var subparts = Utils.subparts(example.getString());
+            for (var x : subparts) {
+                var v = ngrams.containsKey(x) ? ngrams.get(x) : 0;
                 v++;
                 ngrams.put(x, v);
             }
@@ -109,10 +108,10 @@ public class FlaggingNgramsTerminalSetBuilder implements TerminalSetBuilder{
          * We like to reward ngrams which are in the positives but not in the negatives
          */
         if(PENALIZE_NEGATIVES_NGRAMS){
-            for (Example example : negativeExamples) {           
-                Set<String> subparts = Utils.subparts(example.getString());
-                for (String x : subparts) {
-                    long v = ngrams.containsKey(x) ? ngrams.get(x) : 0;
+            for (var example : negativeExamples) {
+                var subparts = Utils.subparts(example.getString());
+                for (var x : subparts) {
+                    var v = ngrams.containsKey(x) ? ngrams.get(x) : 0;
                     v--;
                     ngrams.put(x, v);
                 }
@@ -122,9 +121,9 @@ public class FlaggingNgramsTerminalSetBuilder implements TerminalSetBuilder{
         ngrams = sortByValues(ngrams);
         
         long numberNgrams = 0; 
-        for (Map.Entry<String, Long> entry : ngrams.entrySet()) {
-                String  ngram = entry.getKey();
-                Long v = entry.getValue();
+        for (var entry : ngrams.entrySet()) {
+            var ngram = entry.getKey();
+            var v = entry.getValue();
                 if(v <= 0){
                     
                     continue;
@@ -141,7 +140,7 @@ public class FlaggingNgramsTerminalSetBuilder implements TerminalSetBuilder{
         
         
         
-        for (char c : charset.toSortedArray()) {
+        for (var c : charset.toSortedArray()) {
             terminalSet.add(new Constant(Utils.escape(c)));
         }
         
@@ -162,10 +161,10 @@ public class FlaggingNgramsTerminalSetBuilder implements TerminalSetBuilder{
      */
     static <K, V extends Comparable<V>> Map<K, V> sortByValues(Map<K, V> map) {
         Comparator<K> valueComparator = (k1, k2) -> {
-            int compare = map.get(k2).compareTo(map.get(k1));
+            var compare = map.get(k2).compareTo(map.get(k1));
             if (compare == 0) {
-                String s1 = (String) k1;
-                String s2 = (String) k2;
+                var s1 = (String) k1;
+                var s2 = (String) k2;
                 compare = Integer.compare(s2.length(), s1.length());
                 if(compare == 0){
                     compare = s1.compareTo(s2);

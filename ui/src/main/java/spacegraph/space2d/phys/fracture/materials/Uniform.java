@@ -16,14 +16,14 @@ public class Uniform extends Material {
 
     @Override
     public v2[] focee(v2 point, v2 velocity) {
-        int num = 32;
-        v2[] focee = new v2[num];
+        var num = 32;
+        var focee = new v2[num];
 
-        float scale = 2 * m_shattering;
+        var scale = 2 * m_shattering;
 
-        for (int i = 0; i < num; ++i) {
-            float x = r.nextFloat() - 0.5f; 
-            float y = r.nextFloat() - 0.5f; 
+        for (var i = 0; i < num; ++i) {
+            var x = r.nextFloat() - 0.5f;
+            var y = r.nextFloat() - 0.5f;
 
             focee[i] = new v2(point.x + x * scale, point.y + y * scale);
         }

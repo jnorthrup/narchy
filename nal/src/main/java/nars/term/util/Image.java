@@ -38,23 +38,23 @@ public enum Image {
 
         if (t instanceof Compound && t.opID() == INH.id) {
 
-            int prodSub = intOrExt ? 1 : 0;
+            var prodSub = intOrExt ? 1 : 0;
 
-            Term prod = t.sub(prodSub);
+            var prod = t.sub(prodSub);
 
             if (prod instanceof Compound && prod.opID() == PROD.id) {
 
-                Subterms ss = ((Compound)prod).subtermsDirect();
-                int n = ss.subs();
+                var ss = ((Compound)prod).subtermsDirect();
+                var n = ss.subs();
                 if (n >= NAL.term.imageTransformSubMin /*&& (ss.structureSurface() & IMG.bit) == 0*/) {
-                    Img target = intOrExt ? ImgInt : ImgExt;
+                    var target = intOrExt ? ImgInt : ImgExt;
 
-                    int index = ss.indexOf(x);
+                    var index = ss.indexOf(x);
                     if (index != -1) {
 
-                        Term[] qq = new Term[n + 1];
+                        var qq = new Term[n + 1];
                         qq[0] = t.sub(1 - prodSub);
-                        for (int i = 0; i < n; i++) {
+                        for (var i = 0; i < n; i++) {
                             Term y;
                             if (i == index) {
                                 y = target;
@@ -64,7 +64,7 @@ public enum Image {
                             qq[i + 1] = y;
                         }
 
-                        Term q = PROD.the(qq);
+                        var q = PROD.the(qq);
                         return INH.the(intOrExt ? new Term[] { q, x } : new Term[] { x, q });
                     }
                 }
@@ -79,11 +79,11 @@ public enum Image {
 
     public static Term imageNormalize(Term _x) {
 
-        boolean neg = _x instanceof Neg;
-        Term x = neg ? _x.unneg() : _x;
+        var neg = _x instanceof Neg;
+        var x = neg ? _x.unneg() : _x;
 
         if (x instanceof Compound && x.hasAll(ImageBits) && x.opID() == INH.id) {
-            Term y = _imgNormalize((Compound) x);
+            var y = _imgNormalize((Compound) x);
             if (x != y)
                 return y.negIf(neg);
         }
@@ -124,15 +124,15 @@ public enum Image {
 
         //assert(x.op()==INH);
 
-        Subterms xx = x.subterms();
+        var xx = x.subterms();
         Term s = xx.sub(0), p = xx.sub(1);
 
         Subterms ss = null;
-        boolean isInt = s instanceof Compound && s.opID() == PROD.id &&
+        var isInt = s instanceof Compound && s.opID() == PROD.id &&
             (ss = s.subterms()).containsInstance(Op.ImgInt) && !ss.containsInstance(Op.ImgExt);
 
         Subterms pp = null;
-        boolean isExt = p instanceof Compound && p.opID() == PROD.id &&
+        var isExt = p instanceof Compound && p.opID() == PROD.id &&
             (pp = p.subterms()).containsInstance(Op.ImgExt) && !pp.containsInstance(Op.ImgInt);
 
         if (isInt == isExt)

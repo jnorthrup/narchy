@@ -67,7 +67,7 @@ public class TokenString {
 		List<Token> v = new ArrayList<>();
 		try {
 			while (true) {
-				Token tok = t.nextToken();
+				var tok = t.nextToken();
 				if (tok.ttype() == Token.TT_EOF) {
 					break;
 				}
@@ -108,12 +108,12 @@ public class TokenString {
 	 */
 	@Override
 	public String toString() {
-		StringJoiner joiner = new StringJoiner(" ");
-		for (Token token : tokens) {
-			String s = String.valueOf(token);
+		var joiner = new StringJoiner(" ");
+		for (var token : tokens) {
+			var s = String.valueOf(token);
 			joiner.add(s);
 		}
-		String buf = joiner.toString();
+		var buf = joiner.toString();
         return buf;
 	}
 }

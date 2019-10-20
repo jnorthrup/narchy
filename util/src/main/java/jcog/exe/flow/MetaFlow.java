@@ -84,7 +84,7 @@ public class MetaFlow {
     final float ditherScale = (float) Math.pow(10, digitResolution);
 
     private void value(byte[] cursor, byte quality, float value) {
-        Node n = plan.putIfAbsent(cursor, Node::new);
+        var n = plan.putIfAbsent(cursor, Node::new);
         n.getIfAbsentPutWithKey(quality,
             (q)->new ConcurrentHistogram(digitResolution) {
                 @Override
@@ -138,7 +138,7 @@ public class MetaFlow {
             if (isEmpty())
                 return super.toString();
 
-            StringBuilder sb = new StringBuilder(512);
+            var sb = new StringBuilder(512);
             sb.append('{');
             forEachKeyValue((k,v)-> sb.append(qualia.getIndex(k).name).append('=').append(v).append(", "));
             sb.setLength(sb.length()-2);
@@ -187,7 +187,7 @@ public class MetaFlow {
                 return null;
             });
 
-            StackWalker.StackFrame at = buffer.getLast();
+            var at = buffer.getLast();
 
 //            Optional<Class<?>> callerClass = walker.walk(s ->
 //                    s.map(StackWalker.StackFrame::getDeclaringClass)
@@ -195,12 +195,12 @@ public class MetaFlow {
 //                            .findFirst());
             clear();
             StackWalker.StackFrame prev = null;
-            for (int i = buffer.size()-1; i>=0; i--) {
+            for (var i = buffer.size()-1; i>=0; i--) {
             //for (int i = buffer.size()-1; i>=0; i--) {
-                StackWalker.StackFrame next = buffer.get(i);
+                var next = buffer.get(i);
                 write(prev, next);
                 if (i != 0) {
-                    char SEPARATOR = '{';
+                    var SEPARATOR = '{';
                     writeByte((byte)SEPARATOR);
                 }
                 prev = next;
@@ -247,7 +247,7 @@ public class MetaFlow {
 
             //TODO add to buffer, with codepoints etc
             writeByte('{');
-            for (Object x : args) {
+            for (var x : args) {
                 writeUTF(x.toString()); //HACK
                 writeByte(',');
             }
@@ -269,7 +269,7 @@ public class MetaFlow {
     static byte[] compactDescriptor(String _descriptor) {
         return compactMethodDescriptors.apply(_descriptor, (descriptor)->{
             //TODO use byteseek automaton
-            String descriptor1 = descriptor;
+            var descriptor1 = descriptor;
             descriptor1 = descriptor1.replace("java/lang/","");
             if (descriptor1.endsWith("V")) //void return value
                 descriptor1 = descriptor1.substring(0, descriptor1.length()-1);
@@ -287,7 +287,7 @@ public class MetaFlow {
     public Quality quality(String q) {
         return qualia.computeIfAbsent(q, qq -> {
             synchronized (qualia) {
-                int id = qualia.size();
+                var id = qualia.size();
                 if (id > 126)
                     throw new TODO("limit to 127 qualities");
                 return new Quality(qq, (byte) id);
@@ -299,7 +299,7 @@ public class MetaFlow {
 
     public MetaFlow() {
         base = walkerSummary.walk(s->s.dropWhile(x -> {
-            String cn = x.getClassName();
+            var cn = x.getClassName();
             return cn.equals(MetaFlow.class.getName()) || cn.startsWith(ThreadLocal.class.getName());
         })
                 .findFirst().get());
@@ -359,14 +359,14 @@ public class MetaFlow {
 //            urls.addAt(f.toURL());
 //        }
 //
-        URL[] urls = ClassPath.from(ClassLoader.getSystemClassLoader().getParent()).getAllClasses().stream().map(ClassPath.ResourceInfo::url).toArray(URL[]::new);
+        var urls = ClassPath.from(ClassLoader.getSystemClassLoader().getParent()).getAllClasses().stream().map(ClassPath.ResourceInfo::url).toArray(URL[]::new);
         // feed your URLs to a URLClassLoader!
         ClassLoader classloader = new URLClassLoader(urls, ClassLoader.getSystemClassLoader().getParent());
 
         // relative to that classloader, find the main class
         // you want to bootstrap, which is the first cmd line arg
         Class mainClass = classloader.loadClass(className);
-        Method main = mainClass.getMethod(methodName
+        var main = mainClass.getMethod(methodName
                 /*new Class[]{args.getClass()}*/);
 
         Thread.currentThread().setContextClassLoader(classloader);

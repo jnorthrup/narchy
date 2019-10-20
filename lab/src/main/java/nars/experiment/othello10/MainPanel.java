@@ -83,7 +83,7 @@ public class MainPanel extends JPanel implements MouseListener {
 
                 drawStone(g);
 
-                Counter counter = countStone();
+                var counter = countStone();
 
                 infoPanel.setBlackLabel(counter.blackCount);
                 infoPanel.setWhiteLabel(counter.whiteCount);
@@ -116,13 +116,13 @@ public class MainPanel extends JPanel implements MouseListener {
                 break;
             case PLAY:
 
-                int x = e.getX() / GS;
-                int y = e.getY() / GS;
+                var x = e.getX() / GS;
+                var y = e.getY() / GS;
 
 
                 if (canPutDown(x, y)) {
 
-                    Undo undo = new Undo(x, y);
+                    var undo = new Undo(x, y);
 
                     putDownStone(x, y, false);
 
@@ -160,8 +160,8 @@ public class MainPanel extends JPanel implements MouseListener {
      * �Ֆʂ�����������B
      */
     private void initBoard() {
-        for (int y = 0; y < MASU; y++) {
-            for (int x = 0; x < MASU; x++) {
+        for (var y = 0; y < MASU; y++) {
+            for (var x = 0; x < MASU; x++) {
                 board[y][x] = BLANK;
             }
         }
@@ -183,8 +183,8 @@ public class MainPanel extends JPanel implements MouseListener {
 
         g.setColor(new Color(0, 128, 128));
         g.fillRect(0, 0, WIDTH, HEIGHT);
-        for (int y = 0; y < MASU; y++) {
-            for (int x = 0; x < MASU; x++) {
+        for (var y = 0; y < MASU; y++) {
+            for (var x = 0; x < MASU; x++) {
 
                 g.setColor(Color.BLACK);
                 g.drawRect(x * GS, y * GS, GS, GS);
@@ -198,8 +198,8 @@ public class MainPanel extends JPanel implements MouseListener {
      * @param g �`��I�u�W�F�N�g
      */
     private void drawStone(Graphics g) {
-        for (int y = 0; y < MASU; y++) {
-            for (int x = 0; x < MASU; x++) {
+        for (var y = 0; y < MASU; y++) {
+            for (var x = 0; x < MASU; x++) {
                 switch (board[y][x]) {
                     case BLANK:
                         continue;
@@ -368,8 +368,8 @@ public class MainPanel extends JPanel implements MouseListener {
      */
     private void reverse(Undo undo, int vecX, int vecY, boolean tryAndError) {
         int putStone;
-        int x = undo.x;
-        int y = undo.y;
+        var x = undo.x;
+        var y = undo.y;
 
         if (flagForWhite) {
             putStone = WHITE_STONE;
@@ -403,12 +403,12 @@ public class MainPanel extends JPanel implements MouseListener {
      * @param undo �Ђ�����Ԃ����΂̏��B
      */
     public void undoBoard(Undo undo) {
-        int c = 0;
+        var c = 0;
 
         while (undo.pos[c] != null) {
 
-            int x = undo.pos[c].x;
-            int y = undo.pos[c].y;
+            var x = undo.pos[c].x;
+            var y = undo.pos[c].y;
 
 
             board[y][x] *= -1;
@@ -434,10 +434,10 @@ public class MainPanel extends JPanel implements MouseListener {
      * @return �΂��łĂ�ꏊ�̐��B
      */
     public int countCanPutDownStone() {
-        int count = 0;
+        var count = 0;
 
-        for (int y = 0; y < MainPanel.MASU; y++) {
-            for (int x = 0; x < MainPanel.MASU; x++) {
+        for (var y = 0; y < MainPanel.MASU; y++) {
+            for (var x = 0; x < MainPanel.MASU; x++) {
                 if (canPutDown(x, y)) {
                     count++;
                 }
@@ -465,9 +465,9 @@ public class MainPanel extends JPanel implements MouseListener {
      * @param s �`�悵����������
      */
     public static void drawTextCentering(Graphics g, String s) {
-        Font f = new Font("SansSerif", Font.BOLD, 20);
+        var f = new Font("SansSerif", Font.BOLD, 20);
         g.setFont(f);
-        FontMetrics fm = g.getFontMetrics();
+        var fm = g.getFontMetrics();
         g.setColor(Color.YELLOW);
         g.drawString(s, WIDTH / 2 - fm.stringWidth(s) / 2, HEIGHT / 2
                 + fm.getDescent());
@@ -480,7 +480,7 @@ public class MainPanel extends JPanel implements MouseListener {
 
         if (putNumber == END_NUMBER) {
 
-            Counter counter = countStone();
+            var counter = countStone();
 
 
             if (counter.blackCount > 32) {
@@ -502,10 +502,10 @@ public class MainPanel extends JPanel implements MouseListener {
      * @return �΂̐����i�[����Counter�I�u�W�F�N�g
      */
     public Counter countStone() {
-        Counter counter = new Counter();
+        var counter = new Counter();
 
-        for (int y = 0; y < MASU; y++) {
-            for (int x = 0; x < MASU; x++) {
+        for (var y = 0; y < MASU; y++) {
+            for (var x = 0; x < MASU; x++) {
                 if (board[y][x] == BLACK_STONE)
                     counter.blackCount++;
                 if (board[y][x] == WHITE_STONE)

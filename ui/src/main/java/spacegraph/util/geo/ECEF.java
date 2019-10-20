@@ -26,18 +26,18 @@ public class ECEF {
 
     public static double[] ecef2latlon(double x, double y, double z) {
 
-        double b = Math.sqrt(asq * esqInv);
-        double bsq = Util.sqr(b);
-        double ep = Math.sqrt((asq - bsq) / bsq);
-        double p = Math.sqrt(Util.sqr(x) + Util.sqr(y));
-        double th = Math.atan2(a * z, b * p);
+        var b = Math.sqrt(asq * esqInv);
+        var bsq = Util.sqr(b);
+        var ep = Math.sqrt((asq - bsq) / bsq);
+        var p = Math.sqrt(Util.sqr(x) + Util.sqr(y));
+        var th = Math.atan2(a * z, b * p);
 
-        double lat = Math.atan2((z + Util.sqr(ep) * b * Util.cube(Math.sin(th))), (p - esq * a * Util.cube(Math.cos(th))));
+        var lat = Math.atan2((z + Util.sqr(ep) * b * Util.cube(Math.sin(th))), (p - esq * a * Util.cube(Math.cos(th))));
 
-        double N = a / (Math.sqrt(1 - esq * Util.sqr(Math.sin(lat))));
-        double alt = p / Math.cos(lat) - N;
+        var N = a / (Math.sqrt(1 - esq * Util.sqr(Math.sin(lat))));
+        var alt = p / Math.cos(lat) - N;
 
-        double lon = Math.atan2(y, x) % (2 * Math.PI);
+        var lon = Math.atan2(y, x) % (2 * Math.PI);
 
         return new double[]{lat, lon, alt};
     }
@@ -59,17 +59,17 @@ public class ECEF {
         lat *= DEG2RAD;
         lon *= DEG2RAD;
 
-        double sinLat = Math.sin(lat);
-        double N = a / Math.sqrt(1 - esq * Util.sqr(sinLat));
+        var sinLat = Math.sin(lat);
+        var N = a / Math.sqrt(1 - esq * Util.sqr(sinLat));
 
-        double cosLat = Math.cos(lat);
-        double xy = (N + alt) * cosLat;
-        double x = xy * Math.cos(lon);
-        double y = xy * Math.sin(lon);
+        var cosLat = Math.cos(lat);
+        var xy = (N + alt) * cosLat;
+        var x = xy * Math.cos(lon);
+        var y = xy * Math.sin(lon);
 
         target[0] = x;
         target[1] = y;
-        double z = (esqInv * N + alt) * sinLat;
+        var z = (esqInv * N + alt) * sinLat;
         target[2] = z;
         return target;
     }

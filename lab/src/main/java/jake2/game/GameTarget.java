@@ -393,7 +393,7 @@ public class GameTarget {
             GameCombat.T_RadiusDamage(self, self.activator, self.dmg, null,
                     self.dmg + 40, Defines.MOD_EXPLOSIVE);
 
-            float save = self.delay;
+            var save = self.delay;
             self.delay = 0;
             GameUtil.G_UseTargets(self, self.activator);
             self.delay = save;
@@ -508,7 +508,7 @@ public class GameTarget {
         @Override
         public void use(edict_t self, edict_t other, edict_t activator) {
 
-            edict_t ent = GameUtil.G_Spawn();
+            var ent = GameUtil.G_Spawn();
             ent.classname = self.target;
             Math3D.VectorCopy(self.s.origin, ent.s.origin);
             Math3D.VectorCopy(self.s.angles, ent.s.angles);
@@ -621,7 +621,7 @@ public class GameTarget {
                     self.spawnflags |= 0x80000000;
             }
 
-            edict_t ignore = self;
+            var ignore = self;
             float[] start = {0, 0, 0};
             Math3D.VectorCopy(self.s.origin, start);
             float[] end = {0, 0, 0};
@@ -716,7 +716,7 @@ public class GameTarget {
 
             if (null == self.enemy) {
                 if (self.target != null) {
-                    EdictIterator edit = GameBase.G_Find(null, GameBase.findByTarget,
+                    var edit = GameBase.G_Find(null, GameBase.findByTarget,
                             self.target);
                     if (edit == null)
                         game_import_t.dprintf(self.classname + " at "
@@ -767,7 +767,7 @@ public class GameTarget {
                 self.nextthink = GameBase.level.time + Defines.FRAMETIME;
             } else if ((self.spawnflags & 1) != 0) {
 
-                char temp = (char) self.movedir[0];
+                var temp = (char) self.movedir[0];
                 self.movedir[0] = self.movedir[1];
                 self.movedir[1] = temp;
                 self.movedir[2] *= -1;
@@ -842,8 +842,8 @@ public class GameTarget {
                 self.last_move_time = GameBase.level.time + 0.5f;
             }
 
-            for (int i = 1; i < GameBase.num_edicts; i++) {
-                edict_t e = GameBase.g_edicts[i];
+            for (var i = 1; i < GameBase.num_edicts; i++) {
+                var e = GameBase.g_edicts[i];
 
                 if (!e.inuse)
                     continue;

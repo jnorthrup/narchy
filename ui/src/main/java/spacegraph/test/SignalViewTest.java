@@ -61,7 +61,7 @@ public class SignalViewTest {
         SensorNode n;
         try {
             n = new SensorNode();
-            SensorNode n2 = new SensorNode();
+            var n2 = new SensorNode();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -84,7 +84,7 @@ public class SignalViewTest {
 
     public static Timeline2D.AnalyzedEvent capture(BufferedImage t, long dur) {
 
-        long now = System.currentTimeMillis();
+        var now = System.currentTimeMillis();
 
         return new Timeline2D.AnalyzedEvent(new AspectAlign(Tex.view(t),
                 ((float) t.getHeight()) / t.getWidth()), now - dur, now);
@@ -94,7 +94,7 @@ public class SignalViewTest {
 
         public GraphPanel(SensorNode n) {
 
-            @Deprecated float fps = n.udp.getFPS();
+            @Deprecated var fps = n.udp.getFPS();
             east(new Gridding(new CheckBox("ON").on((t) -> {
                 if (!t)
                     n.udp.stop();
@@ -103,19 +103,19 @@ public class SignalViewTest {
             }), new PushButton("?")));
 
             Exe.runLater(() -> {
-                GraphEdit2D g = new GraphEdit2D();
+                var g = new GraphEdit2D();
                 center(g);
 
                 Util.sleepMS(2000);
 
                 Exe.runLater(() -> {
                     Surface local = new RealTimeLine(n);
-                    Windo ll = g.add(local).sizeRel(0.25f, 0.25f);
+                    var ll = g.add(local).sizeRel(0.25f, 0.25f);
 
 
-                    for (Sensor s : n.sensors.values()) {
-                        PushButton ss = new PushButton(s.id);
-                        Windo w = g.add(ss).sizeRel(0.1f, 0.1f);
+                    for (var s : n.sensors.values()) {
+                        var ss = new PushButton(s.id);
+                        var w = g.add(ss).sizeRel(0.1f, 0.1f);
                         g.addWire(new Wire(local, ss));
                     }
                 });
@@ -288,7 +288,7 @@ public class SignalViewTest {
 
             };
 
-            HttpModel h = new HttpModel() {
+            var h = new HttpModel() {
 
                 @Override
                 public void wssOpen(WebSocket ws, ClientHandshake handshake) {
@@ -302,7 +302,7 @@ public class SignalViewTest {
             };
 
 
-            HttpServer tcp = new HttpServer(udp.addr(), h);
+            var tcp = new HttpServer(udp.addr(), h);
 
 
             udp.setFPS(5);
@@ -322,13 +322,13 @@ public class SignalViewTest {
 
 
         private List<SensorStatus> manifest() {
-            List<SensorStatus> list = sensors.values().stream().filter(Sensor::on).map(Sensor::status).collect(toList());
+            var list = sensors.values().stream().filter(Sensor::on).map(Sensor::status).collect(toList());
             return list;
         }
 
         public VideoSensor add(Webcam ww) {
             try {
-                WebCam w = new WebCam(ww, false);
+                var w = new WebCam(ww, false);
                 return _add(new VideoSensor(ww.getName(), w));
             } catch (WebcamException e) {
                 //TODO logger.debug...
@@ -346,7 +346,7 @@ public class SignalViewTest {
         }
 
         private <S extends Sensor> S _add(S s) {
-            Sensor t = sensors.put(s.id, s);
+            var t = sensors.put(s.id, s);
             reshare.set(true);
             assert (t == null);
             return s;
@@ -357,7 +357,7 @@ public class SignalViewTest {
          */
         public void connectAll() {
 
-            for (AudioSource in : AudioSource.all()) {
+            for (var in : AudioSource.all()) {
                 Exe.runLater(() -> {
                     try {
                         in.start();
@@ -368,7 +368,7 @@ public class SignalViewTest {
                 });
             }
 
-            for (Webcam ww : Webcam.getWebcams()) {
+            for (var ww : Webcam.getWebcams()) {
                 Exe.runLater(() -> add(ww));
             }
         }
@@ -381,7 +381,7 @@ public class SignalViewTest {
         public RealTimeLine(SensorNode node) {
             super(VERTICAL);
 
-            for (Sensor s : node.sensors.values()) {
+            for (var s : node.sensors.values()) {
                 if (s instanceof VideoSensor)
                     add(((VideoSensor) s), s.events);
                 else if (s instanceof AudioSensor)
@@ -396,11 +396,11 @@ public class SignalViewTest {
         }
 
         public Timeline2D newTrack(Surface label) {
-            Timeline2D g = new Timeline2D();
+            var g = new Timeline2D();
 
             add(new LabeledPane(label, new Clipped(new Animating(g, () -> {
 
-                long e = System.currentTimeMillis();
+                var e = System.currentTimeMillis();
                 g.setTime(e - Math.round(viewWindowSeconds * 1000), e); //slide window
             }, 0.04f))));
 
@@ -413,14 +413,14 @@ public class SignalViewTest {
 
         @Deprecated
         public void add(VideoSensor ww, Timeline2D.FixedSizeEventBuffer<Timeline2D.SimpleEvent> ge) {
-            WebCam w = ((WebCam) ww.video); //HACK
+            var w = ((WebCam) ww.video); //HACK
 
-            Timeline2D g = newTrack(ww.id, () -> new VideoSurface(w));
+            var g = newTrack(ww.id, () -> new VideoSurface(w));
 
-            float camFPS = 0.5f;
+            var camFPS = 0.5f;
             Loop.of(() -> {
                 try {
-                    BufferedImage ii = w.webcam.getImage();
+                    var ii = w.webcam.getImage();
                     if (ii != null)
                         ge.add(capture(ii, Math.round(1000 / camFPS)));
 
@@ -434,16 +434,16 @@ public class SignalViewTest {
         }
 
         public void add(AudioSensor in, Timeline2D.FixedSizeEventBuffer<Timeline2D.SimpleEvent> ge) {
-            int freqs = 128;
+            var freqs = 128;
 
 
 //                FloatSlider preAmp = new FloatSlider("preAmp", 1, 0, 16f);
 
             //new Gridding(new VectorLabel(in.name()), preAmp)
-            Timeline2D g = newTrack(in.toString(), () -> new PushButton(in.toString()));
+            var g = newTrack(in.toString(), () -> new PushButton(in.toString()));
 
 
-            FreqDomain dft = new FreqDomain(freqs, 1);
+            var dft = new FreqDomain(freqs, 1);
             in.in.wave.on(a -> {
 //                    long e = System.currentTimeMillis();
 
@@ -459,7 +459,7 @@ public class SignalViewTest {
 //                    Util.mul(preAmp.asFloat(), a.data);
 
                 double rms = 0;
-                for (float x : a.data) {
+                for (var x : a.data) {
                     rms += x * x;
                 }
                 rms /= a.data.length;
@@ -469,20 +469,20 @@ public class SignalViewTest {
                 //Gridding p = new Gridding();
                 //p.color.set(rms*4, 0, 0, 1);
 
-                float[] f = dft.apply(a).floatArray();
+                var f = dft.apply(a).floatArray();
 
-                float fRMS = (float) rms;
-                BitmapMatrixView pp = new BitmapMatrixView(1, freqs,
+                var fRMS = (float) rms;
+                var pp = new BitmapMatrixView(1, freqs,
                         //arrayRendererY(dft.apply(a).floatArray())
                         (xIgnored, y) -> {
-                            float fy = f[y];
+                            var fy = f[y];
                             if (fy == fy) {
 
 
                                 fy = (float) (fy < 0 ? -Math.sqrt(-fy) : Math.sqrt(fy));
 
-                                float fs = 0.5f + 0.5f * (fy * Util.unitize(fRMS));
-                                float fb = 0.05f + 0.95f * fy;
+                                var fs = 0.5f + 0.5f * (fy * Util.unitize(fRMS));
+                                var fb = 0.05f + 0.95f * fy;
                                 return
                                         Draw.colorHSB(fRMS * 2, fs, fb);
                                 //Draw.colorBipolar(f[y])
@@ -505,7 +505,7 @@ public class SignalViewTest {
 
 //                    long s = e - Math.round( a.volume()/(float)i.sampleRate);
 
-                SignalInput.RealTimeTensor ra = (SignalInput.RealTimeTensor) a;
+                var ra = (SignalInput.RealTimeTensor) a;
 
                 ge.add(new Timeline2D.AnalyzedEvent(p, ra.start, ra.end));
             });
@@ -531,8 +531,8 @@ public class SignalViewTest {
 
         @Override
         public int next(float[] target, int targetIndex, int samplesAtMost) {
-            int n = Math.round(Math.min(((float) sampleRate) / frames, samplesAtMost));
-            for (int i = 0; i < n; i++) {
+            var n = Math.round(Math.min(((float) sampleRate) / frames, samplesAtMost));
+            for (var i = 0; i < n; i++) {
                 target[targetIndex++] = rng.nextFloat();
             }
             return samplesAtMost;

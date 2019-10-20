@@ -40,8 +40,8 @@ public class SilenceDetector  {
 	 * @return The local (linear) energy of an audio buffer.
 	 */
 	private static double localEnergy(float[] buffer) {
-		double power = 0.0D;
-		for (float element : buffer) {
+		var power = 0.0D;
+		for (var element : buffer) {
 			power += element * element;
 		}
 		return power;
@@ -55,7 +55,7 @@ public class SilenceDetector  {
 	 * @return The dBSPL level for the buffer.
 	 */
 	private static double soundPressureLevel(float[] buffer) {
-		double value = Math.pow(localEnergy(buffer), 0.5);
+		var value = Math.pow(localEnergy(buffer), 0.5);
         value /= buffer.length;
 		return linearToDecibel(value);
 	}
@@ -97,7 +97,7 @@ public class SilenceDetector  {
 
 
 	public boolean process(float[] buffer) {
-		boolean isSilence = isSilence(buffer);
+		var isSilence = isSilence(buffer);
 		//break processing chain on silence?
 		if(breakProcessingQueueOnSilence){
 			//break if silent

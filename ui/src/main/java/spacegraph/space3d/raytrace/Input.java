@@ -37,25 +37,25 @@ final class Input extends ComponentAdapter implements KeyListener, MouseListener
     }
 
     private void interrupt() {
-        for (Runnable i : onInputInterruptables) {
+        for (var i : onInputInterruptables) {
             i.run();
         }
     }
 
     public int getDeltaMouseX() {
-        int dx = currentMouseX - lastMouseX;
+        var dx = currentMouseX - lastMouseX;
         lastMouseX = currentMouseX;
         return dx;
     }
 
     public int getDeltaMouseY() {
-        int dy = currentMouseY - lastMouseY;
+        var dy = currentMouseY - lastMouseY;
         lastMouseY = currentMouseY;
         return dy;
     }
 
     public vv3 getKeyboardVector() {
-        vv3 kbVector = new vv3(0, 0, 0);
+        var kbVector = new vv3(0, 0, 0);
 
         if (forward) {
             kbVector = kbVector.add(new vv3(0, 1, 0));
@@ -91,7 +91,7 @@ final class Input extends ComponentAdapter implements KeyListener, MouseListener
 
     @Override
     public void keyPressed(KeyEvent e) {
-        int keyCode = e.getKeyCode();
+        var keyCode = e.getKeyCode();
         switch (keyCode) {
             case KeyEvent.VK_A:
                 left = true;
@@ -116,8 +116,8 @@ final class Input extends ComponentAdapter implements KeyListener, MouseListener
 
     @Override
     public void keyReleased(KeyEvent e) {
-        int keyCode = e.getKeyCode();
-        boolean oldMoving = moving();
+        var keyCode = e.getKeyCode();
+        var oldMoving = moving();
         switch (keyCode) {
             case KeyEvent.VK_A:
                 left = false;

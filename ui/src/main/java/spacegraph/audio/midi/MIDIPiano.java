@@ -53,7 +53,7 @@ public class MIDIPiano extends JPanel {
     private final Controller SYNTH;
 
     static {
-        for (int key = 0; key != KEYS; key++) {
+        for (var key = 0; key != KEYS; key++) {
             KEY_BOUNDS[key] = new Rectangle(4 + key * (KEY_WIDTH + INTERKEY_SPACE), 5, KEY_WIDTH, KEY_HEIGHT);
         }
     }
@@ -71,8 +71,8 @@ public class MIDIPiano extends JPanel {
 
             @Override
             public void mousePressed(MouseEvent e) {
-                Point p = e.getPoint();
-                for (int i = 0; i != KEY_BOUNDS.length; i++) {
+                var p = e.getPoint();
+                for (var i = 0; i != KEY_BOUNDS.length; i++) {
                     if (!selected[i] && KEY_BOUNDS[i].contains(p)) {
                         selected[clicked = i] = true;
                         SYNTH.press(note(e, i));
@@ -92,9 +92,9 @@ public class MIDIPiano extends JPanel {
         addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
-                int code = e.getKeyCode();
-                for (int i = 0; i != KEY_BINDINGS.length; i++) {
-                    for (int c : KEY_BINDINGS[i]) {
+                var code = e.getKeyCode();
+                for (var i = 0; i != KEY_BINDINGS.length; i++) {
+                    for (var c : KEY_BINDINGS[i]) {
                         if (c == code && !selected[i]) {
                             selected[i] = true;
                             SYNTH.press(note(e, i));
@@ -106,9 +106,9 @@ public class MIDIPiano extends JPanel {
 
             @Override
             public void keyReleased(KeyEvent e) {
-                int code = e.getKeyCode();
-                for (int i = 0; i != KEYS; i++) {
-                    for (int c = 0; c != KEY_BINDINGS[i].length; c++) {
+                var code = e.getKeyCode();
+                for (var i = 0; i != KEYS; i++) {
+                    for (var c = 0; c != KEY_BINDINGS[i].length; c++) {
                         if (code == KEY_BINDINGS[i][c]) {
                             selected[i] = false;
                             SYNTH.release(note(e, i));
@@ -121,7 +121,7 @@ public class MIDIPiano extends JPanel {
     }
 
     private static int note(InputEvent key, int code) {
-        int note = NOTE_MAP[code];
+        var note = NOTE_MAP[code];
         if (key.isControlDown())
             note -= 24;
         if (key.isShiftDown())
@@ -134,10 +134,10 @@ public class MIDIPiano extends JPanel {
     @Override
     public void paintComponent(Graphics _g) {
         super.paintComponent(_g);
-        Graphics2D g = (Graphics2D) _g;
+        var g = (Graphics2D) _g;
         g.translate(0, -10); // Make top part of keys invisible
-        for (int key = 0; key != KEYS; key++) {
-            Rectangle bounds = KEY_BOUNDS[key];
+        for (var key = 0; key != KEYS; key++) {
+            var bounds = KEY_BOUNDS[key];
 
             if (selected[key]) {
                 paintRoundRect(g, bounds, 6, Color.GRAY);
@@ -149,8 +149,8 @@ public class MIDIPiano extends JPanel {
 			paintRoundRect(g, bounds, 3, Color.LIGHT_GRAY);
 			paintRoundRectFill(g, bounds, Color.WHITE);
 			g.setColor(Color.BLACK);
-            char[] binds = KEY_CHARS[key];
-            for (int c = 0; c != binds.length; c++) {
+            var binds = KEY_CHARS[key];
+            for (var c = 0; c != binds.length; c++) {
                 g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 g.setFont(KEY_FONT);
                 g.drawChars(binds, c, 1, bounds.x + KEY_WIDTH / 2 - g.getFontMetrics().charWidth(binds[c]) / 2,
@@ -192,7 +192,7 @@ public class MIDIPiano extends JPanel {
 
         public static void main(String[] args) throws MidiUnavailableException {
             //UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-            JFrame frame = new JFrame("Virtual MIDI Synthesizer");
+            var frame = new JFrame("Virtual MIDI Synthesizer");
             frame.setLayout(new BorderLayout());
 
 
@@ -200,7 +200,7 @@ public class MIDIPiano extends JPanel {
 
             (synthesizer = MidiSystem.getSynthesizer()).open();
 
-            Receiver v = MidiSystem.getMidiDevice(MidiSystem.getMidiDeviceInfo()[1]).getReceiver();
+            var v = MidiSystem.getMidiDevice(MidiSystem.getMidiDeviceInfo()[1]).getReceiver();
             System.out.println(v);
 
     //        Sequencer seq = MidiSystem.getSequencer();
@@ -213,9 +213,9 @@ public class MIDIPiano extends JPanel {
     //        for (var x : MidiSystem.getMidiDeviceInfo())
     //            System.out.println(x.getName() + " " + x.getDescription() + " " + x.getVendor());
 
-            Soundbank sb = synthesizer.getDefaultSoundbank();
+            var sb = synthesizer.getDefaultSoundbank();
             soundbank = sb.getInstruments();
-            for (Instrument is : soundbank) instrumentControl.addItem(is.getName());
+            for (var is : soundbank) instrumentControl.addItem(is.getName());
 
             //System.out.println("Loaded " + soundbank.length + " instruments.");
 
@@ -228,7 +228,7 @@ public class MIDIPiano extends JPanel {
             MIDIPiano keyboardControl;
             frame.add(keyboardControl = new MIDIPiano(new MIDIController()), BorderLayout.NORTH);
 
-            JPanel controls = new JPanel(new BorderLayout());
+            var controls = new JPanel(new BorderLayout());
             {
                 controls.add(group(new JLabel("Instruments: "), instrumentControl), BorderLayout.NORTH);
                 controls.add(group(new JLabel("Volume:      "), volumeControl = new JSlider()), BorderLayout.CENTER);
@@ -250,7 +250,7 @@ public class MIDIPiano extends JPanel {
         }
 
         private static JPanel group(JComponent one, JComponent two) {
-            JPanel holder = new JPanel(new BorderLayout());
+            var holder = new JPanel(new BorderLayout());
             holder.add(one, BorderLayout.WEST);
             holder.add(two, BorderLayout.CENTER);
             return holder;

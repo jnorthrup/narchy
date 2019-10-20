@@ -57,10 +57,10 @@ public class PrologPrimitives {
         if (!libs.add(src))
             throw new RuntimeException("already loaded: " + src);
 
-        Map<Integer, List<PrologPrim>> sp = src.primitives();
-        for (int type : new int[] { DIRECTIVE, PREDICATE, FUNCTOR }) {
-            Map<String, PrologPrim> table = table(type);
-            for (PrologPrim p : sp.get(type)) {
+        var sp = src.primitives();
+        for (var type : new int[] { DIRECTIVE, PREDICATE, FUNCTOR }) {
+            var table = table(type);
+            for (var p : sp.get(type)) {
                 table.put(p.key, p);
             }
         }
@@ -71,10 +71,10 @@ public class PrologPrimitives {
         if (!libs.remove(src))
             throw new RuntimeException("not loaded: " + src);
 
-        Map<Integer, List<PrologPrim>> sp = src.primitives();
-        for (int type : new int[] { DIRECTIVE, PREDICATE, FUNCTOR }) {
-            Map<String, PrologPrim> table = table(type);
-            for (PrologPrim p : sp.get(type)) {
+        var sp = src.primitives();
+        for (var type : new int[] { DIRECTIVE, PREDICATE, FUNCTOR }) {
+            var table = table(type);
+            for (var p : sp.get(type)) {
                 table.remove(p.key);
             }
         }
@@ -109,7 +109,7 @@ public class PrologPrimitives {
     }
 
     boolean evalAsDirective(Struct d) throws Throwable {
-        PrologPrim pd = identifyDirective(d).getPrimitive();
+        var pd = identifyDirective(d).getPrimitive();
         if (pd == null)
             return false;
 
@@ -134,13 +134,13 @@ public class PrologPrimitives {
         if (t.isPrimitive())
             return; //assume already identified
 
-        int primType = PRIMITIVE_PREDICATES.contains(t.name()) ? PREDICATE : FUNCTOR;
-        int arity = t.subs();
-        for (int c = 0; c < arity; c++) {
+        var primType = PRIMITIVE_PREDICATES.contains(t.name()) ? PREDICATE : FUNCTOR;
+        var arity = t.subs();
+        for (var c = 0; c < arity; c++) {
             identify(t.sub(c), primType);
         }
 
-        PrologPrim p = table(typeOfPrimitive).get(t.key());
+        var p = table(typeOfPrimitive).get(t.key());
         if (p!=null)
             t.setPrimitive(p);
     }

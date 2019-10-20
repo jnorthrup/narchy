@@ -143,7 +143,7 @@ public class Tokenizer implements ITokenizer {
 	 *                if there is any problem reading
 	 */
 	public Token nextToken() throws IOException {
-		int unicode = reader.read();
+		var unicode = reader.read();
 
 		/*
 		 * There was a defect here, that resulted from the fact that unreading a
@@ -151,7 +151,7 @@ public class Tokenizer implements ITokenizer {
 		 * 65535. This may be a defect in PushbackReader.
 		 */
 
-		TokenizerState tokenizerState = getCharacterState(unicode);
+		var tokenizerState = getCharacterState(unicode);
 		if (tokenizerState != null) {
 			return tokenizerState.nextToken(reader, unicode, this);
 		}
@@ -192,7 +192,7 @@ public class Tokenizer implements ITokenizer {
 	 */
 	public void setCharacterState(int fromUnicode, int toUnicode, TokenizerState state) {
 
-		for (int i = fromUnicode; i <= toUnicode; i++) {
+		for (var i = fromUnicode; i <= toUnicode; i++) {
 			if (i >= 0) {
 				characterStates.put(i, state);
 			}

@@ -18,9 +18,9 @@ public abstract class MouseFinger extends Finger {
 
         posGlobal.set(posPixel); //HACK
 
-        Fingering ff = this.fingering.get();
+        var ff = this.fingering.get();
 
-        Surface touchNext = s.apply(this);
+        var touchNext = s.apply(this);
 
         touching.accumulateAndGet(touchNext, ff::touchNext);
 

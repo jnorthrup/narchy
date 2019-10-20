@@ -54,7 +54,7 @@ class HttpSelector implements ConnectionStateChangeListener {
                 conn.key.cancel();
 
                 if (conn.websocket && upgradeWebSocketHandler != null) {
-                    ByteBuffer rawHead = conn.rawHead;
+                    var rawHead = conn.rawHead;
                     conn.rawHead = null;
                     rawHead.flip();
                     upgradeWebSocketHandler.upgradeWebSocketHandler(conn, rawHead);
@@ -101,7 +101,7 @@ class HttpSelector implements ConnectionStateChangeListener {
                 try {
                     sChannel.configureBlocking(false);
                     sChannel.socket().setTcpNoDelay(false);
-                    SelectionKey key = sChannel.register(selector, SelectionKey.OP_READ);
+                    var key = sChannel.register(selector, SelectionKey.OP_READ);
                     key.attach(new HttpConnection(this, model, key, sChannel));
                 } catch (IOException e) {
                     logger.error("connect {}", e);
@@ -110,11 +110,11 @@ class HttpSelector implements ConnectionStateChangeListener {
         }
 
 
-        long now = System.nanoTime();
+        var now = System.nanoTime();
 
         {
-			for (SelectionKey key : selector.keys()) {
-				HttpConnection conn = (HttpConnection) key.attachment();
+			for (var key : selector.keys()) {
+                var conn = (HttpConnection) key.attachment();
 				if (now - conn.lastReceivedNS >= TIMEOUT_PERIOD_ms * 1_000_000L) {
 					key.attach(null);
 					key.cancel();
@@ -124,11 +124,11 @@ class HttpSelector implements ConnectionStateChangeListener {
         }
 
         {
-            Iterator<SelectionKey> it = selector.selectedKeys().iterator();
+            var it = selector.selectedKeys().iterator();
             while (it.hasNext()) {
-                SelectionKey key = it.next();
+                var key = it.next();
 
-                HttpConnection conn = (HttpConnection) key.attachment();
+                var conn = (HttpConnection) key.attachment();
 
                 it.remove();
 

@@ -61,7 +61,7 @@ public class ContactManager implements PairCallback {
         contactListener = null;
         this.broadPhase = broadPhase;
 
-        IWorldPool pool = dyn.pool;
+        var pool = dyn.pool;
         addType(pool.getCircleContactStack(), ShapeType.CIRCLE, ShapeType.CIRCLE);
         addType(pool.getPolyCircleContactStack(), ShapeType.POLYGON, ShapeType.CIRCLE);
         addType(pool.getPolyContactStack(), ShapeType.POLYGON, ShapeType.POLYGON);
@@ -71,13 +71,13 @@ public class ContactManager implements PairCallback {
         addType(pool.getChainPolyContactStack(), ShapeType.CHAIN, ShapeType.POLYGON);
     }
     private void addType(IDynamicStack<Contact> creator, ShapeType type1, ShapeType type2) {
-        ContactRegister register = new ContactRegister();
+        var register = new ContactRegister();
         register.creator = creator;
         register.primary = true;
         contactStacks[type1.ordinal()][type2.ordinal()] = register;
 
         if (type1 != type2) {
-            ContactRegister register2 = new ContactRegister();
+            var register2 = new ContactRegister();
             register2.creator = creator;
             register2.primary = false;
             contactStacks[type2.ordinal()][type1.ordinal()] = register2;
@@ -91,21 +91,21 @@ public class ContactManager implements PairCallback {
      */
     public void addPair(Object proxyUserDataA, Object proxyUserDataB) {
 
-        FixtureProxy proxyA = (FixtureProxy) proxyUserDataA;
-        Fixture fixtureA = proxyA.fixture;
+        var proxyA = (FixtureProxy) proxyUserDataA;
+        var fixtureA = proxyA.fixture;
         if (fixtureA == null)
-            return; 
+            return;
 
-        FixtureProxy proxyB = (FixtureProxy) proxyUserDataB;
-        Fixture fixtureB = proxyB.fixture;
+        var proxyB = (FixtureProxy) proxyUserDataB;
+        var fixtureB = proxyB.fixture;
         if (fixtureB == null)
-            return; 
+            return;
 
-        int indexA = proxyA.childIndex;
-        int indexB = proxyB.childIndex;
+        var indexA = proxyA.childIndex;
+        var indexB = proxyB.childIndex;
 
-        Body2D bodyA = fixtureA.getBody();
-        Body2D bodyB = fixtureB.getBody();
+        var bodyA = fixtureA.getBody();
+        var bodyB = fixtureB.getBody();
 
         
         if (bodyA == bodyB || !bodyB.colllide(bodyA)) {
@@ -113,17 +113,14 @@ public class ContactManager implements PairCallback {
         }
 
 
-        
-        
-        
-        ContactEdge edge = bodyB.contacts();
+        var edge = bodyB.contacts();
         while (edge != null) {
             if (edge.other == bodyA) {
-                Contact ec = edge.contact;
-                Fixture fA = ec.aFixture;
-                Fixture fB = ec.bFixture;
-                int iA = ec.aIndex;
-                int iB = ec.bIndex;
+                var ec = edge.contact;
+                var fA = ec.aFixture;
+                var fB = ec.bFixture;
+                var iA = ec.aIndex;
+                var iB = ec.bIndex;
 
                 if (fA == fixtureA && iA == indexA && fB == fixtureB && iB == indexB) {
                     
@@ -145,8 +142,8 @@ public class ContactManager implements PairCallback {
             return;
         }
 
-        
-        Contact c = popContact(fixtureA, indexA, fixtureB, indexB);
+
+        var c = popContact(fixtureA, indexA, fixtureB, indexB);
         if (c == null) {
             return;
         }
@@ -205,10 +202,10 @@ public class ContactManager implements PairCallback {
     }
 
     public void destroy(Contact c) {
-        Fixture a = c.aFixture;
-        Fixture b = c.bFixture;
-        Body2D aa = a.getBody();
-        Body2D bb = b.getBody();
+        var a = c.aFixture;
+        var b = c.bFixture;
+        var aa = a.getBody();
+        var bb = b.getBody();
 
         if (contactListener != null && c.isTouching()) {
             contactListener.endContact(c);
@@ -269,21 +266,21 @@ public class ContactManager implements PairCallback {
      * processed for the world contact list.
      */
     public void collide() {
-        
-        Contact c = m_contactList;
+
+        var c = m_contactList;
         while (c != null) {
-            Fixture fixtureA = c.aFixture;
-            Fixture fixtureB = c.bFixture;
-            int indexA = c.aIndex;
-            int indexB = c.bIndex;
-            Body2D bodyA = fixtureA.getBody();
-            Body2D bodyB = fixtureB.getBody();
+            var fixtureA = c.aFixture;
+            var fixtureB = c.bFixture;
+            var indexA = c.aIndex;
+            var indexB = c.bIndex;
+            var bodyA = fixtureA.getBody();
+            var bodyB = fixtureB.getBody();
 
             
             if ((c.m_flags & Contact.FILTER_FLAG) == Contact.FILTER_FLAG) {
                 
                 if (!bodyB.colllide(bodyA)) {
-                    Contact cNuke = c;
+                    var cNuke = c;
                     c = cNuke.next();
                     destroy(cNuke);
                     continue;
@@ -291,7 +288,7 @@ public class ContactManager implements PairCallback {
 
                 
                 if (!ContactFilter.shouldCollide(fixtureA, fixtureB)) {
-                    Contact cNuke = c;
+                    var cNuke = c;
                     c = cNuke.next();
                     destroy(cNuke);
                     continue;
@@ -310,13 +307,13 @@ public class ContactManager implements PairCallback {
                 continue;
             }
 
-            int proxyIdA = fixtureA.proxies[indexA].id;
-            int proxyIdB = fixtureB.proxies[indexB].id;
-            boolean overlap = broadPhase.testOverlap(proxyIdA, proxyIdB);
+            var proxyIdA = fixtureA.proxies[indexA].id;
+            var proxyIdB = fixtureB.proxies[indexB].id;
+            var overlap = broadPhase.testOverlap(proxyIdA, proxyIdB);
 
             
             if (!overlap) {
-                Contact cNuke = c;
+                var cNuke = c;
                 c = cNuke.next();
                 destroy(cNuke);
                 continue;
@@ -333,17 +330,17 @@ public class ContactManager implements PairCallback {
         if (fixtureA.getBody().getType()!=DYNAMIC && fixtureB.getBody().getType()!=DYNAMIC)
             return null;
 
-        ShapeType type1 = fixtureA.type();
-        ShapeType type2 = fixtureB.type();
+        var type1 = fixtureA.type();
+        var type2 = fixtureB.type();
 
-        ContactRegister reg = contactStacks[type1.ordinal()][type2.ordinal()];
+        var reg = contactStacks[type1.ordinal()][type2.ordinal()];
         if (reg != null) {
             if (reg.primary) {
-                Contact c = reg.creator.pop();
+                var c = reg.creator.pop();
                 c.init(fixtureA, indexA, fixtureB, indexB);
                 return c;
             } else {
-                Contact c = reg.creator.pop();
+                var c = reg.creator.pop();
                 c.init(fixtureB, indexB, fixtureA, indexA);
                 return c;
             }

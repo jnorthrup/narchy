@@ -21,14 +21,14 @@ public class BPTTTeacher implements INTMTeacher
     @Override
     public NTM[] trainInternal(double[][] input, double[][] knownOutput) {
 
-        NTM[] machines = new NTM[input.length];
+        var machines = new NTM[input.length];
         machine.initializeMemoryState();
 
         
 
         machines[0] = new NTM(machine);
         machines[0].process(input[0]);
-        for (int i = 1;i < input.length;i++) {
+        for (var i = 1; i < input.length; i++) {
             machines[i] = new NTM(machines[i - 1]);
             machines[i].process(input[i]);
         }
@@ -38,7 +38,7 @@ public class BPTTTeacher implements INTMTeacher
         machine.updateWeights(gradientResetter);
 
         
-        for (int i = input.length - 1; i >= 0;i--)        {
+        for (var i = input.length - 1; i >= 0; i--)        {
             machines[i].backwardErrorPropagation(knownOutput[i]);
         }
         machine.backwardErrorPropagation();

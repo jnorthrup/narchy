@@ -87,7 +87,7 @@ public class JeneticSymbolicRegression {
 	);
 
 	public static void main(String[] args) {
-		Engine<ProgramGene<Double>, Double> engine = Engine
+		var engine = Engine
 			.builder(REGRESSION)
 			.minimizing()
 			.alterers(
@@ -95,23 +95,23 @@ public class JeneticSymbolicRegression {
 				new Mutator<>())
 			.build();
 
-		EvolutionResult<ProgramGene<Double>, Double> result = engine.stream()
+		var result = engine.stream()
 			//.limit(Limits.byFitnessThreshold(0.01))
 			.limit(Limits.byFixedGeneration(10))
 			.collect(EvolutionResult.toBestEvolutionResult());
 
-		ProgramGene<Double> program = result.getBestPhenotype()
+		var program = result.getBestPhenotype()
 			.getGenotype()
 			.getGene();
 
-		TreeNode<Op<Double>> tree = program.toTreeNode();
+		var tree = program.toTreeNode();
 		MathExpr.rewrite(tree);
 		System.out.println("Generations: " + result.getTotalGenerations());
 		System.out.println("Function:    " + new MathExpr(tree));
 		System.out.println("Error:       " + REGRESSION.error(tree));
 
 		System.out.println("x: y, y', error");
-		for (Sample<Double> sample : REGRESSION.samples()) {
+		for (var sample : REGRESSION.samples()) {
 			double x = sample.argAt(0);
 			double y = program.eval(x);
 

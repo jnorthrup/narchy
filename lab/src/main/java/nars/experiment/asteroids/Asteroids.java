@@ -118,7 +118,7 @@ public class Asteroids extends JFrame implements KeyListener, ActionListener {
         credits = 0;
         lives = 3;
 
-        for (int i = 0; i < numAsteroids; i++) {
+        for (var i = 0; i < numAsteroids; i++) {
             rockList.add(new Rock());
         }
         setVisible(true);
@@ -274,18 +274,18 @@ public class Asteroids extends JFrame implements KeyListener, ActionListener {
                 keyCheck();
 
 
-                for (int i = 0; i < rockList.size(); i++) {
+                for (var i = 0; i < rockList.size(); i++) {
                     rockList.get(i).updatePosition(WIDTH, HEIGHT);
                 }
 
-                for (int i = 0; i < bulletList.size(); i++) {
+                for (var i = 0; i < bulletList.size(); i++) {
                     bulletList.get(i).updatePosition(WIDTH, HEIGHT);
                     if (bulletList.get(i).counter == bulletDeathCounter) {
                         bulletList.remove(i);
                     }
                 }
 
-                for (int i = 0; i < explosionList.size(); i++) {
+                for (var i = 0; i < explosionList.size(); i++) {
                     explosionList.get(i).updatePosition(WIDTH, HEIGHT);
                     if (explosionList.get(i).counter == 25) {
                         explosionList.remove(i);
@@ -331,10 +331,10 @@ public class Asteroids extends JFrame implements KeyListener, ActionListener {
 
                 offg.setColor(Color.WHITE);
 
-                for (int i = 0; i < rockList.size(); i++) {
-                    Rock rock = rockList.get(i);
-                    for (int n = 0; n < 5; n++) {
-                        for (int j = 0; j < 5; j++) {
+                for (var i = 0; i < rockList.size(); i++) {
+                    var rock = rockList.get(i);
+                    for (var n = 0; n < 5; n++) {
+                        for (var j = 0; j < 5; j++) {
                             offg.drawLine((int) Math.round((rock.shape.xpoints[n] * Math.cos(rock.angle) - rock.shape.ypoints[n] * Math.sin(rock.angle) + rock.xposition)),
                                     (int) Math.round((rock.shape.xpoints[n] * Math.sin(rock.angle) + rock.shape.ypoints[n] * Math.cos(rock.angle) + rock.yposition)),
                                     (int) Math.round((rock.shape.xpoints[j] * Math.cos(rock.angle) - rock.shape.ypoints[j] * Math.sin(rock.angle) + rock.xposition)),
@@ -349,8 +349,8 @@ public class Asteroids extends JFrame implements KeyListener, ActionListener {
 
 
                 offg.setColor(Color.YELLOW);
-                for (int i = 0; i < bulletList.size(); i++) {
-                    Bullet bullet = bulletList.get(i);
+                for (var i = 0; i < bulletList.size(); i++) {
+                    var bullet = bulletList.get(i);
                     if (bullet.active == true) {
                         bullet.paint(offg, false);
                     }
@@ -463,7 +463,7 @@ public class Asteroids extends JFrame implements KeyListener, ActionListener {
 
         if (FKey == true) {
             if (gameState == 1) {
-                for (int i = 0; i < rockList.size(); i++) {
+                for (var i = 0; i < rockList.size(); i++) {
                     rockList.get(i).active = false;
                 }
             }
@@ -500,31 +500,31 @@ public class Asteroids extends JFrame implements KeyListener, ActionListener {
     public static boolean collision(VectorSprite object1, VectorSprite object2) {
 
 
-        int bound1 = object1.drawShape.npoints;
-        for (int i1 = 0; i1 < bound1; i1++) {
+        var bound1 = object1.drawShape.npoints;
+        for (var i1 = 0; i1 < bound1; i1++) {
             if (object2.drawShape.contains(object1.drawShape.xpoints[i1], object1.drawShape.ypoints[i1]) && object1.active && object2.active) {
                 return true;
             }
         }
-        int bound = object2.drawShape.npoints;
+        var bound = object2.drawShape.npoints;
         return IntStream.range(0, bound).anyMatch(i -> object1.drawShape.contains(object2.drawShape.xpoints[i], object2.drawShape.ypoints[i]) && object1.active && object2.active);
 
     }
 
     public void checkCollisions() {
-        for (int i = 0; i < rockList.size(); i++) {
+        for (var i = 0; i < rockList.size(); i++) {
 
             if (collision(ship, rockList.get(i)) == true && ship.invincible == false) {
                 ship.hit();
                 lives -= 1;
                 credits -= 50;
-                for (int e = 0; e < 10 * numDebris; e++) {
+                for (var e = 0; e < 10 * numDebris; e++) {
                     explosionList.add(new Debris(ship.xposition, ship.yposition));
                     isExplosionShip = true;
                 }
             }
 
-            for (int j = 0; j < bulletList.size(); j++) {
+            for (var j = 0; j < bulletList.size(); j++) {
                 if (collision(bulletList.get(j), rockList.get(i)) == true) {
                     bulletList.get(j).active = false;
                     rockList.get(i).health -= ship.damage;
@@ -533,7 +533,7 @@ public class Asteroids extends JFrame implements KeyListener, ActionListener {
 
                         rockList.get(i).active = false;
 
-                        for (int e = 0; e < numDebris; e++) {
+                        for (var e = 0; e < numDebris; e++) {
                             explosionList.add(new Debris(rockList.get(i).xposition, rockList.get(i).yposition));
                             isExplosionShip = false;
                         }
@@ -617,7 +617,7 @@ public class Asteroids extends JFrame implements KeyListener, ActionListener {
     }
 
     public void checkDestruction() {
-        for (int i = 0; i < rockList.size(); i++) {
+        for (var i = 0; i < rockList.size(); i++) {
             if (rockList.get(i).active == false) {
                 if (rockList.get(i).size > 4) {
                     rockList.add(new Rock(rockList.get(i).xposition, rockList.get(i).yposition, rockList.get(i).size -= 1, rockList.get(i).xspeed, rockList.get(i).yspeed));
@@ -653,7 +653,7 @@ public class Asteroids extends JFrame implements KeyListener, ActionListener {
             offg.setColor(Color.WHITE);
         }
 
-        for (int i = 0; i < explosionList.size(); i++) {
+        for (var i = 0; i < explosionList.size(); i++) {
             explosionList.get(i).paint(offg, false);
         }
 
@@ -777,34 +777,34 @@ public class Asteroids extends JFrame implements KeyListener, ActionListener {
 
     public void whichBulletType() {
 
-        for (int i = 0; i < bulletList.size(); i++) {
+        for (var i = 0; i < bulletList.size(); i++) {
             bulletList.get(i).weaponType = ship.weaponType;
         }
     }
 
     public void endLevel() {
 
-        for (int i = 0; i < rockList.size(); i++) {
+        for (var i = 0; i < rockList.size(); i++) {
             rockList.get(i).active = false;
         }
 
-        for (int i = 0; i < rockList.size(); i++) {
+        for (var i = 0; i < rockList.size(); i++) {
             rockList.remove(rockList.get(i));
         }
 
-        for (int i = 0; i < explosionList.size(); i++) {
+        for (var i = 0; i < explosionList.size(); i++) {
             explosionList.get(i).active = false;
         }
 
-        for (int i = 0; i < explosionList.size(); i++) {
+        for (var i = 0; i < explosionList.size(); i++) {
             explosionList.remove(explosionList.get(i));
         }
 
-        for (int i = 0; i < bulletList.size(); i++) {
+        for (var i = 0; i < bulletList.size(); i++) {
             bulletList.get(i).active = false;
         }
 
-        for (int i = 0; i < bulletList.size(); i++) {
+        for (var i = 0; i < bulletList.size(); i++) {
             bulletList.remove(bulletList.get(i));
         }
 
@@ -822,7 +822,7 @@ public class Asteroids extends JFrame implements KeyListener, ActionListener {
 
         numAsteroids = 2 + (level * 2);
 
-        for (int i = 0; i < numAsteroids; i++) {
+        for (var i = 0; i < numAsteroids; i++) {
             rockList.add(new Rock());
         }
     }

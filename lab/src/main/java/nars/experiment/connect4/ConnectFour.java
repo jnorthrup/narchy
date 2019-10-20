@@ -28,7 +28,7 @@ import static nars.experiment.connect4.C4.dropConcept;
 public class ConnectFour {
 
     public static JFrame constructApplicationFrame(ConnectFourState game) {
-        JFrame frame = new JFrame();
+        var frame = new JFrame();
         JPanel panel = new ConnectFourPanel(game);
         frame.add(panel, BorderLayout.CENTER);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -95,7 +95,7 @@ public class ConnectFour {
         }
 
         protected int moving() {
-            int m = moveCount.get() % 2 + 1;
+            var m = moveCount.get() % 2 + 1;
 
             return m;
         }
@@ -106,12 +106,12 @@ public class ConnectFour {
         }
 
         public synchronized boolean drop(int col, int whoamI) {
-            int playerNum = moving();
+            var playerNum = moving();
             if (playerNum != whoamI) {
                 invalidMove();
                 return false;
             }
-            int row = freeRow(col);
+            var row = freeRow(col);
             if (row != -1) {
                 moveCount.getAndIncrement();
                 if (moveCount.get() == board.length)
@@ -183,24 +183,24 @@ public class ConnectFour {
         private void analyzeWinPositions(int moveRow, int moveCol) {
             int[] rowIncr = {1, 0, 1, 1};
             int[] colIncr = {0, 1, -1, 1};
-            int playerNum = get(moveRow, moveCol);
+            var playerNum = get(moveRow, moveCol);
             WinPositionInfo[] wInfo = {
                     new WinPositionInfo(), new WinPositionInfo()};
-            for (int i = 0; i < 4; i++) {
-                int rIncr = rowIncr[i];
-                int cIncr = colIncr[i];
-                int diskCount = 1;
+            for (var i = 0; i < 4; i++) {
+                var rIncr = rowIncr[i];
+                var cIncr = colIncr[i];
+                var diskCount = 1;
 
-                for (int j = 0; j < 2; j++) {
-                    WinPositionInfo wInf = wInfo[j];
+                for (var j = 0; j < 2; j++) {
+                    var wInf = wInfo[j];
                     wInf.clear();
-                    int rBound = rIncr > 0 ? rows : -1;
-                    int cBound = cIncr > 0 ? cols : -1;
+                    var rBound = rIncr > 0 ? rows : -1;
+                    var cBound = cIncr > 0 ? cols : -1;
 
-                    int row = moveRow + rIncr;
-                    int col = moveCol + cIncr;
+                    var row = moveRow + rIncr;
+                    var col = moveCol + cIncr;
                     while (row != rBound && col != cBound) {
-                        int plNum = get(row, col);
+                        var plNum = get(row, col);
                         if (plNum == playerNum) {
                             if (wInf.hasData())
                                 wInf.diskCount++;
@@ -222,8 +222,8 @@ public class ConnectFour {
                     rIncr = -rIncr;
                     cIncr = -cIncr;
                 }
-                for (int j = 0; j < 2; j++) {
-                    WinPositionInfo wInf = wInfo[j];
+                for (var j = 0; j < 2; j++) {
+                    var wInf = wInfo[j];
                     if (wInf.hasData() && diskCount + wInf.diskCount >= 3) {
                         setWinPositionFor(wInf.row, wInf.col, playerNum);
                     }
@@ -238,8 +238,8 @@ public class ConnectFour {
 
 
         private double getUtility(String player) {
-            ConnectFourState state = this;
-            double result = state.utility();
+            var state = this;
+            var result = state.utility();
             if (result != -1) {
                 if (Objects.equals(player, players[1]))
                     result = 1 - result;
@@ -286,7 +286,7 @@ public class ConnectFour {
 
             public boolean drop(int which) {
 
-                int moving = game.moving();
+                var moving = game.moving();
                 if (moving != player) {
                     notMoving(player);
                     return false;
@@ -321,9 +321,9 @@ public class ConnectFour {
             public void see() {
 
 
-                for (int r = 0; r < game.rows; r++)
-                    for (int c = 0; c < game.cols; c++) {
-                        int x = game.get(r, c);
+                for (var r = 0; r < game.rows; r++)
+                    for (var c = 0; c < game.cols; c++) {
+                        var x = game.get(r, c);
                         board(r, c, "emt", 0 == x);
                         board(r, c, "red", 1 == x);
                         board(r, c, "yel", 2 == x);
@@ -379,7 +379,7 @@ public class ConnectFour {
             setLayout(new BorderLayout());
             setBackground(Color.BLUE);
 
-            JToolBar toolBar = new JToolBar();
+            var toolBar = new JToolBar();
             toolBar.setFloatable(false);
             toolBar.add(Box.createHorizontalGlue());
             clearButton = new JButton("Clear");
@@ -388,14 +388,14 @@ public class ConnectFour {
 
             add(toolBar, BorderLayout.NORTH);
 
-            int rows = game.rows;
-            int cols = game.cols;
-            JPanel boardPanel = new JPanel();
+            var rows = game.rows;
+            var cols = game.cols;
+            var boardPanel = new JPanel();
             boardPanel.setLayout(new GridLayout(rows, cols, 5, 5));
             boardPanel.setBorder(BorderFactory.createEtchedBorder());
             boardPanel.setBackground(Color.BLUE);
-            for (int i = 0; i < rows * cols; i++) {
-                GridElement element = new GridElement(i / cols, i % cols);
+            for (var i = 0; i < rows * cols; i++) {
+                var element = new GridElement(i / cols, i % cols);
                 boardPanel.add(element);
                 element.addActionListener(this);
             }
@@ -429,16 +429,16 @@ public class ConnectFour {
          * Updates the status bar.
          */
         protected int updateStatus() {
-            int won = 0;
+            var won = 0;
             String statusText;
             if (!game.isTerminal()) {
-                String toMove = ConnectFourState.players[game.moving() - 1];
+                var toMove = ConnectFourState.players[game.moving() - 1];
                 statusText = "Next move: " + toMove;
                 statusBar.setForeground("red".equals(toMove) ? Color.RED
                         : Color.YELLOW);
             } else {
                 String winner = null;
-                for (int i = 0; i < 2; i++)
+                for (var i = 0; i < 2; i++)
                     if (game.getUtility(ConnectFourState.players[i]) == 1) {
                         winner = ConnectFourState.players[i];
                         won = i;
@@ -473,11 +473,11 @@ public class ConnectFour {
             public void paintComponent(Graphics g) {
                 super.paintComponent(g);
 
-                int playerNum = game.get(row, col);
+                var playerNum = game.get(row, col);
                 if (playerNum != 0) {
                     drawDisk(g, playerNum);
                 }
-                for (int pNum = 1; pNum <= 2; pNum++)
+                for (var pNum = 1; pNum <= 2; pNum++)
                     if (game.isWinPositionFor(row, col, pNum))
                         drawWinSituation(g, pNum);
             }
@@ -486,7 +486,7 @@ public class ConnectFour {
              * Fills a simple oval.
              */
             void drawDisk(Graphics g, int playerNum) {
-                int size = Math.min(getWidth(), getHeight());
+                var size = Math.min(getWidth(), getHeight());
                 g.setColor(playerNum == 1 ? Color.RED : Color.YELLOW);
                 g.fillOval((getWidth() - size) / 2, (getHeight() - size) / 2,
                         size, size);
@@ -496,7 +496,7 @@ public class ConnectFour {
              * Draws a simple oval.
              */
             void drawWinSituation(Graphics g, int playerNum) {
-                int size = Math.min(getWidth(), getHeight());
+                var size = Math.min(getWidth(), getHeight());
                 g.setColor(playerNum == 1 ? Color.RED : Color.YELLOW);
                 g.drawOval((getWidth() - size) / 2 + playerNum,
                         (getHeight() - size) / 2 + playerNum, size - 2

@@ -32,7 +32,7 @@ public interface Node<N, E> {
     /** warning this buffers the iteration */
     default Iterable<FromTo<Node<N,E>,E>> edges(boolean in, boolean out, @Nullable Predicate<FromTo<Node<N,E>,E>> filter, @Nullable Comparator<FromTo<Node<N,E>,E>> sorter) {
         FasterList<FromTo<Node<N, E>, E>> l = new FasterList(edgeIterator(in, out));
-        int s = l.size();
+        var s = l.size();
         if (s == 0)
             return Util.emptyIterable;
 
@@ -52,7 +52,7 @@ public interface Node<N, E> {
     }
 
     default Iterable<FromTo<Node<N,E>,E>> edges(boolean in, boolean out, @Nullable Predicate<FromTo<Node<N,E>,E>> filter) {
-        Iterable<FromTo<Node<N, E>, E>> l = edges(in, out);
+        var l = edges(in, out);
         if (l instanceof Collection && ((Collection)l).isEmpty())
             return Util.emptyIterable;
         else

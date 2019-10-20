@@ -63,7 +63,7 @@ public class PushButton extends AbstractButton  {
 
     @Override
     protected void onClick() {
-        Consumer<PushButton> c = this.onClick;
+        var c = this.onClick;
         if (c !=null) {
             //Exe.invoke(()->
             c.accept(this);

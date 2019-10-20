@@ -18,7 +18,7 @@ public interface Subst extends RecursiveTermTransform {
 
     @Override
     default Term applyAtomic(Atomic x) {
-        Term y = xy(x);
+        var y = xy(x);
         return y != null ? y : x;
     }
 
@@ -27,7 +27,7 @@ public interface Subst extends RecursiveTermTransform {
         Term y = RecursiveTermTransform.super.applyCompound(x);
         if (y == Null)
             return Null;
-        Term z = xy(y);
+        var z = xy(y);
         return (z!=null) ? z : y;
 
 //        Term y = xy(x);

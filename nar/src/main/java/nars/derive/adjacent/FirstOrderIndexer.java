@@ -16,16 +16,16 @@ public class FirstOrderIndexer extends AbstractAdjacentIndexer {
 	public boolean test(Term concept, Term target) {
 		if (concept instanceof Compound) {
 
-			UnifyAny u = new UnifyAny(); //TODO reuse from Derivation
+			var u = new UnifyAny(); //TODO reuse from Derivation
 			u.ttl = NAL.derive.TTL_UNISUBST;
 
 
-			int targetOp = target.opID();
+			var targetOp = target.opID();
 			if (concept.opID() == targetOp && u.unifies(concept, target))
 				return true;
 
 			Predicate<Term> subunification = x -> {
-				Term xx = x.unneg();
+				var xx = x.unneg();
 				return xx.opID()==targetOp && xx.hasAny(Op.AtomicConstant) && u.unifies(xx, target);
 			};
 

@@ -120,7 +120,7 @@ public class Reflect {
         }
 
         if (accessible instanceof Member) {
-            Member member = (Member) accessible;
+            var member = (Member) accessible;
 
             if (Modifier.isPublic(member.getModifiers()) &&
                     Modifier.isPublic(member.getDeclaringClass().getModifiers())) {
@@ -225,9 +225,9 @@ public class Reflect {
      */
     public Reflect set(String name, Object value) throws ReflectException {
         try {
-            Field field = field0(name);
+            var field = field0(name);
             if ((field.getModifiers() & Modifier.FINAL) == Modifier.FINAL) {
-                Field modifiersField = Field.class.getDeclaredField("modifiers");
+                var modifiersField = Field.class.getDeclaredField("modifiers");
                 modifiersField.setAccessible(true); //TODO trySetAccessible
                 modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
             }
@@ -273,7 +273,7 @@ public class Reflect {
      */
     public Reflect field(String name) throws ReflectException {
         try {
-            Field field = field0(name);
+            var field = field0(name);
             return on(field.getType(),
                     object instanceof Class ? field /* the field itself */ : field.get(object));
         } catch (Exception e) {
@@ -282,7 +282,7 @@ public class Reflect {
     }
 
     private Field field0(String name) throws ReflectException {
-        Class<?> t = type();
+        var t = type();
 
         
         try {
@@ -325,14 +325,14 @@ public class Reflect {
 
         Map<String, Reflect> result = new LinkedHashMap<>(16);
 
-        Class<?> t = type();
+        var t = type();
 
         Function<String, Reflect> fieldResolver = this::field;
 
         do {
-            for (Field field : t.getDeclaredFields()) {
-                int mods = field.getModifiers();
-                boolean isStatik = Modifier.isStatic(mods);
+            for (var field : t.getDeclaredFields()) {
+                var mods = field.getModifiers();
+                var isStatik = Modifier.isStatic(mods);
                 if ((isStatik && statik ) || (!isStatik && instance)) {
                     if (!nonPublic && !Modifier.isPublic(mods))
                         continue;
@@ -403,16 +403,16 @@ public class Reflect {
      * @throws ReflectException If any reflection exception occurred.
      */
     public Reflect call(String name, Object... args) throws ReflectException {
-        Class<?>[] types = types(args);
+        var types = types(args);
 
         try {
-            Method method = exactMethod(name, types);
+            var method = exactMethod(name, types);
             return on(method, object, args);
         }
 
         catch (NoSuchMethodException e) {
             try {
-                Method method = similarMethod(name, types);
+                var method = similarMethod(name, types);
                 return on(method, object, args);
             } catch (NoSuchMethodException e1) {
                 throw new ReflectException(e1);
@@ -428,7 +428,7 @@ public class Reflect {
      * If no exact match could be found, we let the {@code NoSuchMethodException} pass through.
      */
     private Method exactMethod(String name, Class<?>[] types) throws NoSuchMethodException {
-        Class<?> t = type();
+        var t = type();
 
         
         try {
@@ -460,11 +460,11 @@ public class Reflect {
      * returned, otherwise a {@code NoSuchMethodException} is thrown.
      */
     private Method similarMethod(String name, Class<?>[] types) throws NoSuchMethodException {
-        Class<?> t = type();
+        var t = type();
 
         
         
-        for (Method method : t.getMethods()) {
+        for (var method : t.getMethods()) {
             if (isSimilarSignature(method, name, types)) {
                 return method;
             }
@@ -472,7 +472,7 @@ public class Reflect {
 
         
         do {
-            for (Method method : t.getDeclaredMethods()) {
+            for (var method : t.getDeclaredMethods()) {
                 if (isSimilarSignature(method, name, types)) {
                     return method;
                 }
@@ -534,19 +534,19 @@ public class Reflect {
      * @throws ReflectException If any reflection exception occurred.
      */
     public Reflect create(Object... args) throws ReflectException {
-        Class<?>[] types = types(args);
+        var types = types(args);
 
         
         
         try {
-            Constructor<?> constructor = type().getDeclaredConstructor(types);
+            var constructor = type().getDeclaredConstructor(types);
             return on(constructor, args);
         }
 
         
         
         catch (NoSuchMethodException e) {
-            for (Constructor<?> constructor : type().getDeclaredConstructors()) {
+            for (var constructor : type().getDeclaredConstructors()) {
                 if (match(constructor.getParameterTypes(), types)) {
                     return on(constructor, args);
                 }
@@ -617,7 +617,7 @@ public class Reflect {
      * Get the POJO property name of an getter/setter
      */
     private static String property(String string) {
-        int length = string.length();
+        var length = string.length();
 
         switch (length) {
             case 0:
@@ -737,8 +737,8 @@ public class Reflect {
 
         Class<?>[] result = new Class[values.length];
 
-        for (int i = 0; i < values.length; i++) {
-            Object value = values[i];
+        for (var i = 0; i < values.length; i++) {
+            var value = values[i];
             result[i] = value == null ? NULL.class : value.getClass();
         }
 

@@ -33,7 +33,7 @@ public abstract class ObjectGraph extends MapNodeGraph<Object, ObjectGraph.Acces
     }
 
     public ObjectGraph add(int depth, Object... xx) {
-        for (Object x: xx)
+        for (var x: xx)
             add(x, depth);
         return this;
     }
@@ -45,12 +45,12 @@ public abstract class ObjectGraph extends MapNodeGraph<Object, ObjectGraph.Acces
     private MutableNode<Object,Accessor> add(Object root, Object x, FasterList<Pair<Class, Accessor>> path, int level) {
 
 
-        MutableNode<Object, Accessor> n = addNode(x);
+        var n = addNode(x);
 
         if ((level == 0) || !recurse(x))
             return n;
 
-        Class<?> clazz = x.getClass();
+        var clazz = x.getClass();
 
         
         
@@ -62,10 +62,10 @@ public abstract class ObjectGraph extends MapNodeGraph<Object, ObjectGraph.Acces
             
 
             if (includeClass(clazz.getComponentType())) {
-                int len = Array.getLength(x);
+                var len = Array.getLength(x);
 
-                for (int i = 0; i < len; i++) {
-                    Object aa = Array.get(x, i);
+                for (var i = 0; i < len; i++) {
+                    var aa = Array.get(x, i);
                     if ((aa != null ||  includeNull()) && includeValue(aa)) {
                         access(root, n, clazz, aa, new ArrayAccessor(clazz, i), path, level);
                     }
@@ -78,7 +78,7 @@ public abstract class ObjectGraph extends MapNodeGraph<Object, ObjectGraph.Acces
 
                 if (!includeField(field))   return;
 
-                Class<?> fieldType = field.getType();
+                var fieldType = field.getType();
 
                 
                 
@@ -89,10 +89,10 @@ public abstract class ObjectGraph extends MapNodeGraph<Object, ObjectGraph.Acces
                     try {
                         field.setAccessible(true);
 
-                        Object value = field.get(x);
+                        var value = field.get(x);
 
                         if ((value != null ||  includeNull()) && includeValue(value)) {
-                            FieldAccessor axe = new FieldAccessor(field);
+                            var axe = new FieldAccessor(field);
                             access(root, n, clazz, value, axe, path, level);
                         }
 
@@ -174,9 +174,9 @@ public abstract class ObjectGraph extends MapNodeGraph<Object, ObjectGraph.Acces
      */
     private Stream<Field> fields(Class<?> clazz) {
 
-        Stream<Field> s = Stream.of(clazz.getDeclaredFields());
+        var s = Stream.of(clazz.getDeclaredFields());
 
-        Class<?> sc = clazz.getSuperclass();
+        var sc = clazz.getSuperclass();
         if (sc != null && includeClass(sc)) {
             s = Stream.concat(s, fields(sc));
         }

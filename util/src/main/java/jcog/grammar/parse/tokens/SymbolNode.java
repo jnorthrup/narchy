@@ -74,8 +74,8 @@ public class SymbolNode {
 	 */
 	void addDescendantLine(String s) {
 		if (!s.isEmpty()) {
-			char c = s.charAt(0);
-			SymbolNode n = ensureChildWithChar(c);
+			var c = s.charAt(0);
+			var n = ensureChildWithChar(c);
 			n.addDescendantLine(s.substring(1));
 		}
 	}
@@ -95,8 +95,8 @@ public class SymbolNode {
 	 */
 	SymbolNode deepestRead(PushbackReader r) throws IOException {
 
-		char c = (char) r.read();
-		SymbolNode n = findChildWithChar(c);
+		var c = (char) r.read();
+		var n = findChildWithChar(c);
 		if (n == null) {
 			r.unread(c);
 			return this;
@@ -108,7 +108,7 @@ public class SymbolNode {
 	 * Find or create a child for the given character.
 	 */
 	SymbolNode ensureChildWithChar(char c) {
-		SymbolNode n = findChildWithChar(c);
+		var n = findChildWithChar(c);
 		if (n == null) {
 			n = new SymbolNode(this, c);
 			children.add(n);
@@ -127,8 +127,8 @@ public class SymbolNode {
 	 * Find a descendant which is down the path the given string indicates.
 	 */
 	SymbolNode findDescendant(String s) {
-		char c = s.charAt(0);
-		SymbolNode n = findChildWithChar(c);
+		var c = s.charAt(0);
+		var n = findChildWithChar(c);
 		if (s.length() == 1) {
 			return n;
 		}

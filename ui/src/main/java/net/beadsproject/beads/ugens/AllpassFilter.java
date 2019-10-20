@@ -97,13 +97,13 @@ public class AllpassFilter extends IIRFilter implements DataBeadReceiver {
     @Override
     public void gen() {
 
-        float[] bi = bufIn[0];
-        float[] bo = bufOut[0];
+        var bi = bufIn[0];
+        var bo = bufOut[0];
 
         if (isDelayStatic && isGStatic) {
 
-            int ind2 = (ind + bufLen - delay) % bufLen;
-            for (int currsample = 0; currsample < bufferSize; currsample++) {
+            var ind2 = (ind + bufLen - delay) % bufLen;
+            for (var currsample = 0; currsample < bufferSize; currsample++) {
                 bo[currsample] = yn[ind] = xn[ind2] + g
                         * (yn[ind2] - (xn[ind] = bi[currsample]));
                 ind2 = (ind2 + 1) % bufLen;
@@ -115,13 +115,13 @@ public class AllpassFilter extends IIRFilter implements DataBeadReceiver {
             gUGen.update();
             delayUGen.update();
 
-            for (int currsample = 0; currsample < bufferSize; currsample++) {
+            for (var currsample = 0; currsample < bufferSize; currsample++) {
                 if ((delay = (int) gUGen.getValue(0, currsample)) < 1) {
                     delay = 1;
                 } else if (delay > maxDelay) {
                     delay = maxDelay;
                 }
-                int ind2 = (ind + bufLen - delay) % bufLen;
+                var ind2 = (ind + bufLen - delay) % bufLen;
                 bo[currsample] = yn[ind] = xn[ind2]
                         + gUGen.getValue(0, currsample)
                         * (yn[ind2] - (xn[ind] = bi[currsample]));
@@ -298,7 +298,7 @@ public class AllpassFilter extends IIRFilter implements DataBeadReceiver {
      * @return The parameter DataBead.
      */
     public DataAuvent getParams() {
-        DataAuvent db = new DataAuvent();
+        var db = new DataAuvent();
         if (isDelayStatic) {
             db.put("delay", delay);
         } else {
@@ -321,7 +321,7 @@ public class AllpassFilter extends IIRFilter implements DataBeadReceiver {
      * @return The static parameter DataBead.
      */
     public DataAuvent getStaticParams() {
-        DataAuvent db = new DataAuvent();
+        var db = new DataAuvent();
         db.put("delay", delay);
         db.put("g", g);
         return db;

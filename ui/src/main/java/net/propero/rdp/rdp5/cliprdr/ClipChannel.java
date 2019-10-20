@@ -111,9 +111,9 @@ public class ClipChannel extends VChannel implements ClipInterface,
     public void process(RdpPacket data) throws RdesktopException, IOException,
             CryptoException {
 
-        int type = data.getLittleEndian16();
-        int status = data.getLittleEndian16();
-        int length = data.getLittleEndian32();
+        var type = data.getLittleEndian16();
+        var status = data.getLittleEndian16();
+        var length = data.getLittleEndian32();
 
         if (status == CLIPRDR_ERROR) {
             if (type == CLIPRDR_FORMAT_ACK) {
@@ -149,7 +149,7 @@ public class ClipChannel extends VChannel implements ClipInterface,
     @Override
     public void send_null(int type, int status) {
 
-        RdpPacket_Localised s = new RdpPacket_Localised(12);
+        var s = new RdpPacket_Localised(12);
         s.setLittleEndian16(type);
         s.setLittleEndian16(status);
         s.setLittleEndian32(0);
@@ -193,11 +193,11 @@ public class ClipChannel extends VChannel implements ClipInterface,
 
     private void handle_clip_format_announce(RdpPacket data, int length)
             throws RdesktopException, IOException, CryptoException {
-        TypeHandlerList serverTypeList = new TypeHandlerList();
+        var serverTypeList = new TypeHandlerList();
 
         
-        for (int c = length; c >= 36; c -= 36) {
-            int typeCode = data.getLittleEndian32();
+        for (var c = length; c >= 36; c -= 36) {
+            var typeCode = data.getLittleEndian32();
             
             
             data.incrementPosition(32);
@@ -213,10 +213,10 @@ public class ClipChannel extends VChannel implements ClipInterface,
     }
 
     private void handle_data_request(RdpPacket data) {
-        int format = data.getLittleEndian32();
-        Transferable clipData = clipboard.getContents(this);
+        var format = data.getLittleEndian32();
+        var clipData = clipboard.getContents(this);
 
-        TypeHandler outputHandler = allHandlers.getHandlerForFormat(format);
+        var outputHandler = allHandlers.getHandlerForFormat(format);
         if (outputHandler != null) {
             outputHandler.send_data(clipData, this);
             
@@ -243,11 +243,11 @@ public class ClipChannel extends VChannel implements ClipInterface,
     private void request_clipboard_data(int formatcode) throws RdesktopException,
             IOException, CryptoException {
 
-        RdpPacket_Localised s = Common.secure.init(
+        var s = Common.secure.init(
                 Constants.encryption ? Secure.SEC_ENCRYPT : 0, 24);
-        s.setLittleEndian32(16); 
+        s.setLittleEndian32(16);
 
-        int flags = VChannels.CHANNEL_FLAG_FIRST | VChannels.CHANNEL_FLAG_LAST;
+        var flags = VChannels.CHANNEL_FLAG_FIRST | VChannels.CHANNEL_FLAG_LAST;
         if ((this.flags() & VChannels.CHANNEL_OPTION_SHOW_PROTOCOL) != 0)
             flags |= VChannels.CHANNEL_FLAG_SHOW_PROTOCOL;
 
@@ -267,7 +267,7 @@ public class ClipChannel extends VChannel implements ClipInterface,
     public void send_data(byte[] data, int length) {
         CommunicationMonitor.lock(this);
 
-        RdpPacket_Localised all = new RdpPacket_Localised(12 + length);
+        var all = new RdpPacket_Localised(12 + length);
 
         all.setLittleEndian16(CLIPRDR_DATA_RESPONSE);
         all.setLittleEndian16(CLIPRDR_RESPONSE);

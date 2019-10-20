@@ -80,8 +80,8 @@ public class AxisSweep3 extends AxisSweep3Internal {
 		
 		@Override
 		public void swap(int idx1, int idx2) {
-			short tmpPos = pos[idx1];
-			short tmpHandle = handle[idx1];
+			var tmpPos = pos[idx1];
+			var tmpHandle = handle[idx1];
 			
 			pos[idx1] = pos[idx2];
 			handle[idx1] = handle[idx2];

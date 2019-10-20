@@ -52,17 +52,17 @@ public class CharmaskMatchLengthObjective implements Objective {
 
     @Override
     public double[] fitness(Node individual) {
-        DataSet dataSetView = this.context.getCurrentDataSet();
+        var dataSetView = this.context.getCurrentDataSet();
 
-        TreeEvaluator evaluator = context.getConfiguration().getEvaluator();
-        double[] fitness = new double[3];
+        var evaluator = context.getConfiguration().getEvaluator();
+        var fitness = new double[3];
 
         double fitnessLenght;
 
         List<Bounds[]> evaluate;
         try {
             evaluate = evaluator.evaluate(individual, context);
-            StringBuilder builder = new StringBuilder();
+            var builder = new StringBuilder();
             individual.describe(builder);
             fitnessLenght = builder.length();
         } catch (TreeEvaluationException ex) {
@@ -71,25 +71,23 @@ public class CharmaskMatchLengthObjective implements Objective {
             return fitness;
         }
 
-        
-        
-        
-        BasicStats statsOverall = new BasicStats();
 
-        
-        BasicStats statsCharsOverall = new BasicStats();
+        var statsOverall = new BasicStats();
 
-        int i = 0;
-        for (Bounds[] result : evaluate) {
-            BasicStats stats = new BasicStats();
-            BasicStats statsChars = new BasicStats();
-            
-            Example example = dataSetView.getExample(i);
+
+        var statsCharsOverall = new BasicStats();
+
+        var i = 0;
+        for (var result : evaluate) {
+            var stats = new BasicStats();
+            var statsChars = new BasicStats();
+
+            var example = dataSetView.getExample(i);
             if (example == null)
-                continue; 
+                continue;
 
-            List<Bounds> expectedMatchMask = example.getMatch();
-            List<Bounds> expectedUnmatchMask = example.getUnmatch();
+            var expectedMatchMask = example.getMatch();
+            var expectedUnmatchMask = example.getUnmatch();
             List<Bounds> annotatedMask = new FastList(expectedMatchMask);
             annotatedMask.addAll(expectedUnmatchMask);
 
@@ -115,12 +113,12 @@ public class CharmaskMatchLengthObjective implements Objective {
 
     
     private static int intersection(Bounds[] extractedRanges, List<Bounds> expectedRanges) {
-        int overallNumChars = 0;
+        var overallNumChars = 0;
          
-        for (Bounds extractedBounds : extractedRanges) {
+        for (var extractedBounds : extractedRanges) {
             for (int i = 0, expectedRangesSize = expectedRanges.size(); i < expectedRangesSize; i++) {
-                Bounds expectedBounds = expectedRanges.get(i);
-                int numChars = Math.min(extractedBounds.end, expectedBounds.end) - Math.max(extractedBounds.start, expectedBounds.start);
+                var expectedBounds = expectedRanges.get(i);
+                var numChars = Math.min(extractedBounds.end, expectedBounds.end) - Math.max(extractedBounds.start, expectedBounds.start);
                 overallNumChars += Math.max(0, numChars);
             }
         }
@@ -129,9 +127,9 @@ public class CharmaskMatchLengthObjective implements Objective {
 
     
     private static int countIdenticalRanges(Bounds[] rangesA, List<Bounds> rangesB) {
-        int identicalRanges = 0;
+        var identicalRanges = 0;
          
-        for (Bounds boundsA : rangesA) {
+        for (var boundsA : rangesA) {
             for (int i = 0, rangesBSize = rangesB.size(); i < rangesBSize; i++) {
                 if (boundsA.equals(rangesB.get(i))) {
                     identicalRanges++;

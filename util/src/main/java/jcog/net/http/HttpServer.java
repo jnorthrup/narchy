@@ -78,9 +78,9 @@ public class HttpServer extends Loop implements WebSocketSelector.UpgradeWebSock
     }
 
     private static ServerSocketChannel openServerChannel(InetSocketAddress listenAddr) throws IOException {
-        ServerSocketChannel ssChannel = ServerSocketChannel.open();
+        var ssChannel = ServerSocketChannel.open();
         ssChannel.configureBlocking(false);
-        ServerSocket socket = ssChannel.socket();
+        var socket = ssChannel.socket();
         socket.bind(listenAddr);
         socket.setReceiveBufferSize(RCVBUFFER_SIZE);
 
@@ -99,7 +99,7 @@ public class HttpServer extends Loop implements WebSocketSelector.UpgradeWebSock
             return -1;
         }
 
-        ServerSocket sock = ssChannel.socket();
+        var sock = ssChannel.socket();
         if (sock == null) {
             return -1;
         }

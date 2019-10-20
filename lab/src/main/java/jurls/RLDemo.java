@@ -43,9 +43,9 @@ public class RLDemo extends javax.swing.JFrame {
         public DomainMenu() {
             super("Domain");
 
-            ButtonGroup bg = new ButtonGroup();
+            var bg = new ButtonGroup();
             bg.add(poleBalancing);
-            JRadioButtonMenuItem wanderBot = new JRadioButtonMenuItem(new MyAction("Wander Bot"));
+            var wanderBot = new JRadioButtonMenuItem(new MyAction("Wander Bot"));
             bg.add(wanderBot);
             bg.add(follow1D);
             
@@ -103,11 +103,11 @@ public class RLDemo extends javax.swing.JFrame {
 
                 updateParameters();
 
-                for (int i = 0; i < numIterationsPerLoop; ++i) {
-                    double[] previousState = rLDomain.observe();
+                for (var i = 0; i < numIterationsPerLoop; ++i) {
+                    var previousState = rLDomain.observe();
                     rLDomain.takeAction(action);
                     rLDomain.frame();
-                    double[] nextState = rLDomain.observe();
+                    var nextState = rLDomain.observe();
 
                     action = agent.learnAndAction(
                             nextState,
@@ -122,7 +122,7 @@ public class RLDemo extends javax.swing.JFrame {
                 debugLabel.setText("@" + numPhysicsIterations);
 
                 if (visualize) {
-                    double r = rLDomain.getReward();
+                    var r = rLDomain.getReward();
 
 
 
@@ -133,10 +133,10 @@ public class RLDemo extends javax.swing.JFrame {
 
 
                     if (agent instanceof RLAgent) {
-                        double[] d = ((RLAgent)agent).getStateNormalized();
-                        int numParam = d.length;
-                        int cw = (int) Math.ceil(Math.sqrt(numParam));
-                        int ch = numParam / cw;
+                        var d = ((RLAgent)agent).getStateNormalized();
+                        var numParam = d.length;
+                        var cw = (int) Math.ceil(Math.sqrt(numParam));
+                        var ch = numParam / cw;
 
                         parameterChart.draw(agent.getFunction());
                         
@@ -232,33 +232,33 @@ public class RLDemo extends javax.swing.JFrame {
 
     private void initComponents() {
 
-        ButtonGroup buttonGroup1 = new ButtonGroup();
-        ButtonGroup approximatorButtonGroup = new ButtonGroup();
-        ButtonGroup actionSelectorButtonGroup = new ButtonGroup();
-        ButtonGroup numFeaturesButtonGroup = new ButtonGroup();
-        ButtonGroup agentButtonGroup = new ButtonGroup();
-        JTabbedPane jTabbedPane1 = new JTabbedPane();
-        JPanel jPanel3 = new JPanel();
+        var buttonGroup1 = new ButtonGroup();
+        var approximatorButtonGroup = new ButtonGroup();
+        var actionSelectorButtonGroup = new ButtonGroup();
+        var numFeaturesButtonGroup = new ButtonGroup();
+        var agentButtonGroup = new ButtonGroup();
+        var jTabbedPane1 = new JTabbedPane();
+        var jPanel3 = new JPanel();
 
-        JPanel parametersPanel = new JPanel();
-        JLabel jLabel1 = new JLabel();
-        JLabel jLabel2 = new JLabel();
+        var parametersPanel = new JPanel();
+        var jLabel1 = new JLabel();
+        var jLabel2 = new JLabel();
 
 
-        JLabel jLabel9 = new JLabel();
-        JLabel jLabel10 = new JLabel();
-        JLabel jLabel3 = new JLabel();
+        var jLabel9 = new JLabel();
+        var jLabel10 = new JLabel();
+        var jLabel3 = new JLabel();
 
-        JLabel jLabel4 = new JLabel();
+        var jLabel4 = new JLabel();
         debugLabel = new javax.swing.JLabel();
         renderPanel = new javax.swing.JPanel();
-        JPanel jPanel4 = new JPanel();
-        JPanel jPanel5 = new JPanel();
-        JScrollPane jScrollPane2 = new JScrollPane();
-        JTextArea jTextArea2 = new JTextArea();
-        JPanel jPanel6 = new JPanel();
-        JScrollPane jScrollPane3 = new JScrollPane();
-        JTextArea jTextArea3 = new JTextArea();
+        var jPanel4 = new JPanel();
+        var jPanel5 = new JPanel();
+        var jScrollPane2 = new JScrollPane();
+        var jTextArea2 = new JTextArea();
+        var jPanel6 = new JPanel();
+        var jScrollPane3 = new JScrollPane();
+        var jTextArea3 = new JTextArea();
         jTextArea1 = new javax.swing.JTextArea();
         jMenuBar1 = new javax.swing.JMenuBar();
 
@@ -321,7 +321,7 @@ public class RLDemo extends javax.swing.JFrame {
         jTextArea1.setRows(5);
 
 
-        JPanel outputPanel = new JPanel(new GridLayout(0, 1));
+        var outputPanel = new JPanel(new GridLayout(0, 1));
         outputPanel.add(new JScrollPane(jTextArea1));
         outputPanel.add(parameterChart);
         

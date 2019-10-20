@@ -18,7 +18,7 @@ public abstract class InstrumentedDerivationPredicate extends AbstractPred<Deriv
             p = (PREDICATE) ref;
         } else {
 
-            Term s0 = sub(0);
+            var s0 = sub(0);
             if (s0 instanceof PREDICATE)
                 p = (PREDICATE) s0;
             else {
@@ -29,14 +29,14 @@ public abstract class InstrumentedDerivationPredicate extends AbstractPred<Deriv
 
         onEnter(p, derivation);
         Throwable thrown = null;
-        boolean result = false;
-        long start = System.nanoTime();
+        var result = false;
+        var start = System.nanoTime();
         try {
             result = p.test(derivation);
         } catch (Throwable e) {
             thrown = e;
         }
-        long end = System.nanoTime();
+        var end = System.nanoTime();
         onExit(p, derivation, result, thrown,end - start);
         return result;
     }

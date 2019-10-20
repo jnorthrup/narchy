@@ -59,7 +59,7 @@ public class IRC extends ListenerAdapter {
                 if (line.length() > configuration.getMaxLineLength() - 2) line = line.substring(0, configuration.getMaxLineLength() - 2);
                 outputWriter.write(line + "\r\n");
                 outputWriter.flush();
-                List<String> lineParts = InputParser.tokenizeLine(line);
+                var lineParts = InputParser.tokenizeLine(line);
                 getConfiguration().getListenerManager().onEvent(new OutputEvent(this, line, lineParts));
             }
 
@@ -79,8 +79,8 @@ public class IRC extends ListenerAdapter {
 
     public void broadcast(String message) {
         if (irc.isConnected()) {
-            ImmutableSortedSet<Channel> chans = irc.getUserChannelDao().getAllChannels();
-            for (Channel c : chans) {
+            var chans = irc.getUserChannelDao().getAllChannels();
+            for (var c : chans) {
                 irc.send().message(c.getName(), message);
             }
 
@@ -89,9 +89,9 @@ public class IRC extends ListenerAdapter {
 
     public Runnable send(String[] channels, String message) {
         if (irc.isConnected()) {
-            OutputIRC out = irc.send();
+            var out = irc.send();
             return ()-> {
-                for (String c : channels)
+                for (var c : channels)
                     out.message(c, message);
             };
         } else {

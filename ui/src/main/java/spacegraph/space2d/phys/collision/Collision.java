@@ -101,30 +101,30 @@ public class Collision {
     public static void getPointStates(PointState[] state1, PointState[] state2,
                                       Manifold manifold1, Manifold manifold2) {
 
-        for (int i = 0; i < Settings.maxManifoldPoints; i++) {
+        for (var i = 0; i < Settings.maxManifoldPoints; i++) {
             state1[i] = PointState.NULL_STATE;
             state2[i] = PointState.NULL_STATE;
         }
 
         
-        for (int i = 0; i < manifold1.pointCount; i++) {
-            ContactID id = manifold1.points[i].id;
+        for (var i = 0; i < manifold1.pointCount; i++) {
+            var id = manifold1.points[i].id;
 
             state1[i] = PointState.REMOVE_STATE;
 
-            int bound = manifold2.pointCount;
+            var bound = manifold2.pointCount;
             if (IntStream.range(0, bound).anyMatch(j -> manifold2.points[j].id.isEqual(id))) {
                 state1[i] = PointState.PERSIST_STATE;
             }
         }
 
         
-        for (int i = 0; i < manifold2.pointCount; i++) {
-            ContactID id = manifold2.points[i].id;
+        for (var i = 0; i < manifold2.pointCount; i++) {
+            var id = manifold2.points[i].id;
 
             state2[i] = PointState.ADD_STATE;
 
-            int bound = manifold1.pointCount;
+            var bound = manifold1.pointCount;
             if (IntStream.range(0, bound).anyMatch(j -> manifold1.points[j].id.isEqual(id))) {
                 state2[i] = PointState.PERSIST_STATE;
             }
@@ -143,16 +143,16 @@ public class Collision {
     private static int clipSegmentToLine(ClipVertex[] vOut, ClipVertex[] vIn,
                                          v2 normal, float offset, int vertexIndexA) {
 
-        
-        int numOut = 0;
-        ClipVertex vIn0 = vIn[0];
-        ClipVertex vIn1 = vIn[1];
-        v2 vIn0v = vIn0.v;
-        v2 vIn1v = vIn1.v;
 
-        
-        float distance0 = v2.dot(normal, vIn0v) - offset;
-        float distance1 = v2.dot(normal, vIn1v) - offset;
+        var numOut = 0;
+        var vIn0 = vIn[0];
+        var vIn1 = vIn[1];
+        var vIn0v = vIn0.v;
+        var vIn1v = vIn1.v;
+
+
+        var distance0 = v2.dot(normal, vIn0v) - offset;
+        var distance1 = v2.dot(normal, vIn1v) - offset;
 
         
         if (distance0 <= 0.0f) {
@@ -164,10 +164,10 @@ public class Collision {
 
         
         if (distance0 * distance1 < 0.0f) {
-            
-            float interp = distance0 / (distance0 - distance1);
 
-            ClipVertex vOutNO = vOut[numOut];
+            var interp = distance0 / (distance0 - distance1);
+
+            var vOutNO = vOut[numOut];
             
             vOutNO.v.x = vIn0v.x + interp * (vIn1v.x - vIn0v.x);
             vOutNO.v.y = vIn0v.y + interp * (vIn1v.y - vIn0v.y);
@@ -200,25 +200,20 @@ public class Collision {
     public static void collideCircles(Manifold manifold, CircleShape circle1,
                                       Transform xfA, CircleShape circle2, Transform xfB) {
         manifold.pointCount = 0;
-        
-        
-        
-        
-        
 
-        
-        v2 circle1p = circle1.center;
-        v2 circle2p = circle2.center;
-        float pAx = (xfA.c * circle1p.x - xfA.s * circle1p.y) + xfA.pos.x;
-        float pAy = (xfA.s * circle1p.x + xfA.c * circle1p.y) + xfA.pos.y;
-        float pBx = (xfB.c * circle2p.x - xfB.s * circle2p.y) + xfB.pos.x;
-        float pBy = (xfB.s * circle2p.x + xfB.c * circle2p.y) + xfB.pos.y;
-        float dx = pBx - pAx;
-        float dy = pBy - pAy;
-        float distSqr = dx * dx + dy * dy;
-        
 
-        float radius = circle1.skinRadius + circle2.skinRadius;
+        var circle1p = circle1.center;
+        var circle2p = circle2.center;
+        var pAx = (xfA.c * circle1p.x - xfA.s * circle1p.y) + xfA.pos.x;
+        var pAy = (xfA.s * circle1p.x + xfA.c * circle1p.y) + xfA.pos.y;
+        var pBx = (xfB.c * circle2p.x - xfB.s * circle2p.y) + xfB.pos.x;
+        var pBy = (xfB.s * circle2p.x + xfB.c * circle2p.y) + xfB.pos.y;
+        var dx = pBx - pAx;
+        var dy = pBy - pAy;
+        var distSqr = dx * dx + dy * dy;
+
+
+        var radius = circle1.skinRadius + circle2.skinRadius;
         if (distSqr > radius * radius) {
             return;
         }
@@ -246,43 +241,33 @@ public class Collision {
     public static void collidePolygonAndCircle(Manifold manifold, PolygonShape polygon,
                                                Transform xfA, CircleShape circle, Transform xfB) {
         manifold.pointCount = 0;
-        
 
-        
-        
-        
-        
-        
-        
-        
-        v2 circlep = circle.center;
+
+        var circlep = circle.center;
         Rot xfBq = xfB;
         Rot xfAq = xfA;
-        float cx = (xfBq.c * circlep.x - xfBq.s * circlep.y) + xfB.pos.x;
-        float cy = (xfBq.s * circlep.x + xfBq.c * circlep.y) + xfB.pos.y;
-        float px = cx - xfA.pos.x;
-        float py = cy - xfA.pos.y;
-        float cLocalx = (xfAq.c * px + xfAq.s * py);
-        float cLocaly = (-xfAq.s * px + xfAq.c * py);
-        
+        var cx = (xfBq.c * circlep.x - xfBq.s * circlep.y) + xfB.pos.x;
+        var cy = (xfBq.s * circlep.x + xfBq.c * circlep.y) + xfB.pos.y;
+        var px = cx - xfA.pos.x;
+        var py = cy - xfA.pos.y;
+        var cLocalx = (xfAq.c * px + xfAq.s * py);
+        var cLocaly = (-xfAq.s * px + xfAq.c * py);
 
-        
-        int normalIndex = 0;
-        float separation = -Float.MAX_VALUE;
-        float radius = polygon.skinRadius + circle.skinRadius;
-        int vertexCount = polygon.vertices;
-        v2[] vertices = polygon.vertex;
-        v2[] normals = polygon.normals;
 
-        for (int i = 0; i < vertexCount; i++) {
-            
-            
-            
-            
-            v2 vertex = vertices[i];
-            float tempx = cLocalx - vertex.x;
-            float tempy = cLocaly - vertex.y;
-            float s = normals[i].x * tempx + normals[i].y * tempy;
+        var normalIndex = 0;
+        var separation = -Float.MAX_VALUE;
+        var radius = polygon.skinRadius + circle.skinRadius;
+        var vertexCount = polygon.vertices;
+        var vertices = polygon.vertex;
+        var normals = polygon.normals;
+
+        for (var i = 0; i < vertexCount; i++) {
+
+
+            var vertex = vertices[i];
+            var tempx = cLocalx - vertex.x;
+            var tempy = cLocaly - vertex.y;
+            var s = normals[i].x * tempx + normals[i].y * tempy;
 
 
             if (s > radius) {
@@ -296,28 +281,24 @@ public class Collision {
             }
         }
 
-        
-        int vertIndex1 = normalIndex;
-        int vertIndex2 = vertIndex1 + 1 < vertexCount ? vertIndex1 + 1 : 0;
-        v2 v1 = vertices[vertIndex1];
-        v2 v2 = vertices[vertIndex2];
+
+        var vertIndex1 = normalIndex;
+        var vertIndex2 = vertIndex1 + 1 < vertexCount ? vertIndex1 + 1 : 0;
+        var v1 = vertices[vertIndex1];
+        var v2 = vertices[vertIndex2];
 
         
         if (separation < Settings.EPSILON) {
             manifold.pointCount = 1;
             manifold.type = ManifoldType.FACE_A;
 
-            
-            
-            
-            
-            
-            jcog.math.v2 normal = normals[normalIndex];
+
+            var normal = normals[normalIndex];
             manifold.localNormal.x = normal.x;
             manifold.localNormal.y = normal.y;
             manifold.localPoint.x = (v1.x + v2.x) * .5f;
             manifold.localPoint.y = (v1.y + v2.y) * .5f;
-            ManifoldPoint mpoint = manifold.points[0];
+            var mpoint = manifold.points[0];
             mpoint.localPoint.x = circlep.x;
             mpoint.localPoint.y = circlep.y;
             mpoint.id.zero();
@@ -326,26 +307,18 @@ public class Collision {
             return;
         }
 
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        float tempX = cLocalx - v1.x;
-        float tempY = cLocaly - v1.y;
-        float temp2X = v2.x - v1.x;
-        float temp2Y = v2.y - v1.y;
-        float u1 = tempX * temp2X + tempY * temp2Y;
 
-        float temp3X = cLocalx - v2.x;
-        float temp3Y = cLocaly - v2.y;
-        float temp4X = v1.x - v2.x;
-        float temp4Y = v1.y - v2.y;
-        float u2 = temp3X * temp4X + temp3Y * temp4Y;
+        var tempX = cLocalx - v1.x;
+        var tempY = cLocaly - v1.y;
+        var temp2X = v2.x - v1.x;
+        var temp2Y = v2.y - v1.y;
+        var u1 = tempX * temp2X + tempY * temp2Y;
+
+        var temp3X = cLocalx - v2.x;
+        var temp3Y = cLocaly - v2.y;
+        var temp4X = v1.x - v2.x;
+        var temp4Y = v1.y - v2.y;
+        var u2 = temp3X * temp4X + temp3Y * temp4Y;
         
 
         if (u1 <= 0f) {
@@ -355,23 +328,14 @@ public class Collision {
 
             updateManifold(manifold, circlep, cLocalx, cLocaly, radius, v2);
         } else {
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            float fcx = (v1.x + v2.x) * .5f;
-            float fcy = (v1.y + v2.y) * .5f;
 
-            float tx = cLocalx - fcx;
-            float ty = cLocaly - fcy;
-            jcog.math.v2 normal = normals[vertIndex1];
+
+            var fcx = (v1.x + v2.x) * .5f;
+            var fcy = (v1.y + v2.y) * .5f;
+
+            var tx = cLocalx - fcx;
+            var ty = cLocaly - fcy;
+            var normal = normals[vertIndex1];
             separation = tx * normal.x + ty * normal.y;
             if (separation > radius) {
                 return;
@@ -389,8 +353,8 @@ public class Collision {
     }
 
     public static void updateManifold(Manifold manifold, v2 circlep, float cLocalx, float cLocaly, float radius, v2 v1) {
-        float dx = cLocalx - v1.x;
-        float dy = cLocaly - v1.y;
+        var dx = cLocalx - v1.x;
+        var dy = cLocaly - v1.y;
         if (dx * dx + dy * dy > radius * radius) {
             return;
         }
@@ -426,27 +390,27 @@ public class Collision {
      */
     private void findMaxSeparation(EdgeResults results, PolygonShape poly1,
                                    Transform xf1, PolygonShape poly2, Transform xf2) {
-        int count1 = poly1.vertices;
-        int count2 = poly2.vertices;
-        v2[] n1s = poly1.normals;
-        v2[] v1s = poly1.vertex;
-        v2[] v2s = poly2.vertex;
+        var count1 = poly1.vertices;
+        var count2 = poly2.vertices;
+        var n1s = poly1.normals;
+        var v1s = poly1.vertex;
+        var v2s = poly2.vertex;
 
         Transform.mulTransToOutUnsafe(xf2, xf1, xf);
         Rot xfq = xf;
 
-        int bestIndex = 0;
-        float maxSeparation = -Float.MAX_VALUE;
-        for (int i = 0; i < count1; i++) {
+        var bestIndex = 0;
+        var maxSeparation = -Float.MAX_VALUE;
+        for (var i = 0; i < count1; i++) {
             
             Rot.mulToOutUnsafe(xfq, n1s[i], n);
             Transform.mulToOutUnsafe(xf, v1s[i], v1);
 
-            
-            float si = Float.MAX_VALUE;
-            for (int j = 0; j < count2; ++j) {
-                v2 v2sj = v2s[j];
-                float sij = n.x * (v2sj.x - v1.x) + n.y * (v2sj.y - v1.y);
+
+            var si = Float.MAX_VALUE;
+            for (var j = 0; j < count2; ++j) {
+                var v2sj = v2s[j];
+                var sij = n.x * (v2sj.x - v1.x) + n.y * (v2sj.y - v1.y);
                 if (sij < si) {
                     si = sij;
                 }
@@ -464,53 +428,46 @@ public class Collision {
 
     private static void findIncidentEdge(ClipVertex[] c, PolygonShape poly1,
                                          Transform xf1, int edge1, PolygonShape poly2, Transform xf2) {
-        int count1 = poly1.vertices;
-        v2[] normals1 = poly1.normals;
+        var count1 = poly1.vertices;
+        var normals1 = poly1.normals;
 
-        int count2 = poly2.vertices;
-        v2[] vertices2 = poly2.vertex;
-        v2[] normals2 = poly2.normals;
+        var count2 = poly2.vertices;
+        var vertices2 = poly2.vertex;
+        var normals2 = poly2.normals;
 
         assert (0 <= edge1 && edge1 < count1);
 
-        ClipVertex c0 = c[0];
-        ClipVertex c1 = c[1];
+        var c0 = c[0];
+        var c1 = c[1];
         Rot xf1q = xf1;
         Rot xf2q = xf2;
 
-        
-        
-        
-        
-        
-        
-        v2 v = normals1[edge1];
-        float tempx = xf1q.c * v.x - xf1q.s * v.y;
-        float tempy = xf1q.s * v.x + xf1q.c * v.y;
-        float normal1x = xf2q.c * tempx + xf2q.s * tempy;
-        float normal1y = -xf2q.s * tempx + xf2q.c * tempy;
 
-        
+        var v = normals1[edge1];
+        var tempx = xf1q.c * v.x - xf1q.s * v.y;
+        var tempy = xf1q.s * v.x + xf1q.c * v.y;
+        var normal1x = xf2q.c * tempx + xf2q.s * tempy;
+        var normal1y = -xf2q.s * tempx + xf2q.c * tempy;
 
-        
-        int index = 0;
-        float minDot = Float.MAX_VALUE;
-        for (int i = 0; i < count2; ++i) {
-            v2 b = normals2[i];
-            float dot = normal1x * b.x + normal1y * b.y;
+
+        var index = 0;
+        var minDot = Float.MAX_VALUE;
+        for (var i = 0; i < count2; ++i) {
+            var b = normals2[i];
+            var dot = normal1x * b.x + normal1y * b.y;
             if (dot < minDot) {
                 minDot = dot;
                 index = i;
             }
         }
 
-        
-        int i1 = index;
-        int i2 = i1 + 1 < count2 ? i1 + 1 : 0;
 
-        
-        v2 v1 = vertices2[i1];
-        v2 out = c0.v;
+        var i1 = index;
+        var i2 = i1 + 1 < count2 ? i1 + 1 : 0;
+
+
+        var v1 = vertices2[i1];
+        var out = c0.v;
         out.x = (xf2q.c * v1.x - xf2q.s * v1.y) + xf2.pos.x;
         out.y = (xf2q.s * v1.x + xf2q.c * v1.y) + xf2.pos.y;
         c0.id.indexA = (byte) edge1;
@@ -518,9 +475,9 @@ public class Collision {
         c0.id.typeA = (byte) ContactID.Type.FACE.ordinal();
         c0.id.typeB = (byte) ContactID.Type.VERTEX.ordinal();
 
-        
-        v2 v2 = vertices2[i2];
-        jcog.math.v2 out1 = c1.v;
+
+        var v2 = vertices2[i2];
+        var out1 = c1.v;
         out1.x = (xf2q.c * v2.x - xf2q.s * v2.y) + xf2.pos.x;
         out1.y = (xf2q.s * v2.x + xf2q.c * v2.y) + xf2.pos.y;
         c1.id.indexA = (byte) edge1;
@@ -561,7 +518,7 @@ public class Collision {
         
 
         manifold.pointCount = 0;
-        float totalRadius = polyA.skinRadius + polyB.skinRadius;
+        var totalRadius = polyA.skinRadius + polyB.skinRadius;
 
         findMaxSeparation(results1, polyA, xfA, polyB, xfB);
         if (results1.separation > totalRadius) {
@@ -578,7 +535,7 @@ public class Collision {
         Transform xf1, xf2;
         int edge1;                 
         boolean flip;
-        final float k_tol = 0.1f * Settings.linearSlop;
+        final var k_tol = 0.1f * Settings.linearSlop;
 
         if (results2.separation > results1.separation + k_tol) {
             poly1 = polyB;
@@ -601,11 +558,11 @@ public class Collision {
 
         findIncidentEdge(incidentEdge, poly1, xf1, edge1, poly2, xf2);
 
-        int count1 = poly1.vertices;
-        v2[] vertices1 = poly1.vertex;
+        var count1 = poly1.vertices;
+        var vertices1 = poly1.vertex;
 
-        int iv1 = edge1;
-        int iv2 = edge1 + 1 < count1 ? edge1 + 1 : 0;
+        var iv1 = edge1;
+        var iv2 = edge1 + 1 < count1 ? edge1 + 1 : 0;
         v11.set(vertices1[iv1]);
         v12.set(vertices1[iv2]);
         localTangent.x = v12.x - v11.x;
@@ -624,29 +581,24 @@ public class Collision {
         tangent.x = xf1q.c * localTangent.x - xf1q.s * localTangent.y;
         tangent.y = xf1q.s * localTangent.x + xf1q.c * localTangent.y;
 
-        
-        float normalx = 1f * tangent.y;
-        float normaly = -1f * tangent.x;
+
+        var normalx = 1f * tangent.y;
+        var normaly = -1f * tangent.x;
 
 
         Transform.mulToOut(xf1, v11, v11);
         Transform.mulToOut(xf1, v12, v12);
-        
-        
 
-        
-        
-        float frontOffset = normalx * v11.x + normaly * v11.y;
 
-        
-        
-        
-        float sideOffset1 = -(tangent.x * v11.x + tangent.y * v11.y) + totalRadius;
-        float sideOffset2 = tangent.x * v12.x + tangent.y * v12.y + totalRadius;
+        var frontOffset = normalx * v11.x + normaly * v11.y;
+
+
+        var sideOffset1 = -(tangent.x * v11.x + tangent.y * v11.y) + totalRadius;
+        var sideOffset2 = tangent.x * v12.x + tangent.y * v12.y + totalRadius;
 
 
         tangent.negated();
-        int np = clipSegmentToLine(clipPoints1, incidentEdge, tangent, sideOffset1, iv1);
+        var np = clipSegmentToLine(clipPoints1, incidentEdge, tangent, sideOffset1, iv1);
         tangent.negated();
 
         if (np < 2) {
@@ -664,17 +616,17 @@ public class Collision {
         manifold.localNormal.set(localNormal);
         manifold.localPoint.set(planePoint);
 
-        int pointCount = 0;
-        for (int i = 0; i < Settings.maxManifoldPoints; ++i) {
-            
-            float separation = normalx * clipPoints2[i].v.x + normaly * clipPoints2[i].v.y - frontOffset;
+        var pointCount = 0;
+        for (var i = 0; i < Settings.maxManifoldPoints; ++i) {
+
+            var separation = normalx * clipPoints2[i].v.x + normaly * clipPoints2[i].v.y - frontOffset;
 
             if (separation <= totalRadius) {
-                ManifoldPoint cp = manifold.points[pointCount];
-                
-                v2 out = cp.localPoint;
-                float px = clipPoints2[i].v.x - xf2.pos.x;
-                float py = clipPoints2[i].v.y - xf2.pos.y;
+                var cp = manifold.points[pointCount];
+
+                var out = cp.localPoint;
+                var px = clipPoints2[i].v.x - xf2.pos.x;
+                var py = clipPoints2[i].v.y - xf2.pos.y;
                 out.x = (xf2.c * px + xf2.s * py);
                 out.y = (-xf2.s * px + xf2.c * py);
                 cp.id.set(clipPoints2[i].id);
@@ -707,15 +659,15 @@ public class Collision {
         Transform.mulToOutUnsafe(xfB, circleB.center, temp);
         Transform.mulTransToOutUnsafe(xfA, temp, Q);
 
-        v2 A = edgeA.m_vertex1;
-        v2 B = edgeA.m_vertex2;
+        var A = edgeA.m_vertex1;
+        var B = edgeA.m_vertex2;
         e.set(B).subbed(A);
 
-        
-        float u = v2.dot(e, temp.set(B).subbed(Q));
-        float v = v2.dot(e, temp.set(Q).subbed(A));
 
-        float radius = edgeA.skinRadius + circleB.skinRadius;
+        var u = v2.dot(e, temp.set(B).subbed(Q));
+        var v = v2.dot(e, temp.set(Q).subbed(A));
+
+        var radius = edgeA.skinRadius + circleB.skinRadius;
 
         
         cf.indexB = 0;
@@ -723,19 +675,19 @@ public class Collision {
 
         
         if (v <= 0.0f) {
-            v2 P = A;
+            var P = A;
             d.set(Q).subbed(P);
-            float dd = v2.dot(d, d);
+            var dd = v2.dot(d, d);
             if (dd > radius * radius) {
                 return;
             }
 
             
             if (edgeA.m_hasVertex0) {
-                v2 A1 = edgeA.m_vertex0;
-                v2 B1 = A;
+                var A1 = edgeA.m_vertex0;
+                var B1 = A;
                 e1.set(B1).subbed(A1);
-                float u1 = v2.dot(e1, temp.set(B1).subbed(Q));
+                var u1 = v2.dot(e1, temp.set(B1).subbed(Q));
 
                 
                 if (u1 > 0.0f) {
@@ -757,20 +709,20 @@ public class Collision {
 
         
         if (u <= 0.0f) {
-            v2 P = B;
+            var P = B;
             d.set(Q).subbed(P);
-            float dd = v2.dot(d, d);
+            var dd = v2.dot(d, d);
             if (dd > radius * radius) {
                 return;
             }
 
             
             if (edgeA.m_hasVertex3) {
-                v2 B2 = edgeA.m_vertex3;
-                v2 A2 = B;
-                v2 e2 = e1;
+                var B2 = edgeA.m_vertex3;
+                var A2 = B;
+                var e2 = e1;
                 e2.set(B2).subbed(A2);
-                float v2 = jcog.math.v2.dot(e2, temp.set(Q).subbed(A2));
+                var v2 = jcog.math.v2.dot(e2, temp.set(Q).subbed(A2));
 
                 
                 if (v2 > 0.0f) {
@@ -790,15 +742,15 @@ public class Collision {
             return;
         }
 
-        
-        float den = v2.dot(e, e);
+
+        var den = v2.dot(e, e);
         assert (den > 0.0f);
 
         
         P.set(A).scaled(u).added(temp.set(B).scaled(v));
         P.scaled(1.0f / den);
         d.set(Q).subbed(P);
-        float dd = v2.dot(d, d);
+        var dd = v2.dot(d, d);
         if (dd > radius * radius) {
             return;
         }
@@ -850,10 +802,10 @@ public class Collision {
         }
 
         void set(ClipVertex cv) {
-            v2 v1 = cv.v;
+            var v1 = cv.v;
             v.x = v1.x;
             v.y = v1.y;
-            ContactID c = cv.id;
+            var c = cv.id;
             id.indexA = c.indexA;
             id.indexB = c.indexB;
             id.typeA = c.typeA;
@@ -907,7 +859,7 @@ public class Collision {
         int count;
 
         TempPolygon() {
-            for (int i = 0; i < vertices.length; i++) {
+            for (var i = 0; i < vertices.length; i++) {
                 vertices[i] = new v2();
                 normals[i] = new v2();
             }
@@ -961,7 +913,7 @@ public class Collision {
         boolean m_front;
 
         EPCollider() {
-            for (int i = 0; i < 2; i++) {
+            for (var i = 0; i < 2; i++) {
                 ie[i] = new ClipVertex();
                 clipPoints1[i] = new ClipVertex();
                 clipPoints2[i] = new ClipVertex();
@@ -990,15 +942,15 @@ public class Collision {
             m_v2 = edgeA.m_vertex2;
             m_v3 = edgeA.m_vertex3;
 
-            boolean hasVertex0 = edgeA.m_hasVertex0;
-            boolean hasVertex3 = edgeA.m_hasVertex3;
+            var hasVertex0 = edgeA.m_hasVertex0;
+            var hasVertex3 = edgeA.m_hasVertex3;
 
             edge1.set(m_v2).subbed(m_v1);
             edge1.normalize();
             m_normal1.set(edge1.y, -edge1.x);
-            float offset1 = v2.dot(m_normal1, temp.set(m_centroidB).subbed(m_v1));
-            float offset0 = 0.0f;
-            boolean convex1 = false;
+            var offset1 = v2.dot(m_normal1, temp.set(m_centroidB).subbed(m_v1));
+            var offset0 = 0.0f;
+            var convex1 = false;
 
 
             if (hasVertex0) {
@@ -1010,8 +962,8 @@ public class Collision {
             }
 
 
-            boolean convex2 = false;
-            float offset2 = 0.0f;
+            var convex2 = false;
+            var offset2 = 0.0f;
             if (hasVertex3) {
                 edge2.set(m_v3).subbed(m_v2);
                 edge2.normalize();
@@ -1072,7 +1024,7 @@ public class Collision {
 
             
             m_polygonB.count = polygonB.vertices;
-            for (int i = 0; i < polygonB.vertices; ++i) {
+            for (var i = 0; i < polygonB.vertices; ++i) {
                 Transform.mulToOutUnsafe(m_xf, polygonB.vertex[i], m_polygonB.vertices[i]);
                 Rot.mulToOutUnsafe(m_xf, polygonB.normals[i], m_polygonB.normals[i]);
             }
@@ -1098,8 +1050,8 @@ public class Collision {
             }
 
             
-            final float k_relativeTol = 0.98f;
-            final float k_absoluteTol = 0.001f;
+            final var k_relativeTol = 0.98f;
+            final var k_absoluteTol = 0.001f;
 
             EPAxis primaryAxis;
             if (polygonAxis.type == EPAxis.Type.UNKNOWN) {
@@ -1110,25 +1062,25 @@ public class Collision {
                 primaryAxis = edgeAxis;
             }
 
-            ClipVertex ie0 = ie[0];
-            ClipVertex ie1 = ie[1];
+            var ie0 = ie[0];
+            var ie1 = ie[1];
 
             if (primaryAxis.type == EPAxis.Type.EDGE_A) {
                 manifold.type = Manifold.ManifoldType.FACE_A;
 
-                
-                int bestIndex = 0;
-                float bestValue = v2.dot(m_normal, m_polygonB.normals[0]);
-                for (int i = 1; i < m_polygonB.count; ++i) {
-                    float value = v2.dot(m_normal, m_polygonB.normals[i]);
+
+                var bestIndex = 0;
+                var bestValue = v2.dot(m_normal, m_polygonB.normals[0]);
+                for (var i = 1; i < m_polygonB.count; ++i) {
+                    var value = v2.dot(m_normal, m_polygonB.normals[i]);
                     if (value < bestValue) {
                         bestValue = value;
                         bestIndex = i;
                     }
                 }
 
-                int i1 = bestIndex;
-                int i2 = i1 + 1 < m_polygonB.count ? i1 + 1 : 0;
+                var i1 = bestIndex;
+                var i2 = i1 + 1 < m_polygonB.count ? i1 + 1 : 0;
 
                 ie0.v.set(m_polygonB.vertices[i1]);
                 ie0.id.indexA = 0;
@@ -1183,7 +1135,7 @@ public class Collision {
             rf.sideOffset2 = v2.dot(rf.sideNormal2, rf.v2);
 
 
-            int np = clipSegmentToLine(clipPoints1, ie, rf.sideNormal1, rf.sideOffset1, rf.i1);
+            var np = clipSegmentToLine(clipPoints1, ie, rf.sideNormal1, rf.sideOffset1, rf.i1);
 
             if (np < Settings.maxManifoldPoints) {
                 return;
@@ -1205,13 +1157,13 @@ public class Collision {
                 manifold.localPoint.set(polygonB.vertex[rf.i1]);
             }
 
-            int pointCount = 0;
-            for (int i = 0; i < Settings.maxManifoldPoints; ++i) {
+            var pointCount = 0;
+            for (var i = 0; i < Settings.maxManifoldPoints; ++i) {
 
-                float separation = v2.dot(rf.normal, temp.set(clipPoints2[i].v).subbed(rf.v1));
+                var separation = v2.dot(rf.normal, temp.set(clipPoints2[i].v).subbed(rf.v1));
 
                 if (separation <= m_radius) {
-                    ManifoldPoint cp = manifold.points[pointCount];
+                    var cp = manifold.points[pointCount];
 
                     if (primaryAxis.type == EPAxis.Type.EDGE_A) {
                         
@@ -1291,14 +1243,14 @@ public class Collision {
             axis.type = EPAxis.Type.EDGE_A;
             axis.index = m_front ? 0 : 1;
             axis.separation = Float.MAX_VALUE;
-            float nx = m_normal.x;
-            float ny = m_normal.y;
+            var nx = m_normal.x;
+            var ny = m_normal.y;
 
-            for (int i = 0; i < m_polygonB.count; ++i) {
-                v2 v = m_polygonB.vertices[i];
-                float tempx = v.x - m_v1.x;
-                float tempy = v.y - m_v1.y;
-                float s = nx * tempx + ny * tempy;
+            for (var i = 0; i < m_polygonB.count; ++i) {
+                var v = m_polygonB.vertices[i];
+                var tempx = v.x - m_v1.x;
+                var tempy = v.y - m_v1.y;
+                var s = nx * tempx + ny * tempy;
                 if (s < axis.separation) {
                     axis.separation = s;
                 }
@@ -1316,21 +1268,20 @@ public class Collision {
             perp.x = -m_normal.y;
             perp.y = m_normal.x;
 
-            for (int i = 0; i < m_polygonB.count; ++i) {
-                v2 normalB = m_polygonB.normals[i];
-                v2 vB = m_polygonB.vertices[i];
+            for (var i = 0; i < m_polygonB.count; ++i) {
+                var normalB = m_polygonB.normals[i];
+                var vB = m_polygonB.vertices[i];
                 n.x = -normalB.x;
                 n.y = -normalB.y;
 
-                
-                
-                float tempx = vB.x - m_v1.x;
-                float tempy = vB.y - m_v1.y;
-                float s1 = n.x * tempx + n.y * tempy;
+
+                var tempx = vB.x - m_v1.x;
+                var tempy = vB.y - m_v1.y;
+                var s1 = n.x * tempx + n.y * tempy;
                 tempx = vB.x - m_v2.x;
                 tempy = vB.y - m_v2.y;
-                float s2 = n.x * tempx + n.y * tempy;
-                float s = MathUtils.min(s1, s2);
+                var s2 = n.x * tempx + n.y * tempy;
+                var s = MathUtils.min(s1, s2);
 
                 if (s > m_radius) {
                     

@@ -19,8 +19,8 @@ public enum JsonTerm { ;
     public static Term the(JsonNode j) {
 
         if (j.isArray()) {
-            int s = j.size();
-            Term[] subterms = IntStream.range(0, s).mapToObj(i -> the(j.get(i))).toArray(Term[]::new);
+            var s = j.size();
+            var subterms = IntStream.range(0, s).mapToObj(i -> the(j.get(i))).toArray(Term[]::new);
             return $.p(subterms);
 
         } else if (j.isValueNode()) {
@@ -32,11 +32,11 @@ public enum JsonTerm { ;
                 throw new UnsupportedOperationException();
             }
         } else if (j.isObject()) {
-            Term[] s = new Term[j.size()];
+            var s = new Term[j.size()];
             int[] i = {0};
             j.fields().forEachRemaining(f -> {
                 Atomic k = $.quote(f.getKey());
-                Term v = the(f.getValue());
+                var v = the(f.getValue());
                 s[i[0]++] =
                         $.inh(v, k);
                         
@@ -51,7 +51,7 @@ public enum JsonTerm { ;
 
     public static Term the(String json) {
 
-        JsonNode x = Util.jsonNode(json);
+        var x = Util.jsonNode(json);
         return the(x);
 
     }

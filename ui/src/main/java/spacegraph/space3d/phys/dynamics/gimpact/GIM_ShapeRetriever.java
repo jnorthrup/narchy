@@ -47,15 +47,15 @@ class GIM_ShapeRetriever {
 		
 		
 		if (gim_shape.needsRetrieveTriangles()) {
-            TriangleShapeRetriever tri_retriever = new TriangleShapeRetriever();
+			var tri_retriever = new TriangleShapeRetriever();
             current_retriever = tri_retriever;
 		}
 		else if (gim_shape.needsRetrieveTetrahedrons()) {
-            TetraShapeRetriever tetra_retriever = new TetraShapeRetriever();
+			var tetra_retriever = new TetraShapeRetriever();
             current_retriever = tetra_retriever;
 		}
 		else {
-            ChildShapeRetriever child_retriever = new ChildShapeRetriever();
+			var child_retriever = new ChildShapeRetriever();
             current_retriever = child_retriever;
 		}
 

@@ -36,8 +36,8 @@ public class Facts implements Function<Term, Stream<Term>> {
             2. check its termlinks, and local neighborhood graph termlinks
             3. exhaustive concept index scan
         */
-        Op xo = x.op();
-        UnifyAny u = new UnifyAny(nar.random());
+        var xo = x.op();
+        var u = new UnifyAny(nar.random());
 
         return
                 Stream.concat(
@@ -49,10 +49,10 @@ public class Facts implements Function<Term, Stream<Term>> {
                             if (!(c instanceof TaskConcept))
                                 return false;
 
-                            Term yt = c.term();
-                            Op yo = yt.op();
+                            var yt = c.term();
+                            var yo = yt.op();
                             if (beliefsOrGoals && yo == IMPL) {
-                                Term head = yt.sub(1);
+                                var head = yt.sub(1);
                                 return head.op() == xo && head.unify(x, u.clear());
                             }
 
@@ -65,7 +65,7 @@ public class Facts implements Function<Term, Stream<Term>> {
                         .map(c -> {
 
 
-                            BeliefTable table = beliefsOrGoals ? c.beliefs() : c.goals();
+                            var table = beliefsOrGoals ? c.beliefs() : c.goals();
                             if (table.isEmpty())
                                 return null;
 
@@ -73,7 +73,7 @@ public class Facts implements Function<Term, Stream<Term>> {
                             if (t == f)
                                 return null;
 
-                            Term ct = c.term();
+                            var ct = c.term();
 							/*if (!t && f)*/
 							return t ? ct : ct.neg();
 

@@ -92,7 +92,7 @@ public class BZip2InputStream extends InputStream implements BZip2Constants {
 
     private void makeMaps() {
         nInUse = 0;
-        for (int i = 0; i < 256; i++) {
+        for (var i = 0; i < 256; i++) {
             if (inUse.get(i)) {
                 seqToUnseq[nInUse] = (char) i;
                 unseqToSeq[i] = (char) nInUse++;
@@ -181,7 +181,7 @@ public class BZip2InputStream extends InputStream implements BZip2Constants {
         tt = null;
 
         if (fromBZip2File) {
-            byte[] header = new byte[2];
+            var header = new byte[2];
             int nh;
             try {
                 nh = zStream.read(header);
@@ -205,7 +205,7 @@ public class BZip2InputStream extends InputStream implements BZip2Constants {
         if (streamEnd) {
             return -1;
         } else {
-            int retChar = currentChar;
+            var retChar = currentChar;
             switch(currentState) {
                 case RAND_PART_B_STATE:
                     setupRandPartB();
@@ -227,8 +227,8 @@ public class BZip2InputStream extends InputStream implements BZip2Constants {
     }
 
     private void initialize() {
-        char magic3 = bsGetUChar();
-        char magic4 = bsGetUChar();
+        var magic3 = bsGetUChar();
+        var magic4 = bsGetUChar();
         if (magic3 != 'h' || magic4 < '1' || magic4 > '9') {
             bsFinishedWithStream();
             streamEnd = true;
@@ -240,12 +240,12 @@ public class BZip2InputStream extends InputStream implements BZip2Constants {
     }
 
     private void initBlock() {
-        char magic1 = bsGetUChar();
-        char magic2 = bsGetUChar();
-        char magic3 = bsGetUChar();
-        char magic4 = bsGetUChar();
-        char magic5 = bsGetUChar();
-        char magic6 = bsGetUChar();
+        var magic1 = bsGetUChar();
+        var magic2 = bsGetUChar();
+        var magic3 = bsGetUChar();
+        var magic4 = bsGetUChar();
+        var magic5 = bsGetUChar();
+        var magic6 = bsGetUChar();
         if (magic1 == 0x17 && magic2 == 0x72 && magic3 == 0x45
                 && magic4 == 0x38 && magic5 == 0x50 && magic6 == 0x90) {
             complete();
@@ -271,7 +271,7 @@ public class BZip2InputStream extends InputStream implements BZip2Constants {
     }
 
     private void endBlock() {
-        int computedBlockCRC = mCrc.getFinalCRC();
+        var computedBlockCRC = mCrc.getFinalCRC();
         /* A bad CRC is considered a fatal error. */
         if (storedBlockCRC != computedBlockCRC) {
             crcError();
@@ -283,7 +283,7 @@ public class BZip2InputStream extends InputStream implements BZip2Constants {
     }
 
     private void complete() {
-        int storedCombinedCRC = bsGetInt32();
+        var storedCombinedCRC = bsGetInt32();
         if (storedCombinedCRC != computedCombinedCRC) {
             crcError();
         }
@@ -338,7 +338,7 @@ public class BZip2InputStream extends InputStream implements BZip2Constants {
             bsLive += 8;
         }
 
-        int v = (bsBuff >> (bsLive - n)) & ((1 << n) - 1);
+        var v = (bsBuff >> (bsLive - n)) & ((1 << n) - 1);
         bsLive -= n;
         return v;
     }
@@ -348,7 +348,7 @@ public class BZip2InputStream extends InputStream implements BZip2Constants {
     }
 
     private int bsGetint() {
-        int u = 0;
+        var u = 0;
         u = (u << 8) | bsR(8);
         u = (u << 8) | bsR(8);
         u = (u << 8) | bsR(8);
@@ -369,9 +369,9 @@ public class BZip2InputStream extends InputStream implements BZip2Constants {
                                              int minLen, int maxLen, int alphaSize) {
         int i;
 
-        int pp = 0;
+        var pp = 0;
         for (i = minLen; i <= maxLen; i++) {
-            for (int j = 0; j < alphaSize; j++) {
+            for (var j = 0; j < alphaSize; j++) {
                 if (length[j] == i) {
                     perm[pp++] = j;
                 }
@@ -392,7 +392,7 @@ public class BZip2InputStream extends InputStream implements BZip2Constants {
         for (i = 0; i < MAX_CODE_LEN; i++) {
             limit[i] = 0;
         }
-        int vec = 0;
+        var vec = 0;
 
         for (i = minLen; i <= maxLen; i++) {
             vec += (base[i + 1] - base[i]);
@@ -406,7 +406,7 @@ public class BZip2InputStream extends InputStream implements BZip2Constants {
 
     private void recvDecodingTables() {
         int i;
-        boolean[] inUse16 = new boolean[16];
+        var inUse16 = new boolean[16];
 
         /* Receive the mapping table */
         for (i = 0; i < 16; i++) {
@@ -427,11 +427,11 @@ public class BZip2InputStream extends InputStream implements BZip2Constants {
         }
 
         makeMaps();
-        int alphaSize = nInUse + 2;
+        var alphaSize = nInUse + 2;
 
         /* Now the selectors */
-        int nGroups = bsR(3);
-        int nSelectors = bsR(15);
+        var nGroups = bsR(3);
+        var nSelectors = bsR(15);
         for (i = 0; i < nSelectors; i++) {
             j = 0;
             while (bsR(1) == 1) {
@@ -442,7 +442,7 @@ public class BZip2InputStream extends InputStream implements BZip2Constants {
 
         /* Undo the MTF values for the selectors. */
         {
-            char[] pos = new char[N_GROUPS];
+            var pos = new char[N_GROUPS];
             char v;
             for (v = 0; v < nGroups; v++) {
                 pos[v] = v;
@@ -450,7 +450,7 @@ public class BZip2InputStream extends InputStream implements BZip2Constants {
 
             for (i = 0; i < nSelectors; i++) {
                 v = selectorMtf[i];
-                char tmp = pos[v];
+                var tmp = pos[v];
                 while (v > 0) {
                     pos[v] = pos[v - 1];
                     v--;
@@ -462,9 +462,9 @@ public class BZip2InputStream extends InputStream implements BZip2Constants {
 
         /* Now the coding tables */
         int t;
-        char[][] len = new char[N_GROUPS][MAX_ALPHA_SIZE];
+        var len = new char[N_GROUPS][MAX_ALPHA_SIZE];
         for (t = 0; t < nGroups; t++) {
-            int curr = bsR(5);
+            var curr = bsR(5);
             for (i = 0; i < alphaSize; i++) {
                 while (bsR(1) == 1) {
                     if (bsR(1) == 0) {
@@ -479,8 +479,8 @@ public class BZip2InputStream extends InputStream implements BZip2Constants {
 
         /* Create the Huffman decoding tables */
         for (t = 0; t < nGroups; t++) {
-            int minLen = 32;
-            int maxLen = 0;
+            var minLen = 32;
+            var maxLen = 0;
             for (i = 0; i < alphaSize; i++) {
                 if (len[t][i] > maxLen) {
                     maxLen = len[t][i];
@@ -497,11 +497,11 @@ public class BZip2InputStream extends InputStream implements BZip2Constants {
 
     private void getAndMoveToFrontDecode() {
 
-        int limitLast = baseBlockSize * blockSize100k;
+        var limitLast = baseBlockSize * blockSize100k;
         origPtr = bsGetIntVS(24);
 
         recvDecodingTables();
-        int EOB = nInUse + 1;
+        var EOB = nInUse + 1;
 
         /*
           Setting up the unzftab entries here is not strictly
@@ -514,15 +514,15 @@ public class BZip2InputStream extends InputStream implements BZip2Constants {
             unzftab[i] = 0;
         }
 
-        char[] yy = new char[256];
+        var yy = new char[256];
         for (i = 0; i <= 255; i++) {
             yy[i] = (char) i;
         }
 
         last = -1;
 
-        int groupPos = 0;
-        int groupNo = -1;
+        var groupPos = 0;
+        var groupNo = -1;
         int nextSym;
         {
             if (groupPos == 0) {
@@ -531,8 +531,8 @@ public class BZip2InputStream extends InputStream implements BZip2Constants {
             }
             groupPos--;
             int zt = selector[groupNo];
-            int zn = minLens[zt];
-            int zvec = bsR(zn);
+            var zn = minLens[zt];
+            var zvec = bsR(zn);
             while (zvec > limit[zt][zn]) {
                 zn++;
                 int zj;
@@ -564,8 +564,8 @@ public class BZip2InputStream extends InputStream implements BZip2Constants {
         while (nextSym != EOB) {
 
             if (nextSym == RUNA || nextSym == RUNB) {
-                int s = -1;
-                int N = 1;
+                var s = -1;
+                var N = 1;
                 do {
                     switch (nextSym) {
                         case RUNA:
@@ -583,8 +583,8 @@ public class BZip2InputStream extends InputStream implements BZip2Constants {
                         }
                         groupPos--;
                         int zt = selector[groupNo];
-                        int zn = minLens[zt];
-                        int zvec = bsR(zn);
+                        var zn = minLens[zt];
+                        var zvec = bsR(zn);
                         while (zvec > limit[zt][zn]) {
                             zn++;
                             int zj;
@@ -615,7 +615,7 @@ public class BZip2InputStream extends InputStream implements BZip2Constants {
                 } while (nextSym == RUNA || nextSym == RUNB);
 
                 s++;
-                char ch = seqToUnseq[yy[0]];
+                var ch = seqToUnseq[yy[0]];
                 unzftab[ch] += s;
 
                 while (s > 0) {
@@ -633,7 +633,7 @@ public class BZip2InputStream extends InputStream implements BZip2Constants {
                     blockOverrun();
                 }
 
-                char tmp = yy[nextSym - 1];
+                var tmp = yy[nextSym - 1];
                 unzftab[seqToUnseq[tmp]]++;
                 ll8[last] = seqToUnseq[tmp];
 
@@ -644,7 +644,7 @@ public class BZip2InputStream extends InputStream implements BZip2Constants {
                   for (j = nextSym-1; j > 0; j--) yy[j] = yy[j-1];
                 */
 
-                int j = nextSym - 1;
+                var j = nextSym - 1;
                 for (; j > 3; j -= 4) {
                     yy[j] = yy[j - 1];
                     yy[j - 1] = yy[j - 2];
@@ -663,8 +663,8 @@ public class BZip2InputStream extends InputStream implements BZip2Constants {
                     }
                     groupPos--;
                     int zt = selector[groupNo];
-                    int zn = minLens[zt];
-                    int zvec = bsR(zn);
+                    var zn = minLens[zt];
+                    var zvec = bsR(zn);
                     while (zvec > limit[zt][zn]) {
                         zn++;
                         int zj;
@@ -694,7 +694,7 @@ public class BZip2InputStream extends InputStream implements BZip2Constants {
     }
 
     private void setupBlock() {
-        int[] cftab = new int[257];
+        var cftab = new int[257];
 
         cftab[0] = 0;
         int i;
@@ -706,7 +706,7 @@ public class BZip2InputStream extends InputStream implements BZip2Constants {
         }
 
         for (i = 0; i <= last; i++) {
-            char ch = ll8[i];
+            var ch = ll8[i];
             tt[cftab[ch]] = i;
             cftab[ch]++;
         }
@@ -857,7 +857,7 @@ public class BZip2InputStream extends InputStream implements BZip2Constants {
             return;
         }
 
-        int n = baseBlockSize * newSize100k;
+        var n = baseBlockSize * newSize100k;
         ll8 = new char[n];
         tt = new int[n];
     }

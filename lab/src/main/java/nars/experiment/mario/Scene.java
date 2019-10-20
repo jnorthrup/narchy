@@ -17,7 +17,7 @@ public abstract class Scene implements SoundSource {
     }
 
     public static boolean key(int key, boolean isPressed) {
-        boolean wasPressed = keys[key];
+        var wasPressed = keys[key];
         keys[key] = isPressed;
         return wasPressed;
     }

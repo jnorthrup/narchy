@@ -18,9 +18,9 @@ public class RecycledDynBytes extends DynBytes {
                     MAX_KEY_CAPACITY));
 
     public static RecycledDynBytes get() {
-        MetalPool<RecycledDynBytes> pool = bytesPool.get();
+        var pool = bytesPool.get();
 
-        RecycledDynBytes r = pool.get();
+        var r = pool.get();
         //assert(r.pool == null);
         //r.pool = pool;
         return r;

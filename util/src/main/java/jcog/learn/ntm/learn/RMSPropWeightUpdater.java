@@ -59,12 +59,12 @@ public class RMSPropWeightUpdater implements WeightUpdaterBase {
     @Deprecated @Override
     public void updateWeight(Unit unit) {
 
-        double gm = getGradientMomentum();
-        double ugrad = unit.grad;
-        double ugradGM = (1.0 - gm) * ugrad;
+        var gm = getGradientMomentum();
+        var ugrad = unit.grad;
+        var ugradGM = (1.0 - gm) * ugrad;
 
-        double nt = n[t] = (gm * n[t]) + (ugradGM * ugrad);
-        double gt = g[t] = (gm * g[t]) + ugradGM;
+        var nt = n[t] = (gm * n[t]) + (ugradGM * ugrad);
+        var gt = g[t] = (gm * g[t]) + ugradGM;
 
         
         unit.value +=
@@ -77,22 +77,22 @@ public class RMSPropWeightUpdater implements WeightUpdaterBase {
     @Override
     public void updateWeight(UVector unit) {
 
-        double[] ugrads = unit.grad;
-        double[] uvalue = unit.value;
+        var ugrads = unit.grad;
+        var uvalue = unit.value;
 
-        double changeConst = getChangeAddConstant();
-        double changeMult = getChangeMultiplier();
-        double deltaMomentum = getDeltaMomentum();
-        double gm = getGradientMomentum();
+        var changeConst = getChangeAddConstant();
+        var changeMult = getChangeMultiplier();
+        var deltaMomentum = getDeltaMomentum();
+        var gm = getGradientMomentum();
 
-        for (int i = 0; i < uvalue.length; i++) {
+        for (var i = 0; i < uvalue.length; i++) {
 
 
-            double ugrad = ugrads[i];
-            double ugradGM = (1.0 - gm) * ugrad;
+            var ugrad = ugrads[i];
+            var ugradGM = (1.0 - gm) * ugrad;
 
-            double nt = n[t] = (gm * n[t]) + (ugradGM * ugrad);
-            double gt = g[t] = (gm * g[t]) + ugradGM;
+            var nt = n[t] = (gm * n[t]) + (ugradGM * ugrad);
+            var gt = g[t] = (gm * g[t]) + ugradGM;
 
             
             uvalue[i] +=

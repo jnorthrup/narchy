@@ -41,18 +41,18 @@ public enum PremiseRuleCompiler {
     public static DeriverProgram compile(Collection<PremiseRule> rr, PreDeriver preDeriver, NAR n, UnaryOperator<How> actionTransform) {
 
         /** indexed by local (deriver-specific) id */
-        int s = rr.size();
+        var s = rr.size();
         assert(s > 0);
 
-        How[] roots = new How[s];
-        TermPerfectTrie<PREDICATE<PreDerivation>, How> paths = new TermPerfectTrie<>();
+        var roots = new How[s];
+        var paths = new TermPerfectTrie<PREDICATE<PreDerivation>, How>();
 
         Map<String,RuleCause> tags = new HashMap();
 
         short i = 0;
-        for (PremiseRule r : rr) {
+        for (var r : rr) {
 
-            How added = paths.put(
+            var added = paths.put(
                 r.conditions(i),
                 roots[i++] = actionTransform.apply(r.action(n, tags))
             );
@@ -82,9 +82,9 @@ public enum PremiseRuleCompiler {
 
         node.forEach(n -> {
 
-            List<PREDICATE<PreDerivation>> branches = compile(n);
+            var branches = compile(n);
 
-            PREDICATE<PreDerivation> branch = PREDICATE.andFlat(
+            var branch = PREDICATE.andFlat(
                     n.seq().subList(n.start(), n.end()),
                     //n.seq().stream().skip(nStart).limit(nEnd - nStart).collect(Collectors.toList()),
                     branches != null ? factorFork(branches, FORK::new) : null
@@ -100,22 +100,22 @@ public enum PremiseRuleCompiler {
 
     public static PREDICATE<PreDerivation> factorFork(Collection<PREDICATE<PreDerivation>> _x, Function<List<PREDICATE<PreDerivation>>, PREDICATE<PreDerivation>> builder) {
 
-        int n = _x.size();
+        var n = _x.size();
         if (n == 0)
             return null;
 
         if (n == 1)
             return _x.iterator().next();
 
-        ArrayHashSet<PREDICATE<PreDerivation>> x = new ArrayHashSet<>();
+        var x = new ArrayHashSet<PREDICATE<PreDerivation>>();
         x.addAll(_x);
-        FasterList<PREDICATE<PreDerivation>> X = x.list;
+        var X = x.list;
 
         Map<PREDICATE, SubCond> conds = new HashMap(x.size());
-        for (int b = 0; b < n; b++) {
+        for (var b = 0; b < n; b++) {
             PREDICATE  p = X.get(b);
             if (p instanceof AND) {
-                int bb = b;
+                var bb = b;
                 ((AND) p).subStream().forEach((xx)-> SubCond.bumpCond(conds, (PREDICATE)xx, bb));
             } else if (p instanceof FORK) {
 
@@ -126,29 +126,29 @@ public enum PremiseRuleCompiler {
         }
 
         if (!conds.isEmpty()) {
-            boolean seen = false;
+            var seen = false;
             SubCond best = null;
-            Comparator<SubCond> comparator = Comparator.comparingDouble(SubCond::costIfBranch);
-            for (SubCond subCond : conds.values()) {
+            var comparator = Comparator.comparingDouble(SubCond::costIfBranch);
+            for (var subCond : conds.values()) {
                 if (!seen || comparator.compare(subCond, best) > 0) {
                     seen = true;
                     best = subCond;
                 }
             }
-            SubCond fx = (seen ? Optional.of(best) : Optional.<SubCond>empty()).get();
+            var fx = (seen ? Optional.of(best) : Optional.<SubCond>empty()).get();
             if (fx.size() < 2) {
 
             } else {
                 List<PREDICATE<PreDerivation>> bundle = null;
-                int i = 0;
-                Iterator<PREDICATE<PreDerivation>> xx = x.iterator();
+                var i = 0;
+                var xx = x.iterator();
                 while (xx.hasNext()) {
                     PREDICATE px = xx.next();
                     if (fx.branches.contains(i)) {
                         xx.remove();
 
                         if (px instanceof AND) {
-                            Subterms pxSub = px.subterms();
+                            var pxSub = px.subterms();
                             if (pxSub.contains(fx.p)) {
                                 px = AND.the(pxSub.removing(fx.p));
                             }
@@ -175,17 +175,17 @@ public enum PremiseRuleCompiler {
         //force merge
 
         if (x.size() > 1) {
-            RoaringBitmap r = new RoaringBitmap();
+            var r = new RoaringBitmap();
             x.removeIf(zz -> {
                 if (zz instanceof Forkable) {
-                    for (short cc : ((Forkable) zz).can)
+                    for (var cc : ((Forkable) zz).can)
                         r.add(cc);
                     return true;
                 }
                 return false;
             });
             if (!r.isEmpty()) {
-                Forkable bb = new Forkable(r);
+                var bb = new Forkable(r);
                 if (x.isEmpty()) {
                     return bb;
                 } else {
@@ -270,12 +270,12 @@ public enum PremiseRuleCompiler {
         }
 
         static <X> void bumpCond(Map<PREDICATE, SubCond> conds, PREDICATE p, int branch) {
-            float pc = p.cost();
+            var pc = p.cost();
             if (!Float.isFinite(pc))
                 return;
 
             conds.compute(p, (xx, e) -> {
-                SubCond e1 = e;
+                var e1 = e;
                 if (e1 == null) {
                     e1 = new SubCond(xx, branch);
                 } else {
@@ -300,7 +300,7 @@ public enum PremiseRuleCompiler {
 
 
         float costIfBranch() {
-            int s = size();
+            var s = size();
             return s > 1 ? s * p.cost() : Float.NEGATIVE_INFINITY;
         }
     }

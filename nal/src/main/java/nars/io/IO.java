@@ -66,8 +66,8 @@ public enum IO {
 
     public static int readTasks(InputStream i, Consumer<Task> each) throws IOException {
 
-        DataInputStream ii = new DataInputStream(i);
-        int count = 0;
+        var ii = new DataInputStream(i);
+        var count = 0;
         while (i.available() > 0 /*|| (i.available() > 0) || (ii.available() > 0)*/) {
             each.accept(TaskIO.readTask(ii));
             count++;
@@ -86,10 +86,10 @@ public enum IO {
     }
 
     public static void writeEvidence(ByteArrayDataOutput out, long[] evi)  {
-        int evil = evi.length;
+        var evil = evi.length;
         out.writeByte(evil);
         //TODO use zigzag delta encoding
-        for (long anEvi : evi)
+        for (var anEvi : evi)
             out.writeLong(anEvi);
     }
 
@@ -111,7 +111,7 @@ public enum IO {
         if (t instanceof Atomic) {
             return ((Atomic) t).bytes();
         } else {
-            try (RecycledDynBytes d = RecycledDynBytes.get()) { //termBytesEstimate(t) /* estimate */);
+            try (var d = RecycledDynBytes.get()) { //termBytesEstimate(t) /* estimate */);
                 TermIO.the.write(t, d);
                 return d.arrayCopy();
             }
@@ -125,9 +125,9 @@ public enum IO {
 
 
     public static @Nullable byte[] taskToBytes(Task x) {
-        DynBytes dos = new DynBytes(termBytesEstimate(x));
+        var dos = new DynBytes(termBytesEstimate(x));
 
-        byte[] b = taskToBytes(x, dos);
+        var b = taskToBytes(x, dos);
 
         dos.close();
 

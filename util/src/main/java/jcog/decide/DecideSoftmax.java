@@ -48,7 +48,7 @@ public class DecideSoftmax implements Deciding {
         try {
             temperature = Math.max(minTemperature, temperature * temperatureDecay);
 
-            int actions = vector.length;
+            var actions = vector.length;
             if (mot == null) {
                 mot = new float[actions];
                 motProb = new float[actions];
@@ -56,19 +56,19 @@ public class DecideSoftmax implements Deciding {
 
 
             if (onlyPositive) {
-                for (int i = 0; i < vector.length; i++)
+                for (var i = 0; i < vector.length; i++)
                     vector[i] = Math.max(0, vector[i]);
             }
 
-            float sumMotivation = Util.sum(vector);
+            var sumMotivation = Util.sum(vector);
             if (sumMotivation > Float.MIN_NORMAL * actions) {
 
 
                 if (normalize) {
-                    float[] minmax = Util.minmax(vector);
-                    float min = minmax[0];
-                    float max = minmax[1];
-                    for (int i = 0; i < actions; i++) {
+                    var minmax = Util.minmax(vector);
+                    var min = minmax[0];
+                    var max = minmax[1];
+                    for (var i = 0; i < actions; i++) {
                         mot[i] = Util.normalize(vector[i], min, max);
                     }
                 } else {
@@ -77,15 +77,15 @@ public class DecideSoftmax implements Deciding {
 
                 /* http://www.cse.unsw.edu.au/~cs9417ml/RL1/source/RLearner.java */
                 float sumProb = 0;
-                for (int i = 0; i < actions; i++) {
+                for (var i = 0; i < actions; i++) {
                     sumProb += (motProb[i] = Util.softmax(mot[i], temperature));
                 }
 
-                float r = random.nextFloat() * sumProb;
+                var r = random.nextFloat() * sumProb;
 
                 int i;
                 for (i = actions - 1; i >= 1; i--) {
-                    float m = motProb[i];
+                    var m = motProb[i];
                     r -= m;
                     if (r <= 0) {
                         break;

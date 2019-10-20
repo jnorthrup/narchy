@@ -139,9 +139,9 @@ public class Color3f extends v3 {
      * @since vecmath 1.2
      */
     public final Color get() {
-        int r = Math.round(x * 255.0f);
-        int g = Math.round(y * 255.0f);
-        int b = Math.round(z * 255.0f);
+        var r = Math.round(x * 255.0f);
+        var g = Math.round(y * 255.0f);
+        var b = Math.round(z * 255.0f);
 
         return new Color(r, g, b);
     }

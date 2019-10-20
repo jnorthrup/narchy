@@ -147,9 +147,9 @@ public final class IN extends Globals {
 
         if (!IN.mouse_avail)
 			return;
-	
-		KBD kbd=Globals.re.getKeyboardHandler();
-		for (int i = 0; i<3 ; i++) {
+
+        var kbd=Globals.re.getKeyboardHandler();
+		for (var i = 0; i<3 ; i++) {
 			if ( (IN.mouse_buttonstate & (1<<i)) != 0 && (IN.mouse_oldbuttonstate & (1<<i)) == 0 )
 				kbd.Do_Key_Event(Key.K_MOUSE1 + i, true);
 	

@@ -205,7 +205,7 @@ public enum Fast {
 	 * @return an integer approximation of the base-two logarithm of the argument.
 	 */
 	public static int approximateLog2( double x ) {
-		long bits = Double.doubleToRawLongBits( x );
+		var bits = Double.doubleToRawLongBits( x );
 		
 		return (int)( ( bits >>> 52 ) & 0x7FF ) - 1023 + ( ( bits >>> 48 & 0xF ) > 6 ? 1 : 0 );
 	}
@@ -241,24 +241,24 @@ public enum Fast {
 	}
 
 	private static int selectBroadword( long x, int rank ) {
-        
-        long byteSums = x - ( ( x & 0xa * ONES_STEP_4 ) >>> 1 );
+
+		var byteSums = x - ( ( x & 0xa * ONES_STEP_4 ) >>> 1 );
         byteSums = ( byteSums & 3 * ONES_STEP_4 ) + ( ( byteSums >>> 2 ) & 3 * ONES_STEP_4 );
         byteSums = ( byteSums + ( byteSums >>> 4 ) ) & 0x0f * ONES_STEP_8;
         byteSums *= ONES_STEP_8;
-        
-        
-        long rankStep8 = rank * ONES_STEP_8;
-        long byteOffset = ( ( ( ( ( rankStep8 | MSBS_STEP_8 ) - byteSums ) & MSBS_STEP_8 ) >>> 7 ) * ONES_STEP_8 >>> 53 ) & ~0x7;
 
-        
-        int byteRank = (int)( rank - ( ( ( byteSums << 8 ) >>> byteOffset ) & 0xFF ) );
 
-        long spreadBits = ( x >>> byteOffset & 0xFF ) * ONES_STEP_8 & INCR_STEP_8;
-        long bitSums = ( ( ( spreadBits | ( ( spreadBits | MSBS_STEP_8 ) - ONES_STEP_8 ) ) & MSBS_STEP_8 ) >>> 7 ) * ONES_STEP_8;
+		var rankStep8 = rank * ONES_STEP_8;
+		var byteOffset = ( ( ( ( ( rankStep8 | MSBS_STEP_8 ) - byteSums ) & MSBS_STEP_8 ) >>> 7 ) * ONES_STEP_8 >>> 53 ) & ~0x7;
 
-        
-        long byteRankStep8 = byteRank * ONES_STEP_8;
+
+		var byteRank = (int)( rank - ( ( ( byteSums << 8 ) >>> byteOffset ) & 0xFF ) );
+
+		var spreadBits = ( x >>> byteOffset & 0xFF ) * ONES_STEP_8 & INCR_STEP_8;
+		var bitSums = ( ( ( spreadBits | ( ( spreadBits | MSBS_STEP_8 ) - ONES_STEP_8 ) ) & MSBS_STEP_8 ) >>> 7 ) * ONES_STEP_8;
+
+
+		var byteRankStep8 = byteRank * ONES_STEP_8;
 
         return (int)( byteOffset + ( ( ( ( ( byteRankStep8 | MSBS_STEP_8 ) - bitSums ) & MSBS_STEP_8 ) >>> 7 ) * ONES_STEP_8 >>> 56 ) );
 	}
@@ -354,14 +354,14 @@ public enum Fast {
 	 */
 	public static int select( long x, int rank ) {
 		assert rank < Long.bitCount( x );
-		
-		long byteSums = x - ( ( x >>> 1 ) & 0x5 * ONES_STEP_4 );
+
+		var byteSums = x - ( ( x >>> 1 ) & 0x5 * ONES_STEP_4 );
 		byteSums = ( byteSums & 3 * ONES_STEP_4 ) + ( ( byteSums >>> 2 ) & 3 * ONES_STEP_4 );
 		byteSums = ( byteSums + ( byteSums >>> 4 ) ) & 0x0f * ONES_STEP_8;
 		byteSums *= ONES_STEP_8;
 
-		
-		int byteOffset = Long.bitCount( ( ( rank * ONES_STEP_8 | MSBS_STEP_8 ) - byteSums ) & MSBS_STEP_8 ) << 3;
+
+		var byteOffset = Long.bitCount( ( ( rank * ONES_STEP_8 | MSBS_STEP_8 ) - byteSums ) & MSBS_STEP_8 ) << 3;
 
 		return byteOffset + selectInByte[ (int)( x >>> byteOffset & 0xFF ) | (int)( rank - ( ( ( byteSums << 8 ) >>> byteOffset ) & 0xFF ) ) << 8 ];
 	}

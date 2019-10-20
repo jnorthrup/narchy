@@ -189,7 +189,7 @@ public class Collidable<X> {
 	}
 
 	public final boolean isActive() {
-		int s = this.state;
+		var s = this.state;
 		return ((s != ISLAND_SLEEPING) && (s != DISABLE_SIMULATION));
 	}
 

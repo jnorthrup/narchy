@@ -59,11 +59,11 @@ public class Interpolation2D {
      */
     public static float bilinear(double x, double y, double x1, double y1,
             double x2, double y2, float tl, float tr, float bl, float br) {
-        double denom = 1.0 / ((x2 - x1) * (y2 - y1));
-        double dx1 = (x - x1) * denom;
-        double dx2 = (x2 - x) * denom;
-        double dy1 = y - y1;
-        double dy2 = y2 - y;
+        var denom = 1.0 / ((x2 - x1) * (y2 - y1));
+        var dx1 = (x - x1) * denom;
+        var dx2 = (x2 - x) * denom;
+        var dy1 = y - y1;
+        var dy2 = y2 - y;
         return (float) (tl * dx2 * dy2 + tr * dx1 * dy2 + bl * dx2 * dy1 + br
                 * dx1 * dy1);
     }

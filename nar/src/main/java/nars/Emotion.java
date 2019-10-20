@@ -177,8 +177,8 @@ public class Emotion implements Meter, Consumer<NAR> {
      */
     public void perceive(Task t) {
 
-        int vol = t.volume();
-        float pri = t.priElseZero();
+        var vol = t.volume();
+        var pri = t.priElseZero();
 
         busy(pri, vol);
 
@@ -186,8 +186,8 @@ public class Emotion implements Meter, Consumer<NAR> {
     }
 
     public void commit(BiConsumer<String, Object> statConsumer) {
-        for (Field f : EmotionFields) {
-            String fn = f.getName();
+        for (var f : EmotionFields) {
+            var fn = f.getName();
             try {
                 statConsumer.accept(fn, v(f.get(Emotion.this)));
             } catch (IllegalAccessException e) {

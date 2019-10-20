@@ -110,7 +110,7 @@ public final class Qcommon extends Globals {
 			Globals.logfile_active= Cvar.Get("logfile", "0", 0);
 			Globals.showtrace= Cvar.Get("showtrace", "0", 0);
 			Globals.dedicated= Cvar.Get("dedicated", "0", CVAR_NOSET);
-			String s = Com.sprintf("%4.2f %s %s %s",
+			var s = Com.sprintf("%4.2f %s %s %s",
 					new Vargs(4)
 						.add(Globals.VERSION)
 						.add(CPUSTRING)
@@ -232,7 +232,7 @@ public final class Qcommon extends Globals {
 
 			Cbuf.Execute();
 
-			int time_before= 0;
+			var time_before= 0;
 
             if (Globals.host_speeds.value != 0.0f)
 				time_before= Timer.Milliseconds();
@@ -240,7 +240,7 @@ public final class Qcommon extends Globals {
 			Com.debugContext = "SV:";
 			SV_MAIN.SV_Frame(msec);
 
-            int time_between = 0;
+			var time_between = 0;
             if (Globals.host_speeds.value != 0.0f)
 				time_between= Timer.Milliseconds();
 			
@@ -248,13 +248,13 @@ public final class Qcommon extends Globals {
 			CL.Frame(msec);
 
 			if (Globals.host_speeds.value != 0.0f) {
-                int time_after = Timer.Milliseconds();
+				var time_after = Timer.Milliseconds();
 
-                int all= time_after - time_before;
-				int sv= time_between - time_before;
-				int cl= time_after - time_between;
-				int gm= Globals.time_after_game - Globals.time_before_game;
-				int rf= Globals.time_after_ref - Globals.time_before_ref;
+				var all= time_after - time_before;
+				var sv= time_between - time_before;
+				var cl= time_after - time_between;
+				var gm= Globals.time_after_game - Globals.time_before_game;
+				var rf= Globals.time_after_ref - Globals.time_before_ref;
 				sv -= gm;
 				cl -= rf;
 
@@ -268,7 +268,7 @@ public final class Qcommon extends Globals {
 	}
 
 	static void reconfigure(boolean clear) {
-		String dir = Cvar.Get("cddir", "", CVAR_ARCHIVE).string;
+		var dir = Cvar.Get("cddir", "", CVAR_ARCHIVE).string;
 		Cbuf.AddText("exec default.cfg\n");
 		Cbuf.AddText("bind MWHEELUP weapnext\n");
 		Cbuf.AddText("bind MWHEELDOWN weapprev\n");

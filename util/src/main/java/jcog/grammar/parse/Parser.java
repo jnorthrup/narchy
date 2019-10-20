@@ -66,7 +66,7 @@ public abstract class Parser {
 	 */
 	public static Assembly best(Set<Assembly> v) {
 		Assembly best = null;
-		for (Assembly a : v) {
+		for (var a : v) {
 			if (!a.hasNext()) {
 				return a;
 			}
@@ -93,7 +93,7 @@ public abstract class Parser {
 	public Assembly bestMatch(Assembly a) {
 		Set<Assembly> in = new HashSet<>();
 		in.add(a);
-		Set<Assembly> out = matchAndAssemble(in);
+		var out = matchAndAssemble(in);
 		return best(out);
 	}
 
@@ -109,7 +109,7 @@ public abstract class Parser {
 	 *
 	 */
 	public Assembly completeMatch(Assembly a) {
-		Assembly best = bestMatch(a);
+		var best = bestMatch(a);
 		if (best != null && !best.hasNext()) {
 
 			return best;
@@ -125,7 +125,7 @@ public abstract class Parser {
 	 * @return a copy of the input Set, cloning each element of it
 	 */
 	static Set<Assembly> elementClone(Set<Assembly> v) {
-		Set<Assembly> copy = v.stream().map(Assembly::clone).collect(Collectors.toSet());
+		var copy = v.stream().map(Assembly::clone).collect(Collectors.toSet());
 		return copy;
 	}
 
@@ -178,9 +178,9 @@ public abstract class Parser {
 	 */
 	public Set<Assembly> matchAndAssemble(Set<Assembly> in) {
 		announceMatchingStart(in);
-		Set<Assembly> out = match(in);
+		var out = match(in);
 		if (assembler != null) {
-			for (Assembly assembly : out) {
+			for (var assembly : out) {
 				assembler.accept(assembly);
 			}
 		}
@@ -189,13 +189,13 @@ public abstract class Parser {
 	}
 
 	private static void announceMatchingStart(Set<Assembly> in) {
-		for (Assembly each : in) {
+		for (var each : in) {
 			each.announceMatchingStart();
 		}
 	}
 
 	private static void announceMatchingEnd(Set<Assembly> out) {
-		for (Assembly each : out) {
+		for (var each : out) {
 			each.announceMatchingEnd();
 		}
 	}
@@ -212,9 +212,9 @@ public abstract class Parser {
 	 * @return a random element of this parser's language
 	 */
 	public String randomInput(int maxDepth, String separator) {
-		StringBuilder buf = new StringBuilder();
-		Iterator<String> e = randomExpansion(maxDepth, 0).iterator();
-		boolean first = true;
+		var buf = new StringBuilder();
+		var e = randomExpansion(maxDepth, 0).iterator();
+		var first = true;
 		while (e.hasNext()) {
 			if (!first) {
 				buf.append(separator);
@@ -240,7 +240,7 @@ public abstract class Parser {
 	}
 	public Parser push(Function<Assembly,?> f) {
 		this.assembler = (x)->{
-			Object y = f.apply(x);
+			var y = f.apply(x);
 			x.push(y);
 		};
 		return this;
@@ -257,7 +257,7 @@ public abstract class Parser {
 		if (name != null) {
 			return name;
 		} else {
-			HashSet s = new HashSet();
+			var s = new HashSet();
 			s.add(this);
 			return unvisitedString(s);
 		}

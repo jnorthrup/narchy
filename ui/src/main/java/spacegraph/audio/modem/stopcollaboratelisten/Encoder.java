@@ -33,7 +33,7 @@ public class Encoder implements Constants {
 
         System.out.println("encodeStream starts");
 
-        byte[] zeros = new byte[kSamplesPerDuration];
+        var zeros = new byte[kSamplesPerDuration];
 
         //write out the hail and calibration sequences
         output.write(zeros);
@@ -41,13 +41,13 @@ public class Encoder implements Constants {
         output.write(getCalibrationSequence());
 
         //now write the data
-        int read = 0;
-        byte[] buff = new byte[kBytesPerDuration];
+        var read = 0;
+        var buff = new byte[kBytesPerDuration];
         while ((read = input.read(buff)) == kBytesPerDuration) {
             output.write(Encoder.encodeDuration(buff));
         }
         if (read > 0) {
-            for (int i = read; i < kBytesPerDuration; i++) {
+            for (var i = read; i < kBytesPerDuration; i++) {
                 buff[i] = 0;
             }
             output.write(Encoder.encodeDuration(buff));
@@ -61,7 +61,7 @@ public class Encoder implements Constants {
      * @param output the stream of audio samples representing the SOS hail
      */
     public static void generateSOS(OutputStream output) throws IOException {
-        byte[] zeros = new byte[kSamplesPerDuration];
+        var zeros = new byte[kSamplesPerDuration];
         output.write(zeros);
         output.write(getSOSSequence());
     }
@@ -86,8 +86,8 @@ public class Encoder implements Constants {
      * @return the same array of bytes with its CRC appended at the end
      */
     public static byte[] appendCRC(byte[] input) {
-        byte[] output = new byte[input.length + 1];
-        byte crc8 = CRCGen.crc_8_ccitt(input, input.length);
+        var output = new byte[input.length + 1];
+        var crc8 = CRCGen.crc_8_ccitt(input, input.length);
         System.arraycopy(input, 0, output, 0, input.length);
         output[input.length] = crc8;
 
@@ -99,18 +99,18 @@ public class Encoder implements Constants {
      * @return an array of audio samples of type AudioUtil.kDefaultFormat
      */
     private static byte[] encodeDuration(byte[] input) {
-        double[] signal = new double[kSamplesPerDuration];
-        for (int j = 0; j < kBytesPerDuration; j++) {
-            for (int k = 0; k < kBitsPerByte; k++) {
+        var signal = new double[kSamplesPerDuration];
+        for (var j = 0; j < kBytesPerDuration; j++) {
+            for (var k = 0; k < kBitsPerByte; k++) {
                 if (((input[j] >> k) & 0x1) == 0) {
                     //no need to go through encoding a zero
                     continue;
                 }
 
                 //add a sinusoid of getFrequency(j), amplitude kAmplitude and duration kDuration
-                double innerMultiplier = getFrequency((j * kBitsPerByte) + k)
+                var innerMultiplier = getFrequency((j * kBitsPerByte) + k)
                         * (1 / kSamplingFrequency) * 2 * Math.PI;
-                for (int l = 0; l < signal.length; l++) {
+                for (var l = 0; l < signal.length; l++) {
                     signal[l] += (kAmplitude * Math.cos(innerMultiplier * l));
                 }
             }
@@ -124,13 +124,13 @@ public class Encoder implements Constants {
      */
     private static byte[] getSOSSequence() {
         //add a sinusoid of the hail frequency, amplitude kAmplitude and duration kDuration
-        double innerMultiplier = Constants.kSOSFrequency * (1 / kSamplingFrequency) * 2 * Math.PI;
+        var innerMultiplier = Constants.kSOSFrequency * (1 / kSamplingFrequency) * 2 * Math.PI;
         /*kAmplitude **/
-        double[] signal = new double[10];
-        int count = 0;
-        int bound = kSamplesPerDuration;
-        for (int l = 0; l < bound; l++) {
-            double cos = Math.cos(innerMultiplier * l);
+        var signal = new double[10];
+        var count = 0;
+        var bound = kSamplesPerDuration;
+        for (var l = 0; l < bound; l++) {
+            var cos = Math.cos(innerMultiplier * l);
             if (signal.length == count) signal = Arrays.copyOf(signal, count * 2);
             signal[count++] = cos;
         }
@@ -143,13 +143,13 @@ public class Encoder implements Constants {
      */
     private static byte[] getHailSequence() {
         //add a sinusoid of the hail frequency, amplitude kAmplitude and duration kDuration
-        double innerMultiplier = Constants.kHailFrequency * (1 / kSamplingFrequency) * 2 * Math.PI;
+        var innerMultiplier = Constants.kHailFrequency * (1 / kSamplingFrequency) * 2 * Math.PI;
         /*kAmplitude **/
-        double[] signal = new double[10];
-        int count = 0;
-        int bound = kSamplesPerDuration;
-        for (int l = 0; l < bound; l++) {
-            double cos = Math.cos(innerMultiplier * l);
+        var signal = new double[10];
+        var count = 0;
+        var bound = kSamplesPerDuration;
+        for (var l = 0; l < bound; l++) {
+            var cos = Math.cos(innerMultiplier * l);
             if (signal.length == count) signal = Arrays.copyOf(signal, count * 2);
             signal[count++] = cos;
         }
@@ -161,16 +161,16 @@ public class Encoder implements Constants {
      * @return audio samples (of length 2 * kSamplesPerDuration), used to calibrate the decoding
      */
     private static byte[] getCalibrationSequence() {
-        byte[] inputBytes1 = new byte[kBytesPerDuration];
-        byte[] inputBytes2 = new byte[kBytesPerDuration];
-        for (int i = 0; i < kBytesPerDuration; i++) {
+        var inputBytes1 = new byte[kBytesPerDuration];
+        var inputBytes2 = new byte[kBytesPerDuration];
+        for (var i = 0; i < kBytesPerDuration; i++) {
             inputBytes1[i] = (byte) 0xAA; // 10101010
             inputBytes2[i] = (byte) 0x55; // 01010101
         }
 
         //encode inputBytes1 and 2 in sequence
-        byte[] partialResult = encodeDuration(inputBytes1);
-        byte[] results = new byte[2 * kSamplesPerDuration];
+        var partialResult = encodeDuration(inputBytes1);
+        var results = new byte[2 * kSamplesPerDuration];
         System.arraycopy(partialResult, 0, results, 0, kSamplesPerDuration);
         partialResult = encodeDuration(inputBytes2);
         System.arraycopy(partialResult, 0, results, 4410, kSamplesPerDuration);
@@ -192,12 +192,12 @@ public class Encoder implements Constants {
      *
      */
     private static double[] smoothWindow(double[] input, double magicScalingNumber) {
-        double[] smoothWindow = new double[input.length];
+        var smoothWindow = new double[input.length];
         double minVal = 0;
         double maxVal = 0;
-        int peaks = (int) (input.length * 0.1);
-        double steppingValue = 1 / (double) peaks;
-        for (int i = 0; i < smoothWindow.length; i++) {
+        var peaks = (int) (input.length * 0.1);
+        var steppingValue = 1 / (double) peaks;
+        for (var i = 0; i < smoothWindow.length; i++) {
             if (i < peaks) {
                 smoothWindow[i] = input[i] * (steppingValue * i) /* / magicScalingNumber*/;
             } else if (i > input.length - peaks) {
@@ -217,7 +217,7 @@ public class Encoder implements Constants {
     }
 
     private static double[] smoothWindow(double[] input) {
-        double magicScalingNumber = 0.8;
+        var magicScalingNumber = 0.8;
         return smoothWindow(input, magicScalingNumber);
     }
 
@@ -225,12 +225,12 @@ public class Encoder implements Constants {
      * This isn't used at the moment, but it does sound nice
      */
     private static double[] blackmanSmoothWindow(double[] input) {
-        double magicScalingNumber = 3.5;
-        double[] smoothWindow = new double[input.length];
-        double steppingValue = 2 * Math.PI / (input.length - 1);
+        var magicScalingNumber = 3.5;
+        var smoothWindow = new double[input.length];
+        var steppingValue = 2 * Math.PI / (input.length - 1);
         double maxVal = 0;
         double minVal = 0;
-        for (int i = 0; i < smoothWindow.length; i++) {
+        for (var i = 0; i < smoothWindow.length; i++) {
             smoothWindow[i] = (input[i] * (0.42 - 0.5 * Math.cos(steppingValue * i) +
                     0.08 * Math.cos(steppingValue * i))) * 3.5;
             if (smoothWindow[i] < minVal) {
@@ -249,8 +249,8 @@ public class Encoder implements Constants {
      * Note!: This doesn't handle cast/conversion issues, so don't use this unless you understand the code
      */
     public static byte[] getByteArrayFromDoubleArray(double[] sequence) {
-        byte[] result = new byte[sequence.length];
-        for (int i = 0; i < result.length; i++) {
+        var result = new byte[sequence.length];
+        for (var i = 0; i < result.length; i++) {
             result[i] = (byte) ((sequence[i] * kFloatToByteShift) - 1);
         }
         return result;

@@ -30,7 +30,7 @@ public class AdmissionQueueWheelModel extends WheelModel {
         super(wheels, resolution);
 
         this.wheel = new Queue[wheels];
-        for (int i = 0; i < wheels; i++) {
+        for (var i = 0; i < wheels; i++) {
             wheel[i] = new ArrayDeque();
         }
     }
@@ -43,13 +43,13 @@ public class AdmissionQueueWheelModel extends WheelModel {
         if (incoming.clear(this::out, timer) > 0)
             timer.assertRunning(); //is this necessary?
 
-        Queue<TimedFuture<?>> q = wheel[c];
-        int n = q.size();
+        var q = wheel[c];
+        var n = q.size();
         switch (n) {
             case 0: break; 
             case 1: {
-                
-                TimedFuture<?> r = q.peek();
+
+                var r = q.peek();
                 switch (r.state()) {
                     case CANCELLED:
                         q.poll();
@@ -66,8 +66,8 @@ public class AdmissionQueueWheelModel extends WheelModel {
 
 
                 //Fair
-                for (int remain = n; remain > 0; remain--) {
-                    TimedFuture<?> r = q.poll();
+                for (var remain = n; remain > 0; remain--) {
+                    var r = q.poll();
                     switch (r.state()) {
                         case CANCELLED:
                             break;

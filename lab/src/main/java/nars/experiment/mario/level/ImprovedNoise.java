@@ -39,7 +39,7 @@ public final class ImprovedNoise {
     }
 
     static double grad(int hash, double x, double y, double z) {
-        int h = hash & 15;
+        var h = hash & 15;
         double u = h < 8 ? x : y,
                 v = h < 4 ? y : h == 12 || h == 14 ? x : z;
         return ((h & 1) == 0 ? u : -u) + ((h & 2) == 0 ? v : -v);
@@ -50,8 +50,8 @@ public final class ImprovedNoise {
     public double perlinNoise(double x, double y) {
         double n = 0;
 
-        for (int i = 0; i < 8; i++) {
-            double stepSize = 64.0 / ((1 << i));
+        for (var i = 0; i < 8; i++) {
+            var stepSize = 64.0 / ((1 << i));
             n += noise(x / stepSize, y / stepSize, 128) * 1.0 / (1 << i);
         }
 
@@ -59,18 +59,18 @@ public final class ImprovedNoise {
     }
 
     public void shuffle(long seed) {
-        Random random = new Random(seed);
-        int[] permutation = new int[10];
-        int count = 0;
-        for (int i1 = 0; i1 < 256; i1++) {
+        var random = new Random(seed);
+        var permutation = new int[10];
+        var count = 0;
+        for (var i1 = 0; i1 < 256; i1++) {
             if (permutation.length == count) permutation = Arrays.copyOf(permutation, count * 2);
             permutation[count++] = i1;
         }
         permutation = Arrays.copyOfRange(permutation, 0, count);
 
-        for (int i = 0; i < 256; i++) {
-            int j = random.nextInt(256 - i) + i;
-            int tmp = permutation[i];
+        for (var i = 0; i < 256; i++) {
+            var j = random.nextInt(256 - i) + i;
+            var tmp = permutation[i];
             permutation[i] = permutation[j];
             permutation[j] = tmp;
             p[i + 256] = p[i] = permutation[i];

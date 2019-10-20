@@ -44,14 +44,14 @@ public class Hover<X extends Surface, Y extends Surface> extends Fingering {
     @Override
     public boolean update(Finger f) {
         //update
-        boolean focused = f.focused();
+        var focused = f.focused();
         if (focused && source.showing() && f.touching() == source) {
 
-            float hoverTimeS = (float) ((System.nanoTime() - startTime) / 1.0E9);
+            var hoverTimeS = (float) ((System.nanoTime() - startTime) / 1.0E9);
             model.set(source, f, hoverTimeS);
             tgtBoundsPx = model.pos();
 
-            Surface t = this.target;
+            var t = this.target;
             if (t != null) {
                 if (tgtBoundsPx != null)
                     updatePos(t);
@@ -72,11 +72,11 @@ public class Hover<X extends Surface, Y extends Surface> extends Fingering {
 
 
     protected boolean show() {
-        SurfaceGraph r = source.root();
+        var r = source.root();
         if (r instanceof OrthoSurfaceGraph) {
-            Stacking root = ((OrthoSurfaceGraph) r).layers;
+            var root = ((OrthoSurfaceGraph) r).layers;
 
-            Surface t = target = targetBuilder.apply(source);
+            var t = target = targetBuilder.apply(source);
 
             if (t != null) {
                 t.hide();

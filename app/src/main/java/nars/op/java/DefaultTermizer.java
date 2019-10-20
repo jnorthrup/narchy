@@ -79,14 +79,14 @@ public class DefaultTermizer implements Termizer {
 
     public void remove(Term x) {
 
-        Object y = termToObj.remove(x);
+        var y = termToObj.remove(x);
         objToTerm.remove(y);
 
     }
 
     public void remove(Object x) {
 
-        Term y = objToTerm.remove(x);
+        var y = objToTerm.remove(x);
         termToObj.remove(y);
 
     }
@@ -101,7 +101,7 @@ public class DefaultTermizer implements Termizer {
         if (t instanceof Int && t.op() == INT)
             return ((Int) t).i;
 
-        Object x = termToObj.get(t);
+        var x = termToObj.get(t);
         if (x == null)
             return t; /** return the target intance itself */
 
@@ -111,7 +111,7 @@ public class DefaultTermizer implements Termizer {
 
     @Nullable
     Term obj2term(@Nullable Object o) {
-        @Nullable Term result = EMPTY;
+        @Nullable var result = EMPTY;
 
         if (o == null) {
             result = NULL;
@@ -126,7 +126,7 @@ public class DefaultTermizer implements Termizer {
         } else if (o instanceof Number) {
             result = number((Number) o);
         } else if (o instanceof Class) {
-            Class oc = (Class) o;
+            var oc = (Class) o;
             result = classTerm(oc);
         } else if (o instanceof Path) {
             result = $.the((Path) o);
@@ -137,16 +137,16 @@ public class DefaultTermizer implements Termizer {
         } else if (o instanceof int[]) {
             result = $.p((int[]) o);
         } else if (o instanceof Object[]) {
-            List<Term> arg = Arrays.stream((Object[]) o).map(this::term).collect(Collectors.toList());
+            var arg = Arrays.stream((Object[]) o).map(this::term).collect(Collectors.toList());
             if (!arg.isEmpty()) {
                 result = $.p(arg);
             }
         } else if (o instanceof List) {
             if (!((Collection) o).isEmpty()) {
-                Collection c = (Collection) o;
+                var c = (Collection) o;
                 List<Term> arg = $.newArrayList(c.size());
-                for (Object x : c) {
-                    Term y = term(x);
+                for (var x : c) {
+                    var y = term(x);
                     arg.add(y);
                 }
                 if (!arg.isEmpty()) {
@@ -158,18 +158,18 @@ public class DefaultTermizer implements Termizer {
 
 
         } else if (o instanceof Set) {
-            Collection<Term> arg = (Collection<Term>) ((Collection) o).stream().map(this::term).collect(Collectors.toList());
+            var arg = (Collection<Term>) ((Collection) o).stream().map(this::term).collect(Collectors.toList());
             if (!arg.isEmpty()) {
                 result = SETe.the(arg);
             }
         } else if (o instanceof Map) {
 
-            Map mapo = (Map) o;
+            var mapo = (Map) o;
             List<Term> components = new FasterList(mapo.size());
             mapo.forEach((k, v) -> {
 
-                Term tv = obj2term(v);
-                Term tk = obj2term(k);
+                var tv = obj2term(v);
+                var tk = obj2term(k);
 
                 if ((tv != null) && (tk != null)) {
                     components.add(
@@ -210,9 +210,9 @@ public class DefaultTermizer implements Termizer {
     private static Term[] getMethodArgVariables(Method m) {
 
 
-        String varPrefix = m.getName() + '_';
-        int n = m.getParameterCount();
-        Term args = $.p(getArgVariables(varPrefix, n));
+        var varPrefix = m.getName() + '_';
+        var n = m.getParameterCount();
+        var args = $.p(getArgVariables(varPrefix, n));
 
         return m.getReturnType() == void.class ? new Term[]{
                 INSTANCE_VAR,
@@ -226,7 +226,7 @@ public class DefaultTermizer implements Termizer {
 
     
     private static Term[] getArgVariables(String prefix, int numParams) {
-        Term[] x = IntStream.range(0, numParams).mapToObj(i -> $.varDep(prefix + i)).toArray(Term[]::new);
+        var x = IntStream.range(0, numParams).mapToObj(i -> $.varDep(prefix + i)).toArray(Term[]::new);
         return x;
     }
 
@@ -246,9 +246,9 @@ public class DefaultTermizer implements Termizer {
     public static Term termPackage( Package p) {
 
 
-        String n = p.getName();
+        var n = p.getName();
 
-        String[] path = n.split("\\.");
+        var path = n.split("\\.");
         return $.p(path);
 
 
@@ -289,7 +289,7 @@ public class DefaultTermizer implements Termizer {
             return Atomic.the((String) o);
         }
 
-        Term y = obj2termCached(o);
+        var y = obj2termCached(o);
         if (y != null)
             return y;
 
@@ -319,7 +319,7 @@ public class DefaultTermizer implements Termizer {
         if (cacheableInstance(o)) {
             oe = objToTerm.get(o);
             if (oe == null) {
-                Term ob = obj2term(o);
+                var ob = obj2term(o);
                 if (ob != null) {
                     objToTerm.put(o, ob);
                     return ob;

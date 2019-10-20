@@ -45,7 +45,7 @@ final class CompoundShapeChild {
 	@Override
 	public boolean equals(Object obj) {
 		if (!(obj instanceof CompoundShapeChild)) return false;
-		CompoundShapeChild child = (CompoundShapeChild)obj;
+		var child = (CompoundShapeChild)obj;
 		return transform.equals(child.transform) &&
 		       childShape == child.childShape
 				
@@ -56,7 +56,7 @@ final class CompoundShapeChild {
 
 	@Override
 	public int hashCode() {
-		int hash = 7;
+		var hash = 7;
 		hash = 19 * hash + transform.hashCode();
 		hash = 19 * hash + childShape.hashCode();
 		hash = 19 * hash + childShape.getShapeType().hashCode();

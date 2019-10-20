@@ -23,26 +23,26 @@ public class VectorizingUtils {
 		
 		if( options.get("blurradius") > 0 ){ imgd = SelectiveBlur.blur( imgd, options.get("blurradius"), options.get("blurdelta") ); }
 
-		int cycles = (int)Math.floor(options.get("colorquantcycles"));
+		var cycles = (int)Math.floor(options.get("colorquantcycles"));
+
+		var arr = new int[imgd.height+2][imgd.width+2];
+		for(var j = 0; j<(imgd.height+2); j++){ arr[j][0] = -1; arr[j][imgd.width+1 ] = -1; }
+		for(var i = 0; i<(imgd.width+2) ; i++){ arr[0][i] = -1; arr[imgd.height+1][i] = -1; }
+
+		var idx=0;
+
+
+		var original_palette_backup = palette;
+		var paletteacc = new long[palette.length][5];
+
 		
-		int [][] arr = new int[imgd.height+2][imgd.width+2];
-		for(int j=0; j<(imgd.height+2); j++){ arr[j][0] = -1; arr[j][imgd.width+1 ] = -1; }
-		for(int i=0; i<(imgd.width+2) ; i++){ arr[0][i] = -1; arr[imgd.height+1][i] = -1; }
-
-		int idx=0;
-
-
-        byte [][] original_palette_backup = palette;
-		long [][] paletteacc = new long[palette.length][5];
-
-		
-		for(int cnt=0;cnt<cycles;cnt++){
+		for(var cnt = 0; cnt<cycles; cnt++){
 
 			
 			if(cnt>0){
 				
 				
-				for(int k=0;k<palette.length;k++){
+				for(var k = 0; k<palette.length; k++){
 					
 					if(paletteacc[k][3]>0){
 						palette[k][0] = (byte) (-128 + (paletteacc[k][0] / paletteacc[k][4]));
@@ -64,7 +64,7 @@ public class VectorizingUtils {
 			}
 
 			
-			for(int i=0;i<palette.length;i++){
+			for(var i = 0; i<palette.length; i++){
 				paletteacc[i][0]=0;
 				paletteacc[i][1]=0;
 				paletteacc[i][2]=0;
@@ -73,22 +73,22 @@ public class VectorizingUtils {
 			}
 
 			
-			for(int j=0;j<imgd.height;j++){
-				for(int i=0;i<imgd.width;i++){
+			for(var j = 0; j<imgd.height; j++){
+				for(var i = 0; i<imgd.width; i++){
 
 					idx = ((j*imgd.width)+i)*4;
 
 
-                    int cdl = 256 + 256 + 256 + 256;
-                    int ci = 0;
-                    for(int k=0;k<original_palette_backup.length;k++){
+					var cdl = 256 + 256 + 256 + 256;
+					var ci = 0;
+                    for(var k = 0; k<original_palette_backup.length; k++){
 
 
-                        int c1 = Math.abs(original_palette_backup[k][0] - imgd.data[idx]);
-                        int c2 = Math.abs(original_palette_backup[k][1] - imgd.data[idx + 1]);
-                        int c3 = Math.abs(original_palette_backup[k][2] - imgd.data[idx + 2]);
-                        int c4 = Math.abs(original_palette_backup[k][3] - imgd.data[idx + 3]);
-                        int cd = c1 + c2 + c3 + (c4 * 4);
+						var c1 = Math.abs(original_palette_backup[k][0] - imgd.data[idx]);
+						var c2 = Math.abs(original_palette_backup[k][1] - imgd.data[idx + 1]);
+						var c3 = Math.abs(original_palette_backup[k][2] - imgd.data[idx + 2]);
+						var c4 = Math.abs(original_palette_backup[k][3] - imgd.data[idx + 3]);
+						var cd = c1 + c2 + c3 + (c4 * 4);
 
 
                         if(cd<cdl){ cdl = cd; ci = k; }
@@ -121,24 +121,24 @@ public class VectorizingUtils {
 		
 		int val=0, aw = ii.array[0].length, ah = ii.array.length;
 
-        int[][][] layers = new int[ii.palette.length][ah][aw];
+		var layers = new int[ii.palette.length][ah][aw];
 
 		
-		for(int j=1; j<(ah-1); j++){
-			for(int i=1; i<(aw-1); i++){
+		for(var j = 1; j<(ah-1); j++){
+			for(var i = 1; i<(aw-1); i++){
 
 				
 				val = ii.array[j][i];
 
 
-                int n1 = ii.array[j - 1][i - 1] == val ? 1 : 0;
-                int n2 = ii.array[j - 1][i] == val ? 1 : 0;
-                int n3 = ii.array[j - 1][i + 1] == val ? 1 : 0;
-                int n4 = ii.array[j][i - 1] == val ? 1 : 0;
-                int n5 = ii.array[j][i + 1] == val ? 1 : 0;
-                int n6 = ii.array[j + 1][i - 1] == val ? 1 : 0;
-                int n7 = ii.array[j + 1][i] == val ? 1 : 0;
-                int n8 = ii.array[j + 1][i + 1] == val ? 1 : 0;
+				var n1 = ii.array[j - 1][i - 1] == val ? 1 : 0;
+				var n2 = ii.array[j - 1][i] == val ? 1 : 0;
+				var n3 = ii.array[j - 1][i + 1] == val ? 1 : 0;
+				var n4 = ii.array[j][i - 1] == val ? 1 : 0;
+				var n5 = ii.array[j][i + 1] == val ? 1 : 0;
+				var n6 = ii.array[j + 1][i - 1] == val ? 1 : 0;
+				var n7 = ii.array[j + 1][i] == val ? 1 : 0;
+				var n8 = ii.array[j + 1][i + 1] == val ? 1 : 0;
 
 
                 layers[val][j+1][i+1] = 1 + (n5 * 2) + (n8 * 4) + (n7 * 8) ;
@@ -190,12 +190,12 @@ public class VectorizingUtils {
 	
 	
 	public static ArrayList<ArrayList<Integer[]>> pathscan (int [][] arr,float pathomit){
-		ArrayList<ArrayList<Integer[]>> paths = new ArrayList<>();
+		var paths = new ArrayList<ArrayList<Integer[]>>();
         int px=0,py=0,w=arr[0].length,h=arr.length,dir=0;
 		boolean pathfinished=true, holepath = false;
 
-        for(int j=0;j<h;j++){
-			for(int i=0;i<w;i++){
+        for(var j = 0; j<h; j++){
+			for(var i = 0; i<w; i++){
 				if((arr[j][i]!=0)&&(arr[j][i]!=15)){
 
 					
@@ -214,7 +214,7 @@ public class VectorizingUtils {
 						thispath.add(new Integer[] { px-1, py-1, arr[py][px]});
 
 
-                        byte[] lookuprow = pathscan_combined_lookup[arr[py][px]][dir];
+						var lookuprow = pathscan_combined_lookup[arr[py][px]][dir];
                         arr[py][px] = lookuprow[0]; dir = lookuprow[1]; px += lookuprow[2]; py += lookuprow[3];
 
 						
@@ -239,33 +239,33 @@ public class VectorizingUtils {
 
 	
 	public static ArrayList<ArrayList<ArrayList<Integer[]>>> batchpathscan (int [][][] layers, float pathomit){
-		ArrayList<ArrayList<ArrayList<Integer[]>>> bpaths = Arrays.stream(layers).map(layer -> pathscan(layer, pathomit)).collect(Collectors.toCollection(ArrayList::new));
+		var bpaths = Arrays.stream(layers).map(layer -> pathscan(layer, pathomit)).collect(Collectors.toCollection(ArrayList::new));
 		return bpaths;
 	}
 
 
 	
 	public static ArrayList<ArrayList<Double[]>> internodes (List<ArrayList<Integer[]>> paths){
-		ArrayList<ArrayList<Double[]>> ins = new ArrayList<>();
-        Double[] nextpoint = new Double[2];
+		var ins = new ArrayList<ArrayList<Double[]>>();
+		var nextpoint = new Double[2];
         int palen=0,nextidx=0,nextidx2=0;
 
 
-		for (ArrayList<Integer[]> path : paths) {
+		for (var path : paths) {
 			ins.add(new ArrayList<>());
-            ArrayList<Double[]> thisinp = ins.get(ins.size() - 1);
+			var thisinp = ins.get(ins.size() - 1);
             palen = path.size();
 
-			for (int pcnt = 0; pcnt < palen; pcnt++) {
+			for (var pcnt = 0; pcnt < palen; pcnt++) {
 
 
 				nextidx = (pcnt + 1) % palen;
 				nextidx2 = (pcnt + 2) % palen;
 				thisinp.add(new Double[3]);
-                Double[] thispoint = thisinp.get(thisinp.size() - 1);
-                Integer[] pp1 = path.get(pcnt);
-                Integer[] pp2 = path.get(nextidx);
-                Integer[] pp3 = path.get(nextidx2);
+				var thispoint = thisinp.get(thisinp.size() - 1);
+				var pp1 = path.get(pcnt);
+				var pp2 = path.get(nextidx);
+				var pp3 = path.get(nextidx2);
                 thispoint[0] = (pp1[0] + pp2[0]) / 2.0;
 				thispoint[1] = (pp1[1] + pp2[1]) / 2.0;
 				nextpoint[0] = (pp2[0] + pp3[0]) / 2.0;
@@ -306,7 +306,7 @@ public class VectorizingUtils {
 
 	
 	static ArrayList<ArrayList<ArrayList<Double[]>>> batchinternodes (ArrayList<ArrayList<ArrayList<Integer[]>>> bpaths){
-		ArrayList<ArrayList<ArrayList<Double[]>>> binternodes = bpaths.stream().map(VectorizingUtils::internodes).collect(Collectors.toCollection(ArrayList::new));
+		var binternodes = bpaths.stream().map(VectorizingUtils::internodes).collect(Collectors.toCollection(ArrayList::new));
 		return binternodes;
 	}
 
@@ -331,9 +331,9 @@ public class VectorizingUtils {
 
 	public static ArrayList<Double[]> tracepath (ArrayList<Double[]> path, float ltreshold, float qtreshold){
 		int pcnt=0, seqend=0;
-        ArrayList<Double[]> smp = new ArrayList<>();
-		
-		int pathlength = path.size();
+		var smp = new ArrayList<Double[]>();
+
+		var pathlength = path.size();
 
 		while(pcnt<pathlength){
 
@@ -365,8 +365,8 @@ public class VectorizingUtils {
 	
 	
 	public static ArrayList<Double[]> fitseq (ArrayList<Double[]> path, float ltreshold, float qtreshold, int seqstart, int seqend){
-		ArrayList<Double[]> segment = new ArrayList<>();
-        int pathlength = path.size();
+		var segment = new ArrayList<Double[]>();
+		var pathlength = path.size();
 
 		
 		if((seqend>pathlength)||(seqend<0)){return segment;}
@@ -375,14 +375,14 @@ public class VectorizingUtils {
 		double vx = (path.get(seqend)[0]-path.get(seqstart)[0]) / tl,
 				vy = (path.get(seqend)[1]-path.get(seqstart)[1]) / tl;
 
-		
-		int pcnt = (seqstart+1)%pathlength;
+
+		var pcnt = (seqstart+1)%pathlength;
         double errorval = 0;
         double dist2;
         double py;
         double px;
-        boolean curvepass = true;
-        int errorpoint = seqstart;
+		var curvepass = true;
+		var errorpoint = seqstart;
         while(pcnt != seqend){
             double pl = pcnt - seqstart;
             if(pl<0){ pl += pathlength; }
@@ -408,8 +408,8 @@ public class VectorizingUtils {
 			return segment;
 		}
 
-		
-		int fitpoint = errorpoint; curvepass = true; errorval = 0;
+
+		var fitpoint = errorpoint; curvepass = true; errorval = 0;
 
 		
 		
@@ -446,9 +446,8 @@ public class VectorizingUtils {
 			return segment;
 		}
 
-		
-		
-		int splitpoint = (fitpoint + errorpoint)/2;
+
+		var splitpoint = (fitpoint + errorpoint)/2;
 
 		
 		segment = fitseq(path,ltreshold,qtreshold,seqstart,splitpoint);
@@ -460,14 +459,14 @@ public class VectorizingUtils {
 
 	
 	public static ArrayList<ArrayList<Double[]>> batchtracepaths (ArrayList<ArrayList<Double[]>> internodepaths, float ltres,float qtres){
-		ArrayList<ArrayList<Double[]>> btracedpaths = internodepaths.stream().map(internodepath -> tracepath(internodepath, ltres, qtres)).collect(Collectors.toCollection(ArrayList::new));
+		var btracedpaths = internodepaths.stream().map(internodepath -> tracepath(internodepath, ltres, qtres)).collect(Collectors.toCollection(ArrayList::new));
 		return btracedpaths;
 	}
 
 
 	
 	public static ArrayList<ArrayList<ArrayList<Double[]>>> batchtracelayers (ArrayList<ArrayList<ArrayList<Double[]>>> binternodes, float ltres, float qtres){
-		ArrayList<ArrayList<ArrayList<Double[]>>> btbis = binternodes.stream().map(binternode -> batchtracepaths(binternode, ltres, qtres)).collect(Collectors.toCollection(ArrayList::new));
+		var btbis = binternodes.stream().map(binternode -> batchtracepaths(binternode, ltres, qtres)).collect(Collectors.toCollection(ArrayList::new));
 		return btbis;
 	}
 

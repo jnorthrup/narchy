@@ -25,7 +25,7 @@ public interface Sampler<X> {
      * the bag is cycled so that subsequent elements are different.
      */
     default @Nullable X sample(Random rng) {
-        Object[] result = new Object[1];
+        var result = new Object[1];
         sample(rng, ((Predicate<? super X>) (x) -> {
             result[0] = x;
             return false;

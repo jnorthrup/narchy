@@ -144,11 +144,11 @@ public final class HumanReadableDuration implements Comparable<HumanReadableDura
      */
     @JsonCreator
     public static HumanReadableDuration valueOf(String duration) {
-        Matcher matcher = DURATION_PATTERN.matcher(duration);
+        var matcher = DURATION_PATTERN.matcher(duration);
         Preconditions.checkArgument(matcher.matches(), "Invalid duration: %s", duration);
 
-        long count = Long.parseLong(matcher.group(1));
-        TimeUnit unit = SUFFIXES.get(matcher.group(2));
+        var count = Long.parseLong(matcher.group(1));
+        var unit = SUFFIXES.get(matcher.group(2));
         if (unit == null) {
             throw new IllegalArgumentException("Invalid duration: " + duration + ". Wrong time unit");
         }
@@ -296,7 +296,7 @@ public final class HumanReadableDuration implements Comparable<HumanReadableDura
         if ((otherDuration == null) || (getClass() != otherDuration.getClass())) {
             return false;
         }
-        HumanReadableDuration duration = (HumanReadableDuration) otherDuration;
+        var duration = (HumanReadableDuration) otherDuration;
         if (unit == duration.unit) {
             return count == duration.count;
         }
@@ -322,7 +322,7 @@ public final class HumanReadableDuration implements Comparable<HumanReadableDura
     @Override
     @JsonValue
     public String toString() {
-        String units = unit.toString().toLowerCase(Locale.ENGLISH);
+        var units = unit.toString().toLowerCase(Locale.ENGLISH);
         if (count == 1) {
             units = units.substring(0, units.length() - 1);
         }

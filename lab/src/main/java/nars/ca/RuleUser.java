@@ -61,9 +61,9 @@ public class RuleUser {
 		else if (sStr.startsWith("GRH"))
 			RuleIdx = RIDX_GRH;
 
-        StringTokenizer st = new StringTokenizer(sStr, " ,", true);
+		var st = new StringTokenizer(sStr, " ,", true);
 		while (st.hasMoreTokens()) {
-            String sTok = st.nextToken().toUpperCase();
+			var sTok = st.nextToken().toUpperCase();
             if (sTok.length() > 0 && sTok.charAt(0) == 'I')
 				Increment = Integer.valueOf(sTok.substring(1));
 			else if (sTok.length() > 0 && sTok.charAt(0) == 'C')
@@ -80,7 +80,7 @@ public class RuleUser {
 
         Validate();
 
-        String sBff = "";
+		var sBff = "";
         switch (RuleIdx) {
 			case RIDX_RUG : 
 				sBff = "RUG,C" + iClo;
@@ -115,20 +115,20 @@ public class RuleUser {
 	
 	public int OnePass(int sizX, int sizY, boolean isWrap, int ColoringMethod,
 			short[][] crrState, short[][] tmpState) {
-        int modCnt = 0;
-        int[] lurd = new int[4];
+		var modCnt = 0;
+		var lurd = new int[4];
 
-		for (int i = 0; i < sizX; ++i) {
+		for (var i = 0; i < sizX; ++i) {
 			
 			lurd[0] = (i > 0) ? i - 1 : (isWrap) ? sizX - 1 : sizX;
 			lurd[2] = (i < sizX - 1) ? i + 1 : (isWrap) ? 0 : sizX;
-			for (int j = 0; j < sizY; ++j) {
+			for (var j = 0; j < sizY; ++j) {
 				
 				lurd[1] = j > 0 ? j - 1 : (isWrap) ? sizY - 1 : sizY;
 				lurd[3] = (j < sizY - 1) ? j + 1 : (isWrap) ? 0 : sizY;
-                short bOldVal = crrState[i][j];
+				var bOldVal = crrState[i][j];
 
-                short bNewVal = bOldVal;
+				var bNewVal = bOldVal;
                 int iCnt;
                 switch (RuleIdx) {
 					case RIDX_RUG : 
@@ -160,8 +160,8 @@ public class RuleUser {
 																				
 						break;
 
-					case RIDX_HOD : 
-						int sum8 = crrState[lurd[0]][lurd[1]]
+					case RIDX_HOD :
+						var sum8 = crrState[lurd[0]][lurd[1]]
 								+ crrState[lurd[0]][j]
 								+ crrState[lurd[0]][lurd[3]]
 								+ crrState[i][lurd[1]] + crrState[i][lurd[3]]
@@ -191,16 +191,16 @@ public class RuleUser {
 
 					case RIDX_GRH :
 
-                        int prevState = (bOldVal >> 2) & 3;
+						var prevState = (bOldVal >> 2) & 3;
 
                         bOldVal &= 3;
 
 
-                        int d = 0;
-                        int r = 0;
+						var d = 0;
+						var r = 0;
                         switch (bOldVal) {
 							case 0 :
-                                int i4Sum = (((crrState[lurd[0]][j] & 3) == 1)
+								var i4Sum = (((crrState[lurd[0]][j] & 3) == 1)
                                         ? 1
                                         : 0)
                                         + (((crrState[i][lurd[1]] & 3) == 1)

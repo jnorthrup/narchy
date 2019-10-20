@@ -38,7 +38,7 @@ public interface GridRenderer<X> {
 
             @Override
             public Surface apply(int x, int y, X value) {
-                @Nullable Surface s = cache.computeIfAbsent(value, builder);
+                @Nullable var s = cache.computeIfAbsent(value, builder);
                 //s.show();
                 return s;
             }

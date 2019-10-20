@@ -24,19 +24,19 @@ public class MarkovMIDI extends MarkovSampler<MarkovMIDI.MidiMessageWrapper> {
 //    }
 
     public void learnSequence(Sequence s) {
-        for (Track track : s.getTracks())
+        for (var track : s.getTracks())
             learnTrack(track);
     }
 
     public void learnTrack(Track t) {
-        int trackSize = t.size();
+        var trackSize = t.size();
         if (trackSize == 0) return;
         List<Long> times = new FasterList<>();
 
-        MidiEvent event = t.get(0);
-        long lastTick = event.getTick();
-        MidiMessage msg = event.getMessage();
-        MidiMessageWrapper wrap = new MidiMessageWrapper(msg);
+        var event = t.get(0);
+        var lastTick = event.getTick();
+        var msg = event.getMessage();
+        var wrap = new MidiMessageWrapper(msg);
         times.add(lastTick);
 
         
@@ -45,11 +45,11 @@ public class MarkovMIDI extends MarkovSampler<MarkovMIDI.MidiMessageWrapper> {
 //        int adds = 0;
 
         List<MidiMessageWrapper> msgs = new FasterList<>();
-        for (int i = 1; i < trackSize; i++) {
+        for (var i = 1; i < trackSize; i++) {
             event = t.get(i);
             msg = event.getMessage();
             wrap = new MidiMessageWrapper(msg);
-            long eTick = event.getTick();
+            var eTick = event.getTick();
             times.add(eTick - lastTick);
             lastTick = eTick;
             msgs.add(wrap);
@@ -74,21 +74,21 @@ public class MarkovMIDI extends MarkovSampler<MarkovMIDI.MidiMessageWrapper> {
     public void exportTrack(File file, float divisionType, int resolution, int fileType, int maxLength)
             throws InvalidMidiDataException, IOException {
 
-        Sequence s = new Sequence(divisionType, resolution, 1);
-        Track t = s.createTrack();
+        var s = new Sequence(divisionType, resolution, 1);
+        var t = s.createTrack();
         reset();
 
-        MarkovSampler<Long> mLengthSampler = mLengthChain.sample();
+        var mLengthSampler = mLengthChain.sample();
 
         System.out.println("Max length: " + maxLength);
         MidiMessageWrapper wrpmsg;
-        int ticks = 0;
+        var ticks = 0;
         while ((wrpmsg = next(maxLength)) != null) {
-            MidiMessage msg = wrpmsg.getMessage();
+            var msg = wrpmsg.getMessage();
 
             long dt = mLengthSampler.nextLoop();
             ticks += dt;
-            MidiEvent event = new MidiEvent(msg, ticks);
+            var event = new MidiEvent(msg, ticks);
 
             if (t.add(event) == false) {
             }
@@ -98,7 +98,7 @@ public class MarkovMIDI extends MarkovSampler<MarkovMIDI.MidiMessageWrapper> {
     }
 
     public void exportTrack(String s, File inputFile, int maxLen) throws InvalidMidiDataException, IOException {
-        MidiFileFormat fmt = MidiSystem.getMidiFileFormat(inputFile);
+        var fmt = MidiSystem.getMidiFileFormat(inputFile);
         exportTrack(s, fmt.getDivisionType(), fmt.getResolution(), fmt.getType(), maxLen);
     }
 
@@ -115,17 +115,17 @@ public class MarkovMIDI extends MarkovSampler<MarkovMIDI.MidiMessageWrapper> {
 
         public int hashCode() {
             if (mMessage == null || mMessage.getLength() == 0) return 0;
-            String str = toString();
+            var str = toString();
             return str.hashCode();
         }
 
         @Override
         public int compareTo(MidiMessageWrapper other) {
-            byte[] mymsg = mMessage.getMessage();
-            byte[] theirmsg = mMessage.getMessage();
+            var mymsg = mMessage.getMessage();
+            var theirmsg = mMessage.getMessage();
 
 
-            for (int i = 0; i < mymsg.length && i < theirmsg.length; i++) {
+            for (var i = 0; i < mymsg.length && i < theirmsg.length; i++) {
                 if (mymsg[i] > theirmsg[i]) {
                     return 1;
                 } else if (theirmsg[i] > mymsg[i]) return -1;
@@ -136,9 +136,9 @@ public class MarkovMIDI extends MarkovSampler<MarkovMIDI.MidiMessageWrapper> {
 
         public boolean equals(Object o) {
             try {
-                MidiMessageWrapper other = (MidiMessageWrapper) o;
-                byte[] mine = mMessage.getMessage();
-                byte[] theirs = other.getMessage().getMessage();
+                var other = (MidiMessageWrapper) o;
+                var mine = mMessage.getMessage();
+                var theirs = other.getMessage().getMessage();
 
                 if (mine.length != theirs.length) return false;
 
@@ -149,8 +149,8 @@ public class MarkovMIDI extends MarkovSampler<MarkovMIDI.MidiMessageWrapper> {
         }
 
         public String toString() {
-            String out = "";
-            for (int i = 0; i < mMessage.getLength(); i++) {
+            var out = "";
+            for (var i = 0; i < mMessage.getLength(); i++) {
                 out += String.format("%x", mMessage.getMessage()[i]);
                 if (i < mMessage.getLength() - 1) out += " ";
             }

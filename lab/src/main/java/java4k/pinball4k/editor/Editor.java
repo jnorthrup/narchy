@@ -25,19 +25,19 @@ public class Editor extends JFrame {
 		super("Pinball Editor");
 		setSize(1400, 800);
 		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-		
-		LevelPanel levelPnl = new LevelPanel(this);
-		
-		JScrollPane levelScroll = new JScrollPane(levelPnl);
+
+		var levelPnl = new LevelPanel(this);
+
+		var levelScroll = new JScrollPane(levelPnl);
 		levelScroll.setMinimumSize(new Dimension(200, 100));
 
-		GroupUI groupsPnl = new GroupUI(levelPnl.level.groups, levelPnl);
+		var groupsPnl = new GroupUI(levelPnl.level.groups, levelPnl);
 		levelPnl.groupUI = groupsPnl;
-		
-		JSplitPane propsSplit = new JSplitPane(JSplitPane.VERTICAL_SPLIT, propsPnl, groupsPnl);
+
+		var propsSplit = new JSplitPane(JSplitPane.VERTICAL_SPLIT, propsPnl, groupsPnl);
 		propsSplit.setDividerLocation(200);
-		
-		JSplitPane levelSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, levelScroll, propsSplit);
+
+		var levelSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, levelScroll, propsSplit);
 		levelSplit.setDividerLocation(1100);
 
 		
@@ -71,18 +71,18 @@ public class Editor extends JFrame {
 		propsPnl.load(props);
 		*/
 
-		
-		ArrayList<LevelObject> uniqueObjs = new ArrayList<>();
-		String selectionStr = "";
-		for (Handle handle : selection) {
-			LevelObject obj = handle.getLevelObject();
+
+		var uniqueObjs = new ArrayList<LevelObject>();
+		var selectionStr = "";
+		for (var handle : selection) {
+			var obj = handle.getLevelObject();
 			if (obj != null && !uniqueObjs.contains(obj)) {
 				uniqueObjs.add(obj);
 				selectionStr += "" + obj + " ";
 			}
 		}
 		selectionStr = "".equals(selectionStr.trim()) ? "Nothing selected" : selectionStr;
-		JLabel lbl = (JLabel) statusBar.getComponent(0);
+		var lbl = (JLabel) statusBar.getComponent(0);
 		lbl.setText(selectionStr);
 		
 

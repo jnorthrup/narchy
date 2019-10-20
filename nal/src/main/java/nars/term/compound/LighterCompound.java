@@ -38,9 +38,9 @@ public class LighterCompound extends TermList implements AbstractLightCompound {
     public boolean equals(Object obj) {
         if (this == obj) return true;
         if (obj instanceof Compound) {
-            Compound c = (Compound)obj;
+            var c = (Compound)obj;
             if (c.opID() == opID() && c.dt()==dt()) {
-                int s = c.subs();
+                var s = c.subs();
                 if (subs()==s) {
                     return IntStream.range(0, s).allMatch(i -> sub(i).equals(c.sub(i)));
                 }

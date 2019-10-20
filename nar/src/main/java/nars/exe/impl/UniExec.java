@@ -55,28 +55,28 @@ public class UniExec extends Exec {
 
         schedule(this::executeNow);
 
-        NAR n = this.nar;
-        DeriverExecutor e = this.exe;
+        var n = this.nar;
+        var e = this.exe;
         if (e == null)
             return;
 
         /*
         simplest possible implementation: flat 1 work unit per each what
         */
-        long timesliceNS = timeSliceNS();
-        boolean sync = timesliceNS == Long.MIN_VALUE;
+        var timesliceNS = timeSliceNS();
+        var sync = timesliceNS == Long.MIN_VALUE;
         BooleanSupplier kontinue;
         if (sync) {
             kontinue = null;
         } else {
-            long deadline = nanoTime() + timeSliceNS();
+            var deadline = nanoTime() + timeSliceNS();
             kontinue = () -> nanoTime() < deadline;
         }
 
 
 
 
-        for (What w : n.what) {
+        for (var w : n.what) {
             if (w.isOn()) {
                 if (sync)
                     exe.next(w, loops);

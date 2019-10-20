@@ -47,7 +47,7 @@ public class ConcurrentSkiplistTaskSeries<T extends SeriesBeliefTable.SeriesTask
     }
     @Override
     public long start() {
-        Map.Entry<Long, T> e = q.firstEntry();
+        var e = q.firstEntry();
         if (e == null)
             return TIMELESS;
         return e.getValue().start();
@@ -55,7 +55,7 @@ public class ConcurrentSkiplistTaskSeries<T extends SeriesBeliefTable.SeriesTask
 
     @Override
     public long end() {
-        Map.Entry<Long, T> e = q.lastEntry();
+        var e = q.lastEntry();
         if (e == null)
             return TIMELESS;
         return e.getValue().end();
@@ -73,7 +73,7 @@ public class ConcurrentSkiplistTaskSeries<T extends SeriesBeliefTable.SeriesTask
 
     @Override
     public void forEach(Consumer<? super T> action) {
-        for (T t : q.values()) {
+        for (var t : q.values()) {
             action.accept(t);
         }
     }
@@ -89,22 +89,22 @@ public class ConcurrentSkiplistTaskSeries<T extends SeriesBeliefTable.SeriesTask
         assert(minT!=ETERNAL);
 
 
-        Long low = q.floorKey(minT);
+        var low = q.floorKey(minT);
         if (low == null)
             low = minT;
 
         if (!exactRange) {
-            Long lower = q.lowerKey(low);
+            var lower = q.lowerKey(low);
             if (lower != null)
                 low = lower;
         }
 
-        Long high = q.ceilingKey(maxT);
+        var high = q.ceilingKey(maxT);
         if (high == null)
             high = maxT;
 
         if (!exactRange) {
-            Long higher = q.higherKey(high);
+            var higher = q.higherKey(high);
             if (higher != null)
                 high = higher;
         }
@@ -114,14 +114,14 @@ public class ConcurrentSkiplistTaskSeries<T extends SeriesBeliefTable.SeriesTask
         if (low != high) {
             ii = q.subMap(low, true, high, true).values().iterator();
         } else {
-            T the = q.get(low);
+            var the = q.get(low);
             if (the == null)
                 return true; //nothing
             ii = Iterators.singletonIterator(the);
         }
 
         while (ii.hasNext()) {
-            T xx = ii.next();
+            var xx = ii.next();
             if (exactRange && !xx.intersectsRaw(minT, maxT))
                 continue;
             if (!x.test(xx))
@@ -143,12 +143,12 @@ public class ConcurrentSkiplistTaskSeries<T extends SeriesBeliefTable.SeriesTask
 
     @Override
     public @Nullable T last() {
-        Map.Entry<Long, T> x = q.lastEntry();
+        var x = q.lastEntry();
         return x!=null ? x.getValue() : null;
     }
     @Override
     public @Nullable T first() {
-        Map.Entry<Long, T> x = q.firstEntry();
+        var x = q.firstEntry();
         return x!=null ? x.getValue() : null;
     }
 

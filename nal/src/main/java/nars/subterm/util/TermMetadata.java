@@ -46,7 +46,7 @@ public abstract class TermMetadata implements Termlike {
         if (s.varPattern > Byte.MAX_VALUE || s.varQuery > Byte.MAX_VALUE || s.varDep > Byte.MAX_VALUE || s.varIndep > Byte.MAX_VALUE)
             throw new TermException("variable overflow");
 
-        int varTot =
+        var varTot =
                 (this.varPattern = (byte) s.varPattern) +
                 (this.varQuery = (byte) s.varQuery) +
                 (this.varDep = (byte) s.varDep) +
@@ -67,21 +67,21 @@ public abstract class TermMetadata implements Termlike {
         if (Image.imageNormalizable(x))
             return false;
 
-        int vars = x.vars();
+        var vars = x.vars();
         if (vars==0)
             return true;
 
         //depth first traversal, determine if variables encountered are monotonically increasing
 
-        ByteArrayList types = new ByteArrayList(vars);
+        var types = new ByteArrayList(vars);
         return x.recurseTermsOrdered(Term::hasVars, v -> {
             if (!(v instanceof Variable))
                 return true;
 
             if (v instanceof NormalizedVariable) {
-                NormalizedVariable nv = (NormalizedVariable) v;
-                byte varID = nv.id();
-                int nTypes = types.size();
+                var nv = (NormalizedVariable) v;
+                var varID = nv.id();
+                var nTypes = types.size();
                 if (varID <= nTypes) {
                     return types.getByte(varID-1) == nv.anonType();
                 } else if (varID == 1 + nTypes) {
@@ -103,19 +103,19 @@ public abstract class TermMetadata implements Termlike {
          which will indicate that the subterms is normalized
          */
 
-        int minID = 0;
-        int typeToMatch = -1;
-        for (short x: subterms) {
-            boolean neg = x < 0;
+        var minID = 0;
+        var typeToMatch = -1;
+        for (var x: subterms) {
+            var neg = x < 0;
             if (neg) {
                 x = (short) -x;
             }
-            int varID = Intrin.isVariable(x, -1);
+            var varID = Intrin.isVariable(x, -1);
             if (varID == -1) {
                 /*..*/
             } else if (varID == minID) {
                 //same order, ok
-                int type = Intrin.group(x);
+                var type = Intrin.group(x);
                 if (typeToMatch == -1)
                     typeToMatch = type;
                 else if (typeToMatch!=type)

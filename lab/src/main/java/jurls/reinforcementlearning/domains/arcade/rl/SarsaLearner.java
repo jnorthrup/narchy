@@ -73,7 +73,7 @@ public class SarsaLearner {
      */
     public void setAlpha(double alpha) {
         this.alpha = alpha;
-        for (int a = 0; a < numActions; a++)
+        for (var a = 0; a < numActions; a++)
             valueFunction[a].setAlpha(alpha);
     }
 
@@ -146,8 +146,8 @@ public class SarsaLearner {
      */
     public void learn(double[] lastFeatures, int lastAction,
             double reward, double[] features, int action) {
-        
-        double oldValue = valueFunction[lastAction].predict(lastFeatures);
+
+        var oldValue = valueFunction[lastAction].predict(lastFeatures);
 
         
         if (Double.isNaN(oldValue) || oldValue >= 10E7)
@@ -162,15 +162,15 @@ public class SarsaLearner {
         else
             newValue = 0;
 
-        
-        double delta = reward + gamma * newValue - oldValue;
+
+        var delta = reward + gamma * newValue - oldValue;
 
         
         updateTraces(lastFeatures, lastAction);
 
         
-        for (int a = 0; a < numActions; a++) {
-            LinearModel model = valueFunction[a];
+        for (var a = 0; a < numActions; a++) {
+            var model = valueFunction[a];
             
             model.updateWeightsDelta(traces[a], delta);
         }
@@ -188,12 +188,12 @@ public class SarsaLearner {
             traces = new double[numActions][];
             traces[lastAction] = features.clone();
 
-            for (int a = 0; a < numActions; a++)
+            for (var a = 0; a < numActions; a++)
                 if (a != lastAction)
                     traces[a] = new double[features.length];
         }
         else {
-            for (int a = 0; a < numActions; a++) {
+            for (var a = 0; a < numActions; a++) {
                 
                 
                 if (a != lastAction)
@@ -210,7 +210,7 @@ public class SarsaLearner {
      * @param factor
      */
     protected static void decayTraces(double[] traces, double factor) {
-        for (int f = 0; f < traces.length; f++)
+        for (var f = 0; f < traces.length; f++)
             traces[f] *= factor;
     }
 
@@ -221,7 +221,7 @@ public class SarsaLearner {
      * @param state
      */
     protected static void replaceTraces(double[] traces, double factor, double[] state) {
-        for (int f = 0; f < traces.length; f++) {
+        for (var f = 0; f < traces.length; f++) {
             
             if (state[f] == 0)
                 traces[f] *= factor;
@@ -236,21 +236,21 @@ public class SarsaLearner {
      * @return
      */
     public int selectAction(double[] pState) {
-        double[] values = new double[numActions];
+        var values = new double[numActions];
 
 
         if (Math.random() < epsilon) {
-            int r = (int)(Math.random() * numActions);
+            var r = (int)(Math.random() * numActions);
             return r;
         }
 
 
-        ArrayList<Integer> ties = new ArrayList<>();
-        int bestAction = -1;
-        double worstValue = Double.POSITIVE_INFINITY;
-        double bestValue = Double.NEGATIVE_INFINITY;
-        for (int a = 0; a < numActions; a++) {
-            double v = valueFunction[a].predict(pState);
+        var ties = new ArrayList<Integer>();
+        var bestAction = -1;
+        var worstValue = Double.POSITIVE_INFINITY;
+        var bestValue = Double.NEGATIVE_INFINITY;
+        for (var a = 0; a < numActions; a++) {
+            var v = valueFunction[a].predict(pState);
 
             values[a] = v;
             if (v > bestValue) {
@@ -269,7 +269,7 @@ public class SarsaLearner {
 
         
         if (ties.size() > 1) {
-            int r = (int)(Math.random() * ties.size());
+            var r = (int)(Math.random() * ties.size());
             bestAction = ties.get(r);
         }
 
@@ -284,7 +284,7 @@ public class SarsaLearner {
     protected final void createModels(int numActions, int numFeatures) {
         valueFunction = new LinearModel[numActions];
 
-        for (int a = 0; a < numActions; a++) {
+        for (var a = 0; a < numActions; a++) {
             valueFunction[a] = new LinearModel(numFeatures, true);
             valueFunction[a].setAlpha(alpha);
         }

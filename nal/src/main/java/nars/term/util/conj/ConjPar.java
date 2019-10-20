@@ -41,7 +41,7 @@ public enum ConjPar {
             if (a.equals(b)) return a;
         }
 
-        Term xt = xternalDistribute(dt, t, B);
+        var xt = xternalDistribute(dt, t, B);
         if (xt!=null)
             return xt;
 
@@ -49,7 +49,7 @@ public enum ConjPar {
 //        if (h!=null)
 //            return h;
 
-        Term d = disjunctiveFactor(t, dt, B);
+        var d = disjunctiveFactor(t, dt, B);
         if (d!=null)
             return d;
 
@@ -63,12 +63,11 @@ public enum ConjPar {
         }
 
 
-
-        ConjTree ct = new ConjTree();
-        long sdt = dt==DTERNAL ? ETERNAL : 0;
-        int remain = t.length;
-        for (int i = t.length - 1; i >= 0; i--) {
-            Term x = t[i];
+        var ct = new ConjTree();
+        var sdt = dt==DTERNAL ? ETERNAL : 0;
+        var remain = t.length;
+        for (var i = t.length - 1; i >= 0; i--) {
+            var x = t[i];
             if (x.unneg().op() != CONJ) {
                 remain--;
                 if (!ct.add(sdt, x))
@@ -76,8 +75,8 @@ public enum ConjPar {
             }
         }
         if (remain > 0 && ct.terminal==null) {
-            for (int i = t.length - 1; i >= 0; i--) {
-                Term x = t[i];
+            for (var i = t.length - 1; i >= 0; i--) {
+                var x = t[i];
                 if (x.unneg().op() == CONJ) {
                     if (!ct.add(sdt, x))
                         break;
@@ -89,11 +88,11 @@ public enum ConjPar {
     }
 
     private static @Nullable Term xternalDistribute(int dt, Term[] xx, TermBuilder B) {
-        int xternalCount = 0;
-        int lastXternal = -1;
+        var xternalCount = 0;
+        var lastXternal = -1;
         for (int i = 0, xxLength = xx.length; i < xxLength; i++) {
-            Term t = xx[i];
-            Op to = t.op();
+            var t = xx[i];
+            var to = t.op();
             if (to == CONJ && t.dt() == XTERNAL) {
                 lastXternal = i;
                 xternalCount++;
@@ -104,9 +103,9 @@ public enum ConjPar {
 
         if (xternalCount == 1) {
             //distribute to xternal components
-            Term x = xx[lastXternal];
-            Term[] y = ArrayUtil.remove(xx, lastXternal);
-            Term Y = the(B, dt, true, y);
+            var x = xx[lastXternal];
+            var y = ArrayUtil.remove(xx, lastXternal);
+            var Y = the(B, dt, true, y);
             if (Y == True) return x;
             return B.conj(XTERNAL, Util.map(xxx -> B.conj(dt, xxx, Y),
                     new Term[x.subs()],
@@ -225,11 +224,11 @@ public enum ConjPar {
 
     public static @Nullable Term disjunctiveFactor(Term[] xx, int dt, TermBuilder B) {
         @Deprecated MetalBitSet cond = null;
-        int n = xx.length;
-        for (int i = 0; i < n; i++) {
-            Term x = xx[i];
+        var n = xx.length;
+        for (var i = 0; i < n; i++) {
+            var x = xx[i];
             if (x instanceof Neg) {
-                Term xu = x.unneg();
+                var xu = x.unneg();
                 if (!(xu instanceof Sequence) && xu.op() == CONJ && xu.dt()==DTERNAL) {
                     if (cond == null) cond = MetalBitSet.bits(n);
                     cond.set(i);
@@ -239,23 +238,23 @@ public enum ConjPar {
         if (cond == null)
             return null;
 
-        int d = cond.cardinality();
+        var d = cond.cardinality();
         if (d == n) {
         //if (d > 1) {
             ObjectByteHashMap<Term> i = new ObjectByteHashMap(d);
-            int j = -1;
-            boolean anyFull = false;
-            for (int k = 0; k < d; k++) {
+            var j = -1;
+            var anyFull = false;
+            for (var k = 0; k < d; k++) {
                 j = cond.next(true, j+1, n);
-                Term dc = xx[j];
-                for (Term ct : dc.unneg().subterms()) {
-                    Term ctn = ct.neg();
+                var dc = xx[j];
+                for (var ct : dc.unneg().subterms()) {
+                    var ctn = ct.neg();
                     if (i.containsKey(ctn)) {
                         //disqualify both permanently since factoring them would cancel each other out
                         i.put(ct, Byte.MIN_VALUE);
                         i.put(ctn, Byte.MIN_VALUE);
                     } else {
-                        byte z = i.updateValue(ct, (byte) 0, (v) -> (v >= 0) ? (byte) (v + 1) : v);
+                        var z = i.updateValue(ct, (byte) 0, (v) -> (v >= 0) ? (byte) (v + 1) : v);
                         anyFull |= (z == d);
                     }
                 }
@@ -264,8 +263,8 @@ public enum ConjPar {
             if (anyFull) {
                 i.values().removeIf(b -> b < d);
                 if (!i.isEmpty()) {
-                    Set<Term> common = i.keySet();
-                    Term factor = B.conj(common.toArray(Op.EmptyTermArray));
+                    var common = i.keySet();
+                    var factor = B.conj(common.toArray(Op.EmptyTermArray));
 
                     if (factor instanceof Bool)
                         return factor;
@@ -275,10 +274,10 @@ public enum ConjPar {
 
                     Predicate<Term> commonDoesntContain = s -> !common.contains(s);
 
-                    for (int k = 0; k < d; k++) {
+                    for (var k = 0; k < d; k++) {
                         j = cond.next(true, j + 1, n);
 
-                        Term[] xxj = xx[j].unneg().subterms().subsIncluding(commonDoesntContain);
+                        var xxj = xx[j].unneg().subterms().subsIncluding(commonDoesntContain);
                         if (xxj.length == 0)
                             return null; //eliminated TODO detect sooner
                         xx[j] = (xxj.length == 1 ? xxj[0] :

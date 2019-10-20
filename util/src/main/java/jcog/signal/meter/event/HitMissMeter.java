@@ -34,8 +34,8 @@ public class HitMissMeter extends FunctionMeter<Double> {
         return miss.longValue();
     }
     public float ratio() {
-        long h = hits();
-        long sum = h + misses();
+        var h = hits();
+        var sum = h + misses();
         if (sum == 0) return Float.NaN;
         return h/((float)sum);
     }
@@ -66,7 +66,7 @@ public class HitMissMeter extends FunctionMeter<Double> {
     
     @Override
     public Double getValue(Object key, int index) {
-        float r = ratio();
+        var r = ratio();
         if (autoReset) {
             reset();
         }

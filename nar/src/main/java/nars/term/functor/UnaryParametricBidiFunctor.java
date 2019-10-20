@@ -23,7 +23,7 @@ public abstract class UnaryParametricBidiFunctor extends Functor {
 
     @Override
     public final @Nullable Term apply(Evaluation e, Subterms terms) {
-        int s = terms.subs();
+        var s = terms.subs();
         switch (s) {
             case 2:
                 return apply1(terms.sub(0), terms.sub(1));
@@ -46,13 +46,13 @@ public abstract class UnaryParametricBidiFunctor extends Functor {
     }
 
     Term apply2(Evaluation e, Term x, Term param, Term y) {
-        boolean xVar = x instanceof Variable;
+        var xVar = x instanceof Variable;
         if (y instanceof Variable) {
 
             if (xVar) {
                 return null;
             } else {
-                Term XY = compute(x, param);
+                var XY = compute(x, param);
                 if (XY!=null) {
                     return e.is(y, XY) ? null : Bool.Null;
                 } else {
@@ -61,7 +61,7 @@ public abstract class UnaryParametricBidiFunctor extends Functor {
             }
         } else {
             if (x.hasAny(Op.Variable)) {
-                Term X = uncompute(e, x, param, y);
+                var X = uncompute(e, x, param, y);
                 if (X!=null) {
                     return e.is(x, X) ? null : Bool.Null;
                 } else {
@@ -69,7 +69,7 @@ public abstract class UnaryParametricBidiFunctor extends Functor {
                 }
             } else {
 
-                Term XY = compute(x, param);
+                var XY = compute(x, param);
                 if (XY != null) {
                     return XY.equals(y) ? True  : Bool.Null;
                 } else {

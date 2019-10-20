@@ -122,11 +122,11 @@ public class JCTermSwing extends JPanel implements KeyListener, /*Runnable,*/
 
     void setFont(String fname) {
         font = Font.decode(fname);
-        BufferedImage img = new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB);
-        Graphics2D graphics = (Graphics2D) (img.getGraphics());
+        var img = new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB);
+        var graphics = (Graphics2D) (img.getGraphics());
         graphics.setFont(font);
         {
-            FontMetrics fo = graphics.getFontMetrics();
+            var fo = graphics.getFontMetrics();
             descent = fo.getDescent();
       /*
       System.out.println(fo.getDescent());
@@ -148,7 +148,7 @@ public class JCTermSwing extends JPanel implements KeyListener, /*Runnable,*/
         background = new BufferedImage(char_width, char_height,
                 BufferedImage.TYPE_INT_RGB);
         {
-            Graphics2D foog = (Graphics2D) (background.getGraphics());
+            var foog = (Graphics2D) (background.getGraphics());
             foog.setColor(getBackGround());
             foog.fillRect(0, 0, char_width, char_height);
             foog.dispose();
@@ -158,12 +158,12 @@ public class JCTermSwing extends JPanel implements KeyListener, /*Runnable,*/
     public void setSize(int w, int h) {
 
         super.setSize(w, h);
-        BufferedImage imgOrg = img;
+        var imgOrg = img;
         if (graphics != null)
             graphics.dispose();
 
-        int column = w / getCharWidth();
-        int row = h / getCharHeight();
+        var column = w / getCharWidth();
+        var row = h / getCharHeight();
         term_width = column;
         term_height = row;
 
@@ -179,7 +179,7 @@ public class JCTermSwing extends JPanel implements KeyListener, /*Runnable,*/
         redraw(0, 0, w, h);
 
         if (imgOrg != null) {
-            Shape clip = graphics.getClip();
+            var clip = graphics.getClip();
             graphics.setClip(0, 0, getTermWidth(), getTermHeight());
             graphics.drawImage(imgOrg, 0, 0, term_area);
             graphics.setClip(clip);
@@ -201,7 +201,7 @@ public class JCTermSwing extends JPanel implements KeyListener, /*Runnable,*/
 
     public void start(Connection connection) {
         this.connection = connection;
-        InputStream in = connection.getInputStream();
+        var in = connection.getInputStream();
         out = connection.getOutputStream();
         emulator = new EmulatorVT100(this, in);
         emulator.reset();
@@ -220,8 +220,8 @@ public class JCTermSwing extends JPanel implements KeyListener, /*Runnable,*/
 
 
     public void processKeyEvent(KeyEvent e) {
-        
-        int id = e.getID();
+
+        var id = e.getID();
         switch (id) {
             case KeyEvent.KEY_PRESSED:
                 keyPressed(e);
@@ -237,7 +237,7 @@ public class JCTermSwing extends JPanel implements KeyListener, /*Runnable,*/
     }
 
     public void keyPressed(KeyEvent e) {
-        int keycode = e.getKeyCode();
+        var keycode = e.getKeyCode();
         byte[] code = null;
         switch (keycode) {
             case KeyEvent.VK_CONTROL:
@@ -303,7 +303,7 @@ public class JCTermSwing extends JPanel implements KeyListener, /*Runnable,*/
             return;
         }
 
-        char keychar = e.getKeyChar();
+        var keychar = e.getKeyChar();
         if ((keychar & 0xff00) == 0) {
             try {
                 out.write(e.getKeyChar());
@@ -314,12 +314,12 @@ public class JCTermSwing extends JPanel implements KeyListener, /*Runnable,*/
     }
 
     public void keyTyped(KeyEvent e) {
-        char keychar = e.getKeyChar();
+        var keychar = e.getKeyChar();
         if ((keychar & 0xff00) != 0) {
-            char[] foo = new char[1];
+            var foo = new char[1];
             foo[0] = keychar;
             try {
-                byte[] goo = new String(foo).getBytes("EUC-JP");
+                var goo = new String(foo).getBytes("EUC-JP");
                 out.write(goo, 0, goo.length);
                 out.flush();
             } catch (Exception eee) {
@@ -438,7 +438,7 @@ public class JCTermSwing extends JPanel implements KeyListener, /*Runnable,*/
         if (graphics == null)
             return;
         antialiasing = foo;
-        Object mode = foo ? RenderingHints.VALUE_TEXT_ANTIALIAS_ON
+        var mode = foo ? RenderingHints.VALUE_TEXT_ANTIALIAS_ON
                 : RenderingHints.VALUE_TEXT_ANTIALIAS_OFF;
         Map<Object, Object> hints = new RenderingHints(
                 RenderingHints.KEY_TEXT_ANTIALIASING, mode);
@@ -477,7 +477,7 @@ public class JCTermSwing extends JPanel implements KeyListener, /*Runnable,*/
 
     public void setBackGround(Object b) {
         bground = toColor(b);
-        Graphics2D foog = (Graphics2D) (background.getGraphics());
+        var foog = (Graphics2D) (background.getGraphics());
         foog.setColor(getBackGround());
         foog.fillRect(0, 0, char_width, char_height);
         foog.dispose();

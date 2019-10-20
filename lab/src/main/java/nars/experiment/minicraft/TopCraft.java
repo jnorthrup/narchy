@@ -30,10 +30,10 @@ public class TopCraft extends GameX {
         TopDownMinicraft.start(craft);
         //craft.changeLevel(1);
 
-        PixelBag p = new PixelBag(new MonoBufImgBitmap2D(() -> craft.image), 64, 64).addActions(id, this);
-        int nx = 8;
+        var p = new PixelBag(new MonoBufImgBitmap2D(() -> craft.image), 64, 64).addActions(id, this);
+        var nx = 8;
         //return new float[]{p.X, p.Y, p.Z};
-        AutoclassifiedBitmap camAE = new AutoclassifiedBitmap("cae", p.pixels, nx, nx, (subX, subY) -> {
+        var camAE = new AutoclassifiedBitmap("cae", p.pixels, nx, nx, (subX, subY) -> {
             return new float[1]; //return new float[]{p.X, p.Y, p.Z};
         }, 8, this);
         camAE.alpha.set(0.04f);
@@ -46,14 +46,14 @@ public class TopCraft extends GameX {
         sense($.func("stamina", id), () -> (craft.player.stamina) / ((float) craft.player.maxStamina));
         sense($.func("health", id), () -> (craft.player.health) / ((float) craft.player.maxHealth));
 
-        int tileMax = 13;
+        var tileMax = 13;
         senseSwitch("tile:here", () -> craft.player.tile().id, 0, tileMax);
         senseSwitch("tile:up", () -> craft.player.tile(0, 1).id, 0, tileMax);
         senseSwitch("tile:down", () -> craft.player.tile(0, -1).id, 0, tileMax);
         senseSwitch("tile:right", () -> craft.player.tile(1, 0).id, 0, tileMax);
         senseSwitch("tile:left", () -> craft.player.tile(-1, 0).id, 0, tileMax);
 
-        InputHandler input = craft.input;
+        var input = craft.input;
         actionPushButton($.func("fire", id), input.attack::pressed/*, 16*/);
         actionPushButtonMutex($.func("l", id), $.func("r", id),
                 input.left::pressed, input.right::pressed);
@@ -69,7 +69,7 @@ public class TopCraft extends GameX {
 
         rewardNormalized("score", -1, +1, () -> {
             float nextScore = craft.frameImmediate();
-            float ds = nextScore - prevScore;
+            var ds = nextScore - prevScore;
             if (ds == 0)
                 return Float.NaN;
             this.prevScore = nextScore;
@@ -78,7 +78,7 @@ public class TopCraft extends GameX {
         });
         rewardNormalized("health", -1, +1, ()-> {
             float nextHealth = craft.player.health;
-            float dh = nextHealth - prevHealth;
+            var dh = nextHealth - prevHealth;
             if (dh == 0)
                 return Float.NaN;
             this.prevHealth = nextHealth;
@@ -91,7 +91,7 @@ public class TopCraft extends GameX {
     public static void main(String[] args) {
         Companion.initFn(20, n -> {
             try {
-                TopCraft tc = new TopCraft(n);
+                var tc = new TopCraft(n);
 
 
                 return tc;

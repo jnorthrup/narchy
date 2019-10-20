@@ -97,7 +97,7 @@ public class Trie<S, T> implements Map<S, T> {
      * @return The reference to a new Trie.
      */
     public Trie<S, T> newEmptyClone() {
-        Trie<S, T> t = new Trie<>(sequencer, root.value);
+        var t = new Trie<S, T>(sequencer, root.value);
         return t;
     }
 
@@ -111,14 +111,14 @@ public class Trie<S, T> implements Map<S, T> {
      */
     @Override
     public T put(S query, T value) {
-        int queryLength = sequencer.lengthOf(query);
+        var queryLength = sequencer.lengthOf(query);
 
         if (value == null || queryLength == 0)
             return null;
 
 
-        int queryOffset = 0;
-        TrieNode<S, T> node = root.children.get(sequencer.hashOf(query, 0));
+        var queryOffset = 0;
+        var node = root.children.get(sequencer.hashOf(query, 0));
 
         
         if (node == null) {
@@ -127,10 +127,10 @@ public class Trie<S, T> implements Map<S, T> {
         }
 
         do {
-            S nodeSequence = node.sequence;
-            int nodeLength = node.end - node.start;
-            int max = Math.min(nodeLength, queryLength - queryOffset);
-            int matches = sequencer.matches(nodeSequence, node.start, query, queryOffset, max);
+            var nodeSequence = node.sequence;
+            var nodeLength = node.end - node.start;
+            var max = Math.min(nodeLength, queryLength - queryOffset);
+            var matches = sequencer.matches(nodeSequence, node.start, query, queryOffset, max);
 
             queryOffset += matches;
 
@@ -161,8 +161,8 @@ public class Trie<S, T> implements Map<S, T> {
                 return putReturnNull(node, value, query, queryOffset, queryLength);
             }
 
-            
-            TrieNode<S, T> next = node.children.get(sequencer.hashOf(query, queryOffset));
+
+            var next = node.children.get(sequencer.hashOf(query, queryOffset));
 
             if (next == null) {
                 return putReturnNull(node, value, query, queryOffset, queryLength);
@@ -202,7 +202,7 @@ public class Trie<S, T> implements Map<S, T> {
      * null.
      */
     public T get(S sequence, TrieMatch match) {
-        TrieNode<S, T> n = search(root, sequence, match);
+        var n = search(root, sequence, match);
 
         return (n != null ? n.value : root.value);
     }
@@ -283,13 +283,13 @@ public class Trie<S, T> implements Map<S, T> {
      * @return The value of the removed node or null if it wasn't found.
      */
     protected T removeAfter(TrieNode<S, T> root, S sequence) {
-        TrieNode<S, T> n = search(root, sequence, TrieMatch.EXACT);
+        var n = search(root, sequence, TrieMatch.EXACT);
 
         if (n == null) {
             return null;
         }
 
-        T value = n.value;
+        var value = n.value;
 
         n.remove(sequencer);
 
@@ -336,7 +336,7 @@ public class Trie<S, T> implements Map<S, T> {
     public boolean containsValue(Object value) {
         Iterable<T> values = new ValueIterator(root);
 
-        for (T v : values) {
+        for (var v : values) {
             if (v == value || (v != null && value != null && v.equals(values))) {
                 return true;
             }
@@ -374,7 +374,7 @@ public class Trie<S, T> implements Map<S, T> {
      * @return The reference to a Set of Entries that matched.
      */
     public Set<Entry<S, T>> entrySet(S sequence, TrieMatch match) {
-        TrieNode<S, T> node = search(root, sequence, match);
+        var node = search(root, sequence, match);
 
         return (node == null ? (Set<Entry<S, T>>) EMPTY_CONTAINER : new EntrySet(node));
     }
@@ -417,7 +417,7 @@ public class Trie<S, T> implements Map<S, T> {
      * @see #entrySet(Object, TrieMatch)
      */
     public Set<TrieNode<S, T>> nodeSet(S sequence, TrieMatch match) {
-        TrieNode<S, T> node = search(root, sequence, match);
+        var node = search(root, sequence, match);
 
         return (node == null ? (Set<TrieNode<S, T>>) EMPTY_CONTAINER : new NodeSet(node));
     }
@@ -455,7 +455,7 @@ public class Trie<S, T> implements Map<S, T> {
      * @return The reference to a new Iterable.
      */
     public Iterable<TrieNode<S, T>> nodeSetAll(S sequence, TrieMatch match) {
-        TrieNode<S, T> node = search(root, sequence, match);
+        var node = search(root, sequence, match);
 
         return (node == null ? (Iterable<TrieNode<S, T>>) EMPTY_CONTAINER : new NodeAllIterator(root));
     }
@@ -491,7 +491,7 @@ public class Trie<S, T> implements Map<S, T> {
      * @return The reference to a Set of keys/sequences that matched.
      */
     public Set<S> keySet(S sequence, TrieMatch match) {
-        TrieNode<S, T> node = search(root, sequence, match);
+        var node = search(root, sequence, match);
 
         return (node == null ? (Set<S>) EMPTY_CONTAINER : new SequenceSet(node));
     }
@@ -506,7 +506,7 @@ public class Trie<S, T> implements Map<S, T> {
     }
 
     public Collection<T> values(S sequence, TrieMatch match) {
-        TrieNode<S, T> node = search(root, sequence, match);
+        var node = search(root, sequence, match);
 
         return (node == null ? null : new ValueCollection(node));
     }
@@ -532,18 +532,18 @@ public class Trie<S, T> implements Map<S, T> {
      * @return The node that best matched the query based on the logic.
      */
     private TrieNode<S, T> search(TrieNode<S, T> root, S query, TrieMatch match) {
-        int queryLength = sequencer.lengthOf(query);
+        var queryLength = sequencer.lengthOf(query);
 
         
         if (queryLength == 0 || match == null || queryLength < root.end) {
             return null;
         }
 
-        int queryOffset = root.end;
+        var queryOffset = root.end;
 
         
         if (root.sequence != null) {
-            int matches = sequencer.matches(root.sequence, 0, query, 0, root.end);
+            var matches = sequencer.matches(root.sequence, 0, query, 0, root.end);
 
             if (matches == queryLength) {
                 return root;
@@ -553,13 +553,13 @@ public class Trie<S, T> implements Map<S, T> {
             }
         }
 
-        TrieNode<S, T> node = root.children.get(sequencer.hashOf(query, queryOffset));
+        var node = root.children.get(sequencer.hashOf(query, queryOffset));
 
         while (node != null) {
-            S nodeSequence = node.sequence;
-            int nodeLength = node.end - node.start;
-            int max = Math.min(nodeLength, queryLength - queryOffset);
-            int matches = sequencer.matches(nodeSequence, node.start, query, queryOffset, max);
+            var nodeSequence = node.sequence;
+            var nodeLength = node.end - node.start;
+            var max = Math.min(nodeLength, queryLength - queryOffset);
+            var matches = sequencer.matches(nodeSequence, node.start, query, queryOffset, max);
 
             queryOffset += matches;
 
@@ -578,7 +578,7 @@ public class Trie<S, T> implements Map<S, T> {
                 break;
             }
 
-            TrieNode<S, T> next = node.children.get(sequencer.hashOf(query, queryOffset));
+            var next = node.children.get(sequencer.hashOf(query, queryOffset));
 
             
             if (next == null) {
@@ -667,8 +667,8 @@ public class Trie<S, T> implements Map<S, T> {
 
         @Override
         public boolean remove(Object entry) {
-            TrieNode<S, T> node = (TrieNode<S, T>) entry;
-            boolean removable = (node.getRoot() == Trie.this.root);
+            var node = (TrieNode<S, T>) entry;
+            var removable = (node.getRoot() == Trie.this.root);
 
             if (removable) {
                 node.remove(sequencer);
@@ -679,7 +679,7 @@ public class Trie<S, T> implements Map<S, T> {
 
         @Override
         public boolean contains(Object entry) {
-            TrieNode<S, T> node = (TrieNode<S, T>) entry;
+            var node = (TrieNode<S, T>) entry;
 
             return (node.getRoot() == Trie.this.root);
         }
@@ -705,8 +705,8 @@ public class Trie<S, T> implements Map<S, T> {
 
         @Override
         public boolean remove(Object entry) {
-            TrieNode<S, T> node = (TrieNode<S, T>) entry;
-            boolean removable = (node.getRoot() == Trie.this.root);
+            var node = (TrieNode<S, T>) entry;
+            var removable = (node.getRoot() == Trie.this.root);
 
             if (removable) {
                 node.remove(sequencer);
@@ -717,7 +717,7 @@ public class Trie<S, T> implements Map<S, T> {
 
         @Override
         public boolean contains(Object entry) {
-            TrieNode<S, T> node = (TrieNode<S, T>) entry;
+            var node = (TrieNode<S, T>) entry;
 
             return (node.getRoot() == Trie.this.root);
         }
@@ -846,17 +846,17 @@ public class Trie<S, T> implements Map<S, T> {
                 return null;
             }
 
-            TrieNode<S, T> node = previous;
+            var node = previous;
 
             if (node.children == null) {
                 node = node.parent;
             }
 
-            boolean foundValue = false;
+            var foundValue = false;
             while (!foundValue) {
-                PerfectHashMap<TrieNode<S, T>> children = node.children;
-                int childCapacity = children.capacity();
-                int id = indices[depth] + 1;
+                var children = node.children;
+                var childCapacity = children.capacity();
+                var id = indices[depth] + 1;
 
                 while (id < childCapacity && children.valueAt(id) == null) {
                     id++;

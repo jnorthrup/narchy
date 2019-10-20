@@ -49,27 +49,27 @@ public class WheelInfo {
 	
 	public WheelInfo(WheelInfoConstructionInfo ci) {
 		suspensionRestLength1 = ci.suspensionRestLength;
-        float maxSuspensionTravelCm = ci.maxSuspensionTravelCm;
-        float maxSuspensionForce = ci.maxSuspensionForce;
+		var maxSuspensionTravelCm = ci.maxSuspensionTravelCm;
+		var maxSuspensionForce = ci.maxSuspensionForce;
 
-        float wheelsRadius = ci.wheelRadius;
-        float suspensionStiffness = ci.suspensionStiffness;
-        float wheelsDampingCompression = ci.wheelsDampingCompression;
-        float wheelsDampingRelaxation = ci.wheelsDampingRelaxation;
-        v3 chassisConnectionPointCS = new v3();
+		var wheelsRadius = ci.wheelRadius;
+		var suspensionStiffness = ci.suspensionStiffness;
+		var wheelsDampingCompression = ci.wheelsDampingCompression;
+		var wheelsDampingRelaxation = ci.wheelsDampingRelaxation;
+		var chassisConnectionPointCS = new v3();
         chassisConnectionPointCS.set(ci.chassisConnectionCS);
-        v3 wheelDirectionCS = new v3();
+		var wheelDirectionCS = new v3();
         wheelDirectionCS.set(ci.wheelDirectionCS);
-        v3 wheelAxleCS = new v3();
+		var wheelAxleCS = new v3();
         wheelAxleCS.set(ci.wheelAxleCS);
-        float frictionSlip = ci.frictionSlip;
-        float steering = 0f;
-        float engineForce = 0f;
-        float rotation = 0f;
-        float deltaRotation = 0f;
-        float brake = 0f;
-        float rollInfluence = 0.1f;
-        boolean bIsFrontWheel = ci.bIsFrontWheel;
+		var frictionSlip = ci.frictionSlip;
+		var steering = 0f;
+		var engineForce = 0f;
+		var rotation = 0f;
+		var deltaRotation = 0f;
+		var brake = 0f;
+		var rollInfluence = 0.1f;
+		var bIsFrontWheel = ci.bIsFrontWheel;
 	}
 	
 	public float getSuspensionRestLength() {
@@ -80,18 +80,18 @@ public class WheelInfo {
         float suspensionRelativeVelocity;
         float clippedInvContactDotSuspension;
         if (raycastInfo.isInContact) {
-			float project = raycastInfo.contactNormalWS.dot(raycastInfo.wheelDirectionWS);
-			v3 chassis_velocity_at_contactPoint = new v3();
-			v3 relpos = new v3();
+			var project = raycastInfo.contactNormalWS.dot(raycastInfo.wheelDirectionWS);
+			var chassis_velocity_at_contactPoint = new v3();
+			var relpos = new v3();
 			relpos.sub(raycastInfo.contactPointWS, chassis.getCenterOfMassPosition(new v3()));
 			chassis.getVelocityInLocalPoint(relpos, chassis_velocity_at_contactPoint);
-			float projVel = raycastInfo.contactNormalWS.dot(chassis_velocity_at_contactPoint);
+			var projVel = raycastInfo.contactNormalWS.dot(chassis_velocity_at_contactPoint);
 			if (project >= -0.1f) {
 				suspensionRelativeVelocity = 0f;
 				clippedInvContactDotSuspension = 1f / 0.1f;
 			}
 			else {
-				float inv = -1f / project;
+				var inv = -1f / project;
 				suspensionRelativeVelocity = projVel * inv;
 				clippedInvContactDotSuspension = inv;
 			}

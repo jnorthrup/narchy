@@ -14,17 +14,17 @@ public class EdgeDirected3D extends ForceDirected3D {
     @Override
     public void solve(Broadphase b, List<Collidable> objects, float timeStep) {
 
-        float a = condense.floatValue();
+        var a = condense.floatValue();
 
-        for (Collidable c : objects) {
-            Spatial A = ((Spatial) c.data());
+        for (var c : objects) {
+            var A = ((Spatial) c.data());
 
 
             if (A instanceof SpaceWidget) {
                 for (EDraw<?> e : ((SpaceWidget<?>) A).edges()) {
-                    float attraction = e.attraction;
+                    var attraction = e.attraction;
                     if (attraction > 0) {
-                        SimpleSpatial B = e.tgt();
+                        var B = e.tgt();
 
                         if ((B.body != null)) {
 

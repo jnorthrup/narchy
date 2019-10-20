@@ -61,10 +61,10 @@ public class GImpactMeshShape extends GImpactShape {
 	public void setLocalScaling(v3 scaling) {
 		localScaling.set(scaling);
 
-		int i = mesh_parts.size();
+        var i = mesh_parts.size();
 		while ((i--) != 0) {
-            
-            GImpactMeshShapePart part = mesh_parts.get(i);
+
+            var part = mesh_parts.get(i);
 			part.setLocalScaling(scaling);
 		}
 
@@ -75,10 +75,10 @@ public class GImpactMeshShape extends GImpactShape {
 	public GImpactShape setMargin(float margin) {
 		collisionMargin = margin;
 
-		int i = mesh_parts.size();
+        var i = mesh_parts.size();
 		while ((i--) != 0) {
-            
-            GImpactMeshShapePart part = mesh_parts.get(i);
+
+            var part = mesh_parts.get(i);
 			part.setMargin(margin);
 		}
 
@@ -88,10 +88,10 @@ public class GImpactMeshShape extends GImpactShape {
 
 	@Override
 	public void postUpdate() {
-		int i = mesh_parts.size();
+        var i = mesh_parts.size();
 		while ((i--) != 0) {
-            
-            GImpactMeshShapePart part = mesh_parts.get(i);
+
+            var part = mesh_parts.get(i);
 			part.postUpdate();
 		}
 
@@ -103,10 +103,10 @@ public class GImpactMeshShape extends GImpactShape {
 		
 		inertia.set(0f, 0f, 0f);
 
-		int i = getMeshPartCount();
-		float partmass = mass / i;
+        var i = getMeshPartCount();
+        var partmass = mass / i;
 
-		v3 partinertia = new v3();
+        var partinertia = new v3();
 
 		while ((i--) != 0) {
 			getMeshPart(i).calculateLocalInertia(partmass, partinertia);
@@ -213,7 +213,7 @@ public class GImpactMeshShape extends GImpactShape {
 
     @Override
 	public void processAllTriangles(TriangleCallback callback, v3 aabbMin, v3 aabbMax) {
-		int i = mesh_parts.size();
+        var i = mesh_parts.size();
 		while ((i--) != 0) {
             
             mesh_parts.get(i).processAllTriangles(callback, aabbMin, aabbMax);
@@ -221,18 +221,18 @@ public class GImpactMeshShape extends GImpactShape {
 	}
 	
 	private void buildMeshParts(StridingMeshInterface meshInterface) {
-		for (int i=0; i<meshInterface.getNumSubParts(); i++) {
-			GImpactMeshShapePart newpart = new GImpactMeshShapePart(meshInterface, i);
+		for (var i = 0; i<meshInterface.getNumSubParts(); i++) {
+            var newpart = new GImpactMeshShapePart(meshInterface, i);
 			mesh_parts.add(newpart);
 		}
 	}
 
 	@Override
 	protected void calcLocalAABB() {
-		BoxCollision.AABB tmpAABB = new BoxCollision.AABB();
+        var tmpAABB = new BoxCollision.AABB();
 
 		localAABB.invalidate();
-		int i = mesh_parts.size();
+        var i = mesh_parts.size();
 		while ((i--) != 0) {
             
             mesh_parts.get(i).updateBound();
@@ -276,13 +276,13 @@ public class GImpactMeshShape extends GImpactShape {
 
         @Override
         public void lockChildShapes() {
-            TrimeshPrimitiveManager dummymanager = (TrimeshPrimitiveManager) box_set.getPrimitiveManager();
+            var dummymanager = (TrimeshPrimitiveManager) box_set.getPrimitiveManager();
             dummymanager.lock();
         }
 
         @Override
         public void unlockChildShapes() {
-            TrimeshPrimitiveManager dummymanager = (TrimeshPrimitiveManager) box_set.getPrimitiveManager();
+            var dummymanager = (TrimeshPrimitiveManager) box_set.getPrimitiveManager();
             dummymanager.unlock();
         }
 
@@ -325,10 +325,10 @@ public class GImpactMeshShape extends GImpactShape {
             
             inertia.set(0f, 0f, 0f);
 
-            int i = getVertexCount();
-            float pointmass = mass / i;
+            var i = getVertexCount();
+            var pointmass = mass / i;
 
-            v3 pointintertia = new v3();
+            var pointintertia = new v3();
 
             while ((i--) != 0) {
                 getVertex(i, pointintertia);
@@ -424,7 +424,7 @@ public class GImpactMeshShape extends GImpactShape {
         @Override
         public void processAllTriangles(TriangleCallback callback, v3 aabbMin, v3 aabbMax) {
             lockChildShapes();
-            BoxCollision.AABB box = new BoxCollision.AABB();
+            var box = new BoxCollision.AABB();
             box.min.set(aabbMin);
             box.max.set(aabbMax);
 
@@ -436,9 +436,9 @@ public class GImpactMeshShape extends GImpactShape {
                 return;
             }
 
-            int part = getPart();
-            PrimitiveTriangle triangle = new PrimitiveTriangle();
-            int i = collided.size();
+            var part = getPart();
+            var triangle = new PrimitiveTriangle();
+            var i = collided.size();
             while ((i--) != 0) {
                 getPrimitiveTriangle(collided.get(i), triangle);
                 callback.processTriangle(triangle.vertices, part, collided.get(i));

@@ -67,8 +67,8 @@ public class Enemy extends Sprite {
             return;
         }
 
-        float xMarioD = world.mario.x - x;
-        float yMarioD = world.mario.y - y;
+        var xMarioD = world.mario.x - x;
+        var yMarioD = world.mario.y - y;
         @SuppressWarnings("unused")
         float w = 16;
         if (xMarioD > -width * 2 - 4 && xMarioD < width * 2 + 4) {
@@ -109,7 +109,7 @@ public class Enemy extends Sprite {
 
             if (deadTime == 0) {
                 deadTime = 1;
-                for (int i = 0; i < 8; i++) {
+                for (var i = 0; i < 8; i++) {
                     world.addSprite(new Sparkle((int) (x + Math.random() * 16 - 8) + 4, (int) (y - Math.random() * 8) + 4, (float) (Math.random() * 2 - 1), (float) Math.random() * -1, 0, 1, 5));
                 }
                 spriteContext.removeSprite(this);
@@ -132,16 +132,16 @@ public class Enemy extends Sprite {
             facing = -1;
         }
 
-        float sideWaysSpeed = 1.75f;
+        var sideWaysSpeed = 1.75f;
         xa = facing * sideWaysSpeed;
 
-        boolean mayJump = (onGround);
+        var mayJump = (onGround);
 
         xFlipPic = facing == -1;
 
         runTime += (Math.abs(xa)) + 5;
 
-        int runFrame = ((int) (runTime / 20)) % 2;
+        var runFrame = ((int) (runTime / 20)) % 2;
 
         if (!onGround) {
             runFrame = 1;
@@ -192,7 +192,7 @@ public class Enemy extends Sprite {
             ya += 8;
         }
 
-        boolean collide = false;
+        var collide = false;
         if (ya > 0) {
             if (isBlocking(x + xa - width, y + ya, xa, 0)) collide = true;
             else if (isBlocking(x + xa + width, y + ya, xa, 0)) collide = true;
@@ -232,7 +232,7 @@ public class Enemy extends Sprite {
             }
             if (ya < 0) {
                 y = (int) ((y - height) / 16) * 16 + height;
-                int jumpTime = 0;
+                var jumpTime = 0;
                 this.ya = 0;
             }
             if (ya > 0) {
@@ -248,14 +248,14 @@ public class Enemy extends Sprite {
     }
 
     private boolean isBlocking(float _x, float _y, float xa, float ya) {
-        int x = (int) (_x / 16);
-        int y = (int) (_y / 16);
+        var x = (int) (_x / 16);
+        var y = (int) (_y / 16);
         if (x == (int) (this.x / 16) && y == (int) (this.y / 16)) return false;
 
-        boolean blocking = world.level.isBlocking(x, y, xa, ya);
+        var blocking = world.level.isBlocking(x, y, xa, ya);
 
         @SuppressWarnings("unused")
-        byte block = world.level.getBlock(x, y);
+        var block = world.level.getBlock(x, y);
 
         return blocking;
     }
@@ -264,8 +264,8 @@ public class Enemy extends Sprite {
     public boolean shellCollideCheck(Shell shell) {
         if (deadTime != 0) return false;
 
-        float xD = shell.x - x;
-        float yD = shell.y - y;
+        var xD = shell.x - x;
+        var yD = shell.y - y;
 
         if (xD > -16 && xD < 16) {
             if (yD > -height && yD < shell.height) {
@@ -289,8 +289,8 @@ public class Enemy extends Sprite {
     public boolean fireballCollideCheck(Fireball fireball) {
         if (deadTime != 0) return false;
 
-        float xD = fireball.x - x;
-        float yD = fireball.y - y;
+        var xD = fireball.x - x;
+        var yD = fireball.y - y;
 
         if (xD > -16 && xD < 16) {
             if (yD > -height && yD < fireball.height) {
@@ -332,8 +332,8 @@ public class Enemy extends Sprite {
     @Override
     public void render(Graphics og, float alpha) {
         if (winged) {
-            int xPixel = (int) (xOld + (x - xOld) * alpha) - xPicO;
-            int yPixel = (int) (yOld + (y - yOld) * alpha) - yPicO;
+            var xPixel = (int) (xOld + (x - xOld) * alpha) - xPicO;
+            var yPixel = (int) (yOld + (y - yOld) * alpha) - yPicO;
 
             if (type == Enemy.ENEMY_GREEN_KOOPA || type == Enemy.ENEMY_RED_KOOPA) {
             } else {
@@ -346,8 +346,8 @@ public class Enemy extends Sprite {
         super.render(og, alpha);
 
         if (winged) {
-            int xPixel = (int) (xOld + (x - xOld) * alpha) - xPicO;
-            int yPixel = (int) (yOld + (y - yOld) * alpha) - yPicO;
+            var xPixel = (int) (xOld + (x - xOld) * alpha) - xPicO;
+            var yPixel = (int) (yOld + (y - yOld) * alpha) - yPicO;
 
             if (type == Enemy.ENEMY_GREEN_KOOPA || type == Enemy.ENEMY_RED_KOOPA) {
                 og.drawImage(sheet[wingTime / 4 % 2][4], xPixel + (xFlipPic ? wPic : 0) + (xFlipPic ? 10 : -10), yPixel + (yFlipPic ? hPic : 0) - 10, xFlipPic ? -wPic : wPic, yFlipPic ? -hPic : hPic, null);

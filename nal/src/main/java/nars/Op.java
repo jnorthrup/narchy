@@ -324,15 +324,15 @@ public enum Op {
 
 
 	static {
-        for (Op o : Op.values()) {
-            int l = o.minLevel;
+        for (var o : Op.values()) {
+            var l = o.minLevel;
             if (l < 0) l = 0;
-            for (int i = l; i <= 8; i++)
+            for (var i = l; i <= 8; i++)
                 NALLevelEqualAndAbove[i] |= o.bit;
         }
 
         Map<String, Op> _stringToOperator = new HashMap<>(values().length * 2);
-        for (Op r : Op.values())
+        for (var r : Op.values())
             _stringToOperator.put(r.toString(), r);
 
 
@@ -447,9 +447,9 @@ public enum Op {
 
         this.var = java.util.Set.of("$", "#", "?", "%").contains(str);
 
-        boolean isImpl = "==>".equals(str);
+        var isImpl = "==>".equals(str);
         this.statement = "-->".equals(str) || isImpl || "<->".equals(str);
-        boolean isConj = "&&".equals(str);
+        var isConj = "&&".equals(str);
         this.temporal = isConj || isImpl;
 
 
@@ -460,12 +460,12 @@ public enum Op {
 
         this.atomic = var || java.util.Set.of(".", "+", "B", "/", "‡").contains(str);
 
-        boolean isBool = "B".equals(str);
-        boolean isInt = "+".equals(str);
-        boolean isImg = "/".equals(str);
+        var isBool = "B".equals(str);
+        var isInt = "+".equals(str);
+        var isImg = "/".equals(str);
         //boolean isSect = str.equals("|") || str.equals("&");
-        boolean isFrag = "`".equals(str);
-        boolean isInterval = "‡".equals(str);
+        var isFrag = "`".equals(str);
+        var isInterval = "‡".equals(str);
 
         conceptualizable = !var &&
                         !isBool &&
@@ -476,7 +476,7 @@ public enum Op {
         //!isNeg && //<- HACK technically NEG cant be conceptualized but in many cases this is assumed. so NEG must not be included in conceptualizable for it to work currently
         ;
 
-        boolean isNeg = "--".equals(str);
+        var isNeg = "--".equals(str);
         taskable = conceptualizable && !isInt && !isNeg;
 
         eventable = taskable || isNeg || var;
@@ -521,7 +521,7 @@ public enum Op {
         //HACK TEMPORARY
         if ("&".equals(s)) return CONJ;
 
-        Op x = stringToOperator.get(s);
+        var x = stringToOperator.get(s);
         return x != null ? x : s;
     }
 
@@ -532,12 +532,12 @@ public enum Op {
      * TODO make an inverse decoder
      */
     public static Term strucTerm(int struct) {
-        int bits = Integer.bitCount(struct);
+        var bits = Integer.bitCount(struct);
         switch (bits) {
             case 0:
                 throw new UnsupportedOperationException("no bits");
             case 1: {
-                Op op = Op.the(MathUtil.log(Integer.highestOneBit(struct), 2));
+                var op = Op.the(MathUtil.log(Integer.highestOneBit(struct), 2));
                 return op.strAtom;
             }
             default: {
@@ -569,7 +569,7 @@ public enum Op {
             case 1:
                 return x[0];
             default:
-                Term[] xx = x.clone();
+                var xx = x.clone();
                 $.neg(xx);
                 return CONJ.the(b, dt, xx).neg();
         }
@@ -670,11 +670,11 @@ public enum Op {
             return;
         }
 
-        boolean hasTime = dt != Tense.DTERNAL;
+        var hasTime = dt != Tense.DTERNAL;
         if (hasTime)
             w.append(' ');
 
-        char ch = this.ch;
+        var ch = this.ch;
         if (ch == 0)
             w.append(str);
         else

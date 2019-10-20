@@ -50,19 +50,19 @@ public class SocketLibrary extends PrologLib {
 			throw PrologError.instantiation_error(prolog, 1);
 		}
 
-		
-		Pattern p = Pattern.compile(addrRegex);
-		String[] split = p.split(Address.name());
+
+		var p = Pattern.compile(addrRegex);
+		var split = p.split(Address.name());
 		if (split.length != 5)
 			throw PrologError.instantiation_error(prolog, 1);
-		byte[] address = new byte[4];
-		for (int i = 0; i < split.length - 1; i++) {
+		var address = new byte[4];
+		for (var i = 0; i < split.length - 1; i++) {
 			address[i] = Byte.parseByte(split[i]);
 		}
-		int port = Integer.parseInt(split[split.length - 1]);
+		var port = Integer.parseInt(split[split.length - 1]);
 
 		try {
-			DatagramSocket s=new DatagramSocket(port, InetAddress.getByAddress(address));
+			var s=new DatagramSocket(port, InetAddress.getByAddress(address));
 
 			Socket.unify(prolog, new Datagram_Socket(s));
 		} catch (IOException e) {
@@ -82,24 +82,24 @@ public class SocketLibrary extends PrologLib {
 			throw PrologError.instantiation_error(prolog, 1);
 		}
 
-		
-		Pattern p = Pattern.compile(addrRegex);
-		String[] split = p.split(AddressTo.name());
+
+		var p = Pattern.compile(addrRegex);
+		var split = p.split(AddressTo.name());
 		if (split.length != 5)
 			throw PrologError.instantiation_error(prolog, 1);
-		byte[] address = new byte[4];
-		for (int i = 0; i < split.length - 1; i++) {
+		var address = new byte[4];
+		for (var i = 0; i < split.length - 1; i++) {
 			address[i] = Byte.parseByte(split[i]);
 		}
-		int port = Integer.parseInt(split[split.length - 1]);
-		DatagramSocket s = ((Datagram_Socket) Socket.term()).getSocket();
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		var port = Integer.parseInt(split[split.length - 1]);
+		var s = ((Datagram_Socket) Socket.term()).getSocket();
+		var baos = new ByteArrayOutputStream();
 		try {
-			ObjectOutputStream oos = new ObjectOutputStream(baos);
+			var oos = new ObjectOutputStream(baos);
 			oos.writeObject(Data);
              oos.flush();
-             byte[] Buf= baos.toByteArray();
-             DatagramPacket packet = new DatagramPacket(Buf, Buf.length,port);
+			var Buf= baos.toByteArray();
+			var packet = new DatagramPacket(Buf, Buf.length,port);
              s.send(packet);
 
         } catch (IOException e) {
@@ -120,7 +120,7 @@ public boolean udp_socket_close_1(Term Socket) throws PrologError {
 	if (!(((Server_Socket) Socket.term()).isDatagramSocket())) {
 		throw PrologError.instantiation_error(prolog, 1);
 	}
-	DatagramSocket s=((Datagram_Socket) Socket.term()).getSocket();
+	var s=((Datagram_Socket) Socket.term()).getSocket();
 	s.close();
 	return true;
 }
@@ -133,19 +133,19 @@ public boolean udp_receive(Term Socket, Term Data, Struct AddressFrom,
 		throw PrologError.instantiation_error(prolog, 1);
 	}
 
-	
-	Pattern p = Pattern.compile(addrRegex);
-	String[] split = p.split(AddressFrom.name());
+
+	var p = Pattern.compile(addrRegex);
+	var split = p.split(AddressFrom.name());
 	if (split.length != 5)
 		throw PrologError.instantiation_error(prolog, 1);
-	byte[] address = new byte[4];
-	for (int i = 0; i < split.length - 1; i++) {
+	var address = new byte[4];
+	for (var i = 0; i < split.length - 1; i++) {
 		address[i] = Byte.parseByte(split[i]);
 	}
-	@SuppressWarnings("unused") int port = Integer.parseInt(split[split.length - 1]);
-	DatagramSocket s= ((Datagram_Socket) Socket.term()).getSocket();
-	byte[] buffer = new byte[100000];
-	DatagramPacket packet = new DatagramPacket(buffer, buffer.length );
+	@SuppressWarnings("unused") var port = Integer.parseInt(split[split.length - 1]);
+	var s= ((Datagram_Socket) Socket.term()).getSocket();
+	var buffer = new byte[100000];
+	var packet = new DatagramPacket(buffer, buffer.length );
 	try {
 		
 		s.receive(packet);
@@ -153,10 +153,10 @@ public boolean udp_receive(Term Socket, Term Data, Struct AddressFrom,
 		
 		e.printStackTrace();
 	}
-	LinkedList<Term> list = StructToList(Options);
-	for (Term t : list) { 
+	var list = StructToList(Options);
+	for (var t : list) {
 		if ("timeout".equals(((Struct) t).name())) {
-			int time = Integer.parseInt(((Struct) t).sub(0).toString());
+			var time = Integer.parseInt(((Struct) t).sub(0).toString());
 			try {
 				s.setSoTimeout(time);
 			} catch (SocketException e) {
@@ -165,7 +165,7 @@ public boolean udp_receive(Term Socket, Term Data, Struct AddressFrom,
 			}
 		}
 		if("size".equals(((Struct) t).name())){
-			int size=Integer.parseInt(((Struct) t).sub(0).toString());
+			var size=Integer.parseInt(((Struct) t).sub(0).toString());
 			packet.setLength(size);
 		}
 	}
@@ -187,21 +187,21 @@ public boolean tcp_socket_server_open_3(Struct Address, Term Socket, Struct Opti
 		throw PrologError.instantiation_error(prolog, 1);
 	}
 
-	
-	Pattern p = Pattern.compile(addrRegex);
-	String[] split = p.split(Address.name());
+
+	var p = Pattern.compile(addrRegex);
+	var split = p.split(Address.name());
 	if (split.length != 5)
 		throw PrologError.instantiation_error(prolog, 1);
-	byte[] address = new byte[4];
-	for (int i = 0; i < split.length - 1; i++) {
+	var address = new byte[4];
+	for (var i = 0; i < split.length - 1; i++) {
 		address[i] = Byte.parseByte(split[i]);
 	}
-	int port = Integer.parseInt(split[split.length - 1]);
+	var port = Integer.parseInt(split[split.length - 1]);
 
 
-	LinkedList<Term> list = StructToList(Options); 			
-	int backlog = 0;
-	for (Term t : list) { 									
+	var list = StructToList(Options);
+	var backlog = 0;
+	for (var t : list) {
 		if ("backlog".equals(((Struct) t).name())) {
 			backlog = Integer.parseInt(((Struct) t).sub(0).toString());
 		}
@@ -209,7 +209,7 @@ public boolean tcp_socket_server_open_3(Struct Address, Term Socket, Struct Opti
 
 	
 	try {
-		ServerSocket s=new ServerSocket(port, backlog, InetAddress.getByAddress(address));
+		var s=new ServerSocket(port, backlog, InetAddress.getByAddress(address));
 		addServerSocket(s);
 		Socket.unify(prolog, new Server_Socket(s));
 	} catch (IOException e) {
@@ -223,7 +223,7 @@ public boolean tcp_socket_server_open_3(Struct Address, Term Socket, Struct Opti
 
 
 private void addServerSocket(ServerSocket s){
-	for(ServerSocket sock: serverSockets){
+	for(var sock: serverSockets){
 		if(sock.equals(s))return;
 	}
 	serverSockets.add(s);
@@ -232,7 +232,7 @@ private void addServerSocket(ServerSocket s){
 
 
 private void addClientSocket(Socket s){
-	for(Socket sock: clientSockets){
+	for(var sock: clientSockets){
 		if(sock.equals(s))return;
 	}
 	clientSockets.add(s);
@@ -252,14 +252,14 @@ public boolean tcp_socket_server_accept_3(Term ServerSock, Term Client_Addr, Ter
 		throw PrologError.instantiation_error(prolog, 1);
 	}
 
-	AbstractSocket as= (AbstractSocket)ServerSock.term();
+	var as= (AbstractSocket)ServerSock.term();
 	if(!as.isServerSocket()){									
 		throw PrologError.instantiation_error(prolog, 1);
 	}
 
-	ServerSocket s = ((Server_Socket) ServerSock.term()).getSocket();
+	var s = ((Server_Socket) ServerSock.term()).getSocket();
 	try {
-		Socket client = s.accept();
+		var client = s.accept();
 		Client_Addr.unify(prolog, new Struct(client.getInetAddress().getHostAddress() + ':' + client.getPort()));
 		Client_Slave_Socket.unify(prolog, new Client_Socket(client));
 		addClientSocket(client);
@@ -280,19 +280,19 @@ public boolean tcp_socket_client_open_2(Struct Address, Term SocketTerm) throws 
 		throw PrologError.instantiation_error(prolog, 2);
 	}
 
-	
-	Pattern p = Pattern.compile(addrRegex);
-	String[] split = p.split(Address.name());
+
+	var p = Pattern.compile(addrRegex);
+	var split = p.split(Address.name());
 	if (split.length != 5)
 		throw PrologError.instantiation_error(prolog, 1);
-	byte[] address = new byte[4];
-	for (int i = 0; i < split.length - 1; i++) {
+	var address = new byte[4];
+	for (var i = 0; i < split.length - 1; i++) {
 		address[i] = Byte.parseByte(split[i]);
 	}
-	int port = Integer.parseInt(split[split.length - 1]);
+	var port = Integer.parseInt(split[split.length - 1]);
 
 	try {
-		Socket s = new Socket(InetAddress.getByAddress(address), port);
+		var s = new Socket(InetAddress.getByAddress(address), port);
 		SocketTerm.unify(prolog, new Client_Socket(s));
 		addClientSocket(s);
 	} catch (IOException e) {
@@ -315,10 +315,10 @@ public synchronized boolean tcp_socket_server_close_1(Term serverSocket) throws 
 		throw PrologError.instantiation_error(prolog, 1);
 	}
 	try {
-		ServerSocket s=((Server_Socket) serverSocket.term()).getSocket();
+		var s=((Server_Socket) serverSocket.term()).getSocket();
 		s.close();
 		
-		for(int i=0;i<serverSockets.size();i++){
+		for(var i = 0; i<serverSockets.size(); i++){
 			if(serverSockets.get(i).equals(s)){
 				serverSockets.remove(i);
 				return true;
@@ -347,9 +347,9 @@ public boolean write_to_socket_2(Term Socket, Term Msg) throws PrologError {
 		throw PrologError.instantiation_error(prolog, 2);
 
 	} else {
-		Socket sock = ((Client_Socket) Socket.term()).getSocket();
+		var sock = ((Client_Socket) Socket.term()).getSocket();
 		try {
-			ObjectOutputStream out = new ObjectOutputStream(sock.getOutputStream());
+			var out = new ObjectOutputStream(sock.getOutputStream());
 			out.writeObject(Msg);		
 		} catch (IOException e) {
 			
@@ -377,20 +377,20 @@ public boolean read_from_socket_3(Term Socket, Term Msg, Struct Options) throws 
 	if (!((AbstractSocket) Socket.term()).isClientSocket()) { 
 		throw PrologError.instantiation_error(prolog, 1);
 	} else {
-		Socket sock = ((Client_Socket) Socket.term()).getSocket();
+		var sock = ((Client_Socket) Socket.term()).getSocket();
 
-		
-		ThreadReader r = readerExist(sock);
+
+		var r = readerExist(sock);
 		
 		if (r != null) {
 			if (r.started())
 				return false;
 		}
 
-		LinkedList<Term> list = StructToList(Options); 
-		for (Term t : list) { 
+		var list = StructToList(Options);
+		for (var t : list) {
 			if ("timeout".equals(((Struct) t).name())) {
-				int time = Integer.parseInt(((Struct) t).sub(0).toString());
+				var time = Integer.parseInt(((Struct) t).sub(0).toString());
 				try {
 					sock.setSoTimeout(time); 
 				} catch (SocketException e) {
@@ -403,8 +403,8 @@ public boolean read_from_socket_3(Term Socket, Term Msg, Struct Options) throws 
 
 
 		try {
-			ObjectInputStream in = new ObjectInputStream(sock.getInputStream());
-			Term m = (Term) in.readObject();
+			var in = new ObjectInputStream(sock.getInputStream());
+			var m = (Term) in.readObject();
 			Msg.unify(prolog, m);
 		} catch (IOException | ClassNotFoundException e) {
 			e.printStackTrace();
@@ -439,12 +439,11 @@ public boolean aread_from_socket_2(Term Socket, Struct Options) throws PrologErr
 	if (!((AbstractSocket) Socket.term()).isClientSocket()) { 
 		throw PrologError.instantiation_error(prolog, 1);
 	} else {
-		
-		Socket sock = ((Client_Socket) Socket.term()).getSocket();
 
-		
-		
-		ThreadReader r = readerExist(sock);
+		var sock = ((Client_Socket) Socket.term()).getSocket();
+
+
+		var r = readerExist(sock);
 		if (r == null) {
 			synchronized (this) {
 				readers.add(new ThreadReader(sock, prolog));
@@ -462,10 +461,10 @@ public boolean aread_from_socket_2(Term Socket, Struct Options) throws PrologErr
 			e1.printStackTrace();
 		}
 
-		LinkedList<Term> list = StructToList(Options); 
-		for (Term t : list) { 
+		var list = StructToList(Options);
+		for (var t : list) {
 			if ("timeout".equals(((Struct) t).name())) {
-				int time = Integer.parseInt(((Struct) t).sub(0).toString());
+				var time = Integer.parseInt(((Struct) t).sub(0).toString());
 				try {
 					sock.setSoTimeout(time); 
 				} catch (SocketException e) {
@@ -491,7 +490,7 @@ public boolean aread_from_socket_2(Term Socket, Struct Options) throws PrologErr
  */
 private static LinkedList<Term> StructToList(Struct s) {
 	Term temp = s;
-	LinkedList<Term> list = new LinkedList<>();
+	var list = new LinkedList<Term>();
 	while (".".equals(((Struct) temp).name())) {
 		list.add(((Struct) temp).sub(0));
 		temp = ((Struct) temp).sub(1);
@@ -514,7 +513,7 @@ private ThreadReader readerExist(Socket s) {
  */
 
 public void onSolveEnd(){
-	for(ServerSocket s:serverSockets){
+	for(var s:serverSockets){
 		try {
 			s.close();
 		} catch (IOException e) {
@@ -522,7 +521,7 @@ public void onSolveEnd(){
 		}
 	}
 	serverSockets= new LinkedList<>();
-	for(Socket s:clientSockets){
+	for(var s:clientSockets){
 		try {
 			s.close();
 		} catch (IOException e) {
@@ -530,7 +529,7 @@ public void onSolveEnd(){
 		}
 	}
 	clientSockets = new LinkedList<>();
-	for(ThreadReader r:readers)r.stopRead();
+	for(var r:readers)r.stopRead();
 
 }
 
@@ -546,19 +545,19 @@ public boolean getAddress_2(Term sock, Term addr) throws PrologError {
 	if (sock.term() instanceof alice.tuprolog.Var) { 
 		throw PrologError.instantiation_error(prolog, 1);
 	}
-	AbstractSocket abs = (AbstractSocket) sock.term();
+	var abs = (AbstractSocket) sock.term();
 	if (abs.isClientSocket()) {
-		Socket s = ((Client_Socket) sock.term()).getSocket();
+		var s = ((Client_Socket) sock.term()).getSocket();
 		addr.unify(prolog, new Struct(s.getInetAddress().toString(), new Struct(new NumberTerm.Int(s.getLocalPort()).toString())));
 		return true;
 	}
 	if (abs.isServerSocket()) {
-		ServerSocket s = ((Server_Socket) sock.term()).getSocket();
+		var s = ((Server_Socket) sock.term()).getSocket();
 		addr.unify(prolog, new Struct(s.getInetAddress().toString(), new Struct(new NumberTerm.Int(s.getLocalPort()).toString())));
 		return true;
 	}
 	if (abs.isDatagramSocket()) {
-		DatagramSocket s = ((Datagram_Socket) sock.term()).getSocket();
+		var s = ((Datagram_Socket) sock.term()).getSocket();
 		addr.unify(prolog, new Struct(s.getInetAddress().toString(), new Struct(new NumberTerm.Int(s.getLocalPort()).toString())));
 		return true;
 	}
@@ -630,11 +629,11 @@ private static class ThreadReader extends Thread {
 				}
 			}
 			try {
-				ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+				var in = new ObjectInputStream(socket.getInputStream());
 				if(this.isInterrupted())return;
-				Term msg = (Term) in.readObject();
-				if(this.isInterrupted())return;					
-				Struct s = (Struct) Term.term(msg.term().toString());
+				var msg = (Term) in.readObject();
+				if(this.isInterrupted())return;
+				var s = (Struct) Term.term(msg.term().toString());
 				if (assertA)
 					mainEngine.theories.assertA(s, "");
 				else

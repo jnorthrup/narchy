@@ -77,9 +77,9 @@ public class HijackMemoize<X, Y> extends AbstractMemoize<X,Y> {
     }
 
     public final @Nullable Y getIfPresent(Object k) {
-        PriProxy<X, Y> exists = bag.get(k);
+        var exists = bag.get(k);
         if (exists != null) {
-            Y e = exists.get();
+            var e = exists.get();
             if (e != null) {
                 boost(exists);
                 return e;
@@ -101,7 +101,7 @@ public class HijackMemoize<X, Y> extends AbstractMemoize<X,Y> {
 
 
     public @Nullable Y removeIfPresent(X x) {
-        @Nullable PriProxy<X, Y> exists = bag.remove(x);
+        @Nullable var exists = bag.remove(x);
         return exists != null ? exists.get() : null;
     }
 
@@ -111,12 +111,12 @@ public class HijackMemoize<X, Y> extends AbstractMemoize<X,Y> {
 
     @Override
     public @Nullable Y apply(X x) {
-        Y y = getIfPresent(x);
+        var y = getIfPresent(x);
         if (y == null) {
             y = func.apply(x);
-            PriProxy<X, Y> input = computation(x, y);
-            PriProxy<X, Y> output = bag.put(input);
-            boolean interned = (output == input);
+            var input = computation(x, y);
+            var output = bag.put(input);
+            var interned = (output == input);
             if (interned) {
                 miss.getAndIncrement();
                 onIntern(x);
@@ -148,7 +148,7 @@ public class HijackMemoize<X, Y> extends AbstractMemoize<X,Y> {
      * here it can choose the implementation to use: strong, soft, weak, etc..
      */
     public PriProxy<X, Y> computation(X x, Y y) {
-        float pri = value(x,y);
+        var pri = value(x,y);
         return soft ?
                 new PriProxy.SoftProxy<>(x, y, pri) :
                 new PriProxy.StrongProxy<>(x, y, pri);
@@ -159,9 +159,9 @@ public class HijackMemoize<X, Y> extends AbstractMemoize<X,Y> {
      */
     @Override
     public String summary() {
-        StringBuilder sb = new StringBuilder(64);
+        var sb = new StringBuilder(64);
         sb.append(" N=").append(bag.size()).append(' ');
-        float rate = statReset((k, v) -> sb.append(k).append('=').append(v).append(' '));
+        var rate = statReset((k, v) -> sb.append(k).append('=').append(v).append(' '));
         sb.setLength(sb.length() - 1);
         sb.append(" D=").append(Texts.n2percent(bag.density()));
         sb.insert(0, Texts.n2percent(rate));
@@ -219,7 +219,7 @@ public class HijackMemoize<X, Y> extends AbstractMemoize<X,Y> {
 //            HijackMemoize.this.DEFAULT_VALUE = 0.5f / reprobes;
 //            HijackMemoize.this.CACHE_HIT_BOOST = boost;
 
-            float sc = (float) Math.sqrt(c);
+            var sc = (float) Math.sqrt(c);
             DEFAULT_VALUE =
                     //0.5f / reprobes;
                     1f / sc;

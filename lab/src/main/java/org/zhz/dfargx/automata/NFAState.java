@@ -49,8 +49,8 @@ public class NFAState {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        
-        NFAState state = (NFAState) o;
+
+        var state = (NFAState) o;
         return id == state.id; 
     }
 

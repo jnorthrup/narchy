@@ -51,8 +51,8 @@ public class Remember {
     protected static void verify(Task x, NAR n) {
 
         if ((NAL.VOLMAX_RESTRICTS) && (x.isInput() || !NAL.VOLMAX_RESTRICTS_INPUT)) {
-            int termVol = x.term().volume();
-            int maxVol = n.termVolMax.intValue();
+            var termVol = x.term().volume();
+            var maxVol = n.termVolMax.intValue();
             if (termVol > maxVol)
                 throw new TaskException("target exceeds volume maximum: " + termVol + " > " + maxVol, x);
         }
@@ -73,7 +73,7 @@ public class Remember {
 
 
         if (NAL.test.DEBUG_ENSURE_DITHERED_DT || NAL.test.DEBUG_ENSURE_DITHERED_OCCURRENCE) {
-            int d = n.dtDither();
+            var d = n.dtDither();
             if (d > 1) {
                 if (NAL.test.DEBUG_ENSURE_DITHERED_DT)
                     Tense.assertDithered(x.term(), d);
@@ -113,7 +113,7 @@ public class Remember {
 
 
     public boolean store() {
-        Concept cc = concept();
+        var cc = concept();
         if (!(cc instanceof TaskConcept))
             return false;
         else {
@@ -123,7 +123,7 @@ public class Remember {
     }
 
     protected Concept concept() {
-        boolean conceptualize = true;
+        var conceptualize = true;
         return what.nar.concept(input,conceptualize);
     }
 
@@ -133,8 +133,8 @@ public class Remember {
 
     protected void link() {
 
-        Task t = this.result;
-        NAR n = nar();
+        var t = this.result;
+        var n = nar();
 
         /* 1. resolve */
 //        Termed cc = c == null ? t : c;
@@ -142,9 +142,9 @@ public class Remember {
 
         n.emotion.perceive(t);
 
-        byte punc = t.punc();
+        var punc = t.punc();
         if (punc == BELIEF || punc == GOAL) {
-            float value = NAL.valueBeliefOrGoal(t);
+            var value = NAL.valueBeliefOrGoal(t);
             (punc == BELIEF ? MetaGoal.Believe : MetaGoal.Desire)
                     .learn(t, value, n);
 
@@ -183,7 +183,7 @@ public class Remember {
      */
     public void merge(Task y) {
 
-        boolean identity = y == input;
+        var identity = y == input;
         if (identity || y.equals(input)) {
 
             if (filter(y))
@@ -207,12 +207,12 @@ public class Remember {
      */
     private boolean filter(Task prev) {
 
-        Task next = input;
-        boolean priChange = false;
+        var next = input;
+        var priChange = false;
         if (next!=prev) {
-            float np = next.priElseZero();
-            float pp = prev.priElseZero();
-            float dPriPct = (np - pp) / Math.max(ScalarValue.EPSILON, Math.max(np, pp));
+            var np = next.priElseZero();
+            var pp = prev.priElseZero();
+            var dPriPct = (np - pp) / Math.max(ScalarValue.EPSILON, Math.max(np, pp));
 
             //priority change significant enough
             if (dPriPct >= NAL.belief.REMEMBER_REPEAT_PRI_PCT_THRESHOLD) {
@@ -220,16 +220,16 @@ public class Remember {
             }
         }
 
-        long prevCreation = prev.creation();
-        long nextCreation = prev != next ? next.creation() : what.time();
+        var prevCreation = prev.creation();
+        var nextCreation = prev != next ? next.creation() : what.time();
 
         boolean novel;
         if (priChange) { //dont compare time if pri already detected changed
             novel = true;
         } else {
-            long dCycles = Math.max(0, nextCreation - prevCreation);
-            float dur = what.dur();
-            float dDurs = dCycles == 0 ? 0 : (dCycles / dur); //maybe what.dur()
+            var dCycles = Math.max(0, nextCreation - prevCreation);
+            var dur = what.dur();
+            var dDurs = dCycles == 0 ? 0 : (dCycles / dur); //maybe what.dur()
             novel = dDurs >= NAL.belief.REMEMBER_REPEAT_THRESH_DURS;
         }
 

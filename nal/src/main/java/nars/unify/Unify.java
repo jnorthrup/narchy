@@ -152,7 +152,7 @@ public abstract class Unify extends Versioning<Term> implements RecursiveTermTra
 
         } else {
 
-            boolean kontinue = match();
+            var kontinue = match();
 
             return use(NAL.derive.TTL_COST_MUTATE) && kontinue;
         }
@@ -164,19 +164,19 @@ public abstract class Unify extends Versioning<Term> implements RecursiveTermTra
      * completely dereferences a target (usually a variable)
      */
     public Term resolveVar(Variable x) {
-        int s = this.size;
+        var s = this.size;
 
         if (s == 0) return x; //nothing assigned
 
 
         Term /*Variable*/ z = x;
 
-        int safety = NAL.unify.UNIFY_VAR_RECURSION_DEPTH_LIMIT;
+        var safety = NAL.unify.UNIFY_VAR_RECURSION_DEPTH_LIMIT;
             //Math.min(s, NAL.unify.UNIFY_VAR_RECURSION_DEPTH_LIMIT) + 1;
 
         do {
 
-            Term y = xy.get(z);
+            var y = xy.get(z);
 
             if (y==null)
                 return z; //done
@@ -239,7 +239,7 @@ public abstract class Unify extends Versioning<Term> implements RecursiveTermTra
     public Unification unification(boolean clear) {
         FasterList<Term> xyPairs = new FasterList(size * 2 /* estimate */);
 
-        Termutator[] termutes = commitTermutes(true);
+        var termutes = commitTermutes(true);
         if (termutes==Termutator.CUT)
             throw new TODO("this means fail");
 
@@ -251,7 +251,7 @@ public abstract class Unify extends Versioning<Term> implements RecursiveTermTra
         }
 
         DeterministicUnification base;
-        int n = xyPairs.size()/2;
+        var n = xyPairs.size()/2;
         switch (n) {
             case 0:
                 base = Self;
@@ -291,12 +291,12 @@ public abstract class Unify extends Versioning<Term> implements RecursiveTermTra
 
     /** @noinspection ArrayEquality*/
     protected boolean matches() {
-        Termutator[] t = commitTermutes(true);
+        var t = commitTermutes(true);
         if (t==Termutator.CUT)
             return false;
         else {
             //TODO decide what r supposed to mean
-            boolean r = (t == null) ?
+            var r = (t == null) ?
                 match()
                 :
                 matches(t);
@@ -309,12 +309,12 @@ public abstract class Unify extends Versioning<Term> implements RecursiveTermTra
     }
 
     private Termutator[] commitTermutes(boolean finish) {
-        int ts = termutes.size();
+        var ts = termutes.size();
         if (ts > 0) {
-            FasterList<Termutator> tl = termutes.list;
-            for (int i = 0; i < ts; i++) {
-                Termutator x = tl.get(i);
-                @Nullable Termutator y = x.preprocess(this);
+            var tl = termutes.list;
+            for (var i = 0; i < ts; i++) {
+                var x = tl.get(i);
+                @Nullable var y = x.preprocess(this);
                 if (y == null) {
                     //CUT
                     return Termutator.CUT;
@@ -328,7 +328,7 @@ public abstract class Unify extends Versioning<Term> implements RecursiveTermTra
             }
             if (ts > 0 && finish) {
 
-                Termutator[] tt = tl.toArray(Termutator.CUT /* 0 len array */);
+                var tt = tl.toArray(Termutator.CUT /* 0 len array */);
 
                 if (NAL.SHUFFLE_TERMUTES && tt.length > 1)
                     Util.shuffle(tt, random);
@@ -385,10 +385,10 @@ public abstract class Unify extends Versioning<Term> implements RecursiveTermTra
 
     /** how many matchable variables are present */
     public int vars(Term x) {
-        int vb = this.varBits;
+        var vb = this.varBits;
         if (x instanceof Compound) {
             if (x.hasAny(vb)) {
-                int v = 0;
+                var v = 0;
                 if (0 != (vb & Op.VAR_PATTERN.bit)) v += x.varPattern();
                 if (0 != (vb & Op.VAR_QUERY.bit)) v += x.varQuery();
                 if (0 != (vb & Op.VAR_DEP.bit)) v += x.varDep();
@@ -466,12 +466,12 @@ public abstract class Unify extends Versioning<Term> implements RecursiveTermTra
 
 
     public final void constrain(UnifyConstraint[] m) {
-        for (UnifyConstraint mm : m )
+        for (var mm : m )
             constrain(mm);
     }
 
     public final void constrain(UnifyConstraint m) {
-        ConstrainedVersionedTerm target = (ConstrainedVersionedTerm) xy.getOrCreateIfAbsent(m.x);
+        var target = (ConstrainedVersionedTerm) xy.getOrCreateIfAbsent(m.x);
         target.constraint = m;
         xy.context.add(target.unconstrain);
     }
@@ -479,10 +479,10 @@ public abstract class Unify extends Versioning<Term> implements RecursiveTermTra
 
 
     public final boolean unifyDT(Term x, Term y) {
-        int xdt = x.dt();
+        var xdt = x.dt();
         if (xdt == XTERNAL) return true;
 
-        int ydt = y.dt();
+        var ydt = y.dt();
         if (ydt == XTERNAL || ydt==xdt) return true;
 
         if (xdt == DTERNAL) xdt = 0; //HACK
@@ -506,12 +506,12 @@ public abstract class Unify extends Versioning<Term> implements RecursiveTermTra
 
     /** full resolution of a term */
     public final Term resolveTerm(Term _x,  boolean recurse) {
-        int s = this.size;
+        var s = this.size;
         if (s == 0 && !recurse)
             return _x;
 
-        boolean neg = _x instanceof Neg;
-        Term x = neg ? _x.unneg() : _x;
+        var neg = _x instanceof Neg;
+        var x = neg ? _x.unneg() : _x;
 
         Term y;
         y = s > 0 && var(x) ? resolveVar((Variable) x) : x;
@@ -553,7 +553,7 @@ public abstract class Unify extends Versioning<Term> implements RecursiveTermTra
     }
 
     public final @Nullable TermList resolveListIfChanged(Subterms x, boolean recurse) {
-        Subterms y = recurse ? resolveSubsRecurse(x) : resolveSubs(x);
+        var y = recurse ? resolveSubsRecurse(x) : resolveSubs(x);
         if (y == null)
             return new TermList(Bool.Null); //HACK
         else if (y != x)

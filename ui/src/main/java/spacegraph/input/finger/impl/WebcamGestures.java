@@ -47,7 +47,7 @@ public class WebcamGestures extends Finger {
 
         VideoSource in = WebCam.the();
 
-        OrthoSurfaceGraph g = window(new LazySurface(() -> {
+        var g = window(new LazySurface(() -> {
 
             VideoSource in2 = new VideoEqualizer(in);
 
@@ -149,13 +149,13 @@ public class WebcamGestures extends Finger {
 ///		imageType = ImageType.il(3, InterleavedU8.class);
 
             // Configure the feature detector
-            ConfigGeneralDetector confDetector = new ConfigGeneralDetector();
+            var confDetector = new ConfigGeneralDetector();
             confDetector.threshold = 10;
             confDetector.maxFeatures = 300;
             confDetector.radius = 4;
 
             // Use a KLT tracker
-            PointTracker tracker = FactoryPointTracker.klt(new int[]{1, 2, 4, 8}, confDetector, 3,
+            var tracker = FactoryPointTracker.klt(new int[]{1, 2, 4, 8}, confDetector, 3,
                     imageType.getImageClass(), null);
 
             // This estimates the 2D image motion
@@ -211,7 +211,7 @@ public class WebcamGestures extends Finger {
                 segmented.reshape(W, H);
                 grey.reshape(W, H);
 
-                Homography2D_F32 homeToWorld = new Homography2D_F32();
+                var homeToWorld = new Homography2D_F32();
                 homeToWorld.a13 = grey.width/2;
                 homeToWorld.a23 = grey.height/2;
 
@@ -227,7 +227,7 @@ public class WebcamGestures extends Finger {
             motion2D.process(grey);
 
             /*if( motion2D.process(grey) )*/ {
-                Homography2D_F64 firstToCurrent64 = (Homography2D_F64) motion2D.getFirstToCurrent();
+                var firstToCurrent64 = (Homography2D_F64) motion2D.getFirstToCurrent();
                 ConvertMatrixData.convert(firstToCurrent64, firstToCurrent32);
 
                 background.segment(firstToCurrent32, input, segmented);
@@ -258,7 +258,7 @@ public class WebcamGestures extends Finger {
 
         @Override
         public Surface cursorSurface() {
-            CursorSurface c = new CursorSurface(this);
+            var c = new CursorSurface(this);
             c.renderer = null;
             c.set(vx);
             return c;

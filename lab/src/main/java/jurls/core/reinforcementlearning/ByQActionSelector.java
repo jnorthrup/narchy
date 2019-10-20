@@ -17,34 +17,34 @@ public class ByQActionSelector implements ActionSelector {
 
     @Override
     public ActionValuePair[] fromQValuesToProbabilities(double epsilon, ActionValuePair[] actionValuePairs) {
-        ActionValuePair[] ret = Arrays.stream(actionValuePairs).map(actionValuePair1 -> new ActionValuePair(
+        var ret = Arrays.stream(actionValuePairs).map(actionValuePair1 -> new ActionValuePair(
                 actionValuePair1.getA(),
                 actionValuePair1.getV()
         )).toArray(ActionValuePair[]::new);
 
-        boolean seen = false;
+        var seen = false;
         double best = 0;
-        for (ActionValuePair pair : ret) {
-            double valuePair1V = pair.getV();
+        for (var pair : ret) {
+            var valuePair1V = pair.getV();
             if (!seen || Double.compare(valuePair1V, best) < 0) {
                 seen = true;
                 best = valuePair1V;
             }
         }
-        double min = seen ? best : Double.MAX_VALUE;
+        var min = seen ? best : Double.MAX_VALUE;
 
-        for (int i = 0; i < ret.length; ++i) {
+        for (var i = 0; i < ret.length; ++i) {
             ret[i].setV(ret[i].getV() + min);
         }
 
-        double sum = Arrays.stream(ret).mapToDouble(ActionValuePair::getV).sum();
+        var sum = Arrays.stream(ret).mapToDouble(ActionValuePair::getV).sum();
 
-        for (int i = 0; i < ret.length; ++i) {
+        for (var i = 0; i < ret.length; ++i) {
             ret[i].setV(ret[i].getV() / sum);
         }
 
-        for (int i = 0; i < ret.length; ++i) {
-            double v = ret[i].getV();
+        for (var i = 0; i < ret.length; ++i) {
+            var v = ret[i].getV();
             ret[i].setV(
                     
                     v * v
@@ -52,10 +52,10 @@ public class ByQActionSelector implements ActionSelector {
         }
 
         sum = 0;
-        double result = Arrays.stream(ret).mapToDouble(ActionValuePair::getV).sum();
+        var result = Arrays.stream(ret).mapToDouble(ActionValuePair::getV).sum();
         sum += result;
 
-        for (int i = 0; i < ret.length; ++i) {
+        for (var i = 0; i < ret.length; ++i) {
             ret[i].setV(ret[i].getV() / sum);
         }
         return ret;

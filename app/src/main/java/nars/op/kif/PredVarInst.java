@@ -39,13 +39,13 @@ public class PredVarInst {
      */
     private static HashMap<String,HashSet<String>> addExplicitTypes(KB kb, Formula input, HashMap<String,HashSet<String>> types) {
 
-        FormulaPreprocessor fp = new FormulaPreprocessor();
-    	HashMap<String,HashSet<String>> explicit = FormulaPreprocessor.findExplicitTypesInAntecedent(kb,input);
+        var fp = new FormulaPreprocessor();
+        var explicit = FormulaPreprocessor.findExplicitTypesInAntecedent(kb,input);
         if (explicit == null || explicit.keySet() == null || explicit.keySet().isEmpty())
             return types;
-        HashMap<String, HashSet<String>> result = new HashMap<>();
-        for (String var : explicit.keySet()) {
-            HashSet<String> hs = new HashSet<>();
+        var result = new HashMap<String, HashSet<String>>();
+        for (var var : explicit.keySet()) {
+            var hs = new HashSet<String>();
             if (types.containsKey(var))
                 hs = types.get(var);
             hs.addAll(explicit.get(var));
@@ -65,25 +65,25 @@ public class PredVarInst {
      */
     public static Set<Formula> instantiatePredVars(Formula input, KB kb) {
 
-        HashSet<String> predVars = gatherPredVars(kb,input);
+        var predVars = gatherPredVars(kb,input);
         if (predVars == null )
             return null;
         Set<Formula> result = new HashSet<>();
         if (predVars.isEmpty())
             return result;
-        
-        HashMap<String,HashSet<String>> varTypes = findPredVarTypes(input,kb);
+
+        var varTypes = findPredVarTypes(input,kb);
         
         varTypes = addExplicitTypes(kb,input,varTypes);
-        for (String var : varTypes.keySet()) {
-            for (String rel : kb.kbCache.relations) {
+        for (var var : varTypes.keySet()) {
+            for (var rel : kb.kbCache.relations) {
                 if (kb.kbCache.valences.get(rel).equals(predVarArity.get(var))) {
-                    boolean ok = varTypes.get(var).stream().allMatch(varType -> kb.isInstanceOf(rel, varType));
+                    var ok = varTypes.get(var).stream().allMatch(varType -> kb.isInstanceOf(rel, varType));
 
                     if (ok == true) {
-                        Formula f = input.deepCopy();
+                        var f = input.deepCopy();
                         f = f.replaceVar(var, rel);
-                        Formula f2 = input.deepCopy();
+                        var f2 = input.deepCopy();
                         f2.theFormula = f.theFormula;
                         result.add(f);
                     }
@@ -91,7 +91,7 @@ public class PredVarInst {
             }
         }
         if (result.isEmpty()) {
-            String errStr = "No predicate instantiations for ";
+            var errStr = "No predicate instantiations for ";
             errStr += input.theFormula;
             input.errors.add(errStr);
             return null;
@@ -107,13 +107,13 @@ public class PredVarInst {
         if (f == null || StringUtil.emptyString(f.theFormula) || f.empty() ||
                 Formula.atom(f.theFormula) || f.isVariable())
             return null;
-        String rel = f.getArgument(0);
-        ArrayList<String> l = f.complexArgumentsToArrayList(1);
+        var rel = f.getArgument(0);
+        var l = f.complexArgumentsToArrayList(1);
 
         if (Formula.listP(rel)) {
-            Formula p = new Formula();
+            var p = new Formula();
             p.read(rel);
-            String res = hasCorrectArityRecurse(p, kb);
+            var res = hasCorrectArityRecurse(p, kb);
             if (!StringUtil.emptyString(res))
                 return res;
         }
@@ -125,7 +125,7 @@ public class PredVarInst {
             Integer intval = null;
             if (kb.kbCache != null && kb.kbCache.valences != null)
                 intval= kb.kbCache.valences.get(rel);
-            int val = 0;
+            var val = 0;
             if (intval != null)
                 val = intval;
             else {
@@ -145,9 +145,9 @@ public class PredVarInst {
             }
             if (f.isSimpleClause(kb)) {
                 
-                for (String arg : l) {
+                for (var arg : l) {
                     if (kb.isFunction(arg)) {
-                        String result = hasCorrectArityRecurse(new Formula(arg), kb);
+                        var result = hasCorrectArityRecurse(new Formula(arg), kb);
                         if (!StringUtil.emptyString(result))
                             return result;
                     }
@@ -160,12 +160,12 @@ public class PredVarInst {
             }
         }
         if (l != null && !l.isEmpty()) {
-            for (String k : l) {
+            for (var k : l) {
                 if (Formula.atom(k))
                     continue;
-                Formula ff = new Formula();
+                var ff = new Formula();
                 ff.read(k);
-                String res = hasCorrectArityRecurse(ff, kb);
+                var res = hasCorrectArityRecurse(ff, kb);
                 if (!StringUtil.emptyString(res))
                     return res;
             }
@@ -364,16 +364,16 @@ public class PredVarInst {
      * Get a set of all the predicate variables in the formula
      */
     private static HashSet<String> gatherPredVarRecurse(KB kb, Formula f) {
-        
-        HashSet<String> ans = new HashSet<>();
+
+        var ans = new HashSet<String>();
         
         if (f == null || f.empty() || Formula.atom(f.theFormula) || f.isVariable())
             return ans;
         if (f.isSimpleClause(kb)) {
-            String arg0 = f.getArgument(0);
+            var arg0 = f.getArgument(0);
             
             if (arg0.startsWith("?")) {
-                ArrayList<String> arglist = f.complexArgumentsToArrayList(1);
+                var arglist = f.complexArgumentsToArrayList(1);
                 if (arglist != null && !arglist.isEmpty()) {
                     
                     
@@ -386,8 +386,8 @@ public class PredVarInst {
             }
         }
         else if (Formula.isQuantifier(f.car())) {
-            
-            Formula f2 = f.cddrAsFormula();
+
+            var f2 = f.cddrAsFormula();
             ans.addAll(gatherPredVarRecurse(kb,f2));
         }
         else {
@@ -424,11 +424,11 @@ public class PredVarInst {
      * must logically be instances (of class Relation).
      */
     static HashMap<String, HashSet<String>> findPredVarTypes(Formula f, KB kb) {
-        
-        HashSet<String> predVars = gatherPredVars(kb,f);
-        FormulaPreprocessor fp = new FormulaPreprocessor();
-        HashMap<String,HashSet<String>> typeMap = FormulaPreprocessor.computeVariableTypes(f, kb);
-        HashMap<String, HashSet<String>> result = predVars.stream().filter(typeMap::containsKey).collect(Collectors.toMap(var -> var, typeMap::get, (a, b) -> b, HashMap::new));
+
+        var predVars = gatherPredVars(kb,f);
+        var fp = new FormulaPreprocessor();
+        var typeMap = FormulaPreprocessor.computeVariableTypes(f, kb);
+        var result = predVars.stream().filter(typeMap::containsKey).collect(Collectors.toMap(var -> var, typeMap::get, (a, b) -> b, HashMap::new));
         return result;
     }
     
@@ -438,7 +438,7 @@ public class PredVarInst {
     protected static HashSet<String> gatherPredVars(KB kb, Formula f) {
         
         HashSet<String> varlist = null;
-        HashMap<String,HashSet<String>> ans = new HashMap<>();
+        var ans = new HashMap<String, HashSet<String>>();
         if (!StringUtil.emptyString(f.theFormula)) {
             varlist = gatherPredVarRecurse(kb,f);
         }
@@ -702,9 +702,9 @@ public class PredVarInst {
     public static void arityTest() {
 
         KBmanager.manager.initializeOnce();
-        KB kb = KBmanager.manager.getKB(KBmanager.manager.getPref("sumokbname"));
+        var kb = KBmanager.manager.getKB(KBmanager.manager.getPref("sumokbname"));
         System.out.println("INFO in PredVarInst.test(): completed loading KBs");
-        String formStr = "(=> " +
+        var formStr = "(=> " +
         "(and " +
         "(instance ?SOUND RadiatingSound) " +
         "(agent ?SOUND ?OBJ) " +
@@ -719,7 +719,7 @@ public class PredVarInst {
         "(agent ?HEAR ?HUMAN) " +
         "(destination ?HEAR ?HUMAN) " +
         "(origin ?HEAR ?OBJ))) agent ?HUMAN)))) ";
-        Formula f = new Formula(formStr);
+        var f = new Formula(formStr);
         System.out.println("INFO in PredVarInst.arityTest(): formula: " + f);
         System.out.println("INFO in PredVarInst.arityTest(): correct arity: " + hasCorrectArity(f,kb));
     }
@@ -729,7 +729,7 @@ public class PredVarInst {
     public static void test() {
 
         KBmanager.manager.initializeOnce();
-        KB kb = KBmanager.manager.getKB(KBmanager.manager.getPref("sumokbname"));
+        var kb = KBmanager.manager.getKB(KBmanager.manager.getPref("sumokbname"));
         System.out.println("INFO in PredVarInst.test(): completed loading KBs");
         if (kb.kbCache.transInstOf("exhaustiveAttribute","VariableArityRelation")) {
             System.out.println("INFO in PredVarInst.test() variable arity: ");
@@ -738,17 +738,17 @@ public class PredVarInst {
             System.out.println("INFO in PredVarInst.test() not variable arity: ");
         System.out.println("INFO in PredVarInst.test(): " + kb.kbCache.instances.get("partition"));
         System.out.println("INFO in PredVarInst.test(): " + kb.kbCache.insts.contains("partition"));
-        
-        String formStr = "(<=> (instance ?REL TransitiveRelation) " +
+
+        var formStr = "(<=> (instance ?REL TransitiveRelation) " +
         "(forall (?INST1 ?INST2 ?INST3) " +
         "(=> (and (?REL ?INST1 ?INST2) " +
         "(?REL ?INST2 ?INST3)) (?REL ?INST1 ?INST3))))";
-        
-        Formula f = new Formula(formStr);
+
+        var f = new Formula(formStr);
         System.out.println("Formula: " + f);
         System.out.println("Pred vars: " + gatherPredVars(kb,f));
         System.out.println("Pred vars with types: " + findPredVarTypes(f,kb));
-        FormulaPreprocessor fp = new FormulaPreprocessor();
+        var fp = new FormulaPreprocessor();
         System.out.println("Explicit types: " + FormulaPreprocessor.findExplicitTypesInAntecedent(kb,f));
         System.out.println("Instantiated: " + instantiatePredVars(f,kb));
         System.out.println();

@@ -33,14 +33,14 @@ import static nars.time.Tense.DTERNAL;
     }
 
     static Subterms theSubterms(boolean tryAnon, Term... t) {
-        int n = t.length;
+        var n = t.length;
         if (n == 0)
             return Op.EmptySubterms;
 
         if (tryAnon && Intrin.intrinsic(t))
             return new IntrinSubterms(t);
         else {
-            Term t0 = t[0];
+            var t0 = t[0];
             switch (t.length) {
 //                case 0: throw new UnsupportedOperationException();
 
@@ -50,7 +50,7 @@ import static nars.time.Tense.DTERNAL;
 
                 default: {
                     //TODO Param.SUBTERM_BYTE_KEY_CACHED_BELOW_VOLUME
-                    boolean different = IntStream.range(1, t.length).anyMatch(i -> !t[i].equals(t[i - 1]));
+                    var different = IntStream.range(1, t.length).anyMatch(i -> !t[i].equals(t[i - 1]));
                     //if (t[i] != t[i - 1]) {
 
                     return different ?

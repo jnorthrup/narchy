@@ -283,18 +283,18 @@ public class ClassReloader extends ClassLoader {
 
     public static ClassReloader inClassPathOf(Class clazz) throws URISyntaxException {
 
-        URI pkgLocal = clazz.getResource(".").toURI();
+        var pkgLocal = clazz.getResource(".").toURI();
 
-        int depth = Texts.countRows(clazz.getPackage().getName(), '.')+1;
-        for  (int i = 0; i < depth; i++) {
+        var depth = Texts.countRows(clazz.getPackage().getName(), '.')+1;
+        for  (var i = 0; i < depth; i++) {
             pkgLocal = pkgLocal.resolve("..");
         }
 
-        File f = new File(pkgLocal);
+        var f = new File(pkgLocal);
         assert(f.exists());
-        String cp = f.getAbsolutePath() + '/';
+        var cp = f.getAbsolutePath() + '/';
 
-        ClassReloader r = new ClassReloader(List.of(cp), Thread.currentThread().getContextClassLoader());
+        var r = new ClassReloader(List.of(cp), Thread.currentThread().getContextClassLoader());
         //r.markEveryClassInFolderAsReloadable(f.getAbsolutePath());
         return r;
     }
@@ -326,14 +326,14 @@ public class ClassReloader extends ClassLoader {
     private void initReloadedClasses() {
         this.reloadedClasses = new TreeMap<>();
         if (this.reloadableCache == null) return;
-        for (String rc : this.reloadableCache) {
+        for (var rc : this.reloadableCache) {
             this.reloadedClasses.put(rc, Boolean.FALSE);
         }
     }
 
     private void initReloadedClasses(Map<String, Boolean> parentsReloadedClasses) {
         this.reloadedClasses = new TreeMap<>();
-        for (Entry<String, Boolean> rc : parentsReloadedClasses.entrySet()) {
+        for (var rc : parentsReloadedClasses.entrySet()) {
             this.reloadedClasses.put(rc.getKey(), Boolean.FALSE);
         }
     }
@@ -364,8 +364,8 @@ public class ClassReloader extends ClassLoader {
 
     private ClassReloader cleanReloader() {
         Set<String> childReloadableCache = new TreeSet<>(this.reloadableCache);
-        ClassLoader firstClassloader = getFirstClassLoader();
-        ClassReloader cleanSlate = new ClassReloader(this.classpath, firstClassloader, childReloadableCache, this.specificClassPaths);
+        var firstClassloader = getFirstClassLoader();
+        var cleanSlate = new ClassReloader(this.classpath, firstClassloader, childReloadableCache, this.specificClassPaths);
         cleanSlate.reloadersCreated = 1;
         unlinkPreviousReloadersAndLinkWithFirstReloader(firstClassloader, cleanSlate);
         return cleanSlate;
@@ -377,9 +377,9 @@ public class ClassReloader extends ClassLoader {
             if (current != this) {
                 ((ClassReloader)current).child = null;
             }
-            ClassLoader parent = current.getParent();
-            Field[] fields = ClassLoader.class.getDeclaredFields();
-            Field parentField = Arrays.stream(fields).filter(f -> f.getName().compareTo("parent") == 0).findFirst().orElse(null);
+            var parent = current.getParent();
+            var fields = ClassLoader.class.getDeclaredFields();
+            var parentField = Arrays.stream(fields).filter(f -> f.getName().compareTo("parent") == 0).findFirst().orElse(null);
             if (parentField != null) {
                 parentField.setAccessible(true);
                 try {
@@ -406,7 +406,7 @@ public class ClassReloader extends ClassLoader {
 
     @Override
     public Class<?> loadClass(String s) throws ClassNotFoundException {
-        Class<?> clazz = this.reloadableCache.contains(s)?retrieveFromCache(s):null;
+        var clazz = this.reloadableCache.contains(s)?retrieveFromCache(s):null;
         if (clazz == null) {
             if (this.getParent() != null) {
                 try {
@@ -438,7 +438,7 @@ public class ClassReloader extends ClassLoader {
 
     public Class<?> loadClassAsReloadable(String s) throws ClassNotFoundException {
         reloadableCache.add(s);
-        Class<?> clazz = loadClass(s);
+        var clazz = loadClass(s);
         if (clazz != null) {
             addToCache(clazz);
             markClassAsReloadable(s);
@@ -480,7 +480,7 @@ public class ClassReloader extends ClassLoader {
 
     public void markEveryClassInFolderAsReloadable(String folder, Set<String> allowedPackages) {
         cleanIfRescaning(folder);
-        File pathFile = new File(folder);
+        var pathFile = new File(folder);
         if (pathFile.exists() && pathFile.isDirectory()) {
             setPathAsPriority(folder);
             crawlAndMark(pathFile, "", allowedPackages);
@@ -488,8 +488,8 @@ public class ClassReloader extends ClassLoader {
     }
 
     private void crawlAndMark(File dir, String pkg, Set<String> allowedPackages) {
-        File[] files = dir.listFiles();
-        for (File file : files) {
+        var files = dir.listFiles();
+        for (var file : files) {
             if (file.getName().startsWith(".")) {
                 continue;
             } else if (file.isFile() && file.getName().endsWith(".class")) {
@@ -510,9 +510,9 @@ public class ClassReloader extends ClassLoader {
     }
 
     private static String getClassName(File file, String pkg) {
-        String classSimpleName = file.getName();
-        int lastDotIdx = classSimpleName.lastIndexOf('.');
-        String className = classSimpleName.substring(0, lastDotIdx);
+        var classSimpleName = file.getName();
+        var lastDotIdx = classSimpleName.lastIndexOf('.');
+        var className = classSimpleName.substring(0, lastDotIdx);
         if (!pkg.isEmpty()) {
             className = pkg + '.' + className;
         }
@@ -530,8 +530,8 @@ public class ClassReloader extends ClassLoader {
     }
 
     protected Class<?> reload(String s) throws ClassNotFoundException {
-        ClassReloader r = newReloader();
-        for (String c : this.reloadableCache) {
+        var r = newReloader();
+        for (var c : this.reloadableCache) {
             if (c.compareTo(s) != 0) {
                 Class<?> newClass = null;
                 if (r.reloadedClasses.getOrDefault(c, false)) {
@@ -544,7 +544,7 @@ public class ClassReloader extends ClassLoader {
                 //r.addToCache(newClass);
             }
         }
-        Class<?> clazz = r.loadAgain(s);
+        var clazz = r.loadAgain(s);
         this.child = r;
         r.addToCache(clazz);
         return clazz;
@@ -560,15 +560,15 @@ public class ClassReloader extends ClassLoader {
     }
 
     protected Class<?> retrieveFromCache(String s) {
-        Class<?> clazz = this.reloadableClassCache.stream().filter(c -> c.getName().compareTo(s) == 0).findFirst().orElse(null);
+        var clazz = this.reloadableClassCache.stream().filter(c -> c.getName().compareTo(s) == 0).findFirst().orElse(null);
         return clazz;
     }
 
     @Override
     public Class<?> findClass(String s) throws ClassNotFoundException {
         try {
-            byte[] bytes = loadClassData(s);
-            Class<?> clazz = this.defineClass(s, bytes, 0, bytes.length);
+            var bytes = loadClassData(s);
+            var clazz = this.defineClass(s, bytes, 0, bytes.length);
             resolveClass(clazz);
             return clazz;
         } catch (IOException ioe) {
@@ -579,10 +579,10 @@ public class ClassReloader extends ClassLoader {
     }
 
     protected byte[] loadClassData(String className) throws IOException {
-        boolean found = false;
+        var found = false;
         File f = null;
         if (this.specificClassPaths.containsKey(className)) {
-            String specificPath = this.specificClassPaths.get(className);
+            var specificPath = this.specificClassPaths.get(className);
             f = new File(specificPath + className.replaceAll("\\.", File.separator) + ".class");
             if (f != null && f.exists()) {
                 found = true;
@@ -595,7 +595,7 @@ public class ClassReloader extends ClassLoader {
             }
         }
         if (!found) {
-            for (String cp : this.classpath) {
+            for (var cp : this.classpath) {
                 f = new File(cp + className.replaceAll("\\.", File.separator) + ".class");
                 found = f.exists();
                 if (found) break;
@@ -604,14 +604,14 @@ public class ClassReloader extends ClassLoader {
         if (!found) {
             throw new IOException("File " + className + " doesn't exist\n");
         }
-        byte[] classDef = this.byteCodeContainer.loadByteCodeFile(f, className);
+        var classDef = this.byteCodeContainer.loadByteCodeFile(f, className);
         return classDef;
     }
 
     private void addToCache(Class<?> clazz) {
-        boolean found = false;
-        int i = 0;
-        for (Class<?> c : this.reloadableClassCache) {
+        var found = false;
+        var i = 0;
+        for (var c : this.reloadableClassCache) {
             found = c.getName().compareTo(clazz.getName()) == 0;
             if (found) break;
             i++;
@@ -625,7 +625,7 @@ public class ClassReloader extends ClassLoader {
     }
 
     public ClassReloader getLastChild() {
-        ClassReloader lastChild = this;
+        var lastChild = this;
         while (lastChild.child != null) {
             lastChild = lastChild.child;
         }
@@ -633,9 +633,9 @@ public class ClassReloader extends ClassLoader {
     }
 
     private boolean classExist(String s, String[] classpath) {
-        boolean found = false;
+        var found = false;
         File f = null;
-        for (String cp : classpath) {
+        for (var cp : classpath) {
             f = new File(cp + s.replaceAll("\\.", File.separator) + ".class");
             found = this.byteCodeContainer.byteCodeExist(f);
             if (found) break;
@@ -644,7 +644,7 @@ public class ClassReloader extends ClassLoader {
     }
 
     private void cleanIfRescaning(String folder) {
-        File pathFile = new File(folder);
+        var pathFile = new File(folder);
         if (pathFile.exists() && pathFile.isDirectory()) {
             if (this.priorityPath != null && this.priorityPath.compareTo(folder) == 0) {
                 cleanDeletedClasses();
@@ -659,7 +659,7 @@ public class ClassReloader extends ClassLoader {
 
     private void cleanDeletedClasses() {
         Set<String> cleanedClasses = new TreeSet<>();
-        for (String c : this.reloadableCache) {
+        for (var c : this.reloadableCache) {
             if (classExists(c)) {
                 cleanedClasses.add(c);
             } else {
@@ -670,9 +670,9 @@ public class ClassReloader extends ClassLoader {
     }
 
     private boolean classExists(String className) {
-        boolean found = false;
+        var found = false;
         File f = null;
-        for (String cp : classpath) {
+        for (var cp : classpath) {
             f = new File(cp + className.replaceAll("\\.", File.separator) + ".class");
             found = f.exists() && f.isFile();
             if (found) break;
@@ -707,7 +707,7 @@ public class ClassReloader extends ClassLoader {
         }
 
         public void eliminateClass(String className) {
-            String classFilePath = this.filePerClass.remove(className);
+            var classFilePath = this.filePerClass.remove(className);
             if (classFilePath != null) this.classByteCodeMap.remove(classFilePath);
         }
 
@@ -717,7 +717,7 @@ public class ClassReloader extends ClassLoader {
 
         public byte[] loadByteCodeFile(File file, String asClass) throws IOException {
             if (asClass != null && this.filePerClass.containsKey(asClass)) {
-                String associatedPath = this.filePerClass.get(asClass);
+                var associatedPath = this.filePerClass.get(asClass);
                 if (associatedPath.compareTo(file.getAbsolutePath()) != 0) {
                     this.classByteCodeMap.remove(associatedPath);
                     this.filePerClass.put(asClass, file.getAbsolutePath());
@@ -725,15 +725,15 @@ public class ClassReloader extends ClassLoader {
             } else if (asClass != null) {
                 this.filePerClass.put(asClass, file.getAbsolutePath());
             }
-            String key = file.getAbsolutePath();
+            var key = file.getAbsolutePath();
             if (ByteCodeContainer.reuseByteCode && this.classByteCodeMap.containsKey(key)) {
                 if (this.classesToReload.contains(key)) {
-                    byte[] buff = loadFile(file);
+                    var buff = loadFile(file);
                     this.classByteCodeMap.put(key, buff);
                     return buff;
                 } else if (this.verifyFileChanges) {
-                    byte[] lastBuff = this.classByteCodeMap.get(key);
-                    byte[] currentBuff = JustCodeDigest.digest(file, false);
+                    var lastBuff = this.classByteCodeMap.get(key);
+                    var currentBuff = JustCodeDigest.digest(file, false);
                     if (Arrays.equals(lastBuff, currentBuff)) {
                         return lastBuff;
                     } else {
@@ -744,7 +744,7 @@ public class ClassReloader extends ClassLoader {
                     return this.classByteCodeMap.get(key);
                 }
             } else {
-                byte[] buff = loadFile(file);
+                var buff = loadFile(file);
                 this.classByteCodeMap.put(key, buff);
                 return buff;
             }
@@ -759,10 +759,10 @@ public class ClassReloader extends ClassLoader {
         }
 
         private static byte[] loadFile(File file) throws IOException {
-            int size = (int) file.length();
-            byte[] buff = new byte[size];
-            FileInputStream fis = new FileInputStream(file);
-            DataInputStream dis = new DataInputStream(fis);
+            var size = (int) file.length();
+            var buff = new byte[size];
+            var fis = new FileInputStream(file);
+            var dis = new DataInputStream(fis);
             dis.readFully(buff);
             dis.close();
             return buff;
@@ -775,7 +775,7 @@ public class ClassReloader extends ClassLoader {
 
         @Override
         public String toString() {
-            String res = "";
+            var res = "";
             res += "Reuse bytecode      : " + ByteCodeContainer.reuseByteCode + '\n';
             res += "Verify file changes : " + this.verifyFileChanges + '\n';
             res += "Classes to reload   : \n" + classesToReloadAsString(true) + '\n';
@@ -785,8 +785,8 @@ public class ClassReloader extends ClassLoader {
         }
 
         public String classesToReloadAsString(boolean indent) {
-            String res = "";
-            Iterator<String> it = this.classesToReload.iterator();
+            var res = "";
+            var it = this.classesToReload.iterator();
             while (it.hasNext()) {
                 res += indentation(indent) + it.next();
                 if (it.hasNext()) res += "\n";
@@ -795,10 +795,10 @@ public class ClassReloader extends ClassLoader {
         }
 
         public String filePerClassAsString(boolean indent) {
-            String res = "";
-            Iterator<Entry<String, String>> it = this.filePerClass.entrySet().iterator();
+            var res = "";
+            var it = this.filePerClass.entrySet().iterator();
             while (it.hasNext()) {
-                Entry<String, String> entry = it.next();
+                var entry = it.next();
                 res += indentation(indent) + entry.getKey() + " : " + entry.getValue();
                 if (it.hasNext()) res += "\n";
             }
@@ -806,11 +806,11 @@ public class ClassReloader extends ClassLoader {
         }
 
         public String byteCodePerClass(boolean indent, boolean fullByteCode) {
-            String res = "";
-            Iterator<Entry<String, byte[]>> it = this.classByteCodeMap.entrySet().iterator();
+            var res = "";
+            var it = this.classByteCodeMap.entrySet().iterator();
             while (it.hasNext()) {
-                Entry<String, byte[]> entry = it.next();
-                String byteCodeAsString = fullByteCode? Arrays.toString(entry.getValue()):entry.getValue().toString();
+                var entry = it.next();
+                var byteCodeAsString = fullByteCode? Arrays.toString(entry.getValue()):entry.getValue().toString();
                 res += indentation(indent) + entry.getKey() + " : " + byteCodeAsString;
                 if (it.hasNext()) res += "\n";
             }
@@ -846,10 +846,10 @@ public class ClassReloader extends ClassLoader {
         }
 
         private static String getJustCode(String original) {
-            Matcher javadoc = COMMENT_JAVADOC.matcher(original);
-            Matcher comment_multi = COMMENT_MULTILINE.matcher(javadoc.replaceAll(""));
-            Matcher comment_single = COMMENT_SINGLE.matcher(comment_multi.replaceAll(""));
-            Matcher whitespace = WHITESPACE.matcher(comment_single.replaceAll(""));
+            var javadoc = COMMENT_JAVADOC.matcher(original);
+            var comment_multi = COMMENT_MULTILINE.matcher(javadoc.replaceAll(""));
+            var comment_single = COMMENT_SINGLE.matcher(comment_multi.replaceAll(""));
+            var whitespace = WHITESPACE.matcher(comment_single.replaceAll(""));
             return whitespace.replaceAll("");
         }
 
@@ -868,7 +868,7 @@ public class ClassReloader extends ClassLoader {
         }
 
         public static byte[] digest(String original, boolean justCode) {
-            String code = justCode?getJustCode(original):original;
+            var code = justCode?getJustCode(original):original;
             InputStream is = new ByteArrayInputStream(code.getBytes());
             JustCodeDigest.lastException = null;
             DigestInputStream dis = null;
@@ -889,7 +889,7 @@ public class ClassReloader extends ClassLoader {
                     } catch (IOException e) {
                         if (JustCodeDigest.printExceptions) e.printStackTrace();
                         if (JustCodeDigest.lastException != null) {
-                            Exception exc = new Exception(e);
+                            var exc = new Exception(e);
                             exc.initCause(JustCodeDigest.lastException);
                             JustCodeDigest.lastException = exc;
                         } else {
@@ -908,8 +908,8 @@ public class ClassReloader extends ClassLoader {
         public static byte[] digest(File file, boolean justCode) {
             JustCodeDigest.lastException = null;
             try {
-                byte[] bytes = Files.readAllBytes(file.toPath());
-                String text = new String(bytes, StandardCharsets.UTF_8);
+                var bytes = Files.readAllBytes(file.toPath());
+                var text = new String(bytes, StandardCharsets.UTF_8);
                 return digest(text, justCode);
             } catch (IOException e) {
                 if (JustCodeDigest.printExceptions) e.printStackTrace();

@@ -62,7 +62,7 @@ public class SymbolState extends TokenizerState {
 	@Override
 	public Token nextToken(PushbackReader r, int first, Tokenizer t) throws IOException {
 
-		String s = symbols.nextSymbol(r, first);
+		var s = symbols.nextSymbol(r, first);
 		return new Token(Token.TT_SYMBOL, s, BigDecimal.ZERO);
 	}
 }

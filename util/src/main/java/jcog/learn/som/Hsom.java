@@ -34,15 +34,15 @@ public class Hsom {
         gamma = SomSize / 2f;
         this.numInputs = numInputs;
         this.SomSize = SomSize;
-        for (int i1 = 0; i1 < SomSize; i1++) {
-            for (int i2 = 0; i2 < SomSize; i2++) {
+        for (var i1 = 0; i1 < SomSize; i1++) {
+            for (var i2 = 0; i2 < SomSize; i2++) {
                 coords1[i1][i2] = (float) ((float) i1 * 1.0); 
                 coords2[i1][i2] = (float) ((float) i2 * 1.0);
             }
         }
-        for (int x = 0; x < SomSize; x++) {
-            for (int y = 0; y < SomSize; y++) {
-                for (int z = 0; z < numInputs; z++) {
+        for (var x = 0; x < SomSize; x++) {
+            for (var y = 0; y < SomSize; y++) {
+                for (var z = 0; z < numInputs; z++) {
                     links[x][y][z] = (rng.nextFloat()/**
                      * 2.0-1.0
                      */
@@ -54,7 +54,7 @@ public class Hsom {
 
     void input(float[] input) {
         int j;
-        float leak = Leak;
+        var leak = Leak;
 
         for (j = 0; j < numInputs; j++) {
             if (!Leaky) {
@@ -63,14 +63,14 @@ public class Hsom {
                 this.inputs[j] += (-leak * this.inputs[j]) + (1f- leak) * input[j];
             }
         }
-        float minv = Float.POSITIVE_INFINITY;
-        for (int i1 = 0; i1 < SomSize; i1++) {
-            for (int i2 = 0; i2 < SomSize; i2++) {
-                float summe = 0.0f;
-                float[] ll = links[i1][i2];
+        var minv = Float.POSITIVE_INFINITY;
+        for (var i1 = 0; i1 < SomSize; i1++) {
+            for (var i2 = 0; i2 < SomSize; i2++) {
+                var summe = 0.0f;
+                var ll = links[i1][i2];
                 for (j = 0; j < numInputs; j++) {
-                    float ij = inputs[j];
-                    float lljminij = ll[j] - ij;
+                    var ij = inputs[j];
+                    var lljminij = ll[j] - ij;
                     
                     summe += lljminij * lljminij;
                 }
@@ -88,23 +88,23 @@ public class Hsom {
         return winnerx + (winnery * SomSize);
     }
     void get(float[] outarr) {
-        int x = winnerx;
-        int y = winnery;
-        for (int i = 0; i < numInputs; i++) {
+        var x = winnerx;
+        var y = winnery;
+        for (var i = 0; i < numInputs; i++) {
             outarr[i] = links[x][y][i] * outmul;
         }
     }
 
-    float hsit(int i1, int i2) { 
-        float[][] cc = this.coords1;
-        int winnerx = this.winnerx;
-        int winnery = this.winnery;
-        float diff1 = (cc[i1][i2] - cc[winnerx][winnery])
+    float hsit(int i1, int i2) {
+        var cc = this.coords1;
+        var winnerx = this.winnerx;
+        var winnery = this.winnery;
+        var diff1 = (cc[i1][i2] - cc[winnerx][winnery])
                 * (cc[i1][i2] - cc[winnerx][winnery]);
-        float[][] dd = this.coords2;
-        float diff2 = (dd[i1][i2] - dd[winnerx][winnery])
+        var dd = this.coords2;
+        var diff2 = (dd[i1][i2] - dd[winnerx][winnery])
                 * (dd[i1][i2] - dd[winnerx][winnery]);
-        float gammaSq = 2 * gamma * gamma;
+        var gammaSq = 2 * gamma * gamma;
         return (1.0f / ((float) Math.sqrt(Math.PI * gammaSq)))
                 * ((float) Math.exp((diff1 + diff2) / (-gammaSq)));
     }
@@ -115,17 +115,17 @@ public class Hsom {
     public void learn(float[] input) {
         input(input);
 
-        float eta = this.eta;
+        var eta = this.eta;
         if (eta != 0.0f) {
-            float[][][] l = this.links;
-            float[] ii = this.inputs;
+            var l = this.links;
+            var ii = this.inputs;
 
-            for (int i1 = 0; i1 < SomSize; i1++) {
-                for (int i2 = 0; i2 < SomSize; i2++) {
-                    float h = hsit(i1, i2);
-                    float[] ll = l[i1][i2];
-                    for (int j = 0; j < numInputs; j++) { 
-                        float lx = l[i1][i2][j];
+            for (var i1 = 0; i1 < SomSize; i1++) {
+                for (var i2 = 0; i2 < SomSize; i2++) {
+                    var h = hsit(i1, i2);
+                    var ll = l[i1][i2];
+                    for (var j = 0; j < numInputs; j++) {
+                        var lx = l[i1][i2][j];
                         ll[j] = lx + (eta * h * (ii[j] - lx));
                     }
                 }

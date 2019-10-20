@@ -66,7 +66,7 @@ public interface Concept extends Termed, MetaMap {
         print(System.out);
     }
     default String printToString() {
-        StringBuilder sb = new StringBuilder(1024);
+        var sb = new StringBuilder(1024);
         print(sb);
         return sb.toString();
     }

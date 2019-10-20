@@ -19,13 +19,13 @@ public class InspectionUtils
 	 * @param parms: array of params
 	 */
 	public static Method searchForMethod(Class<?> type, String methodName, Class<?>... parms) {
-	    Method[] methods = type.getMethods();
-        for (Method method : methods) {
+        var methods = type.getMethods();
+        for (var method : methods) {
 
             if (!method.getName().equals(methodName))
                 continue;
 
-            Class<?>[] types = method.getParameterTypes();
+            var types = method.getParameterTypes();
 
 
             if (types.length != parms.length)
@@ -50,15 +50,15 @@ public class InspectionUtils
         if(targets.length != sources.length)
             return( false );
 
-        for(int i = 0; i < targets.length; i++)
+        for(var i = 0; i < targets.length; i++)
         {
             if(sources[i] == null)
                 continue;
 
             if(targets[i].isInterface())
             {
-            	Class<?>[] interfaces = sources[i].getInterfaces();
-            	for (Class<?> in : interfaces) {
+                var interfaces = sources[i].getInterfaces();
+            	for (var in : interfaces) {
 					if(targets[i] == in)
 						return true;
 				}

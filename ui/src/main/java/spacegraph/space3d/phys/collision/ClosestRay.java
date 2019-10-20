@@ -47,8 +47,8 @@ public class ClosestRay extends Collisions.RayResultCallback {
 
     @Override
     public float addSingleResult(Collisions.LocalRayResult rayResult, boolean normalInWorldSpace) {
-        
-        float f = rayResult.hitFraction;
+
+        var f = rayResult.hitFraction;
         if ((f > closestHitFraction))
             throw new RuntimeException();
 

@@ -12,7 +12,7 @@ public class LogContainer extends RingContainer<AbstractLabel> {
 
     @Override
     protected void reallocate(AbstractLabel[] x) {
-        for (int i = 0; i < x.length; i++) {
+        for (var i = 0; i < x.length; i++) {
             AbstractLabel r = new VectorLabel();
             r.pos(RectFloat.Unit);
             r.start(this);

@@ -56,7 +56,7 @@ public class TrapezoidWave extends UGen {
 
     @Override
     public void gen() {
-        float[] bo = bufOut[0];
+        var bo = bufOut[0];
 
         if (freqUGen != null) {
             freqUGen.update();
@@ -71,8 +71,8 @@ public class TrapezoidWave extends UGen {
             decayUGen.update();
         }
 
-        for (int i = 0; i < bufferSize; i++) {
-            boolean doCalc = false;
+        for (var i = 0; i < bufferSize; i++) {
+            var doCalc = false;
             if (dutyCycleUGen != null) {
                 dutyCycle = dutyCycleUGen.getValue(0, i);
                 if (dutyCycle < 0) {
@@ -135,7 +135,7 @@ public class TrapezoidWave extends UGen {
             cdSlope = 0;
         } else {
             float att, dec;
-            float m = attack + decay;
+            var m = attack + decay;
             if (m > 0) {
                 m = dutyCycle < .5 ? dutyCycle / m : (1 - dutyCycle) / m;
 

@@ -46,8 +46,8 @@ public class FreqVectorSensor extends VectorSensor {
         component = new ComponentSignal[components];
         componentValue = new float[components];
         freqValue = new float[fftSize];
-        for (int i= 0; i < components; i++) {
-            int finalI = i;
+        for (var i = 0; i < components; i++) {
+            var finalI = i;
             component[i] = newComponent(termizer.apply(i), ()->componentValue[finalI]);
             freqValue[i] = 0;
         }
@@ -71,18 +71,18 @@ public class FreqVectorSensor extends VectorSensor {
 
         dft.nextFreq(inBuf, 0, freqValue);
 
-        float center = this.center.floatValue();
-        float bw = this.bandwidth.floatValue();
-        float fMin = Math.max(0, center - bw/2);
-        float fMax = Math.min(freqMax, center + bw/2);
-        int n = componentValue.length;
-        float fDelta = (fMax - fMin) / n;
-        float fRad = fDelta/2;
-        for (int i = 0; i < n; i++) {
-            float c = Util.lerp((i + 0.5f)/n, fMin, fMax);
-            float a = c - fRad;
-            float b = c + fRad;
-            double f = Util.interpSum(freqValue, a, b)/(b-a);
+        var center = this.center.floatValue();
+        var bw = this.bandwidth.floatValue();
+        var fMin = Math.max(0, center - bw/2);
+        var fMax = Math.min(freqMax, center + bw/2);
+        var n = componentValue.length;
+        var fDelta = (fMax - fMin) / n;
+        var fRad = fDelta/2;
+        for (var i = 0; i < n; i++) {
+            var c = Util.lerp((i + 0.5f)/n, fMin, fMax);
+            var a = c - fRad;
+            var b = c + fRad;
+            var f = Util.interpSum(freqValue, a, b)/(b-a);
             componentValue[i] = (float) f;
         }
         float intensity;

@@ -70,15 +70,15 @@ public class LivePredictor {
                 present = new double[outs.length];
             }
 
-            int i = 0;
-            for (int t = past-1; t >=0; t--) {
-                long w = now - (t + 1) * dur;
-                for (LongToFloatFunction c : ins) {
+            var i = 0;
+            for (var t = past-1; t >=0; t--) {
+                var w = now - (t + 1) * dur;
+                for (var c : ins) {
                     pastVector[i++] = c.valueOf(w);
                 }
             }
-            int k = 0;
-            for (LongToFloatFunction c : outs) {
+            var k = 0;
+            for (var c : outs) {
                 present[k++] = c.valueOf(now);
             }
 
@@ -92,9 +92,9 @@ public class LivePredictor {
 
         @Override
         public double[] shift() {
-            
-            int stride = ins.length;
-            int all = pastVector.length;
+
+            var stride = ins.length;
+            var all = pastVector.length;
             System.arraycopy(pastVector, stride, pastVector, 0, all - stride);
             System.arraycopy(present, 0, pastVector, stride, present.length );
 
@@ -210,7 +210,7 @@ public class LivePredictor {
 
     public double[] next(long when) {
         synchronized (model) {
-            double[] x = framer.inputs(when);
+            var x = framer.inputs(when);
             model.learn(x, framer.outputs());
             framer.shift();
 
@@ -225,9 +225,9 @@ public class LivePredictor {
      */
     public double[] project(double[] prevOut) {
         synchronized (model) {
-            double[] x = ((DenseShiftFramer) framer).pastVector;
+            var x = ((DenseShiftFramer) framer).pastVector;
             model.learn(x, prevOut);
-            double[] nextIn = framer.shift();
+            var nextIn = framer.shift();
 
             return model.predict(x);
         }

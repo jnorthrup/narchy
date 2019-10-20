@@ -21,8 +21,8 @@ public abstract class LazyList<X> extends AbstractList<X> {
 
     @Override
     public void forEach(Consumer<? super X> action) {
-        int s = size();
-        for (int i = 0; i < s; i++)
+        var s = size();
+        for (var i = 0; i < s; i++)
             action.accept(get(i));
     }
 
@@ -35,19 +35,19 @@ public abstract class LazyList<X> extends AbstractList<X> {
     }
 
     public void activateAll() {
-        int s = size();
-        for (int i = 0; i < s; i++) {
+        var s = size();
+        for (var i = 0; i < s; i++) {
             get(i,true);
         }
     }
 
     public boolean allSatisfy(org.eclipse.collections.api.block.predicate.Predicate<? super X> predicate) {
         //return InternalArrayIterate.allSatisfy(this.items, this.size, predicate);
-        int s = size();
+        var s = size();
         return IntStream.range(0, s).allMatch(i -> predicate.test(get(i)));
     }
     public <P> boolean allSatisfyWith(Predicate2<? super X, ? super P> predicate2, P parameter) {
-        int s = size();
+        var s = size();
         if (s > 0) {
             return IntStream.range(0, s).allMatch(i -> predicate2.accept(get(i), parameter));
         }
@@ -77,12 +77,12 @@ public abstract class LazyList<X> extends AbstractList<X> {
     }
 
     public X get(int i, boolean activate) {
-        Object x = list.get(i);
+        var x = list.get(i);
         if (x instanceof Supplier) {
             if (!activate)
                 return inactive();
             else {
-                Object y = ((Supplier) x).get();
+                var y = ((Supplier) x).get();
                 list.setFast(i, y);
                 x = y;
             }

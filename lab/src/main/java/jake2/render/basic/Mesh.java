@@ -77,10 +77,10 @@ public abstract class Mesh extends Light {
         if ((currententity.flags & (Defines.RF_SHELL_RED
                 | Defines.RF_SHELL_GREEN | Defines.RF_SHELL_BLUE
                 | Defines.RF_SHELL_DOUBLE | Defines.RF_SHELL_HALF_DAM)) != 0) {
-            for (int i = 0; i < nverts; i++ /* , v++, ov++, lerp+=4 */
+            for (var i = 0; i < nverts; i++ /* , v++, ov++, lerp+=4 */
             ) {
                 vv = v[i];
-                float[] normal = r_avertexnormals[(vv >>> 24) & 0xFF];
+                var normal = r_avertexnormals[(vv >>> 24) & 0xFF];
                 ovv = ov[i];
 
                 lerp[i][0] = move[0] + (ovv & 0xFF) * backv[0] + (vv & 0xFF)
@@ -91,7 +91,7 @@ public abstract class Mesh extends Light {
                         * frontv[2] + normal[2] * Defines.POWERSUIT_SCALE;
             }
         } else {
-            for (int i = 0; i < nverts; i++ /* , v++, ov++, lerp+=4 */
+            for (var i = 0; i < nverts; i++ /* , v++, ov++, lerp+=4 */
             ) {
                 vv = v[i];
                 ovv = ov[i];
@@ -109,17 +109,17 @@ public abstract class Mesh extends Light {
             float[] frontv, float[] backv) {
         
 	int ovv, vv;
-        FloatBuffer lerp = vertexArrayBuf;
+        var lerp = vertexArrayBuf;
 
         
         if ((currententity.flags & (Defines.RF_SHELL_RED
                 | Defines.RF_SHELL_GREEN | Defines.RF_SHELL_BLUE
                 | Defines.RF_SHELL_DOUBLE | Defines.RF_SHELL_HALF_DAM)) != 0) {
-            int j = 0;
-            for (int i = 0; i < nverts; i++ /* , v++, ov++, lerp+=4 */
+            var j = 0;
+            for (var i = 0; i < nverts; i++ /* , v++, ov++, lerp+=4 */
             ) {
                 vv = v[i];
-                float[] normal = r_avertexnormals[(v[i] >>> 24) & 0xFF];
+                var normal = r_avertexnormals[(v[i] >>> 24) & 0xFF];
                 ovv = ov[i];
 
                 lerp.put(j, move[0] + (ovv & 0xFF) * backv[0] + (vv & 0xFF) * frontv[0]
@@ -131,8 +131,8 @@ public abstract class Mesh extends Light {
                 j += 3;
             }
         } else {
-            int j = 0;
-            for (int i = 0; i < nverts; i++ /* , v++, ov++, lerp+=4 */
+            var j = 0;
+            for (var i = 0; i < nverts; i++ /* , v++, ov++, lerp+=4 */
             ) {
                 ovv = ov[i];
                 vv = v[i];
@@ -164,15 +164,15 @@ public abstract class Mesh extends Light {
         float alpha;
 
 
-        qfiles.daliasframe_t frame = paliashdr.aliasFrames[currententity.frame];
+        var frame = paliashdr.aliasFrames[currententity.frame];
 
-        int[] v = frame.verts;
+        var v = frame.verts;
 
-        qfiles.daliasframe_t oldframe = paliashdr.aliasFrames[currententity.oldframe];
+        var oldframe = paliashdr.aliasFrames[currententity.oldframe];
 
-        int[] ov = oldframe.verts;
+        var ov = oldframe.verts;
 
-        int[] order = paliashdr.glCmds;
+        var order = paliashdr.glCmds;
 
         if ((currententity.flags & Defines.RF_TRANSLUCENT) != 0)
             alpha = currententity.alpha;
@@ -202,7 +202,7 @@ public abstract class Mesh extends Light {
 
         Math3D.VectorAdd(move, oldframe.translate, move);
 
-        float frontlerp = 1.0f - backlerp;
+        var frontlerp = 1.0f - backlerp;
         int i;
         float[] backv = {0, 0, 0};
         for (i = 0; i < 3; i++) {
@@ -213,7 +213,7 @@ public abstract class Mesh extends Light {
 
         int index_xyz;
         int count;
-        int orderIndex = 0;
+        var orderIndex = 0;
         float l;
         if (gl_vertex_arrays.value != 0.0f) {
             GL_LerpVerts(paliashdr.num_xyz, ov, v, move, frontv, backv);
@@ -232,11 +232,9 @@ public abstract class Mesh extends Light {
                 gl.glEnableClientState(GL_COLOR_ARRAY);
                 gl.glColorPointer(4, 0, colorArrayBuf);
 
-                
-                
-                
-                FloatBuffer color = colorArrayBuf;
-                int j = 0;
+
+                var color = colorArrayBuf;
+                var j = 0;
                 for (i = 0; i < paliashdr.num_xyz; i++) {
                     
                     l = shadedots[(v[i] >>> 24) & 0xFF];
@@ -362,18 +360,18 @@ public abstract class Mesh extends Light {
      */
     void GL_DrawAliasShadow(qfiles.dmdl_t paliashdr, int posenum) {
         float[] point = { 0, 0, 0 };
-        float lheight = currententity.origin[2] - lightspot[2];
+        var lheight = currententity.origin[2] - lightspot[2];
 
-        int[] order = paliashdr.glCmds;
+        var order = paliashdr.glCmds;
 
-        float height = -lheight + 1.0f;
+        var height = -lheight + 1.0f;
 
-        int orderIndex = 0;
-        int index = 0;
+        var orderIndex = 0;
+        var index = 0;
 
         while (true) {
 
-            int count = order[orderIndex++];
+            var count = order[orderIndex++];
             if (count == 0)
                 break; 
             if (count < 0) {
@@ -418,7 +416,7 @@ public abstract class Mesh extends Light {
      */
     boolean R_CullAliasModel(float[][] bbox, entity_t e) {
 
-        qfiles.dmdl_t paliashdr = (qfiles.dmdl_t) currentmodel.extradata;
+        var paliashdr = (qfiles.dmdl_t) currentmodel.extradata;
 
         if ((e.frame >= paliashdr.num_frames) || (e.frame < 0)) {
             VID.Printf(Defines.PRINT_ALL, "R_CullAliasModel "
@@ -432,8 +430,8 @@ public abstract class Mesh extends Light {
             e.oldframe = 0;
         }
 
-        qfiles.daliasframe_t pframe = paliashdr.aliasFrames[e.frame];
-        qfiles.daliasframe_t poldframe = paliashdr.aliasFrames[e.oldframe];
+        var pframe = paliashdr.aliasFrames[e.frame];
+        var poldframe = paliashdr.aliasFrames[e.oldframe];
 
         /*
          * * compute axially aligned mins and maxs
@@ -515,13 +513,13 @@ public abstract class Mesh extends Light {
             Math3D.VectorAdd(e.origin, bbox[i], bbox[i]);
         }
 
-        int aggregatemask = ~0;
+        var aggregatemask = ~0;
 
-        for (int p = 0; p < 8; p++) {
-            int mask = 0;
+        for (var p = 0; p < 8; p++) {
+            var mask = 0;
 
-            for (int f = 0; f < 4; f++) {
-                float dp = Math3D.DotProduct(frustum[f].normal, bbox[p]);
+            for (var f = 0; f < 4; f++) {
+                var dp = Math3D.DotProduct(frustum[f].normal, bbox[p]);
 
                 if ((dp - frustum[f].dist) < 0) {
                     mask |= (1 << f);
@@ -556,7 +554,7 @@ public abstract class Mesh extends Light {
                 return;
         }
 
-        qfiles.dmdl_t paliashdr = (qfiles.dmdl_t) currentmodel.extradata;
+        var paliashdr = (qfiles.dmdl_t) currentmodel.extradata;
 
 
         int i;
@@ -606,7 +604,7 @@ public abstract class Mesh extends Light {
             }
 
             if (gl_monolightmap.string.charAt(0) != '0') {
-                float s = shadelight[0];
+                var s = shadelight[0];
 
                 if (s < shadelight[1])
                     s = shadelight[1];
@@ -632,9 +630,9 @@ public abstract class Mesh extends Light {
 
         if ((currententity.flags & Defines.RF_GLOW) != 0) {
 
-            float scale = (float) (0.1f * Math.sin(r_newrefdef.time * 7));
+            var scale = (float) (0.1f * Math.sin(r_newrefdef.time * 7));
             for (i = 0; i < 3; i++) {
-                float min = shadelight[i] * 0.8f;
+                var min = shadelight[i] * 0.8f;
                 shadelight[i] += scale;
                 if (shadelight[i] < min)
                     shadelight[i] = min;
@@ -655,7 +653,7 @@ public abstract class Mesh extends Light {
         shadedots = r_avertexnormal_dots[((int) (currententity.angles[1] * (SHADEDOT_QUANT / 360.0)))
                 & (SHADEDOT_QUANT - 1)];
 
-        float an = (float) (currententity.angles[1] / 180 * Math.PI);
+        var an = (float) (currententity.angles[1] / 180 * Math.PI);
         shadevector[0] = (float) Math.cos(-an);
         shadevector[1] = (float) Math.sin(-an);
         shadevector[2] = 1;

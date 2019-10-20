@@ -42,13 +42,13 @@ public class Termducer {
 
 
     public FST build() throws IOException {
-        Builder b = new Builder(FST.INPUT_TYPE.BYTE1, ByteSequenceOutputs.getSingleton());
+        var b = new Builder(FST.INPUT_TYPE.BYTE1, ByteSequenceOutputs.getSingleton());
 
         xy.list.sort(Comparators.byFunction(Pair::getOne));
 
-        for (Pair<IntsRef, Twin<Term>> z : xy.list) {
+        for (var z : xy.list) {
             try {
-                Term y = z.getTwo().getTwo();
+                var y = z.getTwo().getTwo();
                 b.add(z.getOne(), bytes(y));
             } catch (IOException e) {
                 e.printStackTrace();
@@ -69,15 +69,15 @@ public class Termducer {
     public static void main(String[] args) throws IOException {
 
 
-        Termducer t = new Termducer();
+        var t = new Termducer();
         t.put($.$$("(a-->b)"), $.$$("(1-->2)"));
         t.put($.$$("(a-->(b,c))"), $.$$("(1-->(2,3))"));
         t.put($.$$("add(1,1))"), Int.the(2));
 
-        FST f = t.build();
+        var f = t.build();
         System.out.println("RAM bytes used: " + f.ramBytesUsed());
         for (Pair x : t.xy.list) {
-            BytesRef y = (BytesRef) Util.get(f, (IntsRef) x.getOne());
+            var y = (BytesRef) Util.get(f, (IntsRef) x.getOne());
             System.out.println(y + " " + IO.bytesToTerm(y.bytes));
         }
         System.out.println(f);

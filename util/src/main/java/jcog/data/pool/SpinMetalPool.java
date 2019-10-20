@@ -27,7 +27,7 @@ public abstract class SpinMetalPool<X> extends MetalPool<X> {
 
     @Override
     public X get() {
-        X e = spin.run(data::poll);
+        var e = spin.run(data::poll);
         return e == null ? create() : e;
     }
 }

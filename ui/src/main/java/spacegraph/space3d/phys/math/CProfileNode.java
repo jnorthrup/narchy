@@ -66,8 +66,8 @@ class CProfileNode {
 	}
 
 	public CProfileNode getSubNode(String name) {
-		
-		CProfileNode child = this.child;
+
+		var child = this.child;
 		while (child != null) {
 			if (Objects.equals(child.name, name)) {
 				return child;
@@ -75,9 +75,8 @@ class CProfileNode {
 			child = child.sibling;
 		}
 
-		
 
-		CProfileNode node = new CProfileNode(name, this);
+		var node = new CProfileNode(name, this);
 		node.sibling = this.child;
 		this.child = node;
 		return node;
@@ -122,7 +121,7 @@ class CProfileNode {
 	
 	public boolean Return() {
 		if (--recursionCounter == 0 && totalCalls != 0) {
-			long time = BulletStats.profileGetTicks();
+			var time = BulletStats.profileGetTicks();
 			time -= startTime;
 			totalTime += time / BulletStats.profileGetTickRate();
 		}

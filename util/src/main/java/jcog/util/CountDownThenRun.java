@@ -20,7 +20,7 @@ public class CountDownThenRun extends AtomicInteger {
 
     private void countDown() {
         if (decrementAndGet() == 0) {
-            Runnable of = onFinish;
+            var of = onFinish;
             onFinish = null;
             of.run();
         }

@@ -125,7 +125,7 @@ public class MutableLong extends Number  {
      * @since 3.5
      */
     public long getAndIncrement() {
-        long last = value;
+        var last = value;
         value++;
         return last;
     }
@@ -159,7 +159,7 @@ public class MutableLong extends Number  {
      * @since 3.5
      */
     public long getAndDecrement() {
-        long last = value;
+        var last = value;
         value--;
         return last;
     }
@@ -255,7 +255,7 @@ public class MutableLong extends Number  {
      * @since 3.5
      */
     public long getAndAdd(long operand) {
-        long last = value;
+        var last = value;
         this.value += operand;
         return last;
     }
@@ -270,7 +270,7 @@ public class MutableLong extends Number  {
      * @since 3.5
      */
     public long getAndAdd(Number operand) {
-        long last = value;
+        var last = value;
         this.value += operand.longValue();
         return last;
     }

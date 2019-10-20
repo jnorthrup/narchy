@@ -26,30 +26,30 @@ public class Glass extends Material {
 
     @Override
     public v2[] focee(v2 startPoint, v2 vektor) {
-        Transform t = new Transform();
+        var t = new Transform();
         t.set(startPoint, 0);
 
         /**
          * Pocet prvkov v jednej kruznici.
          */
-        int count = 30; /**
+        var count = 30; /**
          * Pocet prvkov kruznice.
-         */int levels = 4;
-        int allCount = count * levels;
+         */var levels = 4;
+        var allCount = count * levels;
 
-        v2[] va = new v2[allCount];
-        for (int l = 0; l < levels; l++) {
-            for (int c = 0; c < count; c++) {
-                int i = l * count + c;
+        var va = new v2[allCount];
+        for (var l = 0; l < levels; l++) {
+            for (var c = 0; c < count; c++) {
+                var i = l * count + c;
 
-                double u = r.nextDouble() * Math.PI * 2; 
-                double deficit = (r.nextDouble() - 0.5) * m_shattering / 20;
-                double r = (l + 1) * m_shattering + deficit;
+                var u = r.nextDouble() * Math.PI * 2;
+                var deficit = (r.nextDouble() - 0.5) * m_shattering / 20;
+                var r = (l + 1) * m_shattering + deficit;
 
-                double x = Math.sin(u) * r;
-                double y = Math.cos(u) * r;
+                var x = Math.sin(u) * r;
+                var y = Math.cos(u) * r;
 
-                v2 v = new v2((float) x, (float) y);
+                var v = new v2((float) x, (float) y);
 
                 va[i] = Transform.mul(t, v);
             }

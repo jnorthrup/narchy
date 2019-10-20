@@ -48,9 +48,9 @@ public class GrammarFuzzer {
         }
 
         public int randRepetition(Random random) {
-            double sample = random.nextDouble();
-            double sum = 0.0;
-            for (int i = 0; i < this.pRepetition.length; i++) {
+            var sample = random.nextDouble();
+            var sum = 0.0;
+            for (var i = 0; i < this.pRepetition.length; i++) {
                 sum += this.pRepetition[i];
                 if (sum >= sample) {
                     return i;
@@ -94,24 +94,24 @@ public class GrammarFuzzer {
         }
         length.decrement();
         if (!recursiveNodes.get(grammar).isEmpty() && parameters.randRecursion(random)) {
-            int choice = SampleParameters.randMultiAlternation(random, recursiveNodes.get(grammar).size());
+            var choice = SampleParameters.randMultiAlternation(random, recursiveNodes.get(grammar).size());
             return sampleHelper(new ArrayList<>(recursiveNodes.get(grammar)).get(choice), recursiveNodes, parameters, random, backup, length);
         } else if (grammar instanceof MultiAlternationNode) {
-            int choice = SampleParameters.randMultiAlternation(random, grammar.getChildren().size());
+            var choice = SampleParameters.randMultiAlternation(random, grammar.getChildren().size());
             return sampleHelper(grammar.getChildren().get(choice), recursiveNodes, parameters, random, backup, length);
         } else if (grammar instanceof RepetitionNode) {
-            ParseTreeNode start = sampleHelper(((RepetitionNode) grammar).start, recursiveNodes, parameters, random, backup, length);
-            int reps = parameters.randRepetition(random);
-            List<ParseTreeNode> rep = IntStream.range(0, reps).mapToObj(i -> sampleHelper(((RepetitionNode) grammar).rep, recursiveNodes, parameters, random, backup, length)).collect(Collectors.toList());
-            ParseTreeNode end = sampleHelper(((RepetitionNode) grammar).end, recursiveNodes, parameters, random, backup, length);
+            var start = sampleHelper(((RepetitionNode) grammar).start, recursiveNodes, parameters, random, backup, length);
+            var reps = parameters.randRepetition(random);
+            var rep = IntStream.range(0, reps).mapToObj(i -> sampleHelper(((RepetitionNode) grammar).rep, recursiveNodes, parameters, random, backup, length)).collect(Collectors.toList());
+            var end = sampleHelper(((RepetitionNode) grammar).end, recursiveNodes, parameters, random, backup, length);
             return new ParseTreeRepetitionNode((RepetitionNode) grammar, start, rep, end);
         } else if (grammar instanceof MultiConstantNode) {
-            MultiConstantNode mconstNode = (MultiConstantNode) grammar;
-            StringBuilder sb = new StringBuilder();
-            boolean useAllCharacters = parameters.randAllCharacters(random);
-            for (Set<Character> characterOption : useAllCharacters ? mconstNode.characterOptions : mconstNode.characterChecks) {
+            var mconstNode = (MultiConstantNode) grammar;
+            var sb = new StringBuilder();
+            var useAllCharacters = parameters.randAllCharacters(random);
+            for (var characterOption : useAllCharacters ? mconstNode.characterOptions : mconstNode.characterChecks) {
                 List<Character> characterOptionList = new ArrayList<>(characterOption);
-                int choice = SampleParameters.randMultiAlternation(random, characterOptionList.size());
+                var choice = SampleParameters.randMultiAlternation(random, characterOptionList.size());
                 sb.append(characterOptionList.get(choice));
             }
             return new ParseTreeMultiConstantNode(mconstNode, sb.toString());
@@ -122,7 +122,7 @@ public class GrammarFuzzer {
 
     private static void getBackup(ParseTreeNode node, Map<Node, ParseTreeNode> backup) {
         backup.put(node.getNode(), node);
-        for (ParseTreeNode child : node.getChildren()) {
+        for (var child : node.getChildren()) {
             getBackup(child, backup);
         }
     }
@@ -130,23 +130,23 @@ public class GrammarFuzzer {
     public static ParseTreeNode sample(Node program, Grammar grammar, SampleParameters parameters, Random random) {
         Map<Node, ParseTreeNode> backup = new HashMap<>();
         if (grammar.node instanceof MultiAlternationNode) {
-            for (ParseTreeNode parseTree : ParseTreeUtils.getParseTreeAlt((MultiAlternationNode) grammar.node)) {
+            for (var parseTree : ParseTreeUtils.getParseTreeAlt((MultiAlternationNode) grammar.node)) {
                 getBackup(parseTree, backup);
             }
         } else {
             getBackup(ParseTreeUtils.getParseTree(grammar.node), backup);
         }
-        for (Node node : grammar.merges.keySet()) {
+        for (var node : grammar.merges.keySet()) {
             if (!backup.containsKey(node)) {
                 throw new RuntimeException("Invalid node: " + node);
             }
-            for (Node merge : grammar.merges.get(node)) {
+            for (var merge : grammar.merges.get(node)) {
                 if (!backup.containsKey(merge)) {
                     throw new RuntimeException("Invalid node: " + node);
                 }
             }
         }
-        for (Node descendant : GrammarUtils.getDescendants(program)) {
+        for (var descendant : GrammarUtils.getDescendants(program)) {
             if (!backup.containsKey(descendant)) {
                 throw new RuntimeException("Invalid node: " + descendant);
             }
@@ -202,17 +202,17 @@ public class GrammarFuzzer {
         }
 
         private ParseTreeNode sampleHelper(ParseTreeNode seed) {
-            List<ParseTreeNode>[] descendants = ParseTreeUtils.getDescendantsByType(seed);
-            int isMultiConstant = descendants[1].isEmpty() || (!descendants[0].isEmpty() && this.random.nextBoolean()) ? 0 : 1;
-            int choice = this.random.nextInt(descendants[isMultiConstant].size());
-            ParseTreeNode cur = descendants[isMultiConstant].get(choice);
-            ParseTreeNode sub = GrammarFuzzer.sample(cur.getNode(), this.grammar, this.parameters, this.random);
+            var descendants = ParseTreeUtils.getDescendantsByType(seed);
+            var isMultiConstant = descendants[1].isEmpty() || (!descendants[0].isEmpty() && this.random.nextBoolean()) ? 0 : 1;
+            var choice = this.random.nextInt(descendants[isMultiConstant].size());
+            var cur = descendants[isMultiConstant].get(choice);
+            var sub = GrammarFuzzer.sample(cur.getNode(), this.grammar, this.parameters, this.random);
             return ParseTreeUtils.getSubstitute(seed, cur, sub);
         }
 
         private ParseTreeNode sample(ParseTreeNode seed) {
             while (true) {
-                ParseTreeNode result = sampleHelper(seed);
+                var result = sampleHelper(seed);
                 if (result.getExample().length() <= this.maxLength) {
                     return result;
                 }
@@ -220,9 +220,9 @@ public class GrammarFuzzer {
         }
 
         public String sampleOne(Node node) {
-            ParseTreeNode cur = ParseTreeUtils.getParseTree(node);
-            int choice = this.random.nextInt(this.numMutations);
-            for (int i = 0; i < choice; i++) {
+            var cur = ParseTreeUtils.getParseTree(node);
+            var choice = this.random.nextInt(this.numMutations);
+            for (var i = 0; i < choice; i++) {
                 cur = this.sample(cur);
             }
             return cur.getExample();
@@ -235,10 +235,10 @@ public class GrammarFuzzer {
 
         @Override
         public String next() {
-            Node node = this.grammar.node;
+            var node = this.grammar.node;
             if (node instanceof MultiAlternationNode) {
-                List<Node> children = node.getChildren();
-                int choice = this.random.nextInt(children.size());
+                var children = node.getChildren();
+                var choice = this.random.nextInt(children.size());
                 return this.sampleOne(children.get(choice));
             } else {
                 return this.sampleOne(node);
@@ -274,7 +274,7 @@ public class GrammarFuzzer {
 
         @Override
         public String next() {
-            String sample = this.sampler.next();
+            var sample = this.sampler.next();
             if (sample == null) {
                 return null;
             }
@@ -301,9 +301,9 @@ public class GrammarFuzzer {
         if (string.isEmpty()) {
             return String.valueOf(nextChar(random));
         } else {
-            int randIndex = random.nextInt(string.length());
-            String head = string.substring(0, randIndex);
-            String tail = string.substring(randIndex);
+            var randIndex = random.nextInt(string.length());
+            var head = string.substring(0, randIndex);
+            var tail = string.substring(randIndex);
 
             
             if (random.nextBoolean()) {
@@ -315,7 +315,7 @@ public class GrammarFuzzer {
     }
 
     private static String nextStringMutant(String string, int numMutantions, Random random) {
-        for (int i = 0; i < numMutantions; i++) {
+        for (var i = 0; i < numMutantions; i++) {
             string = nextStringMutant(string, random);
         }
         return string;

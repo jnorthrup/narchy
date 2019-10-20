@@ -73,28 +73,28 @@ abstract class GameX(id: Term, gameTime: GameTime, n: NAR?) : Game(id, gameTime,
     /**
      * pixelTruth defaults to linear monochrome brightness -> frequency
      */
-    protected fun senseCamera(id: String, w: java.awt.Container, pw: Int, ph: Int): Bitmap2DSensor<*> =
+    protected fun senseCamera(id: String, w: java.awt.Container, pw: Int, ph: Int)   =
             senseCamera(id, SwingBitmap2D(w), pw, ph)
 
 
-    private fun senseCamera(id: String, w: Supplier<BufferedImage>, pw: Int, ph: Int): Bitmap2DSensor<ScaledBitmap2D> =
+    private fun senseCamera(id: String, w: Supplier<BufferedImage>, pw: Int, ph: Int) =
             senseCamera(id, ScaledBitmap2D(w, pw, ph))
 
-    protected fun senseCameraRetina(id: String, w: Component, pw: Int, ph: Int): Bitmap2DSensor<PixelBag> =
+    protected fun senseCameraRetina(id: String, w: Component, pw: Int, ph: Int)=
             senseCameraRetina(id, SwingBitmap2D(w), pw, ph)
 
 
-    private fun senseCameraRetina(id: String, w: Supplier<BufferedImage>, pw: Int, ph: Int): Bitmap2DSensor<PixelBag> =
+    private fun senseCameraRetina(id: String, w: Supplier<BufferedImage>, pw: Int, ph: Int)=
             senseCameraRetina(`$$`<Term>(id), w, pw, ph)
 
 
-    private fun senseCameraRetina(id: Term, w: Supplier<BufferedImage>, pw: Int, ph: Int): Bitmap2DSensor<PixelBag> =
+    private fun senseCameraRetina(id: Term, w: Supplier<BufferedImage>, pw: Int, ph: Int)=
             senseCamera(id, PixelBag(MonoBufImgBitmap2D(w), pw, ph))
 
-    protected fun senseCameraRetina(id: Term, w: Bitmap2D, pw: Int, ph: Int): Bitmap2DSensor<PixelBag> =
+    protected fun senseCameraRetina(id: Term, w: Bitmap2D, pw: Int, ph: Int)=
             senseCamera(id, PixelBag(w, pw, ph))
 
-    protected fun senseCameraFreq(id: String, w: Supplier<BufferedImage>, pw: Int, ph: Int): Bitmap2DSensor<WaveletBag> =
+    protected fun senseCameraFreq(id: String, w: Supplier<BufferedImage>, pw: Int, ph: Int)=
             senseCamera(id, WaveletBag(w, pw, ph))
 
     protected fun <C : Bitmap2D> senseCamera(id: String?, bc: C): Bitmap2DSensor<C> =
@@ -345,7 +345,7 @@ abstract class GameX(id: Term, gameTime: GameTime, n: NAR?) : Game(id, gameTime,
                 pid.outLimit(0.0, 1.0)
                 pid.setOutMomentum(0.1)
                 val ideal = 0.5f
-                n.onDur { ->b.valve.set(pid.out((ideal - b.load()).toDouble(), 0.0)) }
+                n.onDur { -> b.valve.set(pid.out((ideal - b.load()).toDouble(), 0.0)) }
             }
 
         }

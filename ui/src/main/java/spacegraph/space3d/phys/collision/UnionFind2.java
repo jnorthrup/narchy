@@ -42,13 +42,13 @@ public class UnionFind2 {
      * It sorts the elements, based on island id, in order to make it easy to iterate over islands.
      */
     public void sortIslands() {
-        
 
-        int[][] elements = this.ele;
-        int n = this.numElements;
-        for (int i = 0; i < n; i++) {
-            
-            int[] e = elements[i];
+
+        var elements = this.ele;
+        var n = this.numElements;
+        for (var i = 0; i < n; i++) {
+
+            var e = elements[i];
             e[0] = find(i);
             e[1] = i;
         }
@@ -69,16 +69,16 @@ public class UnionFind2 {
 
         numElements = N;
 
-        int[][] ee = this.ele;
-        for (int i = 0; i < N; i++) {
-            int[] e = ee[i];
+        var ee = this.ele;
+        for (var i = 0; i < N; i++) {
+            var e = ee[i];
             e[0] = i;
             e[1] = 1;
         }
 
         
-        for (int j = N; j < ele.length; j++) {
-            int[] e = ee[j];
+        for (var j = N; j < ele.length; j++) {
+            var e = ee[j];
             e[0] = -1;
             e[1] = -1;
         }
@@ -110,19 +110,8 @@ public class UnionFind2 {
             return;
         }
 
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        int[] ei = ele[i];
+
+        var ei = ele[i];
 
         ei[0] = j;
         
@@ -132,21 +121,16 @@ public class UnionFind2 {
     }
 
     public int find(int x) {
-        
-        
 
-        int numElements = this.numElements;
 
-        
-        int[][] e = this.ele;
+        var numElements = this.numElements;
+
+
+        var e = this.ele;
         while (x != e[x][0]) {
-            
 
-            
-            
-            
-            
-            int i = e[x][0];
+
+            var i = e[x][0];
             if (!valid(i, numElements))
                 return x;
 

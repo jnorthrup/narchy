@@ -64,15 +64,15 @@ public class ConvexConcaveCollisionAlgorithm extends CollisionAlgorithm {
 
 	@Override
 	public void processCollision(Collidable body0, Collidable body1, DispatcherInfo dispatchInfo, ManifoldResult resultOut) {
-		Collidable convexBody = isSwapped ? body1 : body0;
-		Collidable triBody = isSwapped ? body0 : body1;
+		var convexBody = isSwapped ? body1 : body0;
+		var triBody = isSwapped ? body0 : body1;
 
 		if (triBody.shape().isConcave()) {
-			Collidable triOb = triBody;
-			ConcaveShape concaveShape = (ConcaveShape)triOb.shape();
+			var triOb = triBody;
+			var concaveShape = (ConcaveShape)triOb.shape();
 
 			if (convexBody.shape().isConvex()) {
-				float collisionMarginTriangle = concaveShape.getMargin();
+				var collisionMarginTriangle = concaveShape.getMargin();
 
 				resultOut.setPersistentManifold(btConvexTriangleCallback.manifoldPtr);
 				btConvexTriangleCallback.setTimeStepAndCounters(collisionMarginTriangle, dispatchInfo, resultOut);
@@ -94,57 +94,54 @@ public class ConvexConcaveCollisionAlgorithm extends CollisionAlgorithm {
 
 	@Override
 	public float calculateTimeOfImpact(Collidable body0, Collidable body1, DispatcherInfo dispatchInfo, ManifoldResult resultOut) {
-		v3 tmp = new v3();
+		var tmp = new v3();
 
-		Collidable convexbody = isSwapped ? body1 : body0;
-		Collidable triBody = isSwapped ? body0 : body1;
+		var convexbody = isSwapped ? body1 : body0;
+		var triBody = isSwapped ? body0 : body1;
 
 		
 
 		
 		
 		tmp.sub(convexbody.getInterpolationWorldTransform(new Transform()), convexbody.getWorldTransform(new Transform()));
-		float squareMot0 = tmp.lengthSquared();
+		var squareMot0 = tmp.lengthSquared();
 		if (squareMot0 < convexbody.getCcdSquareMotionThreshold()) {
 			return 1f;
 		}
 
-		Transform tmpTrans = new Transform();
+		var tmpTrans = new Transform();
 
-		
-		
-		
 
-		Transform triInv = triBody.getWorldTransform(new Transform());
+		var triInv = triBody.getWorldTransform(new Transform());
 		triInv.invert();
 
-		Transform convexFromLocal = new Transform();
+		var convexFromLocal = new Transform();
 		convexFromLocal.mul(triInv, convexbody.getWorldTransform(tmpTrans));
 
-		Transform convexToLocal = new Transform();
+		var convexToLocal = new Transform();
 		convexToLocal.mul(triInv, convexbody.getInterpolationWorldTransform(tmpTrans));
 
 		if (triBody.shape().isConcave()) {
-			v3 rayAabbMin = new v3(convexFromLocal);
+			var rayAabbMin = new v3(convexFromLocal);
 			VectorUtil.setMin(rayAabbMin, convexToLocal);
 
-			v3 rayAabbMax = new v3(convexFromLocal);
+			var rayAabbMax = new v3(convexFromLocal);
 			VectorUtil.setMax(rayAabbMax, convexToLocal);
 
-			float ccdRadius0 = convexbody.getCcdSweptSphereRadius();
+			var ccdRadius0 = convexbody.getCcdSweptSphereRadius();
 
 			tmp.set(ccdRadius0, ccdRadius0, ccdRadius0);
 			rayAabbMin.sub(tmp);
 			rayAabbMax.add(tmp);
 
-			float curHitFraction = 1f; 
-			LocalTriangleSphereCastCallback raycastCallback = new LocalTriangleSphereCastCallback(convexFromLocal, convexToLocal, convexbody.getCcdSweptSphereRadius(), curHitFraction);
+			var curHitFraction = 1f;
+			var raycastCallback = new LocalTriangleSphereCastCallback(convexFromLocal, convexToLocal, convexbody.getCcdSweptSphereRadius(), curHitFraction);
 
 			raycastCallback.hitFraction = convexbody.getHitFraction();
 
-			Collidable concavebody = triBody;
+			var concavebody = triBody;
 
-			ConcaveShape triangleMesh = (ConcaveShape)concavebody.shape();
+			var triangleMesh = (ConcaveShape)concavebody.shape();
 
 			if (triangleMesh != null) {
 				triangleMesh.processAllTriangles(raycastCallback, rayAabbMin, rayAabbMax);
@@ -194,17 +191,14 @@ public class ConvexConcaveCollisionAlgorithm extends CollisionAlgorithm {
 
 		@Override
         public void processTriangle(v3[] triangle, int partId, int triangleIndex) {
-			
 
-			
-			
 
-			ConvexCast.CastResult castResult = new ConvexCast.CastResult();
+			var castResult = new ConvexCast.CastResult();
 			castResult.fraction = hitFraction;
-			SphereShape pointShape = new SphereShape(ccdSphereRadius);
-			TriangleShape triShape = new TriangleShape(triangle[0], triangle[1], triangle[2]);
-			VoronoiSimplexSolver simplexSolver = new VoronoiSimplexSolver();
-			SubsimplexConvexCast convexCaster = new SubsimplexConvexCast(pointShape, triShape, simplexSolver);
+			var pointShape = new SphereShape(ccdSphereRadius);
+			var triShape = new TriangleShape(triangle[0], triangle[1], triangle[2]);
+			var simplexSolver = new VoronoiSimplexSolver();
+			var convexCaster = new SubsimplexConvexCast(pointShape, triShape, simplexSolver);
 			
 			
 			
@@ -223,7 +217,7 @@ public class ConvexConcaveCollisionAlgorithm extends CollisionAlgorithm {
 
 		@Override
 		public CollisionAlgorithm createCollisionAlgorithm(CollisionAlgorithmConstructionInfo ci, Collidable body0, Collidable body1) {
-			ConvexConcaveCollisionAlgorithm algo = new ConvexConcaveCollisionAlgorithm();
+			var algo = new ConvexConcaveCollisionAlgorithm();
 			algo.init(ci, body0, body1, false);
 			return algo;
 		}
@@ -234,7 +228,7 @@ public class ConvexConcaveCollisionAlgorithm extends CollisionAlgorithm {
 
 		@Override
 		public CollisionAlgorithm createCollisionAlgorithm(CollisionAlgorithmConstructionInfo ci, Collidable body0, Collidable body1) {
-			ConvexConcaveCollisionAlgorithm algo = new ConvexConcaveCollisionAlgorithm();
+			var algo = new ConvexConcaveCollisionAlgorithm();
 			algo.init(ci, body0, body1, true);
 			return algo;
 		}

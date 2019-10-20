@@ -70,18 +70,18 @@ public class RopeJoint extends Joint {
         m_invIB = B.m_invI;
 
         v2 cA = data.positions[indexA];
-        float aA = data.positions[indexA].a;
+        var aA = data.positions[indexA].a;
         v2 vA = data.velocities[indexA];
-        float wA = data.velocities[indexA].w;
+        var wA = data.velocities[indexA].w;
 
         v2 cB = data.positions[indexB];
-        float aB = data.positions[indexB].a;
+        var aB = data.positions[indexB].a;
         v2 vB = data.velocities[indexB];
-        float wB = data.velocities[indexB].w;
+        var wB = data.velocities[indexB].w;
 
-        Rot qA = new Rot();
-        Rot qB = new Rot();
-        v2 temp = new v2();
+        var qA = new Rot();
+        var qB = new Rot();
+        var temp = new v2();
 
         qA.set(aA);
         qB.set(aB);
@@ -94,7 +94,7 @@ public class RopeJoint extends Joint {
 
         length = m_u.length();
 
-        float C = length - targetLength();
+        var C = length - targetLength();
 //        float ca = Math.abs(C);
 
         if (C > Settings.linearSlop) {
@@ -122,10 +122,10 @@ public class RopeJoint extends Joint {
             return;
         }
 
-        
-        float crA = v2.cross(m_rA, m_u);
-        float crB = v2.cross(m_rB, m_u);
-        float invMass = m_invMassA + m_invIA * crA * crA + m_invMassB + m_invIB * crB * crB;
+
+        var crA = v2.cross(m_rA, m_u);
+        var crB = v2.cross(m_rB, m_u);
+        var invMass = m_invMassA + m_invIA * crA * crA + m_invMassB + m_invIB * crB * crB;
 
         m_mass = invMass != 0.0f ? 1.0f / invMass : 0.0f;
 
@@ -133,8 +133,8 @@ public class RopeJoint extends Joint {
             
             m_impulse *= data.step.dtRatio * positionFactor;
 
-            float Px = m_impulse * m_u.x;
-            float Py = m_impulse * m_u.y;
+        var Px = m_impulse * m_u.x;
+        var Py = m_impulse * m_u.y;
             vA.x -= m_invMassA * Px;
             vA.y -= m_invMassA * Py;
             wA -= m_invIA * (m_rA.x * Py - m_rA.y * Px);
@@ -159,42 +159,42 @@ public class RopeJoint extends Joint {
     @Override
     public void solveVelocityConstraints(SolverData data) {
 
-        float targetLength = targetLength();
+        var targetLength = targetLength();
 
-        Velocity VA = data.velocities[indexA];
+        var VA = data.velocities[indexA];
         v2 vA = VA;
-        float wA = VA.w;
-        Velocity VB = data.velocities[indexB];
+        var wA = VA.w;
+        var VB = data.velocities[indexB];
         v2 vB = VB;
-        float wB = VB.w;
+        var wB = VB.w;
 
-        
-        v2 vpA = pool.popVec2();
-        v2 vpB = pool.popVec2();
-        v2 temp = pool.popVec2();
+
+        var vpA = pool.popVec2();
+        var vpB = pool.popVec2();
+        var temp = pool.popVec2();
 
         v2.crossToOutUnsafe(wA, m_rA, vpA);
         vpA.added(vA);
         v2.crossToOutUnsafe(wB, m_rB, vpB);
         vpB.added(vB);
 
-        float dLen = length - targetLength;
-        float Cdot = v2.dot(m_u, temp.set(vpB).subbed(vpA))
+        var dLen = length - targetLength;
+        var Cdot = v2.dot(m_u, temp.set(vpB).subbed(vpA))
                 
         ;
 
         
         
             Cdot += data.step.inv_dt * Math.abs(dLen) * positionFactor;
-        
 
-        float impulse = -m_mass * Cdot;
-        float oldImpulse = m_impulse;
+
+        var impulse = -m_mass * Cdot;
+        var oldImpulse = m_impulse;
         m_impulse = MathUtils.min(0.0f, m_impulse + impulse);
         impulse = m_impulse - oldImpulse;
 
-        float Px = impulse * m_u.x;
-        float Py = impulse * m_u.y;
+        var Px = impulse * m_u.x;
+        var Py = impulse * m_u.y;
 
         vA.x -= m_invMassA * Px;
         vA.y -= m_invMassA * Py;
@@ -213,19 +213,19 @@ public class RopeJoint extends Joint {
     @Override
     public boolean solvePositionConstraints(SolverData data) {
 
-        float targetLength = targetLength();
+        var targetLength = targetLength();
 
         v2 cA = data.positions[indexA];
-        float aA = data.positions[indexA].a;
+        var aA = data.positions[indexA].a;
         v2 cB = data.positions[indexB];
-        float aB = data.positions[indexB].a;
+        var aB = data.positions[indexB].a;
 
-        Rot qA = pool.popRot();
-        Rot qB = pool.popRot();
-        v2 u = pool.popVec2();
-        v2 rA = pool.popVec2();
-        v2 rB = pool.popVec2();
-        v2 temp = pool.popVec2();
+        var qA = pool.popRot();
+        var qB = pool.popRot();
+        var u = pool.popVec2();
+        var rA = pool.popVec2();
+        var rB = pool.popVec2();
+        var temp = pool.popVec2();
 
         qA.set(aA);
         qB.set(aB);
@@ -235,14 +235,13 @@ public class RopeJoint extends Joint {
         Rot.mulToOutUnsafe(qB, temp.set(localAnchorB).subbed(m_localCenterB), rB);
         u.set(cB).added(rB).subbed(cA).subbed(rA);
 
-        float length = u.normalize();
-        float C = length - targetLength;
+        var length = u.normalize();
+        var C = length - targetLength;
 
 
-
-        float impulse = -m_mass * C;
-        float Px = impulse * u.x;
-        float Py = impulse * u.y;
+        var impulse = -m_mass * C;
+        var Px = impulse * u.x;
+        var Py = impulse * u.y;
 
         cA.x -= m_invMassA * Px;
         cA.y -= m_invMassA * Py;

@@ -82,7 +82,7 @@ public class Head
             return _addVector[i - width];
         }
 
-        int width3 = width * 3;
+        var width3 = width * 3;
         if (i < width3)
         {
             return _keyVector[i - (2 * width)];

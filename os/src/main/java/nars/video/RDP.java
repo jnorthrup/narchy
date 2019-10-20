@@ -34,7 +34,7 @@ public class RDP extends Game {
 
     public RDP(NAR n, String host, int port) throws RdesktopException {
         super($$("rdp(\"" + host + "\", " + port + ')'), GameTime.durs(1));
-        RdesktopFrame w = Rdesktop.RDPwindow(host + ':' + port);
+        var w = Rdesktop.RDPwindow(host + ':' + port);
 
         //senseCameraRetina(("video"), ()->w.canvas.backstore.getBufferedImage(), 64, 64);
 

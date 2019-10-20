@@ -78,7 +78,7 @@ public class PrefixSubGraph implements Graph {
 
         if (i < 0 || i >= prefSize) throw new IndexOutOfBoundsException();
 
-        IntHashSet result = new IntHashSet();
+        var result = new IntHashSet();
         g.neighborsOut(i).forEach(j -> {
             if (j < prefSize) result.add(j);
         });
@@ -167,7 +167,7 @@ public class PrefixSubGraph implements Graph {
      */
     public int setSize(int i) {
 
-        int was = prefSize;
+        var was = prefSize;
         if (i < 0) i = 0;
         if (i > g.size()) i = g.size();
         prefSize = i;

@@ -42,31 +42,31 @@ public class BinaryVarVal implements BooleanFunction<List<BooleanSupplier>> {
 
     @Override
     public boolean booleanValueOf(List<BooleanSupplier> decisions) {
-        int varId = selectVar();
+        var varId = selectVar();
         if (varId == -1) {
             return true;
         }
-        IntVar variable = variables[varId];
-        int value = valSelector.applyAsInt(varId);
+        var variable = variables[varId];
+        var value = valSelector.applyAsInt(varId);
         decisions.add(() -> variable.remove(value));
         decisions.add(() -> variable.assign(value));
         return false;
     }
 
     private int selectVar() {
-        int nUnassigned = nUnassignedT.getValue();
+        var nUnassigned = nUnassignedT.getValue();
         if (nUnassigned == 1)
             return unassigned[0];
-        int minCost = Integer.MAX_VALUE;
-        int minId = -1;
-        for (int i = nUnassigned - 1; i >= 0; i--) {
-            int varId = unassigned[i];
+        var minCost = Integer.MAX_VALUE;
+        var minId = -1;
+        for (var i = nUnassigned - 1; i >= 0; i--) {
+            var varId = unassigned[i];
             if (variables[varId].isAssigned()) {
                 nUnassigned--;
                 unassigned[i] = unassigned[nUnassigned];
                 unassigned[nUnassigned] = varId;
             } else {
-                int cost = varCost.applyAsInt(varId);
+                var cost = varCost.applyAsInt(varId);
                 if (cost < minCost) {
                     minId = varId;
                     minCost = cost;

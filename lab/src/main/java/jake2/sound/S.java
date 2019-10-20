@@ -102,7 +102,7 @@ public class S {
 	private static void useDriver(String driverName) {
 		Sound driver = null;
 //		int count = drivers.size();
-		for (Object driver1 : drivers) {
+		for (var driver1 : drivers) {
 			driver = (Sound) driver1;
 			if (driver.getName().equals(driverName)) {
 				impl = driver;
@@ -120,15 +120,15 @@ public class S {
 		
 		Com.Printf("\n------- sound initialization -------\n");
 
-		cvar_t cv = Cvar.Get("s_initsound", "1", 0);
+		var cv = Cvar.Get("s_initsound", "1", 0);
 		if (cv.value == 0.0f) {
 			Com.Printf("not initializing.\n");
 			useDriver("dummy");
 			return;			
 		}
 
-		
-		String defaultDriver = "dummy";
+
+		var defaultDriver = "dummy";
 		if (drivers.size() > 1){
 			defaultDriver = ((Sound)drivers.lastElement()).getName();
 		}
@@ -226,8 +226,8 @@ public class S {
 	 * Returns a string array containing all sound driver names.
 	 */
 	public static String[] getDriverNames() {
-		int bound = drivers.size();
-		String[] names = IntStream.range(0, bound).mapToObj(i -> ((Sound) drivers.get(i)).getName()).toArray(String[]::new);
+		var bound = drivers.size();
+		var names = IntStream.range(0, bound).mapToObj(i -> ((Sound) drivers.get(i)).getName()).toArray(String[]::new);
         return names;
 	}
 	

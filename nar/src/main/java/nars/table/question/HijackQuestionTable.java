@@ -67,18 +67,18 @@ public class HijackQuestionTable extends PriHijackBag<Task, Task> implements Que
         if (isEmpty())
             return null;
 
-        long[] xStamp = x.stamp();
+        var xStamp = x.stamp();
 
         long xs = TIMELESS, xe = TIMELESS;
-        for (Task y : this) {
+        for (var y : this) {
             if (x.equals(y))
                 return y; //found exact
 
             if (x.term().equals(y.term())) {
 
                 //if (Arrays.equals(xStamp, y.stamp())) {
-                long[] yStamp = y.stamp();
-                int xys = Stamp.equalsOrContains(xStamp, yStamp);
+                var yStamp = y.stamp();
+                var xys = Stamp.equalsOrContains(xStamp, yStamp);
                 if (xys!=Integer.MIN_VALUE) {
                     if (xs == TIMELESS) {
                         xs = x.start(); xe = x.end();
@@ -97,9 +97,9 @@ public class HijackQuestionTable extends PriHijackBag<Task, Task> implements Que
                         return null;
                     } else if (xys==0 && y.intersects(xs, xe)) {
                         long ys = y.start(), ye = y.end();
-                        Longerval u = LongInterval.union(xs, xe, ys, ye);
+                        var u = LongInterval.union(xs, xe, ys, ye);
 
-                        float newPri = xs == ETERNAL || ys == ETERNAL ?
+                        var newPri = xs == ETERNAL || ys == ETERNAL ?
                             Util.or(x.priElseZero(), y.priElseZero()) :
                             (float) ((x.priElseZero() * (double)(xe-xs) + y.priElseZero() * (ye-ys)) /  (u.end - u.start));
 
@@ -107,7 +107,7 @@ public class HijackQuestionTable extends PriHijackBag<Task, Task> implements Que
                         //long[] stamp = sc == +1 ? xStamp : yStamp; //TODO determine if this is safe
 
 
-                        Task xy = Task.clone(x, x.term(), null, x.punc(), u.start, u.end, xStamp);
+                        var xy = Task.clone(x, x.term(), null, x.punc(), u.start, u.end, xStamp);
                         Task.merge(xy, new Task[] { x, y }, newPri);
                         remove(y); y.delete();
                         return xy;
@@ -122,9 +122,9 @@ public class HijackQuestionTable extends PriHijackBag<Task, Task> implements Que
 
     @Override
     public void remember(Remember r) {
-        Task x = r.input;
+        var x = r.input;
 
-        Task y = preMerge(x);
+        var y = preMerge(x);
         if (y == null) {
             x = put(x);
             commit(forget(r.nar().questionForgetRate.floatValue() /* estimate */));
@@ -150,7 +150,7 @@ public class HijackQuestionTable extends PriHijackBag<Task, Task> implements Que
 
     @Override
     public boolean removeTask(Task x, boolean delete) {
-        Task r = remove(x);
+        var r = remove(x);
         if (r != null) {
             if (delete)
                 r.delete();

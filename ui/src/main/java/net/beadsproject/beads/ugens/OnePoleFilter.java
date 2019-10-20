@@ -63,12 +63,12 @@ public class OnePoleFilter extends IIRFilter implements DataBeadReceiver {
 
     @Override
     public void gen() {
-        float[] bi = bufIn[0];
-        float[] bo = bufOut[0];
+        var bi = bufIn[0];
+        var bo = bufOut[0];
 
         if (isFreqStatic) {
 
-            for (int currsamp = 0; currsamp < bufferSize; currsamp++) {
+            for (var currsamp = 0; currsamp < bufferSize; currsamp++) {
                 bo[currsamp] = y1 = b0 * bi[currsamp] - a1 * y1;
             }
 
@@ -76,7 +76,7 @@ public class OnePoleFilter extends IIRFilter implements DataBeadReceiver {
 
             freqUGen.update();
 
-            for (int currsamp = 0; currsamp < bufferSize; currsamp++) {
+            for (var currsamp = 0; currsamp < bufferSize; currsamp++) {
                 a1 = (b0 = (float) Math.sin(two_pi_over_sf
                         * freqUGen.getValue(0, currsamp))) - 1;
                 bo[currsamp] = y1 = b0 * bi[currsamp] - a1 * y1;
@@ -225,7 +225,7 @@ public class OnePoleFilter extends IIRFilter implements DataBeadReceiver {
      * @return The DataBead with the stored parameter.
      */
     public DataAuvent getParams() {
-        DataAuvent db = new DataAuvent();
+        var db = new DataAuvent();
 
         if (isFreqStatic) {
             db.put("frequency", freq);
@@ -242,7 +242,7 @@ public class OnePoleFilter extends IIRFilter implements DataBeadReceiver {
      * @return The DataBead with the static float parameter value.
      */
     public DataAuvent getStaticParams() {
-        DataAuvent db = new DataAuvent();
+        var db = new DataAuvent();
         db.put("frequency", freq);
         return db;
     }

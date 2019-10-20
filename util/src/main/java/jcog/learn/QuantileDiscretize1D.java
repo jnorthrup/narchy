@@ -26,10 +26,10 @@ public class QuantileDiscretize1D implements Discretize1D {
 
     protected void ensureUpdated() {
         if (!updated) {
-            
-            boolean difference = true;
-            for (int i = 0; i < thresh.length; i++) {
-                float t = q.quantile((i +0.5f) / thresh.length);
+
+            var difference = true;
+            for (var i = 0; i < thresh.length; i++) {
+                var t = q.quantile((i +0.5f) / thresh.length);
                 if (i > 0 && Math.abs(t - thresh[i-1]) < Float.MIN_NORMAL) {
                     difference = false; //collapsed
                 }

@@ -166,7 +166,7 @@ public final class Ansi {
       case ERROR:
         return asHighlightedFailureText(text);
       default:
-        String message = String.format("Unexpected SeverityLevel; cannot highlight '%s'!", level);
+        var message = String.format("Unexpected SeverityLevel; cannot highlight '%s'!", level);
         throw new IllegalArgumentException(message);
     }
   }
@@ -216,8 +216,8 @@ public final class Ansi {
       return color + text + RESET;
     }
 
-    
-    int firstNonTab = indexOfFirstNonTab(text);
+
+    var firstNonTab = indexOfFirstNonTab(text);
     if (firstNonTab == -1) {
       return color + text + RESET;
     }

@@ -65,7 +65,7 @@ class BucketContainer {
     }
 
     Bucket[] removeBuckets(int num) {
-        Bucket[] resultBuckets = new Bucket[num];
+        var resultBuckets = new Bucket[num];
         if (firstBucket <= ((firstBucket + num) % maxBuckets)) {
             System.arraycopy(buckets, firstBucket, resultBuckets, 0, num);
         } else {
@@ -82,9 +82,9 @@ class BucketContainer {
     }
 
     BucketContainer deepCopy() {
-        BucketContainer copyThis = new BucketContainer(this);
+        var copyThis = new BucketContainer(this);
         if(this.next!=null){
-            BucketContainer nextCopy = this.next.deepCopy();
+            var nextCopy = this.next.deepCopy();
             copyThis.next = nextCopy;
             nextCopy.prev = copyThis;
         }

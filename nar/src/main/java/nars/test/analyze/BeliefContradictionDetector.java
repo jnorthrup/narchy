@@ -26,7 +26,7 @@ public class BeliefContradictionDetector extends NARPart implements Consumer<Tas
     @Override
     public void accept(Task task) {
         if (task.isBeliefOrGoal()) {
-            Concept c = nar.concept(task);
+            var c = nar.concept(task);
             if (c != null) {
                 detectContradiction(c, task.punc());
             }
@@ -37,10 +37,10 @@ public class BeliefContradictionDetector extends NARPart implements Consumer<Tas
         if (concept.term().hasAny(Op.Temporal)) {
             return; //TODO
         }
-        TaskTable table = concept.table(punc);
-        int n = table.taskCount();
+        var table = concept.table(punc);
+        var n = table.taskCount();
         if (n > 1) {
-            FloatArrayList h = new FloatArrayList(n);
+            var h = new FloatArrayList(n);
             table.forEachTask(t -> h.add(t.freq()));
             if (h.count(x -> x < 0.5f) > 0 && h.count(x -> x > 0.5f) > 0) {
                 print(table);

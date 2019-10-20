@@ -18,7 +18,7 @@ public class OneTermUnification extends DeterministicUnification {
     @Override
     protected boolean equals(DeterministicUnification obj) {
         if (obj instanceof OneTermUnification) {
-            OneTermUnification u = (OneTermUnification) obj;
+            var u = (OneTermUnification) obj;
             return tx.equals(u.tx) && ty.equals(u.ty);
         }
         return false;

@@ -43,10 +43,10 @@ public class FastLog {
         this.q = q;
         qM1 = q - 1;
         korr = (float) (LN2 / Math.log(base));
-        int tabSize = 1 << (24 - q);
+        var tabSize = 1 << (24 - q);
         data = new float[tabSize];
 
-        for (int i = 0; i < tabSize; i++) {
+        for (var i = 0; i < tabSize; i++) {
             
             
             data[i] = (float) (log2(i << q) - 150);
@@ -67,9 +67,9 @@ public class FastLog {
      */
     public float log(float x) {
         assert (x > 0);
-        int raw = Float.floatToIntBits(x);
-        int exp = (raw >> 23) & 0xFF;
-        int mant = (raw & 0x7FFFFF);
+        var raw = Float.floatToIntBits(x);
+        var exp = (raw >> 23) & 0xFF;
+        var mant = (raw & 0x7FFFFF);
         return (exp + data[exp == 0 ?
                 (mant >> qM1) :
                 ((mant | 0x800000) >> q)]) * korr;

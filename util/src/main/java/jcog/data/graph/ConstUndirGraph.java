@@ -70,10 +70,10 @@ public class ConstUndirGraph implements Graph {
      */
     void initGraph() {
 
-        int max = g.size();
-        for (int i = 0; i < max; ++i) in[i] = new IntArrayList();
-        for (int i = 0; i < max; ++i) {
-            int ii = i;
+        var max = g.size();
+        for (var i = 0; i < max; ++i) in[i] = new IntArrayList();
+        for (var i = 0; i < max; ++i) {
+            var ii = i;
             g.neighborsOut(i).forEach(j -> {
                 if (!g.isEdge(j, ii)) in[j].add(ii);
             });
@@ -100,7 +100,7 @@ public class ConstUndirGraph implements Graph {
     @Override
     public IntHashSet neighborsOut(int i) {
 
-        IntHashSet result = new IntHashSet();
+        var result = new IntHashSet();
         result.addAll(g.neighborsOut(i));
         if (in != null) result.addAll(in[i]);
         return result;

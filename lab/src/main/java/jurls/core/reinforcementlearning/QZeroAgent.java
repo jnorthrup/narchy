@@ -50,8 +50,8 @@ public class QZeroAgent extends LearnerAndActor {
     @Override
     public int learnAndAction(double[] state, double reward, double[] previousState, int previousAction) {
         Utils.join(stateAction, previousState, previousAction);
-        double q0 = parameterizedFunction.value(stateAction);
-        double q = q0 + rLParameters.getAlpha() * (reward
+        var q0 = parameterizedFunction.value(stateAction);
+        var q = q0 + rLParameters.getAlpha() * (reward
                 + this.rLParameters.getGamma() * Utils.v(
                         parameterizedFunction,
                         stateAction,
@@ -65,8 +65,8 @@ public class QZeroAgent extends LearnerAndActor {
     }
 
     public ActionValuePair[] getActionProbabilities(double[] state) {
-        int bound = numActions;
-        ActionValuePair[] actionValuePairs = IntStream.range(0, bound).mapToObj(i -> new ActionValuePair(
+        var bound = numActions;
+        var actionValuePairs = IntStream.range(0, bound).mapToObj(i -> new ActionValuePair(
                 i, Utils.q(parameterizedFunction, stateAction, state, i)
         )).toArray(ActionValuePair[]::new);
 
@@ -74,11 +74,11 @@ public class QZeroAgent extends LearnerAndActor {
     }
 
     public int chooseAction(double[] state) {
-        ActionValuePair[] actionProbabilityPairs = getActionProbabilities(state);
+        var actionProbabilityPairs = getActionProbabilities(state);
         Arrays.sort(actionProbabilityPairs, (o1, o2) -> (int) Math.signum(o1.getV() - o2.getV()));
 
-        double x = Math.random();
-        int i = -1;
+        var x = Math.random();
+        var i = -1;
 
         while (x > 0) {
             ++i;
@@ -90,7 +90,7 @@ public class QZeroAgent extends LearnerAndActor {
 
     @Override
     public String getDebugString(int indent) {
-        String ind = Utils.makeIndent(indent);
+        var ind = Utils.makeIndent(indent);
         return ind + "Q(0)\n" + super.getDebugString(indent);
     }
 

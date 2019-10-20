@@ -54,22 +54,22 @@ public class JRdpLoader {
             System.exit(-1);
         }
 
-        String launchFile = args[0];
+        var launchFile = args[0];
 
         try {
-            String outArgs = "";
+            var outArgs = "";
 
-            
-            FileInputStream fstream = new FileInputStream(launchFile);
-            DataInputStream in = new DataInputStream(fstream);
-            String port = "";
-            String server = "";
+
+            var fstream = new FileInputStream(launchFile);
+            var in = new DataInputStream(fstream);
+            var port = "";
+            var server = "";
             while (in.available() != 0) {
-                String line = in.readLine();
-                StringTokenizer stok = new StringTokenizer(line);
+                var line = in.readLine();
+                var stok = new StringTokenizer(line);
                 if (stok.hasMoreTokens()) {
-                    String identifier = stok.nextToken();
-                    String value = "";
+                    var identifier = stok.nextToken();
+                    var value = "";
                     while (stok.hasMoreTokens()) {
                         value += stok.nextToken();
                         if (stok.hasMoreTokens())
@@ -84,7 +84,7 @@ public class JRdpLoader {
                             port = value;
                             break;
                         default:
-                            String p = getParam(identifier);
+                            var p = getParam(identifier);
                             if (p != null)
                                 outArgs += p + ' ' + value + ' ';
                             break;
@@ -97,8 +97,8 @@ public class JRdpLoader {
                 if (!port.isEmpty())
                     outArgs += ':' + port;
 
-                
-                String[] finArgs = Utilities_Localised.split(outArgs, " ");
+
+                var finArgs = Utilities_Localised.split(outArgs, " ");
 
                 Rdesktop.main(finArgs);
                 in.close();
@@ -118,7 +118,7 @@ public class JRdpLoader {
     }
 
     private static String getParam(String identifier) {
-        for (int i = 0; i < identifiers.length; i++) {
+        for (var i = 0; i < identifiers.length; i++) {
             if (identifier.equals(identifiers[i])) {
                 return pairs[i];
             }

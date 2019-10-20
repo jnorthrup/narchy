@@ -55,7 +55,7 @@ public class ConvexHullShape extends PolyhedralConvexShape {
 	public ConvexHullShape(OArrayList<v3> points) {
 
 
-        for (v3 point : points) {
+        for (var point : points) {
 
             this.points.add(new v3(point));
         }
@@ -70,7 +70,7 @@ public class ConvexHullShape extends PolyhedralConvexShape {
 	}
 	
 	public ConvexHullShape add(v3... points) {
-		for (v3 point : points)
+		for (var point : points)
 			this.points.add(new v3(point));
 		recalcLocalAabb();
 		return this;
@@ -86,27 +86,27 @@ public class ConvexHullShape extends PolyhedralConvexShape {
 
 	@Override
 	public v3 localGetSupportingVertexWithoutMargin(v3 vec0, v3 out) {
-		v3 supVec = out;
+		var supVec = out;
 		supVec.set(0f, 0f, 0f);
 
-        v3 vec = new v3(vec0);
-		float lenSqr = vec.lengthSquared();
+		var vec = new v3(vec0);
+		var lenSqr = vec.lengthSquared();
 		if (lenSqr < 0.0001f) {
 			vec.set(1f, 0f, 0f);
 		}
 		else {
-			float rlen = 1f / (float) Math.sqrt(lenSqr);
+			var rlen = 1f / (float) Math.sqrt(lenSqr);
 			vec.scaled(rlen);
 		}
 
 
-		v3 vtx = new v3();
-        float maxDot = BulletGlobals.SIMD_EPSILON;
-        for (v3 point : points) {
+		var vtx = new v3();
+		var maxDot = BulletGlobals.SIMD_EPSILON;
+        for (var point : points) {
 
             VectorUtil.mul(vtx, point, localScaling);
 
-            float newDot = vec.dot(vtx);
+			var newDot = vec.dot(vtx);
             if (newDot > maxDot) {
                 maxDot = newDot;
                 supVec.set(vtx);
@@ -119,22 +119,22 @@ public class ConvexHullShape extends PolyhedralConvexShape {
 	public void batchedUnitVectorGetSupportingVertexWithoutMargin(v3[] vectors, v3[] supportVerticesOut, int numVectors) {
 
 
-        float[] wcoords = new float[numVectors];
+		var wcoords = new float[numVectors];
 
 		
-		for (int i = 0; i < numVectors; i++) {
+		for (var i = 0; i < numVectors; i++) {
             
             wcoords[i] = BulletGlobals.SIMD_EPSILON /*-1e30f*/;
         }
-		v3 vtx = new v3();
-        for (v3 point : points) {
+		var vtx = new v3();
+        for (var point : points) {
 
             VectorUtil.mul(vtx, point, localScaling);
 
-            for (int j = 0; j < numVectors; j++) {
-                v3 vec = vectors[j];
+            for (var j = 0; j < numVectors; j++) {
+				var vec = vectors[j];
 
-                float newDot = vec.dot(vtx);
+				var newDot = vec.dot(vtx);
 
                 if (newDot > wcoords[j]) {
 
@@ -148,10 +148,10 @@ public class ConvexHullShape extends PolyhedralConvexShape {
 
 	@Override
 	public v3 localGetSupportingVertex(v3 vec, v3 out) {
-		v3 supVertex = localGetSupportingVertexWithoutMargin(vec, out);
+		var supVertex = localGetSupportingVertexWithoutMargin(vec, out);
 
 		if (getMargin() != 0f) {
-			v3 vecnorm = new v3(vec);
+			var vecnorm = new v3(vec);
 			if (vecnorm.lengthSquared() < (BulletGlobals.FLT_EPSILON * BulletGlobals.FLT_EPSILON)) {
 				vecnorm.set(-1f, -1f, -1f);
 			}
@@ -177,8 +177,8 @@ public class ConvexHullShape extends PolyhedralConvexShape {
 
 	@Override
 	public void getEdge(int i, v3 pa, v3 pb) {
-		int index0 = i % points.size();
-		int index1 = (i + 1) % points.size();
+		var index0 = i % points.size();
+		var index1 = (i + 1) % points.size();
         
         VectorUtil.mul(pa, points.get(index0), localScaling);
         

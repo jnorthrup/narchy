@@ -78,7 +78,7 @@ public abstract class Finger extends Part<SpaceGraph> implements Predicate<Finge
         assert (buttons < 32);
         this.buttons = buttons;
         posPixelPress = new v2[this.buttons];
-        for (int i = 0; i < this.buttons; i++) {
+        for (var i = 0; i < this.buttons; i++) {
             posPixelPress[i] = new v2(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY);
         }
     }
@@ -95,14 +95,14 @@ public abstract class Finger extends Part<SpaceGraph> implements Predicate<Finge
 
 
     public static v2 normalize(v2 pPixel, JoglWindow win) {
-        v2 y = new v2(pPixel);
+        var y = new v2(pPixel);
         y.sub(win.getX(), win.getY());
         y.scaled(1f / win.getWidth(), 1f / win.getHeight());
         return y;
     }
 
     public static v2 normalize(v2 p, RectFloat b) {
-        v2 y = new v2(p);
+        var y = new v2(p);
         y.sub(b.x, b.y);
         y.scaled(1f / b.w, 1f / b.h);
         return y;
@@ -153,9 +153,9 @@ public abstract class Finger extends Part<SpaceGraph> implements Predicate<Finge
     public void updateButtons(@Nullable short[] nextButtonDown) {
 
         if (nextButtonDown != null) {
-            for (short b : nextButtonDown) {
+            for (var b : nextButtonDown) {
 
-                boolean pressed = (b > 0);
+                var pressed = (b > 0);
 
                 if (!pressed) b = (short) -b;
 
@@ -167,7 +167,7 @@ public abstract class Finger extends Part<SpaceGraph> implements Predicate<Finge
     }
 
     public void copyButtons(Finger toCopy) {
-        for (int i = 0; i < buttons; i++) {
+        for (var i = 0; i < buttons; i++) {
             updateButton(i, toCopy.buttonDown.get(i));
         }
     }
@@ -187,16 +187,16 @@ public abstract class Finger extends Part<SpaceGraph> implements Predicate<Finge
      * call once per frame
      */
     protected final void clearRotation() {
-        for (AtomicFloat r : rotation)
+        for (var r : rotation)
             r.getAndZero();
     }
 
     private boolean _dragging(int button) {
-        v2 g = posPixelPress[button];
+        var g = posPixelPress[button];
         /**
          * drag threshold (in screen pixels)
          */
-        float dragThresholdPx = 5f;
+        var dragThresholdPx = 5f;
         return (g.distanceSq(posPixel) > dragThresholdPx * dragThresholdPx);
     }
 
@@ -262,7 +262,7 @@ public abstract class Finger extends Part<SpaceGraph> implements Predicate<Finge
     @Override
     public final boolean test(Fingering next) {
 
-        Fingering prev = this.fingering.get();
+        var prev = this.fingering.get();
 
         if (prev != Idle) {
             if (!prev.update(this)) {
@@ -292,8 +292,8 @@ public abstract class Finger extends Part<SpaceGraph> implements Predicate<Finge
 
 
     protected void rotationAdd(float[] next) {
-        for (int i = 0; i < next.length; i++) {
-            float r = next[i];
+        for (var i = 0; i < next.length; i++) {
+            var r = next[i];
             if (r != 0)
                 this.rotation[i].set(r);
         }
@@ -312,7 +312,7 @@ public abstract class Finger extends Part<SpaceGraph> implements Predicate<Finge
     }
 
     protected float rotation(int which, boolean take) {
-        AtomicFloat r = rotation[which];
+        var r = rotation[which];
         return take ? r.getAndSet(0) : r.get();
     }
 
@@ -338,7 +338,7 @@ public abstract class Finger extends Part<SpaceGraph> implements Predicate<Finge
 //        (posPixel.x - r.x)/r.w, (posPixel.y - r.y)/r.h
 //        );
 
-        v2 g = posGlobal();
+        var g = posGlobal();
         return new v2((g.x - b.x) / b.w, (g.y - b.y) / b.h);
     }
 
@@ -354,7 +354,7 @@ public abstract class Finger extends Part<SpaceGraph> implements Predicate<Finge
     }
 
     public RectFloat globalToPixel(RectFloat bounds) {
-        int n = transforms.size();
+        var n = transforms.size();
         switch (n) {
             case 0:
                 return bounds;
@@ -368,7 +368,7 @@ public abstract class Finger extends Part<SpaceGraph> implements Predicate<Finge
 
 
     public final <S extends Surface> S push(SurfaceTransform t, Function<Finger, S> fingering) {
-        v2 p = posGlobal.clone();
+        var p = posGlobal.clone();
         transforms.add(t);
         try {
             t.pixelToGlobal(posGlobal.x, posGlobal.y, posGlobal);
@@ -379,9 +379,9 @@ public abstract class Finger extends Part<SpaceGraph> implements Predicate<Finge
         }
     }
     public final <S extends Surface> S push(v2 g, Function<Finger, S> fingering) {
-        v2 p = posGlobal.clone();
+        var p = posGlobal.clone();
         posGlobal.set(g);
-        S result = fingering.apply(this);
+        var result = fingering.apply(this);
         posGlobal.set(p);
         return result;
     }
@@ -418,7 +418,7 @@ public abstract class Finger extends Part<SpaceGraph> implements Predicate<Finge
 
         @Override
         protected Surface target() {
-            Surface s = f.touching();
+            var s = f.touching();
             if (s != null) {
                 //color HASH
                 //color.setAt()
@@ -475,7 +475,7 @@ public abstract class Finger extends Part<SpaceGraph> implements Predicate<Finge
 
         @Override
         protected RectFloat innerBounds() {
-            JoglWindow win = ((OrthoSurfaceGraph) root()).video;
+            var win = ((OrthoSurfaceGraph) root()).video;
             float sw = win.getWidth(), sh = win.getHeight();
             return RectFloat.XYWH(f.posPixel, sw*0.1f, sh*0.1f);
         }
@@ -483,11 +483,11 @@ public abstract class Finger extends Part<SpaceGraph> implements Predicate<Finge
         protected void paint(GL2 gl, ReSurface renderer) {
             if (f.focused()) {
 
-                FingerRenderer r = this.renderer;
+                var r = this.renderer;
 
-                Fingering ff = f.fingering();
+                var ff = f.fingering();
                 if (ff != Idle) {
-                    @Nullable FingerRenderer specialRenderer = ff.cursor();
+                    @Nullable var specialRenderer = ff.cursor();
                     if (specialRenderer != null)
                         r = specialRenderer;
                 }

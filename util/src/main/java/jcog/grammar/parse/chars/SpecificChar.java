@@ -53,7 +53,7 @@ public class SpecificChar extends Terminal {
 	 */
 	@Override
 	public boolean qualifies(Object o) {
-		Character c = (Character) o;
+		var c = (Character) o;
 		return c == character;
 	}
 

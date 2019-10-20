@@ -29,8 +29,8 @@ public class RandomWeightInitializer implements WeightUpdaterBase {
 
     @Override
     public void updateWeight(UVector data) {
-        double[] dd = data.value;
-        for (int i = 0; i < data.size(); i++)
+        var dd = data.value;
+        for (var i = 0; i < data.size(); i++)
             dd[i] = next();
     }
 

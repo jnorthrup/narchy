@@ -62,8 +62,8 @@ public class AttractionBehavior2D<V extends Vec2D> implements ParticleBehavior2D
     public void accept(VerletParticle2D p) {
         if (p == attractor)
             return;
-        Vec2D delta = attractor.sub(p);
-        float distSq = delta.magSquared();
+        var delta = attractor.sub(p);
+        var distSq = delta.magSquared();
         if (distSq < radius*radius) {
             move(p, delta, distSq);
         }
@@ -75,9 +75,9 @@ public class AttractionBehavior2D<V extends Vec2D> implements ParticleBehavior2D
         if (distSq <= Spatialization.EPSILONf) {
            if (strength < 0) {
                //random direction
-               float theta = (float) ((rng.nextFloat()) * Math.PI * 2);
-               float rx = (float) (Math.cos(theta) * strength * timeStep);
-               float ry = (float) (Math.sin(theta) * strength * timeStep);
+               var theta = (float) ((rng.nextFloat()) * Math.PI * 2);
+               var rx = (float) (Math.cos(theta) * strength * timeStep);
+               var ry = (float) (Math.sin(theta) * strength * timeStep);
                f = new Vec2D(rx, ry);
            } else {
                return; //no effect

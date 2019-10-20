@@ -19,7 +19,7 @@ public class TaskJsonCodec {
             if (x.isBeliefOrGoal())
                 /* 2 */ y.add(x.truth().toString());
             if (!x.isEternal()) {
-                long start = x.start();
+                var start = x.start();
                 y.addArray().add(start).add(x.end() - start);
             }
         }

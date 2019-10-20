@@ -16,11 +16,11 @@ public abstract class RectDouble1D implements HyperRegion {
     @Override
     public HyperRegion mbr(HyperRegion r) {
 
-        RectDouble1D s = (RectDouble1D) r;
-        double from = from();
-        double to = to();
-        double f = Math.min(from, s.from());
-        double t = Math.max(to, s.to());
+        var s = (RectDouble1D) r;
+        var from = from();
+        var to = to();
+        var f = Math.min(from, s.from());
+        var t = Math.max(to, s.to());
         return new DefaultRect1D(f, t);
     }
 
@@ -52,13 +52,13 @@ public abstract class RectDouble1D implements HyperRegion {
 
     @Override
     public boolean contains(HyperRegion r) {
-        RectDouble1D inner = (RectDouble1D) r;
+        var inner = (RectDouble1D) r;
         return inner.from() >= from() && inner.to() <= to();
     }
 
     @Override
     public boolean intersects(HyperRegion r) {
-        RectDouble1D rr = (RectDouble1D) r;
+        var rr = (RectDouble1D) r;
         return (Math.max(from(), rr.from()) <= Math.min(to(), rr.to()));
     }
 

@@ -46,14 +46,14 @@ public class ImageTracer {
                         "\r\nSee https://github.com/jankovicsandras/imagetracerjava for details. \r\nThis is version " + versionnumber);
             } else {
 
-                
-                String outfilename = args[0] + ".svg";
-                HashMap<String, Float> options = new HashMap<>();
+
+                var outfilename = args[0] + ".svg";
+                var options = new HashMap<String, Float>();
                 String[] parameternames = {
                         "ltres", "qtres", "pathomit", "numberofcolors", "colorquantcycles", "scale", "roundcoords", "lcpr", "qcpr", "desc", "viewbox", "outfilename", "blurammount"};
-                int j = -1;
+                var j = -1;
                 float f = -1;
-                for (String parametername : parameternames) {
+                for (var parametername : parameternames) {
                     j = arraycontains(args, parametername);
                     if (j > -1) {
                         if (parametername == "outfilename") {
@@ -69,14 +69,14 @@ public class ImageTracer {
                     }
                 }
 
-                
-                File file = new File(outfilename);
+
+                var file = new File(outfilename);
                 
                 if (!file.exists()) {
                     file.createNewFile();
                 }
-                FileWriter fw = new FileWriter(file.getAbsoluteFile());
-                BufferedWriter bw = new BufferedWriter(fw);
+                var fw = new FileWriter(file.getAbsoluteFile());
+                var bw = new BufferedWriter(fw);
                 bw.write(imageToSVG(args[0], options));
                 bw.close();
 
@@ -121,23 +121,23 @@ public class ImageTracer {
         }
 
         protected void render(HashMap<String, Float> options, float w, float h, BiConsumer<ArrayList<Double[]>, byte[]> path) {
-            
-            TreeMap<Double, int[]> zindex = new TreeMap<>();
+
+            var zindex = new TreeMap<Double, int[]>();
 
 
-            for (int k = 0; k < this.layers.size(); k++) {
+            for (var k = 0; k < this.layers.size(); k++) {
 
-                
-                ArrayList<ArrayList<Double[]>> lk = this.layers.get(k);
 
-                for (int pcnt = 0; pcnt < lk.size(); pcnt++) {
+                var lk = this.layers.get(k);
 
-                    
-                    Double[] lkp0 = lk.get(pcnt).get(0);
+                for (var pcnt = 0; pcnt < lk.size(); pcnt++) {
 
-                    double label = (lkp0[2] * w) + lkp0[1];
-                    int finalPcnt = pcnt;
-                    int finalK = k;
+
+                    var lkp0 = lk.get(pcnt).get(0);
+
+                    var label = (lkp0[2] * w) + lkp0[1];
+                    var finalPcnt = pcnt;
+                    var finalK = k;
                     
                     zindex.computeIfAbsent(label, (l)-> new int[] {finalK, finalPcnt} );
                 }
@@ -148,8 +148,8 @@ public class ImageTracer {
 
             
             
-            for (Map.Entry<Double, int[]> entry : zindex.entrySet()) {
-                int[] v = entry.getValue();
+            for (var entry : zindex.entrySet()) {
+                var v = entry.getValue();
                 path.accept(this.layers.get(v[0]).get(v[1]), this.palette[v[0]]);
             }
 
@@ -161,8 +161,8 @@ public class ImageTracer {
             
             float w = (int) (this.width * options.get("scale")), h = (int) (this.height * options.get("scale"));
 
-            String viewboxorviewport = options.get("viewbox") != 0 ? "viewBox=\"0 0 " + w + ' ' + h + "\" " : "width=\"" + w + "\" height=\"" + h + "\" ";
-            StringBuilder svgstr = new StringBuilder("<svg " + viewboxorviewport + "version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" ");
+            var viewboxorviewport = options.get("viewbox") != 0 ? "viewBox=\"0 0 " + w + ' ' + h + "\" " : "width=\"" + w + "\" height=\"" + h + "\" ";
+            var svgstr = new StringBuilder("<svg " + viewboxorviewport + "version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" ");
             if (options.get("desc") != 0) {
                 svgstr.append("desc=\"Created with ImageTracer.java version ").append(ImageTracer.versionnumber).append("\" ");
             }
@@ -197,19 +197,19 @@ public class ImageTracer {
     }
 
     private static byte[][] getPalette(BufferedImage image, Map<String, Float> options) {
-        int numberofcolors = options.get("numberofcolors").intValue();
-        int[][] pixels = new int[image.getWidth()][image.getHeight()];
+        var numberofcolors = options.get("numberofcolors").intValue();
+        var pixels = new int[image.getWidth()][image.getHeight()];
 
-        for (int i = 0; i < image.getWidth(); i++)
-            for (int j = 0; j < image.getHeight(); j++) {
+        for (var i = 0; i < image.getWidth(); i++)
+            for (var j = 0; j < image.getHeight(); j++) {
                 pixels[i][j] = image.getRGB(i, j);
             }
-        int[] palette = Quantize.quantizeImage(pixels, numberofcolors);
-        byte[][] bytepalette = new byte[numberofcolors][4];
+        var palette = Quantize.quantizeImage(pixels, numberofcolors);
+        var bytepalette = new byte[numberofcolors][4];
 
-        for (int i = 0; i < palette.length; i++) {
+        for (var i = 0; i < palette.length; i++) {
             //TODO use Bitmap2D decode... functions rather than new Color
-            Color c = new Color(palette[i]);
+            var c = new Color(palette[i]);
             bytepalette[i][0] = (byte) c.getRed();
             bytepalette[i][1] = (byte) c.getGreen();
             bytepalette[i][2] = (byte) c.getBlue();
@@ -228,9 +228,7 @@ public class ImageTracer {
     private static String imageToSVG(String filename, HashMap<String, Float> options) throws Exception {
 
 
-        
-
-        HashMap<String, Float> o = checkoptions(options);
+        var o = checkoptions(options);
 
         return new ImageData(ImageIO.read(new File(filename)))
                 .trace(o)
@@ -324,10 +322,10 @@ public class ImageTracer {
             this.image = image;
             this.width = image.getWidth();
             this.height = image.getHeight();
-            int[] rawdata = image.getRGB(0, 0, width, height, null, 0, width);
-            byte[] data = new byte[rawdata.length * 4];
-            for (int i = 0; i < rawdata.length; i++) {
-                int r = rawdata[i];
+            var rawdata = image.getRGB(0, 0, width, height, null, 0, width);
+            var data = new byte[rawdata.length * 4];
+            for (var i = 0; i < rawdata.length; i++) {
+                var r = rawdata[i];
                 data[(i * 4) + 3] = bytetrans((byte) (r >>> 24));
                 data[(i * 4)] = bytetrans((byte) (r >>> 16));
                 data[(i * 4) + 1] = bytetrans((byte) (r >>> 8));
@@ -339,16 +337,16 @@ public class ImageTracer {
 
         public IndexedImage trace(HashMap<String, Float> options) {
 
-            byte[][] palette = getPalette(image, options);
+            var palette = getPalette(image, options);
 
-            
-            IndexedImage ii = VectorizingUtils.colorquantization(this, palette, options);
-            
-            int[][][] rawlayers = VectorizingUtils.layering(ii);
-            
-            ArrayList<ArrayList<ArrayList<Integer[]>>> bps = VectorizingUtils.batchpathscan(rawlayers, (int) (Math.floor(options.get("pathomit"))));
-            
-            ArrayList<ArrayList<ArrayList<Double[]>>> bis = VectorizingUtils.batchinternodes(bps);
+
+            var ii = VectorizingUtils.colorquantization(this, palette, options);
+
+            var rawlayers = VectorizingUtils.layering(ii);
+
+            var bps = VectorizingUtils.batchpathscan(rawlayers, (int) (Math.floor(options.get("pathomit"))));
+
+            var bis = VectorizingUtils.batchinternodes(bps);
             
             ii.layers = VectorizingUtils.batchtracelayers(bis, options.get("ltres"), options.get("qtres"));
             return ii;

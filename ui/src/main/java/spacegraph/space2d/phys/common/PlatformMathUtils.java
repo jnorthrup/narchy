@@ -39,7 +39,7 @@ public class PlatformMathUtils {
         float x = Float.floatToRawIntBits(a);
         x *= INV_SHIFT23;
         x -= 127;
-        float y = x - (x >= 0 ? (int) x : (int) x - 1);
+        var y = x - (x >= 0 ? (int) x : (int) x - 1);
         b *= x + (y - y * y) * 0.346607f;
         y = b - (b >= 0 ? (int) b : (int) b - 1);
         y = (y - y * y) * 0.33971f;
@@ -54,8 +54,8 @@ public class PlatformMathUtils {
     public static double angle(v2 a, v2 b) {
         double vx = b.x - a.x;
         double vy = b.y - a.y;
-        double x = vx * vx;
-        double cos = x / (x + vy * vy); 
+        var x = vx * vx;
+        var cos = x / (x + vy * vy);
         return vx > 0 ? vy > 0 ? 3 + cos : 1 - cos : vy > 0 ? 3 - cos : 1 + cos;
     }
 
@@ -84,7 +84,7 @@ public class PlatformMathUtils {
         double uy = b.y - a.y;
         double wx = b.x - v.x;
         double wy = b.y - v.y;
-        double sin = (ux * wy - wx * uy) / Math.sqrt((ux * ux + uy * uy) * (wx * wx + wy * wy));
+        var sin = (ux * wy - wx * uy) / Math.sqrt((ux * ux + uy * uy) * (wx * wx + wy * wy));
         if (Double.isNaN(sin) || Math.abs(sin) < DEFICIT) {
             return 0;
         }

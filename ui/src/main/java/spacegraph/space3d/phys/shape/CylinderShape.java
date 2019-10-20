@@ -68,15 +68,14 @@ public class CylinderShape extends BoxShape {
 	}
 	
 	private static v3 cylinderLocalSupport(v3 halfExtents, v3 v, int cylinderUpAxis, int XX, int YY, int ZZ, v3 out) {
-		
-		
 
-		float radius = VectorUtil.coord(halfExtents, XX);
-		float halfHeight = VectorUtil.coord(halfExtents, cylinderUpAxis);
 
-        float s = (VectorUtil.coord(v, XX) * VectorUtil.coord(v, XX) + VectorUtil.coord(v, ZZ) * VectorUtil.coord(v, ZZ));
+		var radius = VectorUtil.coord(halfExtents, XX);
+		var halfHeight = VectorUtil.coord(halfExtents, cylinderUpAxis);
+
+		var s = (VectorUtil.coord(v, XX) * VectorUtil.coord(v, XX) + VectorUtil.coord(v, ZZ) * VectorUtil.coord(v, ZZ));
 		if (s != 0f) {
-            float d = radius / (float) Math.sqrt(s);
+			var d = radius / (float) Math.sqrt(s);
             VectorUtil.setCoord(out, XX, VectorUtil.coord(v, XX) * d);
 			VectorUtil.setCoord(out, YY, VectorUtil.coord(v, YY) < 0f ? -halfHeight : halfHeight);
 			VectorUtil.setCoord(out, ZZ, VectorUtil.coord(v, ZZ) * d);
@@ -96,18 +95,18 @@ public class CylinderShape extends BoxShape {
 
 	@Override
 	public void batchedUnitVectorGetSupportingVertexWithoutMargin(v3[] vectors, v3[] supportVerticesOut, int numVectors) {
-		for (int i = 0; i < numVectors; i++) {
+		for (var i = 0; i < numVectors; i++) {
 			cylinderLocalSupportY(getHalfExtentsWithoutMargin(new v3()), vectors[i], supportVerticesOut[i]);
 		}
 	}
 
 	@Override
 	public v3 localGetSupportingVertex(v3 vec, v3 out) {
-		v3 supVertex = out;
+		var supVertex = out;
 		localGetSupportingVertexWithoutMargin(vec, supVertex);
 
 		if (getMargin() != 0f) {
-			v3 vecnorm = new v3(vec);
+			var vecnorm = new v3(vec);
 			if (vecnorm.lengthSquared() < (BulletGlobals.SIMD_EPSILON * BulletGlobals.SIMD_EPSILON)) {
 				vecnorm.set(-1f, -1f, -1f);
 			}

@@ -147,10 +147,10 @@ public abstract class Contact {
      * Get the world manifold.
      */
     public void getWorldManifold(WorldManifold worldManifold) {
-        Body2D bodyA = aFixture.getBody();
-        Body2D bodyB = bFixture.getBody();
-        Shape shapeA = aFixture.shape();
-        Shape shapeB = bFixture.shape();
+        var bodyA = aFixture.getBody();
+        var bodyB = bFixture.getBody();
+        var shapeA = aFixture.shape();
+        var shapeB = bFixture.shape();
 
         worldManifold.initialize(m_manifold, bodyA, shapeA.skinRadius,
                 bodyB, shapeB.skinRadius);
@@ -248,23 +248,23 @@ public abstract class Contact {
         
         m_flags |= ENABLED_FLAG;
 
-        boolean touching = false;
-        boolean wasTouching = (m_flags & TOUCHING_FLAG) == TOUCHING_FLAG;
+        var touching = false;
+        var wasTouching = (m_flags & TOUCHING_FLAG) == TOUCHING_FLAG;
 
-        boolean sensorA = aFixture.isSensor();
-        boolean sensorB = bFixture.isSensor();
-        boolean sensor = sensorA || sensorB;
+        var sensorA = aFixture.isSensor();
+        var sensorB = bFixture.isSensor();
+        var sensor = sensorA || sensorB;
 
-        Body2D bodyA = aFixture.getBody();
-        Body2D bodyB = bFixture.getBody();
+        var bodyA = aFixture.getBody();
+        var bodyB = bFixture.getBody();
         Transform xfA = bodyA;
         Transform xfB = bodyB;
         
         
 
         if (sensor) {
-            Shape shapeA = aFixture.shape();
-            Shape shapeB = bFixture.shape();
+            var shapeA = aFixture.shape();
+            var shapeB = bFixture.shape();
             touching = pool.getCollision().testOverlap(shapeA, aIndex, shapeB, bIndex, xfA, xfB);
 
             
@@ -275,14 +275,14 @@ public abstract class Contact {
 
             
             
-            for (int i = 0; i < m_manifold.pointCount; ++i) {
-                ManifoldPoint mp2 = m_manifold.points[i];
+            for (var i = 0; i < m_manifold.pointCount; ++i) {
+                var mp2 = m_manifold.points[i];
                 mp2.normalImpulse = 0.0f;
                 mp2.tangentImpulse = 0.0f;
-                ContactID id2 = mp2.id;
+                var id2 = mp2.id;
 
-                for (int j = 0; j < oldManifold.pointCount; ++j) {
-                    ManifoldPoint mp1 = oldManifold.points[j];
+                for (var j = 0; j < oldManifold.pointCount; ++j) {
+                    var mp1 = oldManifold.points[j];
 
                     if (mp1.id.isEqual(id2)) {
                         mp2.normalImpulse = mp1.normalImpulse;

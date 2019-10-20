@@ -74,7 +74,7 @@ public abstract class GImpactShape extends ConcaveShape {
      */
 	@Override
 	public void getAabb(Transform t, v3 aabbMin, v3 aabbMax) {
-		BoxCollision.AABB transformedbox = new BoxCollision.AABB(localAABB);
+		var transformedbox = new BoxCollision.AABB(localAABB);
 		transformedbox.appy_transform(t);
 		aabbMin.set(transformedbox.min);
 		aabbMax.set(transformedbox.max);
@@ -118,9 +118,9 @@ public abstract class GImpactShape extends ConcaveShape {
 	@Override
 	public CollisionShape setMargin(float margin) {
 		collisionMargin = margin;
-		int i = getNumChildShapes();
+		var i = getNumChildShapes();
 		while ((i--) != 0) {
-			CollisionShape child = getChildShape(i);
+			var child = getChildShape(i);
 			child.setMargin(margin);
 		}
 
@@ -209,7 +209,7 @@ public abstract class GImpactShape extends ConcaveShape {
 	 * Retrieves the bound from a child.
 	 */
 	public void getChildAabb(int child_index, Transform t, v3 aabbMin, v3 aabbMax) {
-		BoxCollision.AABB child_aabb = new BoxCollision.AABB();
+		var child_aabb = new BoxCollision.AABB();
 		getPrimitiveManager().get_primitive_box(child_index, child_aabb);
 		child_aabb.appy_transform(t);
 		aabbMin.set(child_aabb.min);

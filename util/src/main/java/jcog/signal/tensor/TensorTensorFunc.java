@@ -35,8 +35,8 @@ public class TensorTensorFunc implements Tensor {
 
     @Override
     public float[] snapshot() {
-        float[] ab = new float[volume()];
-        for (int i = 0; i < ab.length; i++)
+        var ab = new float[volume()];
+        for (var i = 0; i < ab.length; i++)
             ab[i] = getAt(i);
         return ab;
     }

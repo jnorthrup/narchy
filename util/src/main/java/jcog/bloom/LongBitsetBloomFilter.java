@@ -70,10 +70,10 @@ public class LongBitsetBloomFilter {
     
     public LongBitsetBloomFilter(List<Long> serializedBloom) {
         this(serializedBloom.get(0), Double.longBitsToDouble(serializedBloom.get(1)));
-        List<Long> bitSet = serializedBloom.subList(2, serializedBloom.size());
-        long[] data = new long[10];
-        int count = 0;
-        for (Long aLong : bitSet) {
+        var bitSet = serializedBloom.subList(2, serializedBloom.size());
+        var data = new long[10];
+        var count = 0;
+        for (var aLong : bitSet) {
             if (data.length == count) data = Arrays.copyOf(data, count * 2);
             long l = aLong;
             data[count++] = l;
@@ -103,14 +103,14 @@ public class LongBitsetBloomFilter {
     }
 
     public boolean test(byte[] val) {
-        long hash64 = Murmur3Hash.hash64(val);
-        int hash1 = (int) hash64;
-        int hash2 = (int) (hash64 >>> 32);
+        var hash64 = Murmur3Hash.hash64(val);
+        var hash1 = (int) hash64;
+        var hash2 = (int) (hash64 >>> 32);
 
 
-        int k = this.k;
-        int m = this.m;
-        MetalBitSet bits = bitSet;
+        var k = this.k;
+        var m = this.m;
+        var bits = bitSet;
 
         return IntStream.rangeClosed(1, k).map(i -> combineHash(hash1, hash2, i)).allMatch(combinedHash -> bits.get( /*pos*/ combinedHash % m));
     }
@@ -125,28 +125,24 @@ public class LongBitsetBloomFilter {
     }
 
     public final void add(byte[] val) {
-        
-        
-        
 
-        
-        
-        long hash64 = Murmur3Hash.hash64(val);
-        int hash1 = (int) hash64;
-        int hash2 = (int) (hash64 >>> 32);
 
-        int k = this.k;
-        int m = this.m;
-        MetalBitSet bits = bitSet;
+        var hash64 = Murmur3Hash.hash64(val);
+        var hash1 = (int) hash64;
+        var hash2 = (int) (hash64 >>> 32);
 
-        for (int i = 1; i <= k; i++) {
-            int combinedHash = combineHash(hash1, hash2, i);
+        var k = this.k;
+        var m = this.m;
+        var bits = bitSet;
+
+        for (var i = 1; i <= k; i++) {
+            var combinedHash = combineHash(hash1, hash2, i);
             bits.set( /*pos*/ combinedHash % m );
         }
     }
 
     protected static int combineHash(int hash1, int hash2, int i) {
-        int combinedHash = hash1 + (i * hash2);
+        var combinedHash = hash1 + (i * hash2);
         
         if (combinedHash < 0) {
             combinedHash = ~combinedHash;
@@ -168,9 +164,9 @@ public class LongBitsetBloomFilter {
     }
 
     public boolean addIfNotContained(int val) {
-        
-        byte[] bb = intToByteArrayLE(val);
-        boolean b = test(bb);
+
+        var bb = intToByteArrayLE(val);
+        var b = test(bb);
         if (!b) {
             add(bb);
             return true;

@@ -497,7 +497,7 @@ public class Matrix4f implements java.io.Serializable, Cloneable {
      */
     public final float getElement(int row, int column) {
         float result = 0;
-        boolean finished = false;
+        var finished = false;
         switch (row) {
             case 0:
                 switch (column) {
@@ -1424,7 +1424,7 @@ public class Matrix4f implements java.io.Serializable, Cloneable {
      */
     private void transpose() {
 
-        float temp = this.m10;
+        var temp = this.m10;
         this.m10 = this.m01;
         this.m01 = temp;
 
@@ -1515,7 +1515,7 @@ public class Matrix4f implements java.io.Serializable, Cloneable {
      * @param a1 the axis and angle to be converted
      */
     public final void set(AxisAngle4f a1) {
-        float mag = (float) Math.sqrt(a1.x * a1.x + a1.y * a1.y + a1.z * a1.z);
+        var mag = (float) Math.sqrt(a1.x * a1.x + a1.y * a1.y + a1.z * a1.z);
         if (mag < EPS) {
             m00 = 1.0f;
             m01 = 0.0f;
@@ -1530,23 +1530,23 @@ public class Matrix4f implements java.io.Serializable, Cloneable {
             m22 = 1.0f;
         } else {
             mag = 1.0f / mag;
-            float ax = a1.x * mag;
-            float ay = a1.y * mag;
-            float az = a1.z * mag;
+            var ax = a1.x * mag;
+            var ay = a1.y * mag;
+            var az = a1.z * mag;
 
-            float sinTheta = (float) Math.sin(a1.angle);
-            float cosTheta = (float) Math.cos(a1.angle);
-            float t = 1.0f - cosTheta;
+            var sinTheta = (float) Math.sin(a1.angle);
+            var cosTheta = (float) Math.cos(a1.angle);
+            var t = 1.0f - cosTheta;
 
             m00 = t * ax * ax + cosTheta;
-            float xy = ax * ay;
+            var xy = ax * ay;
             m01 = t * xy - sinTheta * az;
-            float xz = ax * az;
+            var xz = ax * az;
             m02 = t * xz + sinTheta * ay;
 
             m10 = t * xy + sinTheta * az;
             m11 = t * ay * ay + cosTheta;
-            float yz = ay * az;
+            var yz = ay * az;
             m12 = t * yz - sinTheta * ax;
 
             m20 = t * xz - sinTheta * ay;
@@ -1794,7 +1794,7 @@ public class Matrix4f implements java.io.Serializable, Cloneable {
      * about allocating a little bit of garbage.
      */
     private void invertGeneral(Matrix4f m1) {
-        double[] temp = new double[16];
+        var temp = new double[16];
         int r, c;
 
         
@@ -1821,19 +1821,19 @@ public class Matrix4f implements java.io.Serializable, Cloneable {
         temp[14] = m1.m32;
         temp[15] = m1.m33;
 
-        
-        int[] row_perm = new int[4];
+
+        var row_perm = new int[4];
         if (!luDecomposition(temp, row_perm)) {
             
             throw new SingularMatrixException(VecMathI18N.getString("Matrix4f12"));
         }
 
 
-        double[] result = new double[10];
-        int count = 0;
-        for (int i = 0; i < 16; i++) {
+        var result = new double[10];
+        var count = 0;
+        for (var i = 0; i < 16; i++) {
             if (result.length == count) result = Arrays.copyOf(result, count * 2);
-            double v = 0.0;
+            var v = 0.0;
             result[count++] = v;
         }
         result = Arrays.copyOfRange(result, 0, count);
@@ -1888,23 +1888,23 @@ public class Matrix4f implements java.io.Serializable, Cloneable {
     private static boolean luDecomposition(double[] matrix0,
                                            int[] row_perm) {
 
-        double[] row_scale = new double[4];
+        var row_scale = new double[4];
 
         
         {
 
-            int ptr = 0;
-            int rs = 0;
+            var ptr = 0;
+            var rs = 0;
 
-            
-            int i = 4;
+
+            var i = 4;
             while (i-- != 0) {
 
 
-                int j = 4;
-                double big = 0.0;
+                var j = 4;
+                var big = 0.0;
                 while (j-- != 0) {
-                    double temp = matrix0[ptr++];
+                    var temp = matrix0[ptr++];
                     temp = Math.abs(temp);
                     if (temp > big) {
                         big = temp;
@@ -1919,10 +1919,10 @@ public class Matrix4f implements java.io.Serializable, Cloneable {
             }
         }
 
-        int mtx = 0;
+        var mtx = 0;
 
         
-        for (int j = 0; j < 4; j++) {
+        for (var j = 0; j < 4; j++) {
             int i, k;
             int target, p1, p2;
             double sum;
@@ -1942,10 +1942,9 @@ public class Matrix4f implements java.io.Serializable, Cloneable {
                 matrix0[target] = sum;
             }
 
-            
-            
-            double big = 0.0;
-            int imax = -1;
+
+            var big = 0.0;
+            var imax = -1;
             double temp;
             for (i = j; i < 4; i++) {
                 target = mtx + (4 * i) + j;
@@ -2033,25 +2032,25 @@ public class Matrix4f implements java.io.Serializable, Cloneable {
                                            double[] matrix2) {
 
 
-        int rp = 0;
+        var rp = 0;
 
         
-        for (int k = 0; k < 4; k++) {
-            
-            int cv = k;
-            int ii = -1;
+        for (var k = 0; k < 4; k++) {
+
+            var cv = k;
+            var ii = -1;
 
 
             int rv;
-            for (int i = 0; i < 4; i++) {
+            for (var i = 0; i < 4; i++) {
 
-                int ip = row_perm[rp + i];
-                double sum = matrix2[cv + 4 * ip];
+                var ip = row_perm[rp + i];
+                var sum = matrix2[cv + 4 * ip];
                 matrix2[cv + 4 * ip] = matrix2[cv + 4 * i];
                 if (ii >= 0) {
                     
                     rv = i * 4;
-                    for (int j = ii; j <= i - 1; j++) {
+                    for (var j = ii; j <= i - 1; j++) {
                         sum -= matrix1[rv + j] * matrix2[cv + 4 * j];
                     }
                 } else if (sum != 0.0) {
@@ -2089,9 +2088,8 @@ public class Matrix4f implements java.io.Serializable, Cloneable {
      */
     public final float determinant() {
 
-        
 
-        float det = m00 * (m11 * m22 * m33 + m12 * m23 * m31 + m13 * m21 * m32
+        var det = m00 * (m11 * m22 * m33 + m12 * m23 * m31 + m13 * m21 * m32
                 - m13 * m22 * m31 - m11 * m23 * m32 - m12 * m21 * m33);
         det -= m01 * (m10 * m22 * m33 + m12 * m23 * m30 + m13 * m20 * m32
                 - m13 * m22 * m30 - m10 * m23 * m32 - m12 * m20 * m33);
@@ -2383,8 +2381,8 @@ public class Matrix4f implements java.io.Serializable, Cloneable {
      */
     public final void rotX(float angle) {
 
-        float sinAngle = (float) Math.sin(angle);
-        float cosAngle = (float) Math.cos(angle);
+        var sinAngle = (float) Math.sin(angle);
+        var cosAngle = (float) Math.cos(angle);
 
         this.m00 = 1.0f;
         this.m01 = 0.0f;
@@ -2415,8 +2413,8 @@ public class Matrix4f implements java.io.Serializable, Cloneable {
      */
     public final void rotY(float angle) {
 
-        float sinAngle = (float) Math.sin(angle);
-        float cosAngle = (float) Math.cos(angle);
+        var sinAngle = (float) Math.sin(angle);
+        var cosAngle = (float) Math.cos(angle);
 
         this.m00 = cosAngle;
         this.m01 = 0.0f;
@@ -2447,8 +2445,8 @@ public class Matrix4f implements java.io.Serializable, Cloneable {
      */
     public final void rotZ(float angle) {
 
-        float sinAngle = (float) Math.sin(angle);
-        float cosAngle = (float) Math.cos(angle);
+        var sinAngle = (float) Math.sin(angle);
+        var cosAngle = (float) Math.cos(angle);
 
         this.m00 = cosAngle;
         this.m01 = -sinAngle;
@@ -2529,40 +2527,40 @@ public class Matrix4f implements java.io.Serializable, Cloneable {
      */
     public final void mul(Matrix4f m1) {
 
-        float m00 = this.m00 * m1.m00 + this.m01 * m1.m10 +
+        var m00 = this.m00 * m1.m00 + this.m01 * m1.m10 +
                 this.m02 * m1.m20 + this.m03 * m1.m30;
-        float m01 = this.m00 * m1.m01 + this.m01 * m1.m11 +
+        var m01 = this.m00 * m1.m01 + this.m01 * m1.m11 +
                 this.m02 * m1.m21 + this.m03 * m1.m31;
-        float m02 = this.m00 * m1.m02 + this.m01 * m1.m12 +
+        var m02 = this.m00 * m1.m02 + this.m01 * m1.m12 +
                 this.m02 * m1.m22 + this.m03 * m1.m32;
-        float m03 = this.m00 * m1.m03 + this.m01 * m1.m13 +
+        var m03 = this.m00 * m1.m03 + this.m01 * m1.m13 +
                 this.m02 * m1.m23 + this.m03 * m1.m33;
 
-        float m10 = this.m10 * m1.m00 + this.m11 * m1.m10 +
+        var m10 = this.m10 * m1.m00 + this.m11 * m1.m10 +
                 this.m12 * m1.m20 + this.m13 * m1.m30;
-        float m11 = this.m10 * m1.m01 + this.m11 * m1.m11 +
+        var m11 = this.m10 * m1.m01 + this.m11 * m1.m11 +
                 this.m12 * m1.m21 + this.m13 * m1.m31;
-        float m12 = this.m10 * m1.m02 + this.m11 * m1.m12 +
+        var m12 = this.m10 * m1.m02 + this.m11 * m1.m12 +
                 this.m12 * m1.m22 + this.m13 * m1.m32;
-        float m13 = this.m10 * m1.m03 + this.m11 * m1.m13 +
+        var m13 = this.m10 * m1.m03 + this.m11 * m1.m13 +
                 this.m12 * m1.m23 + this.m13 * m1.m33;
 
-        float m20 = this.m20 * m1.m00 + this.m21 * m1.m10 +
+        var m20 = this.m20 * m1.m00 + this.m21 * m1.m10 +
                 this.m22 * m1.m20 + this.m23 * m1.m30;
-        float m21 = this.m20 * m1.m01 + this.m21 * m1.m11 +
+        var m21 = this.m20 * m1.m01 + this.m21 * m1.m11 +
                 this.m22 * m1.m21 + this.m23 * m1.m31;
-        float m22 = this.m20 * m1.m02 + this.m21 * m1.m12 +
+        var m22 = this.m20 * m1.m02 + this.m21 * m1.m12 +
                 this.m22 * m1.m22 + this.m23 * m1.m32;
-        float m23 = this.m20 * m1.m03 + this.m21 * m1.m13 +
+        var m23 = this.m20 * m1.m03 + this.m21 * m1.m13 +
                 this.m22 * m1.m23 + this.m23 * m1.m33;
 
-        float m30 = this.m30 * m1.m00 + this.m31 * m1.m10 +
+        var m30 = this.m30 * m1.m00 + this.m31 * m1.m10 +
                 this.m32 * m1.m20 + this.m33 * m1.m30;
-        float m31 = this.m30 * m1.m01 + this.m31 * m1.m11 +
+        var m31 = this.m30 * m1.m01 + this.m31 * m1.m11 +
                 this.m32 * m1.m21 + this.m33 * m1.m31;
-        float m32 = this.m30 * m1.m02 + this.m31 * m1.m12 +
+        var m32 = this.m30 * m1.m02 + this.m31 * m1.m12 +
                 this.m32 * m1.m22 + this.m33 * m1.m32;
-        float m33 = this.m30 * m1.m03 + this.m31 * m1.m13 +
+        var m33 = this.m30 * m1.m03 + this.m31 * m1.m13 +
                 this.m32 * m1.m23 + this.m33 * m1.m33;
 
         this.m00 = m00;
@@ -2629,25 +2627,25 @@ public class Matrix4f implements java.io.Serializable, Cloneable {
             this.m33 = m1.m30 * m2.m03 + m1.m31 * m2.m13 +
                     m1.m32 * m2.m23 + m1.m33 * m2.m33;
         } else {
-            float m00 = m1.m00 * m2.m00 + m1.m01 * m2.m10 + m1.m02 * m2.m20 + m1.m03 * m2.m30;
-            float m01 = m1.m00 * m2.m01 + m1.m01 * m2.m11 + m1.m02 * m2.m21 + m1.m03 * m2.m31;
-            float m02 = m1.m00 * m2.m02 + m1.m01 * m2.m12 + m1.m02 * m2.m22 + m1.m03 * m2.m32;
-            float m03 = m1.m00 * m2.m03 + m1.m01 * m2.m13 + m1.m02 * m2.m23 + m1.m03 * m2.m33;
+            var m00 = m1.m00 * m2.m00 + m1.m01 * m2.m10 + m1.m02 * m2.m20 + m1.m03 * m2.m30;
+            var m01 = m1.m00 * m2.m01 + m1.m01 * m2.m11 + m1.m02 * m2.m21 + m1.m03 * m2.m31;
+            var m02 = m1.m00 * m2.m02 + m1.m01 * m2.m12 + m1.m02 * m2.m22 + m1.m03 * m2.m32;
+            var m03 = m1.m00 * m2.m03 + m1.m01 * m2.m13 + m1.m02 * m2.m23 + m1.m03 * m2.m33;
 
-            float m10 = m1.m10 * m2.m00 + m1.m11 * m2.m10 + m1.m12 * m2.m20 + m1.m13 * m2.m30;
-            float m11 = m1.m10 * m2.m01 + m1.m11 * m2.m11 + m1.m12 * m2.m21 + m1.m13 * m2.m31;
-            float m12 = m1.m10 * m2.m02 + m1.m11 * m2.m12 + m1.m12 * m2.m22 + m1.m13 * m2.m32;
-            float m13 = m1.m10 * m2.m03 + m1.m11 * m2.m13 + m1.m12 * m2.m23 + m1.m13 * m2.m33;
+            var m10 = m1.m10 * m2.m00 + m1.m11 * m2.m10 + m1.m12 * m2.m20 + m1.m13 * m2.m30;
+            var m11 = m1.m10 * m2.m01 + m1.m11 * m2.m11 + m1.m12 * m2.m21 + m1.m13 * m2.m31;
+            var m12 = m1.m10 * m2.m02 + m1.m11 * m2.m12 + m1.m12 * m2.m22 + m1.m13 * m2.m32;
+            var m13 = m1.m10 * m2.m03 + m1.m11 * m2.m13 + m1.m12 * m2.m23 + m1.m13 * m2.m33;
 
-            float m20 = m1.m20 * m2.m00 + m1.m21 * m2.m10 + m1.m22 * m2.m20 + m1.m23 * m2.m30;
-            float m21 = m1.m20 * m2.m01 + m1.m21 * m2.m11 + m1.m22 * m2.m21 + m1.m23 * m2.m31;
-            float m22 = m1.m20 * m2.m02 + m1.m21 * m2.m12 + m1.m22 * m2.m22 + m1.m23 * m2.m32;
-            float m23 = m1.m20 * m2.m03 + m1.m21 * m2.m13 + m1.m22 * m2.m23 + m1.m23 * m2.m33;
+            var m20 = m1.m20 * m2.m00 + m1.m21 * m2.m10 + m1.m22 * m2.m20 + m1.m23 * m2.m30;
+            var m21 = m1.m20 * m2.m01 + m1.m21 * m2.m11 + m1.m22 * m2.m21 + m1.m23 * m2.m31;
+            var m22 = m1.m20 * m2.m02 + m1.m21 * m2.m12 + m1.m22 * m2.m22 + m1.m23 * m2.m32;
+            var m23 = m1.m20 * m2.m03 + m1.m21 * m2.m13 + m1.m22 * m2.m23 + m1.m23 * m2.m33;
 
-            float m30 = m1.m30 * m2.m00 + m1.m31 * m2.m10 + m1.m32 * m2.m20 + m1.m33 * m2.m30;
-            float m31 = m1.m30 * m2.m01 + m1.m31 * m2.m11 + m1.m32 * m2.m21 + m1.m33 * m2.m31;
-            float m32 = m1.m30 * m2.m02 + m1.m31 * m2.m12 + m1.m32 * m2.m22 + m1.m33 * m2.m32;
-            float m33 = m1.m30 * m2.m03 + m1.m31 * m2.m13 + m1.m32 * m2.m23 + m1.m33 * m2.m33;
+            var m30 = m1.m30 * m2.m00 + m1.m31 * m2.m10 + m1.m32 * m2.m20 + m1.m33 * m2.m30;
+            var m31 = m1.m30 * m2.m01 + m1.m31 * m2.m11 + m1.m32 * m2.m21 + m1.m33 * m2.m31;
+            var m32 = m1.m30 * m2.m02 + m1.m31 * m2.m12 + m1.m32 * m2.m22 + m1.m33 * m2.m32;
+            var m33 = m1.m30 * m2.m03 + m1.m31 * m2.m13 + m1.m32 * m2.m23 + m1.m33 * m2.m33;
 
             this.m00 = m00;
             this.m01 = m01;
@@ -2698,25 +2696,25 @@ public class Matrix4f implements java.io.Serializable, Cloneable {
             this.m33 = m1.m03 * m2.m30 + m1.m13 * m2.m31 + m1.m23 * m2.m32 + m1.m33 * m2.m33;
         } else {
 
-            float m00 = m1.m00 * m2.m00 + m1.m10 * m2.m01 + m1.m20 * m2.m02 + m1.m30 * m2.m03;
-            float m01 = m1.m00 * m2.m10 + m1.m10 * m2.m11 + m1.m20 * m2.m12 + m1.m30 * m2.m13;
-            float m02 = m1.m00 * m2.m20 + m1.m10 * m2.m21 + m1.m20 * m2.m22 + m1.m30 * m2.m23;
-            float m03 = m1.m00 * m2.m30 + m1.m10 * m2.m31 + m1.m20 * m2.m32 + m1.m30 * m2.m33;
+            var m00 = m1.m00 * m2.m00 + m1.m10 * m2.m01 + m1.m20 * m2.m02 + m1.m30 * m2.m03;
+            var m01 = m1.m00 * m2.m10 + m1.m10 * m2.m11 + m1.m20 * m2.m12 + m1.m30 * m2.m13;
+            var m02 = m1.m00 * m2.m20 + m1.m10 * m2.m21 + m1.m20 * m2.m22 + m1.m30 * m2.m23;
+            var m03 = m1.m00 * m2.m30 + m1.m10 * m2.m31 + m1.m20 * m2.m32 + m1.m30 * m2.m33;
 
-            float m10 = m1.m01 * m2.m00 + m1.m11 * m2.m01 + m1.m21 * m2.m02 + m1.m31 * m2.m03;
-            float m11 = m1.m01 * m2.m10 + m1.m11 * m2.m11 + m1.m21 * m2.m12 + m1.m31 * m2.m13;
-            float m12 = m1.m01 * m2.m20 + m1.m11 * m2.m21 + m1.m21 * m2.m22 + m1.m31 * m2.m23;
-            float m13 = m1.m01 * m2.m30 + m1.m11 * m2.m31 + m1.m21 * m2.m32 + m1.m31 * m2.m33;
+            var m10 = m1.m01 * m2.m00 + m1.m11 * m2.m01 + m1.m21 * m2.m02 + m1.m31 * m2.m03;
+            var m11 = m1.m01 * m2.m10 + m1.m11 * m2.m11 + m1.m21 * m2.m12 + m1.m31 * m2.m13;
+            var m12 = m1.m01 * m2.m20 + m1.m11 * m2.m21 + m1.m21 * m2.m22 + m1.m31 * m2.m23;
+            var m13 = m1.m01 * m2.m30 + m1.m11 * m2.m31 + m1.m21 * m2.m32 + m1.m31 * m2.m33;
 
-            float m20 = m1.m02 * m2.m00 + m1.m12 * m2.m01 + m1.m22 * m2.m02 + m1.m32 * m2.m03;
-            float m21 = m1.m02 * m2.m10 + m1.m12 * m2.m11 + m1.m22 * m2.m12 + m1.m32 * m2.m13;
-            float m22 = m1.m02 * m2.m20 + m1.m12 * m2.m21 + m1.m22 * m2.m22 + m1.m32 * m2.m23;
-            float m23 = m1.m02 * m2.m30 + m1.m12 * m2.m31 + m1.m22 * m2.m32 + m1.m32 * m2.m33;
+            var m20 = m1.m02 * m2.m00 + m1.m12 * m2.m01 + m1.m22 * m2.m02 + m1.m32 * m2.m03;
+            var m21 = m1.m02 * m2.m10 + m1.m12 * m2.m11 + m1.m22 * m2.m12 + m1.m32 * m2.m13;
+            var m22 = m1.m02 * m2.m20 + m1.m12 * m2.m21 + m1.m22 * m2.m22 + m1.m32 * m2.m23;
+            var m23 = m1.m02 * m2.m30 + m1.m12 * m2.m31 + m1.m22 * m2.m32 + m1.m32 * m2.m33;
 
-            float m30 = m1.m03 * m2.m00 + m1.m13 * m2.m01 + m1.m23 * m2.m02 + m1.m33 * m2.m03;
-            float m31 = m1.m03 * m2.m10 + m1.m13 * m2.m11 + m1.m23 * m2.m12 + m1.m33 * m2.m13;
-            float m32 = m1.m03 * m2.m20 + m1.m13 * m2.m21 + m1.m23 * m2.m22 + m1.m33 * m2.m23;
-            float m33 = m1.m03 * m2.m30 + m1.m13 * m2.m31 + m1.m23 * m2.m32 + m1.m33 * m2.m33;
+            var m30 = m1.m03 * m2.m00 + m1.m13 * m2.m01 + m1.m23 * m2.m02 + m1.m33 * m2.m03;
+            var m31 = m1.m03 * m2.m10 + m1.m13 * m2.m11 + m1.m23 * m2.m12 + m1.m33 * m2.m13;
+            var m32 = m1.m03 * m2.m20 + m1.m13 * m2.m21 + m1.m23 * m2.m22 + m1.m33 * m2.m23;
+            var m33 = m1.m03 * m2.m30 + m1.m13 * m2.m31 + m1.m23 * m2.m32 + m1.m33 * m2.m33;
 
             this.m00 = m00;
             this.m01 = m01;
@@ -2768,25 +2766,25 @@ public class Matrix4f implements java.io.Serializable, Cloneable {
             this.m33 = m1.m30 * m2.m30 + m1.m31 * m2.m31 + m1.m32 * m2.m32 + m1.m33 * m2.m33;
         } else {
 
-            float m00 = m1.m00 * m2.m00 + m1.m01 * m2.m01 + m1.m02 * m2.m02 + m1.m03 * m2.m03;
-            float m01 = m1.m00 * m2.m10 + m1.m01 * m2.m11 + m1.m02 * m2.m12 + m1.m03 * m2.m13;
-            float m02 = m1.m00 * m2.m20 + m1.m01 * m2.m21 + m1.m02 * m2.m22 + m1.m03 * m2.m23;
-            float m03 = m1.m00 * m2.m30 + m1.m01 * m2.m31 + m1.m02 * m2.m32 + m1.m03 * m2.m33;
+            var m00 = m1.m00 * m2.m00 + m1.m01 * m2.m01 + m1.m02 * m2.m02 + m1.m03 * m2.m03;
+            var m01 = m1.m00 * m2.m10 + m1.m01 * m2.m11 + m1.m02 * m2.m12 + m1.m03 * m2.m13;
+            var m02 = m1.m00 * m2.m20 + m1.m01 * m2.m21 + m1.m02 * m2.m22 + m1.m03 * m2.m23;
+            var m03 = m1.m00 * m2.m30 + m1.m01 * m2.m31 + m1.m02 * m2.m32 + m1.m03 * m2.m33;
 
-            float m10 = m1.m10 * m2.m00 + m1.m11 * m2.m01 + m1.m12 * m2.m02 + m1.m13 * m2.m03;
-            float m11 = m1.m10 * m2.m10 + m1.m11 * m2.m11 + m1.m12 * m2.m12 + m1.m13 * m2.m13;
-            float m12 = m1.m10 * m2.m20 + m1.m11 * m2.m21 + m1.m12 * m2.m22 + m1.m13 * m2.m23;
-            float m13 = m1.m10 * m2.m30 + m1.m11 * m2.m31 + m1.m12 * m2.m32 + m1.m13 * m2.m33;
+            var m10 = m1.m10 * m2.m00 + m1.m11 * m2.m01 + m1.m12 * m2.m02 + m1.m13 * m2.m03;
+            var m11 = m1.m10 * m2.m10 + m1.m11 * m2.m11 + m1.m12 * m2.m12 + m1.m13 * m2.m13;
+            var m12 = m1.m10 * m2.m20 + m1.m11 * m2.m21 + m1.m12 * m2.m22 + m1.m13 * m2.m23;
+            var m13 = m1.m10 * m2.m30 + m1.m11 * m2.m31 + m1.m12 * m2.m32 + m1.m13 * m2.m33;
 
-            float m20 = m1.m20 * m2.m00 + m1.m21 * m2.m01 + m1.m22 * m2.m02 + m1.m23 * m2.m03;
-            float m21 = m1.m20 * m2.m10 + m1.m21 * m2.m11 + m1.m22 * m2.m12 + m1.m23 * m2.m13;
-            float m22 = m1.m20 * m2.m20 + m1.m21 * m2.m21 + m1.m22 * m2.m22 + m1.m23 * m2.m23;
-            float m23 = m1.m20 * m2.m30 + m1.m21 * m2.m31 + m1.m22 * m2.m32 + m1.m23 * m2.m33;
+            var m20 = m1.m20 * m2.m00 + m1.m21 * m2.m01 + m1.m22 * m2.m02 + m1.m23 * m2.m03;
+            var m21 = m1.m20 * m2.m10 + m1.m21 * m2.m11 + m1.m22 * m2.m12 + m1.m23 * m2.m13;
+            var m22 = m1.m20 * m2.m20 + m1.m21 * m2.m21 + m1.m22 * m2.m22 + m1.m23 * m2.m23;
+            var m23 = m1.m20 * m2.m30 + m1.m21 * m2.m31 + m1.m22 * m2.m32 + m1.m23 * m2.m33;
 
-            float m30 = m1.m30 * m2.m00 + m1.m31 * m2.m01 + m1.m32 * m2.m02 + m1.m33 * m2.m03;
-            float m31 = m1.m30 * m2.m10 + m1.m31 * m2.m11 + m1.m32 * m2.m12 + m1.m33 * m2.m13;
-            float m32 = m1.m30 * m2.m20 + m1.m31 * m2.m21 + m1.m32 * m2.m22 + m1.m33 * m2.m23;
-            float m33 = m1.m30 * m2.m30 + m1.m31 * m2.m31 + m1.m32 * m2.m32 + m1.m33 * m2.m33;
+            var m30 = m1.m30 * m2.m00 + m1.m31 * m2.m01 + m1.m32 * m2.m02 + m1.m33 * m2.m03;
+            var m31 = m1.m30 * m2.m10 + m1.m31 * m2.m11 + m1.m32 * m2.m12 + m1.m33 * m2.m13;
+            var m32 = m1.m30 * m2.m20 + m1.m31 * m2.m21 + m1.m32 * m2.m22 + m1.m33 * m2.m23;
+            var m33 = m1.m30 * m2.m30 + m1.m31 * m2.m31 + m1.m32 * m2.m32 + m1.m33 * m2.m33;
 
             this.m00 = m00;
             this.m01 = m01;
@@ -2840,25 +2838,25 @@ public class Matrix4f implements java.io.Serializable, Cloneable {
         } else {
 
 
-            float m00 = m1.m00 * m2.m00 + m1.m10 * m2.m10 + m1.m20 * m2.m20 + m1.m30 * m2.m30;
-            float m01 = m1.m00 * m2.m01 + m1.m10 * m2.m11 + m1.m20 * m2.m21 + m1.m30 * m2.m31;
-            float m02 = m1.m00 * m2.m02 + m1.m10 * m2.m12 + m1.m20 * m2.m22 + m1.m30 * m2.m32;
-            float m03 = m1.m00 * m2.m03 + m1.m10 * m2.m13 + m1.m20 * m2.m23 + m1.m30 * m2.m33;
+            var m00 = m1.m00 * m2.m00 + m1.m10 * m2.m10 + m1.m20 * m2.m20 + m1.m30 * m2.m30;
+            var m01 = m1.m00 * m2.m01 + m1.m10 * m2.m11 + m1.m20 * m2.m21 + m1.m30 * m2.m31;
+            var m02 = m1.m00 * m2.m02 + m1.m10 * m2.m12 + m1.m20 * m2.m22 + m1.m30 * m2.m32;
+            var m03 = m1.m00 * m2.m03 + m1.m10 * m2.m13 + m1.m20 * m2.m23 + m1.m30 * m2.m33;
 
-            float m10 = m1.m01 * m2.m00 + m1.m11 * m2.m10 + m1.m21 * m2.m20 + m1.m31 * m2.m30;
-            float m11 = m1.m01 * m2.m01 + m1.m11 * m2.m11 + m1.m21 * m2.m21 + m1.m31 * m2.m31;
-            float m12 = m1.m01 * m2.m02 + m1.m11 * m2.m12 + m1.m21 * m2.m22 + m1.m31 * m2.m32;
-            float m13 = m1.m01 * m2.m03 + m1.m11 * m2.m13 + m1.m21 * m2.m23 + m1.m31 * m2.m33;
+            var m10 = m1.m01 * m2.m00 + m1.m11 * m2.m10 + m1.m21 * m2.m20 + m1.m31 * m2.m30;
+            var m11 = m1.m01 * m2.m01 + m1.m11 * m2.m11 + m1.m21 * m2.m21 + m1.m31 * m2.m31;
+            var m12 = m1.m01 * m2.m02 + m1.m11 * m2.m12 + m1.m21 * m2.m22 + m1.m31 * m2.m32;
+            var m13 = m1.m01 * m2.m03 + m1.m11 * m2.m13 + m1.m21 * m2.m23 + m1.m31 * m2.m33;
 
-            float m20 = m1.m02 * m2.m00 + m1.m12 * m2.m10 + m1.m22 * m2.m20 + m1.m32 * m2.m30;
-            float m21 = m1.m02 * m2.m01 + m1.m12 * m2.m11 + m1.m22 * m2.m21 + m1.m32 * m2.m31;
-            float m22 = m1.m02 * m2.m02 + m1.m12 * m2.m12 + m1.m22 * m2.m22 + m1.m32 * m2.m32;
-            float m23 = m1.m02 * m2.m03 + m1.m12 * m2.m13 + m1.m22 * m2.m23 + m1.m32 * m2.m33;
+            var m20 = m1.m02 * m2.m00 + m1.m12 * m2.m10 + m1.m22 * m2.m20 + m1.m32 * m2.m30;
+            var m21 = m1.m02 * m2.m01 + m1.m12 * m2.m11 + m1.m22 * m2.m21 + m1.m32 * m2.m31;
+            var m22 = m1.m02 * m2.m02 + m1.m12 * m2.m12 + m1.m22 * m2.m22 + m1.m32 * m2.m32;
+            var m23 = m1.m02 * m2.m03 + m1.m12 * m2.m13 + m1.m22 * m2.m23 + m1.m32 * m2.m33;
 
-            float m30 = m1.m03 * m2.m00 + m1.m13 * m2.m10 + m1.m23 * m2.m20 + m1.m33 * m2.m30;
-            float m31 = m1.m03 * m2.m01 + m1.m13 * m2.m11 + m1.m23 * m2.m21 + m1.m33 * m2.m31;
-            float m32 = m1.m03 * m2.m02 + m1.m13 * m2.m12 + m1.m23 * m2.m22 + m1.m33 * m2.m32;
-            float m33 = m1.m03 * m2.m03 + m1.m13 * m2.m13 + m1.m23 * m2.m23 + m1.m33 * m2.m33;
+            var m30 = m1.m03 * m2.m00 + m1.m13 * m2.m10 + m1.m23 * m2.m20 + m1.m33 * m2.m30;
+            var m31 = m1.m03 * m2.m01 + m1.m13 * m2.m11 + m1.m23 * m2.m21 + m1.m33 * m2.m31;
+            var m32 = m1.m03 * m2.m02 + m1.m13 * m2.m12 + m1.m23 * m2.m22 + m1.m33 * m2.m32;
+            var m33 = m1.m03 * m2.m03 + m1.m13 * m2.m13 + m1.m23 * m2.m23 + m1.m33 * m2.m33;
 
             this.m00 = m00;
             this.m01 = m01;
@@ -2912,7 +2910,7 @@ public class Matrix4f implements java.io.Serializable, Cloneable {
      */
     public boolean equals(Object t1) {
         try {
-            Matrix4f m2 = (Matrix4f) t1;
+            var m2 = (Matrix4f) t1;
             return (this.m00 == m2.m00 && this.m01 == m2.m01 && this.m02 == m2.m02
                     && this.m03 == m2.m03 && this.m10 == m2.m10 && this.m11 == m2.m11
                     && this.m12 == m2.m12 && this.m13 == m2.m13 && this.m20 == m2.m20
@@ -2936,7 +2934,7 @@ public class Matrix4f implements java.io.Serializable, Cloneable {
      */
     public boolean epsilonEquals(Matrix4f m1, float epsilon) {
 
-        boolean status = true;
+        var status = true;
 
         if (Math.abs(this.m00 - m1.m00) > epsilon) status = false;
         if (Math.abs(this.m01 - m1.m01) > epsilon) status = false;
@@ -2973,7 +2971,7 @@ public class Matrix4f implements java.io.Serializable, Cloneable {
      * @return the integer hash code value
      */
     public int hashCode() {
-        long bits = 1L;
+        var bits = 1L;
         bits = 31L * bits + VecMathUtil.floatToIntBits(m00);
         bits = 31L * bits + VecMathUtil.floatToIntBits(m01);
         bits = 31L * bits + VecMathUtil.floatToIntBits(m02);
@@ -3002,11 +3000,11 @@ public class Matrix4f implements java.io.Serializable, Cloneable {
      * @param vecOut the vector into which the transformed values are placed
      */
     public final void transform(Tuple4f vec, Tuple4f vecOut) {
-        float x = m00 * vec.x + m01 * vec.y
+        var x = m00 * vec.x + m01 * vec.y
                 + m02 * vec.z + m03 * vec.w;
-        float y = m10 * vec.x + m11 * vec.y
+        var y = m10 * vec.x + m11 * vec.y
                 + m12 * vec.z + m13 * vec.w;
-        float z = m20 * vec.x + m21 * vec.y
+        var z = m20 * vec.x + m21 * vec.y
                 + m22 * vec.z + m23 * vec.w;
         vecOut.w = m30 * vec.x + m31 * vec.y
                 + m32 * vec.z + m33 * vec.w;
@@ -3024,11 +3022,11 @@ public class Matrix4f implements java.io.Serializable, Cloneable {
      */
     public final void transform(Tuple4f vec) {
 
-        float x = m00 * vec.x + m01 * vec.y
+        var x = m00 * vec.x + m01 * vec.y
                 + m02 * vec.z + m03 * vec.w;
-        float y = m10 * vec.x + m11 * vec.y
+        var y = m10 * vec.x + m11 * vec.y
                 + m12 * vec.z + m13 * vec.w;
-        float z = m20 * vec.x + m21 * vec.y
+        var z = m20 * vec.x + m21 * vec.y
                 + m22 * vec.z + m23 * vec.w;
         vec.w = m30 * vec.x + m31 * vec.y
                 + m32 * vec.z + m33 * vec.w;
@@ -3080,8 +3078,8 @@ public class Matrix4f implements java.io.Serializable, Cloneable {
      * @param normalOut the transformed normal
      */
     public final void transform(v3 normal, v3 normalOut) {
-        float x = m00 * normal.x + m01 * normal.y + m02 * normal.z;
-        float y = m10 * normal.x + m11 * normal.y + m12 * normal.z;
+        var x = m00 * normal.x + m01 * normal.y + m02 * normal.z;
+        var y = m10 * normal.x + m11 * normal.y + m12 * normal.z;
         normalOut.z = m20 * normal.x + m21 * normal.y + m22 * normal.z;
         normalOut.x = x;
         normalOut.y = y;
@@ -3096,8 +3094,8 @@ public class Matrix4f implements java.io.Serializable, Cloneable {
      */
     public final void transform(v3 normal) {
 
-        float x = m00 * normal.x + m01 * normal.y + m02 * normal.z;
-        float y = m10 * normal.x + m11 * normal.y + m12 * normal.z;
+        var x = m00 * normal.x + m01 * normal.y + m02 * normal.z;
+        var y = m10 * normal.x + m11 * normal.y + m12 * normal.z;
         normal.z = m20 * normal.x + m21 * normal.y + m22 * normal.z;
         normal.x = x;
         normal.y = y;

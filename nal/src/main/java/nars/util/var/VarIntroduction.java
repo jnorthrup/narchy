@@ -18,14 +18,14 @@ abstract class VarIntroduction {
             return null;
 
 
-        Term[] uu = select(x.subtermsDirect());
+        var uu = select(x.subtermsDirect());
         if (uu.length == 0)
             return null;
 
-        Term u = uu.length > 1 ? choose(uu, rng) : uu[0];
-        Term v = introduce(x, u);
+        var u = uu.length > 1 ? choose(uu, rng) : uu[0];
+        var v = introduce(x, u);
         if (v != null && !(v instanceof Bool)) {
-            Term y = x.replace(u, v);
+            var y = x.replace(u, v);
             if (y != null && y.op().conceptualizable && !y.equals(x)) {
                 if (retransform!=null)
                     retransform.put(u, v);

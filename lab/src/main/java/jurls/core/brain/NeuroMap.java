@@ -18,7 +18,7 @@ public class NeuroMap {
 
 
     public int getDimensions(boolean includeInput, boolean includeOutput) {
-        int t = 0;
+        var t = 0;
         if (includeInput) t += memory[0].input.length;
         if (includeOutput) t += memory[0].output.length;
         return t;
@@ -51,7 +51,7 @@ public class NeuroMap {
         this.memory = new InputOutput[memoryCapacity];
 
         functions = new ParameterizedFunction[numOutputs];
-        for (int i = 0; i < numOutputs; ++i) {
+        for (var i = 0; i < numOutputs; ++i) {
             functions[i] = g.generate(numInputs);
         }
 
@@ -61,18 +61,18 @@ public class NeuroMap {
                     continue;
                 }
 
-                InputOutput io = randomMemory();
+                var io = randomMemory();
 
                 assert io.output.length == functions.length;
 
-                for (int i = 0; i < functions.length; ++i) {
+                for (var i = 0; i < functions.length; ++i) {
                     functions[i].learn(io.input, io.output[i]);
                 }
 
                 iterations++;
                 iterationsPerSecondCounter++;
 
-                long t1 = System.currentTimeMillis();
+                var t1 = System.currentTimeMillis();
                 if (t1 - t0 > 1000) {
                     t0 = t1;
                     iterationsPerSecond = iterationsPerSecondCounter;
@@ -93,7 +93,7 @@ public class NeuroMap {
 
     public void learn(double[] i, double[] o) {
         if (numElements >= memory.length) {
-            InputOutput io = randomMemory();
+            var io = randomMemory();
             io.input = i;
             io.output = o;
         } else {
@@ -105,7 +105,7 @@ public class NeuroMap {
     }
 
     public void value(double[] output,double[] input) {
-        for (int i = 0; i < functions.length; ++i) {
+        for (var i = 0; i < functions.length; ++i) {
             output[i] = functions[i].value(input);
         }
     }

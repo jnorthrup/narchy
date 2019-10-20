@@ -66,7 +66,7 @@ public class PriMap<Y> {
                 //new CustomConcurrentHashMap()
                 ;
         } else {
-            float load = 0.5f;
+            var load = 0.5f;
             return
                  linked ?
                     new LinkedHashMap(0, load)
@@ -102,7 +102,7 @@ public class PriMap<Y> {
         Prioritizable y;
 
         if (x instanceof Prioritizable) {
-            Prioritizable px = (Prioritizable) x;
+            var px = (Prioritizable) x;
             y = items.putIfAbsent(x, px);
             if (y == null) y = px;
         } else {
@@ -111,7 +111,7 @@ public class PriMap<Y> {
         }
 
         if (y != x) {
-            float delta = merge(y, x, ((Prioritizable)x).pri(), merge);
+            var delta = merge(y, x, ((Prioritizable)x).pri(), merge);
             if (pressurizable!=null && Math.abs(delta) > Float.MIN_NORMAL)
                 pressurizable.accept(delta);
 
@@ -128,21 +128,21 @@ public class PriMap<Y> {
 
     public void drain(Consumer<Y> each) {
 
-        Iterator<Y> ii = items.keySet().iterator();
+        var ii = items.keySet().iterator();
         while (ii.hasNext()) {
-            Y e = ii.next();
+            var e = ii.next();
             ii.remove();
             each.accept(e);
         }
     }
     /** drains the bufffer while applying a transformation to each item */
     public <X> void drain(Consumer<X> each, Function<Y,X> f) {
-        Iterator<Map.Entry<Y, Prioritizable>> ii = items.entrySet().iterator();
+        var ii = items.entrySet().iterator();
         while (ii.hasNext()) {
-            Map.Entry<Y, Prioritizable> e = ii.next();
+            var e = ii.next();
             ii.remove();
 
-            X x = f.apply(e.getKey());
+            var x = f.apply(e.getKey());
             if (x != null)
                 each.accept(x);
         }
@@ -150,14 +150,14 @@ public class PriMap<Y> {
 
     /** drains the bufffer while applying a transformation to each item */
     public <X> void drain(Consumer<X> each, ObjectFloatToObjectFunction<Y,X> f) {
-        Iterator<Map.Entry<Y, Prioritizable>> ii = items.entrySet().iterator();
+        var ii = items.entrySet().iterator();
         while (ii.hasNext()) {
-            Map.Entry<Y, Prioritizable> e = ii.next();
+            var e = ii.next();
             ii.remove();
 
-            float pp = e.getValue().pri();
+            var pp = e.getValue().pri();
             if (pp == pp) {
-                X x = f.valueOf(e.getKey(), pp);
+                var x = f.valueOf(e.getKey(), pp);
                 if (x!=null)
                     each.accept(x);
             }

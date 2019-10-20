@@ -33,10 +33,10 @@ public class server_t {
 
     public server_t() {
         models = new cmodel_t[Defines.MAX_MODELS];
-        for (int n = 0; n < Defines.MAX_MODELS; n++)
+        for (var n = 0; n < Defines.MAX_MODELS; n++)
             models[n] = new cmodel_t();
 
-        for (int n = 0; n < Defines.MAX_EDICTS; n++)
+        for (var n = 0; n < Defines.MAX_EDICTS; n++)
             baselines[n] = new entity_state_t(null);
     }
 

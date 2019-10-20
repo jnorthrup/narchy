@@ -16,7 +16,7 @@ public class TextEditView implements BufferListener {
     protected TextEditView(Buffer buffer) {
         this.document = buffer;
         this.cursor = new CursorView(buffer.cursor());
-        for (BufferLine line : document.lines) {
+        for (var line : document.lines) {
             _addLine(line);
         }
         buffer.addListener(this);
@@ -25,8 +25,8 @@ public class TextEditView implements BufferListener {
 
     public void paint(boolean cursor, @Nullable RectFloat v, GL2 g) {
         //float charAspect = 1.4f;
-        float charsWide = v.w;
-        float charsHigh = v.h;
+        var charsWide = v.w;
+        var charsHigh = v.h;
         float vx = v.x, vy = v.y, vw = v.w, vh = v.h;
 
         g.glPushMatrix();
@@ -34,20 +34,20 @@ public class TextEditView implements BufferListener {
         g.glTranslatef(dx, 1f - (0.5f / charsHigh) + vy, 0);
         g.glScalef(1f / charsWide, 1f / charsHigh, 1f);
 
-        int x1 = Math.max(0, (int) Math.floor(vx));
-        int y1 = Math.max(0, (int) Math.floor(vy));
-        int x2 = x1 + (int) Math.ceil(vw);
-        int y2 = y1 + (int) Math.ceil(vh);
+        var x1 = Math.max(0, (int) Math.floor(vx));
+        var y1 = Math.max(0, (int) Math.floor(vy));
+        var x2 = x1 + (int) Math.ceil(vw);
+        var y2 = y1 + (int) Math.ceil(vh);
 
         if (cursor) {
             updateCursor(document.cursor());
             this.cursor.draw(g);
         }
 
-        float ox = x1 - vx;
-        LineView[] ll = lines.array();
-        for (int y = Math.max(0, y1); y < Math.min(ll.length, y2); y++) {
-            LineView line = ll[y];
+        var ox = x1 - vx;
+        var ll = lines.array();
+        for (var y = Math.max(0, y1); y < Math.min(ll.length, y2); y++) {
+            var line = ll[y];
             if (line != null) {
                 line.draw(g, x1, x2, ox, y1 - y);
             }
@@ -58,11 +58,11 @@ public class TextEditView implements BufferListener {
 
 
     private void updateCursor(CursorPosition c) {
-        LineView lv = lines.get(c.getRow());
+        var lv = lines.get(c.getRow());
         if (lv == null)
             return; //HACK
 
-        int lineChars = lv.length();
+        var lineChars = lv.length();
 
         float x;
         if (document.isLineStart()) {
@@ -107,7 +107,7 @@ public class TextEditView implements BufferListener {
                 (from) -> lines.stream().filter(l -> l.getBufferLine() == toLine).
                         findFirst().ifPresent((to) -> {
                     float fromY = from.position.y, toY = to.position.y;
-                    CharView leaveChar = from.leaveChar(c);
+                    var leaveChar = from.leaveChar(c);
                     leaveChar.position.y = -(toY - fromY);
                     to.addChar(leaveChar, k[0]++);
                     to.update();
@@ -122,7 +122,7 @@ public class TextEditView implements BufferListener {
             lines.sort();
 
             float h = 0;
-            for (LineView lv : lines) {
+            for (var lv : lines) {
                 lv.position.y = h;
                 h -= LineView.getHeight();
             }

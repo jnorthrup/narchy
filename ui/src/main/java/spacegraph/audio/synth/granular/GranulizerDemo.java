@@ -11,9 +11,9 @@ public enum GranulizerDemo {
     @SuppressWarnings("HardcodedFileSeparator")
     public static void main(String[] args) throws InterruptedException {
 
-        Audio audio = new Audio(16);
+        var audio = new Audio(16);
 
-        Granulize ts =
+        var ts =
             new Granulize(SampleLoader.load("/tmp/awake.wav"), 0.25f, 0.9f, new XorShift128PlusRandom(1))
                     .setStretchFactor(0.25f);
 

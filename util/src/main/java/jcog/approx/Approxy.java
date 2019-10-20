@@ -67,7 +67,7 @@ import java.util.function.Function;
             if (this == obj) return true;
             if (!(obj instanceof ActualExecution)) return false;
 
-            ActualExecution ae = (ActualExecution)obj;
+            var ae = (ActualExecution)obj;
             if (hash != ae.hash) return false;
 
             return output.equals(ae.output) && Arrays.equals(((Object[])input), (Object[])ae.input);
@@ -99,12 +99,12 @@ import java.util.function.Function;
         }
 
         protected void train() {
-            MLPMap m = new MLPMap(3,
+            var m = new MLPMap(3,
                     new MLPMap.Layer(2, SigmoidActivation.the),
                     new MLPMap.Layer(1, null)
             ).randomize(new XoRoShiRo128PlusRandom());
 
-            for (ActualExecution xy : experience) {//TODO m.put(xEncoded,yEncoded..)
+            for (var xy : experience) {//TODO m.put(xEncoded,yEncoded..)
             }
             approx = (x)-> experience.get(null /*encode(x)*/);
         }
@@ -136,10 +136,10 @@ import java.util.function.Function;
 
         @RuntimeType
         public final Object intercept(@SuperCall Callable<?> zuper, @AllArguments Object[] x /*, @This Object obj */ /*, @SuperMethod Method method, */) throws Exception {
-            Approximator a = approx;
+            var a = approx;
             if (a==null) {
                 //native execution mode
-                Object y = zuper.call();
+                var y = zuper.call();
                 learn(x, y);
                 return y;
             } else {
@@ -169,7 +169,7 @@ import java.util.function.Function;
         public ClassApproximation<X> wrap(Method method) {
 //                .method(ElementMatchers.named("sayFoo").or(ElementMatchers.named("sayBar")))
 //                    .intercept(MethodDelegation.to(MyServiceInterceptor.class))
-            MethodApproximation m = new MethodApproximation(method);
+            var m = new MethodApproximation(method);
             components.add(m);
             gen = gen.method(ElementMatchers.isMethod().and(ElementMatchers.is(method)))
                     .intercept(MethodDelegation.to(new MethodApproximation(method)));
@@ -229,15 +229,15 @@ import java.util.function.Function;
 
     public static void main(String[] args) throws Exception {
 
-        TestClass1 c = new ClassApproximation<>(TestClass1.class)
+        var c = new ClassApproximation<>(TestClass1.class)
                 .method("compute", float.class, float.class)
                 .newInstance();
 
         Random rng = new XoRoShiRo128PlusRandom(1);
-        for (int i = 0; i < 100; i++) {
-            float x = Util.round(rng.nextFloat(), 0.1f);
-            float y = Util.round(rng.nextFloat(), 0.1f);
-            float z = TestClass1.compute(x, y);
+        for (var i = 0; i < 100; i++) {
+            var x = Util.round(rng.nextFloat(), 0.1f);
+            var y = Util.round(rng.nextFloat(), 0.1f);
+            var z = TestClass1.compute(x, y);
         }
     }
 }

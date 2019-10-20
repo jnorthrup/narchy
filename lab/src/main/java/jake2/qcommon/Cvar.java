@@ -55,7 +55,7 @@ public class Cvar extends Globals {
         @Override
         public void execute() {
 
-            int c = Cmd.Argc();
+            var c = Cmd.Argc();
             if (c != 3 && c != 4) {
                 Com.Printf("usage: setAt <variable> <value> [u / s]\n");
                 return;
@@ -88,8 +88,8 @@ public class Cvar extends Globals {
         @Override
         public void execute() {
 
-            int i = 0;
-            for (cvar_t var = Globals.cvar_vars; var != null; var = var.next, i++) {
+            var i = 0;
+            for (var var = Globals.cvar_vars; var != null; var = var.next, i++) {
                 if ((var.flags & Defines.CVAR_ARCHIVE) != 0)
                     Com.Printf("*");
                 else
@@ -129,7 +129,7 @@ public class Cvar extends Globals {
             }
         }
 
-        cvar_t var = FindVar(var_name);
+        var var = FindVar(var_name);
         if (var != null) {
             var.flags |= flags;
             return var;
@@ -164,13 +164,13 @@ public class Cvar extends Globals {
     }
 
     public static String VariableString(String var_name) {
-        cvar_t var = FindVar(var_name);
+        var var = FindVar(var_name);
         return (var == null) ? "" : var.string;
     }
 
     static cvar_t FindVar(String var_name) {
 
-        for (cvar_t var = Globals.cvar_vars; var != null; var = var.next) {
+        for (var var = Globals.cvar_vars; var != null; var = var.next) {
             if (var_name.equals(var.name))
                 return var;
         }
@@ -183,7 +183,7 @@ public class Cvar extends Globals {
      */
     public static cvar_t FullSet(String var_name, String value, int flags) {
 
-        cvar_t var = FindVar(var_name);
+        var var = FindVar(var_name);
         if (null == var) {
             return Get(var_name, value, flags);
         }
@@ -220,7 +220,7 @@ public class Cvar extends Globals {
      */
     static cvar_t Set2(String var_name, String value, boolean force) {
 
-        cvar_t var = FindVar(var_name);
+        var var = FindVar(var_name);
         if (var == null) {
 
             return Get(var_name, value, 0);
@@ -308,7 +308,7 @@ public class Cvar extends Globals {
      * Returns the float value of a variable.
      */
     public static float VariableValue(String var_name) {
-        cvar_t var = FindVar(var_name);
+        var var = FindVar(var_name);
         if (var == null)
             return 0;
 
@@ -321,7 +321,7 @@ public class Cvar extends Globals {
     public static boolean Command() {
 
 
-        cvar_t v = FindVar(Cmd.Argv(0));
+        var v = FindVar(Cmd.Argv(0));
         if (v == null)
             return false;
 
@@ -337,9 +337,9 @@ public class Cvar extends Globals {
 
     public static String BitInfo(int bit) {
 
-        String info = "";
+        var info = "";
 
-        for (cvar_t var = Globals.cvar_vars; var != null; var = var.next) {
+        for (var var = Globals.cvar_vars; var != null; var = var.next) {
             if ((var.flags & bit) != 0)
                 info = Info.Info_SetValueForKey(info, var.name, var.string);
         }
@@ -384,7 +384,7 @@ public class Cvar extends Globals {
 
     public static void WriteVariables(String path) {
 
-        RandomAccessFile f = Lib.fopen(path, "rw");
+        var f = Lib.fopen(path, "rw");
         if (f != null) {
             try {
                 f.seek(f.length());
@@ -392,9 +392,9 @@ public class Cvar extends Globals {
                 Lib.fclose(f);
                 return;
             }
-            for (cvar_t var = Globals.cvar_vars; var != null; var = var.next) {
+            for (var var = Globals.cvar_vars; var != null; var = var.next) {
                 if ((var.flags & Defines.CVAR_ARCHIVE) != 0) {
-                    String buffer = "setAt " + var.name + " \"" + var.string + "\"\n";
+                    var buffer = "setAt " + var.name + " \"" + var.string + "\"\n";
                     try {
                         f.writeBytes(buffer);
                     } catch (IOException e) {
@@ -417,7 +417,7 @@ public class Cvar extends Globals {
      * Some characters are invalid for info strings.
      */
     static boolean InfoValidate(String s) {
-        boolean result = false;
+        var result = false;
         if (!s.contains("\\")) {
             if (!s.contains("\"")) {
                 result = !s.contains(";");

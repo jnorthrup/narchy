@@ -56,9 +56,9 @@ class Tri extends Int3 {
 	};
 	
 	public IntRef neib(int a, int b) {
-		for (int i = 0; i < 3; i++) {
-			int i1 = (i + 1) % 3;
-			int i2 = (i + 2) % 3;
+		for (var i = 0; i < 3; i++) {
+			var i1 = (i + 1) % 3;
+			var i2 = (i + 2) % 3;
 			
 			if (getCoord(i) == a && getCoord(i1) == b) {
 				return n.getRef(i2);

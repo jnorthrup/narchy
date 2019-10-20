@@ -78,8 +78,8 @@ public class I4Kopter extends Applet {
 
         /* ******* start draw helicopters ********* */
 
-        helicopterImage1 = new BufferedImage(50, 25, BufferedImage.TYPE_INT_ARGB); 
-        Graphics2D helicopterBuffer1 = helicopterImage1.createGraphics();
+        helicopterImage1 = new BufferedImage(50, 25, BufferedImage.TYPE_INT_ARGB);
+        var helicopterBuffer1 = helicopterImage1.createGraphics();
 
         helicopterBuffer1.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                                            RenderingHints.VALUE_ANTIALIAS_ON);
@@ -97,9 +97,9 @@ public class I4Kopter extends Applet {
         helicopterBuffer1.drawLine(22,23,33,23);    
 
         helicopterImage2 = new BufferedImage(52, 28, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D helicopterBuffer2 = helicopterImage2.createGraphics();
+        var helicopterBuffer2 = helicopterImage2.createGraphics();
 
-        AffineTransform transform = helicopterBuffer2.getTransform();
+        var transform = helicopterBuffer2.getTransform();
         
         transform.rotate(Math.toRadians(-12), 26, 14);
         helicopterBuffer2.setTransform(transform);
@@ -111,7 +111,7 @@ public class I4Kopter extends Applet {
 
         /* ******* start draw background ********* */
 
-        Graphics2D backgroundBuffer = backgroundImage.createGraphics();
+        var backgroundBuffer = backgroundImage.createGraphics();
 
         backgroundBuffer.setColor(Color.YELLOW);
         backgroundBuffer.fillRect(0,0, backgroundLength, h);
@@ -119,14 +119,14 @@ public class I4Kopter extends Applet {
         obstacles = new Point[ backgroundLength / widthBar ];
 
 
-        int ocounter = 0;
-        for(int i = 0; i < w; i += widthBar){
+        var ocounter = 0;
+        for(var i = 0; i < w; i += widthBar){
             obstacles[ocounter++] = new Point(-1,-1);
         }
 
-        
-        BufferedImage heading = new BufferedImage(100,50, BufferedImage.TYPE_INT_RGB);
-        Graphics2D headingG = heading.createGraphics();
+
+        var heading = new BufferedImage(100,50, BufferedImage.TYPE_INT_RGB);
+        var headingG = heading.createGraphics();
         headingG.setColor(Color.BLACK);
         headingG.fillRect(0,0, 100,50);
         headingG.setColor(Color.WHITE);
@@ -135,9 +135,9 @@ public class I4Kopter extends Applet {
         backgroundBuffer.setColor(Color.BLACK);
 
 
-        int currentY = 80;
-        boolean up = false;
-        for(int i = w; i < (backgroundLength - (2* w)); i += widthBar){
+        var currentY = 80;
+        var up = false;
+        for(var i = w; i < (backgroundLength - (2* w)); i += widthBar){
 
             currentY += (up)? -10 : 10;
 
@@ -152,7 +152,7 @@ public class I4Kopter extends Applet {
 
             
             if(ocounter % 17 == 0){
-                int middleOffset = random.nextInt(pathHeight - currentY) + currentY;
+                var middleOffset = random.nextInt(pathHeight - currentY) + currentY;
                 backgroundBuffer.setColor(Color.YELLOW);
                 backgroundBuffer.fillRect(i,
                                           middleOffset,
@@ -164,7 +164,7 @@ public class I4Kopter extends Applet {
         }
 
         
-        for(int i = (backgroundLength - (2* w)); i < backgroundLength; i += widthBar){
+        for(var i = (backgroundLength - (2* w)); i < backgroundLength; i += widthBar){
             obstacles[ocounter++] = new Point(-1,-1);
         }
 
@@ -186,7 +186,7 @@ public class I4Kopter extends Applet {
             heliY = h /2;
             lasted = 0;
             loop();
-            Graphics g = getGraphics();
+            var g = getGraphics();
             g.setColor(Color.YELLOW);
             g.drawString(" you lasted: "+ lasted /1000+" seconds ", heliX+200, 200);
             try{ Thread.sleep(1400); }catch(Exception e){}
@@ -195,9 +195,8 @@ public class I4Kopter extends Applet {
 
     boolean collides(int bufferOffset, BufferedImage image){
 
-        
 
-        int i = (bufferOffset+heliX) /widthBar + 1;
+        var i = (bufferOffset+heliX) /widthBar + 1;
 
         
         if(obstacles[i].x == -1 || obstacles[i+1].x == -1){ return false; }
@@ -207,8 +206,8 @@ public class I4Kopter extends Applet {
         if(heliY < obstacles[i].x || heliY < obstacles[i+1].x)
         { return true ;}
 
-        int imageHeight = image.getHeight();
-        int imageWidth  = image.getWidth();
+        var imageHeight = image.getHeight();
+        var imageWidth  = image.getWidth();
 
         
         if(heliY + imageHeight > obstacles[i].x + pathHeight ||
@@ -218,7 +217,7 @@ public class I4Kopter extends Applet {
         
         
         if(obstacles[i].y != -1 || obstacles[i+1].y != -1){
-            Rectangle copter = new Rectangle(heliX, heliY, imageWidth, imageHeight);
+            var copter = new Rectangle(heliX, heliY, imageWidth, imageHeight);
             Rectangle oRectangle;
 
             if(obstacles[i].y != -1){
@@ -247,7 +246,7 @@ public class I4Kopter extends Applet {
     void loop(){
 
         int dx = 12, offset = 0, levelLength = w *2;
-        int maxLen = backgroundLength - w;
+        var maxLen = backgroundLength - w;
 
         
         while(offset < maxLen){
@@ -256,7 +255,7 @@ public class I4Kopter extends Applet {
 
                 if(! paused){
 
-                    Graphics bufferGraphics = bufferImage.getGraphics();
+                    var bufferGraphics = bufferImage.getGraphics();
                     bufferGraphics.drawImage(backgroundImage,0,0, w, h,
                                              offset, 0, (offset + w), h, null);
 
@@ -264,14 +263,14 @@ public class I4Kopter extends Applet {
 
                     bufferGraphics.setClip(heliX, heliY, 57, 57);
 
-                    BufferedImage tmp = (keyPressed) ? helicopterImage2 : helicopterImage1;
+                    var tmp = (keyPressed) ? helicopterImage2 : helicopterImage1;
 
                     Graphics frameGraphics;
                     if(collides(offset, tmp)){
 
-                        for(int i = 1; i < 1000; i++){
-                            int oldOffset = (i - 1) * 2 / 2;
-                            int newOffset = i * 2 / 2;
+                        for(var i = 1; i < 1000; i++){
+                            var oldOffset = (i - 1) * 2 / 2;
+                            var newOffset = i * 2 / 2;
                             frameGraphics = getGraphics();
                             frameGraphics.setColor(Color.YELLOW);
                             frameGraphics.drawOval(heliX - newOffset, heliY - newOffset, i*2, i*2);
@@ -317,7 +316,7 @@ public class I4Kopter extends Applet {
     @Override
     public void processKeyEvent(KeyEvent k){
 
-        int keyID = k.getID();
+        var keyID = k.getID();
 
         switch (keyID) {
             case KeyEvent.KEY_PRESSED:

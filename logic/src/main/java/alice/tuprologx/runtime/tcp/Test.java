@@ -17,7 +17,7 @@ public class Test
             engine.loadLibrary("alice.tuprolog.lib.JavaLibrary");
             engine.addTheory(new Theory(new FileInputStream("test.pl")));
              */
-            Solution info=engine.solve(args[1]);
+            var info=engine.solve(args[1]);
             if (info.isSuccess())
                 System.out.println("yes: "+info.getSolution());
             else

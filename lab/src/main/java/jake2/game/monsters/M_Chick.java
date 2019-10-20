@@ -882,7 +882,7 @@ public class M_Chick {
 
             self.pain_debounce_time = GameBase.level.time + 3;
 
-            float r = Lib.random();
+            var r = Lib.random();
             if (r < 0.33)
                 game_import_t.sound(self, Defines.CHAN_VOICE, sound_pain1, 1,
                         Defines.ATTN_NORM, 0);

@@ -36,11 +36,11 @@ public enum Config { ;
    /*@JvmStatic*/
    public static @Nullable String get2(@NotNull String configKey, @Nullable String defaultVal, boolean quiet) {
       //Intrinsics.checkParameterIsNotNull(configKey, "configKey");
-      boolean var5 = false;
+      var var5 = false;
        //Intrinsics.checkExpressionValueIsNotNull(var10000, "(this as java.lang.String).toLowerCase()");
-      String javapropname = configKey.toLowerCase().replace('_', '.');//, false, 4, (Object)null);
+      var javapropname = configKey.toLowerCase().replace('_', '.');//, false, 4, (Object)null);
 
-       String y = System.getenv(configKey); //HACK
+      var y = System.getenv(configKey); //HACK
 
        if (y == null) {
          y = System.getProperty(javapropname);
@@ -56,7 +56,7 @@ public enum Config { ;
 
          y = Texts.unquote(y);
 
-         boolean var6 = false;
+         var var6 = false;
 //         int var8 = false;
          System.setProperty(javapropname, y);
          if (!quiet || insecure) {

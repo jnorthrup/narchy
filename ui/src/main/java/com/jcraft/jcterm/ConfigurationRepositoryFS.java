@@ -37,15 +37,15 @@ public class ConfigurationRepositoryFS implements ConfigurationRepository {
     private final File jcterm_prop = new File(ssh_home, "jcterm.properties");
 
     public Configuration load(String name) {
-        Configuration conf = new Configuration();
+        var conf = new Configuration();
         conf.name = name;
 
         try {
             InputStream in = new FileInputStream(jcterm_prop);
-            java.util.Properties prop = new java.util.Properties();
+            var prop = new java.util.Properties();
             prop.load(in);
 
-            String key = "jcterm." + name + ".font_size";
+            var key = "jcterm." + name + ".font_size";
             if (prop.get(key) != null) {
                 try {
                     conf.font_size = Integer.parseInt((String) prop.get(key));
@@ -79,7 +79,7 @@ public class ConfigurationRepositoryFS implements ConfigurationRepository {
     }
 
     public void save(Configuration conf) {
-        java.util.Properties prop = new java.util.Properties();
+        var prop = new java.util.Properties();
         try {
             InputStream in = new FileInputStream(jcterm_prop);
             prop.load(in);
@@ -88,7 +88,7 @@ public class ConfigurationRepositoryFS implements ConfigurationRepository {
             
         }
 
-        String name = conf.name;
+        var name = conf.name;
 
         prop.setProperty("jcterm." + name + ".destination", join(conf.destinations));
 
@@ -107,8 +107,8 @@ public class ConfigurationRepositoryFS implements ConfigurationRepository {
     }
 
     private static String join(String[] array) {
-        StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < array.length; i++) {
+        var builder = new StringBuilder();
+        for (var i = 0; i < array.length; i++) {
             builder.append(array[i]);
             if (i + 1 < array.length)
                 builder.append(',');

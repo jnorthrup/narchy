@@ -57,7 +57,7 @@ public class ShapeHull {
 		this.numIndices = 0;
 
 		MiscUtil.resize(unitSpherePoints, NUM_UNITSPHERE_POINTS+ ConvexShape.MAX_PREFERRED_PENETRATION_DIRECTIONS*2, v3.class);
-		for (int i=0; i<constUnitSpherePoints.size(); i++) {
+		for (var i = 0; i<constUnitSpherePoints.size(); i++) {
             
             
             unitSpherePoints.get(i).set(constUnitSpherePoints.get(i));
@@ -65,12 +65,12 @@ public class ShapeHull {
 	}
 
 	public boolean buildHull(float margin) {
-		v3 norm = new v3();
+		var norm = new v3();
 
-		int numSampleDirections = NUM_UNITSPHERE_POINTS;
-		int numPDA = shape.getNumPreferredPenetrationDirections();
+		var numSampleDirections = NUM_UNITSPHERE_POINTS;
+		var numPDA = shape.getNumPreferredPenetrationDirections();
 		if (numPDA != 0) {
-            for (int i=0; i<numPDA; i++) {
+            for (var i = 0; i<numPDA; i++) {
                 shape.getPreferredPenetrationDirection(i, norm);
                 
                 unitSpherePoints.get(numSampleDirections).set(norm);
@@ -78,16 +78,16 @@ public class ShapeHull {
             }
         }
 
-		FasterList<v3> supportPoints = new FasterList<>();
+		var supportPoints = new FasterList<v3>();
 		MiscUtil.resize(supportPoints, NUM_UNITSPHERE_POINTS + ConvexShape.MAX_PREFERRED_PENETRATION_DIRECTIONS * 2, v3.class);
 
-		for (int i=0; i<numSampleDirections; i++) {
+		for (var i = 0; i<numSampleDirections; i++) {
             
             
             shape.localGetSupportingVertex(unitSpherePoints.get(i), supportPoints.get(i));
 		}
 
-		HullDesc hd = new HullDesc();
+		var hd = new HullDesc();
 		hd.flags = HullFlags.TRIANGLES;
 		hd.vcount = numSampleDirections;
 
@@ -96,25 +96,24 @@ public class ShapeHull {
 		
 		
 		hd.vertices = supportPoints;
-		
-		
 
-		HullLibrary hl = new HullLibrary();
-		HullResult hr = new HullResult();
+
+		var hl = new HullLibrary();
+		var hr = new HullResult();
 		if (!hl.createConvexHull(hd, hr)) {
 			return false;
 		}
 
 		MiscUtil.resize(vertices, hr.numOutputVertices, v3.class);
 
-		for (int i=0; i<hr.numOutputVertices; i++) {
+		for (var i = 0; i<hr.numOutputVertices; i++) {
             
             
             vertices.get(i).set(hr.outputVertices.get(i));
 		}
 		numIndices = hr.numIndices;
 		MiscUtil.resize(indices, numIndices, 0);
-		for (int i=0; i<numIndices; i++) {
+		for (var i = 0; i<numIndices; i++) {
 			indices.set(i, hr.indices.get(i));
 		}
 

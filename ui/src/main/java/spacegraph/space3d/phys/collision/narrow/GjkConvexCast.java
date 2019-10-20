@@ -58,36 +58,34 @@ public class GjkConvexCast extends ConvexCast {
 	public boolean calcTimeOfImpact(Transform fromA, Transform toA, Transform fromB, Transform toB, CastResult result) {
 		simplexSolver.reset();
 
-		
-		
-		v3 linVelA = new v3();
-		v3 linVelB = new v3();
+
+        var linVelA = new v3();
+        var linVelB = new v3();
 
 		linVelA.sub(toA, fromA);
 		linVelB.sub(toB, fromB);
 
-        v3 v = new v3();
+        var v = new v3();
 		v.set(1f, 0f, 0f);
 
-        v3 n = new v3();
+        var n = new v3();
 		n.set(0f, 0f, 0f);
-        v3 c = new v3();
-		v3 r = new v3();
+        var c = new v3();
+        var r = new v3();
 		r.sub(linVelA, linVelB);
 
-        float lambda = 0f;
-        float lastLambda = lambda;
+        var lambda = 0f;
+        var lastLambda = lambda;
 
 
-        Transform identityTrans = new Transform();
+        var identityTrans = new Transform();
 		identityTrans.setIdentity();
 
-		
 
-		PointCollector pointCollector = new PointCollector();
+        var pointCollector = new PointCollector();
 
-		gjk.init(convexA, convexB, simplexSolver, null); 
-		DiscreteCollisionDetectorInterface.ClosestPointInput input = new DiscreteCollisionDetectorInterface.ClosestPointInput();
+		gjk.init(convexA, convexB, simplexSolver, null);
+        var input = new DiscreteCollisionDetectorInterface.ClosestPointInput();
 		input.init();
 		
 		
@@ -96,26 +94,26 @@ public class GjkConvexCast extends ConvexCast {
 		input.transformB.set(fromB);
 		gjk.getClosestPoints(input, pointCollector);
 
-        boolean hasResult = pointCollector.hasResult;
+        var hasResult = pointCollector.hasResult;
 		c.set(pointCollector.pointInWorld);
 
 		if (hasResult) {
-            float dist = pointCollector.distance;
+            var dist = pointCollector.distance;
             n.set(pointCollector.normalOnBInWorld);
 
 
-            int numIter = 0;
-            int maxIter = MAX_ITERATIONS;
-            float radius = 0.001f;
+            var numIter = 0;
+            var maxIter = MAX_ITERATIONS;
+            var radius = 0.001f;
             while (dist > radius) {
                 numIter++;
                 if (numIter > maxIter) {
                     return false; 
                 }
 
-                float projectedLinearVelocity = r.dot(n);
+                var projectedLinearVelocity = r.dot(n);
 
-                float dLambda = dist / (projectedLinearVelocity);
+                var dLambda = dist / (projectedLinearVelocity);
 
                 lambda -= dLambda;
 

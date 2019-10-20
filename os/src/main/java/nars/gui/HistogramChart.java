@@ -38,26 +38,26 @@ public class HistogramChart extends PaintSurface {
         gl.glColor4f(0f, 0f, 0f, 0.5f);
         Draw.rect(gl, 0, 0, 1, 1);
 
-        float[] data = this.data.get();
+        var data = this.data.get();
 
-        int N = data.length;
-        float max = data[Util.argmax(data)];
+        var N = data.length;
+        var max = data[Util.argmax(data)];
         if (max == 0)
             return;
 
         float x = 0;
 
-        float ra = dark.x;
-        float ga = dark.y;
-        float ba = dark.z;
-        float rb = light.x;
-        float gb = light.y;
-        float bb = light.z;
+        var ra = dark.x;
+        var ga = dark.y;
+        var ba = dark.z;
+        var rb = light.x;
+        var gb = light.y;
+        var bb = light.z;
 
-        float dx = 1f / N;
-        for (int i = 0; i < N; i++) {
+        var dx = 1f / N;
+        for (var i = 0; i < N; i++) {
 
-            float v = data[i] / max;
+            var v = data[i] / max;
 
             gl.glColor3f(Util.lerpSafe(v, ra, rb), Util.lerpSafe(v, ga, gb), Util.lerpSafe(v, ba, bb));
 

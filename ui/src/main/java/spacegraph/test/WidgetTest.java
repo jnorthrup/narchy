@@ -140,21 +140,21 @@ public class WidgetTest {
                 }),
                 "Intro", () -> wiringDemo(g -> {
                     g.add(WidgetTest.widgetDemo()).posRel(1, 1, 0.5f, 0.25f);
-                    for (int i = 1; i < 3; i++)
+                    for (var i = 1; i < 3; i++)
                         g.add(new WizardFrame(new ProtoWidget())).posRel(0.5f, 0.5f, 0.45f / i, 0.35f / i);
                 }),
                 //"", ()-> wiringDemo((g)->{})
                 "Basic", () -> wiringDemo((g) -> {
                     /** switched signal */
 
-                    NoiseVectorChip A = new NoiseVectorChip();
+                    var A = new NoiseVectorChip();
                     ContainerSurface a = g.add(A).sizeRel(0.25f, 0.25f);
 
 
                     Port B = LabeledPort.generic();
                     ContainerSurface b = g.add(B).sizeRel(0.25f, 0.25f);
 
-                    TogglePort AB = new TogglePort();
+                    var AB = new TogglePort();
                     g.add(AB).sizeRel(0.25f, 0.25f);
 
 //                    Loop.of(() -> {
@@ -165,7 +165,7 @@ public class WidgetTest {
     }
 
     private static Surface wiringDemo(Consumer<GraphEdit2D> o) {
-        GraphEdit2D g = new GraphEdit2D() {
+        var g = new GraphEdit2D() {
             @Override
             protected void starting() {
                 super.starting();

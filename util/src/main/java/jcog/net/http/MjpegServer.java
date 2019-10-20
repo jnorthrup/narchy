@@ -33,8 +33,8 @@ public class MjpegServer /*extends NanoHTTPD*/ {
     }
 
     public static void main(String[] args) {
-        
-        MjpegServer server = new MjpegServer();
+
+        var server = new MjpegServer();
 
 
 
@@ -45,31 +45,26 @@ public class MjpegServer /*extends NanoHTTPD*/ {
 
         Enumeration e = header.propertyNames();
         while (e.hasMoreElements()) {
-            String value = (String) e.nextElement();
+            var value = (String) e.nextElement();
             
         }
         e = parms.propertyNames();
         while (e.hasMoreElements()) {
-            String value = (String) e.nextElement();
+            var value = (String) e.nextElement();
             
         }
 
         String feed = null;
 
-        
 
-
-
-
-
-        int pos0 = uri.lastIndexOf('/');
+        var pos0 = uri.lastIndexOf('/');
         if (pos0 != -1) {
             feed = uri.substring(pos0 + 1);
         }
 
         if (!videoFeeds.containsKey(feed)) {
-            StringBuilder response = new StringBuilder(String.format("<html><body align=center>video feeds<br/>", feed));
-            for (Map.Entry<String, BlockingQueue<Supplier<byte[]>>> o : videoFeeds.entrySet()) {
+            var response = new StringBuilder(String.format("<html><body align=center>video feeds<br/>", feed));
+            for (var o : videoFeeds.entrySet()) {
                 
                 
                 
@@ -84,7 +79,7 @@ public class MjpegServer /*extends NanoHTTPD*/ {
             return new HttpResponse(HttpUtil.METHOD.GET, 200, response.toString(), false, null);
         } else {
             try {
-                VideoWebClient client = new VideoWebClient(videoFeeds.get(feed), feed, socket);
+                var client = new VideoWebClient(videoFeeds.get(feed), feed, socket);
                 client.start();
                 clients.put(feed, client);
             } catch (IOException e1) {
@@ -136,12 +131,12 @@ public class MjpegServer /*extends NanoHTTPD*/ {
         public void run() {
             try {
                 while (true) {
-                    Supplier<byte[]> frame = videoFeed.take();
+                    var frame = videoFeed.take();
                     
                     
                     
-                    for (Iterator<Connection> iterator = connections.iterator(); iterator.hasNext(); ) {
-                        Connection c = iterator.next();
+                    for (var iterator = connections.iterator(); iterator.hasNext(); ) {
+                        var c = iterator.next();
 
                         try {
 
@@ -152,7 +147,7 @@ public class MjpegServer /*extends NanoHTTPD*/ {
                                 c.initialized = true;
                             }
 
-                            byte[] bytes = frame.get();
+                            var bytes = frame.get();
 
                             
                             c.os.write(("--BoundaryString\r\n" + "Content-type: image/jpg\r\n" + "Content-Length: " + bytes.length + "\r\n\r\n").getBytes());

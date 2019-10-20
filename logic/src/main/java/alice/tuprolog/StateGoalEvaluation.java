@@ -37,11 +37,11 @@ public class StateGoalEvaluation extends State {
      */
     @Override
     State run(PrologSolve e) {
-        PrologRun c = e.run;
+        var c = e.run;
         State nextState;
         if (e.currentContext.currentGoal.isPrimitive()) {
-            
-            PrologPrim primitive = e.currentContext.currentGoal
+
+            var primitive = e.currentContext.currentGoal
                     .getPrimitive();
             try {
                 nextState = primitive
@@ -57,15 +57,15 @@ public class StateGoalEvaluation extends State {
                 }
 
                 if (t instanceof PrologError) {
-                    
-                    PrologError error = (PrologError) t;
+
+                    var error = (PrologError) t;
                     
                     e.currentContext.currentGoal = new Struct("throw", error.getError());
                     e.run.prolog.exception(error);
 
                 } else if (t instanceof JavaException) {
-                    
-                    JavaException exception = (JavaException) t;
+
+                    var exception = (JavaException) t;
 
                     e.currentContext.currentGoal = new Struct("java_throw", exception.getException());
                     e.run.prolog.exception(exception); //exception.getException());

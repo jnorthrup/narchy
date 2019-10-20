@@ -25,7 +25,7 @@ public class EmbeddedNAgent extends Agent {
     private float nextReward = Float.NaN;
 
     private static final NAR defaultNAR() {
-        NAR n = NARS.tmp();
+        var n = NARS.tmp();
         n.termVolMax.set(10);
         n.freqResolution.set(0.1f);
         return n;
@@ -44,7 +44,7 @@ public class EmbeddedNAgent extends Agent {
 
         this.env = new Game("agent");
 
-        GameLoop[] sense = IntStream.range(0, inputs).mapToObj(i1 -> env.sense($.inh($.the(i1), env.id), () -> senseValue[i1])).toArray(GameLoop[]::new);
+        var sense = IntStream.range(0, inputs).mapToObj(i1 -> env.sense($.inh($.the(i1), env.id), () -> senseValue[i1])).toArray(GameLoop[]::new);
 
         SwitchAction act;
         this.env.addSensor(act = new SwitchAction(n, (a) -> {

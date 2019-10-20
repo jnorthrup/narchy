@@ -129,7 +129,7 @@ public class AudioContext {
 
         stopped = true;
 
-        UGenOutput ioSystem = new UGenOutput();
+        var ioSystem = new UGenOutput();
         ioSystem.context = this;
         this.audioIO = ioSystem;
 
@@ -213,7 +213,7 @@ public class AudioContext {
         if (bufStoreIndex < bufferStore.size()) {
             return bufferStore.get(bufStoreIndex++);
         } else {
-            float[] buf = new float[bufferSizeInFrames];
+            var buf = new float[bufferSizeInFrames];
             bufferStore.add(buf);
             bufStoreIndex++;
             return buf;
@@ -231,7 +231,7 @@ public class AudioContext {
      * @return buffer of size bufSize, all zeros.
      */
     public float[] getCleanBuf() {
-        float[] buf = getBuf();
+        var buf = getBuf();
         Arrays.fill(buf, 0f);
         return buf;
     }
@@ -368,12 +368,12 @@ public class AudioContext {
      * @param depth   depth by which to indent.
      */
     private static void printCallChain(UGen current, int depth) {
-        Set<UGen> children = current.getConnectedInputs();
-        for (int i = 0; i < depth; i++) {
+        var children = current.getConnectedInputs();
+        for (var i = 0; i < depth; i++) {
             System.out.print("  ");
         }
         System.out.println("- " + current);
-        for (UGen child : children) {
+        for (var child : children) {
             printCallChain(child, depth + 1);
         }
     }
@@ -449,9 +449,9 @@ public class AudioContext {
      * @see Sample sample
      **/
     public void record(double timeMS, String filename) throws Exception {
-        Sample s = new Sample(timeMS, audioFormat.outputs, audioFormat.sampleRate);
+        var s = new Sample(timeMS, audioFormat.outputs, audioFormat.sampleRate);
         try {
-            RecordToSample r = new RecordToSample(this, s);
+            var r = new RecordToSample(this, s);
             r.in(out);
             out.dependsOn(r);
             r.start();
@@ -584,7 +584,7 @@ public class AudioContext {
         while ((target = beforeFrameQueue.poll()) != null) {
             target.accept(null);
         }
-        for (Auvent bead : beforeEveryFrameList) {
+        for (var bead : beforeEveryFrameList) {
             bead.accept(null);
         }
     }
@@ -597,7 +597,7 @@ public class AudioContext {
         while ((target = afterFrameQueue.poll()) != null) {
             target.accept(null);
         }
-        for (Auvent bead : afterEveryFrameList) {
+        for (var bead : afterEveryFrameList) {
             bead.accept(null);
         }
     }
@@ -607,12 +607,12 @@ public class AudioContext {
     }
 
     public Clock clock(float intervalMS) {
-        Clock c = new Clock(this, intervalMS);
+        var c = new Clock(this, intervalMS);
         out.dependsOn(c);
         return c;
     }
     public Clock clock(float intervalMS, Auvent e) {
-        Clock x = clock(intervalMS);
+        var x = clock(intervalMS);
         x.on(e);
         return x;
     }

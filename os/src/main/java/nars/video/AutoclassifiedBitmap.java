@@ -175,16 +175,16 @@ public class AutoclassifiedBitmap extends VectorSensor {
         this.signals = new FasterList(nw * nh);
 
         this.feature = new Term[features];
-        for (int i = 0; i < features; i++) {
+        for (var i = 0; i < features; i++) {
             feature[i] = $.quote(Util.uuid64()); //HACK
         }
 
-        Term r = root;
+        var r = root;
 
-        for (int i = 0; i < nw; i++) {
-            for (int j = 0; j < nh; j++) {
-                for (int f = 0; f < features; f++) {
-                    Term term = coord(r, i, j, f);
+        for (var i = 0; i < nw; i++) {
+            for (var j = 0; j < nh; j++) {
+                for (var f = 0; f < features; f++) {
+                    var term = coord(r, i, j, f);
                     int x = i, y = j, ff = f;
                     signals.add( newComponent(term, () -> encoded[x][y][ff]) );
                 }
@@ -215,7 +215,7 @@ public class AutoclassifiedBitmap extends VectorSensor {
      * @param f    feature
      */
     protected Term coord(@Nullable Term root, int x, int y, int f) {
-        Term ff = feature[f];
+        var ff = feature[f];
         return root!=null ? $.inh(root, $.p($.p(x,y),ff)) : $.inh($.p(x, y), ff);
 
         //return root!=null ? $.inh($.p(root, $.p(x, y)),feature[f]) : $.inh($.p(x, y), feature[f]);
@@ -230,59 +230,59 @@ public class AutoclassifiedBitmap extends VectorSensor {
         if (src!=null)
             src.updateBitmap();
 
-        float minConf = nar.confMin.floatValue();
-        float baseConf = nar.confDefault(BELIEF);
+        var minConf = nar.confMin.floatValue();
+        var baseConf = nar.confDefault(BELIEF);
 
 
-        float alpha = this.alpha.floatValue();
-        float noise = this.noise.floatValue();
+        var alpha = this.alpha.floatValue();
+        var noise = this.noise.floatValue();
 
-        int regionPixels = sw * sh;
+        var regionPixels = sw * sh;
         float sumErr = 0;
 
-        int states = ae.y.length;
-        float outputThresh = //TODO make adjustable
+        var states = ae.y.length;
+        var outputThresh = //TODO make adjustable
                 //1f - (1f / (states - 1));
                 1f - (1f / (states / 2f));
 
 
-        float confRes = confResolution.floatValue();
+        var confRes = confResolution.floatValue();
 
-        for (int i = 0; i < nw; ) {
-            for (int j = 0; j < nh; ) {
+        for (var i = 0; i < nw; ) {
+            for (var j = 0; j < nh; ) {
 
-                int p = 0;
-                int oi = i * sw;
-                int oj = j * sh;
-                for (int si = 0; si < sw; si++) {
-                    int d = si + oi;
+                var p = 0;
+                var oi = i * sw;
+                var oj = j * sh;
+                for (var si = 0; si < sw; si++) {
+                    var d = si + oi;
                     if (d >= pw)
                         break;
 
 
-                    for (int sj = 0; sj < sh; sj++) {
+                    for (var sj = 0; sj < sh; sj++) {
 
-                        int c = sj + oj;
+                        var c = sj + oj;
 
                         ins[p++] = c < ph ? pixIn.value(d, c) : 0.5f;
 
                     }
                 }
 
-                float[] metabits = this.metabits.get(i, j);
-                for (float m : metabits) {
+                var metabits = this.metabits.get(i, j);
+                for (var m : metabits) {
                     ins[p++] = m;
                 }
 
                 short[] po = null;
                 if (learn) {
-                    float regionError = ae.put(ins, alpha, noise, (float) 0, true, false, true);
+                    var regionError = ae.put(ins, alpha, noise, (float) 0, true, false, true);
                     sumErr += regionError;
 
 
                     float conf;
                     if ((conf = 1f - (regionError / regionPixels)) > 0) {
-                        short[] features = ae.max(outputThresh);
+                        var features = ae.max(outputThresh);
                         if (features != null) {
 
                             conf = Util.round(w2cSafe(c2wSafe(baseConf * conf) / features.length), confRes);
@@ -298,35 +298,35 @@ public class AutoclassifiedBitmap extends VectorSensor {
                     ae.recode(ins, true, false);
                 }
 
-                float[] peij = encoded[i][j];
+                var peij = encoded[i][j];
 
                 Arrays.fill(peij, 0);
                 float mult;
                 if (po != null && po.length > 0) {
                     mult = +1;
-                    float f = 0.5f + 0.5f / po.length;
-                    for (short ppp : po)
+                    var f = 0.5f + 0.5f / po.length;
+                    for (var ppp : po)
                         peij[ppp] = f;
                 } else {
                     mult = -1;
                 }
 
 
-                boolean reconstruct = true;
+                var reconstruct = true;
                 if (reconstruct) {
 
 
-                    float[] z = this.ae.z;
+                    var z = this.ae.z;
                     p = 0;
-                    for (int si = 0; si < sw; si++) {
-                        int d = si + oi;
+                    for (var si = 0; si < sw; si++) {
+                        var d = si + oi;
                         if (d >= pw)
                             break;
 
-                        float[] col = pixRecon[d];
-                        for (int sj = 0; sj < sh; sj++) {
+                        var col = pixRecon[d];
+                        for (var sj = 0; sj < sh; sj++) {
 
-                            int c = sj + oj;
+                            var c = sj + oj;
 
                             if (c >= ph)
                                 break;

@@ -38,7 +38,7 @@ public class ReversibleRecyclableListIterator<T> implements Iterator<T> {
     public T next() {
         if (!hasNext()) throw new NoSuchElementException();
 
-        int i = (reverse) ? ((count-1) - current) : current;
+        var i = (reverse) ? ((count-1) - current) : current;
         current++;
 
         return a.get(i);

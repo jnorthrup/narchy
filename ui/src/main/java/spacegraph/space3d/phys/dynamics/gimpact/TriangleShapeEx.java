@@ -48,14 +48,14 @@ public class TriangleShapeEx extends TriangleShape {
 
 	@Override
 	public void getAabb(Transform t, v3 aabbMin, v3 aabbMax) {
-		v3 tv0 = new v3(vertices1[0]);
+		var tv0 = new v3(vertices1[0]);
 		t.transform(tv0);
-		v3 tv1 = new v3(vertices1[1]);
+		var tv1 = new v3(vertices1[1]);
 		t.transform(tv1);
-		v3 tv2 = new v3(vertices1[2]);
+		var tv2 = new v3(vertices1[2]);
 		t.transform(tv2);
 
-		BoxCollision.AABB trianglebox = new BoxCollision.AABB();
+		var trianglebox = new BoxCollision.AABB();
 		trianglebox.init(tv0,tv1,tv2,collisionMargin);
 		
 		aabbMin.set(trianglebox.min);
@@ -69,10 +69,10 @@ public class TriangleShapeEx extends TriangleShape {
 	}
 
 	private void buildTriPlane(Vector4f plane) {
-		v3 tmp1 = new v3();
-		v3 tmp2 = new v3();
+		var tmp1 = new v3();
+		var tmp2 = new v3();
 
-		v3 normal = new v3();
+		var normal = new v3();
 		tmp1.sub(vertices1[1], vertices1[0]);
 		tmp2.sub(vertices1[2], vertices1[0]);
 		normal.cross(tmp1, tmp2);
@@ -82,19 +82,19 @@ public class TriangleShapeEx extends TriangleShape {
 	}
 
 	public boolean overlap_test_conservative(TriangleShapeEx other) {
-		float total_margin = getMargin() + other.getMargin();
+		var total_margin = getMargin() + other.getMargin();
 
-		Vector4f plane0 = new Vector4f();
+		var plane0 = new Vector4f();
 		buildTriPlane(plane0);
-		Vector4f plane1 = new Vector4f();
+		var plane1 = new Vector4f();
 		other.buildTriPlane(plane1);
 
-		
-		float dis0 = ClipPolygon.distance_point_plane(plane0, other.vertices1[0]) - total_margin;
 
-		float dis1 = ClipPolygon.distance_point_plane(plane0, other.vertices1[1]) - total_margin;
+		var dis0 = ClipPolygon.distance_point_plane(plane0, other.vertices1[0]) - total_margin;
 
-		float dis2 = ClipPolygon.distance_point_plane(plane0, other.vertices1[2]) - total_margin;
+		var dis1 = ClipPolygon.distance_point_plane(plane0, other.vertices1[1]) - total_margin;
+
+		var dis2 = ClipPolygon.distance_point_plane(plane0, other.vertices1[2]) - total_margin;
 
 		if (dis0 > 0.0f && dis1 > 0.0f && dis2 > 0.0f) {
 			return false; 

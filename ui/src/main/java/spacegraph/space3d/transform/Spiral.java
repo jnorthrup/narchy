@@ -14,36 +14,27 @@ public class Spiral<X> implements SpaceTransform<X> {
     @Override
     public void update(Iterable<Spatial<X>> g, float dt) {
         this.order = 0;
-        for (Spatial<X> xSpatial : g) {
+        for (var xSpatial : g) {
             update(xSpatial);
         }
     }
 
 
     private void update(Spatial v) {
-        
-        
-        
-
-        
-        
-
-        
-
-        
-
-        int o = order++;
 
 
-        SimpleSpatial vv = (SimpleSpatial) v;
+        var o = order++;
+
+
+        var vv = (SimpleSpatial) v;
         vv.body.clearForces();
         vv.body.setLinearVelocity(0,0,0);
-        float nodeSpeed = 0.3f;
+        var nodeSpeed = 0.3f;
         /* ~phi */
-        float baseRad = 40f;
-        float angleRate = 0.5f;
-        float r = baseRad + o * angleRate * 1.6f;
-        float angle = o * angleRate;
+        var baseRad = 40f;
+        var angleRate = 0.5f;
+        var r = baseRad + o * angleRate * 1.6f;
+        var angle = o * angleRate;
         vv.move(
             (float) (Math.sin(angle) * r),
             (float) (Math.cos(angle) * r),

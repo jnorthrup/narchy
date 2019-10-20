@@ -20,10 +20,10 @@ public class CopyAction implements Action {
   }
 
   private static void setClipboardString(String value) {
-    StringSelection selection = new StringSelection(value);
+    var selection = new StringSelection(value);
 
-    Toolkit toolKit = Toolkit.getDefaultToolkit();
-    Clipboard clipboard = toolKit.getSystemClipboard();
+    var toolKit = Toolkit.getDefaultToolkit();
+    var clipboard = toolKit.getSystemClipboard();
     clipboard.setContents(selection, selection);
   }
 }

@@ -57,10 +57,10 @@ public class RdpApplet extends Applet {
         g.setColor(new Color(0xFFFFFF));
         g.fillRect(0, 0, g.getClipBounds().width, g.getClipBounds().height);
         g.setColor(new Color(0x000000));
-        int width = g.getFontMetrics().stringWidth(
+        var width = g.getFontMetrics().stringWidth(
                 "Launching properJavaRDP session...");
-        int x = (int) (g.getClipBounds().getWidth() / 2) - (width / 2);
-        int y = (int) (g.getClipBounds().getHeight() / 2);
+        var x = (int) (g.getClipBounds().getWidth() / 2) - (width / 2);
+        var y = (int) (g.getClipBounds().getHeight() / 2);
         if (!redirectOutput)
             g.drawString("Launching properJavaRDP session...", x, y);
         width = g.getFontMetrics().stringWidth(
@@ -75,7 +75,7 @@ public class RdpApplet extends Applet {
     public void init() {
         redirectOutput = isSet("redirectOutput");
         if (redirectOutput) {
-            PrintStream aPrintStream = new PrintStream(new FilteredStream(
+            var aPrintStream = new PrintStream(new FilteredStream(
                     new ByteArrayOutputStream()));
             System.setOut(aPrintStream);
             System.setErr(aPrintStream);
@@ -90,8 +90,8 @@ public class RdpApplet extends Applet {
 
         Common.underApplet = true;
 
-        String[] args = new String[40];
-        int index = 0;
+        var args = new String[40];
+        var index = 0;
         index = genArgS("-m", "keymap", args, index);
         index = genArgS("-u", "username", args, index);
         index = genArgS("-p", "password", args, index);
@@ -111,16 +111,16 @@ public class RdpApplet extends Applet {
         index = genArgF("--debug_hex", "debug_hex", args, index);
         index = genArgF("--no_remap_hash", "no_remap_hash", args, index);
 
-        String rdpserver = this.getParameter("server");
-        String rdpport = this.getParameter("port");
+        var rdpserver = this.getParameter("server");
+        var rdpport = this.getParameter("port");
         if (rdpserver != null) {
             args[index] = rdpserver + ((rdpport == null) ? "" : (':' + rdpport));
             index++;
         }
 
-        String[] rargs = new String[index];
+        var rargs = new String[index];
         System.arraycopy(args, 0, rargs, 0, index);
-        for (int i = 0; i < rargs.length; i++)
+        for (var i = 0; i < rargs.length; i++)
             System.out.println("args[" + i + "]=\"" + rargs[i] + '"');
 
         rThread = new RdpThread(rargs, this.getParameter("redirect_on_exit"), this);
@@ -143,7 +143,7 @@ public class RdpApplet extends Applet {
     }
 
     private boolean isSet(String parameter) {
-        String s = this.getParameter(parameter);
+        var s = this.getParameter(parameter);
         if (s != null) {
             return "yes".equalsIgnoreCase(s);
         }
@@ -151,7 +151,7 @@ public class RdpApplet extends Applet {
     }
 
     private int genArgF(String flag, String parameter, String[] args, int i) {
-        String s = this.getParameter(parameter);
+        var s = this.getParameter(parameter);
         if (s != null) {
             if ("yes".equalsIgnoreCase(s)) {
                 args[i] = flag;
@@ -162,7 +162,7 @@ public class RdpApplet extends Applet {
     }
 
     private int genArgS(String name, String parameter, String[] args, int i) {
-        String s = this.getParameter(parameter);
+        var s = this.getParameter(parameter);
         if (s != null) {
             
             if (!name.isEmpty()) {
@@ -182,13 +182,13 @@ public class RdpApplet extends Applet {
 
         @Override
         public void write(byte[] b) {
-            String aString = new String(b);
+            var aString = new String(b);
             aTextArea.append(aString);
         }
 
         @Override
         public void write(byte[] b, int off, int len) {
-            String aString = new String(b, off, len);
+            var aString = new String(b, off, len);
             aTextArea.append(aString);
         }
     }
@@ -216,7 +216,7 @@ class RdpThread extends Thread {
         try {
             Rdesktop.main(args);
             if (redirect != null) {
-                URL u = new URL(redirect);
+                var u = new URL(redirect);
                 parentApplet.getAppletContext().showDocument(u);
             }
         } catch (RdesktopException e) {

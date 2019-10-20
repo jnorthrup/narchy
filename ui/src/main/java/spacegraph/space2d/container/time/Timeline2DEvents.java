@@ -53,15 +53,15 @@ public class Timeline2DEvents<E> extends Graph2D<E> implements Timeline2D.TimeRa
         public void update(Graph2D<E> g, float dtS) {
 
 
-            Timeline2DEvents gg = (Timeline2DEvents) g;
-            Timeline2D.EventBuffer model = gg.model;
+            var gg = (Timeline2DEvents) g;
+            var model = gg.model;
             float yl = g.bottom(), yh = g.top();
 
             g.forEachValue(t -> layout(t, gg, model, minVisibleWidth, yl, yh));
         }
 
         protected void layout(NodeVis<E> jj, Timeline2DEvents gg, Timeline2D.EventBuffer model, float minVisibleWidth, float yl, float yh) {
-            long[] w = model.range(jj.id);
+            var w = model.range(jj.id);
             long left = (w[0]), right = (w[1]);
             if (right-left < minVisibleTime) {
                 double mid = (left + right)/2f;
@@ -70,14 +70,14 @@ public class Timeline2DEvents<E> extends Graph2D<E> implements Timeline2D.TimeRa
             }
 
 
-            float xl = gg.x(left);
-            float xr = gg.x(right);
+            var xl = gg.x(left);
+            var xr = gg.x(right);
             if (xr -xl < minVisibleWidth) {
-                float xc = (xl+xr);
+                var xc = (xl+xr);
                 xl = xc - minVisibleWidth/2;
                 xr = xc + minVisibleWidth/2;
             }
-            RectFloat r = RectFloat.XYXY(xl, yl, xr, yh);
+            var r = RectFloat.XYXY(xl, yl, xr, yh);
             jj.pos(r);
             jj.show();
         }
@@ -101,28 +101,28 @@ public class Timeline2DEvents<E> extends Graph2D<E> implements Timeline2D.TimeRa
                 return;
 
 
-            Timeline2DEvents gg = (Timeline2DEvents) g;
-            Timeline2D.EventBuffer model = gg.model;
+            var gg = (Timeline2DEvents) g;
+            var model = gg.model;
 
             next.sortThis((x, y) -> model.compareDurThenStart(x.id, y.id));
 
 
-            RoaringBitmap l0 = new RoaringBitmap();
+            var l0 = new RoaringBitmap();
             l0.add(0);
             List<RoaringBitmap> lanes = new FasterList();
             lanes.add(l0);
 
             for (int i = 1, byDurationSize = next.size(); i < byDurationSize; i++) {
-                NodeVis<E> in = next.get(i);
+                var in = next.get(i);
 
-                int lane = -1;
+                var lane = -1;
                 nextLane:
                 for (int l = 0, lanesSize = lanes.size(); l < lanesSize; l++) {
-                    RoaringBitmap r = lanes.get(l);
-                    PeekableIntIterator rr = r.getIntIterator();
-                    boolean collision = false;
+                    var r = lanes.get(l);
+                    var rr = r.getIntIterator();
+                    var collision = false;
                     while (rr.hasNext()) {
-                        int j = rr.next();
+                        var j = rr.next();
                         if (model.intersectLength(next.get(j).id, in.id) > 0) {
                             collision = true;
                             break;
@@ -135,29 +135,29 @@ public class Timeline2DEvents<E> extends Graph2D<E> implements Timeline2D.TimeRa
                     }
                 }
                 if (lane == -1) {
-                    RoaringBitmap newLane = new RoaringBitmap();
+                    var newLane = new RoaringBitmap();
                     newLane.add(i);
                     lanes.add(newLane);
                 }
             }
 
-            int nlanes = lanes.size();
-            float laneHeight = g.h() / nlanes;
-            float Y = g.bottom();
-            float minVisibleWidth = g.w() * this.minVisibleWidth;
-            for (int i = 0; i < nlanes; i++) {
-                float yl = Y + laneHeight * i;
-                float yh = Y + laneHeight * (i + 1);
+            var nlanes = lanes.size();
+            var laneHeight = g.h() / nlanes;
+            var Y = g.bottom();
+            var minVisibleWidth = g.w() * this.minVisibleWidth;
+            for (var i = 0; i < nlanes; i++) {
+                var yl = Y + laneHeight * i;
+                var yh = Y + laneHeight * (i + 1);
 
                 layout(gg, model, lanes.get(i), minVisibleWidth, yl, yh);
             }
         }
 
         void layout(Timeline2DEvents gg, Timeline2D.EventBuffer model, RoaringBitmap ri, float minVisibleWidth, float yl, float yh) {
-            PeekableIntIterator ii = ri.getIntIterator();
+            var ii = ri.getIntIterator();
             while (ii.hasNext()) {
-                int j = ii.next();
-                NodeVis<E> jj = next.get(j);
+                var j = ii.next();
+                var jj = next.get(j);
                 layout(jj, gg, model, minVisibleWidth, yl, yh);
             }
         }

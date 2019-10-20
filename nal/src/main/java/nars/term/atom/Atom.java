@@ -29,7 +29,7 @@ public class Atom extends AbstractAtomic implements The {
             throw new UnsupportedOperationException("Empty Atom ID");
 
 
-        char c = id.charAt(0);
+        var c = id.charAt(0);
         switch (c) {
             case '+':
             case '-':
@@ -145,9 +145,9 @@ public class Atom extends AbstractAtomic implements The {
 
 
     public boolean startsWith(byte... prefix) {
-        byte[] b = bytes();
-        int o = 3; //skip op byte + 2 len bytes
-        int P = prefix.length;
+        var b = bytes();
+        var o = 3; //skip op byte + 2 len bytes
+        var P = prefix.length;
         if (b.length - o >= P) {
             return IntStream.range(0, P).noneMatch(i -> b[i + o] != prefix[i]);
         }

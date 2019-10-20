@@ -35,7 +35,7 @@ public class QuotedString extends Terminal {
 	 */
 	@Override
 	protected boolean qualifies(Object o) {
-		Token t = (Token) o;
+		var t = (Token) o;
 		return t.isQuotedString();
 	}
 
@@ -44,14 +44,14 @@ public class QuotedString extends Terminal {
 	 */
 	@Override
 	public List<String> randomExpansion(int maxDepth, int depth) {
-		int n = (int) (5.0 * Math.random());
+		var n = (int) (5.0 * Math.random());
 
-		char[] letters = new char[n + 2];
+		var letters = new char[n + 2];
 		letters[0] = '"';
 		letters[n + 1] = '"';
 
-		for (int i = 0; i < n; i++) {
-			int c = (int) (26.0 * Math.random()) + 'a';
+		for (var i = 0; i < n; i++) {
+			var c = (int) (26.0 * Math.random()) + 'a';
 			letters[i + 1] = (char) c;
 		}
 

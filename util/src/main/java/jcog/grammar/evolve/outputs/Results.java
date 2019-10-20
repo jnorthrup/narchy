@@ -35,7 +35,7 @@ public class Results {
     
     public Results(int numberOfJobs) {
         this.jobEvolutionTrace = new ArrayList<>(numberOfJobs);
-        for (int i = 0; i < numberOfJobs; i++) {
+        for (var i = 0; i < numberOfJobs; i++) {
             this.jobEvolutionTrace.add(new JobEvolutionTrace());
         }
     }

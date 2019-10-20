@@ -43,8 +43,8 @@ public class ObjectSurface extends MutableUnitContainer<Surface> {
 
         List<Surface> outer = new FasterList(0, EmptySurfaceArray);
 
-        for (Pair<Object, Iterable<Surface>> p : target) {
-            Surface l = collectionSurface(Streams.stream(p.getTwo()).filter(Objects::nonNull).collect(toList()));
+        for (var p : target) {
+            var l = collectionSurface(Streams.stream(p.getTwo()).filter(Objects::nonNull).collect(toList()));
             if (l!=null)
                 outer.add(l);
         }
@@ -55,7 +55,7 @@ public class ObjectSurface extends MutableUnitContainer<Surface> {
 
     private static @Nullable Surface collectionSurface(List<Surface> x) {
         Surface y = null;
-        int xs = x.size();
+        var xs = x.size();
         switch (xs) {
             case 0:
                 return null; //TODO shouldnt happen
@@ -190,20 +190,20 @@ public class ObjectSurface extends MutableUnitContainer<Surface> {
             //return SupplierPort.button(relationLabel(relation), ()-> {
 
 
-                for (Object cxx : cx) {
+                for (var cxx : cx) {
                     if (cxx == null)
                         continue;
 
-                    Surface yyy = build(cxx);
+                    var yyy = build(cxx);
                     if (yyy != null)
                         yy.add(yyy); //TODO depth, parent, ..
                 }
                 if (yy.isEmpty())
                     return null;
 
-                Surface xx = collectionSurface(yy);
+            var xx = collectionSurface(yy);
 
-                String l = relationLabel(relation);
+            var l = relationLabel(relation);
 
                 if (!l.isEmpty())
                     return LabeledPane.the(l, xx);
@@ -381,7 +381,7 @@ public class ObjectSurface extends MutableUnitContainer<Surface> {
         @Override
         protected void renderContent(ReSurface r) {
             //TODO configurable rate
-            boolean autoUpdate = true;
+            var autoUpdate = true;
             if (autoUpdate) {
                 slider.set(this.get.asFloat());
             }

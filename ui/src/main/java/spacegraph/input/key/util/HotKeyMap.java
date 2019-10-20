@@ -22,7 +22,7 @@ public class HotKeyMap extends KeyAdapter {
 
         @Override
         public String toString() {
-            int awtCode = Keyboard.newtKeyCode2AWTKeyCode(code);
+            var awtCode = Keyboard.newtKeyCode2AWTKeyCode(code);
             return java.awt.event.KeyEvent.getKeyText(awtCode) + '=' + name;
         }
     }
@@ -36,7 +36,7 @@ public class HotKeyMap extends KeyAdapter {
 
     @Override
     public void keyPressed(KeyEvent e) {
-        Reaction r = onPressed.get(e.getKeyCode());
+        var r = onPressed.get(e.getKeyCode());
         if (r!=null) {
             r.run.run();
             e.setConsumed(true);

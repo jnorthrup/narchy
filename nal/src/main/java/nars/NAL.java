@@ -406,7 +406,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     }
 
     public static double eviEternalizable(double evi, long dt, float dur) {
-        double ete = TruthFunctions.eternalize(evi);
+        var ete = TruthFunctions.eternalize(evi);
         return ete + evi(evi-ete, dt, dur);
     }
 
@@ -446,7 +446,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
 
         //quadratic decay: integral finite from to infinity, see: https://en.wikipedia.org/wiki/List_of_definite_integrals
-        double e = (evi / (1.0 + Util.sqr(((double) dt) / dur)));
+        var e = (evi / (1.0 + Util.sqr(((double) dt) / dur)));
 
 
         //linear decay WARNING - not finite integral

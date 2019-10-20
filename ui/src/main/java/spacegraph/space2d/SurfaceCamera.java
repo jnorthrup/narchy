@@ -16,7 +16,7 @@ public class SurfaceCamera {
     public transient float h;
 
     public SurfaceCamera clone() {
-        SurfaceCamera s = new SurfaceCamera();
+        var s = new SurfaceCamera();
         s.scaleX = scaleX;
         s.scaleY = scaleY;
         s.x1 = x1;

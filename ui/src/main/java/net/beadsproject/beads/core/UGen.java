@@ -166,7 +166,7 @@ public abstract class UGen extends Auvent {
 	private synchronized void setIns(int ins) {
 		this.ins = ins;
 		inputsAtChannel = new FasterList[ins];
-		for (int i = 0; i < ins; i++) {
+		for (var i = 0; i < ins; i++) {
 			inputsAtChannel[i] = new FasterList<>();
 		}
 	}
@@ -207,7 +207,7 @@ public abstract class UGen extends Auvent {
 	 * Sets the output buffers to zero.
 	 */
 	private void zeroOuts() {
-        float[] z = context.getZeroBuf();
+		var z = context.getZeroBuf();
         Arrays.fill(bufOut, 0, outs, z);
 	}
 
@@ -215,7 +215,7 @@ public abstract class UGen extends Auvent {
 	 * Sets the input buffers to zero.
 	 */
 	private void zeroIns() {
-        float[] z = context.getZeroBuf();
+		var z = context.getZeroBuf();
         Arrays.fill(bufIn, 0, ins, z);
 	}
 
@@ -236,12 +236,12 @@ public abstract class UGen extends Auvent {
 	private void initializeOuts() {
 		switch (outputInitializationRegime) {
 			case JUNK:
-				for (int i = 0; i < outs; i++) {
+				for (var i = 0; i < outs; i++) {
 					bufOut[i] = context.getBuf();
 				}
 				break;
 			case ZERO:
-				for (int i = 0; i < outs; i++) {
+				for (var i = 0; i < outs; i++) {
 					bufOut[i] = context.getCleanBuf();
 				}
 				break;
@@ -272,13 +272,13 @@ public abstract class UGen extends Auvent {
 
 		if (!noInputs) {
 			noInputs = true;
-			for (int i = 0; i < inputsAtChannel.length; i++) {
+			for (var i = 0; i < inputsAtChannel.length; i++) {
 
 
-				int size = inputsAtChannel[i].size();
+				var size = inputsAtChannel[i].size();
 				bufIn[i] = context.getZeroBuf();
 				if (size == 1) {
-					BufferPointer bp = inputsAtChannel[i].get(0);
+					var bp = inputsAtChannel[i].get(0);
 					if (bp.ugen.isDeleted()) {
 						removeInputAtChannel(i, bp);
 					} else {
@@ -289,16 +289,16 @@ public abstract class UGen extends Auvent {
 
 
 						if (bufIn[i] == null) {
-							float[] bi = bufIn[i] = context.getBuf();
-							for (int j = 0; j < bufferSize; j++) {
+							var bi = bufIn[i] = context.getBuf();
+							for (var j = 0; j < bufferSize; j++) {
 								bi[j] = bp.get(j);
 							}
 						}
 					}
 				} else if (size != 0) {
-					float[] bi = bufIn[i] = context.getCleanBuf();
-					for (int index = 0; index < size; index++) {
-						BufferPointer bp = inputsAtChannel[i].get(index);
+					var bi = bufIn[i] = context.getCleanBuf();
+					for (var index = 0; index < size; index++) {
+						var bp = inputsAtChannel[i].get(index);
 						if (bp.ugen.isDeleted()) {
 
 							removeInputAtChannel(i, bp);
@@ -307,7 +307,7 @@ public abstract class UGen extends Auvent {
 						} else {
 							bp.ugen.update();
 							noInputs = false;
-							for (int j = 0; j < bufferSize; j++) {
+							for (var j = 0; j < bufferSize; j++) {
 								bi[j] += bp.get(j);
 							}
 						}
@@ -316,7 +316,7 @@ public abstract class UGen extends Auvent {
 				}
 			}
 		} else if (ins != 0) {
-			for (int i = 0; i < inputsAtChannel.length; i++) {
+			for (var i = 0; i < inputsAtChannel.length; i++) {
 				bufIn[i] = context.getZeroBuf();
 			}
 		}
@@ -354,9 +354,9 @@ public abstract class UGen extends Auvent {
 	 * Prints a list of UGens connected to this UGen's inputs to System.out.
 	 */
 	public void printInputList() {
-		for (FasterList<BufferPointer> anInputsAtChannel : inputsAtChannel) {
+		for (var anInputsAtChannel : inputsAtChannel) {
 			System.out.print(anInputsAtChannel.size() + " inputs: ");
-			for (BufferPointer bp : anInputsAtChannel) {
+			for (var bp : anInputsAtChannel) {
 				System.out.print(bp.ugen + ":" + bp.index + ' ');
 			}
 			System.out.println();
@@ -373,7 +373,7 @@ public abstract class UGen extends Auvent {
 	 */
 	public synchronized <X extends UGen> X in(UGen sourceUGen) {
 		if (ins != 0 && sourceUGen.outs != 0) {
-			for (int i = 0; i < ins; i++) {
+			for (var i = 0; i < ins; i++) {
 
 				addInput(i, sourceUGen, i % sourceUGen.outs);
 			}
@@ -406,14 +406,14 @@ public abstract class UGen extends Auvent {
 	public synchronized void crossfadeInput(UGen source, UGen destination, float crossoverTime) {
 		removeAllConnections(source);
 
-		Envelope fadeOut = new Envelope(context, 1f);
-		Gain gOut = new Gain(context, source.outs, fadeOut);
+		var fadeOut = new Envelope(context, 1f);
+		var gOut = new Gain(context, source.outs, fadeOut);
 		fadeOut.add(0f, crossoverTime, new KillTrigger(gOut));
 		gOut.in(source);
 		in(gOut);
 
-		Envelope fadeIn = new Envelope(context, 0f);
-		Gain gIn = new Gain(context, destination.outs, fadeIn);
+		var fadeIn = new Envelope(context, 0f);
+		var gIn = new Gain(context, destination.outs, fadeIn);
 		fadeIn.add(1f, crossoverTime, new Auvent() {
 			@Override
 			public void on(Auvent message) {
@@ -477,7 +477,7 @@ public abstract class UGen extends Auvent {
 	 * @return set of UGens
 	 */
 	public synchronized Set<UGen> getConnectedInputs() {
-		Set<UGen> connectedInputs = IntStream.range(0, ins).mapToObj(i -> inputsAtChannel[i].stream()).flatMap(Function.identity()).map(bp -> bp.ugen).collect(Collectors.toSet());
+		var connectedInputs = IntStream.range(0, ins).mapToObj(i -> inputsAtChannel[i].stream()).flatMap(Function.identity()).map(bp -> bp.ugen).collect(Collectors.toSet());
         return connectedInputs;
 	}
 
@@ -509,7 +509,7 @@ public abstract class UGen extends Auvent {
 //	}
 
 	private void removeInputAtChannel(int channel, BufferPointer bp) {
-		FasterList<BufferPointer> ic = inputsAtChannel[channel];
+		var ic = inputsAtChannel[channel];
 		synchronized (ic) {
 			ic.remove(bp);
 		}
@@ -523,10 +523,10 @@ public abstract class UGen extends Auvent {
 	@SuppressWarnings("unchecked")
 	public synchronized void removeAllConnections(UGen sourceUGen) {
 		if (!noInputs) {
-			int inputCount = 0;
-			for (int i = 0; i < inputsAtChannel.length; i++) {
+			var inputCount = 0;
+			for (var i = 0; i < inputsAtChannel.length; i++) {
 				List<BufferPointer> bplist = inputsAtChannel[i].clone();
-				for (BufferPointer bp : bplist) {
+				for (var bp : bplist) {
 					if (sourceUGen.equals(bp.ugen)) {
 						removeInputAtChannel(i, bp);
 					} else
@@ -573,10 +573,10 @@ public abstract class UGen extends Auvent {
 												 UGen sourceUGen, int sourceOutputChannel) {
 
 		if (!noInputs) {
-			int inputCount = 0;
-			boolean ret = false;
+			var inputCount = 0;
+			var ret = false;
 			List<BufferPointer> bplist = inputsAtChannel[inputChannel].clone();
-			for (BufferPointer bp : bplist) {
+			for (var bp : bplist) {
 				if (sourceUGen.equals(bp.ugen)
 					&& bp.index == sourceOutputChannel) {
 					removeInputAtChannel(inputChannel, bp);
@@ -587,7 +587,7 @@ public abstract class UGen extends Auvent {
 			}
 			if (inputCount == 0) {
 
-				int sum = Arrays.stream(inputsAtChannel).mapToInt(FasterList::size).sum();
+				var sum = Arrays.stream(inputsAtChannel).mapToInt(FasterList::size).sum();
 				inputCount += sum;
 			}
 			if (inputCount == 0) {
@@ -605,9 +605,9 @@ public abstract class UGen extends Auvent {
 	 */
 	@SuppressWarnings("unchecked")
 	public synchronized void clearInputConnections() {
-		for (int i = 0; i < inputsAtChannel.length; i++) {
+		for (var i = 0; i < inputsAtChannel.length; i++) {
 			List<BufferPointer> bplist = inputsAtChannel[i].clone();
-			for (BufferPointer bp : bplist)
+			for (var bp : bplist)
 				removeInputAtChannel(i, bp);
 			noInputs = true;
 			zeroIns();
@@ -618,9 +618,9 @@ public abstract class UGen extends Auvent {
 	 * Prints the contents of the input buffers to System.out.
 	 */
 	public void printInBuffers() {
-		for (int i = 0; i < bufferSize; i++) {
+		for (var i = 0; i < bufferSize; i++) {
 			System.out.print(this + " " + i + ' ');
-			for (int j = 0; j < ins; j++) {
+			for (var j = 0; j < ins; j++) {
 				System.out.print(bufIn[j][i] + " ");
 			}
 			System.out.println();
@@ -631,9 +631,9 @@ public abstract class UGen extends Auvent {
 	 * Prints the contents of the output buffers to System.out.
 	 */
 	public void printOutBuffers() {
-		for (int i = 0; i < bufferSize; i++) {
+		for (var i = 0; i < bufferSize; i++) {
 			System.out.print(this + " " + i + ' ');
-			for (int j = 0; j < outs; j++) {
+			for (var j = 0; j < outs; j++) {
 				System.out.print(bufOut[j][i] + " ");
 			}
 			System.out.println();

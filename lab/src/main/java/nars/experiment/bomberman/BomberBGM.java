@@ -46,7 +46,7 @@ public class BomberBGM {
              * change music only if the the current music is not equal to
              * the specified music
              */
-            int i = 0;
+            var i = 0;
             while (i < ((SoundPlayer) player).sounds.size() &&
                     ((SoundPlayer) player).sounds.elementAt(i).
                             toString().indexOf(arg) < 0) i += 1;

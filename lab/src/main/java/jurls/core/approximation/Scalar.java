@@ -59,7 +59,7 @@ public class Scalar implements DiffableFunctionSource {
 
     @Override
     public String valueToSource(SourceEnvironment se) {
-        String y = se.allocateVariable();
+        var y = se.allocateVariable();
         se.assign(y).append("xValues[").append(index).append("];").nl();
 
         return y;
@@ -67,7 +67,7 @@ public class Scalar implements DiffableFunctionSource {
 
     @Override
     public String partialDeriveToSource(SourceEnvironment se) {
-        String y = se.allocateVariable();
+        var y = se.allocateVariable();
 
         se.assign(y).append("parameterIndex == ").append(index).append(" ? 1 : 0;").nl();
 

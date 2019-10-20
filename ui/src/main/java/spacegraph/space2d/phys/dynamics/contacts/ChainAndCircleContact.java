@@ -49,7 +49,7 @@ public class ChainAndCircleContact extends Contact {
 
     @Override
     public void evaluate(Manifold manifold, Transform xfA, Transform xfB) {
-        ChainShape chain = (ChainShape) aFixture.shape();
+        var chain = (ChainShape) aFixture.shape();
         chain.getChildEdge(edge, aIndex);
         pool.getCollision().collideEdgeAndCircle(manifold, edge, xfA,
                 (CircleShape) bFixture.shape(), xfB);

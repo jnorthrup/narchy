@@ -46,7 +46,7 @@ public class BomberFire extends Thread {
         /** if java runtime is Java 2 */
         if (Main.J2) {
             /** create the rendering hints for better graphics output */
-            RenderingHints h = new RenderingHints(null);
+            var h = new RenderingHints(null);
             h.put(RenderingHints.KEY_TEXT_ANTIALIASING,
                     RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
             h.put(RenderingHints.KEY_FRACTIONALMETRICS,
@@ -66,7 +66,7 @@ public class BomberFire extends Thread {
         /**
          * map grid handle
          */
-        int[][] grid = map.grid;
+        var grid = map.grid;
         this.x = x;
         this.y = y;
         this.type = type;
@@ -99,7 +99,7 @@ public class BomberFire extends Thread {
             /** draw the fire */
             paint();
             /** see if any players are in the way */
-            for (int i = 0; i < BomberGame.totalPlayers; i++) {
+            for (var i = 0; i < BomberGame.totalPlayers; i++) {
                 /** if there is */
                 if ((BomberGame.players[i].x >> BomberMain.shiftCount) ==
                         (x >> BomberMain.shiftCount) && (BomberGame.players[i].y >>
@@ -135,7 +135,7 @@ public class BomberFire extends Thread {
      * Drawing method.
      */
     public void paint() {
-        Graphics g = map.getGraphics();
+        var g = map.getGraphics();
         /** if java runtime is Java 2 */
         if (Main.J2) {
             paint2D(map.getGraphics());
@@ -154,7 +154,7 @@ public class BomberFire extends Thread {
      * @param graphics graphics handle
      */
     public void paint2D(Graphics graphics) {
-        Graphics2D g2 = (Graphics2D) graphics;
+        var g2 = (Graphics2D) graphics;
         /** set the rendering hints */
         g2.setRenderingHints((RenderingHints) hints);
         g2.drawImage(images[type][frame], x, y,

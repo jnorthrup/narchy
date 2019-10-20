@@ -60,8 +60,8 @@ public class PriNode implements Prioritized {
         /** @param f f(accumulator, nodePri) */
         protected static double reduce(Iterable<? extends Node<PriNode, Object>> in, double accum, DoubleDoubleToDoubleFunction f) {
             for (Node<PriNode, Object> n : in) {
-                PriNode nn = n.id();
-                float np = nn.pri();
+                var nn = n.id();
+                var np = nn.pri();
                 if (np == np)
                     accum = f.applyAsDouble(accum, np);
             }
@@ -79,10 +79,10 @@ public class PriNode implements Prioritized {
 
     public void update(MapNodeGraph<PriNode,Object> graph) {
 
-        Node<PriNode, Object> node = node(graph);
+        var node = node(graph);
         //fanOut = node.edgeCount(false,true); //TODO cache
 
-        float p = node.edgeCount(true, false) > 0 ?
+        var p = node.edgeCount(true, false) > 0 ?
             (float) input.merge(node.nodes(true, false))
             :
             0;
@@ -102,11 +102,11 @@ public class PriNode implements Prioritized {
         assert(parent.length > 0);
 
 
-        for (FromTo<Node<PriNode, Object>, Object> nodeObjectFromTo : thisNode.edges(true, false)) {
+        for (var nodeObjectFromTo : thisNode.edges(true, false)) {
             g.edgeRemove(nodeObjectFromTo);
         }
 
-        for (PriNode p : parent) {
+        for (var p : parent) {
                 assert(!this.equals(p));
                 g.addEdge(p, "pri", thisNode);
             }

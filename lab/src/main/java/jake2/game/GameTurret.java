@@ -74,8 +74,8 @@ public class GameTurret {
         Math3D.VectorMA(start, self.move_origin[1], r, start);
         Math3D.VectorMA(start, self.move_origin[2], u, start);
 
-        int damage = (int) (100 + Lib.random() * 50);
-        int speed = (int) (550 + 50 * GameBase.skill.value);
+        var damage = (int) (100 + Lib.random() * 50);
+        var speed = (int) (550 + 50 * GameBase.skill.value);
         GameWeapon.fire_rocket(self.teammaster.owner, start, f, damage, speed, 150,
                 damage);
         game_import_t.positioned_sound(start, self, Defines.CHAN_WEAPON,
@@ -182,7 +182,7 @@ public class GameTurret {
         public void blocked(edict_t self, edict_t other) {
 
             if (other.takedamage != 0) {
-                edict_t attacker = Objects.requireNonNullElseGet(self.teammaster.owner, () -> self.teammaster);
+                var attacker = Objects.requireNonNullElseGet(self.teammaster.owner, () -> self.teammaster);
                 GameCombat.T_Damage(other, self, attacker, Globals.vec3_origin,
                         other.s.origin, Globals.vec3_origin,
                         self.teammaster.dmg, 10, 0, Defines.MOD_CRUSH);
@@ -214,13 +214,13 @@ public class GameTurret {
             if ((self.move_angles[Defines.YAW] < self.pos1[Defines.YAW])
                     || (self.move_angles[Defines.YAW] > self.pos2[Defines.YAW])) {
 
-                float dmin = Math.abs(self.pos1[Defines.YAW]
+                var dmin = Math.abs(self.pos1[Defines.YAW]
                         - self.move_angles[Defines.YAW]);
                 if (dmin < -180)
                     dmin += 360;
                 else if (dmin > 180)
                     dmin -= 360;
-                float dmax = Math.abs(self.pos2[Defines.YAW]
+                var dmax = Math.abs(self.pos2[Defines.YAW]
                         - self.move_angles[Defines.YAW]);
                 if (dmax < -180)
                     dmax += 360;
@@ -257,7 +257,7 @@ public class GameTurret {
 
             self.nextthink = GameBase.level.time + Defines.FRAMETIME;
 
-            for (edict_t ent = self.teammaster; ent != null; ent = ent.teamchain)
+            for (var ent = self.teammaster; ent != null; ent = ent.teamchain)
                 ent.avelocity[1] = self.avelocity[1];
 
             
@@ -268,7 +268,7 @@ public class GameTurret {
                 self.owner.avelocity[1] = self.avelocity[1];
 
 
-                float angle = self.s.angles[1] + self.owner.move_origin[1];
+                var angle = self.s.angles[1] + self.owner.move_origin[1];
                 angle *= (Math.PI * 2 / 360);
                 float[] target = {0, 0, 0};
                 target[0] = GameTurret.SnapToEights((float) (self.s.origin[0] +
@@ -284,10 +284,10 @@ public class GameTurret {
 
                 
                 angle = self.s.angles[Defines.PITCH] * (float) (Math.PI * 2f / 360f);
-                float target_z = GameTurret.SnapToEights((float) (self.s.origin[2]
+                var target_z = GameTurret.SnapToEights((float) (self.s.origin[2]
                         + self.owner.move_origin[0] * Math.tan(angle) + self.owner.move_origin[2]));
 
-                float diff = target_z - self.owner.s.origin[2];
+                var diff = target_z - self.owner.s.origin[2];
                 self.owner.velocity[2] = diff * 1.0f / Defines.FRAMETIME;
 
                 if ((self.spawnflags & 65536) != 0) {
@@ -394,7 +394,7 @@ public class GameTurret {
             if (GameBase.level.time < self.monsterinfo.attack_finished)
                 return true;
 
-            float reaction_time = (3 - GameBase.skill.value) * 1.0f;
+            var reaction_time = (3 - GameBase.skill.value) * 1.0f;
             if ((GameBase.level.time - self.monsterinfo.trail_time) < reaction_time)
                 return true;
 

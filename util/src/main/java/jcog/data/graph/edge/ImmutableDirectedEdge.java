@@ -47,7 +47,7 @@ public class ImmutableDirectedEdge<N, E> implements FromTo<Node<N,E>, E> {
     public boolean equals(Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof FromTo) || hash != obj.hashCode()) return false;
-        FromTo ee = (FromTo) obj;
+        var ee = (FromTo) obj;
         return from.equals(ee.from()) && to.equals(ee.to()) && Objects.equals(id, ee.id());
     }
 

@@ -108,7 +108,7 @@ public class PatternHow extends CondHow {
     }
 
     public static PatternHow parse(String ruleSrc, TruthModel truthModel, @Nullable String tag) throws Narsese.NarseseException {
-        PatternHow r = new PatternHow(truthModel);
+        var r = new PatternHow(truthModel);
         r._parse(ruleSrc);
         r.tag(tag);
         return r;
@@ -122,37 +122,30 @@ public class PatternHow extends CondHow {
             )
         );
 
-        Term[] precon = ((Compound)id.sub(0)).arrayShared();
+        var precon = ((Compound)id.sub(0)).arrayShared();
 
         taskPattern(precon[0]);
         beliefPattern(precon[1]);
 
 
-
-
-
-
-
-
-
-        Term[] postcon = ((Compound)id.sub(1)).arrayShared();
+        var postcon = ((Compound)id.sub(1)).arrayShared();
         concTerm = postcon[0];
 
 
-        for (int i = 2; i < precon.length; i++) {
+        for (var i = 2; i < precon.length; i++) {
             cond(precon[i]);
         }
 
         time = null;
 
-        Term[] modifiers = postcon.length > 1 ? ((Compound)postcon[1]).arrayShared() : Op.EmptyTermArray;
+        var modifiers = postcon.length > 1 ? ((Compound)postcon[1]).arrayShared() : Op.EmptyTermArray;
 
-        for (Term m : modifiers) {
+        for (var m : modifiers) {
             if (m.op() != Op.INH)
                 throw new RuntimeException("Unknown postcondition format: " + m);
 
-            Term type = m.sub(1);
-            Term which = m.sub(0);
+            var type = m.sub(1);
+            var which = m.sub(0);
 
             switch (type.toString()) {
 
@@ -270,7 +263,7 @@ public class PatternHow extends CondHow {
         super.cond(o, negated, _negationApplied, pred, x, y, Xv, Yv, Xvs, Yvs);
         switch (pred) {
             case "task":
-                String XString = x.toString();
+                var XString = x.toString();
                 switch (XString) {
 
 
@@ -324,7 +317,7 @@ public class PatternHow extends CondHow {
 
 
     private static Truthify intern(Truthify x) {
-        Truthify y = truthifies.putIfAbsent(x.term(), x);
+        var y = truthifies.putIfAbsent(x.term(), x);
         return y != null ? y : x;
     }
 
@@ -334,7 +327,7 @@ public class PatternHow extends CondHow {
 
     public static Stream<PremiseRule> parse(Stream<String> rules, TruthModel truthModel) {
         String[] currentTag = {null};
-        Stream<PremiseRule> s = rules.flatMap(line ->{
+        var s = rules.flatMap(line ->{
             if (!line.contains("|-")) {
                 if (line.endsWith("{")) {
                     //start tag
@@ -367,17 +360,17 @@ public class PatternHow extends CondHow {
     private static Subterms parseRuleComponents(String src) throws Narsese.NarseseException {
 
 
-        String[] ab = ruleImpl.split(src);
+        var ab = ruleImpl.split(src);
         if (ab.length != 2)
             throw new Narsese.NarseseException("Rule component must have arity=2, separated by \"|-\": " + src);
 
-        String A = '(' + ab[0].trim() + ')';
-        Term a = Narsese.term(A, false);
+        var A = '(' + ab[0].trim() + ')';
+        var a = Narsese.term(A, false);
         if (!(a instanceof Compound))
             throw new Narsese.NarseseException("Left rule component must be compound: " + src);
 
-        String B = '(' + ab[1].trim() + ')';
-        Term b = Narsese.term(B, false);
+        var B = '(' + ab[1].trim() + ')';
+        var b = Narsese.term(B, false);
         if (!(b instanceof Compound))
             throw new Narsese.NarseseException("Right rule component must be compound: " + src);
 
@@ -414,8 +407,8 @@ public class PatternHow extends CondHow {
 
     private static Term restoreEteConj(Term c, List<Term> subbedConj, ArrayHashSet<Term> savedConj) {
         for (int i = 0, subbedConjSize = subbedConj.size(); i < subbedConjSize; i++) {
-            Term y = subbedConj.get(i);
-            Term x = savedConj.get(i);
+            var y = subbedConj.get(i);
+            var x = savedConj.get(i);
             c = c.replace(y, x);
         }
         return c;
@@ -429,21 +422,21 @@ public class PatternHow extends CondHow {
 
         c.recurseTerms(x -> x.hasAll(INH.bit | CONJ.bit), t -> {
             if (t.op() == INH) {
-                Term s = t.sub(0);
-                Term su = s.unneg();
+                var s = t.sub(0);
+                var su = s.unneg();
                 if (su.op() == CONJ && su.dt() == DTERNAL)
                     savedConj.add(patternify(s, false));
-                Term p = t.sub(1);
-                Term pu = p.unneg();
+                var p = t.sub(1);
+                var pu = p.unneg();
                 if (pu.op() == CONJ && pu.dt() == DTERNAL)
                     savedConj.add(patternify(p, false));
             }
             return true;
         }, null);
         if (!savedConj.isEmpty()) {
-            int i = 0;
-            for (Term x : savedConj) {
-                Term y = $.p(eteConj, $.the(i));
+            var i = 0;
+            for (var x : savedConj) {
+                var y = $.p(eteConj, $.the(i));
                 subbedConj.add(y);
                 c = c.replace(x, y);
                 i++;
@@ -453,7 +446,7 @@ public class PatternHow extends CondHow {
     }
 
     private void assertConclusionVariablesPresent(Term c) {
-        boolean tb = taskPattern.equals(beliefPattern);
+        var tb = taskPattern.equals(beliefPattern);
         c.recurseTerms(Termlike::hasVarPattern, z -> {
             if (z.op() == VAR_PATTERN) {
                 if (!(taskPattern.equals(z) || taskPattern.containsRecursively(z)) &&
@@ -470,23 +463,23 @@ public class PatternHow extends CondHow {
 //            boolean taskEqY = taskPattern.equals(y);
 //            boolean beliefEqualY = beliefPattern.equals(y);
 
-        boolean taskObviouslyNotPastable = taskPattern.op().var;
-        boolean beliefObviouslyNotPastable = beliefPattern.op().var;
-        boolean taskTemporal = taskPattern.hasAny(Temporal);
-        boolean beliefTemporal = beliefPattern.hasAny(Temporal);
+        var taskObviouslyNotPastable = taskPattern.op().var;
+        var beliefObviouslyNotPastable = beliefPattern.op().var;
+        var taskTemporal = taskPattern.hasAny(Temporal);
+        var beliefTemporal = beliefPattern.hasAny(Temporal);
 
-        boolean atMostOneTemporal = !(taskTemporal && beliefTemporal);
+        var atMostOneTemporal = !(taskTemporal && beliefTemporal);
 
         //decide when inline "paste" (macro substitution) of the premise task or belief terms is allowed.
-        boolean taskPastable = false;
+        var taskPastable = false;
         if (!taskObviouslyNotPastable && ((atMostOneTemporal || !y.hasAny(Op.Temporal))))
             taskPastable = true;
-        boolean beliefPastable = false;
+        var beliefPastable = false;
         if (!beliefObviouslyNotPastable && ((atMostOneTemporal || !y.hasAny(Op.Temporal))))
             beliefPastable = true;
 
         Term yT, yB;
-        Term y0 = y;
+        var y0 = y;
         if (beliefPattern.volume() <= taskPattern.volume()) {
             //subst task first
             yT = taskPastable ? y0.replace(taskPattern, DerivationFunctors.TaskTerm) : y0;
@@ -525,11 +518,11 @@ public class PatternHow extends CondHow {
 
         super.commit();
 
-        TruthFunction beliefTruthOp = truthModel.get(beliefTruth);
+        var beliefTruthOp = truthModel.get(beliefTruth);
         if (beliefTruth != null && beliefTruthOp == null)
             throw new RuntimeException("unknown BeliefFunction: " + beliefTruth);
 
-        TruthFunction goalTruthOp = truthModel.get(goalTruth);
+        var goalTruthOp = truthModel.get(goalTruth);
         if (goalTruth != null && goalTruthOp == null)
             throw new RuntimeException("unknown GoalFunction: " + goalTruth);
 
@@ -570,7 +563,7 @@ public class PatternHow extends CondHow {
 
         /** infer necessary double premise for derived belief  */
 
-        boolean doubleBelief = false;
+        var doubleBelief = false;
         if (beliefTruthOp != null) {
             assert (concPunc.valueOf(BELIEF) == BELIEF || concPunc.valueOf(GOAL) == BELIEF || concPunc.valueOf(QUESTION) == BELIEF || concPunc.valueOf(QUEST) == BELIEF);
             if (!beliefTruthOp.single()) {
@@ -578,7 +571,7 @@ public class PatternHow extends CondHow {
             }
         }
         /** infer necessary double premise for derived goal  */
-        boolean doubleGoal = false;
+        var doubleGoal = false;
         if (goalTruthOp != null) {
             assert (concPunc.valueOf(BELIEF) == GOAL || concPunc.valueOf(GOAL) == GOAL || concPunc.valueOf(QUESTION) == GOAL || concPunc.valueOf(QUEST) == GOAL);
             if (!goalTruthOp.single()) {
@@ -622,7 +615,7 @@ public class PatternHow extends CondHow {
             //concPunc = t -> t;
         }
 
-        PuncMap tp = new PuncMap(
+        var tp = new PuncMap(
             PuncMap.p(taskPunc, concPunc, BELIEF),
             PuncMap.p(taskPunc, concPunc, GOAL),
             PuncMap.p(taskPunc, concPunc, QUESTION),
@@ -636,9 +629,9 @@ public class PatternHow extends CondHow {
             if (beliefPattern.op() != VAR_PATTERN && !beliefPattern.op().taskable)
                 throw new TermException("double premise may be required and belief pattern is not taskable", beliefPattern);
 
-            boolean forBelief = doubleBelief && tp.get(BELIEF)==BELIEF;
-            boolean forGoal = doubleGoal && tp.get(GOAL)==GOAL;
-            boolean forQ = (doubleBelief && (tp.get(QUESTION)==BELIEF || tp.get(QUEST)==BELIEF))
+            var forBelief = doubleBelief && tp.get(BELIEF)==BELIEF;
+            var forGoal = doubleGoal && tp.get(GOAL)==GOAL;
+            var forQ = (doubleBelief && (tp.get(QUESTION)==BELIEF || tp.get(QUEST)==BELIEF))
                 ||
                 (doubleGoal && (tp.get(QUESTION)==GOAL || tp.get(QUEST)==GOAL));
             if (forBelief || forGoal || forQ) {
@@ -691,7 +684,7 @@ public class PatternHow extends CondHow {
         public Term applyAtomic(Atomic atomic) {
             if (atomic instanceof Atom) {
                 if (!reservedMetaInfoCategories.contains(atomic)) {
-                    String name = atomic.toString();
+                    var name = atomic.toString();
                     if (name.length() == 1 && Character.isUpperCase(name.charAt(0))) {
                         return map.computeIfAbsent(name, (n) -> $.varPattern(1 + map.size()));
 
@@ -707,7 +700,7 @@ public class PatternHow extends CondHow {
         @Override
         public Term applyAtomic(Atomic x) {
             if (x instanceof Atom) {
-                Functor f = Builtin.functor(x);
+                var f = Builtin.functor(x);
                 return f != null ? f : x;
             } else
                 return super.applyAtomic(x);
@@ -724,7 +717,7 @@ public class PatternHow extends CondHow {
 
             Term f = Functor.func(c);
             if (f != Null) {
-                Subterms a = Functor._args(c);
+                var a = Functor._args(c);
                 if (f.equals(UniSubst.unisubst)) {
                     Unifiable.constrainUnifiable(a, PatternHow.this);
                 } else if (f.equals(ConjMatch.BEFORE) || f.equals(ConjMatch.AFTER)) {
@@ -735,7 +728,7 @@ public class PatternHow extends CondHow {
                     Unifiable.constraintEvent(a, PatternHow.this, false);
                 }
 
-                Term cc = a.sub(0);
+                var cc = a.sub(0);
                 if (cc.op()==VAR_PATTERN) {
                     if (Arrays.asList(ConjMatch.BEFORE, ConjMatch.AFTER, ConjMatch.CONJ_WITHOUT_UNIFY).contains(f)) {
                         is(cc, Op.CONJ);
@@ -783,11 +776,11 @@ public class PatternHow extends CondHow {
         @Override
         public final float priHeuristic(Derivation d) {
 
-            byte punc = truth.punc.get(d.taskPunc);
+            var punc = truth.punc.get(d.taskPunc);
             if (punc == 0)
                 return 0;
 
-            float puncFactor = d.preAmp(d.punc /*taskPunc*/, punc);
+            var puncFactor = d.preAmp(d.punc /*taskPunc*/, punc);
             if (puncFactor < Float.MIN_NORMAL)
                 return 0f; //entirely disabled by deriver
 
@@ -808,12 +801,12 @@ public class PatternHow extends CondHow {
             d.unify.constrain(constraints);
 
 
-            boolean single = patternsEqual;
+            var single = patternsEqual;
             //assert(!(single && !d.taskTerm.equals(d.beliefTerm))); //should be eliminated by prefilters
 //        if (single && !d.taskTerm.equals(d.beliefTerm))
 //            return false;
 
-            boolean fwd = single || fwd(d);
+            var fwd = single || fwd(d);
 
             if (unify(d, fwd, single) && !single) {
                 if (d.unify.live())
@@ -840,14 +833,14 @@ public class PatternHow extends CondHow {
 
 
                 //first if one is contained recursively by the other
-                boolean Tb = T.containsRecursively(B);
-                boolean Bt = B.containsRecursively(T);
+                var Tb = T.containsRecursively(B);
+                var Bt = B.containsRecursively(T);
                 if (Tb && !Bt) return -1; //belief first as it is a part of Task
                 if (Bt && !Tb) return +1; //task first as it is a part of Belief
 
                 // first which is more specific in its constant structure
-                int taskBits = Integer.bitCount(T.structure() & ~Op.Variable);
-                int belfBits = Integer.bitCount(B.structure() & ~Op.Variable);
+                var taskBits = Integer.bitCount(T.structure() & ~Op.Variable);
+                var belfBits = Integer.bitCount(B.structure() & ~Op.Variable);
                 if (belfBits > taskBits) return -1;
                 if (taskBits > belfBits) return +1;
 

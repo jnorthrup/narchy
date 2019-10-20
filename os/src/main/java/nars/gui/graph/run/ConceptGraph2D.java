@@ -47,7 +47,7 @@ public class ConceptGraph2D extends Graph2D<Term> {
         build(nn -> nn.set(
                 new Scale(
                         new PushButton(new VectorLabel(nn.id.toString())).clicked(() -> {
-                            Term t = nn.id;
+                            var t = nn.id;
                             if (t != null)
                                 NARui.conceptWindow(t, nar);
                         }),
@@ -95,10 +95,10 @@ public class ConceptGraph2D extends Graph2D<Term> {
     }
 
     static void updateNode(NodeVis<Term> nn) {
-        Term i = nn.id;
+        var i = nn.id;
         if (i != null && nn.visible()) {
 
-            float pri =
+            var pri =
                     //Math.max(nar.concepts.pri(i, 0f), ScalarValue.EPSILON);
                     0.5f;
 
@@ -212,7 +212,7 @@ public class ConceptGraph2D extends Graph2D<Term> {
                 return;
 
 
-            for (TaskLink l : links) {
+            for (var l : links) {
                 add(edit, l);
             }
 
@@ -226,22 +226,22 @@ public class ConceptGraph2D extends Graph2D<Term> {
 
         public void add(GraphEditing<Term> graph, TaskLink l) {
 
-            Term targetTerm = l.to();//.concept();
+            var targetTerm = l.to();//.concept();
             if (targetTerm instanceof nars.term.Variable)
                 return; //ignore variables
 
-            float[] pp = new float[4];
+            var pp = new float[4];
             pp[0] = _belief ? l.priPunc(BELIEF) : 0;
             pp[1] = _goal ? l.priPunc(GOAL) : 0;
             pp[2] = _question ? l.priPunc(QUESTION) : 0;
             pp[3] = _quest ? l.priPunc(QUEST) : 0;
-            float pSum = (pp[0] + pp[1] + pp[2] + pp[3]);
+            var pSum = (pp[0] + pp[1] + pp[2] + pp[3]);
             if (pSum < ScalarValue.EPSILON)
                 return;
 
 
-            Term from = l.from().concept();
-            EdgeVis<Term> e = graph.edge(from, targetTerm);
+            var from = l.from().concept();
+            var e = graph.edge(from, targetTerm);
             if (e != null) {
                 /*
                 https://www.colourlovers.com/palette/848743/(_%E2%80%9D_)
@@ -251,8 +251,8 @@ public class ConceptGraph2D extends Graph2D<Term> {
                 QUEST    Yellow  248,202,0
                 */
 
-                for (int i = 0; i < 4; i++) {
-                    float ppi = pp[i];
+                for (var i = 0; i < 4; i++) {
+                    var ppi = pp[i];
                     if (ppi < ScalarValue.EPSILON)
                         continue;
 
@@ -355,15 +355,15 @@ public class ConceptGraph2D extends Graph2D<Term> {
             if (!statements.get())
                 return;
 
-            Term t = node.id;
+            var t = node.id;
             if (t.op().statement) {
-                Term subj = t.sub(0);
+                var subj = t.sub(0);
                 if (!(subj instanceof nars.term.Variable)) {
-                    Term pred = t.sub(1);
+                    var pred = t.sub(1);
                     if (!(pred instanceof nars.term.Variable)) {
-                        @Nullable EdgeVis<Term> e = graph.edge(subj, pred);
+                        @Nullable var e = graph.edge(subj, pred);
                         if (e != null) {
-                            float p = 0.5f;
+                            var p = 0.5f;
                             e.weightLerp(p, WEIGHT_UPDATE_RATE)
                                 .colorLerp(Float.NaN, Float.NaN, (0.9f * p) + 0.1f, COLOR_UPDATE_RATE)
                             ;

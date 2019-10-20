@@ -42,10 +42,10 @@ import java.util.*;
 public class SeparateAndConquerStrategy extends DiversityElitarismStrategy{
 
     public static final Comparator<Ranking> comparator = (o1, o2) -> {
-        double[] fitness1 = o1.getFitness();
-        double[] fitness2 = o2.getFitness();
-        int compare = 0;
-        for (int i = 0; i < fitness1.length; i++) {
+        var fitness1 = o1.getFitness();
+        var fitness2 = o2.getFitness();
+        var compare = 0;
+        for (var i = 0; i < fitness1.length; i++) {
             compare = Double.compare(fitness1[i], fitness2[i]);
             if (compare != 0) {
                 return compare;
@@ -59,8 +59,8 @@ public class SeparateAndConquerStrategy extends DiversityElitarismStrategy{
     
     @Override
     protected void readParameters(Configuration configuration) {
-        super.readParameters(configuration); 
-        Map<String, String> parameters = configuration.getStrategyParameters();
+        super.readParameters(configuration);
+        var parameters = configuration.getStrategyParameters();
         if (parameters != null) {
             if (parameters.containsKey("convertToUnmatch")) {
                 convertToUnmatch = Boolean.parseBoolean(parameters.get("convertToUnmatch"));
@@ -104,7 +104,7 @@ public class SeparateAndConquerStrategy extends DiversityElitarismStrategy{
 
             context.setSeparateAndConquerEnabled(true);
 
-            int terminationCriteriaGenerationsCounter = 0;
+            var terminationCriteriaGenerationsCounter = 0;
             String oldGenerationBestValue = null;
             int generation;
             Set<Node> bests = new UnifiedSet<>();
@@ -112,17 +112,17 @@ public class SeparateAndConquerStrategy extends DiversityElitarismStrategy{
                 context.setStripedPhase(context.getDataSetContainer().isDataSetStriped() && ((generation % context.getDataSetContainer().getProposedNormalDatasetInterval()) != 0));
 
                 evolve();
-                Ranking best = rankings.first();
+                var best = rankings.first();
 
                 
                 List<Node> tmpBests = new LinkedList<>(bests);
                  
                 
                 tmpBests.add(best.getNode());
-                
-                Node joinedBest = joinSolutions(tmpBests);
+
+                var joinedBest = joinSolutions(tmpBests);
                 context.setSeparateAndConquerEnabled(false);
-                double[] fitnessOfJoined = objective.fitness(joinedBest);
+                var fitnessOfJoined = objective.fitness(joinedBest);
                 context.setSeparateAndConquerEnabled(true);
                 
                 
@@ -132,20 +132,20 @@ public class SeparateAndConquerStrategy extends DiversityElitarismStrategy{
                     
                     listener.logGeneration(this, generation + 1, joinedBest, fitnessOfJoined, this.rankings);
                 }
-                boolean allPerfect = Arrays.stream(this.rankings.first().getFitness()).noneMatch(fitness -> Math.round(fitness * 10000) != 0);
+                var allPerfect = Arrays.stream(this.rankings.first().getFitness()).noneMatch(fitness -> Math.round(fitness * 10000) != 0);
                 if (allPerfect) {
                     break;
                 }
 
                 Objective trainingObjective = new PerformacesObjective();
                 trainingObjective.setup(context);
-                double[] trainingPerformace = trainingObjective.fitness(best.getNode());
+                var trainingPerformace = trainingObjective.fitness(best.getNode());
                 Map<String, Double> performancesMap = new HashMap<>();
                 PerformacesObjective.populatePerformancesMap(trainingPerformace, performancesMap, isFlagging);
 
                 double pr = !isFlagging ? performancesMap.get("match precision") : performancesMap.get("flag precision");
-                
-                String newBestValue = best.getDescription();
+
+                var newBestValue = best.getDescription();
                 if (newBestValue.equals(oldGenerationBestValue)) {
                     terminationCriteriaGenerationsCounter++;
                 } else {
@@ -156,8 +156,8 @@ public class SeparateAndConquerStrategy extends DiversityElitarismStrategy{
                 if (terminationCriteriaGenerationsCounter >= terminationCriteriaGenerations && pr >= dividePrecisionThreashold && generation < (param.getGenerations() - 1)) {
                     terminationCriteriaGenerationsCounter = 0;
                     bests.add(best.getNode());
-                    
-                    StringBuilder builder = new StringBuilder();
+
+                    var builder = new StringBuilder();
                     best.getNode().describe(builder);
                     context.getTrainingDataset().addSeparateAndConquerLevel(builder.toString(), (int) context.getSeed(), convertToUnmatch, isFlagging);
 
@@ -177,7 +177,7 @@ public class SeparateAndConquerStrategy extends DiversityElitarismStrategy{
 
             }
 
-            Ranking best = rankings.first();
+            var best = rankings.first();
             bests.add(best.getNode());
 
              
@@ -186,7 +186,7 @@ public class SeparateAndConquerStrategy extends DiversityElitarismStrategy{
             if (listener != null) {
                 List<Node> dividedPopulation = new ArrayList<>(population.size());
                 List<Node> tmpBests = new LinkedList<>(bests);
-                for (Ranking r : rankings) {
+                for (var r : rankings) {
                     tmpBests.set(tmpBests.size() - 1, r.getNode());
                     dividedPopulation.add(joinSolutions(tmpBests));
                 }
@@ -220,8 +220,8 @@ public class SeparateAndConquerStrategy extends DiversityElitarismStrategy{
         while (nodes.size() > 1) {
 
             while (nodes.size() > 0) {
-                Node first = nodes.pollFirst();
-                Node second = nodes.pollFirst();
+                var first = nodes.pollFirst();
+                var second = nodes.pollFirst();
 
                 if (second != null) {
                     tmp.addLast(new Or(first, second));

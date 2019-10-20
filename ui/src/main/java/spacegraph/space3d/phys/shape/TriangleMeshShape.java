@@ -54,16 +54,16 @@ public abstract class TriangleMeshShape extends ConcaveShape {
 	}
 
 	private v3 localGetSupportingVertex(v3 vec, v3 out) {
-		v3 tmp = new v3();
+		var tmp = new v3();
 
-		v3 supportVertex = out;
+		var supportVertex = out;
 
-		Transform ident = new Transform();
+		var ident = new Transform();
 		ident.setIdentity();
 
-		SupportVertexCallback supportCallback = new SupportVertexCallback(vec, ident);
+		var supportCallback = new SupportVertexCallback(vec, ident);
 
-		v3 aabbMax = new v3();
+		var aabbMax = new v3();
 		aabbMax.set(1e30f, 1e30f, 1e30f);
 		tmp.negated(aabbMax);
 
@@ -80,11 +80,11 @@ public abstract class TriangleMeshShape extends ConcaveShape {
 	}
 
 	void recalcLocalAabb() {
-		for (int i = 0; i < 3; i++) {
-			v3 vec = new v3();
+		for (var i = 0; i < 3; i++) {
+			var vec = new v3();
 			vec.set(0f, 0f, 0f);
 			VectorUtil.setCoord(vec, i, 1f);
-			v3 tmp = localGetSupportingVertex(vec, new v3());
+			var tmp = localGetSupportingVertex(vec, new v3());
 			VectorUtil.setCoord(localAabbMax, i, VectorUtil.coord(tmp, i) + collisionMargin);
 			VectorUtil.setCoord(vec, i, -1f);
 			localGetSupportingVertex(vec, tmp);
@@ -94,23 +94,23 @@ public abstract class TriangleMeshShape extends ConcaveShape {
 
 	@Override
 	public void getAabb(Transform trans, v3 aabbMin, v3 aabbMax) {
-		v3 tmp = new v3();
+		var tmp = new v3();
 
-		v3 localHalfExtents = new v3();
+		var localHalfExtents = new v3();
 		localHalfExtents.sub(localAabbMax, localAabbMin);
 		localHalfExtents.scaled(0.5f);
 
-		v3 localCenter = new v3();
+		var localCenter = new v3();
 		localCenter.add(localAabbMax, localAabbMin);
 		localCenter.scaled(0.5f);
 
-		Matrix3f abs_b = new Matrix3f(trans.basis);
+		var abs_b = new Matrix3f(trans.basis);
 		MatrixUtil.absolute(abs_b);
 
-		v3 center = new v3(localCenter);
+		var center = new v3(localCenter);
 		trans.transform(center);
 
-		v3 extent = new v3();
+		var extent = new v3();
 		abs_b.getRow(0, tmp);
 		extent.x = tmp.dot(localHalfExtents);
 		abs_b.getRow(1, tmp);
@@ -118,7 +118,7 @@ public abstract class TriangleMeshShape extends ConcaveShape {
 		abs_b.getRow(2, tmp);
 		extent.z = tmp.dot(localHalfExtents);
 
-		float m = getMargin();
+		var m = getMargin();
 		extent.add(m, m, m);
 
 		aabbMin.sub(center, extent);
@@ -127,7 +127,7 @@ public abstract class TriangleMeshShape extends ConcaveShape {
 
 	@Override
 	public void processAllTriangles(TriangleCallback callback, v3 aabbMin, v3 aabbMax) {
-		FilteredCallback filterCallback = new FilteredCallback(callback, aabbMin, aabbMax);
+		var filterCallback = new FilteredCallback(callback, aabbMin, aabbMax);
 
 		meshInterface.internalProcessAllTriangles(filterCallback, aabbMin, aabbMax);
 	}
@@ -185,8 +185,8 @@ public abstract class TriangleMeshShape extends ConcaveShape {
 
 		@Override
         public void processTriangle(v3[] triangle, int partId, int triangleIndex) {
-			for (int i = 0; i < 3; i++) {
-				float dot = supportVecLocal.dot(triangle[i]);
+			for (var i = 0; i < 3; i++) {
+				var dot = supportVecLocal.dot(triangle[i]);
 				if (dot > maxDot) {
 					maxDot = dot;
 					supportVertexLocal.set(triangle[i]);

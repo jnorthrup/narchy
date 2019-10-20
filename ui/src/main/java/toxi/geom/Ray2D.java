@@ -66,7 +66,7 @@ public class Ray2D extends Vec2D {
      * @return distance
      */
     public float getDistanceToPoint(ReadonlyVec2D p) {
-        Vec2D sp = p.sub(this);
+        var sp = p.sub(this);
         return sp.distanceTo(dir.scale(sp.dot(dir)));
     }
 

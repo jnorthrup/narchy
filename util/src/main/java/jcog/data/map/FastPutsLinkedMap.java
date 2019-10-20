@@ -28,12 +28,12 @@ public class FastPutsLinkedMap<K, V> extends AbstractMap<K, V> implements Serial
     public void compact() {
 
         synchronized(header) {
-            LinkedEntry<K, V> entry = header.next;
-            int size = 0;
+            var entry = header.next;
+            var size = 0;
             while (entry != header) {
                 size++;
-                LinkedEntry<K, V> next = entry.next;
-                LinkedEntry<K, V> newerEntry = getEntry(entry.getKey());
+                var next = entry.next;
+                var newerEntry = getEntry(entry.getKey());
                 if (newerEntry != null && newerEntry != entry) {
                     remove(entry);
                     size--;
@@ -70,14 +70,14 @@ public class FastPutsLinkedMap<K, V> extends AbstractMap<K, V> implements Serial
 
     @Override
     public V get(Object key) {
-        LinkedEntry<K, V> entry = getEntry(key);
+        var entry = getEntry(key);
         return (entry != null) ? entry.getValue() : null;
     }
 
     @Override
     public V put(K key, V value) {
-        size = 0; 
-        LinkedEntry<K, V> newEntry = new LinkedEntry<>(key, value, header, header.prev);
+        size = 0;
+        var newEntry = new LinkedEntry<K, V>(key, value, header, header.prev);
         newEntry.prev.next = newEntry;
         newEntry.next.prev = newEntry;
         return null;
@@ -92,10 +92,10 @@ public class FastPutsLinkedMap<K, V> extends AbstractMap<K, V> implements Serial
 
     @Override
     public V remove(Object key) {
-        LinkedEntry<K, V> entry = getEntry(key);
+        var entry = getEntry(key);
         if (entry != null) {
-            size = 0; 
-            V value = entry.getValue();
+            size = 0;
+            var value = entry.getValue();
             do {
                 remove(entry);
                 entry = getEntry(key);
@@ -106,7 +106,7 @@ public class FastPutsLinkedMap<K, V> extends AbstractMap<K, V> implements Serial
     }
 
     protected LinkedEntry<K, V> getEntry(Object key) {
-        LinkedEntry<K, V> entry = header.prev;
+        var entry = header.prev;
         while (entry != header) {
             if (entry.getKey().equals(key)) {
                 return entry;
@@ -135,7 +135,7 @@ public class FastPutsLinkedMap<K, V> extends AbstractMap<K, V> implements Serial
                     compact();
 
                     List<Map.Entry<K, V>> list = new ArrayList<>(size());
-                    for (LinkedEntry<K, V> entry = header.next; entry != null && entry != header; entry = entry.next) {
+                    for (var entry = header.next; entry != null && entry != header; entry = entry.next) {
                         list.add(entry);
                     }
                     return list.iterator();

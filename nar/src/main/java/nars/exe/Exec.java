@@ -52,7 +52,7 @@ public abstract class Exec extends NARPart implements Executor {
     /** sets the deriver */
     public void deriver(Deriver deriver) {
 
-        Deriver prev = this.deriver;
+        var prev = this.deriver;
         if (prev!=null) {
             //prev.stop
         }
@@ -184,7 +184,7 @@ public abstract class Exec extends NARPart implements Executor {
 
         try {
 
-            long now0 = nar.time();
+            var now0 = nar.time();
             toSchedule.drain(x -> {
                 if (x.scheduled)
                     return; //ignore
@@ -200,10 +200,10 @@ public abstract class Exec extends NARPart implements Executor {
                 }
             });
 
-            long now = nar.time();
+            var now = nar.time();
             ScheduledTask t;
             while (((t = scheduled.peek()) != null) && (t.start() <= now)) {
-                ScheduledTask s = scheduled.poll();
+                var s = scheduled.poll();
                 s.scheduled = false;
                 each.accept(s); //assert (next == actualNext);
             }

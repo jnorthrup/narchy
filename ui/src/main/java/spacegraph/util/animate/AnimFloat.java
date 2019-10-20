@@ -28,7 +28,7 @@ public class AnimFloat extends AtomicFloat implements Animated {
     @Override
     public boolean animate(float dt) {
 
-        float x = floatValue();
+        var x = floatValue();
         if (x!=x) {
             
             super.set(target);
@@ -41,7 +41,7 @@ public class AnimFloat extends AtomicFloat implements Animated {
     }
 
     private void interpLERP(float dt) {
-        float rate = speed.floatValue() * dt;
+        var rate = speed.floatValue() * dt;
         
         super.set(
                 Util.lerp(rate, floatValue(), target)

@@ -62,9 +62,9 @@ public class Launcher {
     public static void main(String[] args) {
 
 
-        Set<Class<? extends GameX>> envs = new Reflections("nars").getSubTypesOf(GameX.class);
+        var envs = new Reflections("nars").getSubTypesOf(GameX.class);
 
-        List<Experiment> list = envs.stream().map(Experiment::new).collect(toList());
+        var list = envs.stream().map(Experiment::new).collect(toList());
         Surface m = grid(
                 new ObjectSurface(
                         list
@@ -76,7 +76,7 @@ public class Launcher {
         );
 
 
-        GraphEdit2D g = new GraphEdit2D();
+        var g = new GraphEdit2D();
         SpaceGraph.window(                 g, 800, 800        );
 
         g.add(m).posRel(0.5f, 0.5f, 0.75f);

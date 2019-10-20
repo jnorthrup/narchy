@@ -27,7 +27,7 @@ public class JavaDynamicClassLoader extends AbstractDynamicClassLoader
 	public Class<?> findClass(String className) throws ClassNotFoundException
 	{
 
-		Class<?> result = classCache.get(className);
+		var result = classCache.get(className);
 		if (result != null)
 	        return result;  
 	    try {
@@ -35,8 +35,8 @@ public class JavaDynamicClassLoader extends AbstractDynamicClassLoader
 		} catch (ClassNotFoundException e) {
 			
 		}
-		String classNameReplaced = className.replace(".", File.separator);
-		for (URL aURL : listURLs) {
+		var classNameReplaced = className.replace(".", File.separator);
+		for (var aURL : listURLs) {
 	    	try {
 	    		InputStream is = null;
 
@@ -53,7 +53,7 @@ public class JavaDynamicClassLoader extends AbstractDynamicClassLoader
 	    			is = aURL.openConnection().getInputStream();
 	    		}
 
-				byte[] classByte = getClassData(is);
+				var classByte = getClassData(is);
 				try {
 	            	result = defineClass(className, classByte, 0, classByte.length, null);  
 	        		classCache.put(className, result);
@@ -71,8 +71,8 @@ public class JavaDynamicClassLoader extends AbstractDynamicClassLoader
 	
 	private static byte[] getClassData(InputStream is) throws IOException
 	{
-		ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
-		int nextValue= is.read();  
+		var byteStream = new ByteArrayOutputStream();
+		var nextValue= is.read();
         while (-1 != nextValue) {  
             byteStream.write(nextValue);  
             nextValue = is.read();  

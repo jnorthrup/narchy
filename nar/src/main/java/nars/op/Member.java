@@ -32,11 +32,11 @@ public final class Member extends Functor implements The, InlineFunctor<Evaluati
         Term x = terms.sub(0), y = terms.sub(1);
         if (x.equals(y))
             return Null;
-        boolean ySet = y instanceof Compound && y.opID() == SETe.id;
+        var ySet = y instanceof Compound && y.opID() == SETe.id;
         if ((ySet && y.contains(x)))
             return True;
 
-        boolean xVar = x instanceof Variable;
+        var xVar = x instanceof Variable;
 
 //        Subterms yy;
 //        Term rewrite = null;

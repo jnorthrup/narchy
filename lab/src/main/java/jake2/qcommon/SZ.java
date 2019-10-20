@@ -65,7 +65,7 @@ public final class SZ {
 			buf.overflowed = true;
 		}
 
-        int oldsize = buf.cursize;
+		var oldsize = buf.cursize;
 		buf.cursize += length;
 	
 		return oldsize;
@@ -81,7 +81,7 @@ public final class SZ {
 	}
 
 	public static void Write(sizebuf_t buf, byte[] data) {
-		int length = data.length;
+		var length = data.length;
 		
 		System.arraycopy(data, 0, buf.data, GetSpace(buf, length), length);
 	}
@@ -89,8 +89,8 @@ public final class SZ {
 	
 	public static void Print(sizebuf_t buf, String data) {
 	    Com.dprintln("SZ.print():<" + data + '>');
-		int length = data.length();
-        byte[] str = Lib.stringToBytes(data);
+		var length = data.length();
+		var str = Lib.stringToBytes(data);
 	
 		if (buf.cursize != 0) {
 	

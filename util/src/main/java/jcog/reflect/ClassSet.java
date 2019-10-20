@@ -57,7 +57,7 @@ public class ClassSet extends HashSet<Class> {
     public ClassSet(boolean inverse, Iterable<Class> itr) {
         super(new TreeSet<>(new ClassHierarchyComparer(inverse)));
         if (itr != null) {
-            for (Class cls : itr) {
+            for (var cls : itr) {
                 if (cls != null) {
                     add(cls);
                 }
@@ -89,14 +89,14 @@ public class ClassSet extends HashSet<Class> {
             throw new IllegalArgumentException("cls == null");
         }
 
-        Collection<Class> res = createAssignableCollection();
+        var res = createAssignableCollection();
 
-        for (Class c : this) {
-            boolean cAssignable = c.isAssignableFrom(cls);
-            boolean _resAssignCls = parentClasses && cAssignable;
+        for (var c : this) {
+            var cAssignable = c.isAssignableFrom(cls);
+            var _resAssignCls = parentClasses && cAssignable;
 
-            boolean clsAssignable = cls.isAssignableFrom(c);
-            boolean _clsAssignRes = childrenClasses && clsAssignable;
+            var clsAssignable = cls.isAssignableFrom(c);
+            var _clsAssignRes = childrenClasses && clsAssignable;
 
             if (_resAssignCls || _clsAssignRes) res.add(c);
         }
@@ -122,9 +122,9 @@ public class ClassSet extends HashSet<Class> {
      * @see #getParentClassesFrom(Class)
      */
     public Class getFirstParentClassesFrom(Class cls) {
-        Collection<Class> col = getParentClassesFrom(cls);
+        var col = getParentClassesFrom(cls);
         if (col.isEmpty()) return null;
-        Iterator<Class> i = col.iterator();
+        var i = col.iterator();
         if (i.hasNext()) {
             return i.next();
         }
@@ -139,9 +139,9 @@ public class ClassSet extends HashSet<Class> {
      * @see #getParentClassesFrom(Class)
      */
     public Class getLastParentClassesFrom(Class cls) {
-        Collection<Class> col = getParentClassesFrom(cls);
+        var col = getParentClassesFrom(cls);
         if (col.isEmpty()) return null;
-        Iterator<Class> i = col.iterator();
+        var i = col.iterator();
         Class c = null;
         while (i.hasNext()) {
             c = i.next();
@@ -167,9 +167,9 @@ public class ClassSet extends HashSet<Class> {
      * @see #getChildClassesFrom(Class)
      */
     public Class getFirstChildClassesFrom(Class cls) {
-        Collection<Class> col = getChildClassesFrom(cls);
+        var col = getChildClassesFrom(cls);
         if (col.isEmpty()) return null;
-        Iterator<Class> i = col.iterator();
+        var i = col.iterator();
         if (i.hasNext()) {
             return i.next();
         }
@@ -184,9 +184,9 @@ public class ClassSet extends HashSet<Class> {
      * @see #getChildClassesFrom(Class)
      */
     public Class getLastChildClassesFrom(Class cls) {
-        Collection<Class> col = getChildClassesFrom(cls);
+        var col = getChildClassesFrom(cls);
         if (col.isEmpty()) return null;
-        Iterator<Class> i = col.iterator();
+        var i = col.iterator();
         Class c = null;
         while (i.hasNext()) {
             c = i.next();
@@ -226,19 +226,19 @@ public class ClassSet extends HashSet<Class> {
             if (o1 == null && o2 != null) return inverse ? -1 : 1;
             if (o1 == o2) return 0;
 
-            boolean assignO1O2 = o1.isAssignableFrom(o2);
-            boolean assignO2O1 = o2.isAssignableFrom(o1);
+            var assignO1O2 = o1.isAssignableFrom(o2);
+            var assignO2O1 = o2.isAssignableFrom(o1);
 
             if (assignO1O2 == assignO2O1) {
-                int r = o1.getName().compareTo(o2.getName());
+                var r = o1.getName().compareTo(o2.getName());
                 if (r == 0) {
                     return inverse ? 1 : -1;
                 }
                 return inverse ? -r : r;
             }
 
-            boolean itf1 = o1.isInterface();
-            boolean itf2 = o2.isInterface();
+            var itf1 = o1.isInterface();
+            var itf2 = o2.isInterface();
 
             if (itf1 != itf2) {
                 if (inverse) {

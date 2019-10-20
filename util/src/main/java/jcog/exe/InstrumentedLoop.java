@@ -34,16 +34,16 @@ public abstract class InstrumentedLoop extends Loop {
 
     @Override
     protected void afterNext() {
-        long afterIteration = System.nanoTime();
-        long lastIteration = this.last;
+        var afterIteration = System.nanoTime();
+        var lastIteration = this.last;
         this.last = afterIteration;
 
         cycleTimeNS = afterIteration - lastIteration;
         cycleTimeS = cycleTimeNS / 1.0E9;
         this.cycleTime.next((float) cycleTimeS);
 
-        long dutyTimeNS = afterIteration - beforeIteration;
-        double dutyTimeS = dutyTimeNS / 1.0E9;
+        var dutyTimeNS = afterIteration - beforeIteration;
+        var dutyTimeS = dutyTimeNS / 1.0E9;
         this.dutyTime.next((float) dutyTimeS);
     }
 

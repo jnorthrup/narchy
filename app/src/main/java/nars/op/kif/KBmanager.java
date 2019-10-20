@@ -98,8 +98,8 @@ public class KBmanager implements Serializable {
      */
     public static boolean serializedExists() {
 
-        String kbDir = System.getenv("SIGMA_HOME") + File.separator + "KBs";
-        File serfile = new File(kbDir + File.separator + "kbmanager.ser");
+        var kbDir = System.getenv("SIGMA_HOME") + File.separator + "KBs";
+        var serfile = new File(kbDir + File.separator + "kbmanager.ser");
         System.out.println("KBmanager.serializedExists(): " + serfile.exists());
         return serfile.exists();
     }
@@ -219,59 +219,57 @@ public class KBmanager implements Serializable {
     public void setDefaultAttributes() {
 
         try {
-            String base = System.getenv("SIGMA_HOME");
+            var base = System.getenv("SIGMA_HOME");
             if (StringUtil.emptyString(base))
                 base = System.getProperty("user.dir");
-            String tptpHome = System.getenv("TPTP_HOME");
+            var tptpHome = System.getenv("TPTP_HOME");
             if (StringUtil.emptyString(tptpHome))
                 tptpHome = System.getProperty("user.dir");
-            String systemsHome = System.getenv("SYSTEMS_HOME");
+            var systemsHome = System.getenv("SYSTEMS_HOME");
             if (StringUtil.emptyString(systemsHome))
                 systemsHome = System.getProperty("user.dir");
-            String tomcatRoot = System.getenv("CATALINA_HOME");
+            var tomcatRoot = System.getenv("CATALINA_HOME");
             if (StringUtil.emptyString(tomcatRoot))
                 tomcatRoot = System.getProperty("user.dir");
-            File tomcatRootDir = new File(tomcatRoot);
-            File baseDir = new File(base);
-            File tptpHomeDir = new File(tptpHome);
-            File systemsDir = new File(systemsHome);
-            File logDir = new File(baseDir, "logs");
+            var tomcatRootDir = new File(tomcatRoot);
+            var baseDir = new File(base);
+            var tptpHomeDir = new File(tptpHome);
+            var systemsDir = new File(systemsHome);
+            var logDir = new File(baseDir, "logs");
             logDir.mkdirs();
 
 
             preferences.put("baseDir",baseDir.getCanonicalPath());
             preferences.put("tptpHomeDir",tptpHomeDir.getCanonicalPath());
             preferences.put("systemsDir",systemsDir.getCanonicalPath());
-            File kbDir = new File(baseDir, "KBs");
+            var kbDir = new File(baseDir, "KBs");
             preferences.put("kbDir",kbDir.getCanonicalPath());
-            File inferenceTestDir = new File(kbDir, "tests");
+            var inferenceTestDir = new File(kbDir, "tests");
             preferences.put("inferenceTestDir",inferenceTestDir.getCanonicalPath());
-            String sep = File.separator;
-            File testOutputDir = new File(tomcatRootDir,
+            var sep = File.separator;
+            var testOutputDir = new File(tomcatRootDir,
                     (String.join(sep, "webapps", "sigma", "tests")));
             preferences.put("testOutputDir",testOutputDir.getCanonicalPath());
 
-            File graphVizDir = new File("/usr/bin");
+            var graphVizDir = new File("/usr/bin");
             preferences.put("graphVizDir", graphVizDir.getCanonicalPath());
 
-            File graphDir = new File(tomcatRootDir, String.join(sep, "webapps", "sigma", "graph"));
+            var graphDir = new File(tomcatRootDir, String.join(sep, "webapps", "sigma", "graph"));
             if (!graphDir.exists())
                 graphDir.mkdir();
             preferences.put("graphDir", graphDir.getCanonicalPath());
 
-            
-            
-            
-            String _OS = System.getProperty("os.name");
-            String ieExec = "e_ltb_runner";
+
+            var _OS = System.getProperty("os.name");
+            var ieExec = "e_ltb_runner";
             if (StringUtil.isNonEmptyString(_OS) && _OS.matches("(?i).*win.*"))
                 ieExec = "e_ltb_runner.exe";
-            File ieDirFile = new File(baseDir, "inference");
-            File ieExecFile = (ieDirFile.isDirectory()
+            var ieDirFile = new File(baseDir, "inference");
+            var ieExecFile = (ieDirFile.isDirectory()
                     ? new File(ieDirFile, ieExec)
                     : new File(ieExec));
-            String leoExec = "leo";
-            File leoExecFile = (ieDirFile.isDirectory()
+            var leoExec = "leo";
+            var leoExecFile = (ieDirFile.isDirectory()
                     ? new File(ieDirFile, leoExec)
                     : new File(leoExec));
             preferences.put("inferenceEngine",ieExecFile.getCanonicalPath());
@@ -615,8 +613,8 @@ public class KBmanager implements Serializable {
     public void initializeOnce() {
 
         System.out.println("Info in KBmanager.initializeOnce()");
-        
-        String base = System.getenv("SIGMA_HOME");
+
+        var base = System.getenv("SIGMA_HOME");
         initializeOnce(base + File.separator + "KBs");
     }
 
@@ -628,7 +626,7 @@ public class KBmanager implements Serializable {
      */
     public void initializeOnce(String configFileDir) {
 
-        boolean loaded = false;
+        var loaded = false;
         if (initializing || initialized) {
             System.out.println("Info in KBmanager.initializeOnce(): initialized is " + initialized);
             System.out.println("Info in KBmanager.initializeOnce(): initializing is " + initializing);
@@ -718,8 +716,8 @@ public class KBmanager implements Serializable {
      */
     public static String escapeFilename(CharSequence fname) {
 
-        StringBuilder newstring = new StringBuilder();
-        for (int i = 0; i < fname.length(); i++) {
+        var newstring = new StringBuilder();
+        for (var i = 0; i < fname.length(); i++) {
             if (fname.charAt(i) == 92 && fname.charAt(i+1) != 92)
                 newstring = newstring.append("\\\\");
             if (fname.charAt(i) == 92 && fname.charAt(i+1) == 92) {
@@ -742,7 +740,7 @@ public class KBmanager implements Serializable {
 
     public KB addKB(String name, boolean isVisible) {
 
-        KB kb = new KB(name, preferences.get("kbDir"), isVisible);
+        var kb = new KB(name, preferences.get("kbDir"), isVisible);
         kbs.put(name.intern(),kb);
         return kb;
     }
@@ -866,9 +864,9 @@ public class KBmanager implements Serializable {
      */
     public HashSet<String> getKBnames() {
 
-        HashSet<String> names = new HashSet<>();
-        for (String kbName : kbs.keySet()) {
-            KB kb = getKB(kbName);
+        var names = new HashSet<String>();
+        for (var kbName : kbs.keySet()) {
+            var kb = getKB(kbName);
             if (kb.isVisible())
                 names.add(kbName);
         }
@@ -880,9 +878,9 @@ public class KBmanager implements Serializable {
      */
     public ArrayList<String> allAvailableLanguages() {
 
-        ArrayList<String> result = new ArrayList<>();
-        for (String kbName : kbs.keySet()) {
-            KB kb = getKB(kbName);
+        var result = new ArrayList<String>();
+        for (var kbName : kbs.keySet()) {
+            var kb = getKB(kbName);
             result.addAll(kb.availableLanguages());
         }
         return result;
@@ -896,8 +894,8 @@ public class KBmanager implements Serializable {
         System.out.println("KBmanager.printPrefs()");
         if (preferences == null || preferences.isEmpty())
             System.out.println("KBmanager.printPrefs(): preference list is empty");
-        for (Map.Entry<String, String> entry : preferences.entrySet()) {
-            String value = entry.getValue();
+        for (var entry : preferences.entrySet()) {
+            var value = entry.getValue();
             System.out.println(entry.getKey() + " : " + value);
         }
     }
@@ -911,7 +909,7 @@ public class KBmanager implements Serializable {
             System.out.println("Error in KBmanager.getPref(): bad key: " + key);
             return "";
         }
-        String ans = preferences.get(key);
+        var ans = preferences.get(key);
         if (ans == null)
             ans = "";
         return ans;

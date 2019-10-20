@@ -60,9 +60,9 @@ public class PerformacesObjective implements Objective {
 
     @Override
     public double[] fitness(Node individual) {
-        DataSet dataSetView = this.context.getCurrentDataSet();
-        TreeEvaluator evaluator = context.getConfiguration().getEvaluator();
-        double[] fitness = new double[12];
+        var dataSetView = this.context.getCurrentDataSet();
+        var evaluator = context.getConfiguration().getEvaluator();
+        var fitness = new double[12];
         List<Bounds[]> evaluate;
         try {
             evaluate = evaluator.evaluate(individual, context);
@@ -72,25 +72,25 @@ public class PerformacesObjective implements Objective {
             return fitness;
         }
 
-        
-        BasicStats statsOverall = new BasicStats();
 
-        
-        BasicStats statsCharsOverall = new BasicStats();
+        var statsOverall = new BasicStats();
 
-        
-        BasicStats statsOverallFlagging = new BasicStats();
 
-        int i = 0;
-        for (Bounds[] result : evaluate) {
-            BasicStats stats = new BasicStats();
-            BasicStats statsChars = new BasicStats();
-            BasicStats statsFlagging = new BasicStats();
+        var statsCharsOverall = new BasicStats();
 
-            
-            Example example = dataSetView.getExample(i);
-            List<Bounds> expectedMatchMask = example.getMatch();
-            List<Bounds> expectedUnmatchMask = example.getUnmatch();
+
+        var statsOverallFlagging = new BasicStats();
+
+        var i = 0;
+        for (var result : evaluate) {
+            var stats = new BasicStats();
+            var statsChars = new BasicStats();
+            var statsFlagging = new BasicStats();
+
+
+            var example = dataSetView.getExample(i);
+            var expectedMatchMask = example.getMatch();
+            var expectedUnmatchMask = example.getUnmatch();
             List<Bounds> annotatedMask = new ArrayList<>(expectedMatchMask);
             annotatedMask.addAll(expectedUnmatchMask);
 
@@ -117,18 +117,18 @@ public class PerformacesObjective implements Objective {
         statsCharsOverall.tn = dataSetView.getNumberUnmatchedChars() - statsCharsOverall.fp;
         statsCharsOverall.fn = dataSetView.getNumberMatchedChars() - statsCharsOverall.tp;
 
-        double charAccuracy = statsCharsOverall.accuracy(); 
-        double charPrecision = statsCharsOverall.precision(); 
-        double charRecall = statsCharsOverall.recall(); 
-        double precision = statsOverall.precision(); 
-        double recall = statsOverall.recall(dataSetView.getNumberMatches());
+        var charAccuracy = statsCharsOverall.accuracy();
+        var charPrecision = statsCharsOverall.precision();
+        var charRecall = statsCharsOverall.recall();
+        var precision = statsOverall.precision();
+        var recall = statsOverall.recall(dataSetView.getNumberMatches());
 
         fitness[0] = precision;
         fitness[1] = recall;
         fitness[2] = charPrecision;
         fitness[3] = charRecall;
         fitness[4] = charAccuracy;
-        double fmeasure = 2 * (precision * recall) / (precision + recall);
+        var fmeasure = 2 * (precision * recall) / (precision + recall);
         fitness[5] = fmeasure;
         
         fitness[6] = statsOverallFlagging.accuracy();
@@ -143,14 +143,14 @@ public class PerformacesObjective implements Objective {
 
     
     private static int intersection(Bounds[] extractedRanges, List<Bounds> expectedRanges) {
-        int overallNumChars = 0;
+        var overallNumChars = 0;
 
-        for (Bounds extractedBounds : extractedRanges) {
+        for (var extractedBounds : extractedRanges) {
 
-            int extractedEnd = extractedBounds.end;
-            int extractedStart = extractedBounds.start;
+            var extractedEnd = extractedBounds.end;
+            var extractedStart = extractedBounds.start;
 
-            int sum = expectedRanges.stream().mapToInt(expectedBounds -> Math.min(extractedEnd, expectedBounds.end) -
+            var sum = expectedRanges.stream().mapToInt(expectedBounds -> Math.min(extractedEnd, expectedBounds.end) -
                     Math.max(extractedStart, expectedBounds.start)).map(numChars -> Math.max(0, numChars)).sum();
             overallNumChars += sum;
         }
@@ -159,7 +159,7 @@ public class PerformacesObjective implements Objective {
 
     
     private static int countIdenticalRanges(Bounds[] rangesA, List<Bounds> rangesB) {
-        int identicalRanges = (int) Arrays.stream(rangesA).filter(boundsA -> rangesB.stream().anyMatch(boundsA::equals)).count();
+        var identicalRanges = (int) Arrays.stream(rangesA).filter(boundsA -> rangesB.stream().anyMatch(boundsA::equals)).count();
 
         return identicalRanges;
     }
@@ -202,9 +202,9 @@ public class PerformacesObjective implements Objective {
      * @param finalSolution
      */
     public static void populateFinalSolutionPerformances(Context.EvaluationPhases phase, Configuration configuration, FinalSolution finalSolution, boolean isFlagging) {
-        Objective phaseObjective = PerformancesFactory.buildObjective(phase, configuration);
+        var phaseObjective = PerformancesFactory.buildObjective(phase, configuration);
         Node finalTree = new Constant(finalSolution.getSolution());
-        double[] phasePerformaceRoughtValues = phaseObjective.fitness(finalTree);
+        var phasePerformaceRoughtValues = phaseObjective.fitness(finalTree);
         Map<String, Double> phasePerformances = null; 
         switch (phase) {
             case TRAINING:

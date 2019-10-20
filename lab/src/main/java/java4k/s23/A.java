@@ -22,7 +22,7 @@ public class A extends Applet implements Runnable {
 
 	@Override
     public void run() {
-        for (boolean newGame = true; ;) {
+        for (var newGame = true; ;) {
 			if (newGame) {
 				l();
 				newGame = false;
@@ -41,9 +41,9 @@ public class A extends Applet implements Runnable {
 
 		Random rndLvl = new Random(23), rndItemStar = new Random(1337);
 
-		BufferedImage screen = new BufferedImage(480, 480, BufferedImage.TYPE_INT_RGB);
-		Graphics g = screen.getGraphics();
-		Graphics appletGraphics = getGraphics();
+		var screen = new BufferedImage(480, 480, BufferedImage.TYPE_INT_RGB);
+		var g = screen.getGraphics();
+		var appletGraphics = getGraphics();
 
 		
 		
@@ -51,20 +51,20 @@ public class A extends Applet implements Runnable {
 		int i;
 
 
-        int[][] enemy = new int[enemynum][4];
-		int[] enemyStack = new int[enemynum];
+		var enemy = new int[enemynum][4];
+		var enemyStack = new int[enemynum];
 
 
-        int[][] ibullet = new int[bulletnum][3];
-		int[] bulletStack = new int[bulletnum];
+		var ibullet = new int[bulletnum][3];
+		var bulletStack = new int[bulletnum];
 
 
-        double[][] item = new double[itemnum][6];
-        int[] itemStack = new int[itemnum];
+		var item = new double[itemnum][6];
+		var itemStack = new int[itemnum];
 
 
-        double[][] graze = new double[grazenum][5];
-		int[] grazeStack = new int[grazenum];
+		var graze = new double[grazenum][5];
+		var grazeStack = new int[grazenum];
 
         for (i = 0; i < itemnum; ++i) {
 			if (i < enemynum) {
@@ -87,11 +87,11 @@ public class A extends Applet implements Runnable {
 		
 
 		Graphics g2;
-		BufferedImage gplayer = new BufferedImage(30, 30, BufferedImage.TYPE_INT_ARGB);
-		BufferedImage genemy = new BufferedImage(30, 30, BufferedImage.TYPE_INT_ARGB);
-		BufferedImage gitem = new BufferedImage(10, 10, BufferedImage.TYPE_INT_RGB);
-		BufferedImage gbullet = new BufferedImage(20, 20, BufferedImage.TYPE_INT_ARGB);
-		BufferedImage gbg = new BufferedImage(480, 480, BufferedImage.TYPE_INT_RGB);
+		var gplayer = new BufferedImage(30, 30, BufferedImage.TYPE_INT_ARGB);
+		var genemy = new BufferedImage(30, 30, BufferedImage.TYPE_INT_ARGB);
+		var gitem = new BufferedImage(10, 10, BufferedImage.TYPE_INT_RGB);
+		var gbullet = new BufferedImage(20, 20, BufferedImage.TYPE_INT_ARGB);
+		var gbg = new BufferedImage(480, 480, BufferedImage.TYPE_INT_RGB);
 
 
         long playerG = 35466898305473L, enemyG = 562949815469064L;
@@ -127,7 +127,7 @@ public class A extends Applet implements Runnable {
 		}
 
 
-        double[][] star = new double[75][2];
+		var star = new double[75][2];
         for (i = 0; i < 75; ++i) {
 			star[i][0] = rndItemStar.nextInt(480);
 			star[i][1] = rndItemStar.nextInt(480);
@@ -154,7 +154,7 @@ public class A extends Applet implements Runnable {
         Color[] bgCol = {new Color(64, 20, 64), new Color(160, 60, 160), new Color(112, 112, 140)};
         for (stari = 1200; stari > 0; --stari) {
 			i = rndItemStar.nextInt(300);
-			int d = i - 150;
+			var d = i - 150;
 			if (d < 0)
 				d *= -1;
 			d = 180 - d;
@@ -176,7 +176,7 @@ public class A extends Applet implements Runnable {
 		for (stari = 480; stari > 0; --stari) {
 			i = rndItemStar.nextInt(100);
 			j = rndItemStar.nextInt(100);
-			int d = (i - 50) * (i - 50) + (j - 50) * (j - 50);
+			var d = (i - 50) * (i - 50) + (j - 50) * (j - 50);
 			g2.setColor(Color.getHSBColor(0.8f, 0.2f, 1 - d / 6000f)); 
 			g2.fillRect(i + 140, j + 130, 1, 1);
 			g2.fillRect(rndItemStar.nextInt(480), rndItemStar.nextInt(480), 1, 1);
@@ -186,27 +186,27 @@ public class A extends Applet implements Runnable {
 		
 
 		int fps = 0, fpsout = 0, frame = 0;
-		long lastfpsoutt = System.nanoTime();
-        int grazeStacki = grazenum;
+		var lastfpsoutt = System.nanoTime();
+		var grazeStacki = grazenum;
         int[] item2 = {0, 490, 600, 1};
-        int itemStacki = itemnum;
-        int bulletStacki = bulletnum;
-        double[][] bullet = new double[bulletnum][8];
-        double[][] enemyB = new double[enemynum][9];
-        int enemyStacki = enemynum;
-        int nextEnemyDiff = 180;
-        int nextEnemy = 0;
-        int multiplier = 1;
-        int score = 0;
-        int lastDeath = -120;
-        int lives = 3;
-        int lastShot = -1380;
-        int playerSpeed = 1;
-        int shotY = -30;
-        int playerY = 400;
-        int playerX = 225;
+		var itemStacki = itemnum;
+		var bulletStacki = bulletnum;
+		var bullet = new double[bulletnum][8];
+		var enemyB = new double[enemynum][9];
+		var enemyStacki = enemynum;
+		var nextEnemyDiff = 180;
+		var nextEnemy = 0;
+		var multiplier = 1;
+		var score = 0;
+		var lastDeath = -120;
+		var lives = 3;
+		var lastShot = -1380;
+		var playerSpeed = 1;
+		var shotY = -30;
+		var playerY = 400;
+		var playerX = 225;
         while (lives >= 0) {
-            long lastfpst = System.nanoTime();
+			var lastfpst = System.nanoTime();
 
 
             playerSpeed = 2;
@@ -242,7 +242,7 @@ public class A extends Applet implements Runnable {
 					item[i][0] += item[i][2];
 					item[i][1] += item[i][3];
 
-					int dir = item[i][2] > 0.0625 ? -1 : 1;
+					var dir = item[i][2] > 0.0625 ? -1 : 1;
 					item[i][2] += dir * item[i][4];
 					if (item[i][3] < 5)
 						item[i][3] += item[i][5];
@@ -281,7 +281,7 @@ public class A extends Applet implements Runnable {
 			if (frame >= nextEnemy) {
 				if (enemyStacki > 0)
 					enemyStacki--;
-				int ei = enemyStack[enemyStacki];
+				var ei = enemyStack[enemyStacki];
 				enemy[ei][0] = rndLvl.nextInt(400) + 25;
 				enemy[ei][1] = -30;
 				enemy[ei][2] = 1;
@@ -324,7 +324,7 @@ public class A extends Applet implements Runnable {
 						for (j = 0; j < 100; ++j) {
 							if (itemStacki > 0)
 								itemStacki--;
-							int ii = itemStack[itemStacki];
+							var ii = itemStack[itemStacki];
 							item[ii][0] = enemy[i][0];
 							item[ii][1] = enemy[i][1];
 							item[ii][2] = rndItemStar.nextInt(100) / 40.0 - 1.25;
@@ -349,7 +349,7 @@ public class A extends Applet implements Runnable {
 						for (j = 0; j < enemyB[i][2]; ++j) {
 							if (bulletStacki > 0)
 								bulletStacki--;
-							int bi = bulletStack[bulletStacki];
+							var bi = bulletStack[bulletStacki];
 							ibullet[bi][0] = 1;
 							ibullet[bi][2] = 0;
 							bullet[bi][0] = enemy[i][0];
@@ -379,7 +379,7 @@ public class A extends Applet implements Runnable {
 								bullet[bi][4] = enemyB[i][5] * (j / enemyB[i][3]);
 							}
 							if (enemyB[i][1] == 2) {
-								int wavenum = 5 * (int) enemyB[i][3];
+								var wavenum = 5 * (int) enemyB[i][3];
 								bullet[bi][2] = (j / wavenum) * PI * 0.04 + (j % enemyB[i][3]) * 2 * PI / enemyB[i][3];
 								bullet[bi][4] = enemyB[i][5] * (((j % wavenum) / enemyB[i][3]) + (j / wavenum) * (enemyB[i][3] + 2));
 							}
@@ -450,7 +450,7 @@ public class A extends Applet implements Runnable {
 
 							if (grazeStacki > 0)
 								grazeStacki--;
-							int gi = grazeStack[grazeStacki];
+							var gi = grazeStack[grazeStacki];
 							graze[gi][0] = playerX + 16;
 							graze[gi][1] = playerY + 12;
 							graze[gi][2] = 2 * rndItemStar.nextDouble() - 1;
@@ -508,7 +508,7 @@ public class A extends Applet implements Runnable {
 			if (shotY > -30)
 				g.fillRect(0, shotY, 480, 20);
 
-			int cd = (1439 - frame + lastShot) / 60;
+			var cd = (1439 - frame + lastShot) / 60;
 			if (cd < 0)
 				cd = 0;
 			g.setColor(Color.white);

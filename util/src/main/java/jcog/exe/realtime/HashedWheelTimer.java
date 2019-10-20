@@ -94,14 +94,14 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 		model.restart(this);
 
 
-		long deadline = System.nanoTime();
+		var deadline = System.nanoTime();
 
 		//        IntUnaryOperator updater = (cc) -> (cc + 1) % w;
 
         do {
 
-			int c = cursor();
-            int empties = 0;
+			var c = cursor();
+			var empties = 0;
 
             //while ((c = cursor.getAndAccumulate(wheels, (cc, w) -> (cc + 1) % w)) >= 0) {
 			while ((cursor.compareAndSet(c, c = (c + 1) % wheels))) {
@@ -138,8 +138,8 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 	private long await(long deadline) {
 
 
-		long now = System.nanoTime();
-		long sleepTimeNanos = deadline - now;
+		var now = System.nanoTime();
+		var sleepTimeNanos = deadline - now;
 
 		if (sleepTimeNanos > 0) {
 			//System.out.println(Texts.timeStr(sleepTimeNanos) + " sleep");
@@ -175,7 +175,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 		if (r.state() == TimedFuture.CANCELLED)
 			throw new RuntimeException("scheduling an already cancelled task");
 
-		boolean ok = model.accept(r, this);
+		var ok = model.accept(r, this);
 		if (!ok)
 			return null;
 
@@ -209,7 +209,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 	}
 
 	final int cursorActive() {
-		int c = cursor();
+		var c = cursor();
 		if (c != -1)
 			return c;
 		else {
@@ -337,7 +337,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 
 		if (delayNS <= resolution / 2) {
 			//immediate
-			ImmediateFuture<V> f = new ImmediateFuture<>(callable);
+			var f = new ImmediateFuture<V>(callable);
 			executor.execute(f);
 			return f;
 		} else if (delayNS < resolution) {
@@ -346,9 +346,9 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 		}
 
 
-		long cycleLen = wheels * resolution;
-		int rounds = (int) (((double) delayNS) / cycleLen);
-		int firstFireOffset = Util.longToInt(delayNS - rounds * cycleLen);
+		var cycleLen = wheels * resolution;
+		var rounds = (int) (((double) delayNS) / cycleLen);
+		var firstFireOffset = Util.longToInt(delayNS - rounds * cycleLen);
 
 		return schedule(new OneTimedFuture(Math.max(0, firstFireOffset), rounds, callable));
 	}
@@ -359,7 +359,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 												  Runnable callable) {
 
 
-		FixedRateTimedFuture r = new FixedRateTimedFuture(0, callable,
+		var r = new FixedRateTimedFuture(0, callable,
 			recurringTimeout, resolution, wheels);
 
 		return scheduleFixedRate(recurringTimeout, firstDelay, r);
@@ -386,7 +386,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 		assert (recurringTimeout >= resolution) : "Cannot schedule tasks for amount of time less than timer precision.";
 
 
-		FixedDelayTimedFuture<V> r = new FixedDelayTimedFuture<>(
+		var r = new FixedDelayTimedFuture<V>(
 			callable,
 			recurringTimeout, resolution, wheels,
 			this::schedule);
@@ -419,8 +419,8 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 				throw new RuntimeException("loop exists");
 		}
 
-		Thread t = this.loop = new Thread(this, HashedWheelTimer.class.getSimpleName() + '_' + hashCode());
-        boolean daemon = false;
+		var t = this.loop = new Thread(this, HashedWheelTimer.class.getSimpleName() + '_' + hashCode());
+		var daemon = false;
         t.setDaemon(daemon);
 		t.setPriority(THREAD_PRI);
 		t.start();
@@ -513,7 +513,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 
 		@Override
 		public boolean cancel(boolean mayInterruptIfRunning) {
-			Callable<V> c = callable;
+			var c = callable;
 			if (c != null) {
 				result = null;
 				callable = null;
@@ -534,7 +534,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 
 		@Override
 		public V get() {
-			Object r = this.result;
+			var r = this.result;
 			return r == this ? null : (V) r;
 		}
 

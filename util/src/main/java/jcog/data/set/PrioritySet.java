@@ -31,7 +31,7 @@ public class PrioritySet<X> extends CachedPriorityQueue<X> {
 
 	@Override
 	public X poll() {
-		X x = super.poll();
+		var x = super.poll();
 		if (x!=null) {
 			set.remove(x); //assert(removed)
 		}

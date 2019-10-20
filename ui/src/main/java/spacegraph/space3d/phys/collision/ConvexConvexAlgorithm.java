@@ -84,23 +84,10 @@ public class ConvexConvexAlgorithm extends CollisionAlgorithm {
 		resultOut.setPersistentManifold(manifoldPtr);
 
 
+		var min0 = (ConvexShape) body0.shape();
+		var min1 = (ConvexShape) body1.shape();
 
-
-
-
-
-
-
-
-
-
-
-
-
-		ConvexShape min0 = (ConvexShape) body0.shape();
-		ConvexShape min1 = (ConvexShape) body1.shape();
-
-		DiscreteCollisionDetectorInterface.ClosestPointInput input = new DiscreteCollisionDetectorInterface.ClosestPointInput();
+		var input = new DiscreteCollisionDetectorInterface.ClosestPointInput();
 		input.init();
 
 		
@@ -126,14 +113,14 @@ public class ConvexConvexAlgorithm extends CollisionAlgorithm {
 
 	@Override
 	public float calculateTimeOfImpact(Collidable col0, Collidable col1, DispatcherInfo dispatchInfo, ManifoldResult resultOut) {
-		v3 tmp = new v3();
+		var tmp = new v3();
 
-		Transform tmpTrans1 = new Transform();
-		Transform tmpTrans2 = new Transform();
+		var tmpTrans1 = new Transform();
+		var tmpTrans2 = new Transform();
 
 
         tmp.sub(col0.getInterpolationWorldTransform(tmpTrans1), col0.getWorldTransform(tmpTrans2));
-        float resultFraction = 1f;
+		var resultFraction = 1f;
         if (tmp.lengthSquared() < col0.getCcdSquareMotionThreshold()) {
 			tmp.sub(col1.getInterpolationWorldTransform(tmpTrans1), col1.getWorldTransform(tmpTrans2));
 			if (tmp.lengthSquared() < col1.getCcdSquareMotionThreshold()) {
@@ -145,8 +132,8 @@ public class ConvexConvexAlgorithm extends CollisionAlgorithm {
 			return 1f;
 		}
 
-		Transform tmpTrans3 = new Transform();
-		Transform tmpTrans4 = new Transform();
+		var tmpTrans3 = new Transform();
+		var tmpTrans4 = new Transform();
 
 		
 		
@@ -156,16 +143,15 @@ public class ConvexConvexAlgorithm extends CollisionAlgorithm {
 
 		
 		{
-			ConvexShape convex0 = (ConvexShape) col0.shape();
+			var convex0 = (ConvexShape) col0.shape();
 
-			SphereShape sphere1 = new SphereShape(col1.getCcdSweptSphereRadius()); 
-			ConvexCast.CastResult result = new ConvexCast.CastResult();
+			var sphere1 = new SphereShape(col1.getCcdSweptSphereRadius());
+			var result = new ConvexCast.CastResult();
 
 			voronoiSimplex.reset();
 
-			
-			
-			GjkConvexCast ccd1 = new GjkConvexCast(convex0, sphere1, voronoiSimplex);
+
+			var ccd1 = new GjkConvexCast(convex0, sphere1, voronoiSimplex);
 			
 			if (ccd1.calcTimeOfImpact(col0.getWorldTransform(tmpTrans1), col0.getInterpolationWorldTransform(tmpTrans2),
 					col1.getWorldTransform(tmpTrans3), col1.getInterpolationWorldTransform(tmpTrans4), result)) {
@@ -185,15 +171,15 @@ public class ConvexConvexAlgorithm extends CollisionAlgorithm {
 			}
 		}
 
-		
-        ConvexShape convex1 = (ConvexShape) col1.shape();
 
-        SphereShape sphere0 = new SphereShape(col0.getCcdSweptSphereRadius()); 
-        ConvexCast.CastResult result = new ConvexCast.CastResult();
-        VoronoiSimplexSolver voronoiSimplex = new VoronoiSimplexSolver();
-        
-        
-        GjkConvexCast ccd1 = new GjkConvexCast(sphere0, convex1, voronoiSimplex);
+		var convex1 = (ConvexShape) col1.shape();
+
+		var sphere0 = new SphereShape(col0.getCcdSweptSphereRadius());
+		var result = new ConvexCast.CastResult();
+		var voronoiSimplex = new VoronoiSimplexSolver();
+
+
+		var ccd1 = new GjkConvexCast(sphere0, convex1, voronoiSimplex);
         
         if (ccd1.calcTimeOfImpact(col0.getWorldTransform(tmpTrans1), col0.getInterpolationWorldTransform(tmpTrans2),
                 col1.getWorldTransform(tmpTrans3), col1.getInterpolationWorldTransform(tmpTrans4), result)) {
@@ -242,7 +228,7 @@ public class ConvexConvexAlgorithm extends CollisionAlgorithm {
 
 		@Override
 		public CollisionAlgorithm createCollisionAlgorithm(CollisionAlgorithmConstructionInfo ci, Collidable body0, Collidable body1) {
-			ConvexConvexAlgorithm algo = new ConvexConvexAlgorithm();
+			var algo = new ConvexConvexAlgorithm();
 			algo.init(ci.manifold, ci, body0, body1, simplexSolver, pdSolver);
 			return algo;
 		}

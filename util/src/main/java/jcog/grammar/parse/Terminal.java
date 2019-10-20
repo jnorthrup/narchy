@@ -90,7 +90,7 @@ public class Terminal extends Parser {
 	 */
 	@Override
 	public Set<Assembly> match(Set<Assembly> in) {
-		Set<Assembly> out = in.stream().map(this::matchOneAssembly).filter(Objects::nonNull).collect(Collectors.toSet());
+		var out = in.stream().map(this::matchOneAssembly).filter(Objects::nonNull).collect(Collectors.toSet());
 		return out;
 	}
 
@@ -107,8 +107,8 @@ public class Terminal extends Parser {
 	 */
 	private Assembly matchOneAssembly(Assembly in) {
 		if (in.hasNext() && qualifies(in.peek())) {
-			Assembly out = in.clone();
-			Object o = out.next();
+			var out = in.clone();
+			var o = out.next();
 			if (!discard) {
 				out.push(elementToPushOnStack(o));
 			}

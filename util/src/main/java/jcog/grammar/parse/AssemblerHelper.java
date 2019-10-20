@@ -28,7 +28,7 @@ public class AssemblerHelper {
 		List<Object> items = new ArrayList<>();
 
 		while (!a.getStack().isEmpty()) {
-			Object top = a.pop();
+			var top = a.pop();
 			if (top.equals(fence)) {
 				break;
 			}

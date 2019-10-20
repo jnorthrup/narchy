@@ -53,17 +53,17 @@ public class a extends Applet implements Runnable {
       0xF1F0F5, 
     };
 
-    BufferedImage image = new BufferedImage(256, 256, 1);
-      Graphics2D g = (Graphics2D)image.getGraphics();
-      Random random = new Random(37);
+    var image = new BufferedImage(256, 256, 1);
+    var g = (Graphics2D)image.getGraphics();
+    var random = new Random(37);
 
-    Color[] backgroundColors = new Color[10];
+    var backgroundColors = new Color[10];
     for(i = 0; i < 10; i++) {
-      int color = colors[i >> 1];
+      var color = colors[i >> 1];
       if ((i & 1) == 0) {
         backgroundColors[i] = new Color(color);
       } else {
-        float[] hsv = new float[3];
+        var hsv = new float[3];
         Color.RGBtoHSB(color >> 16, 0xFF & (color >> 8), 0xFF & color, hsv);
         backgroundColors[i] = new Color(Color.HSBtoRGB(hsv[0], hsv[1],
           hsv[2] - .03f));
@@ -71,42 +71,42 @@ public class a extends Applet implements Runnable {
     }
 
 
-      float[] player = new float[32];
-      ArrayList<float[]> queue = new ArrayList<>();
+    var player = new float[32];
+    var queue = new ArrayList<float[]>();
       queue.add(player);
-      final int OBJ_SPRITE = 3;
+      final var OBJ_SPRITE = 3;
       player[OBJ_SPRITE] = 0;
-      final int OBJ_TIME = 0;
+      final var OBJ_TIME = 0;
       player[OBJ_TIME] = 16;
-      final int OBJ_HALF_WIDTH = 10;
+      final var OBJ_HALF_WIDTH = 10;
       player[OBJ_HALF_WIDTH] = 42;
-      final int OBJ_HEIGHT = 11;
+      final var OBJ_HEIGHT = 11;
       player[OBJ_HEIGHT] = 54;
 
-      ArrayList[] renderList = new ArrayList[8192];
+    var renderList = new ArrayList[8192];
       for(i = 0; i < 8192; i++) {
       renderList[i] = new ArrayList<float[]>();
     }
 
 
-      final int SEGMENTS = 4096;
-      float[][][] segments = new float[2][SEGMENTS][3];
+      final var SEGMENTS = 4096;
+    var segments = new float[2][SEGMENTS][3];
 
       int k;
       int j;
-      final int ROAD = 0;
+      final var ROAD = 0;
       for(k = 0; k < 2; k++) {
           float slope = 0;
-          float nextSlope = 0.3f;
+        var nextSlope = 0.3f;
 
           for(i = 1; i < SEGMENTS; i++) {
 
-        float[] lastSegment = segments[k][i - 1];
-        float[] segment = segments[k][i];
+            var lastSegment = segments[k][i - 1];
+            var segment = segments[k][i];
 
         j = random.nextInt(17);
         if (k == ROAD) {
-          float ds = nextSlope - slope;
+          var ds = nextSlope - slope;
           if (ds < 0) {
             ds = -ds;
           }
@@ -154,24 +154,24 @@ public class a extends Applet implements Runnable {
 
 
       Graphics2D g3 = null;
-      BufferedImage[] sprites = new BufferedImage[64];
+    var sprites = new BufferedImage[64];
       float mag;
-      final int TREE_SPRITE = 14;
+      final var TREE_SPRITE = 14;
       for(k = 0; k < 3; k++) {
       if (k == 2) {
         random = new Random(22);
       }
       sprites[TREE_SPRITE + k] = new BufferedImage(128, 128, 2);
       g3 = (Graphics2D)sprites[TREE_SPRITE + k].getGraphics();
-          AffineTransform transform = g3.getTransform();
+        var transform = g3.getTransform();
       transform.translate(64, 128);
-          ArrayList<AffineTransform> transforms = new ArrayList<>();
+        var transforms = new ArrayList<AffineTransform>();
           transforms.add(transform);
       while(transforms.size() > 0) {
         transform = transforms.remove(0);
         mag = (float)transform.getScaleX() + (float)transform.getScaleY();
         mag *= 0.1f;
-        float hue = 0.3f - mag;
+        var hue = 0.3f - mag;
         if (hue < 0.175f) {
           hue = 0.175f;
         }
@@ -187,7 +187,7 @@ public class a extends Applet implements Runnable {
                   break;
               default:
 
-                  float s = 0.495f - hue * 1.9f;
+                var s = 0.495f - hue * 1.9f;
                   if (s < -0.05f) {
                       s = -0.05f;
                   }
@@ -199,7 +199,7 @@ public class a extends Applet implements Runnable {
         g3.fillRect(-10, -40, 20, 40);
         if (mag > 0.03f) {
           for(i = 0; i < 5; i++) {
-            AffineTransform transform2 = (AffineTransform)transform.clone();
+            var transform2 = (AffineTransform)transform.clone();
             transforms.add(transform2);
             transform2.translate(0, -30);
             transform2.scale(0.7f + 0.1f * random.nextFloat(),
@@ -215,10 +215,10 @@ public class a extends Applet implements Runnable {
     }
 
 
-      final int SNOWMAN_SPRITE = 13;
+      final var SNOWMAN_SPRITE = 13;
       sprites[SNOWMAN_SPRITE] = new BufferedImage(256, 256, 2);
-    Graphics2D g4 = (Graphics2D) sprites[SNOWMAN_SPRITE].getGraphics();
-    AffineTransform transform = g4.getTransform();
+    var g4 = (Graphics2D) sprites[SNOWMAN_SPRITE].getGraphics();
+    var transform = g4.getTransform();
       int x;
       for(x = 2; x >= 0; x--) {
       for(i = 0; i < 16; i++) {
@@ -236,12 +236,12 @@ public class a extends Applet implements Runnable {
     g4.setTransform(transform);
 
 
-      final int TELEPHONE_POLE_SPRITE = 12;
+      final var TELEPHONE_POLE_SPRITE = 12;
       sprites[TELEPHONE_POLE_SPRITE] = new BufferedImage(84, 256, 2);
     g3 = (Graphics2D)sprites[TELEPHONE_POLE_SPRITE].getGraphics();
       int y;
       for(i = 0; i < 16; i++) {
-      Color color = new Color(Color.HSBtoRGB(24f / 360, 0.69f,
+        var color = new Color(Color.HSBtoRGB(24f / 360, 0.69f,
         (74 - (i << 1)) / 100f));
       g3.setColor(color);
       y = 4 + (i >> 1);
@@ -258,17 +258,17 @@ public class a extends Applet implements Runnable {
       g4.drawLine(207, 64 + i, 165, 96 + i);
     }
 
-    
-    int[] pixels = new int[256 << 8];
-    BufferedImage[] roadImages = new BufferedImage[256];
+
+    var pixels = new int[256 << 8];
+    var roadImages = new BufferedImage[256];
     for(y = 0; y < 256; y++) {      
       for(x = 0; x < 256; x++) {
-        float angle = 8 * 6.28f * x / 243f;
+        var angle = 8 * 6.28f * x / 243f;
         mag = 0.5f + 0.5f * (float)Math.sin(angle);
         i = 0x72 + (int)((0x93 - 0x72) * mag);
         j = 0x68 + (int)((0x8A - 0x68) * mag);
         k = 0x67 + (int)((0x83 - 0x67) * mag);
-        float scale = y < 128 ? 0.95f : 1f;
+        var scale = y < 128 ? 0.95f : 1f;
         scale -= 0.05f * random.nextFloat();
         i *= scale;
         j *= scale;
@@ -286,8 +286,8 @@ public class a extends Applet implements Runnable {
       roadImages[y].setRGB(0, 0, 256, 1, pixels, 0, 256);
     }
 
-    
-    BufferedImage skyImage = new BufferedImage(512, 512, 1);
+
+    var skyImage = new BufferedImage(512, 512, 1);
     g3 = (Graphics2D)skyImage.getGraphics();
     for(y = 0; y < 512; y++) {
       mag = y / 512f;
@@ -307,8 +307,8 @@ public class a extends Applet implements Runnable {
       g3.fillOval(x, y, 100, 20);
     }
 
-    
-    String S = "\u03c0\u0000\u5ff0\u0000\u5ff0\u0000\ufbe4\u0000\u0aac\u0000\u0aad\u0000\u0aa3\u0000\u0aa3\u0000\u0aa3\u0000\u0283\u0000\u0e83\uf000\u3aaf\ufc00\ueaaa\ufc00\uaaab\ubc00\ufeaa\u8000\uaaaa\u8000\uaaaa\u5000\u555a\u9000\u5555\u9400\u5555\u5400\u5555\u5500\u5555\u5550\u5555\u5550\u5555\u5554\u5555\u5554\u5555\u5554\u5555\u5554\u5555\u5554\u5555\u5554\uaa95\u5557\uaaa9\u5557\uaaaa\u9557\uaaaa\ua955\u5555\u55fd\u555f\ufead\u555a\uaaa5\u955a\uaaa5\u955a\uaaa5\u555a\ua957\u5555\u57f7\u5555\u57f7\ufff5\u57f7\uffd5\u57f7\uaad5\u57f7\uffd5\u55f4\ufb55\u55f4\ufaff\uf5f4\ufaea\ufff4\uaaee\ufff4\ufff3\ufffc\uffc0\u3ffc\u0000\u3ffc\u0000\u3ffc\u0000\u3ff0";
+
+    var S = "\u03c0\u0000\u5ff0\u0000\u5ff0\u0000\ufbe4\u0000\u0aac\u0000\u0aad\u0000\u0aa3\u0000\u0aa3\u0000\u0aa3\u0000\u0283\u0000\u0e83\uf000\u3aaf\ufc00\ueaaa\ufc00\uaaab\ubc00\ufeaa\u8000\uaaaa\u8000\uaaaa\u5000\u555a\u9000\u5555\u9400\u5555\u5400\u5555\u5500\u5555\u5550\u5555\u5550\u5555\u5554\u5555\u5554\u5555\u5554\u5555\u5554\u5555\u5554\u5555\u5554\uaa95\u5557\uaaa9\u5557\uaaaa\u9557\uaaaa\ua955\u5555\u55fd\u555f\ufead\u555a\uaaa5\u955a\uaaa5\u955a\uaaa5\u555a\ua957\u5555\u57f7\u5555\u57f7\ufff5\u57f7\uffd5\u57f7\uaad5\u57f7\uffd5\u55f4\ufb55\u55f4\ufaff\uf5f4\ufaea\ufff4\uaaee\ufff4\ufff3\ufffc\uffc0\u3ffc\u0000\u3ffc\u0000\u3ffc\u0000\u3ff0";
       int z;
       for(k = 0; k < 10; k++) {
 
@@ -317,9 +317,9 @@ public class a extends Applet implements Runnable {
       y = (int)(256f * (0.5f + 0.5f * (float)Math.sin(mag + 2.09f)));
       z = (int)(256f * (0.5f + 0.5f * (float)Math.sin(mag + 4.19f)));
 
-      int color1 = 0xFF000000 | (x << 16) | (y << 8) | z;
-      int color2 = 0xFF000000 | ((x >> 1) << 16) | ((y >> 1) << 8) | (z >> 1);
-      int color3 = 0xFF000000 | (((x + 768) >> 2) << 16)
+        var color1 = 0xFF000000 | (x << 16) | (y << 8) | z;
+        var color2 = 0xFF000000 | ((x >> 1) << 16) | ((y >> 1) << 8) | (z >> 1);
+        var color3 = 0xFF000000 | (((x + 768) >> 2) << 16)
           | (((y + 768) >> 2) << 8) | ((z + 768) >> 2);
 
       for(y = 0; y < 54; y++) {
@@ -335,7 +335,7 @@ public class a extends Applet implements Runnable {
           i >>= 2;
         }
       }
-      BufferedImage carImage = new BufferedImage(32, 54, 2);
+        var carImage = new BufferedImage(32, 54, 2);
       carImage.setRGB(0, 0, 32, 54, pixels, 0, 32);
 
       sprites[k] = new BufferedImage(84, 54, 2);
@@ -344,16 +344,16 @@ public class a extends Applet implements Runnable {
     }
 
 
-      final int CHECKPOINT_SPRITE = 11;
+      final var CHECKPOINT_SPRITE = 11;
       sprites[CHECKPOINT_SPRITE] = new BufferedImage(710, 256, 2);
     g3 = (Graphics2D)sprites[CHECKPOINT_SPRITE].getGraphics();
     for(z = 0; z < 8; z++) {
-      int h = z << 5;
+      var h = z << 5;
       for(x = 0; x < 22; x++) {
         if (z == 0 || x == 0 || x == 21) {
           k = x << 5;
           for(i = 0; i < 3; i++) {
-            Color color = Color.WHITE;
+            var color = Color.WHITE;
             for(j = 0; j < 5; j++) {
               g3.setColor(color);
               color = color.darker();
@@ -370,38 +370,38 @@ public class a extends Applet implements Runnable {
       }
     }
 
-    long nextFrameStartTime = System.nanoTime();
-      float[][] roadInfos = new float[8192][16];
+    var nextFrameStartTime = System.nanoTime();
+    var roadInfos = new float[8192][16];
       Graphics2D g2 = null;
-      boolean raceStarted = false;
-      boolean startReleased = true;
-      boolean wonBlink = false;
+    var raceStarted = false;
+    var startReleased = true;
+    var wonBlink = false;
       float nextCarTime = 32;
-      int timeIncrementor = 0;
-      int time = 50;
+    var timeIncrementor = 0;
+    var time = 50;
       final int VK_START = '\n';
-      final int VK_GAS = 0x44;
-      final int VK_RIGHT = 0x27;
-      final int VK_LEFT = 0x25;
-      final int ROAD_Y = 4;
-      final int ROAD_CLIP = 3;
-      final int ROAD_OFFSET = 2;
-      final int ROAD_K = 1;
-      final int ROAD_HEIGHT = 0;
-      final int OBJ_SEEKER_SPEED = 13;
-      final int OBJ_CHECKPOINT = 12;
-      final int OBJ_SEEKER = 9;
-      final int OBJ_CAR = 8;
-      final int OBJ_SPRITE_HEIGHT = 7;
-      final int OBJ_SPRITE_WIDTH = 6;
-      final int OBJ_SPRITE_Y = 5;
-      final int OBJ_SPRITE_X = 4;
-      final int OBJ_DT = 2;
-      final int OBJ_X = 1;
-      final float CAR_SPEED = 0.05f;
-      final float ACCELERATION = 0.003f;
-      final float I256 = 0.00390625f;
-      final int HILL = 1;
+      final var VK_GAS = 0x44;
+      final var VK_RIGHT = 0x27;
+      final var VK_LEFT = 0x25;
+      final var ROAD_Y = 4;
+      final var ROAD_CLIP = 3;
+      final var ROAD_OFFSET = 2;
+      final var ROAD_K = 1;
+      final var ROAD_HEIGHT = 0;
+      final var OBJ_SEEKER_SPEED = 13;
+      final var OBJ_CHECKPOINT = 12;
+      final var OBJ_SEEKER = 9;
+      final var OBJ_CAR = 8;
+      final var OBJ_SPRITE_HEIGHT = 7;
+      final var OBJ_SPRITE_WIDTH = 6;
+      final var OBJ_SPRITE_Y = 5;
+      final var OBJ_SPRITE_X = 4;
+      final var OBJ_DT = 2;
+      final var OBJ_X = 1;
+      final var CAR_SPEED = 0.05f;
+      final var ACCELERATION = 0.003f;
+      final var I256 = 0.00390625f;
+      final var HILL = 1;
       while(true) {
 
       do {
@@ -432,7 +432,7 @@ public class a extends Applet implements Runnable {
 
           
           for(i = 0; i < 6; i++) {
-            float[] checkpoint = new float[32];
+            var checkpoint = new float[32];
             queue.add(checkpoint);
             checkpoint[OBJ_SPRITE] = CHECKPOINT_SPRITE;
             checkpoint[OBJ_TIME] = 18 + 400 * i;
@@ -473,7 +473,7 @@ public class a extends Applet implements Runnable {
           }
         }
 
-        int t = (int)player[OBJ_TIME];
+        var t = (int)player[OBJ_TIME];
         player[OBJ_TIME] += player[OBJ_DT];
         if (t != (int)player[OBJ_TIME]) {
           i = ((int)player[OBJ_TIME] - 18);
@@ -482,8 +482,8 @@ public class a extends Applet implements Runnable {
           if (k > 100 && k < 300) {            
             if (j == 0) {
               if ((i & 3) == 0) {
-                
-                float[] pole = new float[32];
+
+                var pole = new float[32];
                 queue.add(pole);
                 pole[OBJ_TIME] = player[OBJ_TIME] + 32;
                 pole[OBJ_SPRITE] = TELEPHONE_POLE_SPRITE;
@@ -492,8 +492,8 @@ public class a extends Applet implements Runnable {
                 pole[OBJ_X] = 1.4f;
               }
             } else {
-              
-              float[] tree = new float[32];
+
+              var tree = new float[32];
               queue.add(tree);
               tree[OBJ_TIME] = player[OBJ_TIME] + 32;
               tree[OBJ_SPRITE] = j == 4 ? SNOWMAN_SPRITE 
@@ -515,7 +515,7 @@ public class a extends Applet implements Runnable {
 
         if (player[OBJ_TIME] > nextCarTime) {
 
-          int segment = (int)((player[OBJ_TIME] - 18) / 400);
+          var segment = (int)((player[OBJ_TIME] - 18) / 400);
 
           
           x = 1;
@@ -532,7 +532,7 @@ public class a extends Applet implements Runnable {
           for(y = 0; y < x; y++) {
             mag = 0.6f * ((y + k) % 4) - 0.9f;
             for(i = 0; i < j; i++) {
-              float[] car = new float[32];
+              var car = new float[32];
               queue.add(car);
               car[OBJ_SPRITE] = 1 + random.nextInt(7);
               car[OBJ_X] = mag;
@@ -553,7 +553,7 @@ public class a extends Applet implements Runnable {
 
         
         for(i = queue.size() - 1; i >= 0; i--) {
-          float[] car = queue.get(i);
+          var car = queue.get(i);
           if (car[OBJ_CAR] == 1) {
             car[OBJ_TIME] += CAR_SPEED;
 
@@ -561,7 +561,7 @@ public class a extends Applet implements Runnable {
             if (player[OBJ_DT] > 0
                 && player[OBJ_TIME] < car[OBJ_TIME]
                 && player[OBJ_TIME] > car[OBJ_TIME] - 0.16f) {
-              float dx = car[OBJ_X] - player[OBJ_X];
+              var dx = car[OBJ_X] - player[OBJ_X];
               if (dx < 0) {
                 dx = -dx;
               }
@@ -595,20 +595,17 @@ public class a extends Applet implements Runnable {
 
       } while(nextFrameStartTime < System.nanoTime());
 
-      
 
-
-      
-      float playerTime = player[OBJ_TIME];
-      float playerX = playerTime - (int)playerTime;
-      float[] road = segments[ROAD][(int)playerTime];
-      float[] hill = segments[HILL][(int)playerTime];
-      float playerY = (road[0] * playerX + road[1]) * playerX + road[2];
-      float playerZ = (hill[0] * playerX + hill[1]) * playerX + hill[2] + 0.5f;
+        var playerTime = player[OBJ_TIME];
+        var playerX = playerTime - (int)playerTime;
+        var road = segments[ROAD][(int)playerTime];
+        var hill = segments[HILL][(int)playerTime];
+        var playerY = (road[0] * playerX + road[1]) * playerX + road[2];
+        var playerZ = (hill[0] * playerX + hill[1]) * playerX + hill[2] + 0.5f;
 
       
       float vx = 1;
-      float vy = 2 * road[0] * playerX + road[1];
+        var vy = 2 * road[0] * playerX + road[1];
       mag = (float)Math.sqrt(vx * vx + vy * vy);
       vx /= mag;
       vy /= mag;
@@ -623,32 +620,32 @@ public class a extends Applet implements Runnable {
       }
       g.drawImage(skyImage, (int)(vy * 256) - 128, i, null);
 
-      
-      int height = 256;
+
+        var height = 256;
       for(i = 0; i < 32; i++) {
         road = segments[ROAD][(int)playerTime + i];
         hill = segments[HILL][(int)playerTime + i];
         for(j = 0; j < 256; j++) {
-          float tx = I256 * j;
+          var tx = I256 * j;
 
-          
-          float py = (road[0] * tx + road[1]) * tx + road[2] - playerY;
-          float pz = (hill[0] * tx + hill[1]) * tx + hill[2] - playerZ;
-          float px = tx - playerX + i;
 
-          
-          float qx = vy * px - vx * py - player[OBJ_X];
-          float qy = vx * px - vy * py;
+          var py = (road[0] * tx + road[1]) * tx + road[2] - playerY;
+          var pz = (hill[0] * tx + hill[1]) * tx + hill[2] - playerZ;
+          var px = tx - playerX + i;
 
-          float K = 256 / (1 + qy);
-          int Y = 128 - (int)(K * pz);
+
+          var qx = vy * px - vx * py - player[OBJ_X];
+          var qy = vx * px - vy * py;
+
+          var K = 256 / (1 + qy);
+          var Y = 128 - (int)(K * pz);
 
           
           if (Y < height) {
             height = Y;
 
-            int X1 = 128 + (int)(K * (qx - 1.25f));
-            int X2 = 128 + (int)(K * (qx + 1.25f));
+            var X1 = 128 + (int)(K * (qx - 1.25f));
+            var X2 = 128 + (int)(K * (qx + 1.25f));
 
             k = (((int)playerTime + i - 18) / 400) << 1;
             if (k > 8) {
@@ -662,8 +659,8 @@ public class a extends Applet implements Runnable {
                     X1, Y, X2 - X1 + 1, 1, null);
           }
 
-          
-          float[] roadInfo = roadInfos[(i << 8) + j];
+
+          var roadInfo = roadInfos[(i << 8) + j];
           roadInfo[ROAD_HEIGHT] = pz;
           roadInfo[ROAD_K] = K;
           roadInfo[ROAD_OFFSET] = qx;
@@ -678,16 +675,16 @@ public class a extends Applet implements Runnable {
           renderList[i].clear();
         }
         for(i = queue.size() - 1; i >= 0; i--) {
-          float[] object = queue.get(i);
-          int index = (int)(256 * (object[OBJ_TIME] - (int)playerTime));
+          var object = queue.get(i);
+          var index = (int)(256 * (object[OBJ_TIME] - (int)playerTime));
           if (index >= 0 && index < 8192) {
-            float[] roadInfo = roadInfos[index];
+            var roadInfo = roadInfos[index];
             renderList[index].add(object);
-            float K = roadInfo[ROAD_K];
-            float W = object[OBJ_HALF_WIDTH] * I256;
-            int X1 = 128 + (int)(K * (roadInfo[ROAD_OFFSET] + object[OBJ_X] - W));
-            int X2 = 128 + (int)(K * (roadInfo[ROAD_OFFSET] + object[OBJ_X] + W));
-            int Y1 = 128 - (int)(K * (roadInfo[ROAD_HEIGHT]
+            var K = roadInfo[ROAD_K];
+            var W = object[OBJ_HALF_WIDTH] * I256;
+            var X1 = 128 + (int)(K * (roadInfo[ROAD_OFFSET] + object[OBJ_X] - W));
+            var X2 = 128 + (int)(K * (roadInfo[ROAD_OFFSET] + object[OBJ_X] + W));
+            var Y1 = 128 - (int)(K * (roadInfo[ROAD_HEIGHT]
                 + object[OBJ_HEIGHT] * I256));
             object[OBJ_SPRITE_X] = X1;
             object[OBJ_SPRITE_Y] = Y1;
@@ -702,7 +699,7 @@ public class a extends Applet implements Runnable {
           if (spriteList.size() > 0) {
             g.setClip(0, 0, 256, (int)roadInfos[i][ROAD_CLIP]);
             for(j = spriteList.size() - 1; j >= 0; j--) {
-              float[] sprite = spriteList.get(j);
+              var sprite = spriteList.get(j);
               g.drawImage(sprites[(int)sprite[OBJ_SPRITE]],
                   (int)sprite[OBJ_SPRITE_X],
                   (int)sprite[OBJ_SPRITE_Y],
@@ -757,12 +754,12 @@ public class a extends Applet implements Runnable {
   @Override
   public void processKeyEvent(KeyEvent keyEvent) {
 
-      int k = keyEvent.getKeyCode();
+    var k = keyEvent.getKeyCode();
     if (k > 0) {
-        final int VK_D = 0x44;
-        final int VK_A = 0x41;
-        final int VK_RIGHT = 0x27;
-        final int VK_LEFT = 0x25;
+        final var VK_D = 0x44;
+        final var VK_A = 0x41;
+        final var VK_RIGHT = 0x27;
+        final var VK_LEFT = 0x25;
         switch (k) {
             case VK_D:
                 k = VK_RIGHT;
@@ -772,7 +769,7 @@ public class a extends Applet implements Runnable {
                 break;
         }
         final int VK_START = '\n';
-        final int VK_GAS = 0x44;
+        final var VK_GAS = 0x44;
         a[(k == VK_LEFT || k == VK_RIGHT || k == VK_START) ? k : VK_GAS]
           = keyEvent.getID() != 402;
     }

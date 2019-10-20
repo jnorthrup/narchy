@@ -56,15 +56,15 @@ public class MSG extends Globals {
     }
 
     public static void WriteShort(sizebuf_t sb, int c) {
-        int i = SZ.GetSpace(sb, 2);
+        var i = SZ.GetSpace(sb, 2);
         sb.data[i++] = (byte) (c & 0xff);
         sb.data[i] = (byte) ((c >>> 8) & 0xFF);
     }
 
     
     public static void WriteInt(sizebuf_t sb, int c) {
-        int i = SZ.GetSpace(sb, 4);
-        byte[] d = sb.data;
+        var i = SZ.GetSpace(sb, 4);
+        var d = sb.data;
         d[i++] = (byte) ((c & 0xff));
         d[i++] = (byte) ((c >>> 8) & 0xff);
         d[i++] = (byte) ((c >>> 16) & 0xff);
@@ -83,7 +83,7 @@ public class MSG extends Globals {
 
     
     public static void WriteString(sizebuf_t sb, String s) {
-        String x = s;
+        var x = s;
 
         if (s == null)
             x = "";
@@ -121,7 +121,7 @@ public class MSG extends Globals {
             usercmd_t cmd) {
 
 
-        int bits = 0;
+        var bits = 0;
         if (cmd.angles[0] != from.angles[0])
             bits |= CM_ANGLE1;
         if (cmd.angles[1] != from.angles[1])
@@ -173,9 +173,9 @@ public class MSG extends Globals {
         }
 
         float bestd = 0;
-        int best = 0;
-        for (int i = 0; i < NUMVERTEXNORMALS; i++) {
-            float d = Math3D.DotProduct(dir, bytedirs[i]);
+        var best = 0;
+        for (var i = 0; i < NUMVERTEXNORMALS; i++) {
+            var d = Math3D.DotProduct(dir, bytedirs[i]);
             if (d > bestd) {
                 bestd = d;
                 best = i;
@@ -187,7 +187,7 @@ public class MSG extends Globals {
     
     public static void ReadDir(sizebuf_t sb, float[] dir) {
 
-        int b = ReadByte(sb);
+        var b = ReadByte(sb);
         if (b >= NUMVERTEXNORMALS)
             Com.Error(ERR_DROP, "MSF_ReadDir: out of range");
         Math3D.VectorCopy(bytedirs[b], dir);
@@ -208,7 +208,7 @@ public class MSG extends Globals {
             Com.Error(ERR_FATAL, "Entity number >= MAX_EDICTS");
 
 
-        int bits = 0;
+        var bits = 0;
 
         if (to.number >= 256)
             bits |= U_NUMBER16; 
@@ -408,7 +408,7 @@ public class MSG extends Globals {
     public static int ReadByte(sizebuf_t msg_read) {
         int c;
 
-        int readcount = msg_read.readcount;
+        var readcount = msg_read.readcount;
         if (readcount + 1 > msg_read.cursize)
             c = -1;
         else
@@ -441,8 +441,8 @@ public class MSG extends Globals {
         }
 
         else {
-            int readcount = msg_read.readcount;
-            byte[] data = msg_read.data;
+            var readcount = msg_read.readcount;
+            var data = msg_read.data;
             c = (data[readcount++] & 0xff)
                     | ((data[readcount++] & 0xff) << 8)
                     | ((data[readcount++] & 0xff) << 16)
@@ -455,7 +455,7 @@ public class MSG extends Globals {
     }
 
     public static float ReadFloat(sizebuf_t msg_read) {
-        int n = ReadLong(msg_read);
+        var n = ReadLong(msg_read);
         return Float.intBitsToFloat(n);
     }
 
@@ -464,10 +464,10 @@ public class MSG extends Globals {
 
     public static String ReadString(sizebuf_t msg_read) {
 
-        int l = 0;
-        byte[] rb = MSG.readbuf;
+        var l = 0;
+        var rb = MSG.readbuf;
         do {
-            byte c = (byte) ReadByte(msg_read);
+            var c = (byte) ReadByte(msg_read);
             if (c == -1 || c == 0)
                 break;
 
@@ -481,16 +481,16 @@ public class MSG extends Globals {
 
     public static String ReadStringLine(sizebuf_t msg_read) {
 
-        int l = 0;
+        var l = 0;
         do {
-            byte c = (byte) ReadChar(msg_read);
+            var c = (byte) ReadChar(msg_read);
             if (c == -1 || c == 0 || c == 0x0a)
                 break;
             readbuf[l] = c;
             l++;
         } while (l < 2047);
-        
-        String ret = new String(readbuf, 0, l).trim();
+
+        var ret = new String(readbuf, 0, l).trim();
         Com.dprintln("MSG.ReadStringLine:[" + ret.replace('\0', '@') + ']');
         return ret;
     }
@@ -519,7 +519,7 @@ public class MSG extends Globals {
 
 
         move.set(from);
-        int bits = ReadByte(msg_read);
+        var bits = ReadByte(msg_read);
 
         
         if ((bits & CM_ANGLE1) != 0)
@@ -553,7 +553,7 @@ public class MSG extends Globals {
     }
 
     public static void ReadData(sizebuf_t msg_read, byte[] data, int len) {
-        for (int i = 0; i < len; i++)
+        for (var i = 0; i < len; i++)
             data[i] = (byte) ReadByte(msg_read);
     }    
             

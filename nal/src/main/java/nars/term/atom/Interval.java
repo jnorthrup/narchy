@@ -35,10 +35,10 @@ public final class Interval extends AbstractAtomic implements /*The, */Iterable<
     private final int[] value;
 
     public static Interval read(DataInput in) throws IOException {
-        int n = in.readUnsignedByte();
-        byte[] subterm = new byte[n];
-        int[] value = new int[n];
-        for (int i = 0; i < n; i++) {
+        var n = in.readUnsignedByte();
+        var subterm = new byte[n];
+        var value = new int[n];
+        for (var i = 0; i < n; i++) {
             subterm[i] = in.readByte();
             value[i] = IntCoding.readZigZagInt(in);
         }
@@ -46,13 +46,13 @@ public final class Interval extends AbstractAtomic implements /*The, */Iterable<
     }
 
     public static Interval the(byte[] subterm, int[] value) {
-        int n = subterm.length;
+        var n = subterm.length;
         if (n !=value.length)
             throw new TermException(Interval.class + " requires same # of subterms as values");
-        DynBytes b = new DynBytes(n * value.length*4);
+        var b = new DynBytes(n * value.length*4);
         b.writeByte(INTERVAL.id);
         b.writeUnsignedByte(n);
-        for (int i = 0; i < n; i++) {
+        for (var i = 0; i < n; i++) {
             b.writeByte(subterm[i]);
             b.writeZigZagInt(value[i]);
         }
@@ -102,7 +102,7 @@ public final class Interval extends AbstractAtomic implements /*The, */Iterable<
     }
 
     public boolean AND(Subterms s, ObjectIntPredicate<Term> each) {
-        int n = size();
+        var n = size();
         return IntStream.range(0, n).allMatch(i -> each.accept(s.sub(key[i]), value[i]));
     }
 

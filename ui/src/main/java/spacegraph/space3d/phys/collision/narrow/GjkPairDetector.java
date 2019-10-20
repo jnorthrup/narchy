@@ -69,21 +69,21 @@ public class GjkPairDetector extends DiscreteCollisionDetectorInterface {
 
 	@Override
     public void getClosestPoints(ClosestPointInput input, Result output, boolean swapResults) {
-		v3 tmp = new v3();
+        var tmp = new v3();
 
-        v3 normalInB = new v3();
+        var normalInB = new v3();
 		normalInB.set(0f, 0f, 0f);
 		v3 pointOnA = new v3(), pointOnB = new v3();
-		Transform localTransA = new Transform(input.transformA);
-		Transform localTransB = new Transform(input.transformB);
-		v3 positionOffset = new v3();
+        var localTransA = new Transform(input.transformA);
+        var localTransB = new Transform(input.transformB);
+        var positionOffset = new v3();
         positionOffset.add(localTransA, localTransB);
 		positionOffset.scaled(0.5f);
 		localTransA.sub(positionOffset);
 		localTransB.sub(positionOffset);
 
-		float marginA = minkowskiA.getMargin();
-		float marginB = minkowskiB.getMargin();
+        var marginA = minkowskiA.getMargin();
+        var marginB = minkowskiB.getMargin();
 
 		BulletStats.gNumGjkChecks++;
 
@@ -97,30 +97,30 @@ public class GjkPairDetector extends DiscreteCollisionDetectorInterface {
 
         lastUsedMethod = -1;
 
-        float margin = marginA + marginB;
+        var margin = marginA + marginB;
 
         simplexSolver.reset();
 
-        v3 seperatingAxisInA = new v3();
-        v3 seperatingAxisInB = new v3();
+        var seperatingAxisInA = new v3();
+        var seperatingAxisInB = new v3();
 
-        v3 pInA = new v3();
-        v3 qInB = new v3();
+        var pInA = new v3();
+        var qInB = new v3();
 
-        v3 pWorld = new v3();
-        v3 qWorld = new v3();
-        v3 w = new v3();
+        var pWorld = new v3();
+        var qWorld = new v3();
+        var w = new v3();
 
         v3 tmpPointOnA = new v3(), tmpPointOnB = new v3();
-        v3 tmpNormalInB = new v3();
+        var tmpNormalInB = new v3();
 
-        float squaredDistance = BulletGlobals.SIMD_INFINITY;
-        int degenerateSimplex = 0;
-        boolean checkPenetration = true;
-        boolean checkSimplex = false;
-        int gGjkMaxIter = 1000;
-        int curIter = 0;
-        for (float delta = 0f; ;)
+        var squaredDistance = BulletGlobals.SIMD_INFINITY;
+        var degenerateSimplex = 0;
+        var checkPenetration = true;
+        var checkSimplex = false;
+        var gGjkMaxIter = 1000;
+        var curIter = 0;
+        for (var delta = 0f; ;)
         {
             seperatingAxisInA.negated(cachedSeparatingAxis);
             MatrixUtil.transposeTransform(seperatingAxisInA, seperatingAxisInA, input.transformA.basis);
@@ -153,9 +153,9 @@ public class GjkPairDetector extends DiscreteCollisionDetectorInterface {
                 checkSimplex = true;
                 break;
             }
-            
-            float f0 = squaredDistance - delta;
-            float f1 = squaredDistance * REL_ERROR2;
+
+            var f0 = squaredDistance - delta;
+            var f1 = squaredDistance * REL_ERROR2;
 
             if (f0 <= f1) {
                 if (f0 <= 0f) {
@@ -180,7 +180,7 @@ public class GjkPairDetector extends DiscreteCollisionDetectorInterface {
                 break;
             }
 
-            float previousSquaredDistance = squaredDistance;
+            var previousSquaredDistance = squaredDistance;
             squaredDistance = cachedSeparatingAxis.lengthSquared();
 
             
@@ -210,7 +210,7 @@ public class GjkPairDetector extends DiscreteCollisionDetectorInterface {
 
             }
 
-            boolean check = (!simplexSolver.fullSimplex());
+            var check = (!simplexSolver.fullSimplex());
             
 
             if (!check) {
@@ -220,20 +220,20 @@ public class GjkPairDetector extends DiscreteCollisionDetectorInterface {
             }
         }
 
-        boolean isValid = false;
-        float distance = 0f;
+        var isValid = false;
+        var distance = 0f;
         if (checkSimplex) {
             simplexSolver.compute_points(pointOnA, pointOnB);
             normalInB.sub(pointOnA, pointOnB);
-            float lenSqr = cachedSeparatingAxis.lengthSquared();
+            var lenSqr = cachedSeparatingAxis.lengthSquared();
             
             if (lenSqr < 0.0001f) {
                 degenerateSimplex = 5;
             }
             if (lenSqr > BulletGlobals.FLT_EPSILON * BulletGlobals.FLT_EPSILON) {
-                float rlen = 1f / (float) Math.sqrt(lenSqr);
+                var rlen = 1f / (float) Math.sqrt(lenSqr);
                 normalInB.scaled(rlen);
-                float s = (float) Math.sqrt(squaredDistance);
+                var s = (float) Math.sqrt(squaredDistance);
 
                 assert (s > 0f);
 
@@ -253,7 +253,7 @@ public class GjkPairDetector extends DiscreteCollisionDetectorInterface {
             }
         }
 
-        boolean catchDegeneratePenetrationCase =
+        var catchDegeneratePenetrationCase =
                 (catchDegeneracies != 0 && penetrationDepthSolver != null && degenerateSimplex != 0 && ((distance + margin) < 0.01f));
 
         
@@ -265,7 +265,7 @@ public class GjkPairDetector extends DiscreteCollisionDetectorInterface {
                 
                 BulletStats.gNumDeepPenetrationChecks++;
 
-                boolean isValid2 = penetrationDepthSolver.calcPenDepth(
+                var isValid2 = penetrationDepthSolver.calcPenDepth(
                         simplexSolver,
                         minkowskiA, minkowskiB,
                         localTransA, localTransB,
@@ -275,11 +275,11 @@ public class GjkPairDetector extends DiscreteCollisionDetectorInterface {
                 if (isValid2) {
                     tmpNormalInB.sub(tmpPointOnB, tmpPointOnA);
 
-                    float lenSqr = tmpNormalInB.lengthSquared();
+                    var lenSqr = tmpNormalInB.lengthSquared();
                     if (lenSqr > (BulletGlobals.FLT_EPSILON * BulletGlobals.FLT_EPSILON)) {
                         tmpNormalInB.scaled(1f / (float) Math.sqrt(lenSqr));
                         tmp.sub(tmpPointOnA, tmpPointOnB);
-                        float distance2 = -tmp.length();
+                        var distance2 = -tmp.length();
                         
                         if (!isValid || (distance2 < distance)) {
                             distance = distance2;

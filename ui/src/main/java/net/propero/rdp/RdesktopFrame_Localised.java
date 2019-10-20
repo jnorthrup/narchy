@@ -77,9 +77,9 @@ public class RdesktopFrame_Localised extends RdesktopFrame {
         if (this.isDisplayable())
             this.dispose();
 
-        GraphicsEnvironment env = GraphicsEnvironment
+        var env = GraphicsEnvironment
                 .getLocalGraphicsEnvironment();
-        GraphicsDevice myDevice = env.getDefaultScreenDevice();
+        var myDevice = env.getDefaultScreenDevice();
         if (myDevice.isFullScreenSupported())
             myDevice.setFullScreenWindow(null);
 

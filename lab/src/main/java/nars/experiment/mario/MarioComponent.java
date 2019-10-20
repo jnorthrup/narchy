@@ -23,7 +23,7 @@ public class MarioComponent extends JComponent implements Runnable, KeyListener,
     public void startGame() {
 
 
-        int levelType = ThreadLocalRandom.current().nextFloat()  > 0.5f ?
+        var levelType = ThreadLocalRandom.current().nextFloat()  > 0.5f ?
                 LevelGenerator.TYPE_UNDERGROUND
                 :
                 LevelGenerator.TYPE_OVERGROUND;
@@ -53,7 +53,7 @@ public class MarioComponent extends JComponent implements Runnable, KeyListener,
         this.width = width;
         this.height = height;
 
-        Dimension size = new Dimension(width, height);
+        var size = new Dimension(width, height);
         setPreferredSize(size);
         setMinimumSize(size);
         setMaximumSize(size);
@@ -116,11 +116,11 @@ public class MarioComponent extends JComponent implements Runnable, KeyListener,
 
         image = new BufferedImage(320, 240, BufferedImage.TYPE_INT_RGB);
         image.setAccelerationPriority(1f);
-        Graphics g = getGraphics();
-        Graphics og = image.getGraphics();
+        var g = getGraphics();
+        var og = image.getGraphics();
 
-        double time = System.nanoTime() / 1000000000.0;
-        long tm = System.currentTimeMillis();
+        var time = System.nanoTime() / 1000000000.0;
+        var tm = System.currentTimeMillis();
 
         addKeyListener(this);
         addFocusListener(this);
@@ -129,8 +129,8 @@ public class MarioComponent extends JComponent implements Runnable, KeyListener,
         adjustFPS();
 
 
-        double now = time;
-        boolean running = true;
+        var now = time;
+        var running = true;
         while (running) {
 
             if (!paused)
@@ -141,9 +141,9 @@ public class MarioComponent extends JComponent implements Runnable, KeyListener,
 
 
             @SuppressWarnings("unused")
-            int x = (int) (Math.sin(now) * 16 + 160);
+            var x = (int) (Math.sin(now) * 16 + 160);
             @SuppressWarnings("unused")
-            int y = (int) (Math.cos(now) * 16 + 120);
+            var y = (int) (Math.cos(now) * 16 + 120);
 
             og.setColor(Color.BLACK);
             og.fillRect(0, 0, 320, 240);
@@ -174,8 +174,8 @@ public class MarioComponent extends JComponent implements Runnable, KeyListener,
     }
 
     private static void drawString(Graphics g, String text, int x, int y, int c) {
-        char[] ch = text.toCharArray();
-        for (int i = 0; i < ch.length; i++) {
+        var ch = text.toCharArray();
+        for (var i = 0; i < ch.length; i++) {
             g.drawImage(Art.font[ch[i] - 32][c], x + i * 8, y, null);
         }
     }

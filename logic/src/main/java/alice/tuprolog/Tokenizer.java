@@ -162,7 +162,7 @@ public class Tokenizer extends StreamTokenizer implements Serializable {
 
     Token readNextToken() throws IOException, InvalidTermException {
         Token result;
-        Tokenizer other = this;
+        var other = this;
         while (true) {
             int typea;
             String svala;
@@ -206,7 +206,7 @@ public class Tokenizer extends StreamTokenizer implements Serializable {
             if (typea == '/') {
                 /*Castagna 06/2011*/
 
-                int typeb = other.tokenConsume();
+                var typeb = other.tokenConsume();
                 /**/
                 if (typeb == '*') {
                     do {
@@ -278,7 +278,7 @@ public class Tokenizer extends StreamTokenizer implements Serializable {
             if (typea == '.') {
                 /*Castagna 06/2011*/
 
-                int typeb = other.tokenConsume();
+                var typeb = other.tokenConsume();
                 /**/
                 if (Tokenizer.isWhite(typeb) || typeb == '%' || typeb == StreamTokenizer.TT_EOF) {
                     result = new Token(".", Tokenizer.END);
@@ -290,11 +290,11 @@ public class Tokenizer extends StreamTokenizer implements Serializable {
                 /**/
             }
 
-            boolean isNumber = false;
+            var isNumber = false;
 
 
             if (typea == TT_WORD) {
-                char firstChar = svala.charAt(0);
+                var firstChar = svala.charAt(0);
 
                 if (Character.isUpperCase(firstChar) || '_' == firstChar) {
                     result = new Token(svala, Tokenizer.VARIABLE);
@@ -306,7 +306,7 @@ public class Tokenizer extends StreamTokenizer implements Serializable {
                     /*Castagna 06/2011*/
 
 
-                    int typeb = other.tokenConsume();
+                    var typeb = other.tokenConsume();
                     other.tokenPushBack();
                     /**/
                     if (typeb == '(') {
@@ -324,8 +324,8 @@ public class Tokenizer extends StreamTokenizer implements Serializable {
 
 
             if (typea == '\'' || typea == '\"' || typea == '`') {
-                int qType = typea;
-                StringBuilder quote = new StringBuilder();
+                var qType = typea;
+                var quote = new StringBuilder();
                 while (true) {
                     /*Castagna 06/2011*/
 
@@ -336,14 +336,14 @@ public class Tokenizer extends StreamTokenizer implements Serializable {
                     if (typea == '\\') {
                         /*Castagna 06/2011*/
 
-                        int typeb = other.tokenConsume();
+                        var typeb = other.tokenConsume();
                         /**/
                         if (typeb == '\n')
                             continue;
                         if (typeb == '\r') {
                             /*Castagna 06/2011*/
 
-                            int typec = other.tokenConsume();
+                            var typec = other.tokenConsume();
                             /**/
                             if (typec == '\n')
                                 continue;
@@ -362,7 +362,7 @@ public class Tokenizer extends StreamTokenizer implements Serializable {
                     if (typea == qType) {
                         /*Castagna 06/2011*/
 
-                        int typeb = other.tokenConsume();
+                        var typeb = other.tokenConsume();
                         /**/
                         if (typeb == qType) {
                             quote.append((char) qType);
@@ -393,7 +393,7 @@ public class Tokenizer extends StreamTokenizer implements Serializable {
                     /**/
                 }
 
-                String quoteBody = quote.toString();
+                var quoteBody = quote.toString();
 
                 qType = qType == '\'' ? SQ_SEQUENCE : qType == '\"' ? DQ_SEQUENCE : SQ_SEQUENCE;
                 if (qType == SQ_SEQUENCE) {
@@ -402,7 +402,7 @@ public class Tokenizer extends StreamTokenizer implements Serializable {
                     /*Castagna 06/2011*/
 
 
-                    int typeb = other.tokenConsume();
+                    var typeb = other.tokenConsume();
                     other.tokenPushBack();
                     /**/
                     if (typeb == '(') {
@@ -421,8 +421,8 @@ public class Tokenizer extends StreamTokenizer implements Serializable {
 
 
                 /**/
-                StringBuilder symbols = new StringBuilder();
-                int typeb = typea;
+                var symbols = new StringBuilder();
+                var typeb = typea;
 
                 while (Arrays.binarySearch(Tokenizer.GRAPHIC_CHARS, (char) typeb) >= 0) {
                     symbols.append((char) typeb);
@@ -465,9 +465,9 @@ public class Tokenizer extends StreamTokenizer implements Serializable {
 
                     /*Castagna 06/2011*/
 
-                    int typeb = other.tokenConsume();
+                    var typeb = other.tokenConsume();
                     /**/
-                    String svalb = other.sval;
+                    var svalb = other.sval;
 
 
                     if (typeb != '.' && typeb != '\'') {
@@ -483,9 +483,9 @@ public class Tokenizer extends StreamTokenizer implements Serializable {
                     if (typeb == '\'' && "0".equals(svala)) {
                         /*Castagna 06/2011*/
 
-                        int typec = other.tokenConsume();
+                        var typec = other.tokenConsume();
                         /**/
-                        String svalc = other.sval;
+                        var svalc = other.sval;
                         int intVal;
                         if ((intVal = isCharacterCodeConstantToken(typec, svalc)) != -1) {
                             result = new Token(String.valueOf(intVal), Tokenizer.INTEGER);
@@ -512,9 +512,9 @@ public class Tokenizer extends StreamTokenizer implements Serializable {
 
                     /*Castagna 06/2011*/
 
-                    int typec = other.tokenConsume();
+                    var typec = other.tokenConsume();
                     /**/
-                    String svalc = other.sval;
+                    var svalc = other.sval;
 
 
                     if (typec != TT_WORD) {
@@ -528,7 +528,7 @@ public class Tokenizer extends StreamTokenizer implements Serializable {
                     }
 
 
-                    int exponent = svalc.indexOf('E');
+                    var exponent = svalc.indexOf('E');
                     if (exponent == -1)
                         exponent = svalc.indexOf('e');
 
@@ -536,14 +536,14 @@ public class Tokenizer extends StreamTokenizer implements Serializable {
                         if (exponent == svalc.length() - 1) {
                             /*Castagna 06/2011*/
 
-                            int typeb2 = other.tokenConsume();
+                            var typeb2 = other.tokenConsume();
                             /**/
                             if (typeb2 == '+' || typeb2 == '-') {
                                 /*Castagna 06/2011*/
 
-                                int typec2 = other.tokenConsume();
+                                var typec2 = other.tokenConsume();
                                 /**/
-                                String svalc2 = other.sval;
+                                var svalc2 = other.sval;
                                 if (typec2 == TT_WORD) {
 
                                     Long.parseLong(svalc.substring(0, exponent));
@@ -594,12 +594,12 @@ public class Tokenizer extends StreamTokenizer implements Serializable {
     public int[] offsetToRowColumn(int offset) {
     	if (text == null || text.length() <= 0)
     		return new int[] { super.lineno(), -1 };
+
+        var newText = removeTrailing(text,tokenOffset);
+        var lno = 0;
+        var lastNewline = -1;
     	
-    	String newText = removeTrailing(text,tokenOffset);
-    	int lno = 0;
-    	int lastNewline = -1;
-    	
-    	for (int i=0; i<newText.length() && i<offset; i++) {
+    	for (var i = 0; i<newText.length() && i<offset; i++) {
     		if (newText.charAt(i) == '\n') {
     			lno++;
     			lastNewline = i;
@@ -619,9 +619,9 @@ public class Tokenizer extends StreamTokenizer implements Serializable {
     static String removeTrailing(String input, int tokenOffset){
 
         try {
-	    	char c = input.charAt(tokenOffset-1);
-            String out = input;
-            int i = tokenOffset;
+            var c = input.charAt(tokenOffset-1);
+            var out = input;
+            var i = tokenOffset;
             while(c == '\n'){
 	    		out=input.substring(0, i);
 	    		i--;
@@ -639,7 +639,7 @@ public class Tokenizer extends StreamTokenizer implements Serializable {
      * @throws IOException
      */
     private int tokenConsume() throws IOException {
-    	int t = super.nextToken();
+        var t = super.nextToken();
     	tokenLength = (sval == null ? 1 : sval.length());
     	tokenOffset += tokenLength;
     	return t;
@@ -664,7 +664,7 @@ public class Tokenizer extends StreamTokenizer implements Serializable {
      */
     private static int isCharacterCodeConstantToken(int typec, String svalc) {
         if (svalc != null) {
-            int sl = svalc.length();
+            var sl = svalc.length();
             if (sl == 1)
                 return svalc.charAt(0);
             if (sl > 1) {

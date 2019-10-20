@@ -95,16 +95,16 @@ public class PixelBag implements Bitmap2D {
 
 
         float X = pos.x, Y = pos.y;
-        float Z = this.Z;
+        var Z = this.Z;
 
 
-        float visibleProportion = (float) lerp(Math.sqrt(1 - Z), maxZoom, minZoom);
-        float ew = visibleProportion * (sw);
-        float eh = visibleProportion * (sh);
+        var visibleProportion = (float) lerp(Math.sqrt(1 - Z), maxZoom, minZoom);
+        var ew = visibleProportion * (sw);
+        var eh = visibleProportion * (sh);
 
 
         float minX, maxX, minY, maxY;
-        boolean inBoundsOnly = false;
+        var inBoundsOnly = false;
         if (inBoundsOnly) {
 
 
@@ -144,21 +144,21 @@ public class PixelBag implements Bitmap2D {
         int supersamplingX = (int) Math.floor(xRange / px / 2f),
                 supersamplingY = (int) Math.floor(yRange / py / 2f);
 
-        for (int oy = 0; oy < py; oy++) {
-            float sy = (lerpSafe((oy / py), minY, maxY));
+        for (var oy = 0; oy < py; oy++) {
+            var sy = (lerpSafe((oy / py), minY, maxY));
 
-            for (int ox = 0; ox < px; ox++) {
+            for (var ox = 0; ox < px; ox++) {
 
                 //TODO optimize sources which are already gray (ex: 8-bit grayscale)
 
-                float sx = (lerpSafe((ox) / px, minX, maxX));
+                var sx = (lerpSafe((ox) / px, minX, maxX));
 
 
                 /** sampled pixels in the original image (inclusive) */
-                int x1 = Math.max(0, round(sx - supersamplingX));
-                int x2 = Math.min(sw - 1, round(sx + supersamplingX + 1));
-                int y1 = Math.max(0, round(sy - supersamplingY));
-                int y2 = Math.min(sh - 1, round(sy + supersamplingY + 1));
+                var x1 = Math.max(0, round(sx - supersamplingX));
+                var x2 = Math.min(sw - 1, round(sx + supersamplingX + 1));
+                var y1 = Math.max(0, round(sy - supersamplingY));
+                var y2 = Math.min(sh - 1, round(sy + supersamplingY + 1));
 
                 float v;
                 if (x1 == x2 && y1 == y2) {
@@ -173,19 +173,19 @@ public class PixelBag implements Bitmap2D {
                     float samples = 0;
                     float brightSum = 0;
                     //float R = 0, G = 0, B = 0;
-                    for (int esx = x1; esx <= x2; esx++) {
+                    for (var esx = x1; esx <= x2; esx++) {
 
-                        float dpx = esx - sx;
+                        var dpx = esx - sx;
 
-                        for (int esy = y1; esy <= y2; esy++) {
+                        for (var esy = y1; esy <= y2; esy++) {
 
                             //TODO gaussian blur, not just flat average
-                            float b = src.brightness(esx, esy);
+                            var b = src.brightness(esx, esy);
                             if (b == b) {
 
-                                float dpy = esy - sy;
+                                var dpy = esy - sy;
 
-                                float a = kernelFade(dpx, dpy);
+                                var a = kernelFade(dpx, dpy);
                                 brightSum += b * a;
                                 samples += a;
                             } //else: random?
@@ -211,7 +211,7 @@ public class PixelBag implements Bitmap2D {
      * cheap sampling approximation
      */
     private static float kernelFade(float dpx, float dpy) {
-        float manhattan = Math.abs(dpx) + Math.abs(dpy);
+        var manhattan = Math.abs(dpx) + Math.abs(dpy);
         return manhattan > Float.MIN_NORMAL ? 1f / (1 + 4 * manhattan) : 1;
     }
 

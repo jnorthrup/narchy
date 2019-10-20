@@ -51,7 +51,7 @@ public class HitMeter extends FunctionMeter<Long> {
     
     @Override
     public Long getValue(Object key, int index) {
-        long c = count();
+        var c = count();
         if (autoReset) {
             reset();
         }

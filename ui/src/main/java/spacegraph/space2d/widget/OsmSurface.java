@@ -100,7 +100,7 @@ public class OsmSurface extends PaintSurface {
                 renderTouchedIndexBounds(gl);
             }
 
-            for (OsmElement each : hilight) {
+            for (var each : hilight) {
                 renderBounds(gl, each);
             }
 
@@ -130,7 +130,7 @@ public class OsmSurface extends PaintSurface {
         if (b instanceof OsmWay)
             b = ((OsmWay) b).bounds();
         if (b instanceof HyperRectFloat) {
-            HyperRectFloat r = (HyperRectFloat) b;
+            var r = (HyperRectFloat) b;
             rect(gl, r);
         }
     }
@@ -139,7 +139,7 @@ public class OsmSurface extends PaintSurface {
         float x1 = r.min.coord(0), y1 = r.min.coord(1);
         float x2 = r.max.coord(0), y2 = r.max.coord(1);
 
-        float[] ff = new float[3];
+        var ff = new float[3];
         projection.project(x1, y1, 0, ff, 0);
         x1 = ff[0];
         y1 = ff[1];
@@ -160,7 +160,7 @@ public class OsmSurface extends PaintSurface {
 
         if (o != null) {
 
-            RectFloat b = o.geoBounds;
+            var b = o.geoBounds;
 
             if (b != null) {
 
@@ -170,8 +170,8 @@ public class OsmSurface extends PaintSurface {
                 if (!o.ready)
                     renderProc = loading;
                 else {
-                    GLContext ctx = gl.getContext();
-                    Object c = ctx.getAttachedObject(o.id);
+                    var ctx = gl.getContext();
+                    var c = ctx.getAttachedObject(o.id);
                     if (projection.changed() && c != null) {
                         //detach and create new
                         ctx.detachObject(o.id);
@@ -179,13 +179,13 @@ public class OsmSurface extends PaintSurface {
                     }
                     if (c == null) {
                         c = new OsmSpace.OsmRenderer(gl, projection);
-                        OsmSpace.OsmRenderer r = ((OsmSpace.OsmRenderer) c);
+                        var r = ((OsmSpace.OsmRenderer) c);
 //                        HyperRectFloat viewBounds = new HyperRectFloat(
 //                                new float[] { },
 //                                new float[] { }
 //                        );
                         o.ways.forEach(r::addWay);
-                        for (OsmNode osmNode : o.nodes.values()) {
+                        for (var osmNode : o.nodes.values()) {
                             r.addNode(osmNode);
                         }
 //                        //index.index.forEach(e -> {//whileEachIntersecting(viewBounds,e->{
@@ -243,9 +243,9 @@ public class OsmSurface extends PaintSurface {
         } else {
             //v2 pos = finger.posGlobal(); //posPixel;
 
-            v2 pos = finger.posGlobal();
-            float wx = (pos.x - cx());
-            float wy = (pos.y - cy());
+            var pos = finger.posGlobal();
+            var wx = (pos.x - cx());
+            var wy = (pos.y - cy());
             float wz = 0;
 
             //TODO unproject screen to world
@@ -257,8 +257,8 @@ public class OsmSurface extends PaintSurface {
 //            projection.project(touch[0], touch[1], touch[2], untouch, 0);
 //            System.out.println("  " + n4(untouch[0] - wx) + " " + n4(untouch[1] - wy));
 
-            float rad = 0.0000f;
-            HyperRectFloat cursor = HyperRectFloat.cube(touch, rad);
+            var rad = 0.0000f;
+            var cursor = HyperRectFloat.cube(touch, rad);
             index.index.intersectsWhile(cursor, (each) -> {
                 if (each.tags != null) {
                     //System.out.println(each.tags);
@@ -278,10 +278,10 @@ public class OsmSurface extends PaintSurface {
                     .south(
                         new Animating<>(new BitmapLabel(), (b)->{
 
-                            List<OsmElement> h = this.hilight;
+                            var h = this.hilight;
                             if (!h.isEmpty()) {
                                 try {
-                                    OsmElement hh = ((FasterList<OsmElement>) h).min(
+                                    var hh = ((FasterList<OsmElement>) h).min(
                                             Comparators.byDoubleFunction((DoubleFunction<OsmElement>)
                                                     HyperRegion::perimeter)
                                     );

@@ -46,7 +46,7 @@ public interface Prioritizable extends Prioritized, ScalarValue {
 
         float amount;
         if (amountOrFraction) {
-            float s = source.pri();
+            var s = source.pri();
             if (s!=s || s < ScalarValue.EPSILON)
                 return 0; //source is depleted
 
@@ -58,21 +58,21 @@ public interface Prioritizable extends Prioritized, ScalarValue {
                 return 0; //request*source is insignificant
         }
 
-        float[] before = new float[1];
+        var before = new float[1];
 
-        float after = pri((x,a)->{
-            float x1 = x;
+        var after = pri((x, a)->{
+            var x1 = x;
             if (x1 != x1)
                 x1 = 0;
             before[0] = x1;
             return x1 + a;
         }, amount);
 
-        float b = before[0];
+        var b = before[0];
         if (b!=b)
             b = 0;
 
-        float taken = after - b;
+        var taken = after - b;
 
         if (!copyOrMove) {
 //            float taken = source.priDelta((exist,subtracting)->{
@@ -140,19 +140,19 @@ public interface Prioritizable extends Prioritized, ScalarValue {
 
         assert (src.length > 0);
 
-        double priTarget = Math.min(maxPri, Util.sumDouble(s -> {
+        var priTarget = Math.min(maxPri, Util.sumDouble(s -> {
             if (s == null) return 0;
             return getPri.apply(s).priElseZero();
         }, src));
 
-        UnitPri u = new UnitPri();
+        var u = new UnitPri();
 
         if (priTarget > ScalarValue.EPSILON) {
-            float perSrc = (float) (priTarget / src.length);
+            var perSrc = (float) (priTarget / src.length);
             //TODO random visit order if not copying (transferring)
-            for (X t: src) {
+            for (var t: src) {
                 if (t != null) {
-                    float v = u.take(getPri.apply(t), perSrc, true, copyOrTransfer);
+                    var v = u.take(getPri.apply(t), perSrc, true, copyOrTransfer);
                     if (Util.equals(v, 1f, EPSILON))
                         break; //done
                 }

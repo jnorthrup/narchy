@@ -76,7 +76,7 @@ public class ToolItem extends Item {
     @Override
     public boolean matches(Item item) {
         if (item instanceof ToolItem) {
-            ToolItem other = (ToolItem) item;
+            var other = (ToolItem) item;
             if (other.type != type) return false;
             return other.level == level;
         }

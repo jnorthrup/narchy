@@ -27,8 +27,8 @@ public class Flipper extends LevelObject {
 		this.p = new Point(p1);
 		length = (int) p1.distance(p2);
 		leftFlipper = (p1.x < p2.x);
-		int dx = p2.x - p1.x;
-		int dy = p2.y - p1.y;
+		var dx = p2.x - p1.x;
+		var dy = p2.y - p1.y;
 		angle = (float) Math.atan2(dy, dx);
 		
 		if (leftFlipper) {
@@ -57,8 +57,8 @@ public class Flipper extends LevelObject {
 	@Override
     public void draw(Graphics2D g, LevelPanel levelPanel) {
 		g.setColor(Color.WHITE);
-		int startDeg = (int) -Math.toDegrees(toAngle(minAngle));
-		int arcDeg = (int) -Math.toDegrees(toAngle(maxAngle) - toAngle(minAngle));
+		var startDeg = (int) -Math.toDegrees(toAngle(minAngle));
+		var arcDeg = (int) -Math.toDegrees(toAngle(maxAngle) - toAngle(minAngle));
 		g.fillArc(p.x - length, p.y - length, length * 2, length * 2, startDeg, arcDeg);
 	}	
 	

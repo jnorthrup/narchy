@@ -54,7 +54,7 @@ public class Path2D extends FloatArrayList {
         assert (maxPoints > 3);
 
         synchronized (this) {
-            int s = this.size;
+            var s = this.size;
             if (s > 0) {
                 //quick test for equality with last point
                 if (Util.equals(items[s-2], p.x, ScalarValue.EPSILON) && Util.equals(items[s-1], p.y, ScalarValue.EPSILON))
@@ -71,22 +71,22 @@ public class Path2D extends FloatArrayList {
     }
 
     private void collinearSimplifyNext() {
-        int n = points();
-        int worst = -1;
-        float minC = Float.POSITIVE_INFINITY;
-        for (int i = 1; i < n - 1; i++) {
-            int prevId = i - 1;
+        var n = points();
+        var worst = -1;
+        var minC = Float.POSITIVE_INFINITY;
+        for (var i = 1; i < n - 1; i++) {
+            var prevId = i - 1;
             if (prevId < 0) prevId = n - 1;
-            int nextId = i + 1;
+            var nextId = i + 1;
             if (nextId >= n) nextId = 0;
 
             {
 
-                v2 prev = point(prevId);
-                v2 current = point(i);
-                v2 next = point(nextId);
+                var prev = point(prevId);
+                var current = point(i);
+                var next = point(nextId);
 
-                float c = collinearity(prev, current, next);
+                var c = collinearity(prev, current, next);
                 if (c < minC) {
                     worst = i;
                     minC = c;
@@ -102,16 +102,16 @@ public class Path2D extends FloatArrayList {
 
         assert (maxPoints >= 3);
 
-        int n = points();
-        for (int i = 0; n > maxPoints && i < n; ) {
-            int prevId = i - 1;
+        var n = points();
+        for (var i = 0; n > maxPoints && i < n; ) {
+            var prevId = i - 1;
             if (prevId < 0) prevId = n - 1;
-            int nextId = i + 1;
+            var nextId = i + 1;
             if (nextId >= n) nextId = 0;
 
-            v2 prev = point(prevId);
-            v2 current = point(i);
-            v2 next = point(nextId);
+            var prev = point(prevId);
+            var current = point(i);
+            var next = point(nextId);
 
             if (i > 0 && i < n - 1 && collinear(prev, current, next, collinearityTolerance)) {
                 removeAtIndex(i * 2);
@@ -124,15 +124,15 @@ public class Path2D extends FloatArrayList {
     }
 
     public void setEnd(v2 p) {
-        float[] ii = items;
-        int s = size;
+        var ii = items;
+        var s = size;
         ii[s - 2] = p.x;
         ii[s - 1] = p.y;
     }
 
     public void addAll(v2... pp) {
         ensureCapacity(size + pp.length * 2);
-        for (v2 p : pp)
+        for (var p : pp)
             addAll(p.x, p.y);
     }
 
@@ -143,21 +143,21 @@ public class Path2D extends FloatArrayList {
     }
 
     private v2 point(int i) {
-        float[] ii = items;
+        var ii = items;
         return new v2(ii[i * 2], ii[i * 2 + 1]);
     }
 
     public v2 end() {
-        int s = size;
+        var s = size;
         assert (s > 0);
-        float[] ii = items;
+        var ii = items;
         return new v2(ii[s - 2], ii[s - 1]);
     }
 
 
     private void forEach(FloatFloatProcedure each) {
-        int s = size;
-        for (int i = 0; i < s; ) {
+        var s = size;
+        for (var i = 0; i < s; ) {
             each.value(items[i++], items[i++]);
         }
     }
@@ -176,13 +176,13 @@ public class Path2D extends FloatArrayList {
     }
 
     public RectFloat bounds() {
-        float[] a = array();
-        int n = points();
+        var a = array();
+        var n = points();
         if (n <= 2)
             return RectFloat.XYWH(a[0], a[1], 1, 1);
 
         float x1 = Float.POSITIVE_INFINITY, y1 = Float.POSITIVE_INFINITY, x2 = Float.NEGATIVE_INFINITY, y2 = Float.NEGATIVE_INFINITY;
-        for (int i = 0; i < n; ) {
+        for (var i = 0; i < n; ) {
             float x = a[i++], y = a[i++];
             if (x < x1) x1 = x;
             if (x > x2) x2 = x;

@@ -41,13 +41,13 @@ public class Player extends LivingEntity {
                            float mouseY, World world, int tileSize) {
 
 
-        float x = .5f + (int) this.getCenterX(tileSize);
-        float y = .5f + (int) this.getCenterY(tileSize);
+        var x = .5f + (int) this.getCenterX(tileSize);
+        var y = .5f + (int) this.getCenterY(tileSize);
 
         handStartX = x;
         handStartY = y;
 
-        float tMax = (float) Math.ceil(armLength);
+        var tMax = (float) Math.ceil(armLength);
         handEndX = -1;
         handEndY = -1;
 
@@ -61,12 +61,12 @@ public class Player extends LivingEntity {
             m = (y - mouseY) / (x - mouseX);
         }
 
-        int hitY = -1;
-        int hitX = -1;
+        var hitY = -1;
+        var hitX = -1;
         for (float i = 0; i <= Math.ceil(armLength) * 2; i++) {
             for (float j = 0; j <= Math.ceil(armLength) * 2; j++) {
-                float px = (float) (x - Math.ceil(armLength) + i) - .5f;
-                float py = (float) (y - Math.ceil(armLength) + j) - .5f;
+                var px = (float) (x - Math.ceil(armLength) + i) - .5f;
+                var py = (float) (y - Math.ceil(armLength) + j) - .5f;
                 if (!world.isBreakable((int) px, (int) py)) {
                     continue;
                 }
@@ -99,7 +99,7 @@ public class Player extends LivingEntity {
                 if (down != -1 || left != -1 || up != -1 || right != -1) {
 
 
-                    float newTMax = (float) Math.sqrt(Math.pow(Math.abs(x) - Math.abs(px), 2)
+                    var newTMax = (float) Math.sqrt(Math.pow(Math.abs(x) - Math.abs(px), 2)
                             + Math.pow(Math.abs(y) - Math.abs(py), 2));
                     if (newTMax >= tMax) {
                         continue;
@@ -107,27 +107,27 @@ public class Player extends LivingEntity {
 
                     if (up != -1) {
                         handEndX = up;
-                        float upY = py - 1;
+                        var upY = py - 1;
                         handEndY = upY;
                         handBuildPos.x = (int) px;
                         handBuildPos.y = (int) py - 1;
                     }
                     if (down != -1) {
                         handEndX = down;
-                        float downY = py + 1;
+                        var downY = py + 1;
                         handEndY = downY;
                         handBuildPos.x = (int) px;
                         handBuildPos.y = (int) py + 1;
                     }
                     if (left != -1) {
-                        float leftX = px;
+                        var leftX = px;
                         handEndX = leftX;
                         handEndY = left;
                         handBuildPos.x = (int) px - 1;
                         handBuildPos.y = (int) py;
                     }
                     if (right != -1) {
-                        float rightX = px + 1;
+                        var rightX = px + 1;
                         handEndX = rightX;
                         handEndY = right;
                         handBuildPos.x = (int) px + 1;
@@ -148,10 +148,10 @@ public class Player extends LivingEntity {
     @Override
     public void draw(GraphicsHandler g, float cameraX, float cameraY, int screenWidth,
                      int screenHeight, int tileSize) {
-        Int2 pos = StockMethods.computeDrawLocationInPlace(cameraX, cameraY, screenWidth,
+        var pos = StockMethods.computeDrawLocationInPlace(cameraX, cameraY, screenWidth,
                 screenHeight, tileSize, x, y);
         if (StockMethods.onScreen) {
-            int frame = (int) x % 4;
+            var frame = (int) x % 4;
             if (facingRight) {
                 if (frame == 0 || frame == 2 || dx <= 0) {
                     sprite.draw(g, pos.x, pos.y, widthPX, heightPX);

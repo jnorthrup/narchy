@@ -104,9 +104,9 @@ public class TopN<X> extends SortedArray<X> implements FloatFunction<X>, TopFilt
 
 
     public final boolean add(/*@NotNull*/ X e) {
-        float negRank = floatValueOf(e);
+        var negRank = floatValueOf(e);
         if (-negRank > min) {
-            int r = addRanked(e, negRank, this);
+            var r = addRanked(e, negRank, this);
             if (r >= 0) {
                 commit();
                 return true;
@@ -133,7 +133,7 @@ public class TopN<X> extends SortedArray<X> implements FloatFunction<X>, TopFilt
 
     @Override
     public @Nullable X pop() {
-        X x = removeFirst();
+        var x = removeFirst();
         if (x!=null)
             commit();
         return x;
@@ -143,7 +143,7 @@ public class TopN<X> extends SortedArray<X> implements FloatFunction<X>, TopFilt
     public List<X> drain(int count) {
         count = Math.min(count, size);
         List<X> x = new FasterList<>(count);
-        for (int i = 0; i < count; i++)
+        for (var i = 0; i < count; i++)
             x.add(removeFirst());
         commit();
         return x;
@@ -151,7 +151,7 @@ public class TopN<X> extends SortedArray<X> implements FloatFunction<X>, TopFilt
 
     public X[] drain(X[] next) {
 
-        X[] current = this.items;
+        var current = this.items;
 
         this.items = next;
         this.size = 0;
@@ -166,7 +166,7 @@ public class TopN<X> extends SortedArray<X> implements FloatFunction<X>, TopFilt
     }
 
     final float minValue() {
-        int s = size;
+        var s = size;
         return s <= 0 ? Float.NaN :
             valueAt(s - 1, rank);
     }
@@ -180,7 +180,7 @@ public class TopN<X> extends SortedArray<X> implements FloatFunction<X>, TopFilt
      */
     public void removePercentage(float below, boolean ofExistingOrCapacity) {
         assert (below >= 0 && below <= 1.0f);
-        int belowIndex = (int) Math.floor(ofExistingOrCapacity ? size() : capacity() * below);
+        var belowIndex = (int) Math.floor(ofExistingOrCapacity ? size() : capacity() * below);
         if (belowIndex < size) {
             size = belowIndex;
             Arrays.fill(items, size, items.length - 1, null);
@@ -229,7 +229,7 @@ public class TopN<X> extends SortedArray<X> implements FloatFunction<X>, TopFilt
      * roulette select
      */
     public @Nullable X getRoulette(FloatSupplier rng, FloatFunction<X> rank) {
-        int n = size;
+        var n = size;
         switch (n) {
             case 0:
                 return null;
@@ -257,7 +257,7 @@ public class TopN<X> extends SortedArray<X> implements FloatFunction<X>, TopFilt
 
 
     public void compact(float thresh) {
-        int s = size;
+        var s = size;
         if (s == 0) {
             items = null;
             capacity = 0;

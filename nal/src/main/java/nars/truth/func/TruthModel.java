@@ -42,7 +42,7 @@ public class TruthModel {
 	}
 
 	protected void add(TruthFunction... values) {
-		for (TruthFunction t : values)
+		for (var t : values)
 			add(t);
 	}
 
@@ -74,7 +74,7 @@ public class TruthModel {
 
 	/** adds it and the swapped */
 	protected void _add(TruthFunction t, String postfix) {
-		String name = t + postfix;
+		var name = t + postfix;
 		__add(name, t);
 		__add(name + "X",
 			t instanceof RepolarizedTruth ?  ((RepolarizedTruth)t).swapped() : new TruthFunction.SwappedTruth(t));

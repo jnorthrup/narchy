@@ -19,8 +19,8 @@ public class LogisticSigmoid implements DiffableFunctionSource {
 
     @Override
     public String valueToSource(SourceEnvironment se) {
-        String xv = x.valueToSource(se);
-        String y = se.allocateVariable();
+        var xv = x.valueToSource(se);
+        var y = se.allocateVariable();
 
         se.assign(y).append("1 / (1 + Math.exp(-").append(xv).append("));").nl();
         return y;
@@ -28,9 +28,9 @@ public class LogisticSigmoid implements DiffableFunctionSource {
 
     @Override
     public String partialDeriveToSource(SourceEnvironment se) {
-        String xv = valueToSource(se);
-        String xdv = x.partialDeriveToSource(se);
-        String y = se.allocateVariable();
+        var xv = valueToSource(se);
+        var xdv = x.partialDeriveToSource(se);
+        var y = se.allocateVariable();
 
         se.assign(y).append(xdv).append(" * ").append(xv).append(" * (1.0 - ").
                 append(xv).append(");").nl();

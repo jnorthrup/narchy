@@ -14,8 +14,8 @@ public class MatrixUtils {
     }
 
     public static double[][] simpleRead2DMatrix(File file, String columnDelimiter) {
-        try (FileReader fr = new FileReader(file)) {
-            double[][] m = simpleRead2DMatrix(fr, columnDelimiter);
+        try (var fr = new FileReader(file)) {
+            var m = simpleRead2DMatrix(fr, columnDelimiter);
             fr.close();
             return m;
         } catch (IOException e) {
@@ -29,12 +29,12 @@ public class MatrixUtils {
         Collection<double[]> rows = new ArrayList<>();
 
         {
-            BufferedReader b = new BufferedReader(r);
+            var b = new BufferedReader(r);
             String line;
             while ((line = b.readLine()) != null && !LINE.matcher(line).matches()) {
-                String[] cols = line.trim().split(columnDelimiter);
-                double[] row = new double[cols.length];
-                for (int j = 0; j < cols.length; j++) {
+                var cols = line.trim().split(columnDelimiter);
+                var row = new double[cols.length];
+                for (var j = 0; j < cols.length; j++) {
                     if (!(cols[j].isEmpty())) {
                         row[j] = Double.parseDouble(cols[j].trim());
                     }
@@ -44,9 +44,9 @@ public class MatrixUtils {
 
         }
 
-        double[][] array = new double[rows.size()][];
-        int currentRow = 0;
-        for (double[] ds : rows) {
+        var array = new double[rows.size()][];
+        var currentRow = 0;
+        for (var ds : rows) {
             array[currentRow++] = ds;
         }
 
@@ -56,17 +56,17 @@ public class MatrixUtils {
     public static String[] simpleReadLines(File file) {
         Collection<String> rows;
 
-        try (FileReader fr = new FileReader(file)) {
-            try (BufferedReader b = new BufferedReader(fr)) {
+        try (var fr = new FileReader(file)) {
+            try (var b = new BufferedReader(fr)) {
                 rows = b.lines().map(String::trim).collect(Collectors.toList());
             }
         } catch (IOException e) {
             throw new IllegalArgumentException(e);
         }
 
-        String[] lines = new String[rows.size()];
-        int currentRow = 0;
-        for (String line : rows) {
+        var lines = new String[rows.size()];
+        var currentRow = 0;
+        for (var line : rows) {
             lines[currentRow++] = line;
         }
 

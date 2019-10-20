@@ -73,7 +73,7 @@ public class Simulation {
         if (DISPLAY) {
             displayAgent(agent);
         }
-        boolean displayRewardChart = DISPLAY;
+        var displayRewardChart = DISPLAY;
         if (displayRewardChart) {
 
 
@@ -123,9 +123,9 @@ public class Simulation {
         */
 
         lastCycleTime = System.nanoTime();
-        int cycles = 0;
+        var cycles = 0;
 
-        int time = 0;
+        var time = 0;
         while (world.isActive()) {
             /*    
             # Repeat the loop through the duration of the existence of the world 
@@ -135,21 +135,21 @@ public class Simulation {
             return agent.report_performance()
             */
 
-            double reward = world.step(agent.getAction(), agent.getSensor());
+            var reward = world.step(agent.getAction(), agent.getSensor());
             rewardTotal+= reward;
             
             agent.step(reward);
 
-            long now = System.currentTimeMillis();
+            var now = System.currentTimeMillis();
             if ((lastDisplay == -1) || (now - lastDisplay > displayPeriodMS)) {
                 
                 if (jf!=null) jf.setTitle("Reward: " + reward + ", @" + time);
                 lastDisplay = System.currentTimeMillis();
 
-                long n = System.nanoTime();
-                
-                double cycleTime = ((((double)n) - ((double)lastCycleTime))/1000000000.0);
-                double fps = cycles/cycleTime;
+                var n = System.nanoTime();
+
+                var cycleTime = ((((double)n) - ((double)lastCycleTime))/1000000000.0);
+                var fps = cycles/cycleTime;
                 System.out.println(time + " (" + fps + " cycles/sec)" + " " + cycleTime + "s");
 
 

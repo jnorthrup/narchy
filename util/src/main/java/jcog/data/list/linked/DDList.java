@@ -46,7 +46,7 @@ public class DDList<E> implements Iterable<E> {
             
             DD current = getFirstNode();
             do {
-                DD next = current.next;
+                var next = current.next;
                 pool.put(detach(current));
                 current = next;
             } while (size > 0);
@@ -88,22 +88,22 @@ public class DDList<E> implements Iterable<E> {
     /** add the raw item to the list, will be bagged */
     public DD<E> add(E item) {
         if (item == null) throw new RuntimeException("Bag requires non-null items");
-        DD<E> d = pool.get(item, id);
+        var d = pool.get(item, id);
         return add( d );
     }
 
 
     public DD<E> getFirstNode() {
-        
-        DD<E> x = pre.next;
+
+        var x = pre.next;
         if (x instanceof Sentinel) {
             return x.next;
         }
         return x;
     }
     public DD<E> getLastNode() {
-        
-        DD<E> x = post.prev;
+
+        var x = post.prev;
         if (x instanceof Sentinel) return x.prev;
         return x;
     }
@@ -128,7 +128,7 @@ public class DDList<E> implements Iterable<E> {
         if (x == null) throw new RuntimeException("attempt to add null element");
         if (x.owner()!=getID()) throw new RuntimeException("add of item already owned by level " + x.owner());
 
-        DD<E> last = post.prev;
+        var last = post.prev;
         x.next = post;
         x.prev = last;
         post.prev = x;
@@ -150,8 +150,8 @@ public class DDList<E> implements Iterable<E> {
         if ((i == pre) || (i == post))
             throw new RuntimeException("DDList fault");
 
-        DD<E> x = i.prev;
-        DD<E> y = i.next;
+        var x = i.prev;
+        var y = i.next;
         x.next = y;
         y.prev = x;
         size--;
@@ -170,15 +170,15 @@ public class DDList<E> implements Iterable<E> {
 
     @Override
     public DDListIterator<E> iterator() {
-        DDListIterator dd = new DDListIterator();
+        var dd = new DDListIterator();
         dd.init(this);
         return dd;
     }
 
 
     public String toString() {
-        StringBuilder s = new StringBuilder();
-        for (E item : this)
+        var s = new StringBuilder();
+        for (var item : this)
             s.append(item).append(' ');
         return s.toString();
     }
@@ -191,10 +191,10 @@ public class DDList<E> implements Iterable<E> {
     public void forEach(Consumer<? super E> action) {
 
         DD<E> postSentinel = post;
-        DD<E> next = getFirstNode();
+        var next = getFirstNode();
 
         while ((next!=null) && (next!=postSentinel)) {
-            E item = next.item;
+            var item = next.item;
             action.accept(item);
             next = next.next;
         }

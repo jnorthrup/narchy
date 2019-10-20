@@ -19,18 +19,18 @@ public class Simplify2D {
 	
 	
 	public static FasterList<v2> collinearSimplify(FasterList<v2> vertices, float collinearityTolerance) {
-		
-		int n = vertices.size();
+
+		var n = vertices.size();
 		if (n < 3) return vertices;
-		FasterList<v2> simplified = new FasterList<>();
-		for (int i = 0; i < n; i++) {
-			int prevId = i - 1;
+		var simplified = new FasterList<v2>();
+		for (var i = 0; i < n; i++) {
+			var prevId = i - 1;
 			if (prevId < 0) prevId = n - 1;
-			int nextId = i + 1;
+			var nextId = i + 1;
 			if (nextId >= n) nextId = 0;
-			v2 prev = vertices.get(prevId);
-			v2 current = vertices.get(i);
-			v2 next = vertices.get(nextId);
+			var prev = vertices.get(prevId);
+			var current = vertices.get(i);
+			var next = vertices.get(nextId);
 			
 			if (collinear(prev, current, next, collinearityTolerance))
 				continue;
@@ -69,30 +69,30 @@ public class Simplify2D {
 	
 	
 	public static FasterList<v2> douglasPeuckerSimplify(FasterList<v2> vertices, float distanceTolerance) {
-		
-		int n = vertices.size();
-		MetalBitSet usePt = MetalBitSet.bits(n);
+
+		var n = vertices.size();
+		var usePt = MetalBitSet.bits(n);
 		usePt.setAll();
 		simplifySection(usePt, distanceTolerance, vertices, 0, n - 1);
-		FasterList<v2> result = IntStream.range(0, n).filter(usePt::get).mapToObj(vertices::get).collect(Collectors.toCollection(FasterList::new));
+		var result = IntStream.range(0, n).filter(usePt::get).mapToObj(vertices::get).collect(Collectors.toCollection(FasterList::new));
 		return result;
 	}
 
 	private static void simplifySection(MetalBitSet usePt, float _distanceTolerance, FasterList<v2> vertices, int i, int j) {
 		if ((i + 1) == j) return;
-		v2 A = vertices.get(i);
-		v2 B = vertices.get(j);
-		double maxDistance = -1.0;
-		int maxIndex = i;
-		for (int k = i + 1; k < j; k++) {
-			double distance = distancePointLine(vertices.get(k), A, B);
+		var A = vertices.get(i);
+		var B = vertices.get(j);
+		var maxDistance = -1.0;
+		var maxIndex = i;
+		for (var k = i + 1; k < j; k++) {
+			var distance = distancePointLine(vertices.get(k), A, B);
 			if (distance > maxDistance) {
 				maxDistance = distance;
 				maxIndex = k;
 			}
 		}
 		if (maxDistance <= _distanceTolerance)
-			for (int k = i + 1; k < j; k++)
+			for (var k = i + 1; k < j; k++)
 				usePt.clear(k);
 		else {
 			simplifySection(usePt, _distanceTolerance, vertices, i, maxIndex);
@@ -137,12 +137,12 @@ public class Simplify2D {
 			throw new InvalidParameterException(
 					"areaTolerance: must be equal to or greater then zero.");
 		}
-        v2 v1 = vertices.get(vertices.size() - 2);
-        v2 v2 = vertices.get(vertices.size() - 1);
+		var v1 = vertices.get(vertices.size() - 2);
+		var v2 = vertices.get(vertices.size() - 1);
 		areaTolerance *= 2;
         v2 v3;
-        FasterList<v2> result = new FasterList<>();
-        for (int index = 0; index < vertices.size(); ++index, v2 = v3) {
+		var result = new FasterList<jcog.math.v2>();
+        for (var index = 0; index < vertices.size(); ++index, v2 = v3) {
 			if (index == vertices.size() - 1) {
 				if (result.isEmpty()) {
 					throw new InvalidParameterException("areaTolerance: The tolerance is too high!");
@@ -173,21 +173,21 @@ public class Simplify2D {
 	
 	
 	public static void mergeParallelEdges(FasterList<v2> vertices, float tolerance) {
-		if (vertices.size() <= 3) return; 
-										
-		boolean[] mergeMe = new boolean[vertices.size()];
-		int newNVertices = vertices.size();
+		if (vertices.size() <= 3) return;
+
+		var mergeMe = new boolean[vertices.size()];
+		var newNVertices = vertices.size();
 		
-		for (int i = 0; i < vertices.size(); ++i) {
-			int lower = (i == 0) ? (vertices.size() - 1) : (i - 1);
-			int middle = i;
-			int upper = (i == vertices.size() - 1) ? (0) : (i + 1);
-			float dx0 = vertices.get(middle).x - vertices.get(lower).x;
-			float dy0 = vertices.get(middle).y - vertices.get(lower).y;
-			float dx1 = vertices.get(upper).y - vertices.get(middle).x;
-			float dy1 = vertices.get(upper).y - vertices.get(middle).y;
-			float norm0 = (float) Math.sqrt(dx0 * dx0 + dy0 * dy0);
-			float norm1 = (float) Math.sqrt(dx1 * dx1 + dy1 * dy1);
+		for (var i = 0; i < vertices.size(); ++i) {
+			var lower = (i == 0) ? (vertices.size() - 1) : (i - 1);
+			var middle = i;
+			var upper = (i == vertices.size() - 1) ? (0) : (i + 1);
+			var dx0 = vertices.get(middle).x - vertices.get(lower).x;
+			var dy0 = vertices.get(middle).y - vertices.get(lower).y;
+			var dx1 = vertices.get(upper).y - vertices.get(middle).x;
+			var dy1 = vertices.get(upper).y - vertices.get(middle).y;
+			var norm0 = (float) Math.sqrt(dx0 * dx0 + dy0 * dy0);
+			var norm1 = (float) Math.sqrt(dx1 * dx1 + dy1 * dy1);
 			if (!(norm0 > 0.0f && norm1 > 0.0f) && newNVertices > 3) {
 				
 				mergeMe[i] = true;
@@ -197,8 +197,8 @@ public class Simplify2D {
 			dy0 /= norm0;
 			dx1 /= norm1;
 			dy1 /= norm1;
-			float cross = dx0 * dy1 - dx1 * dy0;
-			float dot = dx0 * dx1 + dy0 * dy1;
+			var cross = dx0 * dy1 - dx1 * dy0;
+			var dot = dx0 * dx1 + dy0 * dy1;
 			if (Math.abs(cross) < tolerance && dot > 0 && newNVertices > 3) {
 				mergeMe[i] = true;
 				--newNVertices;
@@ -207,10 +207,10 @@ public class Simplify2D {
 		}
 		if (newNVertices == vertices.size() || newNVertices == 0) return;
 
-        FasterList<v2> oldVertices = new FasterList<>(vertices);
+		var oldVertices = new FasterList<v2>(vertices);
 		vertices.clear();
-        int currIndex = 0;
-        for (int i = 0; i < oldVertices.size(); ++i) {
+		var currIndex = 0;
+        for (var i = 0; i < oldVertices.size(); ++i) {
 			if (mergeMe[i] || currIndex == newNVertices) continue;
 			
 			vertices.add(oldVertices.get(i));
@@ -225,9 +225,9 @@ public class Simplify2D {
 	
 	
 	public static FasterList<v2> mergeIdenticalPoints(FasterList<v2> vertices) {
-		FasterList<v2> results = new FasterList<>();
-        for (v2 vOriginal : vertices) {
-			boolean alreadyExists = results.stream().anyMatch(vOriginal::equals);
+		var results = new FasterList<v2>();
+        for (var vOriginal : vertices) {
+			var alreadyExists = results.stream().anyMatch(vOriginal::equals);
 			if (!alreadyExists) results.add(vOriginal);
         }
 		return results;
@@ -243,14 +243,14 @@ public class Simplify2D {
 	public static FasterList<v2> reduceByDistance(FasterList<v2> vertices, float distance) {
 		
 		if (vertices.size() < 3) return vertices;
-		float distSq = distance * distance;
-		FasterList<v2> simplified = new FasterList<>();
-		for (int i = 0; i < vertices.size(); i++) {
-			v2 current = vertices.get(i);
-			int ii = i + 1;
+		var distSq = distance * distance;
+		var simplified = new FasterList<v2>();
+		for (var i = 0; i < vertices.size(); i++) {
+			var current = vertices.get(i);
+			var ii = i + 1;
 			if (ii >= vertices.size()) ii = 0;
-			v2 next = vertices.get(ii);
-			v2 diff = new v2(next.x - current.x, next.y - current.y);
+			var next = vertices.get(ii);
+			var diff = new v2(next.x - current.x, next.y - current.y);
 			
 			if (diff.lengthSquared() <= distSq) continue;
 			simplified.add(current);
@@ -268,8 +268,8 @@ public class Simplify2D {
 		
 		if (vertices.size() < 3) return vertices;
 		if (nth == 0) return vertices;
-		FasterList<v2> result = new FasterList<>(vertices.size());
-		for (int i = 0; i < vertices.size(); i++) {
+		var result = new FasterList<v2>(vertices.size());
+		for (var i = 0; i < vertices.size(); i++) {
 			if (i % nth == 0) continue;
 			result.add(vertices.get(i));
 		}

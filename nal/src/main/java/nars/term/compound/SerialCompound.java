@@ -36,8 +36,8 @@ public class SerialCompound extends DynBytes implements SameSubtermsCompound, Th
     public SerialCompound(Op o, int dt, Term[] subterms) {
         super(subterms.length * 4 /* estimate */);
 
-        int v = 1;
-        int sum = Arrays.stream(subterms).mapToInt(Termlike::volume).sum();
+        var v = 1;
+        var sum = Arrays.stream(subterms).mapToInt(Termlike::volume).sum();
         v += sum;
 
         if (v > NAL.term.COMPOUND_VOLUME_MAX)
@@ -104,11 +104,11 @@ public class SerialCompound extends DynBytes implements SameSubtermsCompound, Th
 
     @Override
     public int dt() {
-        
-        Op o = op();
+
+        var o = op();
         if (o.temporal) {
-            int p = this.len;
-            byte[] b = bytes;
+            var p = this.len;
+            var b = bytes;
             return Ints.fromBytes(b[p-3], b[p-2], b[p-1], b[p]);
         } else {
             return DTERNAL;

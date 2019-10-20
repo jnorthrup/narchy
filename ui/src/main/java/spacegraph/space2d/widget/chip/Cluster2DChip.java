@@ -47,9 +47,9 @@ public class Cluster2DChip extends Bordering {
 
         config.update(1);
 
-        Port<Tensor> in = new TypedPort<>(Tensor.class).on(t -> {
+        var in = new TypedPort<>(Tensor.class).on(t -> {
             synchronized (Cluster2DChip.this) {
-                int volume = t.volume();
+                var volume = t.volume();
                 config.update(volume);
                 if (volume >= 2) {
                     g.put(t.doubleArray());

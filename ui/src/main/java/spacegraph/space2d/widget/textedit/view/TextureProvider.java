@@ -22,8 +22,8 @@ public final class TextureProvider {
                 public BufferedImage load(String c) {
                     //return AWTTextureIO.newTexture(gl.getGLProfile(), getTexture(c, FONT_SIZE), true);
                     //return TextureIO.newTexture(gl.getGLProfile(), charTex, true);
-                    int FONT_BITMAP_WIDTH = 48;
-                    BufferedImage charTex = getTexture(c, FONT_BITMAP_WIDTH, FONT_SIZE);
+                    var FONT_BITMAP_WIDTH = 48;
+                    var charTex = getTexture(c, FONT_BITMAP_WIDTH, FONT_SIZE);
                     return charTex;
                 }
             });
@@ -47,8 +47,8 @@ public final class TextureProvider {
 
     Tex getTexture(GL2 gl, String c) {
 
-            BufferedImage charTex = glyphCache.getUnchecked(c);
-            Tex tt = new Tex();
+        var charTex = glyphCache.getUnchecked(c);
+        var tt = new Tex();
             tt.commit(gl);
             tt.set(charTex);
             //tt.commit(gl); //HACK
@@ -67,15 +67,15 @@ public final class TextureProvider {
 //    }
 
     private BufferedImage getTexture(String c, int sizeX, int sizeY) {
-        BufferedImage image = new BufferedImage(sizeX, sizeY, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g2d = (Graphics2D) image.getGraphics();
+        var image = new BufferedImage(sizeX, sizeY, BufferedImage.TYPE_INT_ARGB);
+        var g2d = (Graphics2D) image.getGraphics();
         g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        FontRenderContext fontRenderContext = g2d.getFontRenderContext();
-        GlyphVector gv = font.createGlyphVector(fontRenderContext, c.toCharArray());
+        var fontRenderContext = g2d.getFontRenderContext();
+        var gv = font.createGlyphVector(fontRenderContext, c.toCharArray());
 
-        FontMetrics fm = g2d.getFontMetrics(font);
+        var fm = g2d.getFontMetrics(font);
         g2d.drawGlyphVector(gv, 0 /*(FONT_SIZE - fm.charWidth(c.codePointAt(0)))*/, fm.getMaxAscent());
         return image;
     }

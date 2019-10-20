@@ -47,7 +47,7 @@ public class MiscUtil {
 	}
 	
 	private static int getListCapacityForHash(int size) {
-		int n = 2;
+		var n = 2;
 		while (n < size) {
 			n <<= 1;
 		}
@@ -68,7 +68,7 @@ public class MiscUtil {
 	 * Resizes list to exact size, filling with given value when expanding.
 	 */
 	public static void resize(IntArrayList list, int size, int value) {
-		int s = list.size();
+		var s = list.size();
 		while (s < size) {
 			list.add(value);
 			s++;
@@ -86,7 +86,7 @@ public class MiscUtil {
 	 * when expanding.
 	 */
 	public static <T> void resizeIntArray(OArrayList<int[]> list, int size, int arrayLen) {
-			int ls = list.size();
+		var ls = list.size();
 			while (ls < size) {
 				list.add(new int[arrayLen]);
 				ls++;
@@ -105,7 +105,7 @@ public class MiscUtil {
 	 */
 	public static <T> void resize(FasterList<T> list, int size, Class<T> valueCls) {
 		try {
-			int ls = list.size();
+			var ls = list.size();
 			while (ls < size) {
 				list.add(valueCls != null? valueCls.getConstructor().newInstance() : null);
 				ls++;
@@ -135,11 +135,11 @@ public class MiscUtil {
 		/*  PRE: a[k+1..N] is a heap */
 		/* POST:  a[k..N]  is a heap */
 
-        
-        T temp = pArr.get(k - 1);
+
+		var temp = pArr.get(k - 1);
 		/* k has child(s) */
 		while (k <= n / 2) {
-			int child = 2 * k;
+			var child = 2 * k;
 
             
             
@@ -212,8 +212,8 @@ public class MiscUtil {
 		
 		
 		int i = lo, j = hi;
-        
-        T x = list.get((lo + hi) / 2);
+
+		var x = list.get((lo + hi) / 2);
 
 		
 		do {
@@ -252,8 +252,8 @@ public class MiscUtil {
 		
 		
 		int i = lo, j = hi;
-		
-		int[] x = list[((lo + hi) / 2)];
+
+		 var x = list[((lo + hi) / 2)];
 
 		
 		do {

@@ -72,7 +72,7 @@ class SampleManager {
      * @return the sample.
      */
     private static Sample sample(String ref, String fn) {
-        Sample sample = samples.get(ref);
+        var sample = samples.get(ref);
         if (sample == null) {
             try {
                 sample = new Sample(fn);
@@ -100,12 +100,12 @@ class SampleManager {
         } else {
             group = groups.get(groupName);
         }
-        for (Sample aSampleList : sampleList) {
+        for (var aSampleList : sampleList) {
             if (!group.contains(aSampleList)) {
                 group.add(aSampleList);
             }
         }
-        for (SampleGroupListener l : listeners) {
+        for (var l : listeners) {
             l.changed(groupName);
         }
         return group;
@@ -133,7 +133,7 @@ class SampleManager {
     private static List<Sample> group(String groupName, String folderName, int maxItems) {
         
         File theDirectory = null;
-        URL url = ClassLoader.getSystemResource(folderName);
+        var url = ClassLoader.getSystemResource(folderName);
         if (url != null) {
             theDirectory = new File(URLDecoder.decode(url.getPath(), StandardCharsets.UTF_8));
         }
@@ -142,9 +142,9 @@ class SampleManager {
             theDirectory = new File(folderName);
         }
         groupDirs.put(groupName, theDirectory.getAbsolutePath());
-        String[] fileNameList = theDirectory.list();
-        for (int i = 0; i < fileNameList.length; i++) {
-            String absFileName = theDirectory.getAbsolutePath() + '/' + fileNameList[i];
+        var fileNameList = theDirectory.list();
+        for (var i = 0; i < fileNameList.length; i++) {
+            var absFileName = theDirectory.getAbsolutePath() + '/' + fileNameList[i];
             if (new File(absFileName).exists()) {
                 fileNameList[i] = absFileName;
             }
@@ -179,10 +179,10 @@ class SampleManager {
             groups.put(groupName, group);
         } else
             group = groups.get(groupName);
-        int count = 0;
-        for (String simpleName : fileNameList) {
+        var count = 0;
+        for (var simpleName : fileNameList) {
             try {
-                Sample sample = sample(simpleName, simpleName);
+                var sample = sample(simpleName, simpleName);
                 if (!group.contains(simpleName) && sample != null) {
                     if (count++ >= maxItems) break;
                     group.add(sample);
@@ -191,7 +191,7 @@ class SampleManager {
 
             }
         }
-        for (SampleGroupListener l : listeners) {
+        for (var l : listeners) {
             l.changed(groupName);
         }
         return group;
@@ -214,7 +214,7 @@ class SampleManager {
         if (!samples.contains(sample)) {
             samples.add(sample);
         }
-        for (SampleGroupListener l : listeners) {
+        for (var l : listeners) {
             l.changed(group);
         }
     }
@@ -235,12 +235,12 @@ class SampleManager {
         } else {
             samples = groups.get(group);
         }
-        for (Sample sample : newSamples) {
+        for (var sample : newSamples) {
             if (!samples.contains(sample)) {
                 samples.add(sample);
             }
         }
-        for (SampleGroupListener l : listeners) {
+        for (var l : listeners) {
             l.changed(group);
         }
     }
@@ -290,7 +290,7 @@ class SampleManager {
      * @return a random Sample.
      */
     public static Sample randomFromGroup(String groupName) {
-        ArrayList<Sample> group = groups.get(groupName);
+        var group = groups.get(groupName);
         return group.get((int) (Math.random() * group.size()));
     }
 
@@ -303,7 +303,7 @@ class SampleManager {
      * @return the Sample.
      */
     public static Sample fromGroup(String groupName, int index) {
-        ArrayList<Sample> group = groups.get(groupName);
+        var group = groups.get(groupName);
         if (group == null || group.isEmpty()) {
             return null;
         }
@@ -336,7 +336,7 @@ class SampleManager {
     private static void removeGroup(String groupName) {
         groups.remove(groupName);
         groupDirs.remove(groupName);
-        for (SampleGroupListener l : listeners) {
+        for (var l : listeners) {
             l.changed(groupName);
         }
     }
@@ -348,8 +348,8 @@ class SampleManager {
      * @param groupName the group name.
      */
     public static void destroyGroup(String groupName) {
-        ArrayList<Sample> group = groups.get(groupName);
-        for (Sample aGroup : group) {
+        var group = groups.get(groupName);
+        for (var aGroup : group) {
             removeSample(aGroup);
         }
         removeGroup(groupName);
@@ -367,7 +367,7 @@ class SampleManager {
      * Prints a list of all {@link Sample}s to System.out.
      */
     public static void printSampleList() {
-        for (Map.Entry<String, Sample> stringSampleEntry : samples.entrySet()) {
+        for (var stringSampleEntry : samples.entrySet()) {
             System.out.println(stringSampleEntry.getKey() + ' ' + stringSampleEntry.getValue());
         }
     }
@@ -409,9 +409,9 @@ class SampleManager {
      */
     public static void logSamplePaths(String toFile) {
         try {
-            File f = new File(toFile);
-            PrintWriter out = new PrintWriter(f);
-            for (Sample s : samples.values()) {
+            var f = new File(toFile);
+            var out = new PrintWriter(f);
+            for (var s : samples.values()) {
                 if (s.getFileName() != null && !s.getFileName().isEmpty()) {
                     out.println('"' + s.getFileName() + '"');
                 }
@@ -433,20 +433,20 @@ class SampleManager {
      * @param force         set to true to force overwrite existing files - take care!
      */
     public static void transferSamples(String sourceRootDir, String destRootDir, boolean force) {
-        File srd = new File(sourceRootDir);
+        var srd = new File(sourceRootDir);
         if (!srd.exists()) return;
         sourceRootDir = srd.getAbsolutePath();
-        File drd = new File(destRootDir);
+        var drd = new File(destRootDir);
         if (!drd.exists()) drd.mkdir();
         destRootDir = drd.getAbsolutePath();
-        for (Sample s : samples.values()) {
+        for (var s : samples.values()) {
             if (s.getFileName() != null && !s.getFileName().isEmpty()) {
-                String absFileName = s.getFileName();
+                var absFileName = s.getFileName();
                 if (absFileName.startsWith(sourceRootDir)) {
-                    String destAbsFileName = absFileName.replace(sourceRootDir, destRootDir);
+                    var destAbsFileName = absFileName.replace(sourceRootDir, destRootDir);
                     if (force || !new File(destAbsFileName).exists()) {
                         try {
-                            File parent = new File(destAbsFileName).getParentFile();
+                            var parent = new File(destAbsFileName).getParentFile();
                             if (!parent.exists()) parent.mkdirs();
                             s.write(destAbsFileName);
                             System.out.println("Copied file \"" + absFileName + "\" to \"" + destAbsFileName + '"');

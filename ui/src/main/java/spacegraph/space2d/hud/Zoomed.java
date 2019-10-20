@@ -72,11 +72,11 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
         @Override
         protected boolean drag(Finger f) {
 
-            v2 current = f.posPixel;
+            var current = f.posPixel;
 
-            float dy = start.distanceToY(current);
-            float dx = start.distanceToX(current);
-            float d = (float) Math.sqrt(dy*dy + dx*dx);
+            var dy = start.distanceToY(current);
+            var dx = start.distanceToX(current);
+            var d = (float) Math.sqrt(dy*dy + dx*dx);
 
             zoomDelta(f.posGlobal(), Util.clamp((float) Math.pow(d * rate, 1), -maxIterationChange, +maxIterationChange));
 
@@ -152,17 +152,17 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
     public final void renderContent(ReSurface render) {
 
 
-        GL2 gl = render.gl;
+        var gl = render.gl;
 
-        float zoom = (float) (sin(Math.PI / 2 - focusAngle / 2) / (cam.z * sin(focusAngle / 2)));
-        float H = h();
-        float W = w();
-        float s = zoom * Math.min(W, H);
+        var zoom = (float) (sin(Math.PI / 2 - focusAngle / 2) / (cam.z * sin(focusAngle / 2)));
+        var H = h();
+        var W = w();
+        var s = zoom * Math.min(W, H);
 
         boolean scaleChanged;
-        float scaleChangeTolerance = ScalarValue.EPSILONcoarse;
+        var scaleChangeTolerance = ScalarValue.EPSILONcoarse;
         if (parent instanceof Surface) {
-            Surface ps = (Surface) this.parent;
+            var ps = (Surface) this.parent;
             scaleChanged = scale.setIfChanged(s * W /ps.w(), s * H /ps.h(), scaleChangeTolerance);
         } else {
             scaleChanged = scale.setIfChanged(s, s, scaleChangeTolerance);
@@ -194,11 +194,11 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
         finger.boundsScreen = bounds;
 
         return finger.push(cam, (f)->{
-            Surface innerTouched = super.finger(f);
+            var innerTouched = super.finger(f);
 
             if (!(innerTouched instanceof Finger.ScrollWheelConsumer)) {
                 //wheel zoom: absorb remaining rotationY
-                float dy = f.rotationY(true);
+                var dy = f.rotationY(true);
                 if (dy != 0) {
                     zoomDelta(f.posGlobal(), dy * wheelZoomRate);
                     //zoomDelta(dy * wheelZoomRate);
@@ -251,7 +251,7 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
     @Override
     protected void starting() {
 
-        JoglDisplay s = (JoglDisplay) root();
+        var s = (JoglDisplay) root();
 
         s.video.addKeyListener(keyboard);
 
@@ -278,8 +278,8 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
 
         synchronized (zoomStack) {
 
-            int s = zoomStack.size();
-            Surface top = zoomStack.peekLast();
+            var s = zoomStack.size();
+            var top = zoomStack.peekLast();
             if (top == x) {
                 if (s > 1)
                     zoomStack.removeLast(); //POP
@@ -299,7 +299,7 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
 
 
     public void zoom(RectFloat b) {
-        float zoomMargin = 0.1f;
+        var zoomMargin = 0.1f;
         zoom(b.cx(), b.cy(), b.w, b.h, zoomMargin);
     }
 
@@ -307,7 +307,7 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
      * choose best zoom radius for the target rectangle according to current view aspect ratio
      */
     private static float targetDepth(float w, float h, float margin) {
-        float d = Math.max(w, h);
+        var d = Math.max(w, h);
 //        if (((((float) pw()) / ph()) >= 1) == ((w / h) >= 1))
 //            d = h; //limit by height
 //        else
@@ -363,9 +363,9 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
         @Override
         public boolean animate(float dt) {
             //System.out.println(this);
-            v3 before = clone();
+            var before = clone();
             if (super.animate(dt)) {
-                v3 after = clone();
+                var after = clone();
                 change = !before.equals(after, CHANGE_EPSILON);
                 update();
                 return true;
@@ -376,12 +376,12 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
         protected void update() {
 
             //System.out.println(z);
-            float W = bounds.w;
-            float H = bounds.h;
+            var W = bounds.w;
+            var H = bounds.h;
             /**
              * TODO atomic
              */
-            float CAM_RATE = 3f;
+            var CAM_RATE = 3f;
             speed.set(Math.max(W, H) * CAM_RATE);
 
             float visW = W / scale.x / 2, visH = H / scale.y / 2; //TODO optional extra margin
@@ -439,8 +439,8 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
         }
 
         public RectFloat globalToPixel(float x1, float y1, float x2, float y2) {
-            v2 p = cam.globalToPixel(x1, y1);
-            v2 q = cam.globalToPixel(x2, y2);
+            var p = cam.globalToPixel(x1, y1);
+            var q = cam.globalToPixel(x2, y2);
             return RectFloat.XYXY(p.x, p.y, q.x, q.y);
         }
 

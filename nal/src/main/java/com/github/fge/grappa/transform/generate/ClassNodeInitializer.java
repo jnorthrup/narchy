@@ -69,29 +69,29 @@ public final class ClassNodeInitializer
 
         // walk up the parser parent class chain
         ownerClass = classNode.getParentClass();
-        try (Closer closer = Closer.create()) {
+        try (var closer = Closer.create()) {
             while (Object.class != ownerClass) {
                 annotations.removeAll(CLASS_FLAGS_CLEAR);
 
 
-                InputStream in = getInputStream(ownerClass);
-                ClassReader reader = new ClassReader(closer.register(in));
+                var in = getInputStream(ownerClass);
+                var reader = new ClassReader(closer.register(in));
                 reader.accept(this, ClassReader.SKIP_FRAMES);
 
                 ownerClass = ownerClass.getSuperclass();
             }
 
-            Map<String, RuleMethod> ruleMethods = classNode.getRuleMethods();
+            var ruleMethods = classNode.getRuleMethods();
 
-            for (RuleMethod method : ruleMethods.values()) {
+            for (var method : ruleMethods.values()) {
                 // move all flags from the super methods to their overriding methods
                 if (!method.isSuperMethod())
                     continue;
 
-                String overridingMethodName
+                var overridingMethodName
                         = method.name.substring(1) + method.desc;
 
-                RuleMethod overridingMethod
+                var overridingMethod
                         = ruleMethods.get(overridingMethodName);
 
                 method.moveFlagsTo(overridingMethod);
@@ -110,7 +110,7 @@ public final class ClassNodeInitializer
             if ((access & ACC_FINAL) != 0)
                 throw new InvalidGrammarException("a parser class cannot be "
                         + "final");
-            String className = getExtendedParserClassName(name);
+            var className = getExtendedParserClassName(name);
             classNode.visit(Opcodes.V1_8, ACC_PUBLIC, className, null,
                     classNode.getParentType().getInternalName(), null);
         }
@@ -148,7 +148,7 @@ public final class ClassNodeInitializer
             if ((access & ACC_PRIVATE) > 0)
                 return null;
 
-            MethodNode constructor = new MethodNode(access, name, desc,
+            var constructor = new MethodNode(access, name, desc,
                     signature, exceptions);
             classNode.getConstructors().add(constructor);
             // return the newly created method in order to have it "filled"
@@ -171,10 +171,10 @@ public final class ClassNodeInitializer
         // check, whether we do not already have a method with that name and
         // descriptor; if we do we add the method with a "$" prefix in order
         // to have it processed and be able to reference it later if we have to
-        Map<String, RuleMethod> ruleMethods = classNode.getRuleMethods();
+        var ruleMethods = classNode.getRuleMethods();
 
-        String methodKey = name + desc;
-        StringBuilder nameBuilder = new StringBuilder(name);
+        var methodKey = name + desc;
+        var nameBuilder = new StringBuilder(name);
         while (ruleMethods.containsKey(methodKey)) {
 
             nameBuilder.insert(0, '$');
@@ -182,7 +182,7 @@ public final class ClassNodeInitializer
         }
         name = nameBuilder.toString();
 
-        RuleMethod method = new RuleMethod(ownerClass, access, name, desc,
+        var method = new RuleMethod(ownerClass, access, name, desc,
                 signature, exceptions, annotations);
         ruleMethods.put(methodKey, method);
         // return the newly created method in order to have it "filled" with the
@@ -197,18 +197,18 @@ public final class ClassNodeInitializer
 
     private static InputStream getInputStream(Class<?> c) {
 //        Objects.requireNonNull(c);
-        String name = c.getName().replace('.', '/') + ".class";
+        var name = c.getName().replace('.', '/') + ".class";
 
-        ClassLoader me = ClassNodeInitializer.class.getClassLoader();
-        InputStream ret = me.getResourceAsStream(name);
+        var me = ClassNodeInitializer.class.getClassLoader();
+        var ret = me.getResourceAsStream(name);
 
         if (ret == null) {
-            ClassLoader context = Thread.currentThread().getContextClassLoader();
+            var context = Thread.currentThread().getContextClassLoader();
             ret = context.getResourceAsStream(name);
         }
 
         if (ret == null) {
-            ClassLoader system = ClassLoader.getSystemClassLoader();
+            var system = ClassLoader.getSystemClassLoader();
             ret = system.getResourceAsStream(name);
         }
 

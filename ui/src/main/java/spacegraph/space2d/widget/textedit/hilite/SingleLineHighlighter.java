@@ -17,7 +17,7 @@ public class SingleLineHighlighter {
         //    2 this for example:: if(s.contains("/*") && bs.contains("*/")) {}   ////everything between /* and */ will be greyed out
         //    ((3 multi line comments(not really supposed to work either).
         //    ((4 braces highlighting ((that actually doesn't even work with this idea, since recalculateDisplayLines isn't called for that
-        SingleLineHighlighter javaSyntaxHilite = new SingleLineHighlighter();
+        var javaSyntaxHilite = new SingleLineHighlighter();
         javaSyntaxHilite.addWordBeforeMatchRule(new TextStyle(Color.MAGENTA.darker().darker(), null, null), "(");
         javaSyntaxHilite.addWordMatchRules(new TextStyle(Color.blue, null, null),
                 "assert", "boolean", "break", "byte", "case", "catch", "char", "class", "const", "continue", "default", "do", "double",
@@ -55,7 +55,7 @@ public class SingleLineHighlighter {
     }
 
     public void addWordMatchRules(TextStyle highlight, String... words) {
-        for (String word : words) addWordMatchRule(highlight, word);
+        for (var word : words) addWordMatchRule(highlight, word);
     }
 
     public void addBetweenMatchesRule(TextStyle highlight, String start, String end, String escape) {
@@ -117,8 +117,8 @@ public class SingleLineHighlighter {
 
         @Override
         LineView apply(LineView line) {
-            String s = line.toString();
-            int index_of_word = -1;
+            var s = line.toString();
+            var index_of_word = -1;
             while ((index_of_word = s.indexOf(word, index_of_word + 1)) != -1) {
                 if (isFiniteWord(s, index_of_word, index_of_word + word.length()))
                     line = LineView.apply(index_of_word, index_of_word + word.length(), highlight);
@@ -147,11 +147,11 @@ public class SingleLineHighlighter {
 
         @Override
         LineView apply(LineView line) {
-            int start_index = 0;
-            int end_index = 0;
+            var start_index = 0;
+            var end_index = 0;
             while (true) {
                 start_index = line.toString().indexOf(start, end_index);
-                int escapeLen = escape != null ? escape.length() : -1;
+                var escapeLen = escape != null ? escape.length() : -1;
                 while (start_index != -1 && escape != null && start_index > escapeLen && LineView.substring(start_index - escapeLen, start_index).equals(escape)) {//skip escapes
                     start_index = line.toString().indexOf(start, start_index + 1);
                 }
@@ -182,7 +182,7 @@ public class SingleLineHighlighter {
 
         @Override
         LineView apply(LineView line) {
-            int indexOf = line.toString().indexOf(match);
+            var indexOf = line.toString().indexOf(match);
             if (indexOf != -1)
                 line = LineView.apply(indexOf, line.length(), highlight);
             return line;
@@ -202,15 +202,15 @@ public class SingleLineHighlighter {
 
         @Override
         LineView apply(LineView line) {
-            int indexOf = line.toString().indexOf(after_match);
+            var indexOf = line.toString().indexOf(after_match);
             if (indexOf != -1 && count_occurrences(line.toString(), in_between_match, indexOf) % 2 == 0)
                 line = LineView.apply(indexOf, line.length(), highlight);
             return line;
         }
 
         private static int count_occurrences(String string, String occur, int upUntil) {
-            int index = string.indexOf(occur);
-            int count = 0;
+            var index = string.indexOf(occur);
+            var count = 0;
             while (index != -1 && index < upUntil) {
                 count++;
                 index = string.indexOf(occur, index + occur.length());
@@ -230,16 +230,16 @@ public class SingleLineHighlighter {
 
         @Override
         LineView apply(LineView line) {
-            String s = line.toString();
-            int index_of_match = -1;
+            var s = line.toString();
+            var index_of_match = -1;
             while ((index_of_match = s.indexOf(match, index_of_match + 1)) != -1) {
-                int index_of_word = index_of_match;
+                var index_of_word = index_of_match;
                 while (index_of_word >= 0 && !Character.toString(s.charAt(index_of_word)).matches(wordMatcher))
                     index_of_word--;
-                int end_index_of_word = index_of_word;
+                var end_index_of_word = index_of_word;
                 while (index_of_word >= 0 && Character.toString(s.charAt(index_of_word)).matches(wordMatcher))
                     index_of_word--;
-                int start_index_of_word = index_of_word;
+                var start_index_of_word = index_of_word;
                 if (start_index_of_word >= 0 && end_index_of_word > 0 && start_index_of_word != end_index_of_word)
                     line = LineView.apply(start_index_of_word, end_index_of_word + 1, highlight);
             }

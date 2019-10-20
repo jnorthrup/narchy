@@ -91,21 +91,21 @@ public class MutableRoulette {
         if (w.length!=n)
             realloc(n);
 
-        float[] w = this.w;
-        for (int i = 0; i < n; i++)
+        var w = this.w;
+        for (var i = 0; i < n; i++)
             w[i] = initializer.valueOf(i);
 
         return reweigh();
     }
 
     public MutableRoulette reweigh() {
-        int n = w.length;
+        var n = w.length;
         float s = 0;
 
-        int nn = n;
-        float[] w = this.w;
-        for (int i = 0; i < nn; i++) {
-            float wi = w[i];
+        var nn = n;
+        var w = this.w;
+        for (var i = 0; i < nn; i++) {
+            var wi = w[i];
             if (wi < 0 || !Float.isFinite(wi))
                 throw new RuntimeException("invalid weight: " + wi);
 
@@ -126,12 +126,12 @@ public class MutableRoulette {
         this.remaining = n;
         this.weightSum = s;
 
-        int l = w.length;
+        var l = w.length;
         if (l > 1 && n > 1) {
 //            this.direction = rng.nextBoolean();
 //            this.i = rng.nextInt(l);
 
-            int r = rng.nextInt(); //using only one RNG call
+            var r = rng.nextInt(); //using only one RNG call
             this.direction = r >= 0;
             this.i = (r & 0b01111111111111111111111111111111) % l;
         } else {
@@ -162,13 +162,13 @@ public class MutableRoulette {
     }
 
     public static void run1(float weight, FloatToFloatFunction weightUpdate, IntPredicate choose) {
-        float theWeight = weight;
+        var theWeight = weight;
         while (choose.test(0) && ((theWeight = weightUpdate.valueOf(theWeight)) > EPSILON)) {
         }
     }
 
     public boolean next(IntPredicate select) {
-        int n = next();
+        var n = next();
         return n >= 0 && select.test(n) && remaining > 0;
     }
 
@@ -186,14 +186,14 @@ public class MutableRoulette {
     }
 
     private int nextN() {
-        float distance = rng.nextFloat() * weightSum;
+        var distance = rng.nextFloat() * weightSum;
 
-        float[] w = this.w;
-        int i = this.i;
+        var w = this.w;
+        var i = this.i;
         float wi;
-        int count = w.length;
+        var count = w.length;
 
-        int idle = count+1; //to count eextra step
+        var idle = count+1; //to count eextra step
         do {
             wi = w[i = Util.next(i, direction, count)];
             distance -= wi;
@@ -202,7 +202,7 @@ public class MutableRoulette {
         } while (distance > 0);
 
 
-        float nextWeight = weightUpdate.valueOf(wi);
+        var nextWeight = weightUpdate.valueOf(wi);
         if (!validWeight(nextWeight)) {
             w[i] = 0;
             weightSum -= wi;
@@ -216,12 +216,12 @@ public class MutableRoulette {
     }
 
     private int next1() {
-        float[] w = this.w;
-        int count = w.length;
-        for (int x = 0; x < count; x++) {
-            float wx = w[x];
+        var w = this.w;
+        var count = w.length;
+        for (var x = 0; x < count; x++) {
+            var wx = w[x];
             if (wx >= EPSILON) {
-                float nextWeight = weightUpdate.valueOf(wx);
+                var nextWeight = weightUpdate.valueOf(wx);
                 if (!validWeight(nextWeight)) {
                     w[x] = 0;
                     remaining = 0;

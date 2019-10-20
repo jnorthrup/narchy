@@ -56,15 +56,15 @@ public class Grok implements Serializable {
     public static void main(String[] args) throws FileNotFoundException {
 
 
-        Grok g = Grok.withThe("patterns", "linux-syslog");
-        BufferedReader br = new BufferedReader(new FileReader(
+        var g = Grok.withThe("patterns", "linux-syslog");
+        var br = new BufferedReader(new FileReader(
                 
                 "/var/log/alternatives.log"
         ));
         br.lines().forEach(line -> {
             System.out.println(line);
 
-            String data = g.discover(line);
+            var data = g.discover(line);
 
             System.out.println(data);
 
@@ -142,14 +142,14 @@ public class Grok implements Serializable {
      */
     public static Grok withFile(String grokPatternPath/*, String grokExpression*/)
             throws RuntimeException, FileNotFoundException {
-        Grok g = new Grok();
+        var g = new Grok();
         g.addPatternFrom(grokPatternPath);
         return g;
     }
 
     public static Grok withReader(Reader reader)
             throws RuntimeException {
-        Grok g = new Grok();
+        var g = new Grok();
         g.addPatterns(reader);
         return g;
     }
@@ -186,7 +186,7 @@ public class Grok implements Serializable {
         if (cpy.isEmpty()) {
             throw new RuntimeException("Invalid Patterns");
         }
-        for (Map.Entry<String, String> entry : cpy.entrySet()) {
+        for (var entry : cpy.entrySet()) {
             grokPatternDefinition.put(entry.getKey(), entry.getValue());
         }
     }
@@ -228,13 +228,13 @@ public class Grok implements Serializable {
      * @throws RuntimeException runtime expt
      */
     private Grok addPatterns(Reader r) throws RuntimeException {
-        BufferedReader br = new BufferedReader(r);
+        var br = new BufferedReader(r);
         
 
         try {
             String line;
             while ((line = br.readLine()) != null) {
-                Matcher m = gp.matcher(line);
+                var m = gp.matcher(line);
                 if (m.matches()) {
                     this.addPattern(m.group(1), m.group(2));
                 }
@@ -263,12 +263,12 @@ public class Grok implements Serializable {
      * @param text : log to match
      * */
     public Match capture(String text) {
-        Match match = match(text);
+        var match = match(text);
         match.captures(/*flattened*/);
         return match;
     }
     public Match capture(String text, String pattern) {
-        Match match = match(text, pattern);
+        var match = match(text, pattern);
         match.captures(/*flattened*/);
         return match;
     }
@@ -286,8 +286,8 @@ public class Grok implements Serializable {
             return Match.EMPTY;
         }
 
-        Matcher m = compiledNamedRegex.matcher(text);
-        Match match = new Match();
+        var m = compiledNamedRegex.matcher(text);
+        var match = new Match();
         if (m.find()) {
             match.setSubject(text);
             match.setGrok(this);
@@ -302,8 +302,8 @@ public class Grok implements Serializable {
             return Match.EMPTY;
         }
 
-        Matcher m = Pattern.compile(compiled(patterns().get(pattern), false)).matcher(text);
-        Match match = new Match();
+       var m = Pattern.compile(compiled(patterns().get(pattern), false)).matcher(text);
+       var match = new Match();
         if (m.find()) {
             match.setSubject(text);
             match.setGrok(this);
@@ -335,10 +335,10 @@ public class Grok implements Serializable {
 
     private static int countMatches(String str, String sub) {
         if (!str.isEmpty()) {
-            int sl = sub.length();
+            var sl = sub.length();
             if (sl > 0) {
-                int count = (int) IntStream.iterate(0, idx -> {
-                    int idx1 = idx;
+                var count = (int) IntStream.iterate(0, idx -> {
+                    var idx1 = idx;
                     return (idx1 = str.indexOf(sub, idx1)) != -1;
                 }, idx -> idx + sl).count();
 
@@ -358,7 +358,7 @@ public class Grok implements Serializable {
      */
     private void compile(String pattern, boolean namedOnly) throws RuntimeException {
 
-        String namedRegex = compiled(pattern, namedOnly);
+        var namedRegex = compiled(pattern, namedOnly);
 
         
         this.namedRegex = namedRegex;
@@ -371,13 +371,13 @@ public class Grok implements Serializable {
         }
 
         originalGrokPattern = pattern;
-        int index = 0;
+        var index = 0;
         /** flag for infinite recurtion */
-        int iterationLeft = 1000;
-        boolean continueIteration = true;
+        var iterationLeft = 1000;
+        var continueIteration = true;
 
 
-        String namedRegex = pattern;
+        var namedRegex = pattern;
         while (continueIteration) {
             continueIteration = false;
             if (iterationLeft <= 0) {
@@ -385,15 +385,15 @@ public class Grok implements Serializable {
             }
             iterationLeft--;
 
-            Matcher m = GROK_PATTERN.matcher(namedRegex);
+            var m = GROK_PATTERN.matcher(namedRegex);
             
             
             if (m.find()) {
                 continueIteration = true;
-                Map<String, String> group = namedGroups(m, m.group());
-                String gdef = group.get("definition");
-                String gname = group.get("name");
-                String gpat = group.get("pattern");
+                var group = namedGroups(m, m.group());
+                var gdef = group.get("definition");
+                var gname = group.get("name");
+                var gpat = group.get("pattern");
                 if (gdef != null) {
                     try {
                         addPattern(gpat, gdef);
@@ -402,15 +402,15 @@ public class Grok implements Serializable {
                         throw new RuntimeException(e);
                     }
                 }
-                int count = countMatches(namedRegex, "%{" + gname + '}');
-                for (int i = 0; i < count; i++) {
-                    String definitionOfPattern = grokPatternDefinition.get(gpat);
+                var count = countMatches(namedRegex, "%{" + gname + '}');
+                for (var i = 0; i < count; i++) {
+                    var definitionOfPattern = grokPatternDefinition.get(gpat);
                     if (definitionOfPattern == null) {
                         throw new RuntimeException(format("No definition for key '%s' found, aborting",
                                 gpat));
                     }
-                    String replacement = String.format("(?<name%d>%s)", index, definitionOfPattern);
-                    String gsub = group.get("subname");
+                    var replacement = String.format("(?<name%d>%s)", index, definitionOfPattern);
+                    var gsub = group.get("subname");
                     if (namedOnly && gsub == null) {
                         replacement = String.format("(?:%s)", definitionOfPattern);
                     }
@@ -437,15 +437,15 @@ public class Grok implements Serializable {
 
     private static String replace(String text, String searchString, String replacement, int max) {
         if (max > 0 && !text.isEmpty()) {
-            int replLength = searchString.length();
+            var replLength = searchString.length();
             if (replLength > 0) {
 
-                int start = 0;
-                int end = text.indexOf(searchString, start);
+                var start = 0;
+                var end = text.indexOf(searchString, start);
                 if (end == -1) {
                     return text;
                 } else {
-                    int increase = replacement.length() - replLength;
+                    var increase = replacement.length() - replLength;
                     increase = Math.max(increase, 0);
                     increase *= Math.min(max, 64);
 
@@ -508,10 +508,10 @@ public class Grok implements Serializable {
 
 
     public static Grok withThe(String... patternLibs) {
-        Grok g = new Grok();
-        for (String s : patternLibs) {
+        var g = new Grok();
+        for (var s : patternLibs) {
 
-            try (InputStream nn = Grok.class.getClassLoader().getResourceAsStream("patterns/" + s)) {
+            try (var nn = Grok.class.getClassLoader().getResourceAsStream("patterns/" + s)) {
 
                 g.addPatterns(new InputStreamReader(nn));
 
@@ -525,10 +525,10 @@ public class Grok implements Serializable {
         return g;
     }
     public static Grok all() {
-        Grok g = new Grok();
+        var g = new Grok();
         try {
-            File f = new File(Grok.class.getClassLoader().getResource("patterns").toURI());
-            for (File e : f.listFiles()) {
+            var f = new File(Grok.class.getClassLoader().getResource("patterns").toURI());
+            for (var e : f.listFiles()) {
                 g.addPatterns(new FileReader(e));
             }
         } catch (Throwable e) {
@@ -568,12 +568,12 @@ public class Grok implements Serializable {
          */
         private static Map<String, Grok> sort(Map<String, Grok> groks) {
 
-            Collection<Grok> n = groks.values();
+            var n = groks.values();
             List<Grok> groky = new ArrayList<>(n);
             Map<String, Grok> mGrok = new LinkedHashMap(n.size());
             groky.sort(MyGrokComparator);
 
-            for (Grok g : groky) {
+            for (var g : groky) {
                 mGrok.put(g.savedPattern, g);
             }
             return mGrok;
@@ -585,7 +585,7 @@ public class Grok implements Serializable {
          * @return the complexity of the regex
          */
         private static int complexity(String expandedPattern) {
-            int score = 0;
+            var score = 0;
 
             score += complexity.split(expandedPattern, -1).length - 1;
             score += expandedPattern.length();
@@ -608,12 +608,12 @@ public class Grok implements Serializable {
             }
 
             Map<String, Grok> groks = new TreeMap<>();
-            Map<String, String> gPatterns = grok.patterns();
+            var gPatterns = grok.patterns();
 
 
-            for (Map.Entry<String, String> pairs : gPatterns.entrySet()) {
-                String key = pairs.getKey();
-                Grok g = new Grok();
+            for (var pairs : gPatterns.entrySet()) {
+                var key = pairs.getKey();
+                var g = new Grok();
 
                 
                 try {
@@ -627,14 +627,14 @@ public class Grok implements Serializable {
 
             }
 
-            
-            Map<String, Grok> patterns = Discovery.sort(groks);
+
+            var patterns = Discovery.sort(groks);
 
 
-            String texte = text;
-            for (Map.Entry<String, Grok> pairs : patterns.entrySet()) {
-                String key = pairs.getKey();
-                Grok value = pairs.getValue();
+            var texte = text;
+            for (var pairs : patterns.entrySet()) {
+                var key = pairs.getKey();
+                var value = pairs.getValue();
 
                 
                 
@@ -642,22 +642,22 @@ public class Grok implements Serializable {
                     continue;
                 }
 
-                Match m = value.match(text);
+                var m = value.match(text);
                 if (m.isNull()) {
                     continue;
                 }
-                
-                String part = getPart(m, text);
 
-                
-                Matcher ma = wordBoundary.matcher(part);
+                var part = getPart(m, text);
+
+
+                var ma = wordBoundary.matcher(part);
                 if (!ma.find()) {
                     continue;
                 }
 
-                
-                Pattern pattern2 = Pattern.compile("%\\{[^}+]}");
-                Matcher ma2 = pattern2.matcher(part);
+
+                var pattern2 = Pattern.compile("%\\{[^}+]}");
+                var ma2 = pattern2.matcher(part);
 
                 if (ma2.find()) {
                     continue;
@@ -694,7 +694,7 @@ public class Grok implements Serializable {
             }
 
             private int complexity(String expandedPattern) {
-                int score = 0;
+                var score = 0;
                 score += complexity.split(expandedPattern, -1).length - 1;
                 score += expandedPattern.length();
                 return score;
@@ -735,7 +735,7 @@ public class Grok implements Serializable {
         }
 
         static KeyValue convert(String key, Object value) {
-            String[] spec = key.split("[;:]", 3);
+            var spec = key.split("[;:]", 3);
             try {
                 switch (spec.length) {
                     case 1:
@@ -889,7 +889,7 @@ public class Grok implements Serializable {
 
         @Override
         public Date convert(String value, String informat) throws ParseException {
-            SimpleDateFormat formatter = new SimpleDateFormat(informat, Converter.locale);
+            var formatter = new SimpleDateFormat(informat, Converter.locale);
             return formatter.parse(value);
         }
 
@@ -999,20 +999,17 @@ public class Grok implements Serializable {
                 return;
             }
             capture.clear();
-            boolean automaticConversionEnabled = true; 
+            var automaticConversionEnabled = true;
 
 
-            
-            
-
-            Map<String, String> mappedw = namedGroups(this.match, this.subject);
-            Iterator<Map.Entry<String, String>> it = mappedw.entrySet().iterator();
+            var mappedw = namedGroups(this.match, this.subject);
+            var it = mappedw.entrySet().iterator();
             while (it.hasNext()) {
 
                 @SuppressWarnings("rawtypes")
-                Map.Entry<String,String> pairs = it.next();
+                var pairs = it.next();
                 String key = null;
-                String nr = this.grok.getNamedRegexCollectionById(pairs.getKey());
+                var nr = this.grok.getNamedRegexCollectionById(pairs.getKey());
                 if (nr == null) {
                     key = pairs.getKey();
                 } else if (!nr.isEmpty()) {
@@ -1024,7 +1021,7 @@ public class Grok implements Serializable {
 
 
                     if (automaticConversionEnabled) {
-                        KeyValue keyValue = Converter.convert(key, value);
+                        var keyValue = Converter.convert(key, value);
 
                         
                         key = keyValue.getKey();
@@ -1039,7 +1036,7 @@ public class Grok implements Serializable {
                     }
                 }
 
-                Object currentValue = capture.get(key);
+                var currentValue = capture.get(key);
                 if (currentValue!=null) {
 
                     /*if (flattened) {
@@ -1081,13 +1078,13 @@ public class Grok implements Serializable {
             if (value.isEmpty()) {
                 return value;
             }
-            char[] tmp = value.toCharArray();
-            char t0 = tmp[0];
+            var tmp = value.toCharArray();
+            var t0 = tmp[0];
             if (tmp.length == 1 && (t0 == '"' || t0 == '\'')) {
                 return "";
             } else {
-                int vlen = value.length();
-                char tl = tmp[vlen - 1];
+                var vlen = value.length();
+                var tl = tmp[vlen - 1];
                 if ((t0 == '"' && tl == '"')
                         || (t0 == '\'' && tl == '\'')) {
                     return value.substring(1, vlen - 1);
@@ -1255,7 +1252,7 @@ public class Grok implements Serializable {
          * @return nb of deleted item
          */
         int remove(Map<String, Object> map) {
-            int item = 0;
+            var item = 0;
 
             if (map == null) {
                 return item;
@@ -1265,9 +1262,9 @@ public class Grok implements Serializable {
                 return item;
             }
 
-            for (Iterator<Map.Entry<String, Object>> it = map.entrySet().iterator(); it.hasNext(); ) {
-                Map.Entry<String, Object> entry = it.next();
-                for (int i = 0; i < toRemove.size(); i++) {
+            for (var it = map.entrySet().iterator(); it.hasNext(); ) {
+                var entry = it.next();
+                for (var i = 0; i < toRemove.size(); i++) {
                     if (entry.getKey().equals(toRemove.get(i))) {
                         it.remove();
                         item++;
@@ -1284,7 +1281,7 @@ public class Grok implements Serializable {
          * @return nb of renamed items
          */
         int rename(Map<String, Object> map) {
-            int item = 0;
+            var item = 0;
 
             if (map == null) {
                 return item;
@@ -1294,10 +1291,10 @@ public class Grok implements Serializable {
                 return item;
             }
 
-            for (Iterator<Map.Entry<String, Object>> it = toRename.entrySet().iterator(); it.hasNext(); ) {
-                Map.Entry<String, Object> entry = it.next();
+            for (var it = toRename.entrySet().iterator(); it.hasNext(); ) {
+                var entry = it.next();
                 if (map.containsKey(entry.getKey())) {
-                    Object obj = map.remove(entry.getKey());
+                    var obj = map.remove(entry.getKey());
                     map.put(entry.getValue().toString(), obj);
                     item++;
                 }
@@ -1329,7 +1326,7 @@ public class Grok implements Serializable {
 
     private static Set<String> getNameGroups(String regex) {
         Set<String> namedGroups = new LinkedHashSet<>();
-        Matcher m = NAMED_REGEX.matcher(regex);
+        var m = NAMED_REGEX.matcher(regex);
         while (m.find()) {
             namedGroups.add(m.group(1));
         }
@@ -1338,12 +1335,12 @@ public class Grok implements Serializable {
 
     private static Map<String, String> namedGroups(Matcher matcher,
                                                    String namedRegex) {
-        Set<String> groupNames = getNameGroups(matcher.pattern().pattern());
-        Matcher localMatcher = matcher.pattern().matcher(namedRegex);
+        var groupNames = getNameGroups(matcher.pattern().pattern());
+        var localMatcher = matcher.pattern().matcher(namedRegex);
         Map<String, String> namedGroups = new LinkedHashMap<>();
         if (localMatcher.find()) {
-            for (String groupName : groupNames) {
-                String groupValue = localMatcher.group(groupName);
+            for (var groupName : groupNames) {
+                var groupValue = localMatcher.group(groupName);
                 namedGroups.put(groupName, groupValue);
             }
         }

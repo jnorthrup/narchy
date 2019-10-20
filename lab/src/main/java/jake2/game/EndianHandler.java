@@ -38,7 +38,7 @@ public abstract class EndianHandler
 
 	public static float swapFloat(float f)
 	{
-		int i = Float.floatToRawIntBits(f);
+		var i = Float.floatToRawIntBits(f);
 		i = swapInt(i);
 		f = Float.intBitsToFloat(i);
 
@@ -48,17 +48,17 @@ public abstract class EndianHandler
 	public static int swapInt(int i)
 	{
 
-		int a = i & mask;
+		var a = i & mask;
 		i >>>= 8;
 
 		a <<= 24;
 
-		int b = i & mask;
+		var b = i & mask;
 
 		i >>>= 8;
 		b <<= 16;
 
-		int c = i & mask;
+		var c = i & mask;
 		i >>>= 8;
 		c <<= 8;
 
@@ -67,9 +67,9 @@ public abstract class EndianHandler
 
 	public static short swapShort(short s)
 	{
-		int a = s & mask;
+		var a = s & mask;
 		a <<= 8;
-		int b = (s >>> 8) & mask;
+		var b = (s >>> 8) & mask;
 
 		return (short) (b | a);
 	}

@@ -49,11 +49,11 @@ public abstract class FuncGen extends UGen implements FloatFunction<float[]> {
      */
     @Override
     public final void gen() {
-        for (UGen input : inputs) {
+        for (var input : inputs) {
             input.update();
         }
-        for (int i = 0; i < bufferSize; i++) {
-            for (int j = 0; j < inputs.length; j++) {
+        for (var i = 0; i < bufferSize; i++) {
+            for (var j = 0; j < inputs.length; j++) {
                 x[j] = inputs[j].getValue(0, i);
             }
             bufOut[0][i] = floatValueOf(x);

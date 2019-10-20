@@ -76,7 +76,7 @@ public class Cons<T> extends AbstractList<T> {
 
     @Override
     public void forEach(Consumer<? super T> action) {
-        for (T t : head) {
+        for (var t : head) {
             action.accept(t);
         }
         action.accept(tail);

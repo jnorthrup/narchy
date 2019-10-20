@@ -66,27 +66,27 @@ public class Mult extends UGen {
     @Override
     public void gen() {
         if (multiplierUGen == null) {
-            for (int j = 0; j < outs; j++) {
-                float[] bi = bufIn[j];
-                float[] bo = bufOut[j];
+            for (var j = 0; j < outs; j++) {
+                var bi = bufIn[j];
+                var bo = bufOut[j];
 
-                for (int i = 0; i < bufferSize; i++) {
+                for (var i = 0; i < bufferSize; i++) {
                     bo[i] = bi[i] * multiplier;
                 }
             }
         } else {
             multiplierUGen.update();
             if (outs == 1) {
-                float[] bi = bufIn[0];
-                float[] bo = bufOut[0];
-                for (int i = 0; i < bufferSize; i++) {
+                var bi = bufIn[0];
+                var bo = bufOut[0];
+                for (var i = 0; i < bufferSize; i++) {
                     multiplier = multiplierUGen.getValue(0, i);
                     bo[i] = bi[i] * multiplier;
 
                 }
             } else {
-                for (int i = 0; i < bufferSize; i++) {
-                    for (int j = 0; j < outs; j++) {
+                for (var i = 0; i < bufferSize; i++) {
+                    for (var j = 0; j < outs; j++) {
                         multiplier = multiplierUGen.getValue(0, i);
                         bufOut[j][i] = bufIn[j][i] * multiplier;
                     }

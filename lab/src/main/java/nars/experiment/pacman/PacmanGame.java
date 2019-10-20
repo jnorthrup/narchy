@@ -48,7 +48,7 @@ public class PacmanGame {
         updates = UPDATES;
         keys = new boolean[4];
         splashes = new CopyOnWriteArrayList<>();
-        JFrame frame = new JFrame();
+        var frame = new JFrame();
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.setTitle("Pacman");
         frame.setVisible(true);
@@ -76,7 +76,7 @@ public class PacmanGame {
 
     public void restart() {
         maze = Maze.create(15, 13);
-        float playerSpeed = GHOST_SPEED * 2;
+        var playerSpeed = GHOST_SPEED * 2;
         player = new Player(maze, maze.playerStart().x, maze.playerStart().y, playerSpeed);
         resetGhosts();
         text = "";
@@ -132,7 +132,7 @@ public class PacmanGame {
             if (player.power == 0)
                 ghostEatCount = 0;
 
-            for (Ghost g : ghosts) {
+            for (var g : ghosts) {
 
                 if (updates >= 3500 && updates % 3500 == 0) {
 
@@ -317,7 +317,7 @@ public class PacmanGame {
 
     public static void main(String[] args) {
 
-        PacmanGame game = new PacmanGame();
+        var game = new PacmanGame();
 
 
     }

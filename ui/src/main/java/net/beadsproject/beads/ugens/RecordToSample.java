@@ -164,7 +164,7 @@ public class RecordToSample extends UGen {
     @Override
     public void gen() {
         if (sample != null) {
-            long nFrames = sample.getNumFrames();
+            var nFrames = sample.getNumFrames();
             if ((position + bufferSize) >= nFrames) {
                 switch (mode) {
                     case FINITE:
@@ -174,8 +174,8 @@ public class RecordToSample extends UGen {
                         break;
 
                     case LOOPING:
-                        int framesToEnd = (int) (nFrames - position);
-                        int numframesleft = bufferSize - framesToEnd;
+                        var framesToEnd = (int) (nFrames - position);
+                        var numframesleft = bufferSize - framesToEnd;
 
                         /*                  nFrames
                          *                     V

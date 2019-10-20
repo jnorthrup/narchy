@@ -15,7 +15,7 @@ public class SaneObjectFloatHashMap<X> extends ObjectFloatHashMap<X> {
 
     @Override
     public void clear() {
-        int s = size();
+        var s = size();
         if (s > 0) {
             super.clear();
             if (s > sizeThresh) {

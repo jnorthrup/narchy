@@ -38,18 +38,18 @@ public class TopDownMinicraft extends Canvas implements Runnable {
     static final int[] colors = new int[256];
 
     static {
-        int pp = 0;
-        for (int r = 0; r < 6; r++) {
-            for (int g = 0; g < 6; g++) {
-                for (int b = 0; b < 6; b++) {
-                    float rr = (r * 255f / 5f);
-                    float gg = (g * 255f / 5f);
-                    float bb = (b * 255f / 5f);
-                    float mid = (rr * 30 + gg * 59 + bb * 11) / 100;
+        var pp = 0;
+        for (var r = 0; r < 6; r++) {
+            for (var g = 0; g < 6; g++) {
+                for (var b = 0; b < 6; b++) {
+                    var rr = (r * 255f / 5f);
+                    var gg = (g * 255f / 5f);
+                    var bb = (b * 255f / 5f);
+                    var mid = (rr * 30 + gg * 59 + bb * 11) / 100;
 
-                    int r1 = Math.round(((rr + mid * 1) / 2) * 230f / 255f + 10f);
-                    int g1 = Math.round(((gg + mid * 1) / 2) * 230f / 255f + 10f);
-                    int b1 = Math.round(((bb + mid * 1) / 2) * 230f / 255f + 10f);
+                    var r1 = Math.round(((rr + mid * 1) / 2) * 230f / 255f + 10f);
+                    var g1 = Math.round(((gg + mid * 1) / 2) * 230f / 255f + 10f);
+                    var b1 = Math.round(((bb + mid * 1) / 2) * 230f / 255f + 10f);
                     colors[pp++] = r1 << 16 | g1 << 8 | b1;
 
                 }
@@ -123,7 +123,7 @@ public class TopDownMinicraft extends Canvas implements Runnable {
 
         level.add(player);
 
-        for (int i = 0; i < 5; i++) {
+        for (var i = 0; i < 5; i++) {
             levels[i].trySpawn(5000);
         }
     }
@@ -134,20 +134,20 @@ public class TopDownMinicraft extends Canvas implements Runnable {
 
     @Override
     public void run() {
-        long lastTime = System.nanoTime();
-        double nsPerTick = 1000000000.0 / 60;
-        long lastTimer1 = System.currentTimeMillis();
+        var lastTime = System.nanoTime();
+        var nsPerTick = 1000000000.0 / 60;
+        var lastTimer1 = System.currentTimeMillis();
 
 
         while (running) {
-            long now = System.nanoTime();
+            var now = System.nanoTime();
             unprocessed += (now - lastTime) / nsPerTick;
             lastTime = now;
             frame();
 
             Util.sleepMS(2);
 
-            int fpsIntervalMS = 10000;
+            var fpsIntervalMS = 10000;
             if (System.currentTimeMillis() - lastTimer1 > fpsIntervalMS) {
                 lastTimer1 += fpsIntervalMS;
                 System.out.println(ticks + " ticks, " + frames + " fps");
@@ -158,7 +158,7 @@ public class TopDownMinicraft extends Canvas implements Runnable {
     }
 
     public void frame() {
-        boolean shouldRender = true;
+        var shouldRender = true;
         while (unprocessed >= 1) {
             ticks++;
             tick();
@@ -239,23 +239,23 @@ public class TopDownMinicraft extends Canvas implements Runnable {
     }
 
     public void render() {
-        BufferStrategy bs = getBufferStrategy();
+        var bs = getBufferStrategy();
         if (bs == null) {
             createBufferStrategy(3);
             requestFocus();
             return;
         }
 
-        int xScroll = player.x - screen.w / 2;
-        int yScroll = player.y - (screen.h - 8) / 2;
+        var xScroll = player.x - screen.w / 2;
+        var yScroll = player.y - (screen.h - 8) / 2;
         if (xScroll < 16) xScroll = 16;
         if (yScroll < 16) yScroll = 16;
         if (xScroll > level.w * 16 - screen.w - 16) xScroll = level.w * 16 - screen.w - 16;
         if (yScroll > level.h * 16 - screen.h - 16) yScroll = level.h * 16 - screen.h - 16;
         if (currentLevel > 3) {
-            int col = Color.get(20, 20, 121, 121);
-            for (int y = 0; y < 14; y++)
-                for (int x = 0; x < 24; x++) {
+            var col = Color.get(20, 20, 121, 121);
+            for (var y = 0; y < 14; y++)
+                for (var x = 0; x < 24; x++) {
                     screen.render(x * 8 - ((xScroll / 4) & 7), y * 8 - ((yScroll / 4) & 7), 0, col, 0);
                 }
         }
@@ -272,33 +272,33 @@ public class TopDownMinicraft extends Canvas implements Runnable {
         renderGui();
 
 
-        for (int y = 0; y < screen.h; y++) {
-            for (int x = 0; x < screen.w; x++) {
-                int cc = screen.pixels[x + y * screen.w];
+        for (var y = 0; y < screen.h; y++) {
+            for (var x = 0; x < screen.w; x++) {
+                var cc = screen.pixels[x + y * screen.w];
                 if (cc < 255) pixels[x + y * WIDTH] = colors[cc];
             }
         }
 
-        Graphics g = bs.getDrawGraphics();
+        var g = bs.getDrawGraphics();
         g.fillRect(0, 0, getWidth(), getHeight());
 
-        int ww = WIDTH * SCALE;
-        int hh = HEIGHT * SCALE;
-        int xo = (getWidth() - ww) / 2;
-        int yo = (getHeight() - hh) / 2;
+        var ww = WIDTH * SCALE;
+        var hh = HEIGHT * SCALE;
+        var xo = (getWidth() - ww) / 2;
+        var yo = (getHeight() - hh) / 2;
         g.drawImage(image, xo, yo, ww, hh, null);
         g.dispose();
         bs.show();
     }
 
     private void renderGui() {
-        for (int y = 0; y < 2; y++) {
-            for (int x = 0; x < 20; x++) {
+        for (var y = 0; y < 2; y++) {
+            for (var x = 0; x < 20; x++) {
                 screen.render(x * 8, screen.h - 16 + y * 8, 0 + 12 * 32, Color.get(000, 000, 000, 000), 0);
             }
         }
 
-        for (int i = 0; i < 10; i++) {
+        for (var i = 0; i < 10; i++) {
             if (i < player.health)
                 screen.render(i * 8, screen.h - 16, 0 + 12 * 32, Color.get(000, 200, 500, 533), 0);
             else
@@ -326,21 +326,21 @@ public class TopDownMinicraft extends Canvas implements Runnable {
     }
 
     private void renderFocusNagger() {
-        String msg = "Click to focus!";
-        int xx = (WIDTH - msg.length() * 8) / 2;
-        int yy = (HEIGHT - 8) / 2;
+        var msg = "Click to focus!";
+        var xx = (WIDTH - msg.length() * 8) / 2;
+        var yy = (HEIGHT - 8) / 2;
 
         screen.render(xx - 8, yy - 8, 0 + 13 * 32, Color.get(-1, 1, 5, 445), 0);
-        int w = msg.length();
+        var w = msg.length();
         screen.render(xx + w * 8, yy - 8, 0 + 13 * 32, Color.get(-1, 1, 5, 445), 1);
         screen.render(xx - 8, yy + 8, 0 + 13 * 32, Color.get(-1, 1, 5, 445), 2);
         screen.render(xx + w * 8, yy + 8, 0 + 13 * 32, Color.get(-1, 1, 5, 445), 3);
-        for (int x = 0; x < w; x++) {
+        for (var x = 0; x < w; x++) {
             screen.render(xx + x * 8, yy - 8, 1 + 13 * 32, Color.get(-1, 1, 5, 445), 0);
             screen.render(xx + x * 8, yy + 8, 1 + 13 * 32, Color.get(-1, 1, 5, 445), 2);
         }
-        int h = 1;
-        for (int y = 0; y < h; y++) {
+        var h = 1;
+        for (var y = 0; y < h; y++) {
             screen.render(xx - 8, yy + y * 8, 2 + 13 * 32, Color.get(-1, 1, 5, 445), 0);
             screen.render(xx + w * 8, yy + y * 8, 2 + 13 * 32, Color.get(-1, 1, 5, 445), 1);
         }
@@ -357,7 +357,7 @@ public class TopDownMinicraft extends Canvas implements Runnable {
     }
 
     public static void main(String[] args) {
-        TopDownMinicraft game = new TopDownMinicraft();
+        var game = new TopDownMinicraft();
         start(game);
     }
 
@@ -366,7 +366,7 @@ public class TopDownMinicraft extends Canvas implements Runnable {
         game.setMaximumSize(new Dimension(WIDTH * SCALE, HEIGHT * SCALE));
         game.setPreferredSize(new Dimension(WIDTH * SCALE, HEIGHT * SCALE));
 
-        JFrame frame = new JFrame(TopDownMinicraft.NAME);
+        var frame = new JFrame(TopDownMinicraft.NAME);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.setLayout(new BorderLayout());
         frame.add(game, BorderLayout.CENTER);

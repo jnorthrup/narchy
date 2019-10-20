@@ -63,7 +63,7 @@ public class Wiring extends Dragging {
     protected boolean drag(Finger f) {
         if (path == null) {
 
-            GraphEdit2D g = graph();
+            var g = graph();
             if (g!=null)
                 g.addRaw(pathVis = new PathSurface(path = new Path2D(64)));
             else
@@ -123,8 +123,8 @@ public class Wiring extends Dragging {
                 //TODO lazy construct and/or cache these
 
                 //apply type checking and auto-conversion if necessary
-                Class ta = ((TypedPort) start).type;
-                Class tb = ((TypedPort) end).type;
+                var ta = ((TypedPort) start).type;
+                var tb = ((TypedPort) end).type;
                 if (ta != tb /* TODO && direct ancestor comparison */ ) {
                     Class aa = ta, bb = tb;
 
@@ -132,11 +132,11 @@ public class Wiring extends Dragging {
 
                     if (!ab.isEmpty() || !ba.isEmpty()) {
                         //wire with adapter
-                        PortAdapter adapter = new PortAdapter(aa, ba, bb, ab);
+                        var adapter = new PortAdapter(aa, ba, bb, ab);
                         g.addUndecorated(adapter).pos(start.bounds.mean(end.bounds).scale(0.5f));
 
-                        TypedPort ax = adapter.port(true);
-                        TypedPort ay = adapter.port(false);
+                        var ax = adapter.port(true);
+                        var ay = adapter.port(false);
 
                         g.addWire(new Wire(start, ax));
                         g.addWire(new Wire(ay, end));
@@ -146,7 +146,7 @@ public class Wiring extends Dragging {
                 }
             }
 
-            Wire wire = g.addWire(new Wire(start, end));
+            var wire = g.addWire(new Wire(start, end));
             return wire!=null;
         }
 
@@ -154,7 +154,7 @@ public class Wiring extends Dragging {
     }
 
     private void updateEnd(Finger finger) {
-        Surface nextEnd = finger.touching();
+        var nextEnd = finger.touching();
         if (nextEnd != end) {
 
             if (nextEnd == start) {

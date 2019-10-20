@@ -95,12 +95,12 @@ public final class TrieSet<E> implements Set<E> {
    @Override
    public boolean addAll( Collection<? extends E> collection )
    {
-      boolean acc = false;
+      var acc = false;
       for (E e : collection) {
-         boolean add = add(e);
+         var add = add(e);
          acc = acc || add;
       }
-      boolean changed = acc;
+      var changed = acc;
 
        return changed;
    }
@@ -151,19 +151,19 @@ public final class TrieSet<E> implements Set<E> {
    @Override
    public boolean removeAll( Collection<?> collection )
    {
-      boolean acc = false;
+      var acc = false;
       for (Object o : collection) {
-         boolean remove = remove(o);
+         var remove = remove(o);
          acc = acc || remove;
       }
-      boolean changed = acc;
+      var changed = acc;
 
        return changed;
    }
 
    public TrieSet<E> retainsAll( Collection<?> collection ) {
-      int previousSize = trie.size();
-      Trie<E, Object> newTrie = trie.newEmptyClone();
+      var previousSize = trie.size();
+      var newTrie = trie.newEmptyClone();
 
       for (Object element : collection) {
          if (trie.containsKey(element)) {

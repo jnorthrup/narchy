@@ -20,9 +20,9 @@ public class PIDFitter implements ParameterizedFunction {
         private double prevDelta = 0;
 
         public double compute(double error) {
-            double deltaE = error - prevE;
+            var deltaE = error - prevE;
             prevE = error;
-            double deltaDelta = deltaE - prevDelta;
+            var deltaDelta = deltaE - prevDelta;
             prevDelta = deltaE;
             integral += error;
 
@@ -37,7 +37,7 @@ public class PIDFitter implements ParameterizedFunction {
     public PIDFitter(ParameterizedFunction parameterizedFunction) {
         this.parameterizedFunction = parameterizedFunction;
         pids = new PID[parameterizedFunction.numberOfParameters()];
-        for (int i = 0; i < pids.length; ++i) {
+        for (var i = 0; i < pids.length; ++i) {
             pids[i] = new PID();
         }
         gradient = new double[parameterizedFunction.numberOfParameters()];
@@ -45,11 +45,11 @@ public class PIDFitter implements ParameterizedFunction {
 
     @Override
     public void learn(double[] xs, double y) {
-        double q = parameterizedFunction.value(xs);
+        var q = parameterizedFunction.value(xs);
         parameterGradient(gradient, xs);
 
-        double e = y - q;
-        for (int i = 0; i < pids.length; ++i) {
+        var e = y - q;
+        for (var i = 0; i < pids.length; ++i) {
             gradient[i] = 0.00001 * pids[i].compute(Math.signum(gradient[i]) * e);
         }
 

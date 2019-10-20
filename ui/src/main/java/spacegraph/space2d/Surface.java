@@ -119,7 +119,7 @@ public abstract class Surface implements Surfacelike {
      * override and return false to prevent movement
      */
     protected boolean posChanged(RectFloat next) {
-        RectFloat last = BOUNDS.getAndSet(this, next);
+        var last = BOUNDS.getAndSet(this, next);
 //        if (bounds.area() < ScalarValue.EPSILON)
 //            throw new WTF();
         return last != next && !last.equals(next, Spatialization.EPSILONf);
@@ -141,7 +141,7 @@ public abstract class Surface implements Surfacelike {
      * default root() impl
      */
     public final SurfaceGraph rootParent() {
-        Surfacelike parent = this.parent;
+        var parent = this.parent;
         return parent == null ? null : parent.root();
     }
 
@@ -160,7 +160,7 @@ public abstract class Surface implements Surfacelike {
         if (includeSelf && test.test(this))
             return this;
 
-        Surfacelike p = this.parent;
+        var p = this.parent;
 
         if (p instanceof Surface)
             return test.test(p) ? p : ((Surface) p).parent(test, true);
@@ -171,7 +171,7 @@ public abstract class Surface implements Surfacelike {
     public boolean start(Surfacelike parent) {
         assert (parent != null);
 
-        Surfacelike p = PARENT.getAndSet(this, parent);
+        var p = PARENT.getAndSet(this, parent);
         if (p == parent)
             return false; //no change
 
@@ -242,7 +242,7 @@ public abstract class Surface implements Surfacelike {
      * prepares the rendering procedures in the rendering context
      */
     public final void renderIfVisible(ReSurface r) {
-        boolean showing = visible(r);
+        var showing = visible(r);
         showing(showing);
         if (showing) {
             render(r);
@@ -259,7 +259,7 @@ public abstract class Surface implements Surfacelike {
      * test visibility in the current rendering context
      */
     public final boolean visible(ReSurface r) {
-        RectFloat b = this.bounds;
+        var b = this.bounds;
         return visible() &&
                (b.w > Float.MIN_NORMAL && b.h > Float.MIN_NORMAL) &&
                (!clipBounds || r.visibleByCamera(b)) &&
@@ -303,7 +303,7 @@ public abstract class Surface implements Surfacelike {
     public boolean delete() {
 
 
-        Surfacelike p = PARENT.getAndSet(this, null);
+        var p = PARENT.getAndSet(this, null);
         if (p!=null) {
 
 //            if (p instanceof MutableUnitContainer) {
@@ -329,10 +329,10 @@ public abstract class Surface implements Surfacelike {
         if (this == nextParent)
             return true;
 
-        Surfacelike prevParent = this.parent;
+        var prevParent = this.parent;
         if (prevParent instanceof AbstractMutableContainer && nextParent instanceof AbstractMutableContainer) {
-            AbstractMutableContainer prevMutableParent = (AbstractMutableContainer) prevParent;
-            AbstractMutableContainer nextMutableParent = (AbstractMutableContainer) nextParent;
+            var prevMutableParent = (AbstractMutableContainer) prevParent;
+            var nextMutableParent = (AbstractMutableContainer) nextParent;
             if (PARENT.compareAndSet(this, prevParent, nextParent)) {
                 if (prevMutableParent.detachChild(this)) {
 

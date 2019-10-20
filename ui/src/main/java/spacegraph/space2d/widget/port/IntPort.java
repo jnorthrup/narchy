@@ -17,8 +17,8 @@ public class IntPort extends EditablePort<Integer> {
     public IntPort() {
         super(0, Integer.class);
 
-        PushButton incButton = new PushButton("+");
-        PushButton decButton = new PushButton("-");
+        var incButton = new PushButton("+");
+        var decButton = new PushButton("-");
         incButton.clicked(()-> out(get() +1));
         decButton.clicked(()-> out((get() -1))); //TODO fully atomic
 

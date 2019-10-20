@@ -26,7 +26,7 @@ public class SquareVolumeWave extends KarplusStrongString {
 
         attackDelta = Math.pow(1.1, 440.0 / frequency);
         decayDelta = Math.pow(.9998, 440.0 / frequency);
-        double sustainDelta = Math.pow(.9998, 440.0 / frequency);
+        var sustainDelta = Math.pow(.9998, 440.0 / frequency);
         releaseDelta = Math.pow(.9, 440.0 / frequency);
     }
 
@@ -34,13 +34,13 @@ public class SquareVolumeWave extends KarplusStrongString {
         // setDeltaVolume(attackDelta);
         state = 0;
         clear();
-        int capacity = buffer.capacity();
-        int half = capacity / 2;
-        for (int i = 0; i < half; i++) {
+        var capacity = buffer.capacity();
+        var half = capacity / 2;
+        for (var i = 0; i < half; i++) {
             buffer.enqueue(getInitialVolume() * -1);
         }
-        int otherHalf = capacity - half;
-        for (int i = 0; i < otherHalf; i++) {
+        var otherHalf = capacity - half;
+        for (var i = 0; i < otherHalf; i++) {
             buffer.enqueue(getInitialVolume());
         }
         setDeltaVolume(attackDelta);
@@ -48,10 +48,10 @@ public class SquareVolumeWave extends KarplusStrongString {
 
     public void tic() {
         double first = buffer.dequeue();
-        double x = first * deltaVolume;
+        var x = first * deltaVolume;
 		filterOut = C * x + filterIn - C * filterOut; // allpass tuning filter
         filterIn = x;
-        double next = checkMax(filterOut * deltaVolume);
+        var next = checkMax(filterOut * deltaVolume);
         if (state == 0 && next != filterOut * deltaVolume) {
             setDeltaVolume(decayDelta);
             state = 1;

@@ -75,7 +75,7 @@ public class Taskify extends ProxyTerm {
             //if ((d.concPunc==QUESTION || d.concPunc==QUEST)  && !VarIndep.validIndep(y, true)) {
             if (!VarIndep.validIndep(y, true)) {
                 //convert orphaned indep vars to query/dep variables
-                byte punc = d.punc;
+                var punc = d.punc;
                 y = y.transform(
                         (punc == QUESTION || punc == QUEST) ?
                                 VariableTransform.indepToQueryVar
@@ -100,12 +100,12 @@ public class Taskify extends ProxyTerm {
         if (o == null)
             return null;
 
-        long[] occ = o.getTwo();
+        var occ = o.getTwo();
         return task(o.getOne(), occ[0], occ[1], d);
     }
 
     private @Nullable Pair<Term, long[]> occurrify(Term x, Derivation d) {
-        Pair<Term, long[]> timing = time.occurrence(x, d);
+        var timing = time.occurrence(x, d);
         if (timing == null) {
             if (NAL.test.DEBUG_OCCURRIFY)
                 throw new TermException("occurify failure:\n" + d + '\n' + d.occ, x);
@@ -116,16 +116,16 @@ public class Taskify extends ProxyTerm {
         }
 
 
-        long[] occ = timing.getTwo();
+        var occ = timing.getTwo();
         assertOccValid(d, occ);
 
-        Term y = timing.getOne();
+        var y = timing.getOne();
 
         if (NAL.derive.DERIVE_QUESTION_FROM_AMBIGUOUS_BELIEF_OR_GOAL && (d.punc == BELIEF || d.punc == GOAL)) {
             if (DerivationFailure.failure(y, d.punc)) {
 
                 //as a last resort, try forming a question from the remains
-                byte qPunc = d.punc == BELIEF ? QUESTION : QUEST;
+                var qPunc = d.punc == BELIEF ? QUESTION : QUEST;
                 d.punc = qPunc;
                 if (DerivationFailure.failure(y, d) == null) {
                     d.punc = qPunc;
@@ -174,20 +174,20 @@ public class Taskify extends ProxyTerm {
      */
     private @Nullable Task task(Term x0, long start, long end, Derivation d) {
 
-        byte punc = d.punc;
+        var punc = d.punc;
         if (punc == 0)
             throw new RuntimeException("no punctuation assigned");
 
-        Term z = postFilter(x0, d);
+        var z = postFilter(x0, d);
 
         /** un-anon */
-        Term x1 = d.anon.get(z);
+        var x1 = d.anon.get(z);
         if (x1 == null)
             throw new NullPointerException("could not un-anonymize " + z + " with " + d.anon);
 
-        NAR nar = d.nar;
+        var nar = d.nar;
 
-        Term x = Task.taskTerm(x1, punc, !NAL.test.DEBUG_EXTRA);
+        var x = Task.taskTerm(x1, punc, !NAL.test.DEBUG_EXTRA);
         if (x == null) {
             nar.emotion.deriveFailTaskify.increment();
             spam(d, NAL.derive.TTL_COST_DERIVE_TASK_FAIL);
@@ -213,7 +213,7 @@ public class Taskify extends ProxyTerm {
 //            }
 //        }
 
-        boolean neg = x instanceof Neg;
+        var neg = x instanceof Neg;
 
 
         Truth tru;
@@ -236,12 +236,12 @@ public class Taskify extends ProxyTerm {
         if (start != ETERNAL) {
             assert (start <= end) : "reversed occurrence: " + start + ".." + end;
 
-            int dither =
+            var dither =
                 d.ditherDT;
 
-            int dur =
+            var dur =
                 d.unify.dtTolerance;
-            long belowDur = dur - (end - start);
+            var belowDur = dur - (end - start);
             if (belowDur >= 2) {
                 //expand to perceptual dur since this is used in unification
                 //TODO corresponding evidence dilution
@@ -276,13 +276,13 @@ public class Taskify extends ProxyTerm {
         }
 
 
-        DerivedTask t = //Task.tryTask(x, punc, tru, (C, tr) -> {
+        var t = //Task.tryTask(x, punc, tru, (C, tr) -> {
                 //return
                 NAL.DEBUG ?
                         new DebugDerivedTask(x, punc, tru, S, E, d) :
                         new DerivedTask(x, punc, tru, d.time, S, E, d.evidence());
 
-        float priority = d.x.derivePri.pri(t, d);
+        var priority = d.x.derivePri.pri(t, d);
         if (priority != priority) {
             nar.emotion.deriveFailPrioritize.increment();
             spam(d, NAL.derive.TTL_COST_DERIVE_TASK_UNPRIORITIZABLE);
@@ -335,7 +335,7 @@ public class Taskify extends ProxyTerm {
     }
 
     public final Task task(Term x, Derivation d) {
-        Task y = d.temporal || x.hasXternal() /*Occurrify.temporal(y)*/ ?
+        var y = d.temporal || x.hasXternal() /*Occurrify.temporal(y)*/ ?
             taskTemporal(x, d) : task(x, ETERNAL, ETERNAL, d);
 
         if (y!=null)

@@ -20,8 +20,8 @@ public class OneWindow extends WaveFactory {
      */
     @Override
     public ArrayTensor get(int bufferSize) {
-        int size = bufferSize;
-        ArrayTensor b = new ArrayTensor(size);
+        var size = bufferSize;
+        var b = new ArrayTensor(size);
         Arrays.fill(b.data, 1.f);
         return b;
     }

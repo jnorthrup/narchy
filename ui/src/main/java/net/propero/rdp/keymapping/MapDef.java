@@ -121,7 +121,7 @@ public class MapDef {
      * @throws KeyMapException Any parsing errors which may occur
      */
     public MapDef(String definition) throws KeyMapException {
-        StringTokenizer st = new StringTokenizer(definition);
+        var st = new StringTokenizer(definition);
         try {
             
             characterDef = (Integer.parseInt(st.nextToken()) == 1);
@@ -138,8 +138,8 @@ public class MapDef {
             
             scancode = Integer.decode(st.nextToken());
 
-            
-            int modifiers = Integer.parseInt(st.nextToken());
+
+            var modifiers = Integer.parseInt(st.nextToken());
             shiftDown = ((modifiers & FLAG_SHIFT) != 0);
             ctrlDown = ((modifiers & FLAG_CTRL) != 0);
             altDown = ((modifiers & FLAG_ALT) != 0);
@@ -234,7 +234,7 @@ public class MapDef {
         if (!characterDef)
             return 0;
 
-        int dist = 0;
+        var dist = 0;
         if (ctrlDown != e.isControlDown())
             dist += 1;
         if (altDown != e.isAltDown())
@@ -271,7 +271,7 @@ public class MapDef {
             
             if (capslock && Character.isLetter(e.getKeyChar())
                     && Character.isUpperCase(e.getKeyChar()) && e.isShiftDown()) {
-                char c = Character.toLowerCase(e.getKeyChar());
+                var c = Character.toLowerCase(e.getKeyChar());
                 return ((characterDef) && (this.keyChar == c));
             }
         }
@@ -306,9 +306,8 @@ public class MapDef {
      */
     public void writeToStream(PrintStream p) {
 
-        
-        
-        String definition = String.valueOf(characterDef ? 1 : 0);
+
+        var definition = String.valueOf(characterDef ? 1 : 0);
 
         
         definition += "\t";
@@ -321,8 +320,8 @@ public class MapDef {
         definition += "\t" + keyLocation;
         definition += "\t0x" + Integer.toHexString(scancode);
 
-        
-        int modifiers = 0;
+
+        var modifiers = 0;
         modifiers |= (shiftDown ? FLAG_SHIFT : 0);
         modifiers |= (ctrlDown ? FLAG_CTRL : 0);
         modifiers |= (altDown ? FLAG_ALT : 0);

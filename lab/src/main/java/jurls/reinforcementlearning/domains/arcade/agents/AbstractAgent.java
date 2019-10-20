@@ -73,8 +73,8 @@ public abstract class AbstractAgent {
         this.useGUI = useGUI;
         this.namedPipesBasename = namedPipesBasename;
 
-        
-        ColorPalette palette = makePalette("NTSC");
+
+        var palette = makePalette("NTSC");
 
         
         converter = new ScreenConverter(palette);
@@ -146,7 +146,7 @@ public abstract class AbstractAgent {
      *    request).
      */
     public void run() {
-        boolean done = false;
+        var done = false;
 
         
         while (!done) {
@@ -154,21 +154,21 @@ public abstract class AbstractAgent {
             done = io.observe();
             
             if (done) break;
-            
-            
-            ScreenMatrix screen = io.getScreen();
+
+
+            var screen = io.getScreen();
             
             updateImage(screen);
             
             observe(screen, io.getRAM(), io.getRLData());
 
-            
-            int action = selectAction();
+
+            var action = selectAction();
             
             done = io.act(action);
 
-            
-            long pauseLength = getPauseLength();
+
+            var pauseLength = getPauseLength();
             
             if (pauseLength > 0) {
                 pause(pauseLength);
@@ -193,9 +193,9 @@ public abstract class AbstractAgent {
             ui.updateFrameCount();
             return;
         }
-        
-        
-        BufferedImage img = converter.convert(currentScreen);
+
+
+        var img = converter.convert(currentScreen);
 
         
         ui.updateFrameCount();

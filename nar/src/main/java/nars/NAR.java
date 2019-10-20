@@ -152,16 +152,16 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
 
         } else {
 
-            int n = chan.length() + 2;
-            for (int i = 0; i < n; i++)
+            var n = chan.length() + 2;
+            for (var i = 0; i < n; i++)
                 out.append(' ');
         }
 
         if (v instanceof Object[]) {
             v = Arrays.toString((Object[]) v);
         } else if (v instanceof Task) {
-            Task tv = ((Task) v);
-            float tvp = tv.priElseZero();
+            var tv = ((Task) v);
+            var tvp = tv.priElseZero();
             v = ansi()
 
                     .a(tvp >= 0.25f ?
@@ -191,10 +191,10 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
             throw new RuntimeException(e);
         }
 
-		Term tc = t.why();
+        var tc = t.why();
 		if (tc!=null) {
 		    Why.forEachUnique(t.why(), s-> {
-                Cause c = control.why.get(s);
+                var c = control.why.get(s);
                 try {
                     out.append(c.toString());
                     out.append('\n');
@@ -211,13 +211,13 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
      * @param change a change event emitted by Parts
      */
     private void indexPartChange(ObjectBooleanPair<Part<NAR>> change) {
-        Part<NAR> p = change.getOne();
+        var p = change.getOne();
         if (p instanceof What) {
             PartBag b = what;
             if (change.getTwo()) {
                 b.putAsync(p); //TODO handle rejection, eviction etc
             } else {
-                boolean removed = b.remove(((PriNARPart) p).id) != null;
+                var removed = b.remove(((PriNARPart) p).id) != null;
                 assert (removed);
             }
         }
@@ -247,21 +247,21 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
         SortedMap<String, Object> x = new TreeMap();
 
         if (concepts) {
-            LongSummaryStatistics beliefs = new LongSummaryStatistics();
-            LongSummaryStatistics goals = new LongSummaryStatistics();
-            LongSummaryStatistics questions = new LongSummaryStatistics();
-            LongSummaryStatistics quests = new LongSummaryStatistics();
+            var beliefs = new LongSummaryStatistics();
+            var goals = new LongSummaryStatistics();
+            var questions = new LongSummaryStatistics();
+            var quests = new LongSummaryStatistics();
 
 
-            HashBag clazz = new HashBag();
-            HashBag rootOp = new HashBag();
+            var clazz = new HashBag();
+            var rootOp = new HashBag();
 
-            Histogram volume = new Histogram(1, term.COMPOUND_VOLUME_MAX, 3);
+            var volume = new Histogram(1, term.COMPOUND_VOLUME_MAX, 3);
 
             {
                 concepts().filter(xx -> !(xx instanceof Functor)).forEach(c -> {
 
-                    Term ct = c.term();
+                    var ct = c.term();
                     volume.recordValue(ct.volume());
                     rootOp.add(ct.op());
                     clazz.add(ct.getClass().toString());
@@ -312,8 +312,8 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
 
         synchronized (exe) {
 
-            boolean running = loop.isRunning();
-            float fps = running ? loop.getFPS() : -1;
+            var running = loop.isRunning();
+            var fps = running ? loop.getFPS() : -1;
 
             stop();
 
@@ -395,7 +395,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
     }
 
     public List<Task> input(String text) throws NarseseException, TaskException {
-        List<Task> l = Narsese.tasks(text, this);
+        var l = Narsese.tasks(text, this);
         switch (l.size()) {
             case 0:
                 return Collections.EMPTY_LIST;
@@ -445,7 +445,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
      * desire goal
      */
     public Task want(Term goalTerm, Tense tense, float freq, float conf) {
-        long now = time(tense);
+        var now = time(tense);
         return want(
                 priDefault(GOAL),
                 goalTerm, now, now, freq, conf);
@@ -503,7 +503,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
 
     public NAR believe(String... tt) throws NarseseException {
 
-        for (String b : tt)
+        for (var b : tt)
             believe(b, true);
 
         return this;
@@ -573,9 +573,9 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
 
     public Task input(float pri, Term term, byte punc, long start, long end, float freq, double conf) throws TaskException {
 
-        PreciseTruth truth = $.t(freq, conf);
+        var truth = $.t(freq, conf);
 
-        Term c = Task.taskValid(term, punc, truth, false);
+        var c = Task.taskValid(term, punc, truth, false);
 
         Task z = NALTask.the(c, punc, truth, time(), start, end, evidence());
 
@@ -711,7 +711,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
         }
 
         if (autoStart) {
-            boolean ok = add(key, pp);
+            var ok = add(key, pp);
             assert (ok);
         }
         return pp;
@@ -730,7 +730,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
     public final Operator addOp1(String atom, BiConsumer<Term, NAR> exe) {
         return setOp(Atomic.atom(atom), (task, nar) -> {
 
-            Subterms ss = task.term().sub(0).subterms();
+            var ss = task.term().sub(0).subterms();
             if (ss.subs() == 1)
                 exe.accept(ss.sub(0), nar);
             return null;
@@ -740,7 +740,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
     public final void addOp2(String atom, TriConsumer<Term, Term, NAR> exe) {
         setOp(Atomic.atom(atom), (task, nar) -> {
 
-            Subterms ss = task.term().sub(0).subterms();
+            var ss = task.term().sub(0).subterms();
             if (ss.subs() == 2)
                 exe.accept(ss.sub(0), ss.sub(1), nar);
             return null;
@@ -751,7 +751,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
      * registers an operator
      */
     public final Operator setOp(Atom name, BiFunction<Task, NAR, Task> exe) {
-        Operator op = Operator.simple(name, exe);
+        var op = Operator.simple(name, exe);
         memory.set(op);
         return op;
     }
@@ -775,11 +775,11 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
      */
     public final @Nullable Truth truth(Termed concept, byte punc, long start, long end) {
 
-        boolean neg = concept.term().op()==NEG;
+        var neg = concept.term().op()==NEG;
         if (neg)
             concept = concept.term().unneg();
 
-        @Nullable BeliefTable table = (BeliefTable) tableDynamic(concept, punc);
+        @Nullable var table = (BeliefTable) tableDynamic(concept, punc);
         return table != null ? Truth.negIf(table.truth(start, end, concept instanceof Term ? ((Term) concept) : null, null, this),neg) : null;
     }
 
@@ -912,7 +912,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
 
 
     public NAR input(String... ss) throws NarseseException {
-        for (String s : ss)
+        for (var s : ss)
             input(s);
         return this;
     }
@@ -1057,11 +1057,11 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
 //        }
 
         if (_x instanceof Concept && memory.elideConceptGets()) {
-            Concept cx = (Concept) _x;
+            var cx = (Concept) _x;
             if (!(cx.isDeleted())) return cx;
         }
 
-        Term xt = _x.term();
+        var xt = _x.term();
         if (!xt.op().conceptualizable)
             throw new TermException("not conceptualizable", xt);
 
@@ -1075,7 +1075,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
 //            xt = xtn;
 //        }
 
-        Term x = xt.concept();
+        var x = xt.concept();
 
         return memory.get(x, createIfMissing);
     }
@@ -1119,7 +1119,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
     }
 
     public final DurLoop onDur(Runnable on, boolean autostart) {
-        DurLoop.DurRunnable r = new DurLoop.DurRunnable(on);
+        var r = new DurLoop.DurRunnable(on);
         if (autostart)
             add(r);
         return r;
@@ -1144,7 +1144,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
      */
 
     public final DurLoop onDur(Consumer<NAR> on) {
-        DurNARConsumer r = new DurNARConsumer(on);
+        var r = new DurNARConsumer(on);
         add(r);
         return r;
     }
@@ -1224,7 +1224,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
     }
 
     public NAR outputBinary(File f, boolean append, UnaryOperator<Task> each) throws IOException {
-        FileOutputStream f1 = new FileOutputStream(f, append);
+        var f1 = new FileOutputStream(f, append);
         OutputStream ff = new GZIPOutputStream(f1, IO.gzipWindowBytesDefault);
         outputBinary(ff, each);
         return this;
@@ -1248,18 +1248,18 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
 
         Util.time(logger, "outputBinary", () -> {
 
-            DataOutputStream oo = new DataOutputStream(o);
+            var oo = new DataOutputStream(o);
 
             MutableInteger total = new MutableInteger(0), wrote = new MutableInteger(0);
 
-            DynBytes d = new DynBytes(128);
+            var d = new DynBytes(128);
 
             tasks().map(each).filter(Objects::nonNull).distinct().forEach(x -> {
 
                 total.increment();
 
                 try {
-                    byte[] b = IO.taskToBytes(x, d);
+                    var b = IO.taskToBytes(x, d);
                     oo.write(b);
                     wrote.increment();
                 } catch (IOException e) {
@@ -1287,11 +1287,11 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
     public NAR outputText(OutputStream o, UnaryOperator<Task> each) {
 
 
-        PrintStream ps = new PrintStream(o);
+        var ps = new PrintStream(o);
 
-        MutableInteger total = new MutableInteger(0);
+        var total = new MutableInteger(0);
 
-        StringBuilder sb = new StringBuilder();
+        var sb = new StringBuilder();
         tasks().map(each).filter(Objects::nonNull).forEach(x -> {
 
             total.increment();
@@ -1330,7 +1330,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
      */
     public NAR inputBinary(InputStream i) throws IOException {
 
-        int count = IO.readTasks(i, this::input);
+        var count = IO.readTasks(i, this::input);
 
 
         logger.info("input {} tasks from {}", count, i);
@@ -1373,27 +1373,27 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
         assert (punc == BELIEF || punc == GOAL);
 
 
-        Term tt = t.term();
-        boolean negate = tt instanceof Neg;
+        var tt = t.term();
+        var negate = tt instanceof Neg;
         if (negate)
             t = tt = tt.unneg();
 
 
-        BeliefTable table = (BeliefTable) tableDynamic(!negate ? t : tt, punc);
+        var table = (BeliefTable) tableDynamic(!negate ? t : tt, punc);
         if (table == null)
             return null;
 
-        Task answer = table.matchExact(start, end, tt, null, dur(), this);
+        var answer = table.matchExact(start, end, tt, null, dur(), this);
 
         return answer!=null ? Task.negIf(answer, negate) : null;
     }
 
     public SortedMap<String, Object> stats(boolean concepts, boolean emotions, Appendable out) {
 
-        SortedMap<String, Object> stat = stats(concepts, emotions);
-        for (Map.Entry<String, Object> entry : stat.entrySet()) {
-            String k = entry.getKey();
-            Object v = entry.getValue();
+        var stat = stats(concepts, emotions);
+        for (var entry : stat.entrySet()) {
+            var k = entry.getKey();
+            var v = entry.getValue();
             try {
                 out.append(k.replace(" ", "/")).append(" \t ").append(v.toString()).append('\n');
             } catch (IOException e) {
@@ -1591,7 +1591,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
         if (logger.isDebugEnabled())
             logger.debug("fork {} {}" /* (+{})"*/, Thread.currentThread(), next);
 
-        What removed = what.put(next, null);
+        var removed = what.put(next, null);
         if (removed!=null)
             stop(removed);
         add(next);
@@ -1601,7 +1601,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
 
     @Deprecated public Term eval(Term x) {
         if (x instanceof Compound) {
-            Term y = Evaluation.solveFirst(x, this::axioms);
+            var y = Evaluation.solveFirst(x, this::axioms);
             return y == null ? x : y;
         } else {
             return x;
@@ -1614,11 +1614,11 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
      */
     @Deprecated public final Concept conceptualizeDynamic(Termed concept) {
 
-        Concept x = concept(concept);
+        var x = concept(concept);
         if (x != null)
             return x;
 
-        Term ct = concept.term();
+        var ct = concept.term();
         if (ct instanceof Compound) {
             if (ct.volume() > termVolMax.intValue())
                 return null; //too complex to analyze for dynamic
@@ -1641,7 +1641,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
             case GOAL:
                 return tableDynamic(concept, false);
             default:
-                Concept exist = concept(concept);
+                var exist = concept(concept);
                 return (exist != null) ? exist.table(punc) : null;
         }
     }
@@ -1660,15 +1660,15 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
 //        return table;
 
 
-        Concept c = concept(concept);
+        var c = concept(concept);
         if (c != null)
             return (BeliefTable) c.table(beliefOrGoal ? BELIEF : GOAL); //concept exists, use its table
 
-        Term ct = concept.term();
+        var ct = concept.term();
         if (ct instanceof Compound && ct.volume() < termVolMax.intValue()) {
-            @Nullable ObjectBooleanToObjectFunction<Term, BeliefTable[]> dmt = ConceptBuilder.dynamicModel((Compound) ct);
+            @Nullable var dmt = ConceptBuilder.dynamicModel((Compound) ct);
             if (dmt != null) {
-                BeliefTable[] dmtb = dmt.valueOf(ct, beliefOrGoal);
+                var dmtb = dmt.valueOf(ct, beliefOrGoal);
                 switch (dmtb.length) {
                     case 0: return null; //does this happen?
                     case 1: return dmtb[0];

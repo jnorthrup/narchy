@@ -64,8 +64,8 @@ public class Pointbase implements Comparable {
     
     public void rotate(double theta) {
         double cosa = Math.cos(theta), sina = Math.sin(theta);
-        double newx = x * cosa - y * sina;
-        double newy = x * sina + y * cosa;
+        var newx = x * cosa - y * sina;
+        var newy = x * sina + y * cosa;
         x = newx;
         y = newy;
     }
@@ -94,7 +94,7 @@ public class Pointbase implements Comparable {
         
         
         if (!(o instanceof Pointbase)) return -1;
-        Pointbase pb = (Pointbase) o;
+        var pb = (Pointbase) o;
         if (this.equals(pb)) return 0;
         if (this.y > pb.y) return 1;
         else if (this.y < pb.y) return -1;

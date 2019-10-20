@@ -83,7 +83,7 @@ public class CircularByteBuffer extends CircularBuffer {
                     isEOS = true;
                     return -1;
                 }
-                int result = CircularByteBuffer.this.readFully(singleByteBuf, 0, 1);
+                var result = CircularByteBuffer.this.readFully(singleByteBuf, 0, 1);
                 if (result < 1)
                     return -1;
                 return singleByteBuf[0] & 0x000000FF;
@@ -106,7 +106,7 @@ public class CircularByteBuffer extends CircularBuffer {
                     isEOS = true;
                     return -1;
                 }
-                int result = CircularByteBuffer.this.read(buf, offset, len, true);
+                var result = CircularByteBuffer.this.read(buf, offset, len, true);
                 if (result < 0) {
                     return -1;
                 }
@@ -159,7 +159,7 @@ public class CircularByteBuffer extends CircularBuffer {
         lock.lock();
         try {
             if (length > 0) {
-                int emptySize = _circBuffer.length - writeAt.get();
+                var emptySize = _circBuffer.length - writeAt.get();
                 while (blocking && emptySize < length) {
                     try {
                         writCond.await();
@@ -169,13 +169,13 @@ public class CircularByteBuffer extends CircularBuffer {
                     emptySize = _circBuffer.length - writeAt.get();
                 }
                 if (emptySize > 0) {
-                    int len = length;
+                    var len = length;
                     if (len > emptySize)
                         len = emptySize;
 
-                    int tmpIdx = bufEnd + len;
+                    var tmpIdx = bufEnd + len;
                     if (tmpIdx > _circBuffer.length) {
-                        int tmpLen = _circBuffer.length - bufEnd;
+                        var tmpLen = _circBuffer.length - bufEnd;
                         System.arraycopy(data, offset, _circBuffer, bufEnd, tmpLen);
                         bufEnd = (tmpIdx) % _circBuffer.length;
                         System.arraycopy(data, tmpLen + offset, _circBuffer, 0, bufEnd);
@@ -206,14 +206,14 @@ public class CircularByteBuffer extends CircularBuffer {
     public int peek(byte[] data, int length) {
         lock.lock();
         try {
-            int remSize = writeAt.get() - readAt.get();
+            var remSize = writeAt.get() - readAt.get();
             if (length > 0 && remSize > 0) {
-                int len = length;
+                var len = length;
                 if (len > remSize)
                     len = remSize;
-                int tmpIdx = viewPtr + len;
+                var tmpIdx = viewPtr + len;
                 if (tmpIdx > _circBuffer.length) {
-                    int tmpLen = _circBuffer.length - viewPtr;
+                    var tmpLen = _circBuffer.length - viewPtr;
                     System.arraycopy(_circBuffer, viewPtr, data, 0, tmpLen);
                     viewPtr = (tmpIdx) % _circBuffer.length;
                     System.arraycopy(_circBuffer, 0, data, tmpLen, viewPtr);
@@ -234,7 +234,7 @@ public class CircularByteBuffer extends CircularBuffer {
         lock.lock();
         try {
             if (length > 0) {
-                int minSize = Math.max(this.minSize, 0);
+                var minSize = Math.max(this.minSize, 0);
                 while (writeAt.get() - minSize < length) {
                     try {
                         readCond.await();
@@ -268,13 +268,13 @@ public class CircularByteBuffer extends CircularBuffer {
                         return -1;
                     }
                 }
-                int minSize = Math.max(this.minSize, 0);
+                var minSize = Math.max(this.minSize, 0);
                 if (writeAt.get() > 0) {
-                    int len = length;
+                    var len = length;
                     if (len > writeAt.get() - minSize)
                         len = writeAt.get() - minSize;
                     int tmpLen;
-                    CircularBuffer.BufMark m = marks.peek();
+                    var m = marks.peek();
                     if (m != null) {
                         tmpLen = calcMarkSize(m);
                         if (tmpLen <= len) {
@@ -284,7 +284,7 @@ public class CircularByteBuffer extends CircularBuffer {
                         }
                     }
                     if (len > 0) {
-                        int tmpIdx = bufStart + len;
+                        var tmpIdx = bufStart + len;
                         if (tmpIdx > _circBuffer.length) {
                             tmpLen = _circBuffer.length - bufStart;
                             System.arraycopy(_circBuffer, bufStart, data, offset, tmpLen);

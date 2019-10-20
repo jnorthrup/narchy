@@ -86,14 +86,13 @@ public class HeightfieldTerrainShape extends ConcaveShape
 	public HeightfieldTerrainShape(int heightStickWidth, int heightStickLength, byte[] heightfieldData,
 			float maxHeight, int upAxis, boolean useFloatData, boolean flipQuadEdges)
 	{
-		
-		
-		PHY_ScalarType hdt = (useFloatData) ? PHY_ScalarType.PHY_FLOAT : PHY_ScalarType.PHY_UCHAR;
-		float minHeight = 0.0f;
 
-		
-		
-		float heightScale = maxHeight / 65535;
+
+		var hdt = (useFloatData) ? PHY_ScalarType.PHY_FLOAT : PHY_ScalarType.PHY_UCHAR;
+		var minHeight = 0.0f;
+
+
+		var heightScale = maxHeight / 65535;
 
 		initialize(heightStickWidth, heightStickLength, heightfieldData, heightScale, minHeight, maxHeight, upAxis,
 				hdt, flipQuadEdges);
@@ -109,38 +108,38 @@ public class HeightfieldTerrainShape extends ConcaveShape
 
 	private float GetRawHeightFieldValue(int x, int y)
 	{
-		float val = 0f;
+		var val = 0f;
 		switch (m_heightDataType)
 		{
 		case PHY_FLOAT:
             if (m_heightFieldDataFloat != null)
             {
-                
-                int index = ((y * m_heightStickWidth) + x);
+
+				var index = ((y * m_heightStickWidth) + x);
                 val = m_heightFieldDataFloat[index];
                 break;
             }
             else
             {
-                
-                
-                int index = ((y * m_heightStickWidth) + x) * 4;
-                
 
-                int size = 4;
-                ByteBuffer bb = ByteBuffer.allocate(size).put(m_heightFieldDataByte, index, size);
+
+				var index = ((y * m_heightStickWidth) + x) * 4;
+
+
+				var size = 4;
+				var bb = ByteBuffer.allocate(size).put(m_heightFieldDataByte, index, size);
                 bb.position(0);
                 val = bb.getFloat();
                 break;
             }
             case PHY_UCHAR:
-            byte heightFieldValue = m_heightFieldDataByte[(y * m_heightStickWidth) + x];
+				var heightFieldValue = m_heightFieldDataByte[(y * m_heightStickWidth) + x];
             val = heightFieldValue * m_heightScale;
             break;
 
             case PHY_SHORT:
-            
-            int index = ((y * m_heightStickWidth) + x) * 2;
+
+				var index = ((y * m_heightStickWidth) + x) * 2;
             short hfValue = 0;
             val = hfValue * m_heightScale;
             break;
@@ -161,7 +160,7 @@ public class HeightfieldTerrainShape extends ConcaveShape
 		  axis-aligned bounding box.
 		 */
 
-		v3 clampedPoint = new v3();
+		var clampedPoint = new v3();
 		clampedPoint.set(point.x, point.y, point.z);
 		VectorUtil.setMax(clampedPoint, m_localAabbMin);
 		VectorUtil.setMin(clampedPoint, m_localAabbMax);
@@ -187,7 +186,7 @@ public class HeightfieldTerrainShape extends ConcaveShape
 		assert (x < m_heightStickWidth);
 		assert (y < m_heightStickLength);
 
-		float height = GetRawHeightFieldValue(x, y);
+		var height = GetRawHeightFieldValue(x, y);
 
 		switch (m_upAxis)
 		{
@@ -289,7 +288,7 @@ public class HeightfieldTerrainShape extends ConcaveShape
 		VectorUtil.add(m_localOrigin, m_localAabbMin, m_localAabbMax);
 		VectorUtil.mul(m_localOrigin, m_localOrigin, 0.5f);
 
-		for (int i = 0; i < vertices.length; ++i)
+		for (var i = 0; i < vertices.length; ++i)
 		{
 			vertices[i] = new v3();
 		}
@@ -304,24 +303,24 @@ public class HeightfieldTerrainShape extends ConcaveShape
 	@Override
 	public void getAabb(Transform trans, v3 aabbMin, v3 aabbMax)
 	{
-		v3 tmp = new v3();
+		var tmp = new v3();
 
-		v3 localHalfExtents = new v3();
+		var localHalfExtents = new v3();
 		localHalfExtents.sub(m_localAabbMax, m_localAabbMin);
 		VectorUtil.mul(localHalfExtents,localHalfExtents,m_localScaling);
 		
 		localHalfExtents.scaled(0.5f);
 
-		v3 localOrigin = new v3();
+		var localOrigin = new v3();
 		localOrigin.set(0f,0f,0f);
 		VectorUtil.setCoord(localOrigin,m_upAxis,(m_minHeight + m_maxHeight)*0.5f );
 		VectorUtil.mul(localOrigin,localOrigin,m_localScaling);
-		
-		Matrix3f abs_b = new Matrix3f(trans.basis);
+
+		var abs_b = new Matrix3f(trans.basis);
 		MatrixUtil.absolute(abs_b);
 
-		v3 center = new v3(trans);
-		v3 extent = new v3();
+		var center = new v3(trans);
+		var extent = new v3();
 		abs_b.getRow(0, tmp);
 		extent.x = tmp.dot(localHalfExtents);
 		abs_b.getRow(1, tmp);
@@ -329,7 +328,7 @@ public class HeightfieldTerrainShape extends ConcaveShape
 		abs_b.getRow(2, tmp);
 		extent.z = tmp.dot(localHalfExtents);
 
-		v3 margin = new v3();
+		var margin = new v3();
 		margin.set(getMargin(), getMargin(), getMargin());
 		extent.add(margin);
 
@@ -352,9 +351,9 @@ public class HeightfieldTerrainShape extends ConcaveShape
 	private static void checkNormal(v3[] vertices1, TriangleCallback callback)
 	{
 
-		v3 tmp1 = new v3();
-		v3 tmp2 = new v3();
-		v3 normal = new v3();
+		var tmp1 = new v3();
+		var tmp2 = new v3();
+		var normal = new v3();
 
 		tmp1.sub(vertices1[1], vertices1[0]);
 		tmp2.sub(vertices1[2], vertices1[0]);
@@ -368,12 +367,12 @@ public class HeightfieldTerrainShape extends ConcaveShape
     public void processAllTriangles(TriangleCallback callback, v3 aabbMin, v3 aabbMax)
 	{
 
-		
-		v3 invScale = new v3();
+
+		var invScale = new v3();
 		invScale.set(1f / m_localScaling.x, 1f / m_localScaling.y, 1f / m_localScaling.z);
 
-		v3 localAabbMin = new v3();
-		v3 localAabbMax = new v3();
+		var localAabbMin = new v3();
+		var localAabbMax = new v3();
 
 		VectorUtil.mul(localAabbMin, aabbMin, invScale);
 		VectorUtil.mul(localAabbMax, aabbMax, invScale);
@@ -387,16 +386,16 @@ public class HeightfieldTerrainShape extends ConcaveShape
 
 		
 		
-		for (int i = 0; i < 3; ++i)
+		for (var i = 0; i < 3; ++i)
 		{
 			quantizedAabbMin[i]--;
 			quantizedAabbMax[i]++;
 		}
 
-		int startX = 0;
-		int endX = m_heightStickWidth - 1;
-		int startJ = 0;
-		int endJ = m_heightStickLength - 1;
+		var startX = 0;
+		var endX = m_heightStickWidth - 1;
+		var startJ = 0;
+		var endJ = m_heightStickLength - 1;
 
 		switch (m_upAxis)
 		{
@@ -437,9 +436,9 @@ public class HeightfieldTerrainShape extends ConcaveShape
         }
 
 		
-		for (int j = startJ; j < endJ; j++)
+		for (var j = startJ; j < endJ; j++)
 		{
-			for (int x = startX; x < endX; x++)
+			for (var x = startX; x < endX; x++)
 			{
 				if (m_flipQuadEdges || (m_useDiamondSubdivision && (((j + x) & 1) > 0)))
 				{

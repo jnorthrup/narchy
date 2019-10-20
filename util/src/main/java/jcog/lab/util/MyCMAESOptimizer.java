@@ -300,13 +300,13 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
 	 * @return a sorted array of indices pointing into doubles.
 	 */
 	private static int[] sortedIndices(double[] x) {
-		int bound1 = x.length;
-		DoubleIndex[] y = IntStream.range(0, bound1).mapToObj(i1 -> new DoubleIndex(x[i1], i1)).sorted().toArray(DoubleIndex[]::new);
-		int[] j = new int[10];
-		int count = 0;
-		int bound = x.length;
-		for (int i = 0; i < bound; i++) {
-			int index = y[i].index;
+		var bound1 = x.length;
+		var y = IntStream.range(0, bound1).mapToObj(i1 -> new DoubleIndex(x[i1], i1)).sorted().toArray(DoubleIndex[]::new);
+		var j = new int[10];
+		var count = 0;
+		var bound = x.length;
+		for (var i = 0; i < bound; i++) {
+			var index = y[i].index;
 			if (j.length == count) j = Arrays.copyOf(j, count * 2);
 			j[count++] = index;
 		}
@@ -321,10 +321,10 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
 	 * @return a double equal to maximum value minus minimum value.
 	 */
 	private static double valueRange(MyCMAESOptimizer.ValuePenaltyPair[] vpPairs) {
-		double max = Double.NEGATIVE_INFINITY;
-		double min = Double.POSITIVE_INFINITY;
-		for (MyCMAESOptimizer.ValuePenaltyPair vpPair : vpPairs) {
-            double vv = vpPair.value;
+		var max = Double.NEGATIVE_INFINITY;
+		var min = Double.POSITIVE_INFINITY;
+		for (var vpPair : vpPairs) {
+			var vv = vpPair.value;
             min = Math.min(vv, min);
             max = Math.max(vv, max);
 		}
@@ -336,10 +336,10 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
 	 * @return Matrix representing the element-wise logarithm of m.
 	 */
 	private static RealMatrix log(RealMatrix m) {
-		int R = m.getRowDimension();
-		int C = m.getColumnDimension();
-		double[][] d = new double[R][C];
-		for (int r = 0; r < R; r++) for (int c = 0; c < C; c++) d[r][c] = Math.log(m.getEntry(r, c));
+		var R = m.getRowDimension();
+		var C = m.getColumnDimension();
+		var d = new double[R][C];
+		for (var r = 0; r < R; r++) for (var c = 0; c < C; c++) d[r][c] = Math.log(m.getEntry(r, c));
 		return new Array2DRowRealMatrix(d, false);
 	}
 
@@ -348,10 +348,10 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
 	 * @return Matrix representing the element-wise square root of m.
 	 */
 	private static RealMatrix sqrt(RealMatrix m) {
-		int R = m.getRowDimension();
-		int C = m.getColumnDimension();
-		double[][] d = new double[R][C];
-		for (int r = 0; r < R; r++) for (int c = 0; c < C; c++) d[r][c] = Math.sqrt(m.getEntry(r, c));
+		var R = m.getRowDimension();
+		var C = m.getColumnDimension();
+		var d = new double[R][C];
+		for (var r = 0; r < R; r++) for (var c = 0; c < C; c++) d[r][c] = Math.sqrt(m.getEntry(r, c));
 		return new Array2DRowRealMatrix(d, false);
 	}
 
@@ -360,10 +360,10 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
 	 * @return Matrix representing the element-wise square of m.
 	 */
 	private static RealMatrix square(RealMatrix m) {
-		double[][] d = new double[m.getRowDimension()][m.getColumnDimension()];
-		for (int r = 0; r < m.getRowDimension(); r++)
-			for (int c = 0; c < m.getColumnDimension(); c++) {
-				double e = m.getEntry(r, c);
+		var d = new double[m.getRowDimension()][m.getColumnDimension()];
+		for (var r = 0; r < m.getRowDimension(); r++)
+			for (var c = 0; c < m.getColumnDimension(); c++) {
+				var e = m.getEntry(r, c);
 				d[r][c] = e * e;
 			}
 		return new Array2DRowRealMatrix(d, false);
@@ -375,10 +375,10 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
 	 * @return the matrix where the elements of m and n are element-wise multiplied.
 	 */
 	private static RealMatrix times(RealMatrix m, RealMatrix n) {
-		int R = m.getRowDimension();
-		int C = m.getColumnDimension();
-		double[][] d = new double[R][C];
-		for (int r = 0; r < R; r++) for (int c = 0; c < C; c++) d[r][c] = m.getEntry(r, c) * n.getEntry(r, c);
+		var R = m.getRowDimension();
+		var C = m.getColumnDimension();
+		var d = new double[R][C];
+		for (var r = 0; r < R; r++) for (var c = 0; c < C; c++) d[r][c] = m.getEntry(r, c) * n.getEntry(r, c);
 		return new Array2DRowRealMatrix(d, false);
 	}
 
@@ -388,9 +388,9 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
 	 * @return Matrix where the elements of m and n are element-wise divided.
 	 */
 	private static RealMatrix divide(RealMatrix m, RealMatrix n) {
-		double[][] d = new double[m.getRowDimension()][m.getColumnDimension()];
-		for (int r = 0; r < m.getRowDimension(); r++)
-			for (int c = 0; c < m.getColumnDimension(); c++) d[r][c] = m.getEntry(r, c) / n.getEntry(r, c);
+		var d = new double[m.getRowDimension()][m.getColumnDimension()];
+		for (var r = 0; r < m.getRowDimension(); r++)
+			for (var c = 0; c < m.getColumnDimension(); c++) d[r][c] = m.getEntry(r, c) / n.getEntry(r, c);
 		return new Array2DRowRealMatrix(d, false);
 	}
 
@@ -400,9 +400,9 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
 	 * @return Matrix representing the selected columns.
 	 */
 	private static RealMatrix selectColumns(RealMatrix m, int[] cols) {
-		int rowDimension = m.getRowDimension();
-		double[][] d = new double[rowDimension][cols.length];
-		for (int r = 0; r < rowDimension; r++) for (int c = 0; c < cols.length; c++) d[r][c] = m.getEntry(r, cols[c]);
+		var rowDimension = m.getRowDimension();
+		var d = new double[rowDimension][cols.length];
+		for (var r = 0; r < rowDimension; r++) for (var c = 0; c < cols.length; c++) d[r][c] = m.getEntry(r, cols[c]);
 		return new Array2DRowRealMatrix(d, false);
 	}
 
@@ -412,10 +412,10 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
 	 * @return Upper triangular part of matrix.
 	 */
 	private static RealMatrix triu(RealMatrix m, int k) {
-		int R = m.getRowDimension();
-		int C = m.getColumnDimension();
-		double[][] d = new double[R][C];
-		for (int r = 0; r < R; r++) for (int c = 0; c < C; c++) d[r][c] = r <= c - k ? m.getEntry(r, c) : 0;
+		var R = m.getRowDimension();
+		var C = m.getColumnDimension();
+		var d = new double[R][C];
+		for (var r = 0; r < R; r++) for (var c = 0; c < C; c++) d[r][c] = r <= c - k ? m.getEntry(r, c) : 0;
 		return new Array2DRowRealMatrix(d, false);
 	}
 
@@ -424,12 +424,12 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
 	 * @return Row matrix representing the sums of the rows.
 	 */
 	private static RealMatrix sumRows(RealMatrix m) {
-		int C = m.getColumnDimension();
-		double[][] d = new double[1][C];
-		int R = m.getRowDimension();
-		for (int c = 0; c < C; c++) {
+		var C = m.getColumnDimension();
+		var d = new double[1][C];
+		var R = m.getRowDimension();
+		for (var c = 0; c < C; c++) {
 			double sum = 0;
-			for (int r = 0; r < R; r++)
+			for (var r = 0; r < R; r++)
 				sum += m.getEntry(r, c);
 			d[0][c] = sum;
 		}
@@ -442,16 +442,16 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
 	 * matrix representing the diagonal if m is a n-by-n matrix.
 	 */
 	private static RealMatrix diag(RealMatrix m) {
-		int c = m.getColumnDimension();
-		int r = m.getRowDimension();
+		var c = m.getColumnDimension();
+		var r = m.getRowDimension();
 		if (c == 1) {
-			double[][] d = new double[r][r];
-			for (int i = 0; i < r; i++)
+			var d = new double[r][r];
+			for (var i = 0; i < r; i++)
 				d[i][i] = m.getEntry(i, 0);
 			return new Array2DRowRealMatrix(d, false);
 		} else {
-			double[][] d = new double[r][1];
-			for (int i = 0; i < c; i++)
+			var d = new double[r][1];
+			for (var i = 0; i < c; i++)
 				d[i][0] = m.getEntry(i, i);
 			return new Array2DRowRealMatrix(d, false);
 		}
@@ -466,8 +466,8 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
 	 * @param col2 Target column.
 	 */
 	private static void copyColumn(RealMatrix m1, int col1, RealMatrix m2, int col2) {
-		int rd = m1.getRowDimension();
-		for (int i = 0; i < rd; i++) m2.setEntry(i, col2, m1.getEntry(i, col1));
+		var rd = m1.getRowDimension();
+		for (var i = 0; i < rd; i++) m2.setEntry(i, col2, m1.getEntry(i, col1));
 	}
 
 	/**
@@ -476,8 +476,8 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
 	 * @return n-by-m matrix filled with 1.
 	 */
 	private static RealMatrix ones(int n, int m) {
-		double[][] d = new double[n][m];
-		for (int r = 0; r < n; r++) Arrays.fill(d[r], 1);
+		var d = new double[n][m];
+		for (var r = 0; r < n; r++) Arrays.fill(d[r], 1);
 		return new Array2DRowRealMatrix(d, false);
 	}
 
@@ -488,8 +488,8 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
 	 * the diagonal.
 	 */
 	private static RealMatrix eye(int n, int m) {
-		double[][] d = new double[n][m];
-		for (int r = 0; r < n; r++) if (r < m) d[r][r] = 1;
+		var d = new double[n][m];
+		for (var r = 0; r < n; r++) if (r < m) d[r][r] = 1;
 		return new Array2DRowRealMatrix(d, false);
 	}
 
@@ -509,13 +509,13 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
 	 * @return a matrix which replicates the input matrix in both directions.
 	 */
 	private static RealMatrix repmat(RealMatrix mat, int n, int m) {
-		int rd = mat.getRowDimension();
-		int cd = mat.getColumnDimension();
-		double[][] d = new double[n * rd][m * cd];
-		for (int r = 0; r < n * rd; r++) {
-			double[] dr = d[r];
-			int rrd = r % rd;
-			for (int c = 0; c < m * cd; c++) dr[c] = mat.getEntry(rrd, c % cd);
+		var rd = mat.getRowDimension();
+		var cd = mat.getColumnDimension();
+		var d = new double[n * rd][m * cd];
+		for (var r = 0; r < n * rd; r++) {
+			var dr = d[r];
+			var rrd = r % rd;
+			for (var c = 0; c < m * cd; c++) dr[c] = mat.getEntry(rrd, c % cd);
 		}
 		return new Array2DRowRealMatrix(d, false);
 	}
@@ -527,10 +527,10 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
 	 * @return a sequence as column matrix.
 	 */
 	private static RealMatrix sequence(double start, double end, double step) {
-		int size = (int) ((end - start) / step + 1);
-		double[][] d = new double[size][1];
-		double value = start;
-		for (int r = 0; r < size; r++) {
+		var size = (int) ((end - start) / step + 1);
+		var d = new double[size][1];
+		var value = start;
+		for (var r = 0; r < size; r++) {
 			d[r][0] = value;
 			value += step;
 		}
@@ -542,13 +542,13 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
 	 * @return the maximum of the matrix element values.
 	 */
 	private static double max(RealMatrix m) {
-		double max = Double.NEGATIVE_INFINITY;
-		int R = m.getRowDimension();
-		int C = m.getColumnDimension();
+		var max = Double.NEGATIVE_INFINITY;
+		var R = m.getRowDimension();
+		var C = m.getColumnDimension();
 
-		for (int r = 0; r < R; r++)
-			for (int c = 0; c < C; c++) {
-				double e = m.getEntry(r, c);
+		for (var r = 0; r < R; r++)
+			for (var c = 0; c < C; c++) {
+				var e = m.getEntry(r, c);
 				if (max < e)
 					max = e;
 			}
@@ -560,12 +560,12 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
 	 * @return the minimum of the matrix element values.
 	 */
 	private static double min(RealMatrix m) {
-		double min = Double.POSITIVE_INFINITY;
-		int R = m.getRowDimension();
-		int C = m.getColumnDimension();
-		for (int r = 0; r < R; r++)
-			for (int c = 0; c < C; c++) {
-				double e = m.getEntry(r, c);
+		var min = Double.POSITIVE_INFINITY;
+		var R = m.getRowDimension();
+		var C = m.getColumnDimension();
+		for (var r = 0; r < R; r++)
+			for (var c = 0; c < C; c++) {
+				var e = m.getEntry(r, c);
 				if (min > e)
 					min = e;
 			}
@@ -577,8 +577,8 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
 	 * @return the inverse of the mapping defined by indices.
 	 */
 	private static int[] inverse(int[] indices) {
-		int[] inverse = new int[indices.length];
-		for (int i = 0; i < indices.length; i++) inverse[indices[i]] = i;
+		var inverse = new int[indices.length];
+		for (var i = 0; i < indices.length; i++) inverse[indices[i]] = i;
 		return inverse;
 	}
 
@@ -587,11 +587,11 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
 	 * @return the indices in inverse order (last is first).
 	 */
 	private static int[] reverse(int[] indices) {
-		int[] reverse = new int[10];
-		int count = 0;
-		int bound = indices.length;
-		for (int i = 0; i < bound; i++) {
-			int index = indices[indices.length - i - 1];
+		var reverse = new int[10];
+		var count = 0;
+		var bound = indices.length;
+		for (var i = 0; i < bound; i++) {
+			var index = indices[indices.length - i - 1];
 			if (reverse.length == count) reverse = Arrays.copyOf(reverse, count * 2);
 			reverse[count++] = index;
 		}
@@ -634,7 +634,7 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
 	protected PointValuePair doOptimize() {
         iterations = 0;
 
-		FitEval eval = new FitEval();
+		var eval = new FitEval();
 
 		for (iterations = 1; iterations <= maxIterations; iterations++) {
             if (!eval.iterate())
@@ -674,13 +674,13 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
 	 * Checks dimensions and values of boundaries and inputSigma if defined.
 	 */
 	private void checkParameters() {
-		double[] init = getStartPoint();
-		double[] lB = getLowerBound();
-		double[] uB = getUpperBound();
+		var init = getStartPoint();
+		var lB = getLowerBound();
+		var uB = getUpperBound();
 
 		if (inputSigma != null) {
 			if (inputSigma.length != init.length) throw new DimensionMismatchException(inputSigma.length, init.length);
-			for (int i = 0; i < init.length; i++)
+			for (var i = 0; i < init.length; i++)
 				if (inputSigma[i] > uB[i] - lB[i]) throw new OutOfRangeException(inputSigma[i], 0, uB[i] - lB[i]);
 		}
 	}
@@ -693,8 +693,8 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
 	private void initializeCMA(double[] guess) {
 		if (lambda <= 0) throw new NotStrictlyPositiveException(lambda);
 
-		double[][] sigmaArray = new double[guess.length][1];
-		for (int i = 0; i < guess.length; i++)
+		var sigmaArray = new double[guess.length][1];
+		for (var i = 0; i < guess.length; i++)
 		    sigmaArray[i][0] = inputSigma[i];
 		RealMatrix insigma = new Array2DRowRealMatrix(sigmaArray, false);
 		sigma = max(insigma);
@@ -708,12 +708,12 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
 
 		mu = lambda / 2;
 		/* log(mu + 0.5), stored for efficiency. */
-		double logMu2 = Math.log(mu + 0.5);
+		var logMu2 = Math.log(mu + 0.5);
 		weights = log(sequence(1, mu, 1)).scalarMultiply(-1).scalarAdd(logMu2);
 		double sumw = 0;
 		double sumwq = 0;
-		for (int i = 0; i < mu; i++) {
-			double w = weights.getEntry(i, 0);
+		for (var i = 0; i < mu; i++) {
+			var w = weights.getEntry(i, 0);
 			sumw += w;
 			sumwq += w * w;
 		}
@@ -749,7 +749,7 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
 		C = B.multiply(diag(square(D)).multiply(B.transpose()));
 
 		/* Size of history queue of best values. */
-		int historySize = 10 + (int) (3 * 10 * dimension / (double) lambda);
+		var historySize = 10 + (int) (3 * 10 * dimension / (double) lambda);
 		fitnessHistory = new double[historySize];
 		Arrays.fill(fitnessHistory, Double.POSITIVE_INFINITY);
 	}
@@ -767,7 +767,7 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
 			B.multiply(zmean).scalarMultiply(
 				Math.sqrt(cs * (2 - cs) * mueff)));
 		normps = ps.getFrobeniusNorm();
-		boolean hsig = normps /
+		var hsig = normps /
 			Math.sqrt(1 - Math.pow(1 - cs, 2 * iterations)) /
 			chiN < 1.4 + 2 / ((double) dimension + 1);
 		pc = pc.scalarMultiply(1 - cc);
@@ -785,7 +785,7 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
 	private void updateCovarianceDiagonalOnly(boolean hsig,
 											  RealMatrix bestArz) {
 
-		double oldFac = hsig ? 0 : ccov1Sep * cc * (2 - cc);
+		var oldFac = hsig ? 0 : ccov1Sep * cc * (2 - cc);
 		oldFac += 1 - ccov1Sep - ccovmuSep;
 		diagC = diagC.scalarMultiply(oldFac)
 			.add(square(pc).scalarMultiply(ccov1Sep))
@@ -818,12 +818,12 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
 								  RealMatrix xold) {
 		double negccov = 0;
 		if (ccov1 + ccovmu > 0) {
-			RealMatrix arpos = bestArx.subtract(repmat(xold, 1, mu))
+			var arpos = bestArx.subtract(repmat(xold, 1, mu))
 				.scalarMultiply(1 / sigma);
-			RealMatrix roneu = pc.multiply(pc.transpose())
+			var roneu = pc.multiply(pc.transpose())
 				.scalarMultiply(ccov1);
 
-			double oldFac = hsig ? 0 : ccov1 * cc * (2 - cc);
+			var oldFac = hsig ? 0 : ccov1 * cc * (2 - cc);
 			oldFac += 1 - ccov1 - ccovmu;
 			if (isActiveCMA) {
 
@@ -831,25 +831,25 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
 					(Math.pow(dimension + 2, 1.5) + 2 * mueff);
 
 
-				int[] arReverseIndex = reverse(arindex);
-				RealMatrix arzneg = selectColumns(arz, MathArrays.copyOf(arReverseIndex, mu));
-				RealMatrix arnorms = sqrt(sumRows(square(arzneg)));
-				int[] idxnorms = sortedIndices(arnorms.getRow(0));
-				RealMatrix arnormsSorted = selectColumns(arnorms, idxnorms);
-				int[] idxReverse = reverse(idxnorms);
-				RealMatrix arnormsReverse = selectColumns(arnorms, idxReverse);
+				var arReverseIndex = reverse(arindex);
+				var arzneg = selectColumns(arz, MathArrays.copyOf(arReverseIndex, mu));
+				var arnorms = sqrt(sumRows(square(arzneg)));
+				var idxnorms = sortedIndices(arnorms.getRow(0));
+				var arnormsSorted = selectColumns(arnorms, idxnorms);
+				var idxReverse = reverse(idxnorms);
+				var arnormsReverse = selectColumns(arnorms, idxReverse);
 				arnorms = divide(arnormsReverse, arnormsSorted);
-				int[] idxInv = inverse(idxnorms);
-				RealMatrix arnormsInv = selectColumns(arnorms, idxInv);
+				var idxInv = inverse(idxnorms);
+				var arnormsInv = selectColumns(arnorms, idxInv);
 
-				final double negminresidualvariance = 0.66;
-				double negcovMax = (1 - negminresidualvariance) /
+				final var negminresidualvariance = 0.66;
+				var negcovMax = (1 - negminresidualvariance) /
 					square(arnormsInv).multiply(weights).getEntry(0, 0);
 				if (negccov > negcovMax) negccov = negcovMax;
 				arzneg = times(arzneg, repmat(arnormsInv, dimension, 1));
-				RealMatrix artmp = BD.multiply(arzneg);
-				RealMatrix Cneg = artmp.multiply(diag(weights)).multiply(artmp.transpose());
-				final double negalphaold = 0.5;
+				var artmp = BD.multiply(arzneg);
+				var Cneg = artmp.multiply(diag(weights)).multiply(artmp.transpose());
+				final var negalphaold = 0.5;
 				oldFac += negalphaold * negccov;
 				C = C.scalarMultiply(oldFac)
 					.add(roneu)
@@ -879,19 +879,19 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
 
 			C = triu(C, 0).add(triu(C, 1).transpose());
 
-			EigenDecomposition eig = new EigenDecomposition(C);
+			var eig = new EigenDecomposition(C);
 			B = eig.getV();
 			D = eig.getD();
 			diagD = diag(D);
 
 			if (min(diagD) <= 0) {
-				for (int i = 0; i < dimension; i++) if (diagD.getEntry(i, 0) < 0) diagD.setEntry(i, 0, 0);
-				double tfac = max(diagD) / big_magic_number_WTF;
+				for (var i = 0; i < dimension; i++) if (diagD.getEntry(i, 0) < 0) diagD.setEntry(i, 0, 0);
+				var tfac = max(diagD) / big_magic_number_WTF;
 				C = C.add(eye(dimension, dimension).scalarMultiply(tfac));
 				diagD = diagD.add(ones(dimension, 1).scalarMultiply(tfac));
 			}
 			if (max(diagD) > big_magic_number_WTF * min(diagD)) {
-				double tfac = max(diagD) / big_magic_number_WTF - min(diagD);
+				var tfac = max(diagD) / big_magic_number_WTF - min(diagD);
 				C = C.add(eye(dimension, dimension).scalarMultiply(tfac));
 				diagD = diagD.add(ones(dimension, 1).scalarMultiply(tfac));
 			}
@@ -906,10 +906,10 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
 	 * @return an array of Gaussian random numbers.
 	 */
 	private double[] randn(int size) {
-		double[] randn = new double[10];
-		int count = 0;
-		for (int i = 0; i < size; i++) {
-			double v = random.nextGaussian();
+		var randn = new double[10];
+		var count = 0;
+		for (var i = 0; i < size; i++) {
+			var v = random.nextGaussian();
 			if (randn.length == count) randn = Arrays.copyOf(randn, count * 2);
 			randn[count++] = v;
 		}
@@ -923,8 +923,8 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
 	 * @return a 2-dimensional matrix of Gaussian random numbers.
 	 */
 	private RealMatrix randn1(int size, int popSize) {
-		double[][] d = new double[size][popSize];
-		for (int r = 0; r < size; r++) for (int c = 0; c < popSize; c++) d[r][c] = random.nextGaussian();
+		var d = new double[size][popSize];
+		for (var r = 0; r < size; r++) for (var c = 0; c < popSize; c++) d[r][c] = random.nextGaussian();
 		return new Array2DRowRealMatrix(d, false);
 	}
 
@@ -1033,12 +1033,12 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
 			lB = getLowerBound();
 			uB = getUpperBound();
 
-            double[] guess = getStartPoint();
+			var guess = getStartPoint();
             dimension = guess.length;
 
             initializeCMA(guess);
 
-            MyCMAESOptimizer.ValuePenaltyPair valuePenalty = value(guess);
+			var valuePenalty = value(guess);
 
             bestValue = valuePenalty.value + valuePenalty.penalty;
             push(fitnessHistory, bestValue);
@@ -1054,13 +1054,13 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
 		MyCMAESOptimizer.ValuePenaltyPair value(double[] point) {
 			double penalty;
 			if (isRepairMode) {
-				double[] repaired = repair(point);
+				var repaired = repair(point);
                 penalty = penalty(point, repaired);
                 point = repaired;
 			} else
 			    penalty = 0;
 
-            double value = MyCMAESOptimizer.this.computeObjectiveValue(point);
+			var value = MyCMAESOptimizer.this.computeObjectiveValue(point);
 			return new MyCMAESOptimizer.ValuePenaltyPair(isMinimize ? value : -value, isMinimize ? penalty : -penalty);
 		}
 
@@ -1070,8 +1070,8 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
 		 */
 		boolean isFeasible(double[] x, double[] lB, double[] uB) {
 
-			for (int i = 0; i < x.length; i++) {
-				double xi = x[i];
+			for (var i = 0; i < x.length; i++) {
+				var xi = x[i];
 				if (xi < lB[i])
 					return false;
 				if (xi > uB[i])
@@ -1086,9 +1086,9 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
 		 */
 		private double[] repair(double[] x) {
 			double[] lB = this.lB, uB = this.uB;
-			double[] repaired = new double[x.length];
-			for (int i = 0; i < x.length; i++) {
-				double xi = x[i];
+			var repaired = new double[x.length];
+			for (var i = 0; i < x.length; i++) {
+				var xi = x[i];
                 repaired[i] = xi < lB[i] ? lB[i] : Math.min(xi, uB[i]);
 			}
 			return repaired;
@@ -1100,8 +1100,8 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
 		 * @return Penalty value according to the violation of the bounds.
 		 */
 		private double penalty(double[] x, double[] repaired) {
-			int bound = x.length;
-			double penalty = IntStream.range(0, bound).mapToDouble(i -> Math.abs(x[i] - repaired[i])).sum();
+			var bound = x.length;
+			var penalty = IntStream.range(0, bound).mapToDouble(i -> Math.abs(x[i] - repaired[i])).sum();
 			return isMinimize ? penalty : -penalty;
 		}
 
@@ -1110,17 +1110,17 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
             incrementIterationCount();
 
 
-            RealMatrix arz = randn1(dimension, lambda);
-            RealMatrix arx = zeros(dimension, lambda);
+			var arz = randn1(dimension, lambda);
+			var arx = zeros(dimension, lambda);
 
             double[] lB = this.lB, uB = this.uB;
 
-            for (int k = 0; k < lambda; k++) {
-                RealMatrix arzK = arz.getColumnMatrix(k);
-                RealMatrix xFactor = times(diagD, arzK).scalarMultiply(sigma);
+            for (var k = 0; k < lambda; k++) {
+				var arzK = arz.getColumnMatrix(k);
+				var xFactor = times(diagD, arzK).scalarMultiply(sigma);
 
                 RealMatrix arxk = null;
-                for (int i = 0; i < checkFeasableCount + 1; i++) {
+                for (var i = 0; i < checkFeasableCount + 1; i++) {
 
                     arxk = xmean.add(diagonalOnly <= 0 ? BD.multiply(arzK).scalarMultiply(sigma) : xFactor);
 
@@ -1140,30 +1140,30 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
             }
 
 
-            double valueRange = valueRange(valuePenaltyPairs);
-            for (int iValue = 0; iValue < valuePenaltyPairs.length; iValue++)
+			var valueRange = valueRange(valuePenaltyPairs);
+            for (var iValue = 0; iValue < valuePenaltyPairs.length; iValue++)
                 fitness[iValue] = valuePenaltyPairs[iValue].value + valuePenaltyPairs[iValue].penalty * valueRange;
 
-            int[] arindex = sortedIndices(fitness);
+			var arindex = sortedIndices(fitness);
 
-            RealMatrix xold = xmean;
-            int[] arMu = MathArrays.copyOf(arindex, mu);
+			var xold = xmean;
+			var arMu = MathArrays.copyOf(arindex, mu);
 
-            RealMatrix bestArx = selectColumns(arx, arMu);
+			var bestArx = selectColumns(arx, arMu);
             xmean = bestArx.multiply(weights);
 
-            RealMatrix bestArz = selectColumns(arz, arMu);
-            RealMatrix zmean = bestArz.multiply(weights);
+			var bestArz = selectColumns(arz, arMu);
+			var zmean = bestArz.multiply(weights);
 
-            boolean hsig = updateEvolutionPaths(zmean, xold);
+			var hsig = updateEvolutionPaths(zmean, xold);
 
             if (diagonalOnly <= 0) updateCovariance(hsig, bestArx, arz, arindex, xold);
             else updateCovarianceDiagonalOnly(hsig, bestArz);
 
             sigma *= Math.exp(Math.min(1, (normps / chiN - 1) * cs / damps));
-            double bestFitness = fitness[arindex[0]];
-            double worstFitness = fitness[arindex[arindex.length - 1]];
-            ConvergenceChecker<PointValuePair> convergence = getConvergenceChecker();
+			var bestFitness = fitness[arindex[0]];
+			var worstFitness = fitness[arindex[arindex.length - 1]];
+			var convergence = getConvergenceChecker();
             if (this.bestValue > bestFitness) {
                 this.bestValue = bestFitness;
                 this.lastResult = opt;
@@ -1178,18 +1178,18 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
             if (stopFitness == stopFitness && bestFitness < (isMinimize ? stopFitness : -stopFitness))
                 return false;
 
-            double[] sqrtDiagC = sqrt(diagC).getColumn(0);
-            double[] pcCol = pc.getColumn(0);
-			int bound = dimension;
+			var sqrtDiagC = sqrt(diagC).getColumn(0);
+			var pcCol = pc.getColumn(0);
+			var bound = dimension;
 			if (IntStream.range(0, bound).takeWhile(i1 -> !(sigma * Math.max(Math.abs(pcCol[i1]), sqrtDiagC[i1]) > stopTolX)).anyMatch(i1 -> i1 >= dimension - 1)) {
 				return false;
 			}
-			for (int i = 0; i < dimension; i++)
+			for (var i = 0; i < dimension; i++)
                 if (sigma * sqrtDiagC[i] > stopTolUpX)
                     return false;
 
-            double historyBest = Util.min(fitnessHistory);
-            double historyWorst = Util.max(fitnessHistory);
+			var historyBest = Util.min(fitnessHistory);
+			var historyWorst = Util.max(fitnessHistory);
 
             if (iterations > 2 && Math.max(historyWorst, worstFitness) - Math.min(historyBest, bestFitness) < stopTolFun)
                 return false;
@@ -1199,7 +1199,7 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
                 return false;
 
             if (convergence != null) {
-                PointValuePair current = new PointValuePair(bestArx.getColumn(0), isMinimize ? bestFitness : -bestFitness);
+				var current = new PointValuePair(bestArx.getColumn(0), isMinimize ? bestFitness : -bestFitness);
                 if (this.lastResult != null && convergence.converged(iterations, current, this.lastResult))
                     return false;
                 this.lastResult = current;

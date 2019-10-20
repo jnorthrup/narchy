@@ -51,24 +51,24 @@ public class CL_pred {
             return;
 
 
-        int frame = Globals.cls.netchan.incoming_acknowledged;
+        var frame = Globals.cls.netchan.incoming_acknowledged;
         frame &= (Defines.CMD_BACKUP - 1);
 
 
-        int[] delta = new int[3];
+        var delta = new int[3];
         Math3D.VectorSubtract(Globals.cl.frame.playerstate.pmove.origin,
                 Globals.cl.predicted_origins[frame], delta);
 
 
-        int len = IntStream.of(0, 1, 2).map(i2 -> Math.abs(delta[i2])).sum();
+        var len = IntStream.of(0, 1, 2).map(i2 -> Math.abs(delta[i2])).sum();
         if (len > 640)
         { 
             Math3D.VectorClear(Globals.cl.prediction_error);
         } else {
             if (Globals.cl_showmiss.value != 0.0f) {
-                boolean b = IntStream.of(0, 1, 2).anyMatch(i11 -> delta[i11] != 0);
+                var b = IntStream.of(0, 1, 2).anyMatch(i11 -> delta[i11] != 0);
                 if (b) {
-                    int sum = IntStream.of(0, 1, 2).map(v -> delta[v]).sum();
+                    var sum = IntStream.of(0, 1, 2).map(v -> delta[v]).sum();
                     Com.Printf("prediction miss on " + Globals.cl.frame.serverframe
                             + ": " + (sum) + '\n');
                 }
@@ -78,7 +78,7 @@ public class CL_pred {
                     Globals.cl.predicted_origins[frame]);
 
             
-            for (int i = 0; i < 3; i++)
+            for (var i = 0; i < 3; i++)
                 Globals.cl.prediction_error[i] = delta[i] * 0.125f;
         }
     }
@@ -90,13 +90,13 @@ public class CL_pred {
      */
     static void ClipMoveToEntities(float[] start, float[] mins, float[] maxs,
             float[] end, trace_t tr) {
-        float[] bmins = new float[3];
-        float[] bmaxs = new float[3];
+        var bmins = new float[3];
+        var bmaxs = new float[3];
 
-        for (int i = 0; i < Globals.cl.frame.num_entities; i++) {
-            int num = (Globals.cl.frame.parse_entities + i)
+        for (var i = 0; i < Globals.cl.frame.num_entities; i++) {
+            var num = (Globals.cl.frame.parse_entities + i)
                     & (Defines.MAX_PARSE_ENTITIES - 1);
-            entity_state_t ent = Globals.cl_parse_entities[num];
+            var ent = Globals.cl_parse_entities[num];
 
             if (ent.solid == 0)
                 continue;
@@ -107,15 +107,15 @@ public class CL_pred {
             float[] angles;
             int headnode;
             if (ent.solid == 31) {
-                cmodel_t cmodel = Globals.cl.model_clip[ent.modelindex];
+                var cmodel = Globals.cl.model_clip[ent.modelindex];
                 if (cmodel == null)
                     continue;
                 headnode = cmodel.headnode;
                 angles = ent.angles;
             } else {
-                int x = 8 * (ent.solid & 31);
-                int zd = 8 * ((ent.solid >>> 5) & 31);
-                int zu = 8 * ((ent.solid >>> 10) & 63) - 32;
+                var x = 8 * (ent.solid & 31);
+                var zd = 8 * ((ent.solid >>> 5) & 31);
+                var zu = 8 * ((ent.solid >>> 10) & 63) - 32;
 
                 bmins[0] = bmins[1] = -x;
                 bmaxs[0] = bmaxs[1] = x;
@@ -129,7 +129,7 @@ public class CL_pred {
             if (tr.allsolid)
                 return;
 
-            trace_t trace = CM.TransformedBoxTrace(start, end, mins, maxs, headnode,
+            var trace = CM.TransformedBoxTrace(start, end, mins, maxs, headnode,
                     Defines.MASK_PLAYERSOLID, ent.origin, angles);
 
             if (trace.allsolid || trace.startsolid
@@ -157,7 +157,7 @@ public class CL_pred {
             float[] end) {
 
 
-        trace_t t = CM.BoxTrace(start, end, mins, maxs, 0, Defines.MASK_PLAYERSOLID);
+        var t = CM.BoxTrace(start, end, mins, maxs, 0, Defines.MASK_PLAYERSOLID);
 
         if (t.fraction < 1.0f) {
             t.ent = DUMMY_ENT;
@@ -176,17 +176,17 @@ public class CL_pred {
      */
     static int PMpointcontents(float[] point) {
 
-        int contents = CM.PointContents(point, 0);
+        var contents = CM.PointContents(point, 0);
 
-        for (int i = 0; i < Globals.cl.frame.num_entities; i++) {
-            int num = (Globals.cl.frame.parse_entities + i)
+        for (var i = 0; i < Globals.cl.frame.num_entities; i++) {
+            var num = (Globals.cl.frame.parse_entities + i)
                     & (Defines.MAX_PARSE_ENTITIES - 1);
-            entity_state_t ent = Globals.cl_parse_entities[num];
+            var ent = Globals.cl_parse_entities[num];
 
             if (ent.solid != 31) 
                 continue;
 
-            cmodel_t cmodel = Globals.cl.model_clip[ent.modelindex];
+            var cmodel = Globals.cl.model_clip[ent.modelindex];
             if (cmodel == null)
                 continue;
 
@@ -212,7 +212,7 @@ public class CL_pred {
         if (Globals.cl_predict.value == 0.0f
                 || (Globals.cl.frame.playerstate.pmove.pm_flags & pmove_t.PMF_NO_PREDICTION) != 0) {
             
-            for (int i = 0; i < 3; i++) {
+            for (var i = 0; i < 3; i++) {
                 Globals.cl.predicted_angles[i] = Globals.cl.viewangles[i]
                         + Math3D
                                 .SHORT2ANGLE(Globals.cl.frame.playerstate.pmove.delta_angles[i]);
@@ -220,8 +220,8 @@ public class CL_pred {
             return;
         }
 
-        int ack = Globals.cls.netchan.incoming_acknowledged;
-        int current = Globals.cls.netchan.outgoing_sequence;
+        var ack = Globals.cls.netchan.incoming_acknowledged;
+        var current = Globals.cls.netchan.outgoing_sequence;
 
         
         if (current - ack >= Defines.CMD_BACKUP) {
@@ -230,9 +230,8 @@ public class CL_pred {
             return;
         }
 
-        
-        
-        pmove_t pm = new pmove_t();
+
+        var pm = new pmove_t();
 
         pm.trace = new pmove_t.TraceAdapter() {
             @Override
@@ -254,13 +253,13 @@ public class CL_pred {
         
         pm.s.set(Globals.cl.frame.playerstate.pmove);
 
-        
-        int frame = 0;
+
+        var frame = 0;
 
 
         while (++ack < current) {
             frame = ack & (Defines.CMD_BACKUP - 1);
-            usercmd_t cmd = Globals.cl.cmds[frame];
+            var cmd = Globals.cl.cmds[frame];
 
             pm.cmd.set(cmd);
 
@@ -270,9 +269,9 @@ public class CL_pred {
             Math3D.VectorCopy(pm.s.origin, Globals.cl.predicted_origins[frame]);
         }
 
-        int oldframe = (ack - 2) & (Defines.CMD_BACKUP - 1);
+        var oldframe = (ack - 2) & (Defines.CMD_BACKUP - 1);
         int oldz = Globals.cl.predicted_origins[oldframe][2];
-        int step = pm.s.origin[2] - oldz;
+        var step = pm.s.origin[2] - oldz;
         if (step > 63 && step < 160
                 && (pm.s.pm_flags & pmove_t.PMF_ON_GROUND) != 0) {
             Globals.cl.predicted_step = step * 0.125f;

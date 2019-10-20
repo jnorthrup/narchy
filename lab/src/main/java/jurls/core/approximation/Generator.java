@@ -20,10 +20,10 @@ public class Generator {
             int numFeatures
     ) {
         return numInputs -> {
-            GeneratorContext gc = new GeneratorContext(numInputs);
+            var gc = new GeneratorContext(numInputs);
             List<DiffableFunctionSource> xs = new ArrayList<>();
 
-            for (int i = 0; i < numFeatures; ++i) {
+            for (var i = 0; i < numFeatures; ++i) {
 
                 DiffableFunctionSource s = new Sum(Arrays.stream(gc.getInputScalars()).map(input -> new Product(
                         gc.newParameter(1),
@@ -35,7 +35,7 @@ public class Generator {
 
                 DiffableFunctionSource g = new Cosine(new Product(gc.newParameter(50), s));
 
-                Scalar p = gc.newParameter(-5);
+                var p = gc.newParameter(-5);
                 p.setUpperBound(0);
                 xs.add(new Product(new Exp(new Product(p, s)), g));
             }
@@ -60,10 +60,10 @@ public class Generator {
             int numFeatures
     ) {
         return numInputs -> {
-            GeneratorContext gc = new GeneratorContext(numInputs);
+            var gc = new GeneratorContext(numInputs);
             List<DiffableFunctionSource> xs = new ArrayList<>();
 
-            for (int i = 0; i < numFeatures; ++i) {
+            for (var i = 0; i < numFeatures; ++i) {
                 List<DiffableFunctionSource> ys = Arrays.stream(gc.getInputScalars()).map(input -> new Product(
                         gc.newParameter(0, 10),
                         new Sum(
@@ -99,10 +99,10 @@ public class Generator {
             int numFeatures
     ) {
         return numInputs -> {
-            GeneratorContext gc = new GeneratorContext(numInputs);
+            var gc = new GeneratorContext(numInputs);
             List<DiffableFunctionSource> xs = new ArrayList<>();
 
-            for (int i = 1; i <= numFeatures; ++i) {
+            for (var i = 1; i <= numFeatures; ++i) {
                 List<DiffableFunctionSource> ys = Arrays.stream(gc.getInputScalars()).map(input -> new Product(
                         gc.newParameter(0, 1),
                         new Sum(

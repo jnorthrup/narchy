@@ -62,7 +62,7 @@ public class BiPolarAction extends AbstractSensor {
     private BiPolarAction(Term pos, Term neg, Polarization model, FloatToFloatFunction motor, NAR n) {
         super(PROD.the(pos, neg), n);
 
-        CauseChannel<Task> cause = n.newChannel(id);
+        var cause = n.newChannel(id);
         short[] causeArray = {cause.id};
 
 
@@ -97,12 +97,12 @@ public class BiPolarAction extends AbstractSensor {
     @Override public void accept(Game g) {
 
 
-        Truth p = pos.actionTruth();
+        var p = pos.actionTruth();
 
-        Truth n = neg.actionTruth();
+        var n = neg.actionTruth();
 
 
-        float x = model.update(p, n, g.nowPercept.start, g.nowPercept.end);
+        var x = model.update(p, n, g.nowPercept.start, g.nowPercept.end);
 
         //System.out.println(p + " vs " + n + " -> " + x);
 
@@ -111,7 +111,7 @@ public class BiPolarAction extends AbstractSensor {
             x = Util.clamp(x, -1f, +1f);
         }
 
-        float y = motor.valueOf(x);
+        var y = motor.valueOf(x);
 
         //TODO configurable feedback model
 
@@ -142,8 +142,8 @@ public class BiPolarAction extends AbstractSensor {
 
             //balanced around 0.5
 
-            float yn = 0.5f - y / 2;
-            float yp = 0.5f + y / 2;
+            var yn = 0.5f - y / 2;
+            var yp = 0.5f + y / 2;
             //System.out.println(p + "," + n + "\t" + y + "\t" + yp + "," + yn);
 
 //            if ((p == null && n == null) /* curiosity */ || (p!=null && n!=null) /* both active */) {
@@ -168,7 +168,7 @@ public class BiPolarAction extends AbstractSensor {
 //            }
 
 
-            float feedbackConf = nar.confDefault(BELIEF);
+            var feedbackConf = nar.confDefault(BELIEF);
 
             Pb = yp == yp ? $.t(yp, feedbackConf).dither(nar) : null;
             Nb = yn == yn ? $.t(yn, feedbackConf).dither(nar) : null;
@@ -225,8 +225,8 @@ public class BiPolarAction extends AbstractSensor {
 //            else pg = fp.valueOf(pq);
 //            if (nq!=nq) ng = latch ? fn.floatValue() : 0;
 //            else ng = fn.valueOf(nq);
-            float pg = pq == pq ? pq : 0;
-            float ng = nq == nq ? nq : 0;
+            var pg = pq == pq ? pq : 0;
+            var ng = nq == nq ? nq : 0;
 
 
 
@@ -248,7 +248,7 @@ public class BiPolarAction extends AbstractSensor {
 
             if (fair) {
                 double pe = c(pos), ne = c(neg);
-                double eMax = Math.max(pe, ne);
+                var eMax = Math.max(pe, ne);
 
 //                //TODO make as an adaptive AGC
 //                if (normalize && eMax > MIN_NORMAL) {
@@ -256,10 +256,10 @@ public class BiPolarAction extends AbstractSensor {
 //                    ne/=eMax;
 //                }
 
-                double eMin = Math.min(pe, ne);
+                var eMin = Math.min(pe, ne);
 
                 //coherence: either they are equally confident, or they specify the same net x value
-                double coherence = Util.unitize(
+                var coherence = Util.unitize(
                         //Util.
                             //or
                             //and(
@@ -299,7 +299,7 @@ public class BiPolarAction extends AbstractSensor {
          * used in the difference comparison. return NaN or value  */
         public float q(Truth t) {
 
-            float q = t != null ? ((freqOrExp ? t.freq() : t.expectation()) ) : Float.NaN;
+            var q = t != null ? ((freqOrExp ? t.freq() : t.expectation()) ) : Float.NaN;
             if (q==q)
                 q = (q-0.5f)*2;
             return q;

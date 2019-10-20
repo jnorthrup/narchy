@@ -47,9 +47,9 @@ class HttpResponse {
     public void prepare(HttpConnection con) {
         assert this.headers == null;
 
-        StringBuilder headerString = new StringBuilder();
+        var headerString = new StringBuilder();
 
-        boolean sendFile = false;
+        var sendFile = false;
 
         if (file != null) {
             if (file.isDirectory()) {
@@ -72,10 +72,10 @@ class HttpResponse {
         if (sendFile) {
             lastModified = new Date(file.lastModified());
 
-            String ifModifiedSince = con.request.get("if-modified-since");
+            var ifModifiedSince = con.request.get("if-modified-since");
             if (ifModifiedSince != null) {
                 try {
-                    Date ifModifiedSinceDate = HttpUtil.HttpDateUtils.parseDate(ifModifiedSince);
+                    var ifModifiedSinceDate = HttpUtil.HttpDateUtils.parseDate(ifModifiedSince);
 
                     if (lastModified.after(ifModifiedSinceDate)) {
                         sendFile = false;
@@ -126,17 +126,17 @@ class HttpResponse {
                 logger.warn("Error reading file: {}", ex);
             }
 
-            String rangeValue = con.request.get("range");
+            var rangeValue = con.request.get("range");
 
 
             if (sendFile && rangeValue != null) {
-                
-                Matcher rangeMatcher = HttpUtil.simpleRange.matcher(rangeValue);
+
+                var rangeMatcher = HttpUtil.simpleRange.matcher(rangeValue);
                 if (rangeMatcher.matches()) {
                     range = true;
                     try {
-                        String start = rangeMatcher.group(1);
-                        String end = rangeMatcher.group(2);
+                        var start = rangeMatcher.group(1);
+                        var end = rangeMatcher.group(2);
 
                         if (start != null && start.isEmpty()) {
                             start = null;
@@ -212,7 +212,7 @@ class HttpResponse {
 
         if (!sendFile) {
             headerString.append("Content-Type: ");
-            String contentType = statusMessage.startsWith("<html") ? "text/html" : "text/plain"; 
+            var contentType = statusMessage.startsWith("<html") ? "text/html" : "text/plain";
             headerString.append(contentType);
             headerString.append(" charset=UTF-8\r\n");
 
@@ -292,7 +292,7 @@ class HttpResponse {
 
             while (true) {
                 if (!fileBuffer.hasRemaining()) {
-                    int read = raf.read(fileBuffer.array());
+                    var read = raf.read(fileBuffer.array());
                     if (read == -1) {
                         raf.close();
                         return true;
@@ -303,7 +303,7 @@ class HttpResponse {
 
                 if (fileBuffer.hasRemaining()) {
                     if (range) {
-                        long limit = rangeLength - fileBytesSent;
+                        var limit = rangeLength - fileBytesSent;
                         if (fileBuffer.limit() > limit) {
                             fileBuffer.limit((int) limit);
                         }

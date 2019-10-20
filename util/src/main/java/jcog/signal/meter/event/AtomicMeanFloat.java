@@ -53,9 +53,9 @@ public class AtomicMeanFloat extends AtomicFloat implements FloatProcedure {
      *
      * returns float[2] pair: mean, sum */
     public float[] commit() {
-        int[] c = new int[1];
+        var c = new int[1];
 
-        float mean = this.mean = (this.sum = getAndZero((v) -> {
+        var mean = this.mean = (this.sum = getAndZero((v) -> {
             c[0] = count;
             count = 0;
         })) / (c[0] > 0 ? c[0] : Float.NaN);

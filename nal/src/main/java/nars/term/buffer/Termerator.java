@@ -93,7 +93,7 @@ public class Termerator extends EvalTermBuffer implements Iterable<Term> {
             default:
 
                 //remove duplicates
-                Set<Term> yy = Set.of(y);
+                var yy = Set.of(y);
                 if (yy.size() != y.length)
                     y = yy.toArray(Op.EmptyTermArray);
 
@@ -127,11 +127,11 @@ public class Termerator extends EvalTermBuffer implements Iterable<Term> {
         if (y instanceof Compound && y.containsRecursively(x))
             return false; //loop
 
-        boolean empty = v==null || v.size()==0;
+        var empty = v==null || v.size()==0;
 
         if (!empty) {
-            Term xx = x.replace(subs);
-            Term yy = y.replace(subs);
+            var xx = x.replace(subs);
+            var yy = y.replace(subs);
             if (!yy.equals(y) || !xx.equals(x))
                 return is(xx, yy); //recurse
         }
@@ -191,8 +191,8 @@ public class Termerator extends EvalTermBuffer implements Iterable<Term> {
 
     public void canBePairs(List<Term> y) {
         canBe(e -> {
-            int n = y.size();
-            for (int i = 0; i < n; ) {
+            var n = y.size();
+            for (var i = 0; i < n; ) {
                 if (!e.is(y.get(i++), y.get(i++)))
                     return false;
             }
@@ -208,8 +208,8 @@ public class Termerator extends EvalTermBuffer implements Iterable<Term> {
     @Override
     protected Term nextTerm(byte[] bytes, int[] range) {
 
-        Term x = super.nextTerm(bytes, range);
-        Term  y = subs.get(x);
+        var x = super.nextTerm(bytes, range);
+        var y = subs.get(x);
         if (y != null) {
             return y;
         }
@@ -218,18 +218,18 @@ public class Termerator extends EvalTermBuffer implements Iterable<Term> {
 
     @Override
     public Iterator<Term> iterator() {
-        int nt = termutes == null ?  0 : termutes.size();
+        var nt = termutes == null ?  0 : termutes.size();
         if (nt == 0) {
             return new MyLazySingletonIterator();
         } else {
 
-            int before = v.size();
+            var before = v.size();
 
             if (nt == 1) {
                 return Iterators.filter(Iterators.transform(termutes.remove(0).iterator(), tt -> {
                     Term y;
                     if (tt.test(this)) {
-                        int during = v.size();
+                        var during = v.size();
                         y = term();
                         if (v.size() != during) {
                             throw new TODO("recurse");
@@ -245,9 +245,9 @@ public class Termerator extends EvalTermBuffer implements Iterable<Term> {
                 termutes.clear();
                 return Iterators.filter(Iterators.transform(ci, tt -> {
                     Term y;
-                    boolean fail = Arrays.stream(tt).anyMatch(p -> !p.test(this));
+                    var fail = Arrays.stream(tt).anyMatch(p -> !p.test(this));
                     if (!fail) {
-                        int during = v.size();
+                        var during = v.size();
                         y = term();
                         if (v.size() != during) {
                             throw new TODO("recurse");
@@ -316,7 +316,7 @@ public class Termerator extends EvalTermBuffer implements Iterable<Term> {
 
         @Override
         public Object next() {
-            Term x = n;
+            var x = n;
             this.n = Null;
             return x;
         }

@@ -32,7 +32,7 @@ public class AnonWithVarShift extends CachedAnon {
     @Override
     protected Term putIntrin(Term x) {
         if (shifting && (x instanceof NormalizedVariable)) {
-            Op o = x.op();
+            var o = x.op();
             if (o.isAny(mask)) {
                 int shift;
                 switch (o) {
@@ -49,8 +49,8 @@ public class AnonWithVarShift extends CachedAnon {
                         throw new UnsupportedOperationException();
                 }
                 if (shift != 0) {
-                    NormalizedVariable v = ((NormalizedVariable) x);
-                    int newID = v.id() + shift;
+                    var v = ((NormalizedVariable) x);
+                    var newID = v.id() + shift;
                     assert (newID < Byte.MAX_VALUE - 3): "shifted normalized variable ID out of range: " + newID; //to be safe
                     x = v.normalizedVariable((byte) newID);
                 }
@@ -62,7 +62,7 @@ public class AnonWithVarShift extends CachedAnon {
 
 
     static Shiftability shiftability(Term base, int mask) {
-        Shiftability s = new Shiftability();
+        var s = new Shiftability();
         base.recurseTermsOrdered(b-> b.hasAny(mask), s, null);
         return s;
     }
@@ -79,9 +79,9 @@ public class AnonWithVarShift extends CachedAnon {
 
         //TODO only shift if the variable bits overlap, but if disjoint not necessary
         if (x.hasAny(mask)) {
-            int subMask = x.structure() & this.mask;
+            var subMask = x.structure() & this.mask;
             if (subMask!=0) {
-                Shiftability s = shiftability(base, subMask);
+                var s = shiftability(base, subMask);
                 if (rng == null) {
                     //fully disjoint: shift so any new variables do not coincide with existing
                     depShift = s.depShiftMax;
@@ -99,14 +99,14 @@ public class AnonWithVarShift extends CachedAnon {
             }
         }
 
-        Term y = put(x);
+        var y = put(x);
         shiftZero();
         return y;
     }
 
     private void invalidateShifted(int mask) {
-        boolean pe = putCache.isEmpty();
-        boolean ge = getCache.isEmpty();
+        var pe = putCache.isEmpty();
+        var ge = getCache.isEmpty();
 
 
         //remove terms from cache that involve shifted vars
@@ -134,7 +134,7 @@ public class AnonWithVarShift extends CachedAnon {
         @Override
         public boolean test(Term s) {
             if (s instanceof NormalizedVariable) {
-                byte serial = ((NormalizedVariable) s).id();
+                var serial = ((NormalizedVariable) s).id();
                 switch (s.op()) {
                     case VAR_DEP:
                         depShiftMax = Math.max(depShiftMax, serial);

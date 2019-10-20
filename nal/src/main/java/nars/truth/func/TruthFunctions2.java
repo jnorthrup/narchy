@@ -122,12 +122,11 @@ public enum TruthFunctions2 {
     /** TODO rename 'Conduction' ?  */
     public static @Nullable Truth desire(/*@NotNull*/ Truth goal, /*@NotNull*/ Truth belief, float minConf, boolean bipolar, boolean strong) {
 
-        float cc = confCompose(belief, goal);
+        var cc = confCompose(belief, goal);
         if (cc >= minConf) {
 
 
-
-            float bF = belief.freq();
+            var bF = belief.freq();
                     //(float) Math.sqrt(belief.freq());
 
             //ACTIVATION FUNCTIONS
@@ -154,8 +153,8 @@ public enum TruthFunctions2 {
             if (cc >= minConf) {
 
                 //float f =
-                float gF = goal.freq();
-                float f =
+                var gF = goal.freq();
+                var f =
                         bipolar ?
                             Util.lerpSafe(bF, 1- gF, gF)
                             :
@@ -176,11 +175,11 @@ public enum TruthFunctions2 {
     /** full positive, half negative */
     public static @Nullable Truth desireSemiBipolar(/*@NotNull*/ Truth goal, /*@NotNull*/ Truth belief, float minConf, boolean strong) {
 
-        float cc = confCompose(belief, goal);
+        var cc = confCompose(belief, goal);
         if (cc < minConf)
             return null;
 
-        float bF = belief.freq();
+        var bF = belief.freq();
 
         if (!strong) {
             cc = weak(cc);
@@ -188,7 +187,7 @@ public enum TruthFunctions2 {
                 return null;
         }
 
-        float f = Util.lerp(bF, ((1-goal.freq()) + 0.5f)/2, goal.freq());
+        var f = Util.lerp(bF, ((1-goal.freq()) + 0.5f)/2, goal.freq());
         return tt(f, cc);
     }
 
@@ -199,11 +198,11 @@ public enum TruthFunctions2 {
      * strong result frequency the closer in frequency they are and the more polarized they are
      */
     public static Truth comparisonSymmetric(Truth t, Truth b, float minConf) {
-        float c = confCompose(t, b);
+        var c = confCompose(t, b);
         if (c < minConf) return null;
-        float sim =
+        var sim =
             (1f - Math.abs(t.freq() - b.freq())) * Math.max(t.polarity(), b.polarity());
-        float cc = /*weak*/(c * sim);
+        var cc = /*weak*/(c * sim);
         return cc >= minConf ? tt(sim, cc) : null;
     }
 
@@ -216,7 +215,7 @@ public enum TruthFunctions2 {
     public static @Nullable Truth weak(@Nullable Truth t, float minConf) {
         if (t == null)
             return null;
-        float c = weak(t.conf());
+        var c = weak(t.conf());
         return c >= minConf ? tt(t.freq(), c) : null;
     }
 
@@ -227,9 +226,9 @@ public enum TruthFunctions2 {
      * @return Truth value of the conclusion
      */
     public static Truth contraposition(Truth t, float minConf) {
-        float f = t.freq();
-        float fPolarization = t.polarity();
-        float c = weak(fPolarization * t.conf());
+        var f = t.freq();
+        var fPolarization = t.polarity();
+        var c = weak(fPolarization * t.conf());
         return c >= minConf ? tt((1 - f), c) : null;
     }
 
@@ -249,14 +248,14 @@ public enum TruthFunctions2 {
      * frequency determined by the XimplY
      */
     public static Truth pre(Truth X, Truth XimplY, boolean weak, float minConf) {
-        float c = confCompose(X, XimplY);
+        var c = confCompose(X, XimplY);
         if (c < minConf) return null;
 
-        float f = XimplY.freq();
+        var f = XimplY.freq();
 
-        float xf = X.freq();
+        var xf = X.freq();
 
-        float cc = c * xf
+        var cc = c * xf
             * Math.abs(f - 0.5f)*2;
             //f = Util.lerp(xf, 0.5f, f);
 
@@ -278,12 +277,12 @@ public enum TruthFunctions2 {
     public static Truth post(Truth Y, Truth XimplY, boolean strong, float minConf) {
 
         //test for matching frequency alignment
-        float yF = Y.freq();
-        float impF = XimplY.freq();
-        boolean opposite = (yF >= 0.5f != impF >= 0.5f);
+        var yF = Y.freq();
+        var impF = XimplY.freq();
+        var opposite = (yF >= 0.5f != impF >= 0.5f);
 
 
-        float c = confCompose(Y, XimplY);
+        var c = confCompose(Y, XimplY);
         c = strong ? c : weak(c);
         if (c < minConf) return null;
 
@@ -294,15 +293,15 @@ public enum TruthFunctions2 {
 //        float impFp = 2 * (impF - 0.5f);
 //        float preAlign = yFp * impFp;
 //        float preAlign = 1-Math.abs(yF - impF);
-        float dyf = (yF - 0.5f)*2;
-        float dimpl = (impF - 0.5f)*2;
+        var dyf = (yF - 0.5f)*2;
+        var dimpl = (impF - 0.5f)*2;
         //normalize to the maximum dynamic range
 //        float range = Math.max(dyf, dimpl);
 //
 //        dimpl = dimpl / range;
 //        dyf = dyf / range;
 
-        float alignment = dyf * dimpl;
+        var alignment = dyf * dimpl;
 
         //hard:
         if (alignment < Float.MIN_NORMAL) //negative
@@ -414,16 +413,16 @@ public enum TruthFunctions2 {
     @Skill("Fuzzy_set")
     public static @Nullable Truth divide(Truth XY, Truth X, float minConf) {
         //float c = confCompose(X, XY);
-        float c = Math.min(XY.conf(), X.conf());
+        var c = Math.min(XY.conf(), X.conf());
         if (c < minConf)
             return null;
 
-        float fx = Math.max(Util.sqr(NAL.truth.TRUTH_EPSILON), X.freq()); //prevent division by zero
-        float fxy = XY.freq();
-        float fy = fxy / fx;
+        var fx = Math.max(Util.sqr(NAL.truth.TRUTH_EPSILON), X.freq()); //prevent division by zero
+        var fxy = XY.freq();
+        var fy = fxy / fx;
 
         if (fy > 1) {
-            float doubt = 1/fy;
+            var doubt = 1/fy;
             c *= doubt;
             if (c < minConf)
                 return null;
@@ -440,16 +439,16 @@ public enum TruthFunctions2 {
      * have equal frequencies then no loss is involved.
      */
     public static Truth union(Truth t, Truth b, float minConf) {
-        float c = confCompose(t, b);
+        var c = confCompose(t, b);
         if (c < minConf) return null;
 
         float tf = t.freq(), bf = b.freq();
-        float f = Util.or(tf, bf);
+        var f = Util.or(tf, bf);
         if (f < NAL.truth.TRUTH_EPSILON)
             return null;
 
-        float loss = Math.abs( (f - tf) - (f - bf) );
-        float lossFraction = loss / f;
+        var loss = Math.abs( (f - tf) - (f - bf) );
+        var lossFraction = loss / f;
         c *= 1 - lossFraction;
         return c < minConf ? null : tt(f, c);
     }

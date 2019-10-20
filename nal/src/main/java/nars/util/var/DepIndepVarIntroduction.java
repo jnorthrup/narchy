@@ -74,7 +74,7 @@ public class DepIndepVarIntroduction extends VarIntroduction {
             DepIndepVarIntroduction::_select, MEMOIZE_CAPACITY);
 
     private static Term[] _select(Intermed.SubtermsKey input) {
-        Term[] n = Terms.nextRepeat(input.subs,
+        var n = Terms.nextRepeat(input.subs,
                 2, NAL.term.VAR_INTRODUCTION_NEG_FILTER ? nonNegdepIndepFilter : depIndepFilter);
         return Objects.requireNonNullElse(n, Op.EmptyTermArray);
     }
@@ -100,21 +100,21 @@ public class DepIndepVarIntroduction extends VarIntroduction {
 //        byte order = (byte) (vars + 1);
 
 
-        Op inOp = input.op();
+        var inOp = input.op();
         List<ByteList> paths = new FasterList<>(4);
-        int minPathLength = inOp.statement ? 2 : 0;
+        var minPathLength = inOp.statement ? 2 : 0;
         input.pathsTo(selected, (path, t) -> {
             if (path.size() >= minPathLength)
                 paths.add(path.toImmutable());
             return true;
         });
 
-        int pSize = paths.size();
+        var pSize = paths.size();
         if (pSize <= 1)
             return null;
 
 
-        Op commonParentOp = input.commonParent(paths).op();
+        var commonParentOp = input.commonParent(paths).op();
 
 
         boolean depOrIndep;
@@ -131,16 +131,16 @@ public class DepIndepVarIntroduction extends VarIntroduction {
         }
 
 
-        ObjectByteHashMap<Term> m = new ObjectByteHashMap<>(4);
-        for (ByteList p: paths) {
+        var m = new ObjectByteHashMap<Term>(4);
+        for (var p: paths) {
             Term t = null;
-            int pathLength = p.size();
-            for (int i = -1; i < pathLength - 1 /* dont include the selected target itself */; i++) {
+            var pathLength = p.size();
+            for (var i = -1; i < pathLength - 1 /* dont include the selected target itself */; i++) {
                 t = (i == -1) ? input : t.sub(p.get(i));
-                Op o = t.op();
+                var o = t.op();
 
                 if (!depOrIndep && validIndepVarSuperterm(o)) {
-                    byte inside = (byte) (1 << p.get(i + 1));
+                    var inside = (byte) (1 << p.get(i + 1));
                     m.updateValue(t, inside, (previous) -> (byte) (previous | inside));
                 } else if (depOrIndep && validDepVarSuperterm(o)) {
                     m.addToValue(t, (byte) 1);

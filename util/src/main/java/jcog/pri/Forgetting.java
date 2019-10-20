@@ -12,14 +12,14 @@ public abstract class Forgetting {
     public static @Nullable <Y> Consumer<Y> forget(Bag<?,Y> b, float temperature) {
 
         if (temperature > Float.MIN_NORMAL) {
-            int size = b.size();
+            var size = b.size();
             if (size > 0) {
-                int cap = b.capacity();
+                var cap = b.capacity();
                 if (cap > 0) {
-                    float depressurizationRate = 1f;
-                    float pressure = b.depressurizePct(depressurizationRate);
+                    var depressurizationRate = 1f;
+                    var pressure = b.depressurizePct(depressurizationRate);
 
-                    float mass = b.mass(); assert(mass == mass);
+                    var mass = b.mass(); assert(mass == mass);
 
                     if (mass > Float.MIN_NORMAL) {
                         //return PriForget.forgetPressure(temperature, 0, size, cap, pressure, mass);

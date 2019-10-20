@@ -59,7 +59,7 @@ public class ConeShape extends ConvexInternalShape {
 	}
 
 	private v3 coneLocalSupport(v3 v, v3 out) {
-		float halfHeight = height * 0.5f;
+		var halfHeight = height * 0.5f;
 
 		if (VectorUtil.coord(v, coneIndices[1]) > v.length() * sinAngle) {
 			VectorUtil.setCoord(out, coneIndices[0], 0f);
@@ -68,11 +68,11 @@ public class ConeShape extends ConvexInternalShape {
 			return out;
 		}
 		else {
-			float v0 = VectorUtil.coord(v, coneIndices[0]);
-			float v2 = VectorUtil.coord(v, coneIndices[2]);
-			float s = (float) Math.sqrt(v0 * v0 + v2 * v2);
+			var v0 = VectorUtil.coord(v, coneIndices[0]);
+			var v2 = VectorUtil.coord(v, coneIndices[2]);
+			var s = (float) Math.sqrt(v0 * v0 + v2 * v2);
 			if (s > BulletGlobals.FLT_EPSILON) {
-				float d = radius / s;
+				var d = radius / s;
 				VectorUtil.setCoord(out, coneIndices[0], VectorUtil.coord(v, coneIndices[0]) * d);
 				VectorUtil.setCoord(out, coneIndices[1], -halfHeight);
 				VectorUtil.setCoord(out, coneIndices[2], VectorUtil.coord(v, coneIndices[2]) * d);
@@ -92,17 +92,17 @@ public class ConeShape extends ConvexInternalShape {
 
 	@Override
 	public void batchedUnitVectorGetSupportingVertexWithoutMargin(v3[] vectors, v3[] supportVerticesOut, int numVectors) {
-		for (int i=0; i<numVectors; i++) {
-			v3 vec = vectors[i];
+		for (var i = 0; i<numVectors; i++) {
+			var vec = vectors[i];
 			coneLocalSupport(vec, supportVerticesOut[i]);
 		}
 	}
 
 	@Override
 	public v3 localGetSupportingVertex(v3 vec, v3 out) {
-		v3 supVertex = coneLocalSupport(vec, out);
+		var supVertex = coneLocalSupport(vec, out);
 		if (getMargin() != 0f) {
-			v3 vecnorm = new v3(vec);
+			var vecnorm = new v3(vec);
 			if (vecnorm.lengthSquared() < (BulletGlobals.FLT_EPSILON * BulletGlobals.FLT_EPSILON)) {
 				vecnorm.set(-1f, -1f, -1f);
 			}
@@ -119,26 +119,26 @@ public class ConeShape extends ConvexInternalShape {
 
 	@Override
 	public void calculateLocalInertia(float mass, v3 inertia) {
-		Transform identity = new Transform();
+		var identity = new Transform();
 		identity.setIdentity();
 		v3 aabbMin = new v3(), aabbMax = new v3();
 		getAabb(identity, aabbMin, aabbMax);
 
-		v3 halfExtents = new v3();
+		var halfExtents = new v3();
 		halfExtents.sub(aabbMax, aabbMin);
 		halfExtents.scaled(0.5f);
 
-		float margin = getMargin();
+		var margin = getMargin();
 
-		float lx = 2f * (halfExtents.x + margin);
-		float ly = 2f * (halfExtents.y + margin);
-		float lz = 2f * (halfExtents.z + margin);
-		float x2 = lx * lx;
-		float y2 = ly * ly;
-		float z2 = lz * lz;
+		var lx = 2f * (halfExtents.x + margin);
+		var ly = 2f * (halfExtents.y + margin);
+		var lz = 2f * (halfExtents.z + margin);
+		var x2 = lx * lx;
+		var y2 = ly * ly;
+		var z2 = lz * lz;
 
         inertia.set(y2 + z2, x2 + z2, x2 + y2);
-        float scaledmass = mass * 0.08333333f;
+		var scaledmass = mass * 0.08333333f;
         inertia.scaled(scaledmass);
 
 		

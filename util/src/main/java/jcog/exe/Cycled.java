@@ -22,7 +22,7 @@ public interface Cycled extends Runnable {
      * runs until the returned AtomicBoolean is false
      */
     default AtomicBoolean runUntil() {
-        AtomicBoolean kontinue = new AtomicBoolean(true);
+        var kontinue = new AtomicBoolean(true);
         while (kontinue.get())
             run();
         return kontinue;
@@ -67,7 +67,7 @@ public interface Cycled extends Runnable {
     default Loop startFPS(float initialFPS) {
         assert (initialFPS >= 0);
 
-        float millisecPerFrame = initialFPS > 0 ? 1000.0f / initialFPS : 0 /* infinite speed */;
+        var millisecPerFrame = initialFPS > 0 ? 1000.0f / initialFPS : 0 /* infinite speed */;
         return startPeriodMS(Math.round(millisecPerFrame));
     }
 

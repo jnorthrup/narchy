@@ -85,7 +85,7 @@ class Row {
 
 
 
-        for (Map.Entry<Symbol, Double> e : other.cells.entrySet()) {
+        for (var e : other.cells.entrySet()) {
 
             
 
@@ -94,7 +94,7 @@ class Row {
 
             this.cells.merge(e.getKey(), e.getValue() * coefficient,
                     (existing, cc)->{
-                        Double existing1 = existing;
+                        var existing1 = existing;
                         if (existing1 == null)
                             existing1 = 0.0;
 
@@ -150,7 +150,7 @@ class Row {
      * @param symbol
      */
     void solveFor(Symbol symbol) {
-        double coeff = -1.0 / cells.remove(symbol);
+        var coeff = -1.0 / cells.remove(symbol);
         this.constant *= coeff;
 
         cells.replaceAll((k,v)->v*coeff);
@@ -194,7 +194,7 @@ class Row {
      * If the symbol does not exist in the row, this is a no-op.
      */
     void substitute(Symbol symbol, Row row) {
-        Double coefficient = cells.remove(symbol);
+        var coefficient = cells.remove(symbol);
         if (coefficient!=null)
             insert(row, coefficient);
     }

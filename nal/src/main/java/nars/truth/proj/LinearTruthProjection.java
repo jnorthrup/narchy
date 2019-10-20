@@ -25,12 +25,12 @@ public class LinearTruthProjection extends TruthProjection {
 
 
         double wFreqSum = 0, /*wSum = 0,*/ eSum = 0;
-        double[] evi = this.evi;
-        Task[] items = this.items;
+        var evi = this.evi;
+        var items = this.items;
         for (int i = 0, thisSize = this.size(); i < thisSize; i++) {
 
 
-            double e = evi[i];
+            var e = evi[i];
             if (e != e || e <= Double.MIN_NORMAL)
                 continue;
 
@@ -41,7 +41,7 @@ public class LinearTruthProjection extends TruthProjection {
             //e * (1 + (2*Math.abs(f-0.5f))); /* 2:1 compression polarity partial weighting */
             //wSum += w;
 
-            Task x = items[i];
+            var x = items[i];
 //            if (x == null)
 //                continue;
             eSum += e;
@@ -57,13 +57,13 @@ public class LinearTruthProjection extends TruthProjection {
         if (start==ETERNAL) {
             eAvg = eSum;
         } else {
-            long range = 1 + (end - start);
+            var range = 1 + (end - start);
             eAvg = eSum / range;
             if (eAvg < eviMin)
                 return null;
         }
 
-        double F = wFreqSum / eSum;
+        var F = wFreqSum / eSum;
         return dither ? Truth.theDithered((float)F, eAvg, n) : PreciseTruth.byEvi(F, eAvg);
     }
 

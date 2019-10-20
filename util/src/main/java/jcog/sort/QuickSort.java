@@ -30,20 +30,20 @@ public class QuickSort {
 
 			if (len < SMALL) {
 				//bubble sort
-				for (int i = from; i < to; i++)
-					for (int j = i; j > from && (comp.compare(j - 1, j) > 0); j--) {
+				for (var i = from; i < to; i++)
+					for (var j = i; j > from && (comp.compare(j - 1, j) > 0); j--) {
 						swapper.value(j, j - 1);
 					}
 				return;
 			}
 
 
-			int m = from + len / 2;
+			var m = from + len / 2;
 			if (len > SMALL) {
-				int l = from;
-				int n = to - 1;
+				var l = from;
+				var n = to - 1;
 				if (len > MEDIUM) {
-					int s = len / 8;
+					var s = len / 8;
 					l = med3(l, l + s, l + 2 * s, comp);
 					m = med3(m - s, m, m + s, comp);
 					n = med3(n - 2 * s, n - s, n, comp);
@@ -52,11 +52,11 @@ public class QuickSort {
 			}
 
 
-			int a = from;
-			int b = a;
-			int c = to - 1;
+			var a = from;
+			var b = a;
+			var c = to - 1;
 
-			int d = c;
+			var d = c;
 			while (true) {
 				int comparison;
 				while (b <= c && ((comparison = comp.compare(b, m)) <= 0)) {
@@ -81,7 +81,7 @@ public class QuickSort {
 			}
 
 
-			int s = Math.min(a - from, b - a);
+			var s = Math.min(a - from, b - a);
 			vecSwap(swapper, from, b - s, s);
 
 			s = Math.min(d - c, to - d - 1);
@@ -108,9 +108,9 @@ public class QuickSort {
 	 * Returns the index of the median of the three indexed chars.
 	 */
 	private static int med3(int a, int b, int c, IntComparator comp) {
-		int ab = comp.compare(a, b);
-		int ac = comp.compare(a, c);
-		int bc = comp.compare(b, c);
+		var ab = comp.compare(a, b);
+		var ac = comp.compare(a, c);
+		var bc = comp.compare(b, c);
 		return (ab < 0 ?
 			(bc < 0 ? b : ac < 0 ? c : a) :
 			(bc > 0 ? b : ac > 0 ? c : a));
@@ -119,7 +119,7 @@ public class QuickSort {
 	 * Swaps x[a .. (a+n-1)] with x[b .. (b+n-1)].
 	 */
 	private static void vecSwap(IntIntProcedure swapper, int from, int l, int s) {
-		for (int i = 0; i < s; i++, from++, l++)
+		for (var i = 0; i < s; i++, from++, l++)
 			swapper.value(from, l);
 	}
 

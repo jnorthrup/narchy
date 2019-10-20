@@ -38,12 +38,12 @@ class RasterOp {
 
     private static void ropInvert(WrappedImage biDst, int[] dest, int width, int x,
                                   int y, int cx, int cy, int Bpp) {
-        int mask = Options.bpp_mask;
-        int pdest = (y * width + x);
-        for (int i = 0; i < cy; i++) {
-            for (int j = 0; j < cx; j++) {
+        var mask = Options.bpp_mask;
+        var pdest = (y * width + x);
+        for (var i = 0; i < cy; i++) {
+            for (var j = 0; j < cx; j++) {
                 if (biDst != null) {
-                    int c = biDst.getRGB(x + j, y + i);
+                    var c = biDst.getRGB(x + j, y + i);
                     biDst.setRGB(x + j, y + i, ~c & mask);
                 } else
                     dest[pdest] = (~dest[pdest]) & mask;
@@ -56,8 +56,8 @@ class RasterOp {
     private static void ropClear(WrappedImage biDst, int width, int x, int y, int cx,
                                  int cy, int Bpp) {
 
-        for (int i = x; i < x + cx; i++) {
-            for (int j = y; j < y + cy; j++)
+        for (var i = x; i < x + cx; i++) {
+            for (var j = y; j < y + cy; j++)
                 biDst.setRGB(i, j, 0);
         }
     }
@@ -65,10 +65,10 @@ class RasterOp {
     private static void ropSet(WrappedImage biDst, int width, int x, int y, int cx,
                                int cy, int Bpp) {
 
-        int mask = Options.bpp_mask;
+        var mask = Options.bpp_mask;
 
-        for (int i = x; i < x + cx; i++) {
-            for (int j = y; j < y + cy; j++)
+        for (var i = x; i < x + cx; i++) {
+            for (var j = y; j < y + cy; j++)
                 biDst.setRGB(i, j, mask);
         }
 
@@ -103,7 +103,7 @@ class RasterOp {
      */
     public static void do_array(int opcode, WrappedImage biDst, int dstwidth, int x,
                                 int y, int cx, int cy, int[] src, int srcwidth, int srcx, int srcy) {
-        int Bpp = Options.Bpp;
+        var Bpp = Options.Bpp;
         
         
         
@@ -184,12 +184,12 @@ class RasterOp {
      * @param color  Colour to use in operation (unused for some operations)
      */
     public static void do_pixel(int opcode, WrappedImage dst, int x, int y, int color) {
-        int mask = Options.bpp_mask;
+        var mask = Options.bpp_mask;
 
         if (dst == null)
             return;
 
-        int c = dst.getRGB(x, y);
+        var c = dst.getRGB(x, y);
 
         switch (opcode) {
             case 0x0:
@@ -246,12 +246,12 @@ class RasterOp {
 
     private static void ropNor(WrappedImage biDst, int dstwidth, int x, int y, int cx,
                                int cy, int[] src, int srcwidth, int srcx, int srcy, int Bpp) {
-        
-        int mask = Options.bpp_mask;
-        int psrc = (srcy * srcwidth + srcx);
 
-        for (int row = 0; row < cy; row++) {
-            for (int col = 0; col < cx; col++) {
+        var mask = Options.bpp_mask;
+        var psrc = (srcy * srcwidth + srcx);
+
+        for (var row = 0; row < cy; row++) {
+            for (var col = 0; col < cx; col++) {
                 biDst.setRGB(x + cx, y + cy,
                         (~(biDst.getRGB(x + cx, y + cy) | src[psrc])) & mask);
             }
@@ -261,12 +261,12 @@ class RasterOp {
 
     private static void ropAndInverted(WrappedImage biDst, int dstwidth, int x, int y,
                                        int cx, int cy, int[] src, int srcwidth, int srcx, int srcy, int Bpp) {
-        
-        int mask = Options.bpp_mask;
-        int psrc = (srcy * srcwidth + srcx);
-        for (int row = 0; row < cy; row++) {
-            for (int col = 0; col < cx; col++) {
-                int c = biDst.getRGB(x + cx, y + cy);
+
+        var mask = Options.bpp_mask;
+        var psrc = (srcy * srcwidth + srcx);
+        for (var row = 0; row < cy; row++) {
+            for (var col = 0; col < cx; col++) {
+                var c = biDst.getRGB(x + cx, y + cy);
                 biDst.setRGB(x + cx, y + cy, c & ((~src[psrc]) & mask));
                 psrc++;
             }
@@ -276,12 +276,12 @@ class RasterOp {
 
     private static void ropXor(WrappedImage biDst, int dstwidth, int x, int y, int cx,
                                int cy, int[] src, int srcwidth, int srcx, int srcy, int Bpp) {
-        
-        int mask = Options.bpp_mask;
-        int psrc = (srcy * srcwidth + srcx);
-        for (int row = 0; row < cy; row++) {
-            for (int col = 0; col < cx; col++) {
-                int c = biDst.getRGB(x + col, y + row);
+
+        var mask = Options.bpp_mask;
+        var psrc = (srcy * srcwidth + srcx);
+        for (var row = 0; row < cy; row++) {
+            for (var col = 0; col < cx; col++) {
+                var c = biDst.getRGB(x + col, y + row);
                 biDst.setRGB(x + col, y + row, c ^ ((src[psrc]) & mask));
                 psrc++;
             }
@@ -291,12 +291,12 @@ class RasterOp {
 
     private static void ropNand(WrappedImage biDst, int dstwidth, int x, int y,
                                 int cx, int cy, int[] src, int srcwidth, int srcx, int srcy, int Bpp) {
-        
-        int mask = Options.bpp_mask;
-        int psrc = (srcy * srcwidth + srcx);
-        for (int row = 0; row < cy; row++) {
-            for (int col = 0; col < cx; col++) {
-                int c = biDst.getRGB(x + col, y + row);
+
+        var mask = Options.bpp_mask;
+        var psrc = (srcy * srcwidth + srcx);
+        for (var row = 0; row < cy; row++) {
+            for (var col = 0; col < cx; col++) {
+                var c = biDst.getRGB(x + col, y + row);
                 biDst.setRGB(x + col, y + row, (~(c & src[psrc])) & mask);
                 psrc++;
             }
@@ -306,12 +306,12 @@ class RasterOp {
 
     private static void ropAnd(WrappedImage biDst, int dstwidth, int x, int y, int cx,
                                int cy, int[] src, int srcwidth, int srcx, int srcy, int Bpp) {
-        
-        int mask = Options.bpp_mask;
-        int psrc = (srcy * srcwidth + srcx);
-        for (int row = 0; row < cy; row++) {
-            for (int col = 0; col < cx; col++) {
-                int c = biDst.getRGB(x + col, y + row);
+
+        var mask = Options.bpp_mask;
+        var psrc = (srcy * srcwidth + srcx);
+        for (var row = 0; row < cy; row++) {
+            for (var col = 0; col < cx; col++) {
+                var c = biDst.getRGB(x + col, y + row);
                 biDst.setRGB(x + col, y + row, c & ((src[psrc]) & mask));
                 psrc++;
             }
@@ -321,12 +321,12 @@ class RasterOp {
 
     private static void ropEquiv(WrappedImage biDst, int dstwidth, int x, int y,
                                  int cx, int cy, int[] src, int srcwidth, int srcx, int srcy, int Bpp) {
-        
-        int mask = Options.bpp_mask;
-        int psrc = (srcy * srcwidth + srcx);
-        for (int row = 0; row < cy; row++) {
-            for (int col = 0; col < cx; col++) {
-                int c = biDst.getRGB(x + col, y + row);
+
+        var mask = Options.bpp_mask;
+        var psrc = (srcy * srcwidth + srcx);
+        for (var row = 0; row < cy; row++) {
+            for (var col = 0; col < cx; col++) {
+                var c = biDst.getRGB(x + col, y + row);
                 biDst.setRGB(x + col, y + row, c ^ ((~src[psrc]) & mask));
                 psrc++;
             }
@@ -336,12 +336,12 @@ class RasterOp {
 
     private static void ropOrInverted(WrappedImage biDst, int dstwidth, int x, int y,
                                       int cx, int cy, int[] src, int srcwidth, int srcx, int srcy, int Bpp) {
-        
-        int mask = Options.bpp_mask;
-        int psrc = (srcy * srcwidth + srcx);
-        for (int row = 0; row < cy; row++) {
-            for (int col = 0; col < cx; col++) {
-                int c = biDst.getRGB(x + col, y + row);
+
+        var mask = Options.bpp_mask;
+        var psrc = (srcy * srcwidth + srcx);
+        for (var row = 0; row < cy; row++) {
+            for (var col = 0; col < cx; col++) {
+                var c = biDst.getRGB(x + col, y + row);
                 biDst.setRGB(x + col, y + row, c | ((~src[psrc]) & mask));
                 psrc++;
             }
@@ -351,12 +351,12 @@ class RasterOp {
 
     private static void ropOr(WrappedImage biDst, int dstwidth, int x, int y, int cx,
                               int cy, int[] src, int srcwidth, int srcx, int srcy, int Bpp) {
-        
-        int mask = Options.bpp_mask;
-        int psrc = (srcy * srcwidth + srcx);
-        for (int row = 0; row < cy; row++) {
-            for (int col = 0; col < cx; col++) {
-                int c = biDst.getRGB(x + col, y + row);
+
+        var mask = Options.bpp_mask;
+        var psrc = (srcy * srcwidth + srcx);
+        for (var row = 0; row < cy; row++) {
+            for (var col = 0; col < cx; col++) {
+                var c = biDst.getRGB(x + col, y + row);
                 biDst.setRGB(x + col, y + row, c | (src[psrc] & mask));
                 psrc++;
             }

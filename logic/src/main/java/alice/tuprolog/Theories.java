@@ -71,8 +71,8 @@ public class Theories {
      * inserting of a clause at the head of the dbase
      */
     public /*synchronized*/ void assertA(Struct clause, String libName) {
-        ClauseInfo d = new ClauseInfo(toClause(clause), libName);
-        String key = d.head.key();
+        var d = new ClauseInfo(toClause(clause), libName);
+        var key = d.head.key();
 //        if (dyn) {
             dynamicDBase.add(key, d, true);
             if (staticDBase.containsKey(key)) {
@@ -88,8 +88,8 @@ public class Theories {
      * inserting of a clause at the end of the dbase
      */
     public /*synchronized*/ void assertZ(Struct clause, boolean dyn, String libName, boolean backtrackable) {
-        ClauseInfo d = new ClauseInfo(toClause(clause), libName);
-        String key = d.head.key();
+        var d = new ClauseInfo(toClause(clause), libName);
+        var key = d.head.key();
         if (dyn) {
             dynamicDBase.add(key, d, false);
             if (engine.isSpy() && staticDBase.containsKey(key)) {
@@ -105,8 +105,8 @@ public class Theories {
      * removing from dbase the first clause with head unifying with clause
      */
     public int retract(Struct cl, Predicate<ClauseInfo> each) {
-        Struct clause = toClause(cl);
-        Struct struct = ((Struct) clause.sub(0));
+        var clause = toClause(cl);
+        var struct = ((Struct) clause.sub(0));
         Deque<ClauseInfo> family = dynamicDBase.clauses(struct.key());
 
 
@@ -145,9 +145,9 @@ public class Theories {
         if (!"/".equals(pi.name()))
             throw new IllegalArgumentException(pi + " has not the valid predicate name. Espected '/' but was " + pi.name());
 
-        String arg0 = Tools.removeApostrophes(pi.sub(0).toString());
-        String arg1 = Tools.removeApostrophes(pi.sub(1).toString());
-        String key = arg0 + '/' + arg1;
+        var arg0 = Tools.removeApostrophes(pi.sub(0).toString());
+        var arg1 = Tools.removeApostrophes(pi.sub(1).toString());
+        var key = arg0 + '/' + arg1;
         Deque<ClauseInfo> abolished = dynamicDBase.remove(key); /* Reviewed by Paolo Contessi: LinkedList -> List */
         if (abolished != null)
             if (engine.isSpy())
@@ -166,8 +166,8 @@ public class Theories {
     public /*synchronized*/ Deque<ClauseInfo> find(Term headt) {
 
         if (headt instanceof Struct) {
-            Struct s = (Struct) headt;
-            Deque<ClauseInfo> list = dynamicDBase.predicates(s);
+            var s = (Struct) headt;
+            var list = dynamicDBase.predicates(s);
             if (list == null) {
                 list = staticDBase.predicates(s);
                 if (list != null)
@@ -221,7 +221,7 @@ public class Theories {
         startGoalStack.clear();
 
         /*Castagna 06/2011*/
-        int clause = 0;
+        var clause = 0;
         /**/
 
         try {
@@ -229,7 +229,7 @@ public class Theories {
                 /*Castagna 06/2011*/
                 clause++;
                 /**/
-                Struct d = (Struct) it.next();
+                var d = (Struct) it.next();
                 if (!runDirective(d))
                     assertZ(d, dynamicTheory, libName, true);
             }
@@ -249,8 +249,8 @@ public class Theories {
      * primitive predicate, if any
      */
     public void rebindPrimitives() {
-        for (ClauseInfo d : dynamicDBase) {
-            for (SubTree sge : d.body) {
+        for (var d : dynamicDBase) {
+            for (var sge : d.body) {
                 prims.identify((Term) sge, PREDICATE);
             }
         }
@@ -267,8 +267,8 @@ public class Theories {
      * remove all the clauses of lib theory
      */
     public void removeLibraryTheory(String libName) {
-        for (Iterator<ClauseInfo> allClauses = staticDBase.iterator(); allClauses.hasNext(); ) {
-            ClauseInfo d = allClauses.next();
+        for (var allClauses = staticDBase.iterator(); allClauses.hasNext(); ) {
+            var d = allClauses.next();
             if (libName.equals(d.libName)) {
                 try {
 
@@ -282,10 +282,10 @@ public class Theories {
 
 
     private boolean runDirective(Struct c) {
-        String cn = c.name();
+        var cn = c.name();
         if ("':-'".equals(cn) ||
                 ((c.subs() == 1) && ":-".equals(cn) && (c.subResolve(0) instanceof Struct))) {
-            Struct dir = (Struct) c.subResolve(0);
+            var dir = (Struct) c.subResolve(0);
             try {
                 if (!prims.evalAsDirective(dir))
                     Prolog.warn("Directive " + dir.key() + " unknown");
@@ -312,10 +312,10 @@ public class Theories {
 
     public /*synchronized*/ void solveTheoryGoal() {
         Struct s = null;
-        Deque<Term> goals = this.startGoalStack;
+        var goals = this.startGoalStack;
 
         while (!goals.isEmpty()) {
-            Term g = goals.pop();
+            var g = goals.pop();
             s = (s == null) ?
                     (Struct) g :
                     new Struct(",", g, s);
@@ -356,12 +356,12 @@ public class Theories {
      */
     @Deprecated
     public /*synchronized*/ String getTheory(boolean onlyDynamic) {
-        StringBuilder buffer = new StringBuilder();
-        for (ClauseInfo d : dynamicDBase) {
+        var buffer = new StringBuilder();
+        for (var d : dynamicDBase) {
             buffer.append(d.toString(engine.ops)).append('\n');
         }
         if (!onlyDynamic)
-            for (ClauseInfo d : staticDBase) {
+            for (var d : staticDBase) {
                 buffer.append(d.toString(engine.ops)).append('\n');
             }
         return buffer.toString();

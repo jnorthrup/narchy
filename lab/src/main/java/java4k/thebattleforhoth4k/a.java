@@ -45,21 +45,21 @@ public class a extends GamePanel {
 	@Override
     public void run() {
 
-        final int SPRITE_ATST = 1;
+        final var SPRITE_ATST = 1;
 
-        final int SCREEN_SIZE = 362;
+        final var SCREEN_SIZE = 362;
 
 		int i;
 
-        AffineTransform transform = new AffineTransform();
-		BufferedImage image = new BufferedImage(362, 362, 1);
-		BufferedImage image2 = new BufferedImage(512, 512, 1);
-		Graphics2D g = (Graphics2D) image.getGraphics();
-		Graphics2D g2 = (Graphics2D) image2.getGraphics();
+		var transform = new AffineTransform();
+		var image = new BufferedImage(362, 362, 1);
+		var image2 = new BufferedImage(512, 512, 1);
+		var g = (Graphics2D) image.getGraphics();
+		var g2 = (Graphics2D) image2.getGraphics();
 
-        Random random = new Random();
+		var random = new Random();
 
-        Color[] firePalette = new Color[32];
+		var firePalette = new Color[32];
 
 		
 		for (i = 0; i < 32; i++) {
@@ -67,16 +67,16 @@ public class a extends GamePanel {
 		}
 
 
-        BufferedImage[] sprites = new BufferedImage[2];
-        int[] pixels = new int[362];
+		var sprites = new BufferedImage[2];
+		var pixels = new int[362];
         int y;
         int x;
         int k;
         int j;
-        final String S = "\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u4000\u4000\ud000\ud000\ud000\u5000\u5400\u4000\u0000\u0000\u4000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u555c\ub7a9\ua9ae\u69a5\uda65\uf95b\ub5bb\u6a6d\u5eed\u5599\u5555\u5454\u0005\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\uc000\u4000\u4000\u7000\u6000\ud010\ud436\ud91a\ud7d5\ub5bf\ub767\ub679\ub559\ub6d5\u5559\u0d55\u4b6a\u4015\u4000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u4000\u4000\u4000\u4000\u4000\ud000\ua000\ud800\u7800\u9400\ufc00\ub400\ua500\u0100\u0000\u6c00\ue568\ubfe5\uaabf\uaaab\uaffb\u9abb\u9aba\u9aba\u9aba\u956a\uaaaa\ubabb\uaaaa\u9a99\uaaaa\u5555\u5555\u5665\u5655\u5ed5\u6a55\u5a56\u7559\u1557\u1955\u1990\u1590\u1994\u5994\u7654\u75f5\u57a9\u57a9\u55a5\u5555\u5559\u5599\u5599\u5565\u5766\u5766\u976a\u5955\u597d\u55a9\u5e9a\u565f\u5675\u555a\u55af\u56aa\u1565\u0005\u555c\ufff5\ubbb7\u99b6\uaab6\u5ab6\ufeb6\u5ab6\uaab6\u5ab6\ufeb6\u5ada\uaada\uaada\uaada\uaada\uffda\uaad5\u6f55\u6a55\u6f55\ubd5a\u5555\u155a\u1a95\u0540\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0001\u0001\u0001\u0001\u0001\u0005\u0015\u001d\u0015\u0015\u0029\u0055\u0055\u0000\u0000\u5555\uffff\ueebe\u6696\uaaaa\uaa55\uabff\uaa55\uaaaa\uaa55\ubbff\ua955\ubaea\ua9aa\ubaaa\uaaaa\uafff\uaaaa\u7e59\u6a59\u7e59\u5eaa\u5555\u9560\u5a90\u0100\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u6000\u5000\u0000\u0000\u700d\ud397\u5556\uaa96\uaa56\uaa96\u5a56\u9a96\u9a56\u9a96\uea96\uaa95\uaaa5\ufa95\ubaa5\u6a95\uaaa5\u5555\u5555\u6555\u6555\ued69\uaa55\u5a56\u7556\u5a64\u6690\u6690\u6650\u6550\u66e4\u6678\u5964\uf554\uad50\uad50\ua550\u5550\u5550\u6550\u6550\u9550\u9550\u9650\u9564\u5564\ud555\ud55d\u6555\u6555\u6555\u5555\ud595\u9000\u5400\u0035\u015b\u0015\u00d5\u00aa\u006a\u036a\u026b\u01ab\u01ab\u0dab\u1fea\u1aaa\u1aaf\u1a9a\u1695\u06aa\u0555\u0015\u0056\u0055\u0055\u0017\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0001\u0001\u0001\u0005\u0006\u0006\u0005\u0005\u0006\u0006\u0006\u0005\u0019\u0019\u0019\u0015\u006d\u015a\u0675\u19df\u15af\u1ff5\u5baf\u555a\u0155\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u002a\uaa7f\u556a\u0015\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\ua000\ua800\uee00\uf780\ubbe0\ubae0\ue7f8\ub6f8\udbf8\u6efe\ubbfd\ueffd\ubf5d\u7dad\u1ead\u1fad\u07fd\u07d4\u0140\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u9000\u5400\u0000\u0000\u0000\ua800\ufea0\ueafa\u76aa\udbaf\u6faf\u6eff\u5bba\u6efa\u5aae\u66ab\u999a\ua666\ua955\ueaaa\u5555\u1554\u1554\u5554\u5550\u5540\u9900\u5500\ue900\ube40\uef90\uef90\udf90\u9f50\u7d00\u9400\u4000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u4000\u5400\ua900\u9b90\uaab9\u6aeb\u5555\u0000\u0000\u0000\u02aa\u0bff\u2fff\u2abf\ubfa9\u7ff6\ubff6\u7ff6\ubff6\u7ea6\uaa56\u55ae\u6abb\u6eef\u17bb\u0155\u0000\u0000\u0000\u0000\u0000\u0001\uafa9\ud69e\ua7f7\udffd\udf7d\udeed\ue7f7\uf95a\uaaa5\u5555\u9954\u6550\u9500\u5000\u4000\u0000\u0000\u0000\u0000\u4000\u4000\u4000\u4000\u5000\u9000\u5000\u9000\u6400\u9400\u6540\u97d0\u6ab5\u156b\u0016\u0001\u0001\u0001\u0001\u0001\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002\u002f\u001d\u005b\u01bf\u17ff\u6fff\uffff\ubffe\u7fa5\u5905\u001a\u0156\u01a9\u0199\u05a9\u0565\u05a9\u05a9\u016a\u006a\u006a\u001a\u0016\u0005\u0006\u0005\u0001\u0015\u006a\u0016\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0016\u007f\u017b\u067f\u0bd9\u1ff4\ubff8\ubfe0\uff40\ufd00\uf400\ud000\u8000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\ufa00\uff80\u9940\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002\u008b\u02cb\u02ef\u02ef\u02ee\u03ed\u03b8\u03b8\u0ba8\u0ba0\u0be0\u07e0\u07e0\u0b80\u0b80\u0f80\u2e80\u0680\u0580\u0740\u1fd0\u2eda\u1fff\u16ef\u6bbb\u1666";
+        final var S = "\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u4000\u4000\ud000\ud000\ud000\u5000\u5400\u4000\u0000\u0000\u4000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u555c\ub7a9\ua9ae\u69a5\uda65\uf95b\ub5bb\u6a6d\u5eed\u5599\u5555\u5454\u0005\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\uc000\u4000\u4000\u7000\u6000\ud010\ud436\ud91a\ud7d5\ub5bf\ub767\ub679\ub559\ub6d5\u5559\u0d55\u4b6a\u4015\u4000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u4000\u4000\u4000\u4000\u4000\ud000\ua000\ud800\u7800\u9400\ufc00\ub400\ua500\u0100\u0000\u6c00\ue568\ubfe5\uaabf\uaaab\uaffb\u9abb\u9aba\u9aba\u9aba\u956a\uaaaa\ubabb\uaaaa\u9a99\uaaaa\u5555\u5555\u5665\u5655\u5ed5\u6a55\u5a56\u7559\u1557\u1955\u1990\u1590\u1994\u5994\u7654\u75f5\u57a9\u57a9\u55a5\u5555\u5559\u5599\u5599\u5565\u5766\u5766\u976a\u5955\u597d\u55a9\u5e9a\u565f\u5675\u555a\u55af\u56aa\u1565\u0005\u555c\ufff5\ubbb7\u99b6\uaab6\u5ab6\ufeb6\u5ab6\uaab6\u5ab6\ufeb6\u5ada\uaada\uaada\uaada\uaada\uffda\uaad5\u6f55\u6a55\u6f55\ubd5a\u5555\u155a\u1a95\u0540\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0001\u0001\u0001\u0001\u0001\u0005\u0015\u001d\u0015\u0015\u0029\u0055\u0055\u0000\u0000\u5555\uffff\ueebe\u6696\uaaaa\uaa55\uabff\uaa55\uaaaa\uaa55\ubbff\ua955\ubaea\ua9aa\ubaaa\uaaaa\uafff\uaaaa\u7e59\u6a59\u7e59\u5eaa\u5555\u9560\u5a90\u0100\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u6000\u5000\u0000\u0000\u700d\ud397\u5556\uaa96\uaa56\uaa96\u5a56\u9a96\u9a56\u9a96\uea96\uaa95\uaaa5\ufa95\ubaa5\u6a95\uaaa5\u5555\u5555\u6555\u6555\ued69\uaa55\u5a56\u7556\u5a64\u6690\u6690\u6650\u6550\u66e4\u6678\u5964\uf554\uad50\uad50\ua550\u5550\u5550\u6550\u6550\u9550\u9550\u9650\u9564\u5564\ud555\ud55d\u6555\u6555\u6555\u5555\ud595\u9000\u5400\u0035\u015b\u0015\u00d5\u00aa\u006a\u036a\u026b\u01ab\u01ab\u0dab\u1fea\u1aaa\u1aaf\u1a9a\u1695\u06aa\u0555\u0015\u0056\u0055\u0055\u0017\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0001\u0001\u0001\u0005\u0006\u0006\u0005\u0005\u0006\u0006\u0006\u0005\u0019\u0019\u0019\u0015\u006d\u015a\u0675\u19df\u15af\u1ff5\u5baf\u555a\u0155\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u002a\uaa7f\u556a\u0015\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\ua000\ua800\uee00\uf780\ubbe0\ubae0\ue7f8\ub6f8\udbf8\u6efe\ubbfd\ueffd\ubf5d\u7dad\u1ead\u1fad\u07fd\u07d4\u0140\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u9000\u5400\u0000\u0000\u0000\ua800\ufea0\ueafa\u76aa\udbaf\u6faf\u6eff\u5bba\u6efa\u5aae\u66ab\u999a\ua666\ua955\ueaaa\u5555\u1554\u1554\u5554\u5550\u5540\u9900\u5500\ue900\ube40\uef90\uef90\udf90\u9f50\u7d00\u9400\u4000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u4000\u5400\ua900\u9b90\uaab9\u6aeb\u5555\u0000\u0000\u0000\u02aa\u0bff\u2fff\u2abf\ubfa9\u7ff6\ubff6\u7ff6\ubff6\u7ea6\uaa56\u55ae\u6abb\u6eef\u17bb\u0155\u0000\u0000\u0000\u0000\u0000\u0001\uafa9\ud69e\ua7f7\udffd\udf7d\udeed\ue7f7\uf95a\uaaa5\u5555\u9954\u6550\u9500\u5000\u4000\u0000\u0000\u0000\u0000\u4000\u4000\u4000\u4000\u5000\u9000\u5000\u9000\u6400\u9400\u6540\u97d0\u6ab5\u156b\u0016\u0001\u0001\u0001\u0001\u0001\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002\u002f\u001d\u005b\u01bf\u17ff\u6fff\uffff\ubffe\u7fa5\u5905\u001a\u0156\u01a9\u0199\u05a9\u0565\u05a9\u05a9\u016a\u006a\u006a\u001a\u0016\u0005\u0006\u0005\u0001\u0015\u006a\u0016\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0016\u007f\u017b\u067f\u0bd9\u1ff4\ubff8\ubfe0\uff40\ufd00\uf400\ud000\u8000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\ufa00\uff80\u9940\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002\u008b\u02cb\u02ef\u02ef\u02ee\u03ed\u03b8\u03b8\u0ba8\u0ba0\u0be0\u07e0\u07e0\u0b80\u0b80\u0f80\u2e80\u0680\u0580\u0740\u1fd0\u2eda\u1fff\u16ef\u6bbb\u1666";
         for (k = 0; k < 2; k++) {
-			int width = 8;
-			int height = 55;
+			var width = 8;
+			var height = 55;
 			if (k == 1) {
 				width = 7;
 				height = 64;
@@ -94,13 +94,13 @@ public class a extends GamePanel {
 		}
 
 
-        int[][] floorTexture = new int[256][256];
+		var floorTexture = new int[256][256];
         for (y = 0; y < 256; y++) {
 			for (x = 0; x < 256; x++) {
 				floorTexture[y][x] = 128;
 			}
 		}
-		for (int z = 0; z < 8; z++) {
+		for (var z = 0; z < 8; z++) {
 			for (y = 0; y < 256; y++) {
 				for (x = 0; x < 256; x++) {
 					floorTexture[y][x] += random.nextInt(1 << (8 - (z >> 2))) - (1 << (7 - (z >> 2)));
@@ -123,7 +123,7 @@ public class a extends GamePanel {
 				}
 			}
 		}
-        int[][] skyTexture = new int[256][256];
+		var skyTexture = new int[256][256];
         for (y = 0; y < 256; y++) {
 			for (x = 0; x < 256; x++) {
 				i = floorTexture[y][x];
@@ -132,13 +132,13 @@ public class a extends GamePanel {
 			}
 		}
 
-		long nextFrameStartTime = System.nanoTime();
-        int[][] scaledSprites = new int[4096][9];
-        int[] yPoints = new int[4];
-        int[] xPoints = new int[4];
+		var nextFrameStartTime = System.nanoTime();
+		var scaledSprites = new int[4096][9];
+		var yPoints = new int[4];
+		var xPoints = new int[4];
         Graphics2D g3 = null;
-        ArrayList<int[]> enemies = new ArrayList<>();
-        ArrayList<float[]> lasers = new ArrayList<>();
+		var enemies = new ArrayList<int[]>();
+		var lasers = new ArrayList<float[]>();
         float yawSin = 0;
         float yawCos = 0;
         float heightVelocity = 0;
@@ -148,77 +148,77 @@ public class a extends GamePanel {
         float zo = 0;
         float yo = 0;
         float xo = 0;
-        boolean paused = true;
-        boolean fadingIn = false;
-        boolean fading = true;
-        boolean dying = false;
-        int playerPower = 0;
-        int level = 1;
-        int fadeIntensity = 255;
-        int lastEnemyDrawn = 0;
-        int enemyLaserDelay = 0;
-        int enemyHitCountdown = 0;
-        int enemyHitPower = 0;
-        int enemyHitSpriteIndex = 0;
-        int spriteCount = 0;
-        int laserDelay = 0;
-        final int MAX_LEVEL = 6;
-        final int MAX_BATTLE_DISTANCE_2 = 268435456;
-		final float MAX_YAW_VELOCITY = 0.02f;
-		final float ROLL_SCALE = -1f / MAX_YAW_VELOCITY;
-        final int HEIGHT_ACCELERATION = 1;
-        final int MAX_HEIGHT_VELOCITY = 32;
-        final float YAW_ACCELERATION = 0.0005f;
-        final int LOW_SPEED = 16;
-        final int HIGH_SPEED = 32;
-        final int LASER_MAX_COUNT = 64;
-        final int LASER_DELAY = 8;
-		final int LASER_WIDTH = 32;
-		final int LASER_HALF_WIDTH = LASER_WIDTH / 2;
-        final int LASER_LENGTH = 1024;
-        final int LASER_SPEED = 512;
-		final int SKY_Y = 8192;
-		final int MAX_Y = SKY_Y / 2;
-		final int HALF_SCREEN_SIZE = SCREEN_SIZE / 2;
-		final int MIN_Y = HALF_SCREEN_SIZE;
-        final int SCREEN_DISTANCE = SCREEN_SIZE;
-        final int QUARTER_SCREEN_SIZE = SCREEN_SIZE / 4;
-        final int ENEMY_RZ = 7;
-        final int ENEMY_RY = 6;
-        final int ENEMY_RX = 5;
-        final int ENEMY_Y = 4;
-        final int ENEMY_POWER = 3;
-        final int ENEMY_TYPE = 2;
-        final int ENEMY_Z = 1;
-        final int ENEMY_X = 0;
-        final int ENEMY_TYPE_EXPLOSION = 2;
-        final int ENEMY_TYPE_ATST = 1;
-        final int ENEMY_TYPE_ATAT = 0;
-        final int SPRITE_ATAT = 0;
-        final int SPRITE_PALETTE = 8;
-        final int SPRITE_ENEMY_INDEX = 7;
-        final int SPRITE_DRAWN = 6;
-        final int SPRITE_INDEX = 5;
-        final int SPRITE_HEIGHT = 4;
-        final int SPRITE_WIDTH = 3;
-        final int SPRITE_Z = 2;
-        final int SPRITE_Y = 1;
-        final int SPRITE_X = 0;
-        final int LASER_TYPE_ENEMY = 1;
-        final int LASER_TYPE_PLAYER = 0;
-        final int LASER_TYPE = 7;
-        final int LASER_COUNT = 6;
-        final int LASER_RZ = 5;
-        final int LASER_RY = 4;
-        final int LASER_RX = 3;
-        final int LASER_Z = 2;
-        final int LASER_Y = 1;
-        final int LASER_X = 0;
-        final int VK_ATTACK = 0x42;
-        final int VK_DOWN = 0x28;
-        final int VK_UP = 0x26;
-        final int VK_RIGHT = 0x27;
-        final int VK_LEFT = 0x25;
+		var paused = true;
+		var fadingIn = false;
+		var fading = true;
+		var dying = false;
+		var playerPower = 0;
+		var level = 1;
+		var fadeIntensity = 255;
+		var lastEnemyDrawn = 0;
+		var enemyLaserDelay = 0;
+		var enemyHitCountdown = 0;
+		var enemyHitPower = 0;
+		var enemyHitSpriteIndex = 0;
+		var spriteCount = 0;
+		var laserDelay = 0;
+        final var MAX_LEVEL = 6;
+        final var MAX_BATTLE_DISTANCE_2 = 268435456;
+		final var MAX_YAW_VELOCITY = 0.02f;
+		final var ROLL_SCALE = -1f / MAX_YAW_VELOCITY;
+        final var HEIGHT_ACCELERATION = 1;
+        final var MAX_HEIGHT_VELOCITY = 32;
+        final var YAW_ACCELERATION = 0.0005f;
+        final var LOW_SPEED = 16;
+        final var HIGH_SPEED = 32;
+        final var LASER_MAX_COUNT = 64;
+        final var LASER_DELAY = 8;
+		final var LASER_WIDTH = 32;
+		final var LASER_HALF_WIDTH = LASER_WIDTH / 2;
+        final var LASER_LENGTH = 1024;
+        final var LASER_SPEED = 512;
+		final var SKY_Y = 8192;
+		final var MAX_Y = SKY_Y / 2;
+		final var HALF_SCREEN_SIZE = SCREEN_SIZE / 2;
+		final var MIN_Y = HALF_SCREEN_SIZE;
+        final var SCREEN_DISTANCE = SCREEN_SIZE;
+        final var QUARTER_SCREEN_SIZE = SCREEN_SIZE / 4;
+        final var ENEMY_RZ = 7;
+        final var ENEMY_RY = 6;
+        final var ENEMY_RX = 5;
+        final var ENEMY_Y = 4;
+        final var ENEMY_POWER = 3;
+        final var ENEMY_TYPE = 2;
+        final var ENEMY_Z = 1;
+        final var ENEMY_X = 0;
+        final var ENEMY_TYPE_EXPLOSION = 2;
+        final var ENEMY_TYPE_ATST = 1;
+        final var ENEMY_TYPE_ATAT = 0;
+        final var SPRITE_ATAT = 0;
+        final var SPRITE_PALETTE = 8;
+        final var SPRITE_ENEMY_INDEX = 7;
+        final var SPRITE_DRAWN = 6;
+        final var SPRITE_INDEX = 5;
+        final var SPRITE_HEIGHT = 4;
+        final var SPRITE_WIDTH = 3;
+        final var SPRITE_Z = 2;
+        final var SPRITE_Y = 1;
+        final var SPRITE_X = 0;
+        final var LASER_TYPE_ENEMY = 1;
+        final var LASER_TYPE_PLAYER = 0;
+        final var LASER_TYPE = 7;
+        final var LASER_COUNT = 6;
+        final var LASER_RZ = 5;
+        final var LASER_RY = 4;
+        final var LASER_RX = 3;
+        final var LASER_Z = 2;
+        final var LASER_Y = 1;
+        final var LASER_X = 0;
+        final var VK_ATTACK = 0x42;
+        final var VK_DOWN = 0x28;
+        final var VK_UP = 0x26;
+        final var VK_RIGHT = 0x27;
+        final var VK_LEFT = 0x25;
         while (true) {
 
 			do {
@@ -271,7 +271,7 @@ public class a extends GamePanel {
 						for (i = 0; i < (level << 2) + 3; i++) {
 							X = random.nextFloat() * 6.28f;
 							Y = random.nextFloat() * 16384;
-							int[] atat = new int[8];
+							var atat = new int[8];
 							atat[ENEMY_X] = (int) (Y * Math.cos(X));
 							atat[ENEMY_Z] = (int) (Y * Math.sin(X));
 							atat[ENEMY_TYPE] = random.nextInt(2);
@@ -314,16 +314,16 @@ public class a extends GamePanel {
 				} else {
 					enemyLaserDelay = LASER_DELAY;
 					if (lastEnemyDrawn >= 0 && enemies.size() > 0) {
-						
-						int[] enemy = enemies.get(lastEnemyDrawn);
-						float[] laser = new float[8];
+
+						var enemy = enemies.get(lastEnemyDrawn);
+						var laser = new float[8];
 						laser[LASER_X] = enemy[ENEMY_X];
 						laser[LASER_Y] = enemy[ENEMY_TYPE] == ENEMY_TYPE_ATAT ? 640 : 128;
 						laser[LASER_Z] = enemy[ENEMY_Z];
 						laser[LASER_RX] = random.nextInt(768) - 384 + xo - enemy[ENEMY_X];
 						laser[LASER_RY] = random.nextInt(768) - 384 + yo - laser[LASER_Y];
 						laser[LASER_RZ] = random.nextInt(768) - 384 + zo - enemy[ENEMY_Z];
-						float mag = (float) Math.sqrt(laser[LASER_RX] * laser[LASER_RX] + laser[LASER_RY] * laser[LASER_RY] + laser[LASER_RZ] * laser[LASER_RZ]);
+						var mag = (float) Math.sqrt(laser[LASER_RX] * laser[LASER_RX] + laser[LASER_RY] * laser[LASER_RY] + laser[LASER_RZ] * laser[LASER_RZ]);
 						laser[LASER_RX] /= mag;
 						laser[LASER_RY] /= mag;
 						laser[LASER_RZ] /= mag;
@@ -340,7 +340,7 @@ public class a extends GamePanel {
 					if (a[VK_ATTACK]) {
 						
 						laserDelay = LASER_DELAY;
-						float[] laser = new float[8];
+						var laser = new float[8];
 						laser[LASER_RX] = yawSin;
 						laser[LASER_RZ] = -yawCos;
 						laser[LASER_X] = xo - QUARTER_SCREEN_SIZE * yawCos;
@@ -431,7 +431,7 @@ public class a extends GamePanel {
 
                 float Z;
                 for (i = lasers.size() - 1; i >= 0; i--) {
-					float[] laser = lasers.get(i);
+					var laser = lasers.get(i);
 					laser[LASER_X] += LASER_SPEED * laser[LASER_RX];
 					laser[LASER_Y] += LASER_SPEED * laser[LASER_RY];
 					laser[LASER_Z] += LASER_SPEED * laser[LASER_RZ];
@@ -455,7 +455,7 @@ public class a extends GamePanel {
 
 				
 				outter2: for (j = enemies.size() - 1; j >= 0; j--) {
-					int[] enemy = enemies.get(j);
+					var enemy = enemies.get(j);
 					if (enemy[ENEMY_TYPE] == ENEMY_TYPE_EXPLOSION) {
 						
 						if (++enemy[ENEMY_POWER] >= 32) {
@@ -470,13 +470,13 @@ public class a extends GamePanel {
 						X = enemy[ENEMY_X] - xo;
 						Z = enemy[ENEMY_Z] - zo;
 
-						float xe = yawCos;
-						float ze = yawSin;
-						float dot = X * xe + Z * ze; 
+						var xe = yawCos;
+						var ze = yawSin;
+						var dot = X * xe + Z * ze;
 						xe *= dot;
 						ze *= dot;
-						float x2 = X - xe;
-						float z2 = Z - ze;
+						var x2 = X - xe;
+						var z2 = Z - ze;
 
                         int q;
                         int p;
@@ -511,7 +511,7 @@ public class a extends GamePanel {
 
 						
 						outter: for (i = lasers.size() - 1; i >= 0; i--) {
-							float[] laser = lasers.get(i);
+							var laser = lasers.get(i);
 							if (laser[LASER_TYPE] == LASER_TYPE_PLAYER) {
 								for (k = 0; k < 512; k += 32) {
 									X = enemy[ENEMY_X] - (laser[LASER_X] + k * laser[LASER_RX]);
@@ -564,7 +564,7 @@ public class a extends GamePanel {
 
 											
 											for (u = 0; u < v; u++) {
-												int[] explosion = new int[8];
+												var explosion = new int[8];
 												explosion[ENEMY_TYPE] = ENEMY_TYPE_EXPLOSION;
 												explosion[ENEMY_X] = (int) (laser[LASER_X] + k * laser[LASER_RX]);
 												explosion[ENEMY_Y] = (int) (laser[LASER_Y] + k * laser[LASER_RY]);
@@ -606,26 +606,26 @@ public class a extends GamePanel {
 				
 				float ry = HALF_SCREEN_SIZE - i;
 				float rz = -SCREEN_DISTANCE;
-				float mag = (float) Math.sqrt(ry * ry + rz * rz);
+				var mag = (float) Math.sqrt(ry * ry + rz * rz);
 				ry /= mag;
 				rz /= mag;
 
 				
 				for (k = 0; k < 2; k++) {
-					float t = (SKY_Y * k - yo) / ry;
-					int[][] texture = k == 0 ? floorTexture : skyTexture;
-					int textureScale = k == 0 ? 4 : 8;
+					var t = (SKY_Y * k - yo) / ry;
+					var texture = k == 0 ? floorTexture : skyTexture;
+					var textureScale = k == 0 ? 4 : 8;
 					if (t > 0) {
-						
-						float scale = t / SCREEN_DISTANCE;
-						float floorX = -scale * HALF_SCREEN_SIZE;
-						float floorZ = rz * t;
 
-						
-						float fx = floorX * yawCos - floorZ * yawSin;
-						float fz = floorX * yawSin + floorZ * yawCos;
-						float dfx = scale * yawCos;
-						float dfz = scale * yawSin;
+						var scale = t / SCREEN_DISTANCE;
+						var floorX = -scale * HALF_SCREEN_SIZE;
+						var floorZ = rz * t;
+
+
+						var fx = floorX * yawCos - floorZ * yawSin;
+						var fz = floorX * yawSin + floorZ * yawCos;
+						var dfx = scale * yawCos;
+						var dfz = scale * yawSin;
 
 						
 						for (j = 0; j < 362; j++) {
@@ -643,22 +643,22 @@ public class a extends GamePanel {
 			
 			spriteCount = 0;
 			for (i = enemies.size() - 1; i >= 0; i--) {
-				int[] enemy = enemies.get(i);
+				var enemy = enemies.get(i);
 
-				float x0 = enemy[ENEMY_X] - xo;
-				float z0 = enemy[ENEMY_Z] - zo;
+				var x0 = enemy[ENEMY_X] - xo;
+				var z0 = enemy[ENEMY_Z] - zo;
 
-				
-				float x1 = yawCos * x0 + yawSin * z0;
-				float z1 = yawCos * z0 - yawSin * x0;
+
+				var x1 = yawCos * x0 + yawSin * z0;
+				var z1 = yawCos * z0 - yawSin * x0;
 
 				if (z1 < 0) {
-					float K = SCREEN_DISTANCE / -z1;
+					var K = SCREEN_DISTANCE / -z1;
 
-					int width = 1024;
-					int height = 864;
-					int offsetX = 640;
-					int offsetY = 832;
+					var width = 1024;
+					var height = 864;
+					var offsetX = 640;
+					var offsetY = 832;
 
                     switch (enemy[ENEMY_TYPE]) {
                         case ENEMY_TYPE_ATST:
@@ -676,7 +676,7 @@ public class a extends GamePanel {
                     }
 
 					if (spriteCount < 4096) {
-						int[] scaledSprite = scaledSprites[spriteCount++];
+						var scaledSprite = scaledSprites[spriteCount++];
 						scaledSprite[SPRITE_X] = 181 + (int) ((x1 - offsetX) * K);
 						scaledSprite[SPRITE_Y] = 181 - (int) ((offsetY - yo) * K);
 						scaledSprite[SPRITE_Z] = (int) z1;
@@ -715,28 +715,28 @@ public class a extends GamePanel {
 			
 			g.setColor(Color.RED);
 			for (i = lasers.size() - 1; i >= 0; i--) {
-				float[] laser = lasers.get(i);
+				var laser = lasers.get(i);
 
-				
-				float x1 = laser[LASER_X] - xo;
-				float y1 = laser[LASER_Y] - yo;
-				float z1 = laser[LASER_Z] - zo;
 
-				float x2 = x1 + LASER_LENGTH * laser[LASER_RX];
-				float y2 = y1 + LASER_LENGTH * laser[LASER_RY];
-				float z2 = z1 + LASER_LENGTH * laser[LASER_RZ];
+				var x1 = laser[LASER_X] - xo;
+				var y1 = laser[LASER_Y] - yo;
+				var z1 = laser[LASER_Z] - zo;
 
-				
-				float _x1 = yawCos * x1 + yawSin * z1;
-				float _x2 = yawCos * x2 + yawSin * z2;
+				var x2 = x1 + LASER_LENGTH * laser[LASER_RX];
+				var y2 = y1 + LASER_LENGTH * laser[LASER_RY];
+				var z2 = z1 + LASER_LENGTH * laser[LASER_RZ];
 
-				float _z1 = yawCos * z1 - yawSin * x1;
-				float _z2 = yawCos * z2 - yawSin * x2;
+
+				var _x1 = yawCos * x1 + yawSin * z1;
+				var _x2 = yawCos * x2 + yawSin * z2;
+
+				var _z1 = yawCos * z1 - yawSin * x1;
+				var _z2 = yawCos * z2 - yawSin * x2;
 
 				
 				if (_z1 < 0 && _z2 < 0) {
-					float k1 = SCREEN_DISTANCE / -_z1;
-					float k2 = SCREEN_DISTANCE / -_z2;
+					var k1 = SCREEN_DISTANCE / -_z1;
+					var k2 = SCREEN_DISTANCE / -_z2;
 
 					xPoints[0] = 181 + (int) ((_x1 - LASER_HALF_WIDTH) * k1);
 					xPoints[1] = 181 + (int) ((_x1 + LASER_HALF_WIDTH) * k1);
@@ -778,7 +778,7 @@ public class a extends GamePanel {
 				g2.drawLine(0, 0, ((int) (-xo)) >> 9, ((int) (-zo)) >> 9);
 				g2.drawOval((((int) (-xo)) >> 9) - 4, (((int) (-zo)) >> 9) - 4, 6, 6);
 				for (i = 0; i < enemies.size(); i++) {
-					int[] enemy = enemies.get(i);
+					var enemy = enemies.get(i);
 					j = ((int) (enemy[ENEMY_X] - xo)) >> 9;
 					k = ((int) (enemy[ENEMY_Z] - zo)) >> 9;
 					if (j * j + k * k <= 1024) {
@@ -818,28 +818,28 @@ public class a extends GamePanel {
 	@Override
 	public void processKeyEvent(KeyEvent keyEvent) {
 
-        int k = keyEvent.getKeyCode();
+		var k = keyEvent.getKeyCode();
 		if (k > 0) {
-            final int VK_D = 0x44;
-            final int VK_A = 0x41;
-            final int VK_S = 0x53;
-            final int VK_W = 0x57;
-            final int VK_DOWN = 0x28;
-            final int VK_UP = 0x26;
-            final int VK_RIGHT = 0x27;
-            final int VK_LEFT = 0x25;
+            final var VK_D = 0x44;
+            final var VK_A = 0x41;
+            final var VK_S = 0x53;
+            final var VK_W = 0x57;
+            final var VK_DOWN = 0x28;
+            final var VK_UP = 0x26;
+            final var VK_RIGHT = 0x27;
+            final var VK_LEFT = 0x25;
             k = k == VK_W ? VK_UP : k == VK_D ? VK_RIGHT : k == VK_A ? VK_LEFT : k == VK_S ? VK_DOWN : k;
-            final int VK_ATTACK = 0x42;
+            final var VK_ATTACK = 0x42;
             a[(k >= VK_LEFT && k <= VK_DOWN) ? k : VK_ATTACK] = keyEvent.getID() != 402;
 		}
 	}
 
 	
 	public static void main(String[] args) throws Throwable {
-	  javax.swing.JFrame frame = new javax.swing.JFrame(
+		var frame = new javax.swing.JFrame(
 	      "Star Wars: The Battle for Hoth 4K");
 	  frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-	  a applet = new a();
+		var applet = new a();
 	  applet.setPreferredSize(new java.awt.Dimension(512, 512));
 	  frame.add(applet, java.awt.BorderLayout.CENTER);
 	  frame.setResizable(false);

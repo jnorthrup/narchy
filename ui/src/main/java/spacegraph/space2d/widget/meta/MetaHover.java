@@ -30,7 +30,7 @@ public class MetaHover extends Stacking {
     @Override
     protected boolean canRender(ReSurface r) {
         if (super.canRender(r)) {
-            boolean nextHovering = hoverVisible.valueOf(hovering);
+            var nextHovering = hoverVisible.valueOf(hovering);
             if (nextHovering!=hovering) {
                 if (nextHovering) {
                     add(hover.get());

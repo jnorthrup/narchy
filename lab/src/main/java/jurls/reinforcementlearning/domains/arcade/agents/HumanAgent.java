@@ -102,13 +102,13 @@ public class HumanAgent extends AbstractAgent {
             targetDelta += 1;
             millisFraction -= framesPerSecond;
         }
-        
-        long time = System.currentTimeMillis();
+
+        var time = System.currentTimeMillis();
         if (lastFrameTime == 0) {
             timeError += targetDelta;
         }
         else {
-            long deltaTime = time - lastFrameTime;
+            var deltaTime = time - lastFrameTime;
             
             timeError += targetDelta - (deltaTime - lastWaitTime);
         }
@@ -128,8 +128,8 @@ public class HumanAgent extends AbstractAgent {
 
     @Override
     public int selectAction() {
-        
-        int action = ui.getKeyboardAction();
+
+        var action = ui.getKeyboardAction();
 
         return action;
     }
@@ -138,7 +138,7 @@ public class HumanAgent extends AbstractAgent {
     public void observe(ScreenMatrix screen, ConsoleRAM ram, RLData rlData) {
         
         if (exportFrames) {
-            BufferedImage image = converter.convert(screen);
+            var image = converter.convert(screen);
             movieGenerator.record(image);
         }
 
@@ -161,15 +161,15 @@ public class HumanAgent extends AbstractAgent {
      * @param args
      */
     public static void main(String[] args) {
-        
-        boolean useGUI = true;
-        String namedPipesName = null;
-        boolean exportFrames = false;
-        
-        
-        int argIndex = 0;
 
-        boolean doneParsing = (args.length == 0);
+        var useGUI = true;
+        String namedPipesName = null;
+        var exportFrames = false;
+
+
+        var argIndex = 0;
+
+        var doneParsing = (args.length == 0);
 
         
         while (!doneParsing) {
@@ -201,7 +201,7 @@ public class HumanAgent extends AbstractAgent {
                 doneParsing = true;
         }
 
-        HumanAgent agent = new HumanAgent(useGUI, namedPipesName, exportFrames);
+        var agent = new HumanAgent(useGUI, namedPipesName, exportFrames);
 
         agent.run();
     }

@@ -102,9 +102,9 @@ public class Orders {
             }
         }
 
-        int i = 0;
-        int bits = 0;
-        int present = 0;
+        var i = 0;
+        var bits = 0;
+        var present = 0;
         for (i = 0; i < size; i++) {
             bits = data.get8();
             present |= (bits << (i * 8));
@@ -128,20 +128,20 @@ public class Orders {
      */
     private static void processRawBitmapCache(RdpPacket_Localised data)
             throws RdesktopException {
-        int cache_id = data.get8();
-        data.incrementPosition(1); 
-        int width = data.get8();
-        int height = data.get8();
-        int bpp = data.get8();
-        int bufsize = data.getLittleEndian16();
-        int cache_idx = data.getLittleEndian16();
-        int pdata = data.getPosition();
+        var cache_id = data.get8();
+        data.incrementPosition(1);
+        var width = data.get8();
+        var height = data.get8();
+        var bpp = data.get8();
+        var bufsize = data.getLittleEndian16();
+        var cache_idx = data.getLittleEndian16();
+        var pdata = data.getPosition();
         data.incrementPosition(bufsize);
 
-        int Bpp = (bpp + 7) / 8;
-        byte[] inverted = new byte[width * height * Bpp];
-        int pinverted = (height - 1) * (width * Bpp);
-        for (int y = 0; y < height; y++) {
+        var Bpp = (bpp + 7) / 8;
+        var inverted = new byte[width * height * Bpp];
+        var pinverted = (height - 1) * (width * Bpp);
+        for (var y = 0; y < height; y++) {
             data.copyToByteArray(inverted, pinverted, pdata, width * Bpp);
             
             
@@ -162,25 +162,25 @@ public class Orders {
     private static void processColorCache(RdpPacket_Localised data)
             throws RdesktopException {
 
-        int cache_id = data.get8();
-        int n_colors = data.getLittleEndian16();
+        var cache_id = data.get8();
+        var n_colors = data.getLittleEndian16();
 
 
-        byte[] palette = new byte[n_colors * 4];
+        var palette = new byte[n_colors * 4];
         data.copyToByteArray(palette, 0, data.getPosition(), palette.length);
         data.incrementPosition(palette.length);
-        byte[] blue = new byte[n_colors];
-        byte[] green = new byte[n_colors];
-        byte[] red = new byte[n_colors];
-        int j = 0;
-        for (int i = 0; i < n_colors; i++) {
+        var blue = new byte[n_colors];
+        var green = new byte[n_colors];
+        var red = new byte[n_colors];
+        var j = 0;
+        for (var i = 0; i < n_colors; i++) {
             blue[i] = palette[j];
             green[i] = palette[j + 1];
             red[i] = palette[j + 2];
             
             j += 4;
         }
-        IndexColorModel cm = new IndexColorModel(8, n_colors, red, green, blue);
+        var cm = new IndexColorModel(8, n_colors, red, green, blue);
         cache.put_colourmap(cache_id, cm);
         
     }
@@ -195,15 +195,15 @@ public class Orders {
             throws RdesktopException {
         int pad2, row_size, final_size, size;
 
-        int bufsize = pad2 = row_size = final_size = size = 0;
+        var bufsize = pad2 = row_size = final_size = size = 0;
 
-        int cache_id = data.get8();
-        int pad1 = data.get8();
-        int width = data.get8();
-        int height = data.get8();
-        int bpp = data.get8();
+        var cache_id = data.get8();
+        var pad1 = data.get8();
+        var width = data.get8();
+        var height = data.get8();
+        var bpp = data.get8();
         bufsize = data.getLittleEndian16();
-        int cache_idx = data.getLittleEndian16();
+        var cache_idx = data.getLittleEndian16();
 
         /*
          * data.incrementPosition(2); 
@@ -227,13 +227,13 @@ public class Orders {
 		final_size = data.getLittleEndian16();
 
 
-		int Bpp = (bpp + 7) / 8;
+        var Bpp = (bpp + 7) / 8;
         if (Bpp == 1) {
-            byte[] pixel = Bitmap.decompress(width, height, size, data, 1);
+            var pixel = Bitmap.decompress(width, height, size, data, 1);
             cache.putBitmap(cache_id, cache_idx, new Bitmap(Bitmap
                     .convertImage(pixel, 1), width, height, 0, 0), 0);
         } else {
-            int[] pixel = Bitmap.decompressInt(width, height, size, data, Bpp);
+            var pixel = Bitmap.decompressInt(width, height, size, data, Bpp);
             cache.putBitmap(cache_id, cache_idx, new Bitmap(pixel, width,
                     height, 0, 0), 0);
         }
@@ -252,9 +252,9 @@ public class Orders {
     private static void process_bmpcache2(RdpPacket_Localised data, int flags,
                                           boolean compressed) throws RdesktopException, IOException {
 
-        int Bpp = Options.Bpp;
+        var Bpp = Options.Bpp;
         /* prevent compiler warning */
-        byte[] bitmap_id = new byte[8];
+        var bitmap_id = new byte[8];
         if ((flags & PERSIST) != 0) {
             bitmap_id = new byte[8];
             data.copyToByteArray(bitmap_id, 0, data.getPosition(), 8);
@@ -270,21 +270,21 @@ public class Orders {
             height = data.get8(); 
         }
 
-        int bufsize = data.getBigEndian16();
+        var bufsize = data.getBigEndian16();
         bufsize &= BUFSIZE_MASK;
-        int cache_idx = data.get8();
+        var cache_idx = data.get8();
 
         if ((cache_idx & LONG_FORMAT) != 0) {
-            int cache_idx_low = data.get8();
+            var cache_idx_low = data.get8();
             cache_idx = ((cache_idx ^ LONG_FORMAT) << 8) + cache_idx_low;
         }
 
 
-        int cache_id = flags & ID_MASK;
+        var cache_id = flags & ID_MASK;
         logger.info("BMPCACHE2(compr={},flags={},cx={},cy={},id={},idx={},Bpp={},bs={}" + ')', compressed, flags, width, height, cache_id, cache_idx, Bpp, bufsize);
 
-        byte[] bmpdata = new byte[width * height * Bpp];
-        int[] bmpdataInt = new int[width * height];
+        var bmpdata = new byte[width * height * Bpp];
+        var bmpdataInt = new int[width * height];
 
         Bitmap bitmap;
         if (compressed) {
@@ -297,7 +297,7 @@ public class Orders {
 
             bitmap = new Bitmap(bmpdataInt, width, height, 0, 0);
         } else {
-            for (int y = 0; y < height; y++)
+            for (var y = 0; y < height; y++)
                 data.copyToByteArray(bmpdata, y * (width * Bpp),
                         (height - y - 1) * (width * Bpp), width * Bpp); 
             
@@ -340,13 +340,13 @@ public class Orders {
         Glyph glyph = null;
 
         int character = 0, offset = 0, baseline = 0, width = 0, height = 0;
-        int datasize = 0;
+        var datasize = 0;
         byte[] fontdata = null;
 
-        int font = data.get8();
-        int nglyphs = data.get8();
+        var font = data.get8();
+        var nglyphs = data.get8();
 
-        for (int i = 0; i < nglyphs; i++) {
+        for (var i = 0; i < nglyphs; i++) {
             character = data.getLittleEndian16();
             offset = data.getLittleEndian16();
             baseline = data.getLittleEndian16();
@@ -377,11 +377,11 @@ public class Orders {
             brush.setXOrigin(data.get8());
         if ((present & 0x04) != 0)
             brush.setStyle(data.get8());
-        byte[] pat = brush.getPattern();
+        var pat = brush.getPattern();
         if ((present & 0x08) != 0)
             pat[0] = (byte) data.get8();
         if ((present & 0x10) != 0)
-            for (int i = 1; i < 8; i++)
+            for (var i = 1; i < 8; i++)
                 pat[i] = (byte) data.get8();
         brush.setPattern(pat);
     }
@@ -396,7 +396,7 @@ public class Orders {
     private static void parseBounds(RdpPacket_Localised data, BoundsOrder bounds)
             throws OrderException {
 
-        int present = data.get8();
+        var present = data.get8();
 
         if ((present & 1) != 0) {
             bounds.setLeft(setCoordinate(data, bounds.getLeft(), false));
@@ -443,7 +443,7 @@ public class Orders {
                                      boolean delta) {
 
         if (delta) {
-            byte change = (byte) data.get8();
+            var change = (byte) data.get8();
             coordinate += change;
 		} else {
             coordinate = data.getLittleEndian16();
@@ -459,8 +459,8 @@ public class Orders {
      */
     private static int setColor(RdpPacket_Localised data) {
 
-        int i = data.get8();
-        int color = i;
+        var i = data.get8();
+        var color = i;
         i = data.get8(); 
         color |= i << 8; 
         i = data.get8(); 
@@ -529,7 +529,7 @@ public class Orders {
     public void processOrders(RdpPacket_Localised data, int next_packet,
                               int n_orders) throws OrderException, RdesktopException {
 
-        int present = 0;
+        var present = 0;
         
         int order_flags = 0, order_type = 0;
         int size = 0, processed = 0;
@@ -577,7 +577,7 @@ public class Orders {
                     surface.setClip(os.getBounds());
                 }
 
-                boolean delta = ((order_flags & RDP_ORDER_DELTA) != 0);
+                var delta = ((order_flags & RDP_ORDER_DELTA) != 0);
 
                 switch (os.getOrderType()) {
                     case RDP_ORDER_DESTBLT:
@@ -675,11 +675,11 @@ public class Orders {
     private static void processSecondaryOrders(RdpPacket_Localised data)
             throws RdesktopException {
 
-        int length = data.getLittleEndian16();
-        int flags = data.getLittleEndian16();
-        int type = data.get8();
+        var length = data.getLittleEndian16();
+        var flags = data.getLittleEndian16();
+        var type = data.get8();
 
-        int next_order = data.getPosition() + length + 7;
+        var next_order = data.getPosition() + length + 7;
 
         switch (type) {
 
@@ -926,15 +926,15 @@ public class Orders {
             desksave.setAction(data.get8());
         }
 
-        int width = desksave.getRight() - desksave.getLeft() + 1;
-        int height = desksave.getBottom() - desksave.getTop() + 1;
+        var width = desksave.getRight() - desksave.getLeft() + 1;
+        var height = desksave.getBottom() - desksave.getTop() + 1;
 
         if (desksave.getAction() == 0) {
-            int[] pixel = surface.getImage(desksave.getLeft(), desksave
+            var pixel = surface.getImage(desksave.getLeft(), desksave
                     .getTop(), width, height);
             cache.putDesktop(desksave.getOffset(), width, height, pixel);
         } else {
-            int[] pixel = cache.getDesktopInt(desksave.getOffset(),
+            var pixel = cache.getDesktopInt(desksave.getOffset(),
                     width, height);
             surface.putImage(desksave.getLeft(), desksave.getTop(), width,
                     height, pixel);
@@ -1046,10 +1046,10 @@ public class Orders {
         if ((present & 0x20) != 0)
             polyline.setLines(data.get8());
         if ((present & 0x40) != 0) {
-            int datasize = data.get8();
+            var datasize = data.get8();
             polyline.setDataSize(datasize);
-            byte[] databytes = new byte[datasize];
-            for (int i = 0; i < datasize; i++)
+            var databytes = new byte[datasize];
+            for (var i = 0; i < datasize; i++)
                 databytes[i] = (byte) data.get8();
             polyline.setData(databytes);
         }
@@ -1161,7 +1161,7 @@ public class Orders {
         if ((present & 0x200000) != 0) {
             text2.setLength(data.get8());
 
-            byte[] text = new byte[text2.getLength()];
+            var text = new byte[text2.getLength()];
             data.copyToByteArray(text, 0, data.getPosition(), text.length);
             data.incrementPosition(text.length);
             text2.setText(text);
@@ -1201,14 +1201,14 @@ public class Orders {
      */
     private void drawText(Text2Order text2, int clipcx, int clipcy, int boxcx,
                           int boxcy) throws RdesktopException {
-        byte[] text = text2.getText();
+        var text = text2.getText();
         DataBlob entry = null;
         Glyph glyph = null;
-        int offset = 0;
-        int ptext = 0;
-        int length = text2.getLength();
-        int x = text2.getX();
-        int y = text2.getY();
+        var offset = 0;
+        var ptext = 0;
+        var length = text2.getLength();
+        var x = text2.getX();
+        var y = text2.getY();
 
 
 
@@ -1230,14 +1230,14 @@ public class Orders {
 
 
 
-        for (int i = 0; i < length; ) {
+        for (var i = 0; i < length; ) {
             switch (text[ptext + i] & 0x000000ff) {
                 case (0xff):
                     if (i + 2 < length) {
-                        byte[] data = new byte[text[ptext + i + 2] & 0x000000ff];
+                        var data = new byte[text[ptext + i + 2] & 0x000000ff];
                         System.arraycopy(text, ptext, data, 0,
                                 text[ptext + i + 2] & 0x000000ff);
-                        DataBlob db = new DataBlob(
+                        var db = new DataBlob(
                                 text[ptext + i + 2] & 0x000000ff, data);
                         cache.putText(text[ptext + i + 1] & 0x000000ff, db);
                     } else {
@@ -1268,23 +1268,23 @@ public class Orders {
                     length -= i;
                     ptext = i;
                     i = 0;
-                    
 
-                    byte[] data = entry.getData();
-                    for (int j = 0; j < entry.getSize(); j++) {
-                        int character = data[j] & 0x000000ff;
+
+                    var data = entry.getData();
+                    for (var j = 0; j < entry.getSize(); j++) {
+                        var character = data[j] & 0x000000ff;
                         glyph = cache.getFont(text2.getFont(), character);
                         if ((text2.getFlags() & TEXT2_IMPLICIT_X) == 0) {
                             offset = data[++j] & 0x000000ff;
                             if ((offset & 0x80) != 0) {
                                 if ((text2.getFlags() & TEXT2_VERTICAL) != 0) {
-                                    int var = Orders
+                                    var var = Orders
                                             .twosComplement16((data[j + 1] & 0xff)
                                                     | ((data[j + 2] & 0xff) << 8));
                                     y += var;
                                     j += 2;
                                 } else {
-                                    int var = Orders
+                                    var var = Orders
                                             .twosComplement16((data[j + 1] & 0xff)
                                                     | ((data[j + 2] & 0xff) << 8));
                                     x += var;
@@ -1325,16 +1325,15 @@ public class Orders {
                         offset = text[ptext + (++i)] & 0x000000ff;
                         if ((offset & 0x80) != 0) {
                             if ((text2.getFlags() & TEXT2_VERTICAL) != 0) {
-                                
-                                
-                                
-                                int var = Orders
+
+
+                                var var = Orders
                                         .twosComplement16((text[ptext + i + 1] & 0x000000ff)
                                                 | ((text[ptext + i + 2] & 0x000000ff) << 8));
                                 y += var;
                                 i += 2;
                             } else {
-                                int var = Orders
+                                var var = Orders
                                         .twosComplement16((text[ptext + i + 1] & 0x000000ff)
                                                 | ((text[ptext + i + 2] & 0x000000ff) << 8));
                                 x += var;

@@ -41,9 +41,9 @@ public class Configurator {
 
     public static Configuration configure(BufferedReader r) {
 
-        String sb = r.lines().collect(Collectors.joining());
+        var sb = r.lines().collect(Collectors.joining());
 
-        String json = sb;
+        var json = sb;
         return configureFromJson(json);
     }
 

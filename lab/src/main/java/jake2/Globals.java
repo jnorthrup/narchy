@@ -159,7 +159,7 @@ public class Globals extends Defines {
 
 	public static final centity_t[] cl_entities = new centity_t[Defines.MAX_EDICTS];
 	static {
-		for (int i = 0; i < cl_entities.length; i++) {
+		for (var i = 0; i < cl_entities.length; i++) {
 			cl_entities[i] = new centity_t();
 		}
 	}
@@ -167,7 +167,7 @@ public class Globals extends Defines {
 	public static final entity_state_t[] cl_parse_entities = new entity_state_t[Defines.MAX_PARSE_ENTITIES];
 	
 	static {
-		for (int i = 0; i < cl_parse_entities.length; i++)
+		for (var i = 0; i < cl_parse_entities.length; i++)
 		{
 			cl_parse_entities[i] = new entity_state_t(null);
 		}
@@ -365,7 +365,7 @@ public class Globals extends Defines {
 	public static final byte[][] key_lines = new byte[32][];
 	public static int key_linepos;
 	static {
-		for (int i = 0; i < key_lines.length; i++)
+		for (var i = 0; i < key_lines.length; i++)
 			key_lines[i] = new byte[Defines.MAXCMDLINE];
 	}
 

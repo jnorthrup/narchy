@@ -42,12 +42,12 @@ public class AabbUtil2 {
 	}
 
 	private static int outcode(v3 p, v3 halfExtent) {
-		float hx = halfExtent.x;
-		float px = p.x;
-		float py = p.y;
-		float pz = p.z;
-		float hy = halfExtent.y;
-		float hz = halfExtent.z;
+		var hx = halfExtent.x;
+		var px = p.x;
+		var py = p.y;
+		var pz = p.z;
+		var hy = halfExtent.y;
+		var hz = halfExtent.z;
 		return  (px < -hx ? 0x01 : 0x0) |
 				(px > hx ? 0x08 : 0x0) |
 				(py < -hy ? 0x02 : 0x0) |
@@ -61,12 +61,12 @@ public class AabbUtil2 {
 	}
 
 	public static boolean rayAabb(v3 rayFrom, v3 rayTo, v3 aabbMin, v3 aabbMax, float[] param, v3 normal) {
-		v3 aabbHalfExtent = new v3();
-		v3 aabbCenter = new v3();
-		v3 source = new v3();
-		v3 target = new v3();
-		v3 r = new v3();
-		v3 hitNormal = new v3();
+		var aabbHalfExtent = new v3();
+		var aabbCenter = new v3();
+		var source = new v3();
+		var target = new v3();
+		var r = new v3();
+		var hitNormal = new v3();
 
 		aabbHalfExtent.sub(aabbMax, aabbMin);
 		aabbHalfExtent.scaled(0.5f);
@@ -77,21 +77,21 @@ public class AabbUtil2 {
 		source.sub(rayFrom, aabbCenter);
 		target.sub(rayTo, aabbCenter);
 
-		int sourceOutcode = outcode(source, aabbHalfExtent);
-		int targetOutcode = outcode(target, aabbHalfExtent);
+		var sourceOutcode = outcode(source, aabbHalfExtent);
+		var targetOutcode = outcode(target, aabbHalfExtent);
 		if ((sourceOutcode & targetOutcode) == 0x0) {
-			float lambda_exit = param[0];
+			var lambda_exit = param[0];
 			r.sub(target, source);
 
 			hitNormal.set(0f, 0f, 0f);
-			int bit = 1;
+			var bit = 1;
 
-			float normSign = 1f;
-			float lambda_enter = 0f;
-			for (int j = 0; j < 2; j++) {
-				for (int i = 0; i != 3; ++i) {
+			var normSign = 1f;
+			var lambda_enter = 0f;
+			for (var j = 0; j < 2; j++) {
+				for (var i = 0; i != 3; ++i) {
 					if ((sourceOutcode & bit) != 0) {
-						float lambda = (-VectorUtil.coord(source, i) - VectorUtil.coord(aabbHalfExtent, i) * normSign) / VectorUtil.coord(r, i);
+						var lambda = (-VectorUtil.coord(source, i) - VectorUtil.coord(aabbHalfExtent, i) * normSign) / VectorUtil.coord(r, i);
 						if (lambda_enter <= lambda) {
 							lambda_enter = lambda;
 							hitNormal.set(0f, 0f, 0f);
@@ -99,7 +99,7 @@ public class AabbUtil2 {
 						}
 					}
 					else if ((targetOutcode & bit) != 0) {
-						float lambda = (-VectorUtil.coord(source, i) - VectorUtil.coord(aabbHalfExtent, i) * normSign) / VectorUtil.coord(r, i);
+						var lambda = (-VectorUtil.coord(source, i) - VectorUtil.coord(aabbHalfExtent, i) * normSign) / VectorUtil.coord(r, i);
 						
 						lambda_exit = Math.min(lambda_exit, lambda);
 					}
@@ -129,10 +129,10 @@ public class AabbUtil2 {
 	 * Conservative test for overlap between triangle and AABB.
 	 */
 	public static boolean testTriangleAgainstAabb2(v3[] vertices, v3 aabbMin, v3 aabbMax) {
-		boolean result = false;
-		v3 p1 = vertices[0];
-		v3 p2 = vertices[1];
-		v3 p3 = vertices[2];
+		var result = false;
+		var p1 = vertices[0];
+		var p2 = vertices[1];
+		var p3 = vertices[2];
 
 		if (!(Math.min(Math.min(p1.x, p2.x), p3.x) > aabbMax.x))
 			if (!(Math.max(Math.max(p1.x, p2.x), p3.x) < aabbMin.x))
@@ -145,18 +145,18 @@ public class AabbUtil2 {
 	}
 
 	public static void transformAabb(v3 halfExtents, float margin, Transform t, v3 aabbMinOut, v3 aabbMaxOut) {
-		v3 halfExtentsWithMargin = new v3();
+		var halfExtentsWithMargin = new v3();
 		halfExtentsWithMargin.x = halfExtents.x + margin;
 		halfExtentsWithMargin.y = halfExtents.y + margin;
 		halfExtentsWithMargin.z = halfExtents.z + margin;
 
-		Matrix3f abs_b = new Matrix3f(t.basis);
+		var abs_b = new Matrix3f(t.basis);
 		MatrixUtil.absolute(abs_b);
 
-		v3 tmp = new v3();
+		var tmp = new v3();
 
-		v3 center = new v3(t);
-		v3 extent = new v3();
+		var center = new v3(t);
+		var extent = new v3();
 		abs_b.getRow(0, tmp);
 		extent.x = tmp.dot(halfExtentsWithMargin);
 		abs_b.getRow(1, tmp);
@@ -173,7 +173,7 @@ public class AabbUtil2 {
 		assert (localAabbMin.y <= localAabbMax.y);
 		assert (localAabbMin.z <= localAabbMax.z);
 
-		v3 localHalfExtents = new v3();
+		var localHalfExtents = new v3();
 		localHalfExtents.sub(localAabbMax, localAabbMin);
 		localHalfExtents.scaled(0.5f);
 
@@ -181,18 +181,18 @@ public class AabbUtil2 {
 		localHalfExtents.y += margin;
 		localHalfExtents.z += margin;
 
-		v3 localCenter = new v3();
+		var localCenter = new v3();
 		localCenter.add(localAabbMax, localAabbMin);
 		localCenter.scaled(0.5f);
 
-		Matrix3f abs_b = new Matrix3f(trans.basis);
+		var abs_b = new Matrix3f(trans.basis);
 		MatrixUtil.absolute(abs_b);
 
-		v3 center = new v3(localCenter);
+		var center = new v3(localCenter);
 		trans.transform(center);
 
-		v3 extent = new v3();
-		v3 tmp = new v3();
+		var extent = new v3();
+		var tmp = new v3();
 
 		abs_b.getRow(0, tmp);
 		extent.x = tmp.dot(localHalfExtents);

@@ -40,12 +40,12 @@ public abstract class FingerMove extends Dragging {
     @Override
     protected boolean drag(Finger f) {
 
-        v2 next = pos(f);
+        var next = pos(f);
         if (next !=null) {
 
 
-            float tx = xSpeed != 0 ? (next.x - start.x) * xSpeed : 0;
-            float ty = ySpeed != 0 ? (next.y - start.y) * ySpeed : 0;
+            var tx = xSpeed != 0 ? (next.x - start.x) * xSpeed : 0;
+            var ty = ySpeed != 0 ? (next.y - start.y) * ySpeed : 0;
 
             if (incremental())
                 start.set(next);

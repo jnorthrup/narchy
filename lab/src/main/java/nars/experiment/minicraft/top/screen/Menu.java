@@ -24,27 +24,27 @@ public class Menu {
     }
 
     public static void renderItemList(Screen screen, int xo, int yo, int x1, int y1, List<? extends ListItem> listItems, int selected) {
-        boolean renderCursor = true;
+        var renderCursor = true;
         if (selected < 0) {
             selected = -selected - 1;
             renderCursor = false;
         }
-        int h = y1 - yo - 1;
-        int i1 = listItems.size();
+        var h = y1 - yo - 1;
+        var i1 = listItems.size();
         if (i1 > h) i1 = h;
-        int io = selected - h / 2;
+        var io = selected - h / 2;
         if (io > listItems.size() - h) io = listItems.size() - h;
         if (io < 0) io = 0;
 
-        int i0 = 0;
-        for (int i = i0; i < i1; i++) {
+        var i0 = 0;
+        for (var i = i0; i < i1; i++) {
             listItems.get(i + io).renderInventory(screen, (1 + xo) * 8, (i + 1 + yo) * 8);
         }
 
         if (renderCursor) {
-            int yy = selected + 1 - io + yo;
+            var yy = selected + 1 - io + yo;
             Font.draw(">", screen, (xo + 0) * 8, yy * 8, Color.get(5, 555, 555, 555));
-            int w = x1 - xo;
+            var w = x1 - xo;
             Font.draw("<", screen, (xo + w) * 8, yy * 8, Color.get(5, 555, 555, 555));
         }
     }

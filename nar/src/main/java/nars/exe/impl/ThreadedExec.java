@@ -74,13 +74,13 @@ public abstract class ThreadedExec extends MultiExec {
             //long ci = this.cycleIdealNS;
             //if (ci > 0)
             {
-                int idealThreads = Util.clamp(
+                var idealThreads = Util.clamp(
                     (int) Math.ceil((nar.loop.throttle.floatValue()) * concurrencyMax),
                     1,
                     concurrencyMax);
 
                 //TODO fix this
-                int concurrency = concurrency();
+                var concurrency = concurrency();
                 if (idealThreads > concurrency) {
                     //spawn more
                     int demand;
@@ -136,7 +136,7 @@ public abstract class ThreadedExec extends MultiExec {
 
         super.starting(n);
 
-        int initialThreads = 1;
+        var initialThreads = 1;
         exe.execute(loop(), initialThreads, affinity);
 
     }

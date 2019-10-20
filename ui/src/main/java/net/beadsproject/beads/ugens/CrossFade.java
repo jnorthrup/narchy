@@ -90,15 +90,15 @@ public class CrossFade extends UGen {
     public void gen() {
         incoming.update();
         if (outgoing != null) outgoing.update();
-        for (int j = 0; j < bufferSize; j++) {
+        for (var j = 0; j < bufferSize; j++) {
             if (currentTimeSamps >= crossfadeTimeSamps) {
-                for (int i = 0; i < outs; i++) {
+                for (var i = 0; i < outs; i++) {
                     bufOut[i][j] = incoming.getValue(i, j);
                 }
             } else {
-                float incomingLevel = (float) (currentTimeSamps / crossfadeTimeSamps);
-                float outgoingLevel = 1f - incomingLevel;
-                for (int i = 0; i < outs; i++) {
+                var incomingLevel = (float) (currentTimeSamps / crossfadeTimeSamps);
+                var outgoingLevel = 1f - incomingLevel;
+                for (var i = 0; i < outs; i++) {
                     bufOut[i][j] = incomingLevel * incoming.getValue(i, j) +
                             outgoingLevel * outgoing.getValue(i, j);
                 }

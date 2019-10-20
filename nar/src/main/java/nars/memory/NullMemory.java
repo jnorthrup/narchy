@@ -16,7 +16,7 @@ public class NullMemory extends MapMemory {
     }
 
     @Override public Concept get(Term x, boolean createIfMissing) {
-        Concept exist = super.get(x, false);
+        var exist = super.get(x, false);
         if (exist!=null)
             return exist;
         else if (createIfMissing)

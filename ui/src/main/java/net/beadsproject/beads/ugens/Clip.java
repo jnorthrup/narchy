@@ -49,11 +49,11 @@ public class Clip extends UGen implements DataBeadReceiver {
     @Override
     public void gen() {
         if (isMinStatic && isMaxStatic) {
-            for (int j = 0; j < ins; j++) {
-                float[] bi = bufIn[j];
-                float[] bo = bufOut[j];
-                for (int i = 0; i < bufferSize; i++) {
-                    float y = bi[i];
+            for (var j = 0; j < ins; j++) {
+                var bi = bufIn[j];
+                var bo = bufOut[j];
+                for (var i = 0; i < bufferSize; i++) {
+                    var y = bi[i];
                     if (y < min) {
                         bo[i] = min;
                     } else bo[i] = Math.min(y, max);
@@ -62,11 +62,11 @@ public class Clip extends UGen implements DataBeadReceiver {
         } else {
             minUGen.update();
             maxUGen.update();
-            for (int i = 0; i < bufferSize; i++) {
+            for (var i = 0; i < bufferSize; i++) {
                 min = minUGen.getValue(0, i);
                 max = maxUGen.getValue(0, i);
-                for (int j = 0; j < ins; j++) {
-                    float y = bufIn[j][i];
+                for (var j = 0; j < ins; j++) {
+                    var y = bufIn[j][i];
                     if (y < min) {
                         bufOut[j][i] = min;
                     } else bufOut[j][i] = Math.min(y, max);
@@ -205,7 +205,7 @@ public class Clip extends UGen implements DataBeadReceiver {
     @Override
     public DataBeadReceiver sendData(DataAuvent db) {
         if (db != null) {
-            UGen u = db.getUGen("maximum");
+            var u = db.getUGen("maximum");
             if (u == null) {
                 setMaximum(db.getFloat("maximum", max));
             } else {
@@ -230,7 +230,7 @@ public class Clip extends UGen implements DataBeadReceiver {
      * @return The new parameter DataBead.
      */
     public DataAuvent getParams() {
-        DataAuvent db = new DataAuvent();
+        var db = new DataAuvent();
         if (isMinStatic) {
             db.put("minimum", min);
         } else {
@@ -253,7 +253,7 @@ public class Clip extends UGen implements DataBeadReceiver {
      * @return The new DataBead.
      */
     public DataAuvent getStaticParams() {
-        DataAuvent db = new DataAuvent();
+        var db = new DataAuvent();
         db.put("minimum", min);
         db.put("maximum", max);
         return db;

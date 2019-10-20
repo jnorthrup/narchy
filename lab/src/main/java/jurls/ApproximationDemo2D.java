@@ -36,9 +36,9 @@ public class ApproximationDemo2D extends javax.swing.JFrame {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            for (int i = 0; i < numIterationsPerLoop; ++i) {
-                double x = Math.random();
-                double y = Math.random();
+            for (var i = 0; i < numIterationsPerLoop; ++i) {
+                var x = Math.random();
+                var y = Math.random();
                 renderParameterizedFunction.oneStepTowards(x, y, f.compute(x, y));
                 numIterations++;
             }
@@ -81,11 +81,11 @@ public class ApproximationDemo2D extends javax.swing.JFrame {
         iterationsMenu.addActionListener(e -> numIterationsPerLoop = (int) iterationsMenu.getObject());
         iterationsMenu.notifyListeners();
 
-        int width = 5;
-        int height = 5;
-        double[][] ys = new double[width][height];
-        for (int i = 0; i < ys.length; ++i) {
-            for (int j = 0; j < ys[i].length; ++j) {
+        var width = 5;
+        var height = 5;
+        var ys = new double[width][height];
+        for (var i = 0; i < ys.length; ++i) {
+            for (var j = 0; j < ys[i].length; ++j) {
                 ys[i][j] = Math.random() * 10 - 5;
             }
         }
@@ -106,26 +106,26 @@ public class ApproximationDemo2D extends javax.swing.JFrame {
     
     private void initComponents() {
 
-        ButtonGroup functionButtonGroup = new ButtonGroup();
-        ButtonGroup hiddenButtonGroup = new ButtonGroup();
-        ButtonGroup outputButtonGroup = new ButtonGroup();
-        JTabbedPane jTabbedPane1 = new JTabbedPane();
-        JPanel jPanel1 = new JPanel();
-        JPanel jPanel8 = new JPanel();
+        var functionButtonGroup = new ButtonGroup();
+        var hiddenButtonGroup = new ButtonGroup();
+        var outputButtonGroup = new ButtonGroup();
+        var jTabbedPane1 = new JTabbedPane();
+        var jPanel1 = new JPanel();
+        var jPanel8 = new JPanel();
         functionRenderer2D1 = new jurls.examples.approximation.FunctionRenderer2D();
-        JPanel jPanel9 = new JPanel();
+        var jPanel9 = new JPanel();
         functionRenderer2D2 = new jurls.examples.approximation.FunctionRenderer2D();
 
-        JScrollPane jScrollPane1 = new JScrollPane();
-        JTextArea jTextArea1 = new JTextArea();
-        JPanel jPanel4 = new JPanel();
-        JPanel jPanel5 = new JPanel();
-        JPanel jPanel6 = new JPanel();
+        var jScrollPane1 = new JScrollPane();
+        var jTextArea1 = new JTextArea();
+        var jPanel4 = new JPanel();
+        var jPanel5 = new JPanel();
+        var jPanel6 = new JPanel();
         alphaComboBox = new javax.swing.JComboBox();
         momentumComboBox = new javax.swing.JComboBox();
-        JPanel jPanel7 = new JPanel();
-        JLabel jLabel3 = new JLabel();
-        JLabel jLabel4 = new JLabel();
+        var jPanel7 = new JPanel();
+        var jLabel3 = new JLabel();
+        var jLabel4 = new JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -135,7 +135,7 @@ public class ApproximationDemo2D extends javax.swing.JFrame {
         jPanel8.setBorder(javax.swing.BorderFactory.createTitledBorder("desired"));
         jPanel8.setLayout(new java.awt.GridLayout(1, 0));
 
-        javax.swing.GroupLayout functionRenderer2D1Layout = new javax.swing.GroupLayout(functionRenderer2D1);
+        var functionRenderer2D1Layout = new javax.swing.GroupLayout(functionRenderer2D1);
         functionRenderer2D1.setLayout(functionRenderer2D1Layout);
         functionRenderer2D1Layout.setHorizontalGroup(
             functionRenderer2D1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -153,7 +153,7 @@ public class ApproximationDemo2D extends javax.swing.JFrame {
         jPanel9.setBorder(javax.swing.BorderFactory.createTitledBorder("actual"));
         jPanel9.setLayout(new java.awt.GridLayout(1, 0));
 
-        javax.swing.GroupLayout functionRenderer2D2Layout = new javax.swing.GroupLayout(functionRenderer2D2);
+        var functionRenderer2D2Layout = new javax.swing.GroupLayout(functionRenderer2D2);
         functionRenderer2D2.setLayout(functionRenderer2D2Layout);
         functionRenderer2D2Layout.setHorizontalGroup(
             functionRenderer2D2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -242,7 +242,7 @@ public class ApproximationDemo2D extends javax.swing.JFrame {
          * For details see http:
          */
         try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+            for (var info : javax.swing.UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;

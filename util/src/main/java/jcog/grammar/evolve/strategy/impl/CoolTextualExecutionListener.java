@@ -79,7 +79,7 @@ public class CoolTextualExecutionListener implements ExecutionListener, Executio
     private final boolean isFlagging;
 
     public CoolTextualExecutionListener(String message, Configuration configuration, Results results) throws IOException {
-        File outputFolder = configuration.getOutputFolder();
+        var outputFolder = configuration.getOutputFolder();
         if (outputFolder == null)
             outputFolder = Files.createTempDirectory("regexgen").toFile();
 
@@ -95,21 +95,21 @@ public class CoolTextualExecutionListener implements ExecutionListener, Executio
 
     private synchronized void print() {
         char esc = 27;
-        String clear = esc + "[2J";
+        var clear = esc + "[2J";
         System.out.print(clear);
 
-        int doneAll = 20 * overallDone / overallTotal;
-        double percAll = Math.round(1000 * overallDone / (double) overallTotal) / 10.0;
+        var doneAll = 20 * overallDone / overallTotal;
+        var percAll = Math.round(1000 * overallDone / (double) overallTotal) / 10.0;
 
         System.out.println(header);
         if (isEvaluatorCached) {
-            CachedEvaluator evaluator = (CachedEvaluator) this.results.getConfiguration().getEvaluator();
+            var evaluator = (CachedEvaluator) this.results.getConfiguration().getEvaluator();
             System.out.printf("[%s] %.2f%%  | %d/%d | ETA: %s | CR: %.2f\n", progress(doneAll), percAll, jobDone, jobTotal, eta, evaluator.getRatio());
         } else {
             System.out.printf("[%s] %.2f%%  | %d/%d | ETA: %s\n", progress(doneAll), percAll, jobDone, jobTotal, eta);
         }
-        for (Map.Entry<Integer, String> entry : screen.entrySet()) {
-            String color = "";
+        for (var entry : screen.entrySet()) {
+            var color = "";
             if (remove.contains(entry.getKey())) {
                 color = ANSI_GREEN;
             }
@@ -122,10 +122,10 @@ public class CoolTextualExecutionListener implements ExecutionListener, Executio
 
     @Override
     public void evolutionStarted(RunStrategy strategy) {
-        int jobId = strategy.getConfiguration().getJobId();
+        var jobId = strategy.getConfiguration().getJobId();
 
         synchronized (screen) {
-            String print = "[                     ] 0% Gen --> 0 job: " + jobId;
+            var print = "[                     ] 0% Gen --> 0 job: " + jobId;
             screen.put(jobId, print);
         }
 
@@ -134,14 +134,14 @@ public class CoolTextualExecutionListener implements ExecutionListener, Executio
 
     @Override
     public void logGeneration(RunStrategy strategy, int generation, Node best, double[] fitness, Collection<Ranking> population) {
-        int jobId = strategy.getConfiguration().getJobId();
-        int done = 20 * generation / strategy.getConfiguration().getEvolutionParameters().getGenerations();
+        var jobId = strategy.getConfiguration().getJobId();
+        var done = 20 * generation / strategy.getConfiguration().getEvolutionParameters().getGenerations();
         double perc = Math.round(1000 * generation / (double) strategy.getConfiguration().getEvolutionParameters().getGenerations()) / 10f;
 
         overallDone++;
 
-        long timeTakenPerGen = (System.currentTimeMillis() - startTime) / overallDone;
-        long elapsedMillis = (overallTotal - overallDone) * timeTakenPerGen;
+        var timeTakenPerGen = (System.currentTimeMillis() - startTime) / overallDone;
+        var elapsedMillis = (overallTotal - overallDone) * timeTakenPerGen;
 
         eta = String.format("%d h, %d m, %d s",
                 TimeUnit.MILLISECONDS.toHours(elapsedMillis),
@@ -149,25 +149,22 @@ public class CoolTextualExecutionListener implements ExecutionListener, Executio
                 TimeUnit.MILLISECONDS.toSeconds(elapsedMillis) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(elapsedMillis)));
 
 
-        
-        Ranking bestRanking = new Ranking(best, fitness);
-        FinalSolution generationBestSolution = new FinalSolution(bestRanking);
-         
- 
-        
-        Objective learningObjective = PerformancesFactory.buildObjective(Context.EvaluationPhases.LEARNING, strategy.getConfiguration());
+        var bestRanking = new Ranking(best, fitness);
+        var generationBestSolution = new FinalSolution(bestRanking);
 
-        Ranking best2 = population.iterator().next();
 
-        double[] learningPerformance = learningObjective.fitness(best2.getNode());
+        var learningObjective = PerformancesFactory.buildObjective(Context.EvaluationPhases.LEARNING, strategy.getConfiguration());
+
+        var best2 = population.iterator().next();
+
+        var learningPerformance = learningObjective.fitness(best2.getNode());
 
         PerformacesObjective.populatePerformancesMap(learningPerformance, generationBestSolution.getLearningPerformances(), isFlagging);
         
         this.updateBest(generationBestSolution);
-        
-        
 
-        String print = String.format("[%s] %.2f%% g: %d j: %d f: %s d: %.2f%% ", progress(done), perc, generation, jobId, printArray(fitness), Utils.diversity(population));
+
+        var print = String.format("[%s] %.2f%% g: %d j: %d f: %s d: %.2f%% ", progress(done), perc, generation, jobId, printArray(fitness), Utils.diversity(population));
         synchronized (screen) {
             screen.put(jobId, print);
             print();
@@ -179,11 +176,11 @@ public class CoolTextualExecutionListener implements ExecutionListener, Executio
 
     @Override
     public void evolutionComplete(RunStrategy strategy, int generation, Collection<Ranking> population) {
-        int jobId = strategy.getConfiguration().getJobId();
-        long executionTime = System.currentTimeMillis() - this.jobStartTimes.remove(jobId);
+        var jobId = strategy.getConfiguration().getJobId();
+        var executionTime = System.currentTimeMillis() - this.jobStartTimes.remove(jobId);
 
-        
-        int jumpedGenerations = strategy.getConfiguration().getEvolutionParameters().getGenerations() - generation;
+
+        var jumpedGenerations = strategy.getConfiguration().getEvolutionParameters().getGenerations() - generation;
         overallDone+=jumpedGenerations;
         
         synchronized (screen) {
@@ -199,24 +196,24 @@ public class CoolTextualExecutionListener implements ExecutionListener, Executio
         if (jobDone >= strategy.getConfiguration().getJobs()) {
             print();
         }
-        JobEvolutionTrace jobTrace = this.results.getJobTrace(jobId);
+        var jobTrace = this.results.getJobTrace(jobId);
         jobTrace.setExecutionTime(executionTime);
         /*
          Populate Job final population with FinalSolution(s). The final population has the same order as fitness ranking but can contain fitness and performance info
          The performance are propulated here:
          */
-        Objective trainingObjective = PerformancesFactory.buildObjective(Context.EvaluationPhases.TRAINING, strategy.getConfiguration());
-        Objective validationObjective = PerformancesFactory.buildObjective(Context.EvaluationPhases.VALIDATION, strategy.getConfiguration());
-        Objective learningObjective = PerformancesFactory.buildObjective(Context.EvaluationPhases.LEARNING, strategy.getConfiguration());
+        var trainingObjective = PerformancesFactory.buildObjective(Context.EvaluationPhases.TRAINING, strategy.getConfiguration());
+        var validationObjective = PerformancesFactory.buildObjective(Context.EvaluationPhases.VALIDATION, strategy.getConfiguration());
+        var learningObjective = PerformancesFactory.buildObjective(Context.EvaluationPhases.LEARNING, strategy.getConfiguration());
 
-        int i = 0;
-        for (Ranking individual : population) {
-            FinalSolution finalSolution = new FinalSolution(individual);
+        var i = 0;
+        for (var individual : population) {
+            var finalSolution = new FinalSolution(individual);
             
             if(i++==0){
-                double[] trainingPerformace = trainingObjective.fitness(individual.getNode());
-                double[] validationPerformance = validationObjective.fitness(individual.getNode());
-                double[] learningPerformance = learningObjective.fitness(individual.getNode());
+                var trainingPerformace = trainingObjective.fitness(individual.getNode());
+                var validationPerformance = validationObjective.fitness(individual.getNode());
+                var learningPerformance = learningObjective.fitness(individual.getNode());
                 PerformacesObjective.populatePerformancesMap(trainingPerformace, finalSolution.getTrainingPerformances(), isFlagging);
                 PerformacesObjective.populatePerformancesMap(validationPerformance, finalSolution.getValidationPerformances(), isFlagging);
                 PerformacesObjective.populatePerformancesMap(learningPerformance, finalSolution.getLearningPerformances(), isFlagging);
@@ -227,7 +224,7 @@ public class CoolTextualExecutionListener implements ExecutionListener, Executio
 
     @Override
     public void evolutionFailed(RunStrategy strategy, TreeEvaluationException cause) {
-        int jobId = strategy.getConfiguration().getJobId();
+        var jobId = strategy.getConfiguration().getJobId();
         try {
             
         } catch (Exception ex) {
@@ -236,7 +233,7 @@ public class CoolTextualExecutionListener implements ExecutionListener, Executio
     }
 
     private static String progress(int done) {
-        StringBuilder builder = new StringBuilder();
+        var builder = new StringBuilder();
 
         builder.append("=".repeat(Math.max(0, done)));
 
@@ -266,12 +263,12 @@ public class CoolTextualExecutionListener implements ExecutionListener, Executio
     }
 
     private static String printArray(double[] fitness) {
-        StringJoiner joiner = new StringJoiner(",", "[", "]");
-        for (double v : fitness) {
-            String s = String.valueOf(Math.round(v * 100) / 100f);
+        var joiner = new StringJoiner(",", "[", "]");
+        for (var v : fitness) {
+            var s = String.valueOf(Math.round(v * 100) / 100f);
             joiner.add(s);
         }
-        String sb = joiner.toString();
+        var sb = joiner.toString();
         return sb;
     }
 
@@ -291,12 +288,12 @@ public class CoolTextualExecutionListener implements ExecutionListener, Executio
             this.best = candidate;
             return;
         }
-        int index = 0;
+         var index = 0;
 
-        double[] ff = this.best.getFitness();
+         var ff = this.best.getFitness();
 
-        for(double value : ff){
-            double f = candidate.getFitness()[index++];
+        for(var value : ff){
+            var f = candidate.getFitness()[index++];
             if(value > f){
                 this.best = candidate;
                 return;

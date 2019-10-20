@@ -32,9 +32,9 @@ public enum Perceive {
     public static void perceive(Task x, What w) {
         //w.link(AtomicTaskLink.link(x.term().concept()).priSet(x.punc(), x.priElseZero()));
 
-        NAR n = w.nar;
+        var n = w.nar;
 
-        Term xx = x.term();
+        var xx = x.term();
 
         MetaGoal.Perceive.learn(x, ((float)xx.volume())/Short.MAX_VALUE, n);
 
@@ -44,8 +44,8 @@ public enum Perceive {
 
         n.emotion.perceivedTaskStart.increment();
 
-        byte punc = x.punc();
-        boolean cmd = punc == COMMAND;
+        var punc = x.punc();
+        var cmd = punc == COMMAND;
 
         if (cmd || punc == GOAL && !x.isEternal()) {
             if (execOperator(x, w)) {
@@ -53,23 +53,23 @@ public enum Perceive {
             }
         }
         //SeriesTask already will have been added directly by the table to itself
-        Remember perceived = (!cmd && !(x instanceof SeriesBeliefTable.SeriesTask)) ? Remember.the(x, w) : null;
+        var perceived = (!cmd && !(x instanceof SeriesBeliefTable.SeriesTask)) ? Remember.the(x, w) : null;
 
 
 
         if (!(x instanceof TemporalTask.Unevaluated) && Termerator.evalable(xx)) {
-            FasterList<Task> rt = (FasterList<Task>) new TaskEvaluation(x, w).result;
+            var rt = (FasterList<Task>) new TaskEvaluation(x, w).result;
             if (rt != null) {
                 //rt.removeInstance(x); //something was eval, remove the input HACK
                 rt.remove(x); //HACK
 
                 if (!rt.isEmpty()) {
                     //move and share input priority fairly:
-                    float xPri = x.pri();
-                    float xPriAfter = xPri * NAL.TaskEvalPriDecomposeRate;
+                    var xPri = x.pri();
+                    var xPriAfter = xPri * NAL.TaskEvalPriDecomposeRate;
                     x.pri(xPriAfter);
-                    float xp = (xPri - xPriAfter) / rt.size();
-                    for (Task y : rt) {
+                    var xp = (xPri - xPriAfter) / rt.size();
+                    for (var y : rt) {
                         y.pri(xp);
                         perceive(y, w); //HACK
                     }
@@ -162,19 +162,19 @@ public enum Perceive {
         if (maybeOperator == Bool.Null)
             return false;
 
-        NAR n = w.nar;
-        Concept ooo = n.concept(maybeOperator);
+        var n = w.nar;
+        var ooo = n.concept(maybeOperator);
         if (!(ooo instanceof NodeConcept.PermanentNodeConcept))
             return false;
-        Term oo = ooo.term();
+        var oo = ooo.term();
         if (!(oo instanceof Operator))
             return false;
 
         Task next;
 
-        Operator o = (Operator) oo;
+        var o = (Operator) oo;
         try {
-            Task y = o.model.apply(x, n);
+            var y = o.model.apply(x, n);
             if (y == null)
                 return false;
             if (y.equals(x)) {

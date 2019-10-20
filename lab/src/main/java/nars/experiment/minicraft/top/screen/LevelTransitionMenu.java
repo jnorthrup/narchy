@@ -19,9 +19,9 @@ public class LevelTransitionMenu extends Menu {
 
     @Override
     public void render(Screen screen) {
-        for (int x = 0; x < 20; x++) {
-            for (int y = 0; y < 15; y++) {
-                int dd = (y + x % 2 * 2 + x / 3) - time;
+        for (var x = 0; x < 20; x++) {
+            for (var y = 0; y < 15; y++) {
+                var dd = (y + x % 2 * 2 + x / 3) - time;
                 if (dd < 0 && dd > -30) {
                     if (dir > 0)
                         screen.render(x * 8, y * 8, 0, 0, 0);

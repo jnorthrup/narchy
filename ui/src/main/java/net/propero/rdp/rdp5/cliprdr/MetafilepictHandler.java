@@ -61,21 +61,21 @@ public class MetafilepictHandler extends TypeHandler {
             "MM_ISOTROPIC", "MM_ANISOTROPIC"};
 
     public static Transferable handleData(RdpPacket data, int length) {
-        String thingy = "";
+        var thingy = "";
 
 
-        int mm = data.getLittleEndian32();
-        
-        int width = data.getLittleEndian32();
-        
-        int height = data.getLittleEndian32();
+        var mm = data.getLittleEndian32();
+
+        var width = data.getLittleEndian32();
+
+        var height = data.getLittleEndian32();
         
 
         try {
             OutputStream out = new FileOutputStream("test.wmf");
 
-            for (int i = 0; i < (length - 12); i++) {
-                int aByte = data.get8();
+            for (var i = 0; i < (length - 12); i++) {
+                var aByte = data.get8();
                 out.write(aByte);
                 thingy += Integer.toHexString(aByte & 0xFF) + ' ';
             }
@@ -114,19 +114,19 @@ public class MetafilepictHandler extends TypeHandler {
     public void handleData(RdpPacket data, int length, ClipInterface c) {
 
 
-        int mm = data.getLittleEndian32();
-        
-        int width = data.getLittleEndian32();
-        
-        int height = data.getLittleEndian32();
+        var mm = data.getLittleEndian32();
+
+        var width = data.getLittleEndian32();
+
+        var height = data.getLittleEndian32();
         
 
         try {
             OutputStream out = new FileOutputStream("test.wmf");
 
-            String thingy = "";
-            for (int i = 0; i < (length - 12); i++) {
-                int aByte = data.get8();
+            var thingy = "";
+            for (var i = 0; i < (length - 12); i++) {
+                var aByte = data.get8();
                 out.write(aByte);
                 thingy += Integer.toHexString(aByte & 0xFF) + ' ';
             }

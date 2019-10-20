@@ -92,10 +92,10 @@ public class LineStrip2D implements Iterable<Vec2D> {
     }
 
     public Vec2D getCentroid() {
-        int num = vertices.size();
+        var num = vertices.size();
         if (num > 0) {
-            Vec2D centroid = new Vec2D();
-            for (Vec2D v : vertices) {
+            var centroid = new Vec2D();
+            for (var v : vertices) {
                 centroid.addSelf(v);
             }
             return centroid.scaleSelf(1f / num);
@@ -140,19 +140,19 @@ public class LineStrip2D implements Iterable<Vec2D> {
                 return null;
             }
         }
-        float arcLen = getLength();
+        var arcLen = getLength();
         if (arcLen > 0) {
             double delta = step / arcLen;
-            int currIdx = 0;
+            var currIdx = 0;
             for (double t = 0; t < 1.0; t += delta) {
-                double currT = t * arcLen;
+                var currT = t * arcLen;
                 while (currT >= arcLenIndex[currIdx]) {
                     currIdx++;
                 }
                 ReadonlyVec2D p = vertices.get(currIdx - 1);
                 ReadonlyVec2D q = vertices.get(currIdx);
-                float frac = (float) ((currT - arcLenIndex[currIdx - 1]) / (arcLenIndex[currIdx] - arcLenIndex[currIdx - 1]));
-                Vec2D i = p.interpolateTo(q, frac);
+                var frac = (float) ((currT - arcLenIndex[currIdx - 1]) / (arcLenIndex[currIdx] - arcLenIndex[currIdx - 1]));
+                var i = p.interpolateTo(q, frac);
                 uniform.add(i);
             }
             if (doAddFinalVertex) {
@@ -169,7 +169,7 @@ public class LineStrip2D implements Iterable<Vec2D> {
      * @return list of lines
      */
     public List<Line2D> getEdges() {
-        int num = vertices.size();
+        var num = vertices.size();
         List<Line2D> edges = IntStream.range(1, num).mapToObj(i -> new Line2D(vertices.get(i - 1), vertices.get(i))).collect(Collectors.toCollection(() -> new ArrayList<>(num - 1)));
         return edges;
     }
@@ -179,7 +179,7 @@ public class LineStrip2D implements Iterable<Vec2D> {
             arcLenIndex = new float[vertices.size()];
         }
         float arcLen = 0;
-        for (int i = 1; i < arcLenIndex.length; i++) {
+        for (var i = 1; i < arcLenIndex.length; i++) {
             ReadonlyVec2D p = vertices.get(i - 1);
             ReadonlyVec2D q = vertices.get(i);
             arcLen += p.distanceTo(q);
@@ -198,18 +198,18 @@ public class LineStrip2D implements Iterable<Vec2D> {
      * @return
      */
     public Vec2D getPointAt(float t) {
-        int num = vertices.size();
+        var num = vertices.size();
         if (num > 1) {
             if (t <= 0.0) {
                 return vertices.get(0);
             } else if (t >= 1.0) {
                 return vertices.get(num - 1);
             }
-            float totalLength = this.getLength();
+            var totalLength = this.getLength();
             double offp = 0, offq = 0;
-            for (int i = 1; i < num; i++) {
-                Vec2D p = vertices.get(i - 1);
-                Vec2D q = vertices.get(i);
+            for (var i = 1; i < num; i++) {
+                var p = vertices.get(i - 1);
+                var q = vertices.get(i);
                 offq += q.distanceTo(p) / totalLength;
                 if (offp <= t && offq >= t) {
                     return p.interpolateTo(q, (float) MathUtils.mapInterval(t,
@@ -222,8 +222,8 @@ public class LineStrip2D implements Iterable<Vec2D> {
     }
 
     public List<Line2D> getSegments() {
-        int num = vertices.size();
-        int bound = num;
+        var num = vertices.size();
+        var bound = num;
         List<Line2D> segments = IntStream.range(1, bound).mapToObj(i -> new Line2D(vertices.get(i - 1), vertices.get(i))).collect(Collectors.toCollection(() -> new ArrayList<>(num - 1)));
         return segments;
     }
@@ -236,10 +236,10 @@ public class LineStrip2D implements Iterable<Vec2D> {
     }
 
     public LineIntersection intersectLine(Line2D line) {
-        Line2D l = new Line2D(new Vec2D(), new Vec2D());
+        var l = new Line2D(new Vec2D(), new Vec2D());
         for (int i = 1, num = vertices.size(); i < num; i++) {
             l.set(vertices.get(i - 1), vertices.get(i));
-            LineIntersection isec = l.intersectLine(line);
+            var isec = l.intersectLine(line);
             if (isec.getType() == Type.INTERSECTING
                     || isec.getType() == Type.COINCIDENT) {
                 return isec;
@@ -253,7 +253,7 @@ public class LineStrip2D implements Iterable<Vec2D> {
     }
 
     public LineStrip2D rotate(float theta) {
-        for (Vec2D v : vertices) {
+        for (var v : vertices) {
             v.rotate(theta);
         }
         return this;
@@ -264,7 +264,7 @@ public class LineStrip2D implements Iterable<Vec2D> {
     }
 
     public LineStrip2D scale(float x, float y) {
-        for (Vec2D v : vertices) {
+        for (var v : vertices) {
             v.scaleSelf(x, y);
         }
         return this;
@@ -279,8 +279,8 @@ public class LineStrip2D implements Iterable<Vec2D> {
     }
 
     public LineStrip2D scaleSize(float x, float y) {
-        Vec2D centroid = getCentroid();
-        for (Vec2D v : vertices) {
+        var centroid = getCentroid();
+        for (var v : vertices) {
             v.subSelf(centroid).scaleSelf(x, y).addSelf(centroid);
         }
         return this;
@@ -299,7 +299,7 @@ public class LineStrip2D implements Iterable<Vec2D> {
     }
 
     public LineStrip2D translate(float x, float y) {
-        for (Vec2D v : vertices) {
+        for (var v : vertices) {
             v.addSelf(x, y);
         }
         return this;

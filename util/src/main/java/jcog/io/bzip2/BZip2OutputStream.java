@@ -98,7 +98,7 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
 
     private void makeMaps() {
         nInUse = 0;
-        for (int i = 0; i < 256; i++)
+        for (var i = 0; i < 256; i++)
             if (inUse[i]) {
                 seqToUnseq[nInUse] = (char) i;
                 unseqToSeq[i] = (char) nInUse;
@@ -114,26 +114,26 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
         */
         int i;
 
-        int[] weight = new int[MAX_ALPHA_SIZE * 2];
+        var weight = new int[MAX_ALPHA_SIZE * 2];
 
         for (i = 0; i < alphaSize; i++) weight[i + 1] = (freq[i] == 0 ? 1 : freq[i]) << 8;
 
-        int[] parent = new int[MAX_ALPHA_SIZE * 2];
-        int[] heap = new int[MAX_ALPHA_SIZE + 2];
+        var parent = new int[MAX_ALPHA_SIZE * 2];
+        var heap = new int[MAX_ALPHA_SIZE + 2];
         while (true) {
 
             heap[0] = 0;
             weight[0] = 0;
             parent[0] = -2;
 
-            int nHeap = 0;
+            var nHeap = 0;
             for (i = 1; i <= alphaSize; i++) {
                 parent[i] = -1;
                 nHeap++;
                 heap[nHeap] = i;
                 {
-                    int zz = nHeap;
-                    int tmp = heap[zz];
+                    var zz = nHeap;
+                    var tmp = heap[zz];
                     while (weight[tmp] < weight[heap[zz >> 1]]) {
                         heap[zz] = heap[zz >> 1];
                         zz >>= 1;
@@ -143,15 +143,15 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
             }
             if (!(nHeap < (MAX_ALPHA_SIZE + 2))) panic();
 
-            int nNodes = alphaSize;
+            var nNodes = alphaSize;
             while (nHeap > 1) {
-                int n1 = heap[1];
+                var n1 = heap[1];
                 heap[1] = heap[nHeap];
                 nHeap--;
                 {
-                    int yy = 0;
-                    int zz = 1;
-                    int tmp = heap[zz];
+                    var yy = 0;
+                    var zz = 1;
+                    var tmp = heap[zz];
                     while (true) {
                         yy = zz << 1;
                         if (yy > nHeap) break;
@@ -163,13 +163,13 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
                     }
                     heap[zz] = tmp;
                 }
-                int n2 = heap[1];
+                var n2 = heap[1];
                 heap[1] = heap[nHeap];
                 nHeap--;
                 {
-                    int yy = 0;
-                    int zz = 1;
-                    int tmp = heap[zz];
+                    var yy = 0;
+                    var zz = 1;
+                    var tmp = heap[zz];
                     while (true) {
                         yy = zz << 1;
                         if (yy > nHeap) break;
@@ -192,8 +192,8 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
                 nHeap++;
                 heap[nHeap] = nNodes;
                 {
-                    int zz = nHeap;
-                    int tmp = heap[zz];
+                    var zz = nHeap;
+                    var tmp = heap[zz];
                     while (weight[tmp] < weight[heap[zz >> 1]]) {
                         heap[zz] = heap[zz >> 1];
                         zz >>= 1;
@@ -203,11 +203,11 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
             }
             if (!(nNodes < (MAX_ALPHA_SIZE * 2))) panic();
 
-            boolean tooLong = false;
+            var tooLong = false;
             int j;
             for (i = 1; i <= alphaSize; i++) {
                 j = 0;
-                int k = i;
+                var k = i;
                 while (parent[k] >= 0) {
                     k = parent[k];
                     j++;
@@ -311,7 +311,7 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
      *
      */
     public void write(int bv) throws IOException {
-        int b = (256 + bv) % 256;
+        var b = (256 + bv) % 256;
         if (currentChar != -1) if (currentChar == b) {
             if (++runLength > 254) {
                 writeRun();
@@ -334,7 +334,7 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
 
             inUse[currentChar] = true;
 
-            char c = (char) this.currentChar;
+            var c = (char) this.currentChar;
 
             mCrc.updateCRC(c, runLength);
 
@@ -421,7 +421,7 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
     }
 
     private void endBlock() throws IOException {
-        int blockCRC = mCrc.getFinalCRC();
+        var blockCRC = mCrc.getFinalCRC();
         combinedCRC = (combinedCRC << 1) | (combinedCRC >>> 31);
         combinedCRC ^= blockCRC;
 
@@ -484,9 +484,9 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
     private static void hbAssignCodes(int[] code, char[] length, int minLen,
                                       int maxLen, int alphaSize) {
 
-        int vec = 0;
-        for (int n = minLen; n <= maxLen; n++) {
-            for (int i = 0; i < alphaSize; i++) if (length[i] == n) code[i] = vec++;
+        var vec = 0;
+        for (var n = minLen; n <= maxLen; n++) {
+            for (var i = 0; i < alphaSize; i++) if (length[i] == n) code[i] = vec++;
             vec <<= 1;
         }
     }
@@ -500,7 +500,7 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
 
     private void bsFinishedWithStream() throws IOException {
         while (bsLive > 0) {
-            int ch = (bsBuff >> 24);
+            var ch = (bsBuff >> 24);
             bsStream.write(ch); 
             bsBuff <<= 8;
             bsLive -= 8;
@@ -510,7 +510,7 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
 
     private void bsW(int n, int v) throws IOException {
         while (bsLive >= 8) {
-            int ch = (bsBuff >> 24);
+            var ch = (bsBuff >> 24);
             bsStream.write(ch); 
             bsBuff <<= 8;
             bsLive -= 8;
@@ -536,11 +536,11 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
     }
 
     private void sendMTFValues() throws IOException {
-        char[][] len = new char[N_GROUPS][MAX_ALPHA_SIZE];
+        var len = new char[N_GROUPS][MAX_ALPHA_SIZE];
 
         int v, t;
 
-        int alphaSize = nInUse + 2;
+        var alphaSize = nInUse + 2;
         for (t = 0; t < N_GROUPS; t++) for (v = 0; v < alphaSize; v++) len[t][v] = GREATER_ICOST;
 
         /* Decide how many coding tables to use */
@@ -558,13 +558,13 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
         int gs;
         {
 
-            int nPart = nGroups;
-            int remF = nMTF;
+            var nPart = nGroups;
+            var remF = nMTF;
             gs = 0;
             while (nPart > 0) {
-                int tFreq = remF / nPart;
+                var tFreq = remF / nPart;
                 ge = gs - 1;
-                int aFreq = 0;
+                var aFreq = 0;
                 while (aFreq < tFreq && ge < alphaSize - 1) {
                     ge++;
                     aFreq += mtfFreq[ge];
@@ -586,22 +586,22 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
             }
         }
 
-        int[][] rfreq = new int[N_GROUPS][MAX_ALPHA_SIZE];
-        int[] fave = new int[N_GROUPS];
-        short[] cost = new short[N_GROUPS];
+        var rfreq = new int[N_GROUPS][MAX_ALPHA_SIZE];
+        var fave = new int[N_GROUPS];
+        var cost = new short[N_GROUPS];
         /*
           Iterate up to N_ITERS times to improve the tables.
         */
-        int nSelectors = 0;
+        var nSelectors = 0;
         int i;
-        for (int iter = 0; iter < N_ITERS; iter++) {
+        for (var iter = 0; iter < N_ITERS; iter++) {
             for (t = 0; t < nGroups; t++) fave[t] = 0;
 
             for (t = 0; t < nGroups; t++) for (v = 0; v < alphaSize; v++) rfreq[t][v] = 0;
 
             nSelectors = 0;
             gs = 0;
-            int totc = 0;
+            var totc = 0;
             while (gs < nMTF) {
 
                 /* Set group start & end marks. */
@@ -616,9 +616,9 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
 
                 if (nGroups == 6) {
                     short cost1, cost2, cost3, cost4, cost5;
-                    short cost0 = cost1 = cost2 = cost3 = cost4 = cost5 = 0;
+                    var cost0 = cost1 = cost2 = cost3 = cost4 = cost5 = 0;
                     for (i = gs; i <= ge; i++) {
-                        short icv = szptr[i];
+                        var icv = szptr[i];
                         cost0 += len[0][icv];
                         cost1 += len[1][icv];
                         cost2 += len[2][icv];
@@ -633,7 +633,7 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
                     cost[4] = cost4;
                     cost[5] = cost5;
                 } else for (i = gs; i <= ge; i++) {
-                    short icv = szptr[i];
+                    var icv = szptr[i];
                     for (t = 0; t < nGroups; t++) cost[t] += len[t][icv];
                 }
 
@@ -641,8 +641,8 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
                   Find the coding table which is best for this group,
                   and record its identity in the selector table.
                 */
-                int bc = 999999999;
-                int bt = -1;
+                var bc = 999999999;
+                var bt = -1;
                 for (t = 0; t < nGroups; t++)
                     if (cost[t] < bc) {
                         bc = cost[t];
@@ -678,15 +678,15 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
         /* Compute MTF values for the selectors. */
         int j;
         {
-            char[] pos = new char[N_GROUPS];
+            var pos = new char[N_GROUPS];
             for (i = 0; i < nGroups; i++) pos[i] = (char) i;
             for (i = 0; i < nSelectors; i++) {
-                char ll_i = selector[i];
+                var ll_i = selector[i];
                 j = 0;
-                char tmp = pos[j];
+                var tmp = pos[j];
                 while (ll_i != tmp) {
                     j++;
-                    char tmp2 = tmp;
+                    var tmp2 = tmp;
                     tmp = pos[j];
                     pos[j] = tmp2;
                 }
@@ -695,12 +695,12 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
             }
         }
 
-        int[][] code = new int[N_GROUPS][MAX_ALPHA_SIZE];
+        var code = new int[N_GROUPS][MAX_ALPHA_SIZE];
 
         /* Assign actual codes for the tables. */
         for (t = 0; t < nGroups; t++) {
-            int minLen = 32;
-            int maxLen = 0;
+            var minLen = 32;
+            var maxLen = 0;
             for (i = 0; i < alphaSize; i++) {
                 if (len[t][i] > maxLen) maxLen = len[t][i];
                 if (len[t][i] < minLen) minLen = len[t][i];
@@ -713,7 +713,7 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
         /* Transmit the mapping table. */
         int nBytes;
         {
-            boolean[] inUse16 = new boolean[16];
+            var inUse16 = new boolean[16];
             for (i = 0; i < 16; i++) {
                 inUse16[i] = false;
                 for (j = 0; j < 16; j++) if (inUse[i * 16 + j]) inUse16[i] = true;
@@ -762,7 +762,7 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
         /* And finally, the block data proper */
         nBytes = bytesOut;
         gs = 0;
-        int selCtr = 0;
+        var selCtr = 0;
         while (gs < nMTF) {
             ge = gs + G_SIZE - 1;
             if (ge >= nMTF) ge = nMTF - 1;
@@ -786,21 +786,21 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
 
     private void simpleSort(int lo, int hi, int d) {
 
-        int bigN = hi - lo + 1;
+        var bigN = hi - lo + 1;
         if (bigN < 2) return;
 
-        int hp = 0;
+        var hp = 0;
         while (incs[hp] < bigN) hp++;
         hp--;
 
         for (; hp >= 0; hp--) {
-            int h = incs[hp];
+            var h = incs[hp];
 
-            int i = lo + h;
+            var i = lo + h;
             while (i <= hi) {
                 /* copy 1 */
-                int v = zptr[i];
-                int j = i;
+                var v = zptr[i];
+                var j = i;
                 while (fullGtU(zptr[j - h] + d, v + d)) {
                     zptr[j] = zptr[j - h];
                     j -= h;
@@ -842,9 +842,9 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
     }
 
     private void vswap(int p1, int p2, int n) {
-        int[] zptr = this.zptr;
+        var zptr = this.zptr;
         while (n > 0) {
-            int temp = zptr[p1];
+            var temp = zptr[p1];
             zptr[p1] = zptr[p2];
             zptr[p2] = temp;
             p1++;
@@ -876,10 +876,10 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
     }
 
     private void qSort3(int loSt, int hiSt, int dSt) {
-        int bound = QSORT_STACK_SIZE;
-        StackElem[] stack = IntStream.range(0, bound).mapToObj(count -> new StackElem()).toArray(StackElem[]::new);
+        var bound = QSORT_STACK_SIZE;
+        var stack = IntStream.range(0, bound).mapToObj(count -> new StackElem()).toArray(StackElem[]::new);
 
-        int sp = 0;
+        var sp = 0;
 
         stack[sp].ll = loSt;
         stack[sp].hh = hiSt;
@@ -890,9 +890,9 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
             if (sp >= QSORT_STACK_SIZE) panic();
 
             sp--;
-            int lo = stack[sp].ll;
-            int hi = stack[sp].hh;
-            int d = stack[sp].dd;
+            var lo = stack[sp].ll;
+            var hi = stack[sp].hh;
+            var d = stack[sp].dd;
 
             if (hi - lo < SMALL_THRESH || d > DEPTH_THRESH) {
                 simpleSort(lo, hi, d);
@@ -905,16 +905,16 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
                     block[zptr[(lo + hi) >> 1] + d + 1]);
 
             int ltLo;
-            int unLo = ltLo = lo;
+            var unLo = ltLo = lo;
             int gtHi;
-            int unHi = gtHi = hi;
+            var unHi = gtHi = hi;
 
             int n;
             while (true) {
                 while (unLo <= unHi) {
                     n = block[zptr[unLo] + d + 1] - med;
                     if (n == 0) {
-                        int temp = zptr[unLo];
+                        var temp = zptr[unLo];
                         zptr[unLo] = zptr[ltLo];
                         zptr[ltLo] = temp;
                         ltLo++;
@@ -927,7 +927,7 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
                 while (unLo <= unHi) {
                     n = block[zptr[unHi] + d + 1] - med;
                     if (n == 0) {
-                        int temp = zptr[unHi];
+                        var temp = zptr[unHi];
                         zptr[unHi] = zptr[gtHi];
                         zptr[gtHi] = temp;
                         gtHi--;
@@ -938,7 +938,7 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
                     unHi--;
                 }
                 if (unLo > unHi) break;
-                int temp = zptr[unLo];
+                var temp = zptr[unLo];
                 zptr[unLo] = zptr[unHi];
                 zptr[unHi] = temp;
                 unLo++;
@@ -955,7 +955,7 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
 
             n = Math.min((ltLo - lo), (unLo - ltLo));
             vswap(lo, unLo - n, n);
-            int m = Math.min((hi - gtHi), (gtHi - unHi));
+            var m = Math.min((hi - gtHi), (gtHi - unHi));
             vswap(unLo, hi - m + 1, m);
 
             n = lo + unLo - ltLo - 1;
@@ -1005,7 +1005,7 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
             simpleSort(0, last, 0);
         } else {
             //numQSorted = 0;
-            boolean[] bigDone = new boolean[256];
+            var bigDone = new boolean[256];
             for (i = 0; i <= 255; i++) bigDone[i] = false;
 
             for (i = 0; i <= 65536; i++) ftab[i] = 0;
@@ -1040,17 +1040,17 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
               big bucket.
             */
 
-            int[] runningOrder = new int[256];
+            var runningOrder = new int[256];
             for (i = 0; i <= 255; i++) runningOrder[i] = i;
 
             {
-                int h = 1;
+                var h = 1;
                 do h = 3 * h + 1;
                 while (h <= 256);
                 do {
                     h /= 3;
                     for (i = h; i <= 255; i++) {
-                        int vv = runningOrder[i];
+                        var vv = runningOrder[i];
                         j = i;
                         while ((ftab[((runningOrder[j - h]) + 1) << 8]
                                 - ftab[(runningOrder[j - h]) << 8]) >
@@ -1067,13 +1067,13 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
             /*
               The main sorting loop.
             */
-            int[] copy = new int[256];
+            var copy = new int[256];
             for (i = 0; i <= 255; i++) {
 
                 /*
                   Process big buckets, starting with the least full.
                 */
-                int ss = runningOrder[i];
+                var ss = runningOrder[i];
 
                 /*
                   Complete the big bucket [ss] by quicksorting
@@ -1083,10 +1083,10 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
                   we don't have to sort them at all.
                 */
                 for (j = 0; j <= 255; j++) {
-                    int sb = (ss << 8) + j;
+                    var sb = (ss << 8) + j;
                     if (!((ftab[sb] & SETMASK) == SETMASK)) {
-                        int lo = ftab[sb] & CLEARMASK;
-                        int hi = (ftab[sb + 1] & CLEARMASK) - 1;
+                        var lo = ftab[sb] & CLEARMASK;
+                        var hi = (ftab[sb + 1] & CLEARMASK) - 1;
                         if (hi > lo) {
                             qSort3(lo, hi, 2);
                             //numQSorted += (hi - lo + 1);
@@ -1107,15 +1107,15 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
                 bigDone[ss] = true;
 
                 if (i < 255) {
-                    int bbStart  = ftab[ss << 8] & CLEARMASK;
-                    int bbSize   = (ftab[(ss + 1) << 8] & CLEARMASK) - bbStart;
-                    int shifts   = 0;
+                    var bbStart  = ftab[ss << 8] & CLEARMASK;
+                    var bbSize   = (ftab[(ss + 1) << 8] & CLEARMASK) - bbStart;
+                    var shifts   = 0;
 
                     while ((bbSize >> shifts) > 65534) shifts++;
 
                     for (j = 0; j < bbSize; j++) {
-                        int a2update = zptr[bbStart + j];
-                        int qVal = (j >> shifts);
+                        var a2update = zptr[bbStart + j];
+                        var qVal = (j >> shifts);
                         quadrant[a2update] = qVal;
                         if (a2update < NUM_OVERSHOOT_BYTES) quadrant[a2update + last + 1] = qVal;
                     }
@@ -1147,8 +1147,8 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
         int i;
         for (i = 0; i < 256; i++) inUse[i] = false;
 
-        int rTPos = 0;
-        int rNToGo = 0;
+        var rTPos = 0;
+        var rNToGo = 0;
         for (i = 0; i <= last; i++) {
             if (rNToGo == 0) {
                 rNToGo = (char) rNums[rTPos];
@@ -1182,7 +1182,7 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
         }
 
         origPtr = -1;
-        for (int i = 0; i <= last; i++)
+        for (var i = 0; i <= last; i++)
             if (zptr[i] == 0) {
                 origPtr = i;
                 break;
@@ -1192,10 +1192,10 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
     }
 
     private boolean fullGtU(int i1, int i2) {
-        boolean result = false;
+        var result = false;
 
-        char c1 = block[i1 + 1];
-        char c2 = block[i2 + 1];
+        var c1 = block[i1 + 1];
+        var c2 = block[i2 + 1];
         if (c1 == c2) {
             i1++;
             i2++;
@@ -1229,7 +1229,7 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
                             else {
                                 i1++;
                                 i2++;
-                                int k = last + 1;
+                                var k = last + 1;
                                 do {
                                     c1 = block[i1 + 1];
                                     c2 = block[i2 + 1];
@@ -1237,8 +1237,8 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
                                         result = (c1 > c2);
                                         break;
                                     }
-                                    int s1 = quadrant[i1];
-                                    int s2 = quadrant[i2];
+                                    var s1 = quadrant[i1];
+                                    var s2 = quadrant[i2];
                                     if (s1 != s2) {
                                         result = (s1 > s2);
                                         break;
@@ -1324,7 +1324,7 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
             797161, 2391484 };
 
     private void allocateCompressStructures () {
-        int n = baseBlockSize * blockSize100k;
+        var n = baseBlockSize * blockSize100k;
         block = new char[(n + 1 + NUM_OVERSHOOT_BYTES)];
         quadrant = new int[(n + NUM_OVERSHOOT_BYTES)];
         zptr = new int[n];
@@ -1355,25 +1355,25 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
     private void generateMTFValues() {
 
         makeMaps();
-        int EOB = nInUse + 1;
+        var EOB = nInUse + 1;
 
         int i;
         for (i = 0; i <= EOB; i++) mtfFreq[i] = 0;
 
-        char[] yy = new char[256];
+        var yy = new char[256];
         for (i = 0; i < nInUse; i++) yy[i] = (char) i;
 
 
-        int zPend = 0;
-        int wr = 0;
+        var zPend = 0;
+        var wr = 0;
         for (i = 0; i <= last; i++) {
 
-            char ll_i = unseqToSeq[block[zptr[i]]];
+            var ll_i = unseqToSeq[block[zptr[i]]];
 
-            int j = 0;
-            char tmp = yy[j];
+            var j = 0;
+            var tmp = yy[j];
             while (ll_i != tmp) {
-                char tmp2 = tmp;
+                var tmp2 = tmp;
                 tmp = yy[++j];
                 yy[j] = tmp2;
             }

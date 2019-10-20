@@ -170,16 +170,16 @@ class MJCellUI extends Frame {
 	public void build() {
 		sBaseURL = mjc.sBaseURL;
 
-		
-        Panel pnlTop = new Panel();
+
+		var pnlTop = new Panel();
 		pnlLeft = new Panel();
 		pnlBotm = new Panel();
-        Panel pnlRule = new Panel();
+		var pnlRule = new Panel();
 		pnlPatterns = new Panel();
 		pnlFav = new Panel();
-        Panel pnlSpeed = new Panel();
-        Panel pnlWrapGrid = new Panel();
-        Panel pnlRun = new Panel();
+		var pnlSpeed = new Panel();
+		var pnlWrapGrid = new Panel();
+		var pnlRun = new Panel();
 
 		setTitle(mjc.getAppletName());
 		setLayout(new BorderLayout(1, 1)); 
@@ -413,13 +413,13 @@ class MJCellUI extends Frame {
 					+ cmbRules.getSelectedItem() + '/' + sInitPatt);
 		}
 
-		
-		int iLen = lblRule.getText().length();
+
+		var iLen = lblRule.getText().length();
 		if (iLen < 20) {
 
 
             iLen = 20 - iLen;
-            String str = "";
+			var str = "";
             while (iLen-- > 0)
                 str += ' ';
 			lblRule.setText(lblRule.getText() + str);
@@ -448,12 +448,12 @@ class MJCellUI extends Frame {
 	
 	
 	public void InitRules() {
-        String sGameName = cmbGames.getSelectedItem();
+		var sGameName = cmbGames.getSelectedItem();
 
 		cmbRules.removeAll();
-        int iGame = MJRules.GetGameIndex(sGameName);
+		var iGame = MJRules.GetGameIndex(sGameName);
 		if (iGame >= 0) {
-			for (int i = 0; i < mjr.Rules[iGame].size(); i++)
+			for (var i = 0; i < mjr.Rules[iGame].size(); i++)
 				cmbRules.addItem(((CARule) mjr.Rules[iGame].elementAt(i)).name);
 		}
 		SendActiveRule(); 
@@ -483,12 +483,12 @@ class MJCellUI extends Frame {
 	
 	public void SendActiveRule() {
 		int i;
-        String sRuleName = cmbRules.getSelectedItem();
-		String sGameName = cmbGames.getSelectedItem();
+		var sRuleName = cmbRules.getSelectedItem();
+		var sGameName = cmbGames.getSelectedItem();
 
         mjb.stop();
-        int iGame = MJRules.GetGameIndex(sGameName);
-        String sRuleDef = mjr.GetRuleDef(sGameName, sRuleName);
+		var iGame = MJRules.GetGameIndex(sGameName);
+		var sRuleDef = mjr.GetRuleDef(sGameName, sRuleName);
 		SendRule(iGame, sRuleName, sRuleDef);
 
 		PatDlg.InitList(); 
@@ -668,7 +668,7 @@ class MJCellUI extends Frame {
 	@Override
 	@SuppressWarnings("HardcodedFileSeparator")
 	public boolean keyDown(Event evt, int key) {
-		boolean retVal = false; 
+		var retVal = false;
 		switch (key) {
 		case Event.F1: 
 			DialogAbout();
@@ -808,17 +808,17 @@ class MJCellUI extends Frame {
 	
 	
 	private void DefineUserRules() {
-		
-		InputBox ib = new InputBox(new Frame(""), mjb.RuleDef, "User rules",
+
+		var ib = new InputBox(new Frame(""), mjb.RuleDef, "User rules",
 				" Enter your own rules (refer to the rules lexicon for syntax):");
 		requestFocus();
 		if (ib.isAccepted) {
-			String sGameName = MJRules.GetGameName(mjb.CrrGame);
-			String sRuleDef = ib.txtFld.getText();
+			var sGameName = MJRules.GetGameName(mjb.CrrGame);
+			var sRuleDef = ib.txtFld.getText();
 			sRuleDef = mjr.CorrectRuleDef(sGameName, sRuleDef);
 
-			
-			String sRuleName = mjr.GetRuleName(sGameName, sRuleDef);
+
+			var sRuleName = mjr.GetRuleName(sGameName, sRuleDef);
 			if (sRuleName.isEmpty()) 
 			{
 				cmbRules.select(MJRules.S_USERRULE); 
@@ -867,13 +867,13 @@ class MJCellUI extends Frame {
 	
 	
 	private void InputCountOfStates() {
-		String sDefault = String.valueOf(mjb.StatesCount);
-		String sRange = "2.." + (MJBoard.MAX_CLO + 1);
-		InputBox ib = new InputBox(new Frame(""), sDefault, "Count of states",
+		var sDefault = String.valueOf(mjb.StatesCount);
+		var sRange = "2.." + (MJBoard.MAX_CLO + 1);
+		var ib = new InputBox(new Frame(""), sDefault, "Count of states",
 				"Input the count of states (" + sRange + "):");
 		requestFocus();
 		if (ib.isAccepted) {
-            String sRetVal = ib.txtFld.getText();
+			var sRetVal = ib.txtFld.getText();
 			try {
                 int iTmp = Integer.valueOf(sRetVal);
                 mjb.SetStatesCount(iTmp);
@@ -886,13 +886,13 @@ class MJCellUI extends Frame {
 	
 	
 	private void InputActiveState() {
-		String sDefault = String.valueOf(mjb.CrrState);
-		String sRange = "0.." + (mjb.StatesCount - 1);
-		InputBox ib = new InputBox(new Frame(""), sDefault, "Active state",
+		var sDefault = String.valueOf(mjb.CrrState);
+		var sRange = "0.." + (mjb.StatesCount - 1);
+		var ib = new InputBox(new Frame(""), sDefault, "Active state",
 				"Input the active state (" + sRange + "):");
 		requestFocus();
 		if (ib.isAccepted) {
-            String sRetVal = ib.txtFld.getText();
+			var sRetVal = ib.txtFld.getText();
 			try {
                 int iTmp = Integer.valueOf(sRetVal);
                 mjb.SetCrrState(iTmp);
@@ -905,22 +905,22 @@ class MJCellUI extends Frame {
 	
 	
 	private void InputBoardSize() {
-		String sDefault = String.valueOf(mjb.UnivSize.x) + 'x'
+		var sDefault = String.valueOf(mjb.UnivSize.x) + 'x'
 				+ mjb.UnivSize.y;
-		String sMax = "max. " + MJBoard.MAX_X + 'x'
+		var sMax = "max. " + MJBoard.MAX_X + 'x'
 				+ MJBoard.MAX_Y;
-		InputBox ib = new InputBox(new Frame(""), sDefault, "Board size",
+		var ib = new InputBox(new Frame(""), sDefault, "Board size",
 				"Input the new board size (" + sMax + "):");
 		requestFocus();
 		if (ib.isAccepted) {
-			Point iSize = mjb.UnivSize;
-			String sRetVal = ib.txtFld.getText(); 
+			var iSize = mjb.UnivSize;
+			var sRetVal = ib.txtFld.getText();
 			try {
-				
-				StringTokenizer st = new StringTokenizer(sRetVal, " .,;x-",
+
+				var st = new StringTokenizer(sRetVal, " .,;x-",
 						false);
 				if (st.hasMoreTokens()) {
-					String sTok = st.nextToken();
+					var sTok = st.nextToken();
 					iSize.x = Integer.valueOf(sTok);
 					if (st.hasMoreTokens()) {
 						sTok = st.nextToken();
@@ -947,7 +947,7 @@ class MJCellUI extends Frame {
 		lblStates.setText("States: " + mjb.CrrState + '/'
 				+ mjb.StatesCount);
 
-		boolean fSttCntEna = false;
+		var fSttCntEna = false;
 		switch (mjb.CrrGame) {
 		case MJRules.GAME_LIFE: 
 		case MJRules.GAME_VOTE: 
@@ -1044,15 +1044,15 @@ class MJCellUI extends Frame {
 		msgDlg = new Dialog(this, "About MJCell");
 		msgDlg.setSize(360, 340);
 
-		Button btnOk = new Button("   Close   ");
-		TextArea ta = new TextArea(mjc.getAppletInfo());
+		var btnOk = new Button("   Close   ");
+		var ta = new TextArea(mjc.getAppletInfo());
 		ta.appendText("\n\nSystem details");
 		ta.appendText("\nBase URL: " + sBaseURL);
 		ta.appendText("\nJava vendor: " + System.getProperty("java.vendor"));
 		ta.appendText("\nJava version: " + System.getProperty("java.version"));
 		ta.appendText("\nOS: " + System.getProperty("os.name") + ", v."
 				+ System.getProperty("os.version"));
-		Panel btnPnl = new Panel();
+		var btnPnl = new Panel();
 		ta.setEditable(false);
 		btnPnl.setBackground(Color.lightGray);
 		btnPnl.add(btnOk);
@@ -1072,7 +1072,7 @@ class MJCellUI extends Frame {
 	
 	
 	public void DialogInfo() {
-		boolean fOldRun = mjb.caThread != null;
+		var fOldRun = mjb.caThread != null;
 
 		
 		mjb.stop();
@@ -1084,9 +1084,9 @@ class MJCellUI extends Frame {
 		msgDlg = new Dialog(this, "Info");
 		msgDlg.setSize(300, 300);
 
-		Button btnOk = new Button("   Close   ");
-		TextArea ta = new TextArea();
-		Panel btnPnl = new Panel();
+		var btnOk = new Button("   Close   ");
+		var ta = new TextArea();
+		var btnPnl = new Panel();
 		btnPnl.setBackground(Color.lightGray);
 		btnPnl.add(btnOk);
 		ta.setEditable(false);
@@ -1105,12 +1105,12 @@ class MJCellUI extends Frame {
 		ta.append("Cycle: " + mjb.Cycle + '\n');
 		ta.append("Population: " + mjb.Population + '\n');
 
-		double dTmp = 100.0 * mjb.Population
+		var dTmp = 100.0 * mjb.Population
 				/ (mjb.UnivSize.x * mjb.UnivSize.y);
 		dTmp = (Math.round(dTmp * 100.0) / 100.0);
 		ta.append("Density: " + dTmp + "%\n");
 		ta.append("\nDistribution:\n");
-		for (int i = 0; i < mjb.StatesCount; i++) {
+		for (var i = 0; i < mjb.StatesCount; i++) {
 			ta.append("State " + i + ": "
 					+ mjb.Populations[i] + '\n');
 		}
@@ -1137,7 +1137,7 @@ class MJCellUI extends Frame {
 	
 	
 	public void DialogDesc() {
-		boolean fOldRun = mjb.caThread != null;
+		var fOldRun = mjb.caThread != null;
 
 		
 		mjb.stop();
@@ -1149,15 +1149,15 @@ class MJCellUI extends Frame {
 		msgDlg = new Dialog(this, "Pattern description");
 		msgDlg.setSize(350, 300);
 
-		Button btnOk = new Button("   Close   ");
-		TextArea ta = new TextArea();
-		Panel btnPnl = new Panel();
+		var btnOk = new Button("   Close   ");
+		var ta = new TextArea();
+		var btnPnl = new Panel();
 		btnPnl.setBackground(Color.lightGray);
 		btnPnl.add(btnOk);
 		ta.setEditable(false);
 
 		if (!vDescr.isEmpty())
-			for (String aVDescr : vDescr) ta.append(aVDescr + '\n');
+			for (var aVDescr : vDescr) ta.append(aVDescr + '\n');
 		else
 			ta.append("\n No description");
 

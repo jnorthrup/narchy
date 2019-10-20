@@ -29,7 +29,7 @@ public abstract class LiveSTM extends AbstractTraining {
 
         this.agent = lstm(cellBlocks);
 
-        int ERROR_WINDOW_SIZE = 8;
+        var ERROR_WINDOW_SIZE = 8;
         errorHistory.setWindowSize(ERROR_WINDOW_SIZE);
     }
 
@@ -41,7 +41,7 @@ public abstract class LiveSTM extends AbstractTraining {
     public double next() {
 
 
-        ExpectedVsActual inter = observe();
+        var inter = observe();
 
 
         double dist;
@@ -53,7 +53,7 @@ public abstract class LiveSTM extends AbstractTraining {
 
         } else {
 
-            float learningRate = 0.1f;
+            var learningRate = 0.1f;
             double[] predicted;
             if (validation_mode)
                 predicted = agent.predict(inter.actual);

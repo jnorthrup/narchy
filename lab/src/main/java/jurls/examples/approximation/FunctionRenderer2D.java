@@ -23,23 +23,23 @@ public class FunctionRenderer2D extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         if (renderFunction2D != null) {
-            int n = 20;
-            for (int i = 0; i < n; ++i) {
-                int x = i * getWidth() / n;
-                double mx = (i + 0.5) / n;
+            var n = 20;
+            for (var i = 0; i < n; ++i) {
+                var x = i * getWidth() / n;
+                var mx = (i + 0.5) / n;
 
-                for (int j = 0; j < n; ++j) {
+                for (var j = 0; j < n; ++j) {
 
-                    int y = j * getHeight() / n;
-                    double my = (j + 0.5) / n;
+                    var y = j * getHeight() / n;
+                    var my = (j + 0.5) / n;
 
-                    double z = renderFunction2D.compute(mx, my);
+                    var z = renderFunction2D.compute(mx, my);
 
-                    float red = 0.5f * (float) Math.sin(z * 0.1 + 0.2) + 0.5f;
-                    float green = 0.5f * (float) Math.sin(z * 0.2 - 0.2) + 0.5f;
-                    float blue = 0.5f * (float) Math.sin(z * 0.3 + 0.1) + 0.5f;
+                    var red = 0.5f * (float) Math.sin(z * 0.1 + 0.2) + 0.5f;
+                    var green = 0.5f * (float) Math.sin(z * 0.2 - 0.2) + 0.5f;
+                    var blue = 0.5f * (float) Math.sin(z * 0.3 + 0.1) + 0.5f;
 
-                    Color c = new Color(red, green, blue);
+                    var c = new Color(red, green, blue);
                     g.setColor(c);
                     g.fillRect(x, y, getWidth() / n, getHeight() / n);
                 }

@@ -197,29 +197,29 @@ public enum Texts {
 	public static int levenshteinDistance(CharSequence a, CharSequence b) {
 		if (a.equals(b)) return 0;
 
-		int len0 = a.length() + 1;
-		int len1 = b.length() + 1;
-		int[] cost = new int[len0];
-		for (int i = 0; i < len0; i++) {
+		var len0 = a.length() + 1;
+		var len1 = b.length() + 1;
+		var cost = new int[len0];
+		for (var i = 0; i < len0; i++) {
 			cost[i] = i;
 		}
-		int[] newcost = new int[len0];
-		for (int j = 1; j < len1; j++) {
+		var newcost = new int[len0];
+		for (var j = 1; j < len1; j++) {
 			newcost[0] = j;
-			char bj = b.charAt(j - 1);
-			for (int i = 1; i < len0; i++) {
-				int match = (a.charAt(i - 1) == bj) ? 0 : 1;
-				int cost_replace = cost[i - 1] + match;
-				int cost_insert = cost[i] + 1;
-				int cost_delete = newcost[i - 1] + 1;
+			var bj = b.charAt(j - 1);
+			for (var i = 1; i < len0; i++) {
+				var match = (a.charAt(i - 1) == bj) ? 0 : 1;
+				var cost_replace = cost[i - 1] + match;
+				var cost_insert = cost[i] + 1;
+				var cost_delete = newcost[i - 1] + 1;
 
-				int c = cost_insert;
+				var c = cost_insert;
 				if (cost_delete < c) c = cost_delete;
 				if (cost_replace < c) c = cost_replace;
 
 				newcost[i] = c;
 			}
-			int[] swap = cost;
+			var swap = cost;
 			cost = newcost;
 			newcost = swap;
 		}
@@ -271,7 +271,7 @@ public enum Texts {
 			return DoubleFormatUtil.formatDoubleFast(x, 2); //fourDecimal.get().format(x);
 		}
 
-		int hundredths = (int) hundredths(x);
+		var hundredths = (int) hundredths(x);
 		switch (hundredths) {
 
 			case 100:
@@ -287,7 +287,7 @@ public enum Texts {
 		}
 
 		if (hundredths > 9) {
-			int tens = hundredths / 10;
+			var tens = hundredths / 10;
 			return new String(new char[]{
 				'.', (char) ('0' + tens), (char) ('0' + hundredths % 10)
 			});
@@ -358,15 +358,15 @@ public enum Texts {
 			case 0:
 				throw new UnsupportedOperationException();
 			case 1: {
-				char c = s.charAt(0);
-				int i = i(c);
+				var c = s.charAt(0);
+				var i = i(c);
 				if (i != -1) return i;
 			}
 			break;
 			case 2: {
-				int dig1 = i(s.charAt(1));
+				var dig1 = i(s.charAt(1));
 				if (dig1 != -1) {
-					int dig10 = i(s.charAt(0));
+					var dig10 = i(s.charAt(0));
 					if (dig10 != -1)
 						return dig10 * 10 + dig1;
 				}
@@ -382,17 +382,17 @@ public enum Texts {
 	 * fast parse an int under certain conditions, avoiding Integer.parse if possible
 	 */
 	public static long l(String s) throws NumberFormatException {
-		int sl = s.length();
+		var sl = s.length();
         switch (sl) {
             case 1:
-                char c = s.charAt(0);
-                int i = i(c);
+				var c = s.charAt(0);
+				var i = i(c);
                 if (i != -1) return i;
                 break;
             case 2:
-                int dig1 = i(s.charAt(1));
+				var dig1 = i(s.charAt(1));
                 if (dig1 != -1) {
-                    int dig10 = i(s.charAt(0));
+					var dig10 = i(s.charAt(0));
                     if (dig10 != -1)
                         return dig10 * 10 + dig1;
                 }
@@ -418,7 +418,7 @@ public enum Texts {
 			default:
 
 
-				for (int i = 0; i < s.length(); i++)
+				for (var i = 0; i < s.length(); i++)
 					if (i(s.charAt(i)) == -1)
 						return ifMissing;
 
@@ -438,10 +438,10 @@ public enum Texts {
 
 	public static String i(byte[] b, int from, int to, int radix) {
 		assert (radix == 16); //TODO other options
-		byte[] c = new byte[(to - from) * 2];
-		int i = 0;
-		for (int j = from; j < to; j++) {
-			byte x = b[j];
+		var c = new byte[(to - from) * 2];
+		var i = 0;
+		for (var j = from; j < to; j++) {
+			var x = b[j];
 			c[i++] = (byte) ((x / radix) + '0');
 			c[i++] = (byte) ((x % radix) + '0');
 		}
@@ -449,7 +449,7 @@ public enum Texts {
 	}
 
 	public static int i(String s, int offset, int ifMissing) {
-		int sl = s.length() - offset;
+		var sl = s.length() - offset;
 		if (sl <= 0)
 			return ifMissing;
 
@@ -474,13 +474,13 @@ public enum Texts {
 	}
 
 	private static int i3(String s, int offset, int ifMissing) {
-		int dig100 = i(s.charAt(offset));
+		var dig100 = i(s.charAt(offset));
 		if (dig100 == -1) return ifMissing;
 
-		int dig10 = i(s.charAt(offset + 1));
+		var dig10 = i(s.charAt(offset + 1));
 		if (dig10 == -1) return ifMissing;
 
-		int dig1 = i(s.charAt(offset + 2));
+		var dig1 = i(s.charAt(offset + 2));
 		if (dig1 == -1) return ifMissing;
 
 		return dig100 * 100 + dig10 * 10 + dig1;
@@ -491,10 +491,10 @@ public enum Texts {
 	}
 
 	private static int i2(String s, int offset, int ifMissing) {
-		int dig10 = i(s.charAt(offset));
+		var dig10 = i(s.charAt(offset));
 		if (dig10 == -1) return ifMissing;
 
-		int dig1 = i(s.charAt(offset + 1));
+		var dig1 = i(s.charAt(offset + 1));
 		if (dig1 == -1) return ifMissing;
 
 		return dig10 * 10 + dig1;
@@ -505,7 +505,7 @@ public enum Texts {
 	}
 
 	private static int i1(String s, int offset, int ifMissing) {
-		int dig1 = i(s.charAt(offset));
+		var dig1 = i(s.charAt(offset));
 		if (dig1 == -1) return ifMissing;
 		return dig1;
 	}
@@ -542,7 +542,7 @@ public enum Texts {
 	}
 
 	public static float f(String s, float min, float max) {
-		float x = f(s, Float.NaN);
+		var x = f(s, Float.NaN);
 		if ((x < min) || x > max)
 			return Float.NaN;
 		return x;
@@ -550,7 +550,7 @@ public enum Texts {
 
 	public static String arrayToString(Object... signals) {
 		if (signals == null) return "";
-		int slen = signals.length;
+		var slen = signals.length;
 		if (slen > 1)
 			return Arrays.toString(signals);
 		if (slen > 0)
@@ -576,13 +576,13 @@ public enum Texts {
 	}
 
 	public static int countRows(String s, char x) {
-		int bound = s.length();
-		long count = IntStream.range(0, bound).filter(i -> s.charAt(i) == x).count();
+		var bound = s.length();
+		var count = IntStream.range(0, bound).filter(i -> s.charAt(i) == x).count();
 
 		return (int) count;
 	}
 	public static int countCols(String next) {
-		int cols = 0;
+		var cols = 0;
 		int n = 0, nn = 0;
 		while ((nn = next.indexOf('\n', n))!=-1) {
 			cols = Math.max(cols, nn - n);
@@ -593,9 +593,9 @@ public enum Texts {
 
 	public static String n2(float... v) {
 		assert (v.length > 0);
-		StringBuilder sb = new StringBuilder(v.length * 4 + 2 /* approx */);
-		int s = v.length;
-		for (int i = 0; i < s; i++) {
+		var sb = new StringBuilder(v.length * 4 + 2 /* approx */);
+		var s = v.length;
+		for (var i = 0; i < s; i++) {
 			sb.append(n2(v[i]));
 			if (i != s - 1) sb.append(' ');
 		}
@@ -606,9 +606,9 @@ public enum Texts {
 	 * prints an array of numbers separated by tab, suitable for a TSV line
 	 */
 	public static String n4(double... v) {
-		StringBuilder sb = new StringBuilder(v.length * 6 + 2 /* approx */);
-		int s = v.length;
-		for (int i = 0; i < s; i++) {
+		var sb = new StringBuilder(v.length * 6 + 2 /* approx */);
+		var s = v.length;
+		for (var i = 0; i < s; i++) {
 			sb.append(n4(v[i]));
 			if (i != s - 1) sb.append('\t');
 		}
@@ -619,9 +619,9 @@ public enum Texts {
 	 * prints an array of numbers separated by tab, suitable for a TSV line
 	 */
 	public static String n4(float... v) {
-		StringBuilder sb = new StringBuilder(v.length * 6 + 2 /* approx */);
-		int s = v.length;
-		for (int i = 0; i < s; i++) {
+		var sb = new StringBuilder(v.length * 6 + 2 /* approx */);
+		var s = v.length;
+		for (var i = 0; i < s; i++) {
 			sb.append(n4(v[i]));
 			if (i != s - 1) sb.append('\t');
 		}
@@ -632,7 +632,7 @@ public enum Texts {
 	 * prints an array of numbers separated by tab, suitable for a TSV line
 	 */
 	public static String n2(byte... v) {
-        int s = v.length;
+		var s = v.length;
 		return IntStream.range(0, s).mapToObj(i -> Integer.toHexString(Byte.toUnsignedInt(v[i])) + ' ').collect(Collectors.joining());
 	}
 
@@ -645,7 +645,7 @@ public enum Texts {
 	 * from: https:
 	 */
 	public static String dateStr(long timestamp) {
-		Date date = new Date(timestamp * 1000);
+		var date = new Date(timestamp * 1000);
 		DateFormat formatter = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
 		return formatter.format(date);
 	}
@@ -656,7 +656,7 @@ public enum Texts {
 	 */
 	public static String timeStr(double ns) {
 		assert (Double.isFinite(ns));
-		boolean neg = ns < 0;
+		var neg = ns < 0;
 		return (neg ? "-" : "") + _timeStr(Math.abs(ns));
 	}
 
@@ -667,13 +667,13 @@ public enum Texts {
 		if (ns < 1_000_000_000) return n4(ns / 1_000_000d) + "ms";
 
 		if (ns < 1_000_000_000_000d) return n2(ns / 1_000_000_000d) + 's';
-		long sec = Math.round(ns / 1_000_000_000d);
+		var sec = Math.round(ns / 1_000_000_000d);
 		if (sec < 5 * 60) return (sec / 60) + "m" + (sec % 60) + 's';
-		long min = sec / 60;
+		var min = sec / 60;
 		if (min < 60) return min + "m";
-		long hour = min / 60;
+		var hour = min / 60;
 		if (min < 24 * 60) return hour + "h" + (min % 60) + 'm';
-		long day = hour / 24;
+		var day = hour / 24;
 		return day + "d" + (day % 24) + 'h';
 	}
 
@@ -693,9 +693,9 @@ public enum Texts {
 	public static String repeat(String s, int n) {
 
 		if (s.length() == 1) {
-			char c = s.charAt(0);
+			var c = s.charAt(0);
 			if (c < 0xff) {
-				byte[] bb = new byte[n];
+				var bb = new byte[n];
 				Arrays.fill(bb, (byte) c);
 				return new String(bb);
 			}
@@ -709,7 +709,7 @@ public enum Texts {
 	 * TODO can be made faster
 	 */
 	public static String iPad(long v, int digits) {
-		String s = String.valueOf(v);
+		var s = String.valueOf(v);
 		while (s.length() < digits)
 			s = ' ' + s;
 		return s;
@@ -720,8 +720,8 @@ public enum Texts {
 	}
 
 	public static void histogramDecode(AbstractHistogram h, String header, int linearStep, BiConsumer<String, Object> x) {
-		int digits = (int) (1 + Math.log10(h.getMaxValue()));
-		for (HistogramIterationValue p : h.linearBucketValues(linearStep)) {
+		var digits = (int) (1 + Math.log10(h.getMaxValue()));
+		for (var p : h.linearBucketValues(linearStep)) {
 			x.accept(header + " [" +
 							iPad(p.getValueIteratedFrom(), digits) + ".." + iPad(p.getValueIteratedTo(), digits) + ']',
 					p.getCountAddedInThisIterationStep());
@@ -730,7 +730,7 @@ public enum Texts {
 
 	public static void histogramDecode(DoubleHistogram h, String header, double linearStep, BiConsumer<String, Object> x) {
 		char[] order = {'a'};
-		for (DoubleHistogramIterationValue p : h.linearBucketValues(linearStep)) {
+		for (var p : h.linearBucketValues(linearStep)) {
 			x.accept(header + ' ' + (order[0]++) +
 							'[' + n4(p.getValueIteratedFrom()) + ".." + n4(p.getValueIteratedTo()) + ']',
 					p.getCountAddedInThisIterationStep());
@@ -738,7 +738,7 @@ public enum Texts {
 	}
 
 	public static void histogramDecode(AbstractHistogram h, String header, BiConsumer<String, Object> x) {
-		for (HistogramIterationValue p : h.percentiles(1)) {
+		for (var p : h.percentiles(1)) {
 			x.accept(header + " [" +
 							p.getValueIteratedFrom() + ".." + p.getValueIteratedTo() + ']',
 					p.getCountAddedInThisIterationStep());
@@ -746,7 +746,7 @@ public enum Texts {
 	}
 
 	public static String histogramString(AbstractHistogram h, boolean percentiles) {
-		StringBuilder sb = new StringBuilder(256);
+		var sb = new StringBuilder(256);
 		histogramPrint(h, percentiles, sb);
 		return sb.toString();
 	}
@@ -787,7 +787,7 @@ public enum Texts {
 
 
 	public static String quote(String s) {
-		int length = s.length();
+		var length = s.length();
 
 		if (length == 0)
 			return "\"\"";
@@ -808,7 +808,7 @@ public enum Texts {
 
 	public static String unquote(String x) {
 		while (true) {
-			int len = x.length();
+			var len = x.length();
 			if (len > 0 && x.charAt(0) == '\"' && x.charAt(len - 1) == '\"') {
 				x = x.substring(1, len - 1);
 			} else {
@@ -825,7 +825,7 @@ public enum Texts {
 	 */
 	public static String n2u(float x) {
 		if ((x < 0) || (x > 1)) throw new RuntimeException("values >=0 and <=1");
-		int hundreds = (int) hundredths(x);
+		var hundreds = (int) hundredths(x);
 		if (x == 100) return "aa";
 		return hundreds < 10 ? "0" + hundreds : Integer.toString(hundreds);
 	}
@@ -834,13 +834,13 @@ public enum Texts {
 	 * returns lev distance divided by max(a.length(), b.length()
 	 */
 	public static float levenshteinFraction(CharSequence a, CharSequence b) {
-		int len = Math.max(a.length(), b.length());
+		var len = Math.max(a.length(), b.length());
 		if (len == 0) return 0f;
 		return levenshteinDistance(a, b) / ((float) len);
 	}
 
 	public static void indent(int amount) {
-		for (int i = 0; i < amount; i++)
+		for (var i = 0; i < amount; i++)
 			System.out.print(' ');
 	}
 
@@ -880,10 +880,10 @@ public enum Texts {
 
 		static {
 			POWERS_OF_TEN_LONG[0] = 1L;
-			for (int i = 1; i < POWERS_OF_TEN_LONG.length; i++) {
+			for (var i = 1; i < POWERS_OF_TEN_LONG.length; i++) {
 				POWERS_OF_TEN_LONG[i] = POWERS_OF_TEN_LONG[i - 1] * 10L;
 			}
-			for (int i = 0; i < POWERS_OF_TEN_DOUBLE.length; i++) {
+			for (var i = 0; i < POWERS_OF_TEN_DOUBLE.length; i++) {
 				POWERS_OF_TEN_DOUBLE[i] = Double.parseDouble("1e" + i);
 			}
 		}
@@ -899,7 +899,7 @@ public enum Texts {
 		 * @param target    the buffer to write to
 		 */
 		public static void formatDouble(double source, int decimals, int precision, StringBuilder target) {
-			int scale = (Math.abs(source) >= 1.0) ? decimals : precision;
+			var scale = (Math.abs(source) >= 1.0) ? decimals : precision;
 			if (tooManyDigitsUsed(source, scale) || tooCloseToRound(source, scale)) {
 				formatDoublePrecise(source, decimals, precision, target);
 			} else {
@@ -929,21 +929,21 @@ public enum Texts {
 				target.append(source);
 				return;
 			}
-			boolean negative = source < 0.0;
+			var negative = source < 0.0;
 			if (negative) {
 				source = -source;
 				// Done once and for all
 				target.append('-');
 			}
-			int scale = (source >= 1.0) ? decimals : precision;
+			var scale = (source >= 1.0) ? decimals : precision;
 			// The only way to format precisely the double is to use the String
 			// representation of the double, and then to do mathematical integer operation on it.
-			String s = Double.toString(source);
+			var s = Double.toString(source);
 			if (source >= 1e-3 && source < 1e7) {
 				// Plain representation of double: "intPart.decimalPart"
-				int dot = s.indexOf('.');
-				String decS = s.substring(dot + 1);
-				int decLength = decS.length();
+				var dot = s.indexOf('.');
+				var decS = s.substring(dot + 1);
+				var decLength = decS.length();
 				if (scale >= decLength) {
 					if ("0".equals(decS)) {
 						// source is a mathematical integer
@@ -951,7 +951,7 @@ public enum Texts {
 					} else {
 						target.append(s);
 						// Remove trailing zeroes
-						for (int l = target.length() - 1; l >= 0 && target.charAt(l) == '0'; l--) {
+						for (var l = target.length() - 1; l >= 0 && target.charAt(l) == '0'; l--) {
 							target.setLength(l);
 						}
 					}
@@ -961,21 +961,21 @@ public enum Texts {
 					decLength = scale + 1;
 					decS = decS.substring(0, decLength);
 				}
-				long intP = Long.parseLong(s.substring(0, dot));
-				long decP = Long.parseLong(decS);
+				var intP = Long.parseLong(s.substring(0, dot));
+				var decP = Long.parseLong(decS);
 				format(target, scale, intP, decP);
 			} else {
 				// Scientific representation of double: "x.xxxxxEyyy"
-				int dot = s.indexOf('.');
+				var dot = s.indexOf('.');
 				assert dot >= 0;
-				int exp = s.indexOf('E');
+				var exp = s.indexOf('E');
 				assert exp >= 0;
-				int exposant = Integer.parseInt(s.substring(exp + 1));
-				String intS = s.substring(0, dot);
-				String decS = s.substring(dot + 1, exp);
-				int decLength = decS.length();
+				var exposant = Integer.parseInt(s.substring(exp + 1));
+				var intS = s.substring(0, dot);
+				var decS = s.substring(dot + 1, exp);
+				var decLength = decS.length();
 				if (exposant >= 0) {
-					int digits = decLength - exposant;
+					var digits = decLength - exposant;
 					if (digits <= 0) {
 						// no decimal part,
 						// no rounding involved
@@ -989,25 +989,25 @@ public enum Texts {
 					} else {
 						// decimalDigits > scale,
 						// Rounding involved
-						long intP = Long.parseLong(intS) * tenPow(exposant) + Long.parseLong(decS.substring(0, exposant));
-						long decP = Long.parseLong(decS.substring(exposant, exposant + scale + 1));
+						var intP = Long.parseLong(intS) * tenPow(exposant) + Long.parseLong(decS.substring(0, exposant));
+						var decP = Long.parseLong(decS.substring(exposant, exposant + scale + 1));
 						format(target, scale, intP, decP);
 					}
 				} else {
 					// Only a decimal part is supplied
 					exposant = -exposant;
-					int digits = scale - exposant + 1;
+					var digits = scale - exposant + 1;
 					if (digits < 0) {
 						target.append('0');
 					} else if (digits == 0) {
-						long decP = Long.parseLong(intS);
+						var decP = Long.parseLong(intS);
 						format(target, scale, 0L, decP);
 					} else if (decLength < digits) {
-						long decP = Long.parseLong(intS) * tenPow(decLength + 1) + Long.parseLong(decS) * 10;
+						var decP = Long.parseLong(intS) * tenPow(decLength + 1) + Long.parseLong(decS) * 10;
 						format(target, exposant + decLength, 0L, decP);
 					} else {
-						long subDecP = Long.parseLong(decS.substring(0, digits));
-						long decP = Long.parseLong(intS) * tenPow(digits) + subDecP;
+						var subDecP = Long.parseLong(decS.substring(0, digits));
+						var decP = Long.parseLong(intS) * tenPow(digits) + subDecP;
 						format(target, scale, 0L, decP);
 					}
 				}
@@ -1085,7 +1085,7 @@ public enum Texts {
 		}
 
 		public static String formatDoubleFast(double source, int decimals) {
-			StringBuilder target = new StringBuilder(decimals * 2 /* estimate */);
+			var target = new StringBuilder(decimals * 2 /* estimate */);
 			formatDoubleFast(source, decimals, target);
 			return target.toString();
 		}
@@ -1116,13 +1116,13 @@ public enum Texts {
 				target.append(source);
 				return;
 			}
-			boolean isPositive = source >= 0.0;
+			var isPositive = source >= 0.0;
 			source = Math.abs(source);
-			int scale = (source >= 1.0) ? decimals : precision;
-			long intPart = (long) Math.floor(source);
-			double tenScale = tenPowDouble(scale);
-			double fracUnroundedPart = (source - intPart) * tenScale;
-			long fracPart = Math.round(fracUnroundedPart);
+			var scale = (source >= 1.0) ? decimals : precision;
+			var intPart = (long) Math.floor(source);
+			var tenScale = tenPowDouble(scale);
+			var fracUnroundedPart = (source - intPart) * tenScale;
+			var fracPart = Math.round(fracUnroundedPart);
 			if (fracPart >= tenScale) {
 				intPart++;
 				fracPart = Math.round(fracPart - tenScale);
@@ -1165,7 +1165,7 @@ public enum Texts {
 		public static int getExponant(double value) {
 			// See Double.doubleToRawLongBits javadoc or IEEE-754 spec
 			// to have this algorithm
-			long exp = Double.doubleToRawLongBits(value) & 0x7ff0000000000000L;
+			var exp = Double.doubleToRawLongBits(value) & 0x7ff0000000000000L;
 			exp >>= 52;
 			return (int) (exp - 1023L);
 		}
@@ -1180,7 +1180,7 @@ public enum Texts {
 		 */
 		private static boolean tooManyDigitsUsed(double source, int scale) {
 			// if scale >= 308, 10^308 ~= Infinity
-			double decExp = Math.log10(source);
+			var decExp = Math.log10(source);
 			return scale >= 308 || decExp + scale >= 14.5;
 		}
 
@@ -1194,12 +1194,12 @@ public enum Texts {
 		 */
 		private static boolean tooCloseToRound(double source, int scale) {
 			source = Math.abs(source);
-			long intPart = (long) Math.floor(source);
-			double fracPart = (source - intPart) * tenPowDouble(scale);
-			double decExp = Math.log10(source);
-			double range = decExp + scale >= 12 ? .1 : .001;
-			double distanceToRound1 = Math.abs(fracPart - Math.floor(fracPart));
-			double distanceToRound2 = Math.abs(fracPart - Math.floor(fracPart) - 0.5);
+			var intPart = (long) Math.floor(source);
+			var fracPart = (source - intPart) * tenPowDouble(scale);
+			var decExp = Math.log10(source);
+			var range = decExp + scale >= 12 ? .1 : .001;
+			var distanceToRound1 = Math.abs(fracPart - Math.floor(fracPart));
+			var distanceToRound2 = Math.abs(fracPart - Math.floor(fracPart) - 0.5);
 			return distanceToRound1 <= range || distanceToRound2 <= range;
 			// .001 range: Totally arbitrary range,
 			// I never had a failure in 10e7 random tests with this value

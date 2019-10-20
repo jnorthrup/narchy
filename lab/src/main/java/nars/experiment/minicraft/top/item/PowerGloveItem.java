@@ -37,7 +37,7 @@ public class PowerGloveItem extends Item {
     @Override
     public boolean interact(Player player, Entity entity, int attackDir) {
         if (entity instanceof Furniture) {
-            Furniture f = (Furniture) entity;
+            var f = (Furniture) entity;
             f.take(player);
             return true;
         }

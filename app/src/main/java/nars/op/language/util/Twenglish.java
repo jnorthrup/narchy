@@ -182,7 +182,7 @@ public class Twenglish {
 
         LinkedList<Term> t = new LinkedList();
         Span last = null;
-        for (Span c : s) {
+        for (var c : s) {
             t.add(spanToTerm(c));
             last = c;
         }
@@ -206,18 +206,13 @@ public class Twenglish {
         
         if (inputProduct) {
 
-            Term tokens =
+            var tokens =
                     $.p(t.toArray(new Term[t.size()]));
 
 
+            var q = $.func("hear", Atomic.the(source), tokens);
 
-
-
-
-
-            Term q = $.func("hear", Atomic.the(source), tokens);
-
-            TaskBuilder newtask = new TaskBuilder(q, BELIEF, 1f, n).present(n); 
+            var newtask = new TaskBuilder(q, BELIEF, 1f, n).present(n);
             tt.add(newtask); 
 
 
@@ -261,7 +256,7 @@ public class Twenglish {
                 if (!includeWordPOS) {
                     return lexToTerm(c.content);
                 } else {
-                    String pos = POS.get(c.content.toLowerCase());
+                    var pos = POS.get(c.content.toLowerCase());
                     if (pos != null) {
                         return $.prop(lexToTerm(c.content), tagToTerm(pos));
                     }
@@ -323,12 +318,12 @@ public class Twenglish {
 
         List<TaskBuilder> results = $.newArrayList();
 
-        List<Span> tokens = Twokenize.twokenize(s);
+        var tokens = Twokenize.twokenize(s);
 
         List<List<Span>> sentences = $.newArrayList();
 
         List<Span> currentSentence = $.newArrayList(tokens.size());
-        for (Span p : tokens) {
+        for (var p : tokens) {
 
             currentSentence.add(p);
 
@@ -349,8 +344,8 @@ public class Twenglish {
         if (!currentSentence.isEmpty())
             sentences.add(currentSentence);
 
-        for (List<Span> x : sentences) {
-            Collection<TaskBuilder> ss = parseSentence(source, n, x);
+        for (var x : sentences) {
+            var ss = parseSentence(source, n, x);
             if (ss != null)
                 results.addAll(ss);
         }

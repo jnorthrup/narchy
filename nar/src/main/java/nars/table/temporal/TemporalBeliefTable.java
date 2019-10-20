@@ -41,12 +41,12 @@ public interface TemporalBeliefTable extends BeliefTable {
     static void budget(TruthProjection sources, Task xy) {
 
         //sources.removeNulls();
-        Task[] tr = sources.arrayCommit(); assert(ArrayUtil.indexOfInstance(tr, null)==-1);
+        var tr = sources.arrayCommit(); assert(ArrayUtil.indexOfInstance(tr, null)==-1);
 
         ((AbstractTask)xy).why(Why.why(tr, NAL.causeCapacity.intValue()));
 
-        float priSum = Util.sum(Prioritized::priElseZero, tr);
-        float priMean = priSum/tr.length; //mean
+        var priSum = Util.sum(Prioritized::priElseZero, tr);
+        var priMean = priSum/tr.length; //mean
         xy.priAdd(priMean);
 
 //        //factor in the evidence loss (and originality?) loss to reduce priority
@@ -72,7 +72,7 @@ public interface TemporalBeliefTable extends BeliefTable {
 
 
 	default void removeIf(Predicate<Task> remove, long finalStart, long finalEnd) {
-        FasterList<Task> deleteAfter = new FasterList<>(0);
+        var deleteAfter = new FasterList<Task>(0);
 
         forEachTask(finalStart, finalEnd, t->{
             if (remove.test(t))

@@ -64,7 +64,7 @@ public class Evaluation extends Termerator {
 
 	private boolean termute(Evaluator e, Term y) {
 
-		int before = v.size();
+		var before = v.size();
 
 		return termutes.size() == 1 ? termute1(e, y, before) : termuteN(e, y, before);
 	}
@@ -75,7 +75,7 @@ public class Evaluation extends Termerator {
 
 	private boolean termuteN(Evaluator e, Term y, int start) {
 
-		Iterable<Predicate<Termerator>>[] tt = termutes.toArrayRecycled(Iterable[]::new);
+		var tt = termutes.toArrayRecycled(Iterable[]::new);
 		for (int i = 0, ttLength = tt.length; i < ttLength; i++)
 			tt[i] = shuffle(tt[i]);
 		ArrayUtil.shuffle(tt, random());
@@ -86,7 +86,7 @@ public class Evaluation extends Termerator {
 
 		Set<Term> tried = null;
 		while (ci.hasNext()) {
-			boolean appliedAll = Arrays.stream(ci.next()).allMatch(cc -> cc.test(this));
+			var appliedAll = Arrays.stream(ci.next()).allMatch(cc -> cc.test(this));
 
 			if (appliedAll) {
 				if (tried == null) tried = new UnifiedSet<>(0);
@@ -102,9 +102,9 @@ public class Evaluation extends Termerator {
 
 
 	private boolean termute1(Evaluator e, Term y, int start) {
-		Iterable<Predicate<Termerator>> t = shuffle(termutes.remove(0));
+		var t = shuffle(termutes.remove(0));
 		Set<Term> tried = null;
-		for (Predicate<Termerator> tt : t) {
+		for (var tt : t) {
 			if (tt.test(this)) {
 				if (tried == null) tried = new UnifiedSet<>(0);
 
@@ -121,7 +121,7 @@ public class Evaluation extends Termerator {
 	}
 
 	private boolean recurse(Evaluator e, Term y, Set<Term> tried) {
-		Term z = y.replace(subs);
+		var z = y.replace(subs);
 		return y.equals(z) || !tried.add(z) || eval(e, z);  //CUT
 	}
 
@@ -134,7 +134,7 @@ public class Evaluation extends Termerator {
 	 * fails fast if no known functors apply
 	 */
 	protected boolean evalTry(Compound x, Evaluator e, boolean includeOriginal) {
-		@Nullable ArrayHashSet<Term> c = e.clauses(x, this);
+		@Nullable var c = e.clauses(x, this);
 
 		if ((c == null || c.isEmpty()) && (termutes == null || termutes.isEmpty())) {
 			if (includeOriginal)
@@ -147,7 +147,7 @@ public class Evaluation extends Termerator {
 
 	private boolean eval(Evaluator e, Term x, @Nullable ArrayHashSet<Term> clauses) {
 
-		Term y = x;
+		var y = x;
 
 		if (clauses != null && !clauses.isEmpty()) {
 
@@ -157,14 +157,14 @@ public class Evaluation extends Termerator {
 			main:
 			do {
 				prev = y;
-                for (Term a : clauses) {
+                for (var a : clauses) {
 
                     //run the functor resolver for any new functor terms which may have appeared
 
                     Term aFunc_Pre = Functor.func(a);
                     if (!(aFunc_Pre instanceof Functor)) {
                         //try resolving
-                        Term aa = e.apply(a);
+						var aa = e.apply(a);
                         if (aa == a) {
                             //no change. no such functor Exception?
                         } else {
@@ -172,11 +172,11 @@ public class Evaluation extends Termerator {
                         }
                     }
 
-                    int vStart = now();
+					var vStart = now();
 
-					Term b = ((Functor) a.sub(1)).apply(this, a.sub(0).subterms());
+					var b = ((Functor) a.sub(1)).apply(this, a.sub(0).subterms());
 
-                    boolean newSubsts = now() != vStart;
+					var newSubsts = now() != vStart;
 
                     if (b instanceof Bool) {
 						if (b == True) {
@@ -191,7 +191,7 @@ public class Evaluation extends Termerator {
                         }
                     }
 
-                    Term y0 = y;
+					var y0 = y;
 
                     if (b != null && b != a) {
                         y = y.replace(a, b); //TODO replace only the first?
@@ -264,7 +264,7 @@ public class Evaluation extends Termerator {
 
 
 	public static Term solveFirst(Term x, Function<Atom, Functor> axioms) {
-		Term[] y = new Term[1];
+		var y = new Term[1];
 		Evaluation.eval(x, true, true, (what) -> {
 			if (what instanceof Bool) {
 				if (y[0] != null)
@@ -293,7 +293,7 @@ public class Evaluation extends Termerator {
 	 */
 	public static Set<Term> eval(Term x, boolean includeTrues, boolean includeFalses, Function<Atom, Functor> resolver) {
 
-		UnifiedSet<Term> ee = new UnifiedSet<>(0);
+		var ee = new UnifiedSet<Term>(0);
 
 		Evaluation.eval(x, includeTrues, includeFalses, t -> {
 			if (t != Null)
@@ -306,7 +306,7 @@ public class Evaluation extends Termerator {
 	}
 	public static Set<Term> eval(Term x, boolean includeTrues, boolean includeFalses, Evaluator e) {
 
-		UnifiedSet ee = new UnifiedSet(0, 0.5f);
+		var ee = new UnifiedSet(0, 0.5f);
 
 		Evaluation.eval(x, includeTrues, includeFalses, e, t -> {
 			if (t != Null)

@@ -35,18 +35,18 @@ public class ActionTiming implements TimeFocus {
     @Override
     public long[] premise(What what, Task task, Term beliefTerm) {
 
-        float dur = what.dur();
+        var dur = what.dur();
 
 
-        float focusRadius = dur * focusDurs.floatValue() / 2;
-        float range = horizonDurs.floatValue() * dur;
+        var focusRadius = dur * focusDurs.floatValue() / 2;
+        var range = horizonDurs.floatValue() * dur;
 
-        long now = what.time();
+        var now = what.time();
 
-        Random rng = what.random();
+        var rng = what.random();
 
         //gaussian
-        double then = (now + range * rng.nextGaussian());
+        var then = (now + range * rng.nextGaussian());
         //uniform
         //double then = (now + range * (-.5f + rng.nextFloat())); //uniform
 

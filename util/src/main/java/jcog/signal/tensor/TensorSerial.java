@@ -31,9 +31,9 @@ public class TensorSerial extends BatchArrayTensor {
 
     @Override
     public void update() {
-        int c = 0;
-        for (Tensor x : sub) {
-            int xv = x.volume();
+        var c = 0;
+        for (var x : sub) {
+            var xv = x.volume();
             x.writeTo(data, c);
             c += xv;
         }

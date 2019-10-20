@@ -49,11 +49,11 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<ComponentS
 
 
         this.defaultFreq = defaultFreq;
-        for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++) {
+        for (var y = 0; y < height; y++) {
+            for (var x = 0; x < width; x++) {
 
-                Term sid = pixelTerm.apply(x, y);
-                PixelSignal sc = new PixelSignal(sid, x,y, s);
+                var sid = pixelTerm.apply(x, y);
+                var sc = new PixelSignal(sid, x,y, s);
                 if (defaultFreq==defaultFreq) {
                     EternalDefaultTable.add(sc, defaultFreq, s.nar);
                 }
@@ -67,7 +67,7 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<ComponentS
 
     protected float nextValue(int x, int y) {
 
-        float ff = src.brightness(x, y);
+        var ff = src.brightness(x, y);
 //                                        float prev = this.prev;
 //                                        this.prev = ff;
 //                                        if (Util.equals(ff, prev) && Util.equals(prev, defaultFreq))
@@ -95,9 +95,9 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<ComponentS
      * crude ASCII text representation of the current pixel state
      */
     public void print(long when, PrintStream out, NAR nar) {
-        for (int j = 0; j < height; j++) {
-            for (int i = 0; i < width; i++) {
-                Truth b = matrix[j][i].beliefs().truth(when, nar);
+        for (var j = 0; j < height; j++) {
+            for (var i = 0; i < width; i++) {
+                var b = matrix[j][i].beliefs().truth(when, nar);
                 out.print(b!=null ? (b.freq() >= 0.5f ? '+' : '-') : ' ' );
             }
             out.println();

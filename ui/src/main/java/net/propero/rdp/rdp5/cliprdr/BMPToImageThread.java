@@ -50,20 +50,20 @@ class BMPToImageThread extends Thread {
 
     @Override
     public void run() {
-        int origin = data.getPosition();
+        var origin = data.getPosition();
 
-        int head_len = data.getLittleEndian32();
+        var head_len = data.getLittleEndian32();
 
         data.setPosition(origin);
 
-        byte[] content = new byte[length];
+        var content = new byte[length];
 
-        for (int i = 0; i < length; i++) {
+        for (var i = 0; i < length; i++) {
             content[i] = (byte) (data.get8() & 0xFF);
         }
 
-        Image img = ClipBMP.loadbitmap(new ByteArrayInputStream(content));
-        ImageSelection imageSelection = new ImageSelection(img);
+        var img = ClipBMP.loadbitmap(new ByteArrayInputStream(content));
+        var imageSelection = new ImageSelection(img);
         c.copyToClipboard(imageSelection);
     }
 

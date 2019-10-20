@@ -74,7 +74,7 @@ public class MathUtils extends PlatformMathUtils {
     private static final float[] sinLUT = new float[Settings.SINCOS_LUT_LENGTH];
 
     static {
-        for (int i = 0; i < Settings.SINCOS_LUT_LENGTH; i++) {
+        for (var i = 0; i < Settings.SINCOS_LUT_LENGTH; i++) {
             sinLUT[i] = (float) Math.sin(i * Settings.SINCOS_LUT_PRECISION);
         }
     }
@@ -90,7 +90,7 @@ public class MathUtils extends PlatformMathUtils {
 
             x /= Settings.SINCOS_LUT_PRECISION;
 
-            int index = (int) x;
+            var index = (int) x;
 
             if (index != 0) {
                 x %= index;
@@ -109,7 +109,7 @@ public class MathUtils extends PlatformMathUtils {
     }
 
     public static int abs(int x) {
-        int y = x >> 31;
+        var y = x >> 31;
         return (x ^ y) - y;
     }
 
@@ -122,7 +122,7 @@ public class MathUtils extends PlatformMathUtils {
     }
 
     private static int fastFloor(float x) {
-        int y = (int) x;
+        var y = (int) x;
         if (x < y) {
             return y - 1;
         }
@@ -138,7 +138,7 @@ public class MathUtils extends PlatformMathUtils {
     }
 
     private static int fastCeil(float x) {
-        int y = (int) x;
+        var y = (int) x;
         if (x > y) {
             return y + 1;
         }
@@ -160,7 +160,7 @@ public class MathUtils extends PlatformMathUtils {
      * @return power^2 value
      */
     public static int ceilPowerOf2(int x) {
-        int pow2 = 1;
+        var pow2 = 1;
         while (pow2 < x) {
             pow2 <<= 1;
         }
@@ -185,8 +185,8 @@ public class MathUtils extends PlatformMathUtils {
 
     public static float map(float val, float fromMin, float fromMax,
                             float toMin, float toMax) {
-        float mult = (val - fromMin) / (fromMax - fromMin);
-        float res = toMin + mult * (toMax - toMin);
+        var mult = (val - fromMin) / (fromMax - fromMin);
+        var res = toMin + mult * (toMax - toMin);
         return res;
     }
 
@@ -198,7 +198,7 @@ public class MathUtils extends PlatformMathUtils {
     }
 
     public static v2 clamp(v2 a, v2 low, v2 high) {
-        v2 min = new v2();
+        var min = new v2();
         min.x = Math.min(a.x, high.x);
         min.y = Math.min(a.y, high.y);
         min.x = Math.max(low.x, min.x);
@@ -239,7 +239,7 @@ public class MathUtils extends PlatformMathUtils {
             return -HALF_PI;
         }
         float atan;
-        float z = y / x;
+        var z = y / x;
         if (Math.abs(z) < 1.0f) {
             atan = z / (1.0f + 0.28f * z * z);
             if (x < 0.0f) {
@@ -273,8 +273,8 @@ public class MathUtils extends PlatformMathUtils {
     }
 
     public static float distanceSquared(v2 v1, v2 v2) {
-        float dx = (v1.x - v2.x);
-        float dy = (v1.y - v2.y);
+        var dx = (v1.x - v2.x);
+        var dy = (v1.y - v2.y);
         return dx * dx + dy * dy;
     }
 

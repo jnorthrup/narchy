@@ -18,16 +18,16 @@ public  class  MetalConcurrentQueueWheelModel extends WheelModel {
         super(wheels, resolution);
         assert(wheels > 1);
         q = new MetalConcurrentQueue[wheels];
-        for (int i = 0; i < wheels; i++)
+        for (var i = 0; i < wheels; i++)
             q[i] = new MetalConcurrentQueue<>(queueCapacity);
     }
 
     @Override
     public int run(int c, HashedWheelTimer timer) {
-        int result = 1;
-        MetalConcurrentQueue<TimedFuture> q = this.q[c];
+        var result = 1;
+        var q = this.q[c];
 
-        int n = q.size();
+        var n = q.size();
         switch (n) {
             case 0:
                 result = 0;
@@ -53,9 +53,9 @@ public  class  MetalConcurrentQueueWheelModel extends WheelModel {
 
                 //TODO if n=2 and the previous or next queue is empty try moving one of the items there. this will distribute items across wheels so each has an ideal 0 or 1 size
 
-                for (int i = 0; i < n; i++) {
+                for (var i = 0; i < n; i++) {
                     {
-                        TimedFuture timedFuture = q.poll();
+                        var timedFuture = q.poll();
                         switch (timedFuture.state()) {
                             case CANCELLED:
                                 break;
@@ -84,7 +84,7 @@ public  class  MetalConcurrentQueueWheelModel extends WheelModel {
     @Override
     public boolean reschedule(int wheel, TimedFuture r) {
 
-        int remain = q.length - 1;
+        var remain = q.length - 1;
         do {
             if (q[wheel].offer(r))
                 return true;

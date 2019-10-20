@@ -53,7 +53,7 @@ public class SimpleBroadphase extends Broadphase {
 
         if (overlappingPairCache == null) {
             this.pairCache = new HashedOverlappingPairCache();
-            boolean ownsPairCache = true;
+            var ownsPairCache = true;
         } else {
             this.pairCache = overlappingPairCache;
         }
@@ -64,7 +64,7 @@ public class SimpleBroadphase extends Broadphase {
     public Broadphasing createProxy(v3 aabbMin, v3 aabbMax, BroadphaseNativeType shapeType, Collidable userPtr, short collisionFilterGroup, short collisionFilterMask, Intersecter intersecter, Object multiSapProxy) {
         assert (aabbMin.x <= aabbMax.x && aabbMin.y <= aabbMax.y && aabbMin.z <= aabbMax.z);
 
-        SimpleBroadphasing proxy = new SimpleBroadphasing(aabbMin, aabbMax, shapeType, userPtr, collisionFilterGroup, collisionFilterMask, multiSapProxy);
+        var proxy = new SimpleBroadphasing(aabbMin, aabbMax, shapeType, userPtr, collisionFilterGroup, collisionFilterMask, multiSapProxy);
         proxy.uid = handles.size();
         handles.add(proxy);
         return proxy;
@@ -79,40 +79,40 @@ public class SimpleBroadphase extends Broadphase {
 
     @Override
     public void setAabb( Broadphasing proxy, v3 aabbMin, v3 aabbMax, Intersecter intersecter) {
-        SimpleBroadphasing sbp = (SimpleBroadphasing) proxy;
+        var sbp = (SimpleBroadphasing) proxy;
         sbp.min.set(aabbMin);
         sbp.max.set(aabbMax);
     }
 
     private static boolean aabbOverlap(SimpleBroadphasing a, SimpleBroadphasing b) {
-        float aminX = a.min.x;
-        float bmaxX = b.max.x;
+        var aminX = a.min.x;
+        var bmaxX = b.max.x;
 
         if (aminX <= bmaxX) {
 
-            float amaxX = a.max.x;
-            float bminX = b.min.x;
+            var amaxX = a.max.x;
+            var bminX = b.min.x;
 
             if (bminX <= amaxX) {
 
-                float aminY = a.min.y;
-                float bmaxY = b.max.y;
+                var aminY = a.min.y;
+                var bmaxY = b.max.y;
 
                 if (aminY <= bmaxY) {
 
-                    float amaxY = a.max.y;
-                    float bminY = b.min.y;
+                    var amaxY = a.max.y;
+                    var bminY = b.min.y;
 
                     if (bminY <= amaxY) {
 
-                        float aminZ = a.min.z;
-                        float bmaxZ = b.max.z;
+                        var aminZ = a.min.z;
+                        var bmaxZ = b.max.z;
 
 
                         if (aminZ <= bmaxZ) {
 
-                            float amaxZ = a.max.z;
-                            float bminZ = b.min.z;
+                            var amaxZ = a.max.z;
+                            var bminZ = b.min.z;
 
                             return bminZ <= amaxZ;
                         }
@@ -125,10 +125,10 @@ public class SimpleBroadphase extends Broadphase {
 
     @Override
     public void update(Intersecter intersecter) {
-        for (int i = 0; i < handles.size(); i++) {
-            
-            SimpleBroadphasing proxy0 = handles.get(i);
-            for (SimpleBroadphasing proxy1 : handles) {
+        for (var i = 0; i < handles.size(); i++) {
+
+            var proxy0 = handles.get(i);
+            for (var proxy1 : handles) {
 
                 if (proxy0 == proxy1) continue;
 

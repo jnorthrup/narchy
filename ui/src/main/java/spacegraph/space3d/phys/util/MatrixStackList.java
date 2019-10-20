@@ -33,7 +33,7 @@ import spacegraph.util.math.Matrix3f;
 public class MatrixStackList extends StackList<Matrix3f> {
 
 	public Matrix3f get(Matrix3f mat) {
-		Matrix3f obj = get();
+		var obj = get();
 		obj.set(mat);
 		return obj;
 	}

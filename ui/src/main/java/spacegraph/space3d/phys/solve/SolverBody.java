@@ -51,7 +51,7 @@ class SolverBody {
 	public final v3 turnVelocity = new v3();
 	
 	public void getVelocityInLocalPoint(v3 rel_pos, v3 velocity) {
-		v3 tmp = new v3();
+		var tmp = new v3();
 		tmp.cross(angularVelocity, rel_pos);
 		velocity.add(linearVelocity, tmp);
 	}
@@ -88,7 +88,7 @@ class SolverBody {
 
 			
 			newTransform.setIdentity();
-			Transform curTrans = body.transform; 
+			var curTrans = body.transform;
 			TransformUtil.integrateTransform(curTrans, pushVelocity, turnVelocity, timeStep, newTransform);
 			body.transform(newTransform);
 

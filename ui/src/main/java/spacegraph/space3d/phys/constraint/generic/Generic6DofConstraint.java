@@ -131,8 +131,8 @@ public class Generic6DofConstraint extends TypedConstraint {
 	}
 
 	private static float getMatrixElem(Matrix3f mat, int index) {
-		int i = index % 3;
-		int j = index / 3;
+		var i = index % 3;
+		var j = index / 3;
 		return mat.get(i, j);
 	}
 
@@ -175,12 +175,12 @@ public class Generic6DofConstraint extends TypedConstraint {
         {
             calculatedLinearDiff.sub(calculatedTransformB, calculatedTransformA);
 
-            Matrix3f basisInv = new Matrix3f();
+			var basisInv = new Matrix3f();
             basisInv.invert(calculatedTransformA.basis);
             basisInv.transform(calculatedLinearDiff);    
 
             linearLimits.currentLinearDiff.set(calculatedLinearDiff);
-            for(int i = 0; i < 3; i++)
+            for(var i = 0; i < 3; i++)
             {
                 linearLimits.testLimitValue(i, VectorUtil.coord(calculatedLinearDiff, i) );
             }
@@ -191,34 +191,20 @@ public class Generic6DofConstraint extends TypedConstraint {
 	 * Calcs the euler angles between the two bodies.
 	 */
     private void calculateAngleInfo() {
-		Matrix3f mat = new Matrix3f();
+		var mat = new Matrix3f();
 
-		Matrix3f relative_frame = new Matrix3f();
+		var relative_frame = new Matrix3f();
 		mat.set(calculatedTransformA.basis);
 		MatrixUtil.invert(mat);
 		relative_frame.mul(mat, calculatedTransformB.basis);
 
 		matrixToEulerXYZ(relative_frame, calculatedAxisAngleDiff);
 
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
 
-		v3 axis0 = new v3();
+		var axis0 = new v3();
 		calculatedTransformB.basis.getColumn(0, axis0);
 
-		v3 axis2 = new v3();
+		var axis2 = new v3();
 		calculatedTransformA.basis.getColumn(2, axis2);
 
 		calculatedAxis[1].cross(axis2, axis0);
@@ -256,18 +242,18 @@ public class Generic6DofConstraint extends TypedConstraint {
 	}
 	
 	private void buildLinearJacobian(/*JacobianEntry jacLinear*/int jacLinear_index, v3 normalWorld, v3 pivotAInW, v3 pivotBInW) {
-		Matrix3f mat1 = rbA.getCenterOfMassTransform(new Transform()).basis;
+		var mat1 = rbA.getCenterOfMassTransform(new Transform()).basis;
 		mat1.transpose();
 
-		Matrix3f mat2 = rbB.getCenterOfMassTransform(new Transform()).basis;
+		var mat2 = rbB.getCenterOfMassTransform(new Transform()).basis;
 		mat2.transpose();
 
-		v3 tmpVec = new v3();
-		
-		v3 tmp1 = new v3();
+		var tmpVec = new v3();
+
+		var tmp1 = new v3();
 		tmp1.sub(pivotAInW, rbA.getCenterOfMassPosition(tmpVec));
 
-		v3 tmp2 = new v3();
+		var tmp2 = new v3();
 		tmp2.sub(pivotBInW, rbB.getCenterOfMassPosition(tmpVec));
 
 		jacLinear[jacLinear_index].init(
@@ -283,10 +269,10 @@ public class Generic6DofConstraint extends TypedConstraint {
 	}
 
 	private void buildAngularJacobian(/*JacobianEntry jacAngular*/int jacAngular_index, v3 jointAxisW) {
-		Matrix3f mat1 = rbA.getCenterOfMassTransform(new Transform()).basis;
+		var mat1 = rbA.getCenterOfMassTransform(new Transform()).basis;
 		mat1.transpose();
 
-		Matrix3f mat2 = rbB.getCenterOfMassTransform(new Transform()).basis;
+		var mat2 = rbB.getCenterOfMassTransform(new Transform()).basis;
 		mat2.transpose();
 
 		jacAng[jacAngular_index].init(jointAxisW,
@@ -302,7 +288,7 @@ public class Generic6DofConstraint extends TypedConstraint {
 	 * Generic6DofConstraint.buildJacobian must be called previously.
 	 */
     private boolean testAngularLimitMotor(int axis_index) {
-		float angle = VectorUtil.coord(calculatedAxisAngleDiff, axis_index);
+		var angle = VectorUtil.coord(calculatedAxisAngleDiff, axis_index);
 
 		
 		angularLimits[axis_index].testLimitValue(angle);
@@ -315,7 +301,7 @@ public class Generic6DofConstraint extends TypedConstraint {
 	 * Generic6DofConstraint.buildJacobian must be called previously.
 	 */
     private boolean testLinearLimitMotor(int axis_index) {
-		float diff = VectorUtil.coord(calculatedLinearDiff, axis_index);
+		var diff = VectorUtil.coord(calculatedLinearDiff, axis_index);
 
 		
 		linearLimits.testLimitValue(axis_index, diff); 
@@ -327,28 +313,25 @@ public class Generic6DofConstraint extends TypedConstraint {
 	public void buildJacobian() {
 		
 		linearLimits.accumulatedImpulse.set(0f, 0f, 0f);
-		for (int i=0; i<3; i++) {
+		for (var i = 0; i<3; i++) {
 			angularLimits[i].accumulatedImpulse = 0f;
 		}
 		
 		
 		calculateTransforms();
-		
-		v3 tmpVec = new v3();
+
+			var tmpVec = new v3();
 
 		
 		
 		calcAnchorPos();
-		v3 pivotAInW = new v3(anchorPos);
-		v3 pivotBInW = new v3(anchorPos);
-		
-		
-		
-		
+			var pivotAInW = new v3(anchorPos);
+			var pivotBInW = new v3(anchorPos);
 
-		v3 normalWorld = new v3();
+
+			var normalWorld = new v3();
 		
-		for (int i=0; i<3; i++) {
+		for (var i = 0; i<3; i++) {
 			if ( testLinearLimitMotor(i))
                         {
 				if (useLinearReferenceFrameA) {
@@ -366,7 +349,7 @@ public class Generic6DofConstraint extends TypedConstraint {
 		}
 
 		
-		for (int i=0; i<3; i++) {
+		for (var i = 0; i<3; i++) {
 			
 			if (testAngularLimitMotor(i)) {   
 				this.getAxis(i, normalWorld);
@@ -382,16 +365,15 @@ public class Generic6DofConstraint extends TypedConstraint {
 
         int i;
 
-		
 
-		v3 pointInA = new v3(calculatedTransformA);
-		v3 pointInB = new v3(calculatedTransformB);
+		var pointInA = new v3(calculatedTransformA);
+		var pointInB = new v3(calculatedTransformB);
 
-        v3 linear_axis = new v3();
+		var linear_axis = new v3();
 		for (i = 0; i < 3; i++) {
 			if (linearLimits.needApplyForces(i))
                         {
-                            float jacDiagABInv = 1f / jacLinear[i].Adiag;
+							var jacDiagABInv = 1f / jacLinear[i].Adiag;
 
                             if (useLinearReferenceFrameA) {
 					calculatedTransformA.basis.getColumn(i, linear_axis);
@@ -409,14 +391,14 @@ public class Generic6DofConstraint extends TypedConstraint {
 			}
 		}
 
-		
-		v3 angular_axis = new v3();
+
+		var angular_axis = new v3();
         for (i = 0; i < 3; i++) {
 			if (angularLimits[i].needApplyTorques()) { 
 				
 				getAxis(i, angular_axis);
 
-                float angularJacDiagABInv = 1f / jacAng[i].Adiag;
+				var angularJacDiagABInv = 1f / jacAng[i].Adiag;
 
                 angularLimits[i].solveAngularLimits(
                         timeStep,
@@ -541,8 +523,8 @@ public class Generic6DofConstraint extends TypedConstraint {
 	
 	
 	private void calcAnchorPos() {
-		float imA = rbA.getInvMass();
-		float imB = rbB.getInvMass();
+		var imA = rbA.getInvMass();
+		var imB = rbB.getInvMass();
 		float weight;
 		if (imB == 0f) {
 			weight = 1f;
@@ -553,8 +535,8 @@ public class Generic6DofConstraint extends TypedConstraint {
 		v3 pA = calculatedTransformA;
 		v3 pB = calculatedTransformB;
 
-		v3 tmp1 = new v3();
-		v3 tmp2 = new v3();
+		var tmp1 = new v3();
+		var tmp2 = new v3();
 
 		tmp1.scale(weight, pA);
 		tmp2.scale(1f - weight, pB);

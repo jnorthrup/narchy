@@ -29,8 +29,8 @@ public interface TaskIndex {
     void clear();
 
     default void remove( List<Task> tt) {
-        int s = tt.size();
-        for (Task aTt: tt) {
+        var s = tt.size();
+        for (var aTt: tt) {
             this.remove(aTt);
         }
     }
@@ -45,7 +45,7 @@ public interface TaskIndex {
 
 
     default void addIfAbsent( List<Task> toAdd) {
-        for (Task aToAdd: toAdd) {
+        for (var aToAdd: toAdd) {
             addIfAbsent(aToAdd);
         }
     }

@@ -26,7 +26,7 @@ import java.util.stream.IntStream;
 
 public class GrammarTransformer {
     public static Node getTransform(Node node, Predicate<String> oracle) {
-        Node transformFlatten = getTransform(node, new FlattenTransformer());
+        var transformFlatten = getTransform(node, new FlattenTransformer());
         return getTransform(transformFlatten, new ConstantTransformer(oracle, getMultiAlternationRepetitionConstantNodes(transformFlatten)));
     }
 
@@ -48,18 +48,18 @@ public class GrammarTransformer {
         } else if (node instanceof MultiConstantNode) {
             return transformer.transformMultiConstant((MultiConstantNode) node);
         } else if (node instanceof AlternationNode) {
-            AlternationNode altNode = (AlternationNode) node;
-            Node newFirst = getTransform(altNode.first, transformer);
-            Node newSecond = getTransform(altNode.second, transformer);
+            var altNode = (AlternationNode) node;
+            var newFirst = getTransform(altNode.first, transformer);
+            var newSecond = getTransform(altNode.second, transformer);
             return transformer.transformAlternation(altNode, newFirst, newSecond);
         } else if (node instanceof MultiAlternationNode) {
-            List<Node> newChildren = node.getChildren().stream().map(child -> getTransform(child, transformer)).collect(Collectors.toList());
+            var newChildren = node.getChildren().stream().map(child -> getTransform(child, transformer)).collect(Collectors.toList());
             return transformer.transformMultiAlternation((MultiAlternationNode) node, newChildren);
         } else if (node instanceof RepetitionNode) {
-            RepetitionNode repNode = (RepetitionNode) node;
-            Node newStart = getTransform(repNode.start, transformer);
-            Node newRep = getTransform(repNode.rep, transformer);
-            Node newEnd = getTransform(repNode.end, transformer);
+            var repNode = (RepetitionNode) node;
+            var newStart = getTransform(repNode.start, transformer);
+            var newRep = getTransform(repNode.rep, transformer);
+            var newEnd = getTransform(repNode.end, transformer);
             return transformer.transformRepetition(repNode, newStart, newRep, newEnd);
         } else {
             throw new RuntimeException("Invalid node type: " + node.getClass().getName());
@@ -67,21 +67,21 @@ public class GrammarTransformer {
     }
 
     private static MultiConstantNode generalizeConstant(Node node, Predicate<String> oracle) {
-        String example = node.getData().example;
-        Context context = node.getData().context;
+        var example = node.getData().example;
+        var context = node.getData().context;
         if (example.length() != 0) {
             Log.info("GENERALIZING CONST: " + example + " ## " + context.pre + " ## " + context.post);
         }
         List<List<Character>> characterOptions = new ArrayList<>();
         List<List<Character>> characterChecks = new ArrayList<>();
-        for (int i = 0; i < example.length(); i++) {
+        for (var i = 0; i < example.length(); i++) {
             List<Character> characterOption = new ArrayList<>();
-            char curC = example.charAt(i);
-            Context curContext = new Context(context, example.substring(0, i), example.substring(i + 1), example.substring(0, i), example.substring(i + 1));
+            var curC = example.charAt(i);
+            var curContext = new Context(context, example.substring(0, i), example.substring(i + 1), example.substring(0, i), example.substring(i + 1));
             characterOption.add(curC);
             List<Character> characterCheck = new ArrayList<>();
             characterCheck.add(curC);
-            for (CharacterUtils.CharacterGeneralization generalization : CharacterUtils.getGeneralizations()) {
+            for (var generalization : CharacterUtils.getGeneralizations()) {
                 if (generalization.triggers.contains(curC)) {
                     Collection<String> checks = new ArrayList<>();
                     for (char c : generalization.checks) {
@@ -110,7 +110,7 @@ public class GrammarTransformer {
     }
 
     private static boolean isContained(String example, MultiConstantNode mconstNode) {
-        int elen = example.length();
+        var elen = example.length();
         if (elen != mconstNode.characterOptions.size()) {
             return false;
         }
@@ -118,7 +118,7 @@ public class GrammarTransformer {
     }
 
     private static boolean isContained(String example, Iterable<MultiConstantNode> mconstNodes) {
-        for (MultiConstantNode mconstNode : mconstNodes) {
+        for (var mconstNode : mconstNodes) {
             if (isContained(example, mconstNode)) {
                 return true;
             }
@@ -145,7 +145,7 @@ public class GrammarTransformer {
         private ConstantTransformer(Predicate<String> oracle, GrammarUtils.MultivalueMap<MultiAlternationNode, ConstantNode> multiAlternationNodeConstantChildren) {
             this.oracle = oracle;
             this.multiAlternationNodeConstantChildren = multiAlternationNodeConstantChildren;
-            for (Map.Entry<MultiAlternationNode, Set<ConstantNode>> multiAlternationNodeSetEntry : multiAlternationNodeConstantChildren.entrySet()) {
+            for (var multiAlternationNodeSetEntry : multiAlternationNodeConstantChildren.entrySet()) {
                 this.ignoredConstants.addAll(multiAlternationNodeSetEntry.getValue());
             }
         }
@@ -205,25 +205,25 @@ public class GrammarTransformer {
     }
 
     private static void getMultiAlternationRepetitionConstantNodesHelper(Node node, GrammarUtils.MultivalueMap<MultiAlternationNode, ConstantNode> result, boolean isParentRep) {
-        GrammarUtils.Maybe<List<Node>> constantChildren = GrammarSynthesis.getMultiAlternationRepetitionConstantChildren(node, isParentRep);
+        var constantChildren = GrammarSynthesis.getMultiAlternationRepetitionConstantChildren(node, isParentRep);
         if (constantChildren.hasT()) {
-            for (Node child : constantChildren.getT()) {
+            for (var child : constantChildren.getT()) {
                 result.add((MultiAlternationNode) node, (ConstantNode) child);
             }
         } else if (node instanceof RepetitionNode) {
-            RepetitionNode repNode = (RepetitionNode) node;
+            var repNode = (RepetitionNode) node;
             getMultiAlternationRepetitionConstantNodesHelper(repNode.start, result, false);
             getMultiAlternationRepetitionConstantNodesHelper(repNode.rep, result, true);
             getMultiAlternationRepetitionConstantNodesHelper(repNode.end, result, false);
         } else {
-            for (Node child : node.getChildren()) {
+            for (var child : node.getChildren()) {
                 getMultiAlternationRepetitionConstantNodesHelper(child, result, false);
             }
         }
     }
 
     private static GrammarUtils.MultivalueMap<MultiAlternationNode, ConstantNode> getMultiAlternationRepetitionConstantNodes(Node root) {
-        GrammarUtils.MultivalueMap<MultiAlternationNode, ConstantNode> result = new GrammarUtils.MultivalueMap<>();
+        var result = new GrammarUtils.MultivalueMap<MultiAlternationNode, ConstantNode>();
         getMultiAlternationRepetitionConstantNodesHelper(root, result, false);
         return result;
     }

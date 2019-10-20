@@ -67,8 +67,8 @@ public class RLAgent extends AbstractAgent {
 
         
         learner.setAlpha(0.01 / featureMap.numFeatures());
-        
-        int requiredHistoryLength = FeatureMap.historyLength();
+
+        var requiredHistoryLength = FeatureMap.historyLength();
         
         history = new FrameHistory(requiredHistoryLength);
 
@@ -116,8 +116,8 @@ public class RLAgent extends AbstractAgent {
      * @param features
      */
     public void rlStep(ScreenMatrix image, ConsoleRAM ram, RLData rlData) {
-        
-        double[] features = featureMap.getFeatures(history);
+
+        var features = featureMap.getFeatures(history);
 
         if (firstStep) {
             
@@ -126,7 +126,7 @@ public class RLAgent extends AbstractAgent {
             firstStep = false;
         }
         else {
-            boolean terminal = rlData.isTerminal;
+            var terminal = rlData.isTerminal;
             double reward = rlData.reward;
 
             
@@ -173,14 +173,14 @@ public class RLAgent extends AbstractAgent {
      * @param args
      */
     public static void main(String[] args) {
-        
-        boolean useGUI = true;
+
+        var useGUI = true;
         String namedPipesName = null;
 
-        
-        int argIndex = 0;
 
-        boolean doneParsing = (args.length == 0);
+        var argIndex = 0;
+
+        var doneParsing = (args.length == 0);
 
         
         while (!doneParsing) {
@@ -207,7 +207,7 @@ public class RLAgent extends AbstractAgent {
                 doneParsing = true;
         }
 
-        RLAgent agent = new RLAgent(useGUI, namedPipesName);
+        var agent = new RLAgent(useGUI, namedPipesName);
 
         agent.run();
     }

@@ -415,9 +415,9 @@ public abstract class RdpPacket {
     public void outUnicodeString(String str, int len) {
 
         if (!str.isEmpty()) {
-            char[] name = str.toCharArray();
-            int j = 0;
-            int i = 0;
+            var name = str.toCharArray();
+            var j = 0;
+            var i = 0;
             while (i < len) {
                 this.setLittleEndian16((short) name[j++]);
                 i += 2;
@@ -434,7 +434,7 @@ public abstract class RdpPacket {
      *               string itself)
      */
     public void out_uint8p(String str, int length) {
-        byte[] bStr = str.getBytes();
+        var bStr = str.getBytes();
         this.copyFromByteArray(bStr, 0, this.getPosition(), bStr.length);
         this.incrementPosition(length);
     }

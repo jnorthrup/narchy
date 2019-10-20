@@ -104,12 +104,12 @@ public class RLeaf<X> extends AbstractRNode<X,X> {
     public RNode<X> add(/*@NotNull*/RInsertion<X> x) {
         int s = size;
         if (s > 0 && x.maybeContainedBy(bounds)) {
-            X[] data = this.data;
+            var data = this.data;
 
             //test for identity/equality
-            X xx = x.x;
-            for (int i = 0; i < s; i++) {
-                X y = data[i];
+            var xx = x.x;
+            for (var i = 0; i < s; i++) {
+                var y = data[i];
                 if (xx.equals(y)) {
                     x.mergeEqual(y);
                     return null; //identical instance found
@@ -117,9 +117,9 @@ public class RLeaf<X> extends AbstractRNode<X,X> {
             }
 
             if (x.model.canMerge()) {
-                for (int i = 0; i < s; i++) {
-                    X y = data[i];
-                    X xy = x.merge(y);
+                for (var i = 0; i < s; i++) {
+                    var y = data[i];
+                    var xy = x.merge(y);
                     if (xy != null) {
                         merged(xy, x, y, i);
                         return null;
@@ -138,11 +138,11 @@ public class RLeaf<X> extends AbstractRNode<X,X> {
 
         data[i] = merged;
 
-        Spatialization<X> m = x.model;
+        var m = x.model;
 
         if (!m.bounds(existing).equals(m.bounds(merged))) {
             //recompute bounds
-            HyperRegion newBounds = HyperRegion.mbr(m, data);
+            var newBounds = HyperRegion.mbr(m, data);
             if (!bounds.equals(newBounds)) {
                 this.bounds = newBounds;
                 x.stretched = true;
@@ -151,8 +151,8 @@ public class RLeaf<X> extends AbstractRNode<X,X> {
     }
 
     RNode<X> insert(RInsertion<X> r) {
-        Spatialization<X> model = r.model;
-        RNode<X> result = insert(r.x, r.bounds, model);
+        var model = r.model;
+        var result = insert(r.x, r.bounds, model);
         r.inserted();
         model.commit(this);
         return result;
@@ -177,7 +177,7 @@ public class RLeaf<X> extends AbstractRNode<X,X> {
 
     @Override
     public boolean AND(Predicate<X> p) {
-        for (X x : data) {
+        for (var x : data) {
             if (x != null) {
                 if (!p.test(x))
                     return false;
@@ -189,7 +189,7 @@ public class RLeaf<X> extends AbstractRNode<X,X> {
 
     @Override
     public boolean OR(Predicate<X> p) {
-        for (X x : data) {
+        for (var x : data) {
             if (x != null) {
                 if (p.test(x))
                     return true;
@@ -205,9 +205,9 @@ public class RLeaf<X> extends AbstractRNode<X,X> {
         int s = size;
         if (s > 0 && bounds.contains(b)) {
 
-            X[] data = this.data;
-            for (int i = 0; i < s; i++) {
-                X t = data[i];
+            var data = this.data;
+            for (var i = 0; i < s; i++) {
+                var t = data[i];
                 if (x == t || model.mergeContain(x, t))
                     return true;
             }
@@ -223,7 +223,7 @@ public class RLeaf<X> extends AbstractRNode<X,X> {
         if (size > 1 && !bounds.contains(xBounds))
             return this; //not found
 
-        X[] data = this.data;
+        var data = this.data;
         int i;
         for (i = 0; i < size; i++) {
             if (x.equals(data[i]))
@@ -232,9 +232,9 @@ public class RLeaf<X> extends AbstractRNode<X,X> {
         if (i == size)
             return this; //not found
         else {
-            int j = i + 1;
+            var j = i + 1;
             if (j < size) {
-                int nRemaining = size - j;
+                var nRemaining = size - j;
                 System.arraycopy(data, j, data, i, nRemaining);
                 Arrays.fill(data, size - 1, size, null);
             } else {
@@ -258,10 +258,10 @@ public class RLeaf<X> extends AbstractRNode<X,X> {
     public RNode<X> replace(X told, HyperRegion oldBounds, X tnew, Spatialization<X> model) {
         int s = size;
         if (s > 0 && bounds.contains(oldBounds)) {
-            X[] data = this.data;
+            var data = this.data;
             HyperRegion r = null;
-            for (int i = 0; i < s; i++) {
-                X d = data[i];
+            for (var i = 0; i < s; i++) {
+                var d = data[i];
                 if (d.equals(told))
                     data[i] = tnew;
 
@@ -276,12 +276,12 @@ public class RLeaf<X> extends AbstractRNode<X,X> {
 
     @Override
     public boolean intersecting(HyperRegion rect, Predicate<X> t, Spatialization<X> model) {
-        short s = this.size;
+        var s = this.size;
         if (s > 0 && rect.intersects(bounds)) {
-            boolean containsAll = s > 1 && rect.contains(bounds);
-            X[] data = this.data;
-            for (int i = 0; i < s; i++) {
-                X d = data[i];
+            var containsAll = s > 1 && rect.contains(bounds);
+            var data = this.data;
+            for (var i = 0; i < s; i++) {
+                var d = data[i];
                 if (/*d != null && */ (containsAll || rect.intersects(model.bounds(d))) && !t.test(d))
                     return false;
             }
@@ -291,12 +291,12 @@ public class RLeaf<X> extends AbstractRNode<X,X> {
 
     @Override
     public boolean containing(HyperRegion rect, Predicate<X> t, Spatialization<X> model) {
-        short s = this.size;
+        var s = this.size;
         if (s > 0 && rect.intersects(bounds)) {
-            boolean fullyContained = s > 1 && rect.contains(bounds);
-            X[] data = this.data;
-            for (int i = 0; i < s; i++) {
-                X d = data[i];
+            var fullyContained = s > 1 && rect.contains(bounds);
+            var data = this.data;
+            for (var i = 0; i < s; i++) {
+                var d = data[i];
                 if (/*d != null && */(fullyContained || rect.contains(model.bounds(d))) && !t.test(d))
                     return false;
             }
@@ -316,7 +316,7 @@ public class RLeaf<X> extends AbstractRNode<X,X> {
 //                    consumer.accept(d);
 //            }
 //        }
-        for (X x : data)
+        for (var x : data)
             if (x != null)
                 consumer.accept(x);
             else
@@ -347,21 +347,21 @@ public class RLeaf<X> extends AbstractRNode<X,X> {
      */
     public final void transfer(RLeaf<X> a, RLeaf<X> b, X x, Spatialization<X> model) {
 
-        HyperRegion xReg = model.bounds(x);
-        double tCost = xReg.cost();
+        var xReg = model.bounds(x);
+        var tCost = xReg.cost();
 
-        HyperRegion aReg = a.bounds();
-        HyperRegion aMbr = aReg != null ? xReg.mbr(aReg) : xReg;
-        double axCost = aMbr.cost();
-        double aCostInc = Math.max(axCost - ((/*aReg!=null ? */aReg.cost() /*: 0*/) + tCost), 0.0);
+        var aReg = a.bounds();
+        var aMbr = aReg != null ? xReg.mbr(aReg) : xReg;
+        var axCost = aMbr.cost();
+        var aCostInc = Math.max(axCost - ((/*aReg!=null ? */aReg.cost() /*: 0*/) + tCost), 0.0);
 
-        HyperRegion bReg = b.bounds();
-        HyperRegion bMbr = xReg.mbr(bReg);
-        double bxCost = bMbr.cost();
-        double bCostInc = Math.max(bxCost - ((/*bReg!=null ? */ bReg.cost()/* : 0*/) + tCost), 0.0);
+        var bReg = b.bounds();
+        var bMbr = xReg.mbr(bReg);
+        var bxCost = bMbr.cost();
+        var bCostInc = Math.max(bxCost - ((/*bReg!=null ? */ bReg.cost()/* : 0*/) + tCost), 0.0);
 
         RLeaf<X> target;
-        double eps = Spatialization.epsilon();
+        var eps = Spatialization.epsilon();
         if (Util.equals(aCostInc, bCostInc, eps)) {
             if (Util.equals(axCost, bxCost, eps)) {
 

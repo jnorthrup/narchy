@@ -33,7 +33,7 @@ public abstract class ScheduledTask extends WhenInternal implements Consumer<NAR
     public final int compareTo(ScheduledTask that) {
         if (this == that) return 0;
 
-        int t = Longs.compare(start(), that.start());
+        var t = Longs.compare(start(), that.start());
 		return t != 0 ? t : Integer.compare(System.identityHashCode(this), System.identityHashCode(that));
     }
 

@@ -73,26 +73,26 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
         checkArgument(concurrencyLevel > 0);
         checkArgument(expectedItems >= concurrencyLevel);
 
-        int numSections = concurrencyLevel;
-        int perSectionExpectedItems = expectedItems / numSections;
+        var numSections = concurrencyLevel;
+        var perSectionExpectedItems = expectedItems / numSections;
         float mapFillFactor;
-        int perSectionCapacity = (int) (perSectionExpectedItems / (mapFillFactor = MapFillFactor));
+        var perSectionCapacity = (int) (perSectionExpectedItems / (mapFillFactor = MapFillFactor));
         this.sections = (Section<K, V>[]) new Section[numSections];
 
-        for (int i = 0; i < numSections; i++) {
+        for (var i = 0; i < numSections; i++) {
             sections[i] = new Section<>(perSectionCapacity, MapFillFactor);
         }
     }
 
     public int size() {
-        long size = Arrays.stream(sections).mapToLong(s -> s.size.getOpaque()).sum();
+        var size = Arrays.stream(sections).mapToLong(s -> s.size.getOpaque()).sum();
         if (size >= Integer.MAX_VALUE)
             return Integer.MAX_VALUE-1;
         return (int) size;
     }
 
     public long capacity() {
-        long capacity = Arrays.stream(sections).mapToLong(s -> s.capacity).sum();
+        var capacity = Arrays.stream(sections).mapToLong(s -> s.capacity).sum();
         return capacity;
     }
 
@@ -103,7 +103,7 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
 
     public V get(Object key) {
         checkNotNull(key);
-        long h = hash(key);
+        var h = hash(key);
         return section(h).get((K)key, (int) h);
     }
 
@@ -114,51 +114,51 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
     public V put(K key, V value) {
         checkNotNull(key);
         checkNotNull(value);
-        long h = hash(key);
+        var h = hash(key);
         return section(h).put(key, value, (int) h, false, null);
     }
 
     public V putIfAbsent(K key, V value) {
         checkNotNull(key);
         checkNotNull(value);
-        long h = hash(key);
+        var h = hash(key);
         return section(h).put(key, value, (int) h, true, null);
     }
 
     public V computeIfAbsent(K key, Function<? super K, ? extends V> provider) {
         checkNotNull(key);
         checkNotNull(provider);
-        long h = hash(key);
+        var h = hash(key);
         return section(h).put(key, null, (int) h, true, provider);
     }
 
     public V remove(Object key) {
         checkNotNull(key);
-        long h = hash(key);
+        var h = hash(key);
         return section(h).remove((K)key, null, (int) h);
     }
 
     @Override public boolean remove(Object key, Object value) {
         checkNotNull(key);
         checkNotNull(value);
-        long h = hash(key);
+        var h = hash(key);
         return section(h).remove((K)key, value, (int) h) != null;
     }
 
     private Section<K, V> section(long hash) {
 
-        final int sectionIdx = (int) (hash >>> 32) & (sections.length - 1);
+        final var sectionIdx = (int) (hash >>> 32) & (sections.length - 1);
         return sections[sectionIdx];
     }
 
     public void clear() {
-        for (Section<K, V> s : sections) {
+        for (var s : sections) {
             s.clear();
         }
     }
 
     public void forEach(BiConsumer<? super K, ? super V> processor) {
-        for (Section<K, V> s : sections) {
+        for (var s : sections) {
             s.forEach(processor);
         }
     }
@@ -173,7 +173,7 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
     }
 
     public V[] values(V[] target, IntFunction<V[]> arrayBuilder) {
-        int s = size();
+        var s = size();
         if (s == 0)
             return (V[]) ArrayUtil.EMPTY_OBJECT_ARRAY;
 
@@ -182,7 +182,7 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
         }
 
         final int[] i = {0};
-        V[] t = target;
+        var t = target;
         forEach((k, v) -> {
             if (v!=null) {
                 if (i[0] < s)
@@ -229,16 +229,16 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
         }
 
         V get(K key, int keyHash) {
-            boolean acquiredLock = false;
-            int bucket = signSafeMod(keyHash, capacity);
-            long stamp = tryOptimisticRead();
+            var acquiredLock = false;
+            var bucket = signSafeMod(keyHash, capacity);
+            var stamp = tryOptimisticRead();
 
             try {
                 while (true) {
 
-                    AtomicReferenceArray table = this.table;
-                    K storedKey = (K) table.getOpaque(bucket);
-                    V storedValue = (V) table.getOpaque(bucket + 1);
+                    var table = this.table;
+                    var storedKey = (K) table.getOpaque(bucket);
+                    var storedValue = (V) table.getOpaque(bucket + 1);
 
                     if (!acquiredLock && validate(stamp)) {
 
@@ -278,16 +278,16 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
         }
 
         V put(K key, V value, int keyHash, boolean onlyIfAbsent, Function<? super K, ? extends V> valueProvider) {
-            long stamp = writeLock();
-            int bucket = signSafeMod(keyHash, capacity);
+            var stamp = writeLock();
+            var bucket = signSafeMod(keyHash, capacity);
 
 
             try {
-                int firstDeletedKey = -1;
+                var firstDeletedKey = -1;
                 while (true) {
-                    AtomicReferenceArray table = this.table;
-                    K storedKey = (K) table.getOpaque(bucket);
-                    V storedValue = (V) table.get(bucket + 1);
+                    var table = this.table;
+                    var storedKey = (K) table.getOpaque(bucket);
+                    var storedValue = (V) table.get(bucket + 1);
 
                     if (storedKey!=null && key.equals(storedKey)) {
                         if (!onlyIfAbsent) {
@@ -335,19 +335,19 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
         }
 
         private V remove(K key, Object value, int keyHash) {
-            long stamp = writeLock();
-            int bucket = signSafeMod(keyHash, capacity);
+            var stamp = writeLock();
+            var bucket = signSafeMod(keyHash, capacity);
 
             try {
                 while (true) {
-                    AtomicReferenceArray table = this.table;
-                    K storedKey = (K) table.getOpaque(bucket);
-                    V storedValue = (V) table.getOpaque(bucket + 1);
+                    var table = this.table;
+                    var storedKey = (K) table.getOpaque(bucket);
+                    var storedValue = (V) table.getOpaque(bucket + 1);
                     if (key.equals(storedKey)) {
                         if (value == null || value.equals(storedValue)) {
                             size.decrementAndGet();
 
-                            int nextInArray = (bucket + 2) & (table.length() - 1);
+                            var nextInArray = (bucket + 2) & (table.length() - 1);
                             if (table.get(nextInArray) == null) {
                                 table.set(bucket, null);
                                 table.set(bucket + 1,  null);
@@ -375,11 +375,11 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
         }
 
         void clear() {
-            long stamp = writeLock();
+            var stamp = writeLock();
 
             try {
-                int l = table.length();
-                for (int i = 0; i < l; i++)
+                var l = table.length();
+                for (var i = 0; i < l; i++)
                     table.set(i, null);
                 this.size.set(0);
                 this.usedBuckets.set(0);
@@ -391,10 +391,10 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
         //TODO whileEach
 
         public void forEach(BiConsumer<? super K, ? super V> processor) {
-            long stamp = tryOptimisticRead();
+            var stamp = tryOptimisticRead();
 
-            AtomicReferenceArray table = this.table;
-            boolean acquiredReadLock = false;
+            var table = this.table;
+            var acquiredReadLock = false;
 
             try {
 
@@ -407,10 +407,10 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
                 }
 
 
-                int l = table.length();
-                for (int bucket = 0; bucket < l; bucket += 2) {
-                    K storedKey = (K) table.getOpaque(bucket);
-                    V storedValue = (V) table.getOpaque(bucket + 1);
+                var l = table.length();
+                for (var bucket = 0; bucket < l; bucket += 2) {
+                    var storedKey = (K) table.getOpaque(bucket);
+                    var storedValue = (V) table.getOpaque(bucket + 1);
 
                     if (!acquiredReadLock && !validate(stamp)) {
 
@@ -434,15 +434,15 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
 
         private void rehash() {
 
-            int newCapacity = capacity * 2;
-            AtomicReferenceArray newTable = new AtomicReferenceArray(2 * newCapacity);
+            var newCapacity = capacity * 2;
+            var newTable = new AtomicReferenceArray(2 * newCapacity);
 
 
-            AtomicReferenceArray table = this.table;
-            int l = table.length();
-            for (int i = 0; i < l; i += 2) {
-                K storedKey = (K) table.getOpaque(i);
-                V storedValue = (V) table.getOpaque(i + 1);
+            var table = this.table;
+            var l = table.length();
+            for (var i = 0; i < l; i += 2) {
+                var storedKey = (K) table.getOpaque(i);
+                var storedValue = (V) table.getOpaque(i + 1);
                 if (storedKey != null && storedKey != DeletedKey) {
                     insertKeyValueNoLock(newTable, newCapacity, storedKey, storedValue);
                 }
@@ -455,12 +455,12 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
         }
 
         private static <K, V> void insertKeyValueNoLock(AtomicReferenceArray table, int capacity, K key, V value) {
-            int bucket = signSafeMod(hash(key), capacity);
+            var bucket = signSafeMod(hash(key), capacity);
 
-            int ll = (table.length() - 1);
+            var ll = (table.length() - 1);
 
             while (true) {
-                K storedKey = (K) table.getOpaque(bucket);
+                var storedKey = (K) table.getOpaque(bucket);
 
                 if (storedKey == null) {
                     table.set(bucket, key);
@@ -477,7 +477,7 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
     private static final int R = 47;
 
     static <K> long hash(K key) {
-        long hash = key.hashCode() * HashMixer;
+        var hash = key.hashCode() * HashMixer;
         hash ^= hash >>> R;
         hash *= HashMixer;
         return hash;

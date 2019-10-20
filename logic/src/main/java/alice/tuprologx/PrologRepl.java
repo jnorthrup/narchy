@@ -30,7 +30,7 @@ public class PrologRepl extends Automaton implements OutputListener, SpyListener
          * Added the method setExecution to conform
          * the operation of CUIConsole as that of JavaIDE
          */
-        IOLibrary IO = (IOLibrary) prolog.library("alice.tuprolog.lib.IOLibrary");
+        var IO = (IOLibrary) prolog.library("alice.tuprolog.lib.IOLibrary");
         IO.setExecutionType(IOLibrary.consoleExecution);
 
 
@@ -62,7 +62,7 @@ public class PrologRepl extends Automaton implements OutputListener, SpyListener
     }
 
     public void goalRequest(){
-        String goal="";
+        var goal="";
         while (goal.isEmpty()){
             System.out.print("\n?- ");
             try {
@@ -78,7 +78,7 @@ public class PrologRepl extends Automaton implements OutputListener, SpyListener
     void solveGoal(String goal){
 
         try {
-        	Solution info = prolog.solve(goal);
+            var info = prolog.solve(goal);
    
             /*Castagna 06/2011*/        	
         	
@@ -94,7 +94,7 @@ public class PrologRepl extends Automaton implements OutputListener, SpyListener
                 become("goalRequest");
             } else
                 if (!prolog.hasOpenAlternatives()) {
-                    String binds = info.toString();
+                    var binds = info.toString();
                     if (binds.isEmpty()) {
                         System.out.println("yes.");
                     } else {
@@ -112,9 +112,9 @@ public class PrologRepl extends Automaton implements OutputListener, SpyListener
     }
     
     private static String solveInfoToString(Solution result) {
-        String s = "";
+        var s = "";
         try {
-            for (Var v: result.getBindingVars()) {
+            for (var v: result.getBindingVars()) {
                 if ( !v.isAnonymous() && v.isBound() && (!(v.term() instanceof Var) || (!((Var) (v.term())).name().startsWith("_")))) {
                     s += v.name() + " / " + v.term() + '\n';
                 }
@@ -129,7 +129,7 @@ public class PrologRepl extends Automaton implements OutputListener, SpyListener
     }
 
     public void getChoice(){
-        String choice="";
+        var choice="";
         try {
             while (true){
                 choice = stdin.readLine();
@@ -146,7 +146,7 @@ public class PrologRepl extends Automaton implements OutputListener, SpyListener
         } else {
             try {
                 System.out.println();
-                Solution info = prolog.solveNext();
+                var info = prolog.solveNext();
                 if (!info.isSuccess()){
                     System.out.println("no.");
                     become("goalRequest");

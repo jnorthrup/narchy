@@ -49,15 +49,15 @@ public class MonoBufImgBitmap2D implements Bitmap2D {
             if (img.getType() == BufferedImage.TYPE_BYTE_GRAY) {
                 throw new TODO();
             } else {
-                float sum = rFactor + gFactor + bFactor;
+                var sum = rFactor + gFactor + bFactor;
                 if (sum < Float.MIN_NORMAL)
                     return 0;
 
-                int[] rgb = raster.getPixel(xx, yy, tmp4);
+                var rgb = raster.getPixel(xx, yy, tmp4);
                 float r, g, b;
                 if (alpha) {
                     //HACK handle either ARGB and RGBA intelligently
-                    ColorModel colormodel = img.getColorModel();
+                    var colormodel = img.getColorModel();
                     r = colormodel.getRed(rgb);
                     g = colormodel.getGreen(rgb);
                     b = colormodel.getBlue(rgb);
@@ -89,13 +89,13 @@ public class MonoBufImgBitmap2D implements Bitmap2D {
     @Override
     public void updateBitmap() {
 
-        Supplier<BufferedImage> src = this.source;
+        var src = this.source;
 
-        BufferedImage nextImage = src != null ? src.get() : null;
+        var nextImage = src != null ? src.get() : null;
 
         this.img = (nextImage != null ? nextImage : Empty);
         raster = this.img.getRaster();
-        ColorModel cm = img.getColorModel();
+        var cm = img.getColorModel();
         alpha = cm.hasAlpha();
         if (alpha) {
             if (cm.getTransparency() == 3) {
@@ -132,7 +132,7 @@ public class MonoBufImgBitmap2D implements Bitmap2D {
             } else {
 
                 /* HACK */
-                int[] rgb = raster.getPixel(xx, yy, new int[4]);
+                var rgb = raster.getPixel(xx, yy, new int[4]);
                 float v;
                 if (alpha) {
                     //ARGB
@@ -147,7 +147,7 @@ public class MonoBufImgBitmap2D implements Bitmap2D {
                             v = rgb[3];
                             break;
                         case RGB:
-                            int sum = IntStream.of(1, 2, 3).map(i -> rgb[i]).sum();
+                            var sum = IntStream.of(1, 2, 3).map(i -> rgb[i]).sum();
                             v = (sum) / 3f;
                             break;
                         default:
@@ -165,7 +165,7 @@ public class MonoBufImgBitmap2D implements Bitmap2D {
                             v = rgb[2];
                             break;
                         case RGB:
-                            int sum = IntStream.of(0, 1, 2).map(i -> rgb[i]).sum();
+                            var sum = IntStream.of(0, 1, 2).map(i -> rgb[i]).sum();
                             v = (sum) / 3f;
                             break;
                         default:

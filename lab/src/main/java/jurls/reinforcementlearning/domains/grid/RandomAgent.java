@@ -18,8 +18,8 @@ public class RandomAgent implements Agent {
 
     @Override
     public void init(World world) {
-        int actions = world.getNumActions();
-        int sensors = world.getNumSensors();
+        var actions = world.getNumActions();
+        var sensors = world.getNumSensors();
         action = new double[actions];
         sensor = new double[sensors];
     }

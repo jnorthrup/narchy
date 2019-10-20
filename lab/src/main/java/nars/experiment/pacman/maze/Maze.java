@@ -58,8 +58,8 @@ public class Maze {
         dotCount = (width / 2) * (height / 2);
         bigDots = new int[][]{{1, 1}, {width - 2, 1}, {width - 2, height - 2}, {1, height - 2}};
 
-        for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
+        for (var x = 0; x < width; x++) {
+            for (var y = 0; y < height; y++) {
 
                 if ((x % 2) == 1 && (y % 2) == 1)
                     tiles[x][y] = 1;
@@ -84,15 +84,15 @@ public class Maze {
         height |= 3;
         width ^= width & 2;
 
-        Maze half = new Maze(width / 2 + 1, height);
+        var half = new Maze(width / 2 + 1, height);
         half.generate();
-        Maze full = half.doubleUp();
+        var full = half.doubleUp();
 
-        Dimension ghostCage = new Dimension(5, 3);
-        Point offset = new Point(width / 2 - ghostCage.width / 2, height / 2 - ghostCage.height / 2);
+        var ghostCage = new Dimension(5, 3);
+        var offset = new Point(width / 2 - ghostCage.width / 2, height / 2 - ghostCage.height / 2);
 
-        for (int ix = 0; ix < ghostCage.width; ix++) {
-            for (int iy = 0; iy < ghostCage.height; iy++) {
+        for (var ix = 0; ix < ghostCage.width; ix++) {
+            for (var iy = 0; iy < ghostCage.height; iy++) {
 
                 if (full.dots[(offset.x + ix) / 2][(offset.y + iy) / 2]) {
 
@@ -146,7 +146,7 @@ public class Maze {
 
         cursors = new GenCursor[]{new GenCursor(this, 1, 1), new GenCursor(this, 1, 1)};
 
-        for (GenCursor c : cursors) {
+        for (var c : cursors) {
 
             c.area = area;
             c.x = area.x + 1;
@@ -154,10 +154,10 @@ public class Maze {
 
         }
 
-        int finished = 0;
+        var finished = 0;
         while (finished < this.cursors.length) {
 
-            for (GenCursor c : this.cursors) {
+            for (var c : this.cursors) {
 
                 c.advance();
 
@@ -169,7 +169,7 @@ public class Maze {
 
         fixDots(area);
 
-        for (int x = 0; x < width; x++) {
+        for (var x = 0; x < width; x++) {
 
             if (tiles[x][0] == 1) {
 
@@ -189,13 +189,13 @@ public class Maze {
 
     Maze doubleUp() {
 
-        Maze other = new Maze(2 * width - 1, height);
+        var other = new Maze(2 * width - 1, height);
 
-        for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
+        for (var x = 0; x < width; x++) {
+            for (var y = 0; y < height; y++) {
 
                 other.tiles[x][y] = tiles[x][y];
-                byte b = tiles[width - x - 1][y];
+                var b = tiles[width - x - 1][y];
                 other.tiles[width + x - 1][y] = b;
 
             }
@@ -213,9 +213,9 @@ public class Maze {
         p.y |= 1;
         height ^= height & 1;
 
-        int walls = 0;
+        var walls = 0;
 
-        for (int i = 0; i <= height; i += 2) {
+        for (var i = 0; i <= height; i += 2) {
 
             try {
 
@@ -252,8 +252,8 @@ public class Maze {
         area.x ^= area.x & 1;
         area.y ^= area.y & 1;
 
-        for (int x = area.x; x < area.x + area.width; x++) {
-            for (int y = area.y; y < area.y + area.height; y++) {
+        for (var x = area.x; x < area.x + area.width; x++) {
+            for (var y = area.y; y < area.y + area.height; y++) {
 
                 if (isDot(x, y)) {
 
@@ -303,7 +303,7 @@ public class Maze {
 
     public Direction[] getUngeneratedDirections(Point p, Rectangle area) {
 
-        ArrayList<Direction> openDirs = new ArrayList<>();
+        var openDirs = new ArrayList<Direction>();
 
         if (p.x > area.x + 2)
             if (isClosed(p.x - 2, p.y)) openDirs.add(Direction.left);
@@ -314,7 +314,7 @@ public class Maze {
         if (p.x < area.x + area.width - 2)
             if (isClosed(p.x + 2, p.y)) openDirs.add(Direction.right);
 
-        Direction[] returnedDirs = new Direction[openDirs.size()];
+        var returnedDirs = new Direction[openDirs.size()];
         openDirs.toArray(returnedDirs);
         return returnedDirs;
 

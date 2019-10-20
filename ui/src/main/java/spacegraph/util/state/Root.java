@@ -32,15 +32,15 @@ public abstract class Root implements Contexter {
     }
 
     public static void main(String[] args) {
-        
-        DummyRoot root = new DummyRoot();
 
-        ContextBranch x = new ContextBranch("x");
-        ContextBranch y = new ContextBranch("y");
+        var root = new DummyRoot();
+
+        var x = new ContextBranch("x");
+        var y = new ContextBranch("y");
         x.start(root);
         y.start(x);
-        StatePath xr = StatePath.toRoot(x);
-        StatePath yr = StatePath.toRoot(y);
+        var xr = StatePath.toRoot(x);
+        var yr = StatePath.toRoot(y);
         System.out.println(xr);
         System.out.println(yr);
         System.out.println(xr.ids(false));

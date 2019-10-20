@@ -72,8 +72,8 @@ public class FixedRateTimedFuture extends AbstractTimedRunnable {
      * */
     protected void reset(int wheels, long resolution) {
         double epoch = resolution * wheels;
-        long periodNS = this.periodNS;
-        int rounds = Math.min(Integer.MAX_VALUE, (int)(periodNS / epoch));
+        var periodNS = this.periodNS;
+        var rounds = Math.min(Integer.MAX_VALUE, (int)(periodNS / epoch));
         this.rounds = rounds;
         this.offset = Math.max(1, (int)(((periodNS - rounds * epoch) / resolution)));
     }

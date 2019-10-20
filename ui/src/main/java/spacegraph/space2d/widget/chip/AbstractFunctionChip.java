@@ -15,7 +15,7 @@ public abstract class AbstractFunctionChip<X,Y> extends Gridding {
         out = new TypedPort<>(cy);
         in = new TypedPort<>(cx, (X x) -> {
             try {
-                Y y = f().apply(x);
+                var y = f().apply(x);
                 if (y != null)
                     out.out(y);
             } catch (Exception e) {

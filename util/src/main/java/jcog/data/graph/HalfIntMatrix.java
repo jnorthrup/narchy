@@ -59,7 +59,7 @@ class HalfIntMatrix {
 		this.matrix = new int[((size * size + size) / 2)];
 		System.arraycopy(template.matrix, 0, matrix, 0,
 				reserveNewNodes >= 0 ? template.matrix.length : matrix.length);
-		for (int i = template.matrix.length; i < matrix.length; i++) {
+		for (var i = template.matrix.length; i < matrix.length; i++) {
 			matrix[i] = initialValue;
 		}
 	}
@@ -89,11 +89,11 @@ class HalfIntMatrix {
 			return;
 		}
 		if (rowA > rowB) {
-			int t = rowA;
+			var t = rowA;
 			rowA = rowB;
 			rowB = t;
 		}
-		int i = 0;
+		var i = 0;
 		for (; i < rowA; i++) {
 			swap(rowA, i, rowB, i);
 		}

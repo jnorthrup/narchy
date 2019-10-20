@@ -71,7 +71,7 @@ public class MJRules {
 	
 	
 	public MJRules() {
-		for (int i = 0; i <= GAME_LAST; i++) {
+		for (var i = 0; i <= GAME_LAST; i++) {
 			Rules[i] = new Vector();
 		}
 		AddRules();
@@ -82,14 +82,14 @@ public class MJRules {
 	@SuppressWarnings("HardcodedFileSeparator")
 	private void AddRules() {
 
-        Vector vLines = new Vector();
-        MJTools mjT = new MJTools();
+		var vLines = new Vector();
+		var mjT = new MJTools();
 		if (MJTools.LoadResTextFile("rul.txt", vLines))
 		{
-            int iGame = -1;
-            int i = -1;
+			var iGame = -1;
+			var i = -1;
             for (i = 0; i < vLines.size(); i++) {
-                String sBff = ((String) vLines.elementAt(i)).trim();
+				var sBff = ((String) vLines.elementAt(i)).trim();
                 if ((!sBff.isEmpty())
 						&& !((String) vLines.elementAt(i)).startsWith("//")) {
 					if (sBff.length() > 0 && sBff.charAt(0) == '#') // next family of rules
@@ -98,11 +98,11 @@ public class MJRules {
 					} else // next rule
 					{
 						if (iGame >= 0) {
-							int whereSep = sBff.indexOf('|');
+							var whereSep = sBff.indexOf('|');
 							if (whereSep > 0) {
-                                String sNam = sBff.substring(0, whereSep);
+								var sNam = sBff.substring(0, whereSep);
 								sNam = sNam.trim();
-								String sDef = sBff.substring(whereSep + 1);
+								var sDef = sBff.substring(whereSep + 1);
 								sDef = sDef.trim();
 								Rules[iGame].addElement(new CARule(sNam, sDef));
 							}
@@ -116,7 +116,7 @@ public class MJRules {
 	
 	
 	public static int GetGameIndex(String sGameName) {
-		int iGame = -1;
+		var iGame = -1;
 		
 		if ((sGameName.compareTo(GAME_GENE_Name) == 0) 
 				|| (sGameName.compareTo(GAME_GENE_Abbr) == 0))
@@ -226,11 +226,11 @@ public class MJRules {
 	
 	
 	public String GetRuleDef(String sGameName, String sRuleName) {
-		String sRuleDef = "";
+		var sRuleDef = "";
 
-        int iGame = GetGameIndex(sGameName);
+		var iGame = GetGameIndex(sGameName);
 		if (iGame >= 0) {
-			for (int i = 0; i < Rules[iGame].size(); i++) {
+			for (var i = 0; i < Rules[iGame].size(); i++) {
 				if (sRuleName
 						.compareTo(((CARule) Rules[iGame].elementAt(i)).name) == 0) {
 					sRuleDef = ((CARule) Rules[iGame].elementAt(i)).def;
@@ -245,11 +245,11 @@ public class MJRules {
 	
 	
 	public String GetRuleName(String sGameName, String sRuleDef) {
-		String sRuleName = "";
+		var sRuleName = "";
 
-        int iGame = GetGameIndex(sGameName);
+		var iGame = GetGameIndex(sGameName);
 		if (iGame >= 0) {
-			for (int i = 0; i < Rules[iGame].size(); i++) {
+			for (var i = 0; i < Rules[iGame].size(); i++) {
 				if (sRuleDef
 						.compareTo(((CARule) Rules[iGame].elementAt(i)).def) == 0) {
 					sRuleName = ((CARule) Rules[iGame].elementAt(i)).name;
@@ -264,75 +264,75 @@ public class MJRules {
 	
 	public static String CorrectRuleDef(String sGameName, String sRuleDef) {
 		sRuleDef = sRuleDef.trim();
-		int iGame = GetGameIndex(sGameName);
+		var iGame = GetGameIndex(sGameName);
 
 		switch (iGame) {
-		case MJRules.GAME_LIFE: 
-			RuleLife RLife = new RuleLife();
+		case MJRules.GAME_LIFE:
+			var RLife = new RuleLife();
 			RLife.InitFromString(sRuleDef);
 			sRuleDef = RLife.GetAsString(); 
 			break;
-		case MJRules.GAME_GENE: 
-			RuleGene RGene = new RuleGene();
+		case MJRules.GAME_GENE:
+			var RGene = new RuleGene();
 			RGene.InitFromString(sRuleDef);
 			sRuleDef = RGene.GetAsString(); 
 			break;
 
-		case MJRules.GAME_VOTE: 
-			RuleVote RVote = new RuleVote();
+		case MJRules.GAME_VOTE:
+			var RVote = new RuleVote();
 			RVote.InitFromString(sRuleDef);
 			sRuleDef = RVote.GetAsString(); 
 			break;
 
-		case MJRules.GAME_WLIF: 
-			RuleWLife RWLife = new RuleWLife();
+		case MJRules.GAME_WLIF:
+			var RWLife = new RuleWLife();
 			RWLife.InitFromString(sRuleDef);
 			sRuleDef = RWLife.GetAsString(); 
 			break;
-		case MJRules.GAME_RTBL: 
-			RuleRTab RRtab = new RuleRTab();
+		case MJRules.GAME_RTBL:
+			var RRtab = new RuleRTab();
 			RRtab.InitFromString(sRuleDef);
 			sRuleDef = RRtab.GetAsString(); 
 			break;
-		case MJRules.GAME_CYCL: 
-			RuleCyclic RCyclic = new RuleCyclic();
+		case MJRules.GAME_CYCL:
+			var RCyclic = new RuleCyclic();
 			RCyclic.InitFromString(sRuleDef);
 			sRuleDef = RCyclic.GetAsString(); 
 			break;
 
-		case MJRules.GAME_1DTO: 
-			Rule1DTotal R1DTo = new Rule1DTotal();
+		case MJRules.GAME_1DTO:
+			var R1DTo = new Rule1DTotal();
 			R1DTo.InitFromString(sRuleDef);
 			sRuleDef = R1DTo.GetAsString(); 
 			break;
 
-		case MJRules.GAME_1DBI: 
-			Rule1DBin R1DBin = new Rule1DBin();
+		case MJRules.GAME_1DBI:
+			var R1DBin = new Rule1DBin();
 			R1DBin.InitFromString(sRuleDef);
 			sRuleDef = R1DBin.GetAsString(); 
 			break;
 		case MJRules.GAME_NMBI:
-			RuleNeumBin RNeumBin = new RuleNeumBin();
+			var RNeumBin = new RuleNeumBin();
 			RNeumBin.InitFromString(sRuleDef);
 			sRuleDef = RNeumBin.GetAsString(); 
 			break;
-		case MJRules.GAME_GEBI: 
-			RuleGenBin RGenBin = new RuleGenBin();
+		case MJRules.GAME_GEBI:
+			var RGenBin = new RuleGenBin();
 			RGenBin.InitFromString(sRuleDef);
 			sRuleDef = RGenBin.GetAsString(); 
 			break;
 		case MJRules.GAME_LGTL:
-			RuleLgtL RLgtL = new RuleLgtL();
+			var RLgtL = new RuleLgtL();
 			RLgtL.InitFromString(sRuleDef);
 			sRuleDef = RLgtL.GetAsString(); 
 			break;
 		case MJRules.GAME_MARG:
-			RuleMarg RMarg = new RuleMarg();
+			var RMarg = new RuleMarg();
 			RMarg.InitFromString(sRuleDef);
 			sRuleDef = RMarg.GetAsString(); 
 			break;
 		case MJRules.GAME_USER:
-			RuleUser RUser = new RuleUser();
+			var RUser = new RuleUser();
 			RUser.InitFromString(sRuleDef);
 			sRuleDef = RUser.GetAsString(); 
 			break;

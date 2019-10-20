@@ -82,10 +82,10 @@ public class VectorSensorChart extends BitmapMatrixView implements BitmapMatrixV
         public abstract void update(VectorSensorChart v);
 
         protected void update(VectorSensorChart v, IntIntToFloatFunction f) {
-            int w = v.w;
-            int h = v.h;
-            for (int y = 0; y < h; y++) {
-                for (int x = 0; x < w; x++) {
+            var w = v.w;
+            var h = v.h;
+            for (var y = 0; y < h; y++) {
+                for (var x = 0; x < w; x++) {
                     value[y * w + x] = f.value(x, y);
                 }
             }
@@ -185,7 +185,7 @@ public class VectorSensorChart extends BitmapMatrixView implements BitmapMatrixV
 
                 update(v, new XYConcept() {
                     @Override protected float floatValue(int x, int y, TaskConcept c) {
-                        Truth b = answer.clear(answerTries).match(c.beliefs())
+                        var b = answer.clear(answerTries).match(c.beliefs())
                             .truth();
                         return b != null ? b.freq() : Float.NaN;
                     }
@@ -206,7 +206,7 @@ public class VectorSensorChart extends BitmapMatrixView implements BitmapMatrixV
 
             @Override
             public void blend(float vv, float opacity, float[] rgbTarget) {
-                float v = (vv-0.5f)*2 * opacity;
+                var v = (vv-0.5f)*2 * opacity;
                 if (v == 0) {
                     //nothing
                 } else if (v < 0)
@@ -221,18 +221,18 @@ public class VectorSensorChart extends BitmapMatrixView implements BitmapMatrixV
                 update(v, new XYConcept() {
                     @Override
                     protected float floatValue(int x, int y, TaskConcept c) {
-                        Truth g = answer.clear(answerTries).match(c.goals()).truth();
+                        var g = answer.clear(answerTries).match(c.goals()).truth();
                         return g != null ? (freqOrExp.booleanValue() ? g.freq() : g.expectation()) : 0.5f;
                     }
                 });
 
                 if (normalize.booleanValue()) {
                     //balance bipolar normalize around 0.5
-                    float[] minmax = Util.minmax(value);
+                    var minmax = Util.minmax(value);
                     float min = minmax[0], max = minmax[1];
                     if (max-min > Float.MIN_NORMAL) {
-                        float max5 = max - 0.5f;
-                        float min5 = 0.5f - min;
+                        var max5 = max - 0.5f;
+                        var min5 = 0.5f - min;
                         if (max5 > min5) {
                             min = 0.5f - max5;
                         } else if (min5 > max5) {
@@ -277,7 +277,7 @@ public class VectorSensorChart extends BitmapMatrixView implements BitmapMatrixV
 
             updateTouchedConcept(finger);
 
-            TaskConcept c = this.touchConcept;
+            var c = this.touchConcept;
             if (c!=null && finger.releasedNow(OPEN_CONCEPT_BUTTON) && !finger.dragging(OPEN_CONCEPT_BUTTON)) {
                 NARui.conceptWindow(c, nar);
             } else {
@@ -293,7 +293,7 @@ public class VectorSensorChart extends BitmapMatrixView implements BitmapMatrixV
         @Override
         protected boolean drag(Finger f) {
 //            updateTouchedConcept(f);
-            TaskConcept c = touchConcept;
+            var c = touchConcept;
             if (c!=null) {
                 onTouch(touchConcept);
                 return true;
@@ -345,17 +345,17 @@ public class VectorSensorChart extends BitmapMatrixView implements BitmapMatrixV
         if (!showing())
             return;
 
-        float dur = this.dur.asFloat();
+        var dur = this.dur.asFloat();
 
-        long now = n.time() + Math.round((dur * timeShift.floatValue()));
+        var now = n.time() + Math.round((dur * timeShift.floatValue()));
 
         long windowRadius = Math.round(dur * this.window.floatValue() / 2);
 
-        int answerDetail = truthPrecision.intValue();
+        var answerDetail = truthPrecision.intValue();
         this.answerTries = (int)Math.ceil(answerDetail);
 
-        long end = now + windowRadius;
-        long start = now - windowRadius;
+        var end = now + windowRadius;
+        var start = now - windowRadius;
         if (answer == null) {
             this.answer = Answer
                     .taskStrength(true, answerDetail, start, end, null, null, nar);
@@ -363,7 +363,7 @@ public class VectorSensorChart extends BitmapMatrixView implements BitmapMatrixV
 
         this.answer.time(start, end).dur(dur /* * perceptDur.floatValue() */);
 
-        for (Layer l : layers)
+        for (var l : layers)
             l.doUpdate(this);
 
         update();
@@ -382,7 +382,7 @@ public class VectorSensorChart extends BitmapMatrixView implements BitmapMatrixV
     public int color(int x, int y) {
 
         float[] rgb = { 0, 0, 0 };
-        for (Layer l : layers) {
+        for (var l : layers) {
             l.blend(l.value(x,w,y), l.opacity.floatValue(), rgb);
         }
         return Draw.rgbInt(
@@ -521,11 +521,11 @@ public class VectorSensorChart extends BitmapMatrixView implements BitmapMatrixV
 
         @Override
         public float value(int x, int y) {
-            TaskConcept[] cx = concept[y];
+            var cx = concept[y];
             if (cx != null) {
-                TaskConcept c = cx[x];
+                var c = cx[x];
                 if (c!=null) {
-                    float b = floatValue(x, y, c);
+                    var b = floatValue(x, y, c);
                     if (b == b)
                         return b;
                     else

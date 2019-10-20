@@ -113,17 +113,17 @@ public final class DatasetContainer {
         this.training.clear();
         this.validation.clear();
 
-        Random random = new Random(randomSeed);
-        int overallNumberMatchesInTraining = (int) Math.ceil(this.dataset.getNumberMatches() / 2.0);
+        var random = new Random(randomSeed);
+        var overallNumberMatchesInTraining = (int) Math.ceil(this.dataset.getNumberMatches() / 2.0);
         overallNumberMatchesInTraining = (overallNumberMatchesInTraining == 0) ? 1 : overallNumberMatchesInTraining;
-        int matchesInTrainingCountdown = overallNumberMatchesInTraining;
+        var matchesInTrainingCountdown = overallNumberMatchesInTraining;
 
         List<Integer> examplePositiveIndexes = new ArrayList<>();
         List<Integer> exampleNegativeIndexes = new ArrayList<>();
 
         {
-            int i = 0;
-            for (Example example : dataset.examples) {
+            var i = 0;
+            for (var example : dataset.examples) {
                 (example.getNumberMatches() > 0 ? examplePositiveIndexes : exampleNegativeIndexes).add(i++);
             }
         }
@@ -131,11 +131,11 @@ public final class DatasetContainer {
         Collections.shuffle(examplePositiveIndexes, random);
         Collections.shuffle(exampleNegativeIndexes, random);
 
-        for (Integer exampleIndex : examplePositiveIndexes) {
-            Example example = this.dataset.examples.get(exampleIndex);
+        for (var exampleIndex : examplePositiveIndexes) {
+            var example = this.dataset.examples.get(exampleIndex);
 
 
-            Range r = new Range(exampleIndex, exampleIndex);
+            var r = new Range(exampleIndex, exampleIndex);
 
             if (examplePositiveIndexes.size() == 1 || ((matchesInTrainingCountdown > 0) && !(validation.isEmpty() && example.getNumberMatches() < overallNumberMatchesInTraining))) {
                 this.training.add(r);
@@ -145,8 +145,8 @@ public final class DatasetContainer {
             }
         }
 
-        int negatives = exampleNegativeIndexes.size();
-        for (int i = 0; i < negatives; i++)
+        var negatives = exampleNegativeIndexes.size();
+        for (var i = 0; i < negatives; i++)
             (i < Math.ceil(negatives / 2.0) ? training: validation).add(new Range(exampleNegativeIndexes.get(i), exampleNegativeIndexes.get(i)));
 
     }
@@ -268,17 +268,17 @@ public final class DatasetContainer {
      * @throws IOException
      */
     public void loadDataset() throws IOException {
-        FileInputStream fis = new FileInputStream(new File(this.path));
-        InputStreamReader isr = new InputStreamReader(fis);
+        var fis = new FileInputStream(new File(this.path));
+        var isr = new InputStreamReader(fis);
         StringBuilder sb;
-        try (BufferedReader bufferedReader = new BufferedReader(isr)) {
+        try (var bufferedReader = new BufferedReader(isr)) {
             sb = new StringBuilder();
             String line;
             while ((line = bufferedReader.readLine()) != null) {
                 sb.append(line);
             }
         }
-        String json = sb.toString();
+        var json = sb.toString();
         DatasetContainer.loadDatasetJson(json);
     }
 

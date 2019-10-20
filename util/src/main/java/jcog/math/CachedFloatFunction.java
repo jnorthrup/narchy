@@ -59,7 +59,7 @@ public class CachedFloatFunction<X> extends ObjectFloatHashMapWithHashingStrateg
 
     @Override
     public void clear() {
-        int s = size();
+        var s = size();
         if (s > 0) {
             super.clear();
 

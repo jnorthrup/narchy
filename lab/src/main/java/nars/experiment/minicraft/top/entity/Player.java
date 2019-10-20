@@ -61,7 +61,7 @@ public class Player extends Mob {
         super.tick();
 
         if (invulnerableTime > 0) invulnerableTime--;
-        Tile onTile = level.getTile(x >> 4, y >> 4);
+        var onTile = level.getTile(x >> 4, y >> 4);
         if (onTile == Tile.stairsDown || onTile == Tile.stairsUp) {
             if (onStairDelay == 0) {
                 changeLevel((onTile == Tile.stairsUp) ? 1 : -1);
@@ -92,11 +92,11 @@ public class Player extends Mob {
             }
         }
 
-        int ya = 0;
-        int speed = 6;
+        var ya = 0;
+        var speed = 6;
         if (input.up.down) ya -= speed;
         if (input.down.down) ya += speed;
-        int xa = 0;
+        var xa = 0;
         if (input.left.down) xa -= speed;
         if (input.right.down) xa += speed;
         if (isSwimming() && tickTime % 60 == 0) {
@@ -131,15 +131,15 @@ public class Player extends Mob {
 
 
     private boolean use() {
-        int yo = -2;
+        var yo = -2;
         if (dir == 0 && use(x - 8, y + 4 + yo, x + 8, y + 12 + yo)) return true;
         if (dir == 1 && use(x - 8, y - 12 + yo, x + 8, y - 4 + yo)) return true;
         if (dir == 3 && use(x + 4, y - 8 + yo, x + 12, y + 8 + yo)) return true;
         if (dir == 2 && use(x - 12, y - 8 + yo, x - 4, y + 8 + yo)) return true;
 
-        int xt = x >> 4;
-        int yt = (y + yo) >> 4;
-        int r = 12;
+        var xt = x >> 4;
+        var yt = (y + yo) >> 4;
+        var r = 12;
         if (attackDir == 0) yt = (y + r + yo) >> 4;
         if (attackDir == 1) yt = (y - r + yo) >> 4;
         if (attackDir == 2) xt = (x - r) >> 4;
@@ -156,21 +156,21 @@ public class Player extends Mob {
         walkDist += 8;
         attackDir = dir;
         attackItem = activeItem;
-        boolean done = false;
+        var done = false;
 
         if (activeItem != null) {
             attackTime = 10;
-            int yo = -2;
-            int range = 12;
+            var yo = -2;
+            var range = 12;
             if (dir == 0 && interact(x - 8, y + 4 + yo, x + 8, y + range + yo)) done = true;
             if (dir == 1 && interact(x - 8, y - range + yo, x + 8, y - 4 + yo)) done = true;
             if (dir == 3 && interact(x + 4, y - 8 + yo, x + range, y + 8 + yo)) done = true;
             if (dir == 2 && interact(x - range, y - 8 + yo, x - 4, y + 8 + yo)) done = true;
             if (done) return;
 
-            int xt = x >> 4;
-            int yt = (y + yo) >> 4;
-            int r = 12;
+            var xt = x >> 4;
+            var yt = (y + yo) >> 4;
+            var r = 12;
             if (attackDir == 0) yt = (y + r + yo) >> 4;
             if (attackDir == 1) yt = (y - r + yo) >> 4;
             if (attackDir == 2) xt = (x - r) >> 4;
@@ -194,16 +194,16 @@ public class Player extends Mob {
 
         if (activeItem == null || activeItem.canAttack()) {
             attackTime = 5;
-            int yo = -2;
-            int range = 20;
+            var yo = -2;
+            var range = 20;
             if (dir == 0) hurt(x - 8, y + 4 + yo, x + 8, y + range + yo);
             if (dir == 1) hurt(x - 8, y - range + yo, x + 8, y - 4 + yo);
             if (dir == 3) hurt(x + 4, y - 8 + yo, x + range, y + 8 + yo);
             if (dir == 2) hurt(x - range, y - 8 + yo, x - 4, y + 8 + yo);
 
-            int xt = x >> 4;
-            int yt = (y + yo) >> 4;
-            int r = 12;
+            var xt = x >> 4;
+            var yt = (y + yo) >> 4;
+            var r = 12;
             if (attackDir == 0) yt = (y + r + yo) >> 4;
             if (attackDir == 1) yt = (y - r + yo) >> 4;
             if (attackDir == 2) xt = (x - r) >> 4;
@@ -217,25 +217,25 @@ public class Player extends Mob {
     }
 
     private boolean use(int x0, int y0, int x1, int y1) {
-        List<Entity> entities = level.getEntities(x0, y0, x1, y1);
+        var entities = level.getEntities(x0, y0, x1, y1);
         return entities.stream().filter(e -> e != this).anyMatch(e -> e.use(this, attackDir));
     }
 
     private boolean interact(int x0, int y0, int x1, int y1) {
-        List<Entity> entities = level.getEntities(x0, y0, x1, y1);
+        var entities = level.getEntities(x0, y0, x1, y1);
         return entities.stream().filter(e -> e != this).anyMatch(e -> e.interact(this, activeItem, attackDir));
     }
 
     private void hurt(int x0, int y0, int x1, int y1) {
-        List<Entity> entities = level.getEntities(x0, y0, x1, y1);
-        for (int i = 0; i < entities.size(); i++) {
-            Entity e = entities.get(i);
+        var entities = level.getEntities(x0, y0, x1, y1);
+        for (var i = 0; i < entities.size(); i++) {
+            var e = entities.get(i);
             if (e != this) e.hurt(this, getAttackDamage(e), attackDir);
         }
     }
 
     private int getAttackDamage(Entity e) {
-        int dmg = random.nextInt(6) + 1;
+        var dmg = random.nextInt(6) + 1;
         if (attackItem != null) {
             dmg += attackItem.getAttackDamageBonus(e);
         }
@@ -244,10 +244,10 @@ public class Player extends Mob {
 
     @Override
     public void render(Screen screen) {
-        int xt = 0;
+        var xt = 0;
 
-        int flip1 = (walkDist >> 3) & 1;
-        int flip2 = (walkDist >> 3) & 1;
+        var flip1 = (walkDist >> 3) & 1;
+        var flip2 = (walkDist >> 3) & 1;
 
         if (dir == 1) {
             xt += 2;
@@ -261,11 +261,11 @@ public class Player extends Mob {
             xt += 4 + ((walkDist >> 3) & 1) * 2;
         }
 
-        int xo = x - 8;
-        int yo = y - 11;
+        var xo = x - 8;
+        var yo = y - 11;
         if (isSwimming()) {
             yo += 4;
-            int waterColor = Color.get(-1, -1, 115, 335);
+            var waterColor = Color.get(-1, -1, 115, 335);
             if (tickTime / 8 % 2 == 0) {
                 waterColor = Color.get(-1, 335, 5, 115);
             }
@@ -280,12 +280,12 @@ public class Player extends Mob {
                 attackItem.renderIcon(screen, xo + 4, yo - 4);
             }
         }
-        int col = Color.get(-1, 100, 220, 532);
+        var col = Color.get(-1, 100, 220, 532);
         if (hurtTime > 0) {
             col = Color.get(-1, 555, 555, 555);
         }
 
-        int yt = 14;
+        var yt = 14;
         if (activeItem instanceof FurnitureItem) {
             yt += 2;
         }
@@ -319,7 +319,7 @@ public class Player extends Mob {
         }
 
         if (activeItem instanceof FurnitureItem) {
-            Furniture furniture = ((FurnitureItem) activeItem).furniture;
+            var furniture = ((FurnitureItem) activeItem).furniture;
             furniture.x = x;
             furniture.y = yo;
             furniture.render(screen);
@@ -340,9 +340,9 @@ public class Player extends Mob {
 
     @Override
     public boolean findStartPos(Level level) {
-        for (int i = 0; i < 1000; i++) {
-            int x = random.nextInt(level.w);
-            int y = random.nextInt(level.h);
+        for (var i = 0; i < 1000; i++) {
+            var x = random.nextInt(level.w);
+            var y = random.nextInt(level.h);
             if (level.getTile(x, y) == Tile.grass) {
                 this.x = x * 16 + 8;
                 this.y = y * 16 + 8;
@@ -364,10 +364,10 @@ public class Player extends Mob {
 
     @Override
     public int getLightRadius() {
-        int r = 2;
+        var r = 2;
         if (activeItem != null) {
             if (activeItem instanceof FurnitureItem) {
-                int rr = ((FurnitureItem) activeItem).furniture.getLightRadius();
+                var rr = ((FurnitureItem) activeItem).furniture.getLightRadius();
                 if (rr > r) r = rr;
             }
         }

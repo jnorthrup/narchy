@@ -25,7 +25,7 @@ public enum SortedSubterms {
 
             case 2:
                 if (!(x[0] instanceof Neg) && (!(x[1] instanceof Neg))) {
-                    int i = x[0].compareTo(x[1]);
+                    var i = x[0].compareTo(x[1]);
                     if (dedup && i == 0)
                         return b.apply(new Term[]{x[0]});
                     else if (i <= 0)
@@ -36,9 +36,9 @@ public enum SortedSubterms {
                 break;
         }
 
-        Term[] y = x;
-        boolean hadNegs = false;
-        for (int j = 0; j < y.length; j++) {
+        var y = x;
+        var hadNegs = false;
+        for (var j = 0; j < y.length; j++) {
             if (y[j] instanceof Neg) {
                 if (y==x)
                     y = x.clone();

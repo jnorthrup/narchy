@@ -16,7 +16,7 @@ public class BufferCharObserver implements Consumer<BufferChar> {
 
   @Override
   public void accept(BufferChar bc) {
-      for (Consumer<BufferChar> l : listeners) {
+      for (var l : listeners) {
           l.accept(bc);
       }
   }

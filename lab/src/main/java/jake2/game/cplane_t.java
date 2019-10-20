@@ -39,8 +39,8 @@ public class cplane_t
 		dist = c.dist;
 		type = c.type;
 		signbits = c.signbits;
-		byte[] pad = this.pad;
-		byte[] pad1 = c.pad;
+		var pad = this.pad;
+		var pad1 = c.pad;
 		pad[0] = pad1[0];
 		pad[1] = pad1[1];
 	}
@@ -50,7 +50,7 @@ public class cplane_t
 		dist = 0;
 		type = 0;
 		signbits = 0;
-		byte[] pad = this.pad;
+		var pad = this.pad;
 		pad[0] = 0;
 		pad[1] = 0;
 	}

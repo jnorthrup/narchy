@@ -62,7 +62,7 @@ public class CL_fx {
 
 	static final cparticle_t[] particles = new cparticle_t[Defines.MAX_PARTICLES];
 	static {
-		for (int i = 0; i < particles.length; i++)
+		for (var i = 0; i < particles.length; i++)
 			particles[i] = new cparticle_t();
 	}
 
@@ -98,7 +98,7 @@ public class CL_fx {
 	}
 
 	static {
-		for (int i = 0; i < cl_lightstyle.length; i++) {
+		for (var i = 0; i < cl_lightstyle.length; i++) {
 			cl_lightstyle[i] = new clightstyle_t();
 		}
 	}
@@ -113,7 +113,7 @@ public class CL_fx {
 
 	static final cdlight_t[] cl_dlights = new cdlight_t[Defines.MAX_DLIGHTS];
 	static {
-		for (int i = 0; i < cl_dlights.length; i++)
+		for (var i = 0; i < cl_dlights.length; i++)
 			cl_dlights[i] = new cdlight_t();
 	}
 
@@ -122,7 +122,7 @@ public class CL_fx {
 	 */
 	static void ClearDlights() {
 		
-		for (cdlight_t cl_dlight : cl_dlights) {
+		for (var cl_dlight : cl_dlights) {
 			cl_dlight.clear();
 		}
 	}
@@ -132,7 +132,7 @@ public class CL_fx {
 	 */
 	static void ClearLightStyles() {
 		
-		for (clightstyle_t aCl_lightstyle : cl_lightstyle) aCl_lightstyle.clear();
+		for (var aCl_lightstyle : cl_lightstyle) aCl_lightstyle.clear();
 		lastofs = -1;
 	}
 
@@ -141,13 +141,13 @@ public class CL_fx {
 	 */
 	static void RunLightStyles() {
 
-		int ofs = Globals.cl.time / 100;
+		var ofs = Globals.cl.time / 100;
 		if (ofs == lastofs)
 			return;
 		lastofs = ofs;
 
-		for (clightstyle_t aCl_lightstyle : cl_lightstyle) {
-			clightstyle_t ls = aCl_lightstyle;
+		for (var aCl_lightstyle : cl_lightstyle) {
+			var ls = aCl_lightstyle;
 			if (ls.length == 0) {
 				ls.value[0] = ls.value[1] = ls.value[2] = 1.0f;
 				continue;
@@ -161,15 +161,15 @@ public class CL_fx {
 
 	static void SetLightstyle(int i) {
 
-		String s = Globals.cl.configstrings[i + Defines.CS_LIGHTS];
+		var s = Globals.cl.configstrings[i + Defines.CS_LIGHTS];
 
-        int j = s.length();
+		var j = s.length();
 		if (j >= Defines.MAX_QPATH)
 			Com.Error(Defines.ERR_DROP, "svc_lightstyle length=" + j);
 
 		cl_lightstyle[i].length = j;
 
-		for (int k = 0; k < j; k++)
+		for (var k = 0; k < j; k++)
 			cl_lightstyle[i].map[k] = (float) (s.charAt(k) - 'a') / (float) ('m' - 'a');
 	}
 
@@ -178,8 +178,8 @@ public class CL_fx {
 	 */
 	static void AddLightStyles() {
 
-		for (int i = 0; i < cl_lightstyle.length; i++) {
-			clightstyle_t ls = cl_lightstyle[i];
+		for (var i = 0; i < cl_lightstyle.length; i++) {
+			var ls = cl_lightstyle[i];
 			V.AddLightStyle(i, ls.value[0], ls.value[1], ls.value[2]);
 		}
 	}
@@ -233,8 +233,8 @@ public class CL_fx {
 	 */
 	static void RunDLights() {
 
-		for (int i = 0; i < Defines.MAX_DLIGHTS; i++) {
-			cdlight_t dl = cl_dlights[i];
+		for (var i = 0; i < Defines.MAX_DLIGHTS; i++) {
+			var dl = cl_dlights[i];
 			if (dl.radius == 0.0f)
 				continue;
 
@@ -259,13 +259,13 @@ public class CL_fx {
 		if (i < 1 || i >= Defines.MAX_EDICTS)
 			Com.Error(Defines.ERR_DROP, "CL_ParseMuzzleFlash: bad entity");
 
-		int weapon = MSG.ReadByte(Globals.net_message);
-		int silenced = weapon & Defines.MZ_SILENCED;
+		var weapon = MSG.ReadByte(Globals.net_message);
+		var silenced = weapon & Defines.MZ_SILENCED;
 		weapon &= ~Defines.MZ_SILENCED;
 
-		centity_t pl = Globals.cl_entities[i];
+		var pl = Globals.cl_entities[i];
 
-		cdlight_t dl = AllocDlight(i);
+		var dl = AllocDlight(i);
 		Math3D.VectorCopy(pl.current.origin, dl.origin);
 		Math3D.AngleVectors(pl.current.angles, fv, rv, null);
 		Math3D.VectorMA(dl.origin, 18, fv, dl.origin);
@@ -513,7 +513,7 @@ public class CL_fx {
 		if (ent < 1 || ent >= Defines.MAX_EDICTS)
 			Com.Error(Defines.ERR_DROP, "CL_ParseMuzzleFlash2: bad entity");
 
-		int flash_number = MSG.ReadByte(Globals.net_message);
+		var flash_number = MSG.ReadByte(Globals.net_message);
 
 		
 		Math3D.AngleVectors(Globals.cl_entities[ent].current.angles, forward, right, null);
@@ -524,7 +524,7 @@ public class CL_fx {
 		origin[2] = Globals.cl_entities[ent].current.origin[2] + forward[2] * M_Flash.monster_flash_offset[flash_number][0] + right[2]
 				* M_Flash.monster_flash_offset[flash_number][1] + M_Flash.monster_flash_offset[flash_number][2];
 
-		cdlight_t dl = AllocDlight(ent);
+		var dl = AllocDlight(ent);
 		Math3D.VectorCopy(origin, dl.origin);
 		dl.radius = 200 + (Globals.rnd.nextInt() & 31);
 		dl.minlight = 32;
@@ -947,14 +947,14 @@ public class CL_fx {
 		
 		
 		if (Globals.vidref_val == Defines.VIDREF_GL) {
-			for (int i = 0; i < Defines.MAX_DLIGHTS; i++) {
+			for (var i = 0; i < Defines.MAX_DLIGHTS; i++) {
 				dl = cl_dlights[i];
 				if (dl.radius == 0.0f)
 					continue;
 				V.AddLight(dl.origin, dl.radius, dl.color[0], dl.color[1], dl.color[2]);
 			}
 		} else {
-			for (int i = 0; i < Defines.MAX_DLIGHTS; i++) {
+			for (var i = 0; i < Defines.MAX_DLIGHTS; i++) {
 				dl = cl_dlights[i];
 				if (dl.radius == 0.0f)
 					continue;
@@ -980,7 +980,7 @@ public class CL_fx {
 		free_particles = particles[0];
 		active_particles = null;
 
-		for (int i = 0; i < particles.length - 1; i++)
+		for (var i = 0; i < particles.length - 1; i++)
 			particles[i].next = particles[i + 1];
 		particles[particles.length - 1].next = null;
 	}
@@ -992,10 +992,10 @@ public class CL_fx {
 	 */
 	static void ParticleEffect(float[] org, float[] dir, int color, int count) {
 
-		for (int i = 0; i < count; i++) {
+		for (var i = 0; i < count; i++) {
 			if (free_particles == null)
 				return;
-			cparticle_t p = free_particles;
+			var p = free_particles;
 			free_particles = p.next;
 			p.next = active_particles;
 			active_particles = p;
@@ -1004,7 +1004,7 @@ public class CL_fx {
 			p.color = color + (Lib.rand() & 7);
 
 			float d = Lib.rand() & 31;
-			for (int j = 0; j < 3; j++) {
+			for (var j = 0; j < 3; j++) {
 				p.org[j] = org[j] + ((Lib.rand() & 7) - 4) + d * dir[j];
 				p.vel[j] = Lib.crand() * 20;
 			}
@@ -1022,10 +1022,10 @@ public class CL_fx {
 	 */
 	static void ParticleEffect2(float[] org, float[] dir, int color, int count) {
 
-		for (int i = 0; i < count; i++) {
+		for (var i = 0; i < count; i++) {
 			if (free_particles == null)
 				return;
-			cparticle_t p = free_particles;
+			var p = free_particles;
 			free_particles = p.next;
 			p.next = active_particles;
 			active_particles = p;
@@ -1034,7 +1034,7 @@ public class CL_fx {
 			p.color = color;
 
 			float d = Lib.rand() & 7;
-			for (int j = 0; j < 3; j++) {
+			for (var j = 0; j < 3; j++) {
 				p.org[j] = org[j] + ((Lib.rand() & 7) - 4) + d * dir[j];
 				p.vel[j] = Lib.crand() * 20;
 			}
@@ -1053,10 +1053,10 @@ public class CL_fx {
 	 */
 	static void ParticleEffect3(float[] org, float[] dir, int color, int count) {
 
-		for (int i = 0; i < count; i++) {
+		for (var i = 0; i < count; i++) {
 			if (free_particles == null)
 				return;
-			cparticle_t p = free_particles;
+			var p = free_particles;
 			free_particles = p.next;
 			p.next = active_particles;
 			active_particles = p;
@@ -1065,7 +1065,7 @@ public class CL_fx {
 			p.color = color;
 
 			float d = Lib.rand() & 7;
-			for (int j = 0; j < 3; j++) {
+			for (var j = 0; j < 3; j++) {
 				p.org[j] = org[j] + ((Lib.rand() & 7) - 4) + d * dir[j];
 				p.vel[j] = Lib.crand() * 20;
 			}
@@ -1083,10 +1083,10 @@ public class CL_fx {
 	 */
 	static void TeleporterParticles(entity_state_t ent) {
 
-		for (int i = 0; i < 8; i++) {
+		for (var i = 0; i < 8; i++) {
 			if (free_particles == null)
 				return;
-			cparticle_t p = free_particles;
+			var p = free_particles;
 			free_particles = p.next;
 			p.next = active_particles;
 			active_particles = p;
@@ -1094,7 +1094,7 @@ public class CL_fx {
 			p.time = Globals.cl.time;
 			p.color = 0xdb;
 
-			for (int j = 0; j < 2; j++) {
+			for (var j = 0; j < 2; j++) {
 				p.org[j] = ent.origin[j] - 16 + (Lib.rand() & 31);
 				p.vel[j] = Lib.crand() * 14;
 			}
@@ -1117,10 +1117,10 @@ public class CL_fx {
 	 */
 	static void LogoutEffect(float[] org, int type) {
 
-		for (int i = 0; i < 500; i++) {
+		for (var i = 0; i < 500; i++) {
 			if (free_particles == null)
 				return;
-			cparticle_t p = free_particles;
+			var p = free_particles;
 			free_particles = p.next;
 			p.next = active_particles;
 			active_particles = p;
@@ -1143,7 +1143,7 @@ public class CL_fx {
 			p.org[1] = org[1] - 16 + Globals.rnd.nextFloat() * 32;
 			p.org[2] = org[2] - 24 + Globals.rnd.nextFloat() * 56;
 
-			for (int j = 0; j < 3; j++)
+			for (var j = 0; j < 3; j++)
 				p.vel[j] = Lib.crand() * 20;
 
 			p.accel[0] = p.accel[1] = 0;
@@ -1161,10 +1161,10 @@ public class CL_fx {
 	 */
 	static void ItemRespawnParticles(float[] org) {
 
-		for (int i = 0; i < 64; i++) {
+		for (var i = 0; i < 64; i++) {
 			if (free_particles == null)
 				return;
-			cparticle_t p = free_particles;
+			var p = free_particles;
 			free_particles = p.next;
 			p.next = active_particles;
 			active_particles = p;
@@ -1177,7 +1177,7 @@ public class CL_fx {
 			p.org[1] = org[1] + Lib.crand() * 8;
 			p.org[2] = org[2] + Lib.crand() * 8;
 
-			for (int j = 0; j < 3; j++)
+			for (var j = 0; j < 3; j++)
 				p.vel[j] = Lib.crand() * 8;
 
 			p.accel[0] = p.accel[1] = 0;
@@ -1193,10 +1193,10 @@ public class CL_fx {
 	 */
 	static void ExplosionParticles(float[] org) {
 
-		for (int i = 0; i < 256; i++) {
+		for (var i = 0; i < 256; i++) {
 			if (free_particles == null)
 				return;
-			cparticle_t p = free_particles;
+			var p = free_particles;
 			free_particles = p.next;
 			p.next = active_particles;
 			active_particles = p;
@@ -1204,7 +1204,7 @@ public class CL_fx {
 			p.time = Globals.cl.time;
 			p.color = 0xe0 + (Lib.rand() & 7);
 
-			for (int j = 0; j < 3; j++) {
+			for (var j = 0; j < 3; j++) {
 				p.org[j] = org[j] + ((Lib.rand() % 32) - 16);
 				p.vel[j] = (Lib.rand() % 384) - 192;
 			}
@@ -1219,10 +1219,10 @@ public class CL_fx {
 
 	static void BigTeleportParticles(float[] org) {
 
-		for (int i = 0; i < 4096; i++) {
+		for (var i = 0; i < 4096; i++) {
 			if (free_particles == null)
 				return;
-			cparticle_t p = free_particles;
+			var p = free_particles;
 			free_particles = p.next;
 			p.next = active_particles;
 			active_particles = p;
@@ -1231,7 +1231,7 @@ public class CL_fx {
 
 			p.color = colortable[Lib.rand() & 3];
 
-			float angle = (float) (Math.PI * 2 * (Lib.rand() & 1023) / 1023.0);
+			var angle = (float) (Math.PI * 2 * (Lib.rand() & 1023) / 1023.0);
 			float dist = Lib.rand() & 31;
 			p.org[0] = (float) (org[0] + Math.cos(angle) * dist);
 			p.vel[0] = (float) (Math.cos(angle) * (70 + (Lib.rand() & 63)));
@@ -1257,11 +1257,11 @@ public class CL_fx {
 	 */
 	static void BlasterParticles(float[] org, float[] dir) {
 
-		int count = 40;
-		for (int i = 0; i < count; i++) {
+		var count = 40;
+		for (var i = 0; i < count; i++) {
 			if (free_particles == null)
 				return;
-			cparticle_t p = free_particles;
+			var p = free_particles;
 			free_particles = p.next;
 			p.next = active_particles;
 			active_particles = p;
@@ -1270,7 +1270,7 @@ public class CL_fx {
 			p.color = 0xe0 + (Lib.rand() & 7);
 
 			float d = Lib.rand() & 15;
-			for (int j = 0; j < 3; j++) {
+			for (var j = 0; j < 3; j++) {
 				p.org[j] = org[j] + ((Lib.rand() & 7) - 4) + d * dir[j];
 				p.vel[j] = dir[j] * 30 + Lib.crand() * 40;
 			}
@@ -1295,18 +1295,18 @@ public class CL_fx {
 
 		Math3D.VectorCopy(start, move);
 		Math3D.VectorSubtract(end, start, vec);
-        float len = Math3D.VectorNormalize(vec);
+		var len = Math3D.VectorNormalize(vec);
 
 		Math3D.VectorScale(vec, 5, vec);
 
 
-		int dec = 5;
+		var dec = 5;
 		while (len > 0) {
 			len -= dec;
 
 			if (free_particles == null)
 				return;
-			cparticle_t p = free_particles;
+			var p = free_particles;
 			free_particles = p.next;
 			p.next = active_particles;
 			active_particles = p;
@@ -1317,7 +1317,7 @@ public class CL_fx {
 			p.alpha = 1.0f;
 			p.alphavel = -1.0f / (0.3f + Globals.rnd.nextFloat() * 0.2f);
 			p.color = 0xe0;
-			for (int j = 0; j < 3; j++) {
+			for (var j = 0; j < 3; j++) {
 				p.org[j] = move[j] + Lib.crand();
 				p.vel[j] = Lib.crand() * 5;
 				p.accel[j] = 0;
@@ -1338,17 +1338,17 @@ public class CL_fx {
 
 		Math3D.VectorCopy(start, move);
 		Math3D.VectorSubtract(end, start, vec);
-        float len = Math3D.VectorNormalize(vec);
+		var len = Math3D.VectorNormalize(vec);
 
 		Math3D.VectorScale(vec, 5, vec);
 
-		int dec = 5;
+		var dec = 5;
 		while (len > 0) {
 			len -= dec;
 
 			if (free_particles == null)
 				return;
-			cparticle_t p = free_particles;
+			var p = free_particles;
 			free_particles = p.next;
 			p.next = active_particles;
 			active_particles = p;
@@ -1359,7 +1359,7 @@ public class CL_fx {
 			p.alpha = 1.0f;
 			p.alphavel = -1.0f / (0.8f + Globals.rnd.nextFloat() * 0.2f);
 			p.color = color;
-			for (int j = 0; j < 3; j++) {
+			for (var j = 0; j < 3; j++) {
 				p.org[j] = move[j] + Lib.crand() * 16;
 				p.vel[j] = Lib.crand() * 5;
 				p.accel[j] = 0;
@@ -1380,9 +1380,9 @@ public class CL_fx {
 
 		Math3D.VectorCopy(start, move);
 		Math3D.VectorSubtract(end, start, vec);
-		float len = Math3D.VectorNormalize(vec);
+		var len = Math3D.VectorNormalize(vec);
 
-		float dec = 0.5f;
+		var dec = 0.5f;
 		Math3D.VectorScale(vec, dec, vec);
 
 		float velscale;
@@ -1406,7 +1406,7 @@ public class CL_fx {
 
 			
 			if ((Lib.rand() & 1023) < old.trailcount) {
-				cparticle_t p = free_particles;
+				var p = free_particles;
 				free_particles = p.next;
 				p.next = active_particles;
 				active_particles = p;
@@ -1418,7 +1418,7 @@ public class CL_fx {
 					p.alpha = 1.0f;
 					p.alphavel = -1.0f / (1.0f + Globals.rnd.nextFloat() * 0.4f);
 					p.color = 0xe8 + (Lib.rand() & 7);
-					for (int j = 0; j < 3; j++) {
+					for (var j = 0; j < 3; j++) {
 						p.org[j] = move[j] + Lib.crand() * orgscale;
 						p.vel[j] = Lib.crand() * velscale;
 						p.accel[j] = 0;
@@ -1428,7 +1428,7 @@ public class CL_fx {
 					p.alpha = 1.0f;
 					p.alphavel = -1.0f / (1.0f + Globals.rnd.nextFloat() * 0.4f);
 					p.color = 0xdb + (Lib.rand() & 7);
-					for (int j = 0; j < 3; j++) {
+					for (var j = 0; j < 3; j++) {
 						p.org[j] = move[j] + Lib.crand() * orgscale;
 						p.vel[j] = Lib.crand() * velscale;
 						p.accel[j] = 0;
@@ -1438,7 +1438,7 @@ public class CL_fx {
 					p.alpha = 1.0f;
 					p.alphavel = -1.0f / (1.0f + Globals.rnd.nextFloat() * 0.2f);
 					p.color = 4 + (Lib.rand() & 7);
-					for (int j = 0; j < 3; j++) {
+					for (var j = 0; j < 3; j++) {
 						p.org[j] = move[j] + Lib.crand() * orgscale;
 						p.vel[j] = Lib.crand() * velscale;
 					}
@@ -1468,7 +1468,7 @@ public class CL_fx {
 		
 		Math3D.VectorCopy(start, move);
 		Math3D.VectorSubtract(end, start, vec);
-        float len = Math3D.VectorNormalize(vec);
+		var len = Math3D.VectorNormalize(vec);
 
         float dec = 1;
 		Math3D.VectorScale(vec, dec, vec);
@@ -1480,7 +1480,7 @@ public class CL_fx {
 				return;
 
 			if ((Lib.rand() & 7) == 0) {
-				cparticle_t p = free_particles;
+				var p = free_particles;
 				free_particles = p.next;
 				p.next = active_particles;
 				active_particles = p;
@@ -1491,7 +1491,7 @@ public class CL_fx {
 				p.alpha = 1.0f;
 				p.alphavel = -1.0f / (1.0f + Globals.rnd.nextFloat() * 0.2f);
 				p.color = 0xdc + (Lib.rand() & 3);
-				for (int j = 0; j < 3; j++) {
+				for (var j = 0; j < 3; j++) {
 					p.org[j] = move[j] + Lib.crand() * 5;
 					p.vel[j] = Lib.crand() * 20;
 				}
@@ -1512,17 +1512,17 @@ public class CL_fx {
 
 		Math3D.VectorCopy(start, move);
 		Math3D.VectorSubtract(end, start, vec);
-        float len = Math3D.VectorNormalize(vec);
+		var len = Math3D.VectorNormalize(vec);
 
-		float[] up = new float[3];
-		float[] right = new float[3];
+		var up = new float[3];
+		var right = new float[3];
 		Math3D.MakeNormalVectors(vec, right, up);
 
 		byte clr = 0x74;
-		float[] dir = new float[3];
+		var dir = new float[3];
 		cparticle_t p;
 		int j;
-		for (int i = 0; i < len; i++) {
+		for (var i = 0; i < len; i++) {
 			if (free_particles == null)
 				return;
 
@@ -1534,9 +1534,9 @@ public class CL_fx {
 			p.time = Globals.cl.time;
 			Math3D.VectorClear(p.accel);
 
-			float d = i * 0.1f;
-			float c = (float) Math.cos(d);
-			float s = (float) Math.sin(d);
+			var d = i * 0.1f;
+			var c = (float) Math.cos(d);
+			var s = (float) Math.sin(d);
 
 			Math3D.VectorScale(right, c, dir);
 			Math3D.VectorMA(dir, s, up, dir);
@@ -1552,7 +1552,7 @@ public class CL_fx {
 			Math3D.VectorAdd(move, vec, move);
 		}
 
-        float dec = 0.75f;
+		var dec = 0.75f;
 		Math3D.VectorScale(vec, dec, vec);
 		Math3D.VectorCopy(start, move);
 
@@ -1592,18 +1592,18 @@ public class CL_fx {
 
 		Math3D.VectorCopy(start, move);
 		Math3D.VectorSubtract(ent, start, vec);
-        float len = Math3D.VectorNormalize(vec);
+		var len = Math3D.VectorNormalize(vec);
 
 		Math3D.VectorScale(vec, 5, vec);
 
-		int dec = 5;
-		int left = 0;
+		var dec = 5;
+		var left = 0;
 		while (len > 0) {
 			len -= dec;
 
 			if (free_particles == null)
 				return;
-			cparticle_t p = free_particles;
+			var p = free_particles;
 			free_particles = p.next;
 			p.next = active_particles;
 			active_particles = p;
@@ -1614,7 +1614,7 @@ public class CL_fx {
 			p.alphavel = -1.0f / (0.3f + Globals.rnd.nextFloat() * 0.2f);
 			p.color = 0xe4 + (Lib.rand() & 3);
 
-			for (int j = 0; j < 3; j++) {
+			for (var j = 0; j < 3; j++) {
 				p.org[j] = move[j];
 				p.accel[j] = 0;
 			}
@@ -1644,16 +1644,16 @@ public class CL_fx {
 
 		Math3D.VectorCopy(start, move);
 		Math3D.VectorSubtract(end, start, vec);
-        float len = Math3D.VectorNormalize(vec);
+		var len = Math3D.VectorNormalize(vec);
 
         float dec = 32;
 		Math3D.VectorScale(vec, dec, vec);
 
-		for (int i = 0; i < len; i += dec) {
+		for (var i = 0; i < len; i += dec) {
 			if (free_particles == null)
 				return;
 
-			cparticle_t p = free_particles;
+			var p = free_particles;
 			free_particles = p.next;
 			p.next = active_particles;
 			active_particles = p;
@@ -1664,7 +1664,7 @@ public class CL_fx {
 			p.alpha = 1.0f;
 			p.alphavel = -1.0f / (1.0f + Globals.rnd.nextFloat() * 0.2f);
 			p.color = 4 + (Lib.rand() & 7);
-			for (int j = 0; j < 3; j++) {
+			for (var j = 0; j < 3; j++) {
 				p.org[j] = move[j] + Lib.crand() * 2;
 				p.vel[j] = Lib.crand() * 5;
 			}
@@ -1693,15 +1693,15 @@ public class CL_fx {
 			}
 		}
 
-        float ltime = Globals.cl.time / 1000.0f;
+		var ltime = Globals.cl.time / 1000.0f;
 		float dist = 64;
 		for (i = 0; i < count; i += 2) {
-			float angle = ltime * avelocities[i][0];
-			float sy = (float) Math.sin(angle);
-			float cy = (float) Math.cos(angle);
+			var angle = ltime * avelocities[i][0];
+			var sy = (float) Math.sin(angle);
+			var cy = (float) Math.cos(angle);
 			angle = ltime * avelocities[i][1];
-			float sp = (float) Math.sin(angle);
-			float cp = (float) Math.cos(angle);
+			var sp = (float) Math.sin(angle);
+			var cp = (float) Math.cos(angle);
 			angle = ltime * avelocities[i][2];
 
 			forward[0] = cp * cy;
@@ -1710,7 +1710,7 @@ public class CL_fx {
 
 			if (free_particles == null)
 				return;
-			cparticle_t p = free_particles;
+			var p = free_particles;
 			free_particles = p.next;
 			p.next = active_particles;
 			active_particles = p;
@@ -1743,7 +1743,7 @@ public class CL_fx {
 			starttime = ent.fly_stoptime - 60000;
 		}
 
-        int n = Globals.cl.time - starttime;
+		var n = Globals.cl.time - starttime;
 		int count;
 		if (n < 20000)
 			count = (int) ((n * 162) / 20000.0);
@@ -1776,15 +1776,15 @@ public class CL_fx {
 			}
 		}
 
-        float ltime = Globals.cl.time / 1000.0f;
+		var ltime = Globals.cl.time / 1000.0f;
 		float dist = 64;
 		for (i = 0; i < Defines.NUMVERTEXNORMALS; i++) {
-			float angle = ltime * avelocities[i][0];
-			float sy = (float) Math.sin(angle);
-			float cy = (float) Math.cos(angle);
+			var angle = ltime * avelocities[i][0];
+			var sy = (float) Math.sin(angle);
+			var cy = (float) Math.cos(angle);
 			angle = ltime * avelocities[i][1];
-			float sp = (float) Math.sin(angle);
-			float cp = (float) Math.cos(angle);
+			var sp = (float) Math.sin(angle);
+			var cp = (float) Math.cos(angle);
 			angle = ltime * avelocities[i][2];
 
 			forward[0] = cp * cy;
@@ -1793,7 +1793,7 @@ public class CL_fx {
 
 			if (free_particles == null)
 				return;
-			cparticle_t p = free_particles;
+			var p = free_particles;
 			free_particles = p.next;
 			p.next = active_particles;
 			active_particles = p;
@@ -1835,12 +1835,12 @@ public class CL_fx {
 
 		Math3D.VectorCopy(start, move);
 		Math3D.VectorSubtract(end, start, vec);
-        float len = Math3D.VectorNormalize(vec);
+		var len = Math3D.VectorNormalize(vec);
 
 		Math3D.VectorScale(vec, 5, vec);
 
 
-		int dec = 5;
+		var dec = 5;
 		cparticle_t p;
 		int j;
 		while (len > 0) {
@@ -1870,13 +1870,13 @@ public class CL_fx {
 		}
 
 		ent.origin[2] += 14;
-		float[] org = new float[3];
+		var org = new float[3];
 		Math3D.VectorCopy(ent.origin, org);
 
-		float[] dir = new float[3];
-		for (int i = -2; i <= 2; i += 4)
+		var dir = new float[3];
+		for (var i = -2; i <= 2; i += 4)
 			for (j = -2; j <= 2; j += 4)
-				for (int k = -2; k <= 4; k += 4) {
+				for (var k = -2; k <= 4; k += 4) {
 					if (free_particles == null)
 						return;
 					p = free_particles;
@@ -1914,10 +1914,10 @@ public class CL_fx {
 	
 	static void BFGExplosionParticles(float[] org) {
 
-		for (int i = 0; i < 256; i++) {
+		for (var i = 0; i < 256; i++) {
 			if (free_particles == null)
 				return;
-			cparticle_t p = free_particles;
+			var p = free_particles;
 			free_particles = p.next;
 			p.next = active_particles;
 			active_particles = p;
@@ -1925,7 +1925,7 @@ public class CL_fx {
 			p.time = Globals.cl.time;
 			p.color = 0xd0 + (Lib.rand() & 7);
 
-			for (int j = 0; j < 3; j++) {
+			for (var j = 0; j < 3; j++) {
 				p.org[j] = org[j] + ((Lib.rand() % 32) - 16);
 				p.vel[j] = (Lib.rand() % 384) - 192;
 			}
@@ -1947,12 +1947,12 @@ public class CL_fx {
 	 */
 	static void TeleportParticles(float[] org) {
 
-		for (int i = -16; i <= 16; i += 4)
-			for (int j = -16; j <= 16; j += 4)
-				for (int k = -16; k <= 32; k += 4) {
+		for (var i = -16; i <= 16; i += 4)
+			for (var j = -16; j <= 16; j += 4)
+				for (var k = -16; k <= 32; k += 4) {
 					if (free_particles == null)
 						return;
-					cparticle_t p = free_particles;
+					var p = free_particles;
 					free_particles = p.next;
 					p.next = active_particles;
 					active_particles = p;
@@ -1963,12 +1963,12 @@ public class CL_fx {
 					p.alpha = 1.0f;
 					p.alphavel = -1.0f / (0.3f + (Lib.rand() & 7) * 0.02f);
 
-					float[] porg = p.org;
+					var porg = p.org;
 					porg[0] = org[0] + i + (Lib.rand() & 3);
 					porg[1] = org[1] + j + (Lib.rand() & 3);
 					porg[2] = org[2] + k + (Lib.rand() & 3);
 
-					float[] dir = CL_fx.dir;
+					var dir = CL_fx.dir;
 					dir[0] = j * 8;
 					dir[1] = i * 8;
 					dir[2] = k * 8;
@@ -1977,7 +1977,7 @@ public class CL_fx {
 					float vel = 50 + (Lib.rand() & 63);
 					Math3D.VectorScale(dir, vel, p.vel);
 
-					float[] paccel = p.accel;
+					var paccel = p.accel;
 					paccel[0] = paccel[1] = 0;
 					paccel[2] = -PARTICLE_GRAVITY;
 				}
@@ -1990,12 +1990,12 @@ public class CL_fx {
 	 */
 	static void AddParticles() {
 		cparticle_t next;
-		float time = 0.0f;
+		var time = 0.0f;
 
 		cparticle_t active = null;
         cparticle_t tail = null;
 
-		for (cparticle_t p = active_particles; p != null; p = next) {
+		for (var p = active_particles; p != null; p = next) {
 			next = p.next;
 
 
@@ -2022,14 +2022,14 @@ public class CL_fx {
 
 			if (alpha > 1.0)
 				alpha = 1;
-			int color = (int) p.color;
+			var color = (int) p.color;
 
-			float time2 = time * time;
+			var time2 = time * time;
 
-			float[] org = CL_fx.org;
-			float[] porg = p.org;
-			float[] pvel = p.vel;
-			float[] paccel = p.accel;
+			var org = CL_fx.org;
+			var porg = p.org;
+			var pvel = p.vel;
+			var paccel = p.accel;
 			org[0] = porg[0] + pvel[0] * time + paccel[0] * time2;
 			org[1] = porg[1] + pvel[1] * time + paccel[1] * time2;
 			org[2] = porg[2] + pvel[2] * time + paccel[2] * time2;

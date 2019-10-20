@@ -30,7 +30,7 @@ public enum ConjSeq { ;
     public static Sequence sequenceFlat(ConjList list) {
 
 
-        int n = list.size();
+        var n = list.size();
         assert(n > 2);
 
         list.trimToSize();
@@ -40,20 +40,20 @@ public enum ConjSeq { ;
 
         TreeSet<Term> ordered = new TreeSet(list);
 
-        ByteAnonMap m = new ByteAnonMap(n);
-        for (Term x : ordered)
+        var m = new ByteAnonMap(n);
+        for (var x : ordered)
             m.intern(x);
 
-        Term[] oa = ordered.toArray(Op.EmptyTermArray);
+        var oa = ordered.toArray(Op.EmptyTermArray);
 
-        byte[] subterm = new byte[n];
-        int[] value = new int[n];
-        for (int i= 0; i < n; i++) {
+        var subterm = new byte[n];
+        var value = new int[n];
+        for (var i = 0; i < n; i++) {
             subterm[i] = (byte) (m.interned(list.get(i))-1);
             value[i] = Tense.occToDT(list.when(i));
         }
 
-        Interval times = Interval.the(subterm, value);
+        var times = Interval.the(subterm, value);
 
         return new Sequence(oa, times);
     }
@@ -109,7 +109,7 @@ public enum ConjSeq { ;
     }
 
     static boolean _isSeq(Term x) {
-        Subterms xx = x.subterms();
+        var xx = x.subterms();
         return xx.subs() == 2 &&
                 xx.hasAny(CONJ) && //inner conjunction
                 xx.countEquals(Conj::isSeq, 1)
@@ -143,8 +143,8 @@ public enum ConjSeq { ;
             case 1:
                 return ss.sub(m.first(true));
             default:
-                Term[] cc = ss.subsIncluding(m);
-                Term e = CONJ.the(cc);
+                var cc = ss.subsIncluding(m);
+                var e = CONJ.the(cc);
                 if (e instanceof Bool)
                     throw new WTF("&&(" + Arrays.toString(cc) + ") => " + e);
                 return e;
@@ -157,7 +157,7 @@ public enum ConjSeq { ;
     }
 
     private static Compound seqTemporal(Subterms s) {
-        Compound t = (Compound) s.subFirst(ConjBuilder.isTemporalComponent);
+        var t = (Compound) s.subFirst(ConjBuilder.isTemporalComponent);
         assert (Conj.isSeq(t));
         return t;
     }
@@ -173,8 +173,8 @@ public enum ConjSeq { ;
      */
     static Term sequenceBalancedTree(TermBuilder B, ConjList events, int start, int end) {
 
-        Term first = events.get(start);
-        int ee = end - start;
+        var first = events.get(start);
+        var ee = end - start;
 
         int dt;
         Term left, right;
@@ -186,19 +186,19 @@ public enum ConjSeq { ;
             case 2: {
                 left = first;
                 right = events.get(end - 1);
-                long firstWhen = events.when(start);
+                var firstWhen = events.when(start);
                 dt = Tense.occToDT(events.when(end - 1) - firstWhen);
                 break;
             }
             default: {
-                int center = ConjList.centerByIndex(start, end);
+                var center = ConjList.centerByIndex(start, end);
                 //int center = events.centerByVolume(start, end);
                 left = sequenceBalancedTree(B, events, start, center + 1);
                 if (left == Null) return Null;
                 if (left == False)
                     return False;
                 right = sequenceBalancedTree(B, events, center + 1, end);
-                long firstWhen = events.when(start);
+                var firstWhen = events.when(start);
                 dt = Tense.occToDT((events.when(center + 1) - firstWhen - left.eventRange()));
                 break;
             }
@@ -213,7 +213,7 @@ public enum ConjSeq { ;
 
     /** TODO add support for supersampling to include task.end() features */
     public static Term sequence(Task[] events, int ditherDT, TermBuilder B) {
-        int eventsSize = events.length;
+        var eventsSize = events.length;
         switch (eventsSize) {
             case 0:
                 return True;
@@ -221,9 +221,9 @@ public enum ConjSeq { ;
                 return sequenceTerm(events[0]);
             case 2: {
                 //optimized 2-ary case
-                Task a = events[0];
+                var a = events[0];
                 if (a.op() != CONJ) {
-                    Task b = events[1];
+                    var b = events[1];
                     if (b.op() != CONJ) {
                         long as = a.start(), bs = b.start();
                         assert (bs != ETERNAL && as != ETERNAL);
@@ -235,7 +235,7 @@ public enum ConjSeq { ;
         }
 
         ConjBuilder ce = new ConjTree();
-        for (Task o : events)
+        for (var o : events)
             if (!ce.add(Tense.dither(o.start(), ditherDT), sequenceTerm(o))) {
                 break;
         }
@@ -269,10 +269,10 @@ public enum ConjSeq { ;
             return Null;
 
 
-        int lr = left.compareTo(right);
+        var lr = left.compareTo(right);
         if (lr > 0) {
             dt = -dt;
-            Term t = right;
+            var t = right;
             right = left;
             left = t;
         } else if (lr == 0) {

@@ -34,7 +34,7 @@ public class RetinaPixel extends Collisions.RayResultCallback {
     }
 
     public void update(Dynamics3D d) {
-        Transform x = parent.transform();
+        var x = parent.transform();
 
         worldPosition = x.transform(v(localPosition));
 
@@ -63,13 +63,13 @@ public class RetinaPixel extends Collisions.RayResultCallback {
 
     @Override
     public float addSingleResult(Collisions.LocalRayResult rayResult, boolean normalInWorldSpace) {
-        Object target = rayResult.collidable.data();
+        var target = rayResult.collidable.data();
         if (target != parent) {
-            float dist = v3.dist(worldPosition, rayResult.hitNormal);
+            var dist = v3.dist(worldPosition, rayResult.hitNormal);
 
             worldHit.set(rayResult.hitNormal);
             if (target instanceof SimpleSpatial) {
-                SimpleSpatial ss = ((SimpleSpatial) target);
+                var ss = ((SimpleSpatial) target);
                 r = ss.shapeColor[0];
                 g = ss.shapeColor[1];
                 b = ss.shapeColor[2];

@@ -23,8 +23,8 @@ public class Utils {
     }
 
     public static String makeIndent(int n) {
-        String result = IntStream.range(0, n).mapToObj(i -> " ").collect(Collectors.joining());
-        String sb = result;
+        var result = IntStream.range(0, n).mapToObj(i -> " ").collect(Collectors.joining());
+        var sb = result;
         return sb;
     }
 
@@ -34,11 +34,11 @@ public class Utils {
     }
 
     public static ActionValuePair v(ParameterizedFunction f, double[] stateAction, double[] state, int num) {
-        double max = Double.NEGATIVE_INFINITY;
-        int maxa = 0;
+        var max = Double.NEGATIVE_INFINITY;
+        var maxa = 0;
 
-        for (int i = 0; i < num; ++i) {
-            double _q = q(f, stateAction, state, i);
+        for (var i = 0; i < num; ++i) {
+            var _q = q(f, stateAction, state, i);
             if (_q > max) {
                 max = _q;
                 maxa = i;
@@ -49,7 +49,7 @@ public class Utils {
     }
 
     public static double lengthSquare(double[] v) {
-        double s = Arrays.stream(v).map(x -> x * x).sum();
+        var s = Arrays.stream(v).map(x -> x * x).sum();
         return s;
     }
 
@@ -60,7 +60,7 @@ public class Utils {
     public static int checkAction(int numActions, double[] behaviourLearnerOutput) {
         assert behaviourLearnerOutput.length == 1;
 
-        int action = (int) Math.round(behaviourLearnerOutput[0]);
+        var action = (int) Math.round(behaviourLearnerOutput[0]);
         if (action >= numActions) {
             action = numActions - 1;
         }
@@ -72,7 +72,7 @@ public class Utils {
     }
 
     public static void multiplySelf(double[] dest, double source) {
-        for (int i = 0; i < dest.length; ++i) {
+        for (var i = 0; i < dest.length; ++i) {
             dest[i] *= source;
         }
     }

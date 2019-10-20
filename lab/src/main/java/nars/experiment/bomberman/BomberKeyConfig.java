@@ -49,11 +49,11 @@ public abstract class BomberKeyConfig {
      */
     public static boolean openFile() {
         /** setup result to be returned */
-        boolean result = true;
+        var result = true;
         /** try to open the file */
         try {
             /** create the file stream object */
-            ObjectInputStream inputStream =
+            var inputStream =
                     new ObjectInputStream(new FileInputStream("BomberKeyConfig.dat"));
             /** read the file into memory */
             keys = (int[][]) inputStream.readObject();
@@ -74,7 +74,7 @@ public abstract class BomberKeyConfig {
         /** try to create the file */
         try {
             /** create the file object, overwrite the file if needs to */
-            ObjectOutputStream outputStream =
+            var outputStream =
                     new ObjectOutputStream(new FileOutputStream("BomberKeyConfig.dat"));
             /** write the file */
             outputStream.writeObject(keys);

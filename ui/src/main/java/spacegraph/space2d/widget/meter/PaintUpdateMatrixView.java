@@ -37,15 +37,15 @@ public class PaintUpdateMatrixView extends BitmapMatrixView {
     public static PaintUpdateMatrixView scroll(double[] x, boolean normalize, int window, int step) {
         assert(window >= step && (window % step == 0));
 
-        int max = x.length;
+        var max = x.length;
         assert(max >= window);
 
-        double[] xx = new double[window];
-        AtomicCycle.AtomicCycleN i = new AtomicCycle.AtomicCycleN(max);
+        var xx = new double[window];
+        var i = new AtomicCycle.AtomicCycleN(max);
         return new PaintUpdateMatrixView(()->{
-            int start = i.addAndGet(step);
+            var start = i.addAndGet(step);
             int over;
-            int end = start + window;
+            var end = start + window;
             if (end >= max) {
                 over = (end-max); end = max;
             } else

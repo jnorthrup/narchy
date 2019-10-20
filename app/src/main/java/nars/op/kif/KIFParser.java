@@ -129,7 +129,7 @@ public class KIFParser {
     private static void display(StreamTokenizer_s st, boolean inRule, boolean inAntecedent, boolean inConsequent,
                                 int argumentNum, int parenLevel, String key) {
 
-        StringBuilder result = new StringBuilder();
+        var result = new StringBuilder();
         result.append(inRule);
         result.append('\t');
         result.append(inAntecedent);
@@ -162,9 +162,9 @@ public class KIFParser {
      */
     protected TreeSet<String> parse(Reader r) {
 
-        int mode = this.getParseMode();
-        StringBuilder expression = new StringBuilder();
-        Formula f = new Formula();
+        var mode = this.getParseMode();
+        var expression = new StringBuilder();
+        var f = new Formula();
         String errStr = null;
 
         if (r == null) {
@@ -173,23 +173,23 @@ public class KIFParser {
             System.err.println("Error in KIF.parse(): " + errStr);
             return warningSet;
         }
-        int duplicateCount = 0;
-        String filename = "";
+        var duplicateCount = 0;
+        var filename = "";
         try {
             count++;
-            StreamTokenizer_s st = new StreamTokenizer_s(r);
+            var st = new StreamTokenizer_s(r);
             KIFParser.setupStreamTokenizer(st);
-            int parenLevel = 0;
-            boolean inRule = false;
-            int argumentNum = -1;
-            boolean inAntecedent = false;
-            boolean inConsequent = false;
-            HashSet<String> keySet = new HashSet<>();
-            
-            boolean isEOL = false;
-            String errStart = "Parsing error in " + filename;
+            var parenLevel = 0;
+            var inRule = false;
+            var argumentNum = -1;
+            var inAntecedent = false;
+            var inConsequent = false;
+            var keySet = new HashSet<String>();
+
+            var isEOL = false;
+            var errStart = "Parsing error in " + filename;
             do {
-                int lastVal = st.ttype;
+                var lastVal = st.ttype;
                 st.nextToken();
                 
                 
@@ -238,18 +238,18 @@ public class KIFParser {
                 else if (st.ttype == 41) { 
                     parenLevel--;
                     expression.append(')');
-                    if (parenLevel == 0) { 
-                        String fstr = StringUtil.normalizeSpaceChars(expression.toString());
+                    if (parenLevel == 0) {
+                        var fstr = StringUtil.normalizeSpaceChars(expression.toString());
                         f.theFormula = fstr.intern();
                         if (formulaMap.containsKey(f.theFormula)) {
-                            String warning = ("Duplicate axiom at line " + f.startLine + " of " + f.sourceFile + ": "
+                            var warning = ("Duplicate axiom at line " + f.startLine + " of " + f.sourceFile + ": "
                                     + expression);
                             warningSet.add(warning);
                             System.out.println(warning);
                             duplicateCount++;
                         }
-                        if (mode == NORMAL_PARSE_MODE) { 
-                            String validArgs = "";
+                        if (mode == NORMAL_PARSE_MODE) {
+                            var validArgs = "";
 
 
                             if (StringUtil.emptyString(validArgs))
@@ -264,10 +264,10 @@ public class KIFParser {
                         keySet.add(f.theFormula); 
                         keySet.add(f.createID());
                         f.endLine = st.lineno() + totalLinesForComments;
-                        for (String fkey : keySet) {
+                        for (var fkey : keySet) {
                             if (formulas.containsKey(fkey)) {
                                 if (!formulaMap.containsKey(f.theFormula)) {
-                                    ArrayList<String> list = formulas.get(fkey);
+                                    var list = formulas.get(fkey);
                                     if (StringUtil.emptyString(f.theFormula)) {
                                         System.out.println("Error in KIF.parse(): Storing empty formula from line: "
                                             + f.startLine);
@@ -276,7 +276,7 @@ public class KIFParser {
                                         list.add(f.theFormula);
                                 }
                             } else {
-                                ArrayList<String> list = new ArrayList<>();
+                                var list = new ArrayList<String>();
                                 if (StringUtil.emptyString(f.theFormula)) {
                                     System.out.println(
                                         "Error in KIF.parse(): Storing empty formula from line: " + f.startLine);
@@ -304,7 +304,7 @@ public class KIFParser {
                     if (lastVal != 40) 
                         expression.append(' ');
                     expression.append('"');
-                    String com = st.sval;
+                    var com = st.sval;
                     totalLinesForComments += countChar(com, (char) 0X0A);
                     expression.append(com);
                     expression.append('"');
@@ -344,7 +344,7 @@ public class KIFParser {
                         }
                         termFrequency.put(st.sval, termFrequency.get(st.sval) + 1);
 
-                        String key = createKey(st.sval, inAntecedent, inConsequent, argumentNum, parenLevel);
+                        var key = createKey(st.sval, inAntecedent, inConsequent, argumentNum, parenLevel);
                         keySet.add(key); 
                     }
                 }
@@ -364,12 +364,12 @@ public class KIFParser {
             }
         }
         catch (Exception ex) {
-            String message = ex.getMessage().replaceAll(":", "&58;"); 
+            var message = ex.getMessage().replaceAll(":", "&58;");
             warningSet.add("Warning in KIF.parse() " + message);
             ex.printStackTrace();
         }
         if (duplicateCount > 0) {
-            String warning = "WARNING in KIF.parse(Reader), " + duplicateCount + " duplicate statement"
+            var warning = "WARNING in KIF.parse(Reader), " + duplicateCount + " duplicate statement"
                     + ((duplicateCount > 1) ? "s " : " ") + "detected in "
                     + (StringUtil.emptyString(filename) ? " the input file" : filename);
             warningSet.add(warning);
@@ -401,7 +401,7 @@ public class KIFParser {
         if (sval == null) {
             sval = "null";
         }
-        String key = "";
+        var key = "";
         if (inAntecedent) {
             key += "ant-";
             key += sval;
@@ -433,9 +433,9 @@ public class KIFParser {
      */
     private static int countChar(String str, char c) {
 
-        int len = 0;
-        char[] cArray = str.toCharArray();
-        for (char value : cArray) {
+        var len = 0;
+        var cArray = str.toCharArray();
+        for (var value : cArray) {
             if (value == c)
                 len++;
         }
@@ -469,9 +469,9 @@ public class KIFParser {
      */
     public void writeFile(String fname) {
 
-        try (FileWriter fr = new FileWriter(fname)) {
-            try (PrintWriter pr = new PrintWriter(fr)) {
-                for (Formula formula : formulaMap.values()) pr.println(formula.theFormula);
+        try (var fr = new FileWriter(fname)) {
+            try (var pr = new PrintWriter(fr)) {
+                for (var formula : formulaMap.values()) pr.println(formula.theFormula);
             }
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
@@ -484,11 +484,11 @@ public class KIFParser {
      */
     public String parseStatement(String formula) {
 
-        StringReader r = new StringReader(formula);
+        var r = new StringReader(formula);
         try {
-            boolean isError = !parse(r).isEmpty();
+            var isError = !parse(r).isEmpty();
             if (isError) {
-                String msg = "Error parsing " + formula;
+                var msg = "Error parsing " + formula;
                 return msg;
             }
         }
@@ -556,16 +556,16 @@ public class KIFParser {
      */
     public static void main(String[] args) {
 
-        
-        String exp = "(documentation foo \"(written by John Smith).\")";
+
+        var exp = "(documentation foo \"(written by John Smith).\")";
         System.out.println(exp);
-        KIFParser kif = new KIFParser();
+        var kif = new KIFParser();
         Reader r = new StringReader(exp);
         kif.parse(r);
         System.out.println(kif.formulaMap);
-        ArrayList<String> al = kif.formulas.get("arg-0-documentation");
-        String fstr = al.get(0);
-        Formula f = kif.formulaMap.get(fstr);
+        var al = kif.formulas.get("arg-0-documentation");
+        var fstr = al.get(0);
+        var f = kif.formulaMap.get(fstr);
         System.out.println(f);
         f.read(f.cdr());
         f.read(f.cdr());

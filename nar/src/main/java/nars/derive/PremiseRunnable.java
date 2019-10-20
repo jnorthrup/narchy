@@ -34,7 +34,7 @@ public class PremiseRunnable {
 
 
     public float pri(How a, Derivation d) {
-        float p = a.pri(d);
+        var p = a.pri(d);
         if (p > Float.MIN_NORMAL) {
             this.action = a;
             if (a instanceof PatternHow.TruthifyDeriveAction) {

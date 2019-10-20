@@ -47,7 +47,7 @@ public class Anchor extends Leaf<String> {
 
     @Override
     public Leaf cloneTree() {
-        Anchor clone = new Anchor(this);
+        var clone = new Anchor(this);
         return clone;
     }
 

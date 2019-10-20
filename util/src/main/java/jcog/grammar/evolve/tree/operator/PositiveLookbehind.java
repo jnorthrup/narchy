@@ -32,7 +32,7 @@ public class PositiveLookbehind extends Lookaround {
 
     @Override
     public boolean isValid() {
-        boolean valid = super.isValid();
+        var valid = super.isValid();
         if (!valid) {
             return valid;
         }                

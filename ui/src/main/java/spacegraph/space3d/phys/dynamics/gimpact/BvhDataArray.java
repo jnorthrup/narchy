@@ -46,10 +46,10 @@ class BvhDataArray {
 	}
 
 	public void resize(int newSize) {
-		float[] newBound = new float[newSize*6];
+		var newBound = new float[newSize*6];
 
         System.arraycopy(bound, 0, newBound, 0, size*6);
-        int[] newData = new int[newSize];
+		var newData = new int[newSize];
         System.arraycopy(data, 0, newData, 0, size);
 		
 		bound = newBound;
@@ -59,18 +59,18 @@ class BvhDataArray {
 	}
 	
 	public void swap(int idx1, int idx2) {
-		int pos1 = idx1*6;
-		int pos2 = idx2*6;
+		var pos1 = idx1*6;
+		var pos2 = idx2*6;
 
-		float[] b = this.bound;
+		var b = this.bound;
 
-		float b0 = b[pos1];
-		float b1 = b[pos1+1];
-		float b2 = b[pos1+2];
-		float b3 = b[pos1+3];
-		float b4 = b[pos1+4];
-		float b5 = b[pos1+5];
-		int d = data[idx1];
+		var b0 = b[pos1];
+		var b1 = b[pos1+1];
+		var b2 = b[pos1+2];
+		var b3 = b[pos1+3];
+		var b4 = b[pos1+4];
+		var b5 = b[pos1+5];
+		var d = data[idx1];
 		
 		b[pos1] = b[pos2];
 		b[pos1+1] = b[pos2+1];
@@ -90,30 +90,30 @@ class BvhDataArray {
 	}
 	
 	public BoxCollision.AABB getBound(int idx, BoxCollision.AABB out) {
-		int pos = idx*6;
-		float[] b = this.bound;
+		var pos = idx*6;
+		var b = this.bound;
 		out.min.set(b[pos++], b[pos++], b[pos++]);
 		out.max.set(b[pos++], b[pos++], b[pos]);
 		return out;
 	}
 
 	public v3 getBoundMin(int idx, v3 out) {
-		int pos = idx*6;
-		float[] b = this.bound;
+		var pos = idx*6;
+		var b = this.bound;
 		out.set(b[pos++], b[pos++], b[pos]);
 		return out;
 	}
 
 	public v3 getBoundMax(int idx, v3 out) {
-		int pos = idx*6 + 3;
-		float[] b = this.bound;
+		var pos = idx*6 + 3;
+		var b = this.bound;
 		out.set(b[pos++], b[pos++], b[pos]);
 		return out;
 	}
 	
 	public void setBound(int idx, BoxCollision.AABB aabb) {
-		int pos = idx*6;
-		float[] b = this.bound;
+		var pos = idx*6;
+		var b = this.bound;
 		b[pos++] = aabb.min.x;
 		b[pos++] = aabb.min.y;
 		b[pos++] = aabb.min.z;

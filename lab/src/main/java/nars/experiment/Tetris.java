@@ -123,26 +123,26 @@ public class Tetris extends GameX {
         if (TETRIS_USE_DENSITY) {
             reward("density", 1, () -> {
 
-                long count = Arrays.stream(state.grid).filter(s -> s > 0).count();
-                int filled = (int) count;
+                var count = Arrays.stream(state.grid).filter(s -> s > 0).count();
+                var filled = (int) count;
 
-                int r = state.rowsFilled;
+                var r = state.rowsFilled;
                 return r > 0 ? ((float) filled) / (r * state.width) : 0;
             });
         }
 
         actionUnipolar($.inh(id, "speed"), (s) -> {
             int fastest = (int) this.timePerFall.min, slowest = (int) this.timePerFall.max;
-            int t = Math.round(Util.lerp(s, slowest, fastest));
+            var t = Math.round(Util.lerp(s, slowest, fastest));
             this.timePerFall.set(t);
             return Util.unlerp(t, slowest, fastest); //get the effective frequency after discretizing
         });
 
 
         int[] lastRowsFilled = {0};
-        SimpleReward lower = reward("lower", 1, () -> {
-            int rowsFilled = state.rowsFilled;
-            int deltaRows = rowsFilled - lastRowsFilled[0];
+        var lower = reward("lower", 1, () -> {
+            var rowsFilled = state.rowsFilled;
+            var deltaRows = rowsFilled - lastRowsFilled[0];
             lastRowsFilled[0] = rowsFilled;
             if (deltaRows > 0) {
                 return -1;
@@ -249,7 +249,7 @@ public class Tetris extends GameX {
     }
 
     private float density() {
-        long count = Arrays.stream(state.grid).filter(s -> s > 0).count();
+        var count = Arrays.stream(state.grid).filter(s -> s > 0).count();
         var filled = (int) count;
 
         var r = state.rowsFilled;
@@ -535,16 +535,16 @@ public class Tetris extends GameX {
          * @return
          */
         private boolean inBounds(int checkX, int checkY, int checkOrientation) {
-            boolean result = false;
+            var result = false;
             try {
                 var thePiece = possibleBlocks.get(currentBlockId).thePiece[checkOrientation];
 
-                boolean finished = false;
+                var finished = false;
                 for (var y = 0; !finished&& y < thePiece[0].length; ++y) {
-                    int i1 = checkY + y;
-                    boolean b = i1 >= 0 && i1 < height;
+                    var i1 = checkY + y;
+                    var b = i1 >= 0 && i1 < height;
                     for (var x = 0; !finished&&x < thePiece.length; ++x) {
-                        int i = checkX + x;
+                        var i = checkX + x;
                         finished =  ((!b || i < 0 || i >= width) && thePiece[x][y] != 0) ;
                     }
                 }
@@ -671,7 +671,7 @@ public class Tetris extends GameX {
          * @return
          */
         public boolean isRow(int y, boolean filledOrClear) {
-            int bound = width;
+            var bound = width;
             return IntStream.range(0, bound).mapToDouble(x -> grid[i(x, y)]).noneMatch(s -> filledOrClear ? s == 0 : s != 0);
         }
 

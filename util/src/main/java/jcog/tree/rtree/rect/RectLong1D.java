@@ -29,18 +29,18 @@ public class RectLong1D implements HyperRegion {
 
     @Override
     public HyperRegion mbr(HyperRegion[] rect) {
-        int n = rect.length;
+        var n = rect.length;
         assert (n > 0);
         if (n == 1)
             return rect[0];
         long min = Long.MAX_VALUE, max = Long.MIN_VALUE;
-        for (HyperRegion h : rect) {
+        for (var h : rect) {
             if (h == null)
                 break;
-            RectLong1D r = (RectLong1D) h;
-            long rmin = r.min;
+            var r = (RectLong1D) h;
+            var rmin = r.min;
             if (rmin < min) min = rmin;
-            long rmax = r.max;
+            var rmax = r.max;
             if (rmax > max) max = rmax;
         }
         return new RectLong1D(min, max);
@@ -49,9 +49,9 @@ public class RectLong1D implements HyperRegion {
     @Override
     public HyperRegion mbr(HyperRegion r) {
 
-        RectLong1D s = (RectLong1D) r;
-        long f = Math.min(min, s.min);
-        long t = Math.max(max, s.max);
+        var s = (RectLong1D) r;
+        var f = Math.min(min, s.min);
+        var t = Math.max(max, s.max);
         return new RectLong1D(f, t);
     }
 
@@ -60,7 +60,7 @@ public class RectLong1D implements HyperRegion {
     public boolean equals(Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof RectLong1D)) return false;
-        RectLong1D o = (RectLong1D)obj;
+        var o = (RectLong1D)obj;
         return min == o.min && max == o.max;
     }
 
@@ -100,13 +100,13 @@ public class RectLong1D implements HyperRegion {
 
     @Override
     public boolean contains(HyperRegion r) {
-        RectLong1D inner = (RectLong1D) r;
+        var inner = (RectLong1D) r;
         return inner.min >= min && inner.max <= max;
     }
 
     @Override
     public boolean intersects(HyperRegion r) {
-        RectLong1D rr = (RectLong1D) r;
+        var rr = (RectLong1D) r;
         return (Math.max(min, rr.min) <= Math.min(max, rr.max));
     }
 

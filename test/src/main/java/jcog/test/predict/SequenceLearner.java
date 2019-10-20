@@ -44,12 +44,12 @@ public abstract class SequenceLearner {
 
         Arrays.fill(errors, 1.0);
 
-        int headUnitSize = Head.getUnitSize(memoryWidth);
+        var headUnitSize = Head.getUnitSize(memoryWidth);
 
-        int outputSize = machine.outputSize();
-        int inputSize = machine.inputSize();
+        var outputSize = machine.outputSize();
+        var inputSize = machine.inputSize();
 
-        int weightsCount = (numHeads * memoryHeight) + (memoryHeight * memoryWidth) + (controllerSize * numHeads * memoryWidth) + (controllerSize * inputSize) + (controllerSize) + (outputSize * (controllerSize + 1)) + (numHeads * headUnitSize * (controllerSize + 1));
+        var weightsCount = (numHeads * memoryHeight) + (memoryHeight * memoryWidth) + (controllerSize * numHeads * memoryWidth) + (controllerSize * inputSize) + (controllerSize) + (outputSize * (controllerSize + 1)) + (numHeads * headUnitSize * (controllerSize + 1));
 //        System.out.println("# Weights: "  + weightsCount);
 
         teacher = new BPTTTeacher(machine,
@@ -86,21 +86,21 @@ public abstract class SequenceLearner {
     }
 
     private static double calculateLogLoss(double[][] knownOutput, NTM[] machines) {
-        double totalLoss = 0.0;
-        int okt = knownOutput.length - ((knownOutput.length - 2) / 2);
-        for (int t = 0; t < knownOutput.length; t++) {
+        var totalLoss = 0.0;
+        var okt = knownOutput.length - ((knownOutput.length - 2) / 2);
+        for (var t = 0; t < knownOutput.length; t++) {
 
             if (t < okt) continue;
 
-            double[] ideal = knownOutput[t];
-            double[] actual = machines[t].getOutput();
+            var ideal = knownOutput[t];
+            var actual = machines[t].getOutput();
 
 
             double rowLoss = 0;
-            for (int i = 0; i < ideal.length; i++) {
+            for (var i = 0; i < ideal.length; i++) {
 
-                double expected = ideal[i];
-                double real = actual[i];
+                var expected = ideal[i];
+                var real = actual[i];
 
 
                 rowLoss += (expected * (Math.log(real) / log2)) + ((1.0 - expected) * (Math.log(1.0 - real) / log2));
@@ -113,22 +113,22 @@ public abstract class SequenceLearner {
     }
 
     private static double calculateAbsoluteError(double[][] knownOutput, NTM[] machines) {
-        double totalLoss = 0.0;
-        int okt = knownOutput.length - ((knownOutput.length - 2) / 2);
-        for (int t = 0; t < knownOutput.length; t++) {
+        var totalLoss = 0.0;
+        var okt = knownOutput.length - ((knownOutput.length - 2) / 2);
+        for (var t = 0; t < knownOutput.length; t++) {
 
             if (t < okt) continue;
 
-            double[] knownOutputT = knownOutput[t];
-            double[] actual = machines[t].getOutput();
+            var knownOutputT = knownOutput[t];
+            var actual = machines[t].getOutput();
 
 
             double rowLoss = 0;
-            for (int i = 0; i < knownOutputT.length; i++) {
+            for (var i = 0; i < knownOutputT.length; i++) {
 
-                double expected = knownOutputT[i];
-                double real = actual[i];
-                double diff = Math.abs(expected - real);
+                var expected = knownOutputT[i];
+                var real = actual[i];
+                var diff = Math.abs(expected - real);
 
                 rowLoss += diff;
             }
@@ -138,9 +138,9 @@ public abstract class SequenceLearner {
     }
 
     public static StringBuffer toNiceString(double[] x) {
-        StringBuffer sb = new StringBuffer(x.length * 5 + 4);
+        var sb = new StringBuffer(x.length * 5 + 4);
         sb.append("< ");
-        for (double v : x) {
+        for (var v : x) {
             sb.append(twoDigits.format(v)).append(' ');
         }
         sb.append('>');
@@ -152,15 +152,15 @@ public abstract class SequenceLearner {
      */
     public double run() {
 
-        TrainingSequence sequence = nextTrainingSequence();
+        var sequence = nextTrainingSequence();
 
-        long timeBefore = System.nanoTime();
-        NTM[] output = teacher.train(sequence.input, sequence.ideal);
-        long trainTimeNS = System.nanoTime() - timeBefore;
+        var timeBefore = System.nanoTime();
+        var output = teacher.train(sequence.input, sequence.ideal);
+        var trainTimeNS = System.nanoTime() - timeBefore;
 
 
-        double error = calculateLogLoss(sequence.ideal, output);
-        double averageError = error / (
+        var error = calculateLogLoss(sequence.ideal, output);
+        var averageError = error / (
                 sequence.ideal.length * sequence.ideal[0].length);
 
 

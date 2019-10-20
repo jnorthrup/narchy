@@ -66,13 +66,13 @@ public class MouseResponder extends UGen {
         /**
          * The current x value.
          */
-        float x = (float) point.x / width;
+        var x = (float) point.x / width;
         /**
          * The current y value.
          */
-        float y = (float) point.y / height;
-        for (int i = 0; i < bufferSize; i++) {
-            float f = (float) i / bufferSize;
+        var y = (float) point.y / height;
+        for (var i = 0; i < bufferSize; i++) {
+            var f = (float) i / bufferSize;
             bufOut[0][i] = f * x + (1f - f) * prevX;
             bufOut[1][i] = f * y + (1f - f) * prevY;
         }

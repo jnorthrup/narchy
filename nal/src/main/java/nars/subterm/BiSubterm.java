@@ -46,9 +46,9 @@ public final class BiSubterm extends TermVector {
         if (this == obj) return true;
 
         if (obj instanceof Subterms) {
-            Subterms t = ((Subterms) obj);
+            var t = ((Subterms) obj);
             if (t instanceof BiSubterm || t.subs()==2) {
-                boolean avoidDynamicHashing = obj instanceof TermList; //TODO marker interface
+                var avoidDynamicHashing = obj instanceof TermList; //TODO marker interface
                 if (avoidDynamicHashing || hash == t.hashCodeSubterms()) {
                     //                    if (t instanceof TermVector)
                     //                        equivalentTo((TermVector) t);
@@ -78,7 +78,7 @@ public final class BiSubterm extends TermVector {
                     case 0: return;
                     case 1: a.accept(x); return;
                     case 2:
-                        for (Term term : this) {
+                        for (var term : this) {
                             a.accept(term);
                         }
                         return;

@@ -57,11 +57,11 @@ public class RadixTreeMemory extends Memory implements Consumer<NAR> {
 	 */
 	private MyRadixTree.Node volumeWeightedRoot(Random rng) {
 
-		List<MyRadixTree.Node> l = concepts.root.getOutgoingEdges();
-		int levels = l.size();
+		var l = concepts.root.getOutgoingEdges();
+		var levels = l.size();
 
 
-		float r = rng.nextFloat();
+		var r = rng.nextFloat();
         r *= r;
 
 
@@ -80,9 +80,9 @@ public class RadixTreeMemory extends Memory implements Consumer<NAR> {
 
 	@Override
 	public Concept get(Term t, boolean createIfMissing) {
-		AbstractBytes k = key(t);
+		var k = key(t);
 
-		ConceptRadixTree c = this.concepts;
+		var c = this.concepts;
 
 		return createIfMissing ?
 			c.putIfAbsent(k, () -> nar.conceptBuilder.apply(t, null))
@@ -93,7 +93,7 @@ public class RadixTreeMemory extends Memory implements Consumer<NAR> {
 	@Override
 	public void set(Term src, Concept target) {
 
-		AbstractBytes k = key(src);
+		var k = key(src);
 
 		concepts.acquireWriteLock();
 		try {
@@ -113,7 +113,7 @@ public class RadixTreeMemory extends Memory implements Consumer<NAR> {
 
 	@Override
 	public void forEach(Consumer<? super Concept> c) {
-		for (Concept concept : concepts) {
+		for (var concept : concepts) {
 			c.accept(concept);
 		}
 	}
@@ -133,10 +133,10 @@ public class RadixTreeMemory extends Memory implements Consumer<NAR> {
 
 	@Override
 	public @Nullable Concept remove(Term entry) {
-		AbstractBytes k = key(entry);
-		Concept result = concepts.get(k);
+		var k = key(entry);
+		var result = concepts.get(k);
 		if (result != null) {
-			boolean removed = concepts.remove(k);
+			var removed = concepts.remove(k);
 			if (removed)
 				return result;
 		}
@@ -180,19 +180,19 @@ public class RadixTreeMemory extends Memory implements Consumer<NAR> {
 
 		private void forgetNext() {
 
-			int sizeBefore = sizeEst();
+			var sizeBefore = sizeEst();
 
-			int overflow = sizeBefore - sizeLimit;
+			var overflow = sizeBefore - sizeLimit;
 
 			if (overflow < 0)
 				return;
 
-            float maxIterationRemovalPct = 0.05f;
-            int maxConceptsThatCanBeRemovedAtATime = (int) Math.max(1, sizeBefore * maxIterationRemovalPct);
+			var maxIterationRemovalPct = 0.05f;
+			var maxConceptsThatCanBeRemovedAtATime = (int) Math.max(1, sizeBefore * maxIterationRemovalPct);
 //        if (overflow < maxConceptsThatCanBeRemovedAtATime)
 //            return;
 
-            float overflowSafetyPct = 0.1f;
+			var overflowSafetyPct = 0.1f;
             if ((((float) overflow) / sizeLimit) > overflowSafetyPct) {
 				//major collection, strong
 				concepts.acquireWriteLock();
@@ -207,17 +207,17 @@ public class RadixTreeMemory extends Memory implements Consumer<NAR> {
 
 				while (/*(iterationLimit-- > 0) &&*/ ((sizeEst() - sizeLimit) > maxConceptsThatCanBeRemovedAtATime)) {
 
-					Random rng = nar.random();
+					var rng = nar.random();
 
-					Node subRoot = volumeWeightedRoot(rng);
+					var subRoot = volumeWeightedRoot(rng);
 
                     if (s == null)
 						s = concepts.random(subRoot, PHI_min_1f, rng);
 
-					Node f = s.found;
+					var f = s.found;
 
 					if (f != null && f != subRoot) {
-						int subTreeSize = concepts.sizeIfLessThan(f, maxConceptsThatCanBeRemovedAtATime);
+						var subTreeSize = concepts.sizeIfLessThan(f, maxConceptsThatCanBeRemovedAtATime);
 
 						if (subTreeSize > 0) {
 							concepts.removeWithWriteLock(s, true);

@@ -15,9 +15,9 @@ public enum Derivers { ;
     /** HACK range is inclusive */
     private static ArrayHashSet<PremiseRule> standard(int minLevel, int maxLevel, String... otherFiles) {
 
-        ArrayHashSet<PremiseRule> f = new ArrayHashSet<>(1024);
+        var f = new ArrayHashSet<PremiseRule>(1024);
 
-        for (int level = minLevel; level <= maxLevel; level++) {
+        for (var level = minLevel; level <= maxLevel; level++) {
             switch (level) {
                 case 1:
                     f.addAll(file("nal1.nal"));
@@ -70,7 +70,7 @@ public enum Derivers { ;
             }
         }
 
-        for (String o : otherFiles)
+        for (var o : otherFiles)
             f.addAll(file(o));
 
         return f;

@@ -51,7 +51,7 @@ public final class GamePad implements Function<String, GamePad.GameInputEvent>, 
             return null;
         }
 
-        Thread t = new Thread(this);
+        var t = new Thread(this);
         t.start();
         return t;
     }
@@ -80,31 +80,30 @@ public final class GamePad implements Function<String, GamePad.GameInputEvent>, 
     @Override
     public GameInputEvent apply(String l) {
 
-        String prefix = "Event: ";
+        var prefix = "Event: ";
         if (!l.startsWith(prefix)) {
             logger.warn("unknown: {}", l);
             return null; 
         }
 
-        String remaining = l.substring(prefix.length());
-        Map<String, String> fields = Splitter.on(", ").withKeyValueSeparator(' ').split(remaining);
+        var remaining = l.substring(prefix.length());
+        var fields = Splitter.on(", ").withKeyValueSeparator(' ').split(remaining);
 
         if (fields.size() != 4) {
             logger.warn("unknown format: {}", fields);
             return null;
         }
 
-        
 
-        long when =
+        var when =
                 
                 
                 System.currentTimeMillis();
 
-        int axis = Integer.parseInt(fields.get("number"));
-        int value = Integer.parseInt(fields.get("value"));
+        var axis = Integer.parseInt(fields.get("number"));
+        var value = Integer.parseInt(fields.get("value"));
 
-        GameInputEvent e = new GameInputEvent(axis, value, when);
+        var e = new GameInputEvent(axis, value, when);
         each.accept(e);
         return e;
 
@@ -124,17 +123,17 @@ public final class GamePad implements Function<String, GamePad.GameInputEvent>, 
         if (!running.compareAndSet(false, true))
             return;
 
-        ProcessBuilder pb = new ProcessBuilder().command("jstest", "--event", "/dev/input/" + device);
+        var pb = new ProcessBuilder().command("jstest", "--event", "/dev/input/" + device);
 
         try {
-            Process proc = pb.start();
+            var proc = pb.start();
 
-            BufferedReader reader = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+            var reader = new BufferedReader(new InputStreamReader(proc.getInputStream()));
 
             logger.info("start {}", proc.info());
 
             while (running.get()) {
-                String l = reader.readLine();
+                var l = reader.readLine();
                 if (!l.isEmpty())
                     apply(l);
             }

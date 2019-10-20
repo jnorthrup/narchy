@@ -61,7 +61,7 @@ public final class Sys extends Defines {
     
     public static File[] FindAll(String path, int musthave, int canthave) {
 
-        int index = path.lastIndexOf('/');
+        var index = path.lastIndexOf('/');
 
         if (index != -1) {
             findbase = path.substring(0, index);
@@ -75,7 +75,7 @@ public final class Sys extends Defines {
             findpattern = "*";
         }
 
-        File fdir = new File(findbase);
+        var fdir = new File(findbase);
 
         if (!fdir.exists())
             return null;
@@ -124,13 +124,13 @@ public final class Sys extends Defines {
 
         static String convert2regexpr(String pattern) {
 
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
 
-            boolean escape = false;
+            var escape = false;
 
 
-            for (int i = 0; i < pattern.length(); i++) {
-                char c = pattern.charAt(i);
+            for (var i = 0; i < pattern.length(); i++) {
+                var c = pattern.charAt(i);
                 String subst = null;
                 switch (c) {
                 case '*':
@@ -158,8 +158,8 @@ public final class Sys extends Defines {
                     sb.append(c);
             }
 
-            
-            String regexpr = sb.toString();
+
+            var regexpr = sb.toString();
 
             
             
@@ -173,8 +173,8 @@ public final class Sys extends Defines {
         }
 
         static boolean CompareAttributes(File dir, int musthave, int canthave) {
-            
-            String name = dir.getName();
+
+            var name = dir.getName();
 
             return !(".".equals(name) || "..".equals(name));
 

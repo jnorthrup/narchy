@@ -78,7 +78,7 @@ public class PrologSolve {
 				break;
 			}
 
-			State state = this.nextState;
+			var state = this.nextState;
 
 			nextState = state.run(this);
 
@@ -103,7 +103,7 @@ public class PrologSolve {
 
 
 	public List<PrologContext> getExecutionStack() {
-		PrologContext t = currentContext;
+		var t = currentContext;
 		if (t == null) return EMPTY_LIST;
 
 		List<PrologContext> l = new FasterList<>(1);
@@ -117,7 +117,7 @@ public class PrologSolve {
 
 
 	void prepareGoal() {
-		LinkedHashMap<Var,Var> goalVars = new LinkedHashMap<>();
+		var goalVars = new LinkedHashMap<Var, Var>();
 		startGoal = (Struct)(query).copyGoal(goalVars,0);
 		this.goalVars = goalVars.values();
 	}
@@ -194,7 +194,7 @@ public class PrologSolve {
 		 * @return
 		 */
 		protected boolean existChoicePoint() {
-			ChoicePointContext pointer = this.pointer;
+			var pointer = this.pointer;
 			while (pointer!=null) {
 				if (pointer.compatibleGoals.unifiesMore())
 					return true;

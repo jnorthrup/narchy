@@ -51,9 +51,9 @@ public class CompoundShape extends CollisionShape {
 	private final v3 localScaling = new v3(1f, 1f, 1f);
 
 	public void addChildShape(Transform localTransform, CollisionShape shape) {
-		
-		
-		CompoundShapeChild child = new CompoundShapeChild(shape);
+
+
+		var child = new CompoundShapeChild(shape);
 		child.transform.set(localTransform);
 		
 
@@ -89,7 +89,7 @@ public class CompoundShape extends CollisionShape {
 		do {
 			done_removing = true;
 
-			for (int i = 0; i < children.size(); i++) {
+			for (var i = 0; i < children.size(); i++) {
 				
 				if (children.get(i).childShape == shape) {
 					children.removeFast(i);
@@ -116,8 +116,8 @@ public class CompoundShape extends CollisionShape {
 		return children.get(index).transform;
 	}
 	public Transform getChildTransform(int index, Transform out) {
-		
-		Transform t = getChildTransform(index);
+
+		var t = getChildTransform(index);
 		out.set(t);
 		return out;
 	}
@@ -131,26 +131,26 @@ public class CompoundShape extends CollisionShape {
 	 */
 	@Override
 	public void getAabb(Transform trans, v3 aabbMin, v3 aabbMax) {
-		v3 localHalfExtents = new v3();
+		var localHalfExtents = new v3();
 		localHalfExtents.sub(localAabbMax, localAabbMin);
 		localHalfExtents.scaled(0.5f);
 		localHalfExtents.x += collisionMargin;
 		localHalfExtents.y += collisionMargin;
 		localHalfExtents.z += collisionMargin;
 
-		v3 localCenter = new v3();
+		var localCenter = new v3();
 		localCenter.add(localAabbMax, localAabbMin);
 		localCenter.scaled(0.5f);
 
-		Matrix3f abs_b = new Matrix3f(trans.basis);
+		var abs_b = new Matrix3f(trans.basis);
 		MatrixUtil.absolute(abs_b);
 
-		v3 center = new v3(localCenter);
+		var center = new v3(localCenter);
 		trans.transform(center);
 
-		v3 tmp = new v3();
+		var tmp = new v3();
 
-		v3 extent = new v3();
+		var extent = new v3();
 		abs_b.getRow(0, tmp);
 		extent.x = tmp.dot(localHalfExtents);
 		abs_b.getRow(1, tmp);
@@ -172,16 +172,16 @@ public class CompoundShape extends CollisionShape {
 		localAabbMin.set(1e30f, 1e30f, 1e30f);
 		localAabbMax.set(-1e30f, -1e30f, -1e30f);
 
-		v3 tmpLocalAabbMin = new v3();
-		v3 tmpLocalAabbMax = new v3();
+		var tmpLocalAabbMin = new v3();
+		var tmpLocalAabbMax = new v3();
 
 
-        for (CompoundShapeChild aChildren : children) {
+        for (var aChildren : children) {
 
 
             aChildren.childShape.getAabb(aChildren.transform, tmpLocalAabbMin, tmpLocalAabbMax);
 
-            for (int i = 0; i < 3; i++) {
+            for (var i = 0; i < 3; i++) {
                 if (VectorUtil.coord(localAabbMin, i) > VectorUtil.coord(tmpLocalAabbMin, i)) {
                     VectorUtil.setCoord(localAabbMin, i, VectorUtil.coord(tmpLocalAabbMin, i));
                 }
@@ -205,19 +205,19 @@ public class CompoundShape extends CollisionShape {
 
 	@Override
 	public void calculateLocalInertia(float mass, v3 inertia) {
-		
-		Transform ident = new Transform();
+
+		var ident = new Transform();
 		ident.setIdentity();
 		v3 aabbMin = new v3(), aabbMax = new v3();
 		getAabb(ident, aabbMin, aabbMax);
 
-		v3 halfExtents = new v3();
+		var halfExtents = new v3();
 		halfExtents.sub(aabbMax, aabbMin);
 		halfExtents.scaled(0.5f);
 
-		float lx = 2f * halfExtents.x;
-		float ly = 2f * halfExtents.y;
-		float lz = 2f * halfExtents.z;
+		var lx = 2f * halfExtents.x;
+		var ly = 2f * halfExtents.y;
+		var lz = 2f * halfExtents.z;
 
 		inertia.x = (mass / 12f) * (ly * ly + lz * lz);
 		inertia.y = (mass / 12f) * (lx * lx + lz * lz);
@@ -263,12 +263,12 @@ public class CompoundShape extends CollisionShape {
 	 * of the collision object by the principal transform.
 	 */
 	public void calculatePrincipalAxisTransform(float[] masses, Transform principal, v3 inertia) {
-		int n = children.size();
+		var n = children.size();
 
-        v3 center = new v3();
+		var center = new v3();
 		center.set(0, 0, 0);
         float totalMass = 0;
-        for (int k = 0; k < n; k++) {
+        for (var k = 0; k < n; k++) {
 			
 			center.scaleAdd(masses[k], children.get(k).transform, center);
 			totalMass += masses[k];
@@ -276,21 +276,21 @@ public class CompoundShape extends CollisionShape {
 		center.scaled(1f / totalMass);
 		principal.set(center);
 
-		Matrix3f tensor = new Matrix3f();
+		var tensor = new Matrix3f();
 		tensor.setZero();
 
-		for (int k = 0; k < n; k++) {
-			v3 i = new v3();
+		for (var k = 0; k < n; k++) {
+			var i = new v3();
 			
 			children.get(k).childShape.calculateLocalInertia(masses[k], i);
 
-			
-			Transform t = children.get(k).transform;
-			v3 o = new v3();
+
+			var t = children.get(k).transform;
+			var o = new v3();
 			o.sub(t, center);
 
-			
-			Matrix3f j = new Matrix3f();
+
+			var j = new Matrix3f();
 			j.transpose(t.basis);
 
 			j.m00 *= i.x;
@@ -308,8 +308,8 @@ public class CompoundShape extends CollisionShape {
 			
 			tensor.add(j);
 
-			
-			float o2 = o.lengthSquared();
+
+			var o2 = o.lengthSquared();
 			j.setRow(0, o2, 0, 0);
 			j.setRow(1, 0, o2, 0);
 			j.setRow(2, 0, 0, o2);

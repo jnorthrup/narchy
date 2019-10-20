@@ -45,10 +45,10 @@ public class UnionFind {
 	 * It sorts the elements, based on island id, in order to make it easy to iterate over islands.
 	 */
 	public void sortIslands() {
-		
-		int numElements = elements.size();
 
-		for (int i = 0; i < numElements; i++) {
+		var numElements = elements.size();
+
+		for (var i = 0; i < numElements; i++) {
 			
 			elements.get(i).id = find(i);
 			
@@ -67,7 +67,7 @@ public class UnionFind {
 	public void reset(int N) {
 		allocate(N);
 
-		for (int i = 0; i < N; i++) {
+		for (var i = 0; i < N; i++) {
 			
 			elements.get(i).id = i;
 			

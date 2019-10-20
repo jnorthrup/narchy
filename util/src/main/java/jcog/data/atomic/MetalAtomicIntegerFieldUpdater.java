@@ -20,7 +20,7 @@ public final class MetalAtomicIntegerFieldUpdater<T> extends AtomicIntegerFieldU
 //            int modifiers;
         try {
             //field = AccessController.doPrivileged((PrivilegedExceptionAction<Field>)
-            Field field = tclass.getDeclaredField(fieldName);
+            var field = tclass.getDeclaredField(fieldName);
             field.trySetAccessible();
             this.offset = U.objectFieldOffset(field);
 

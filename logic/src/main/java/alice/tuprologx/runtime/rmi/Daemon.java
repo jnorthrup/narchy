@@ -9,18 +9,18 @@ import java.util.Optional;
 public class Daemon {
 
     public static void main(String... args){
-        String engineName="prolog";
-        int port=1099;
-        String portString="1099";
+        var engineName="prolog";
+        var port=1099;
+        var portString="1099";
         if (args.length >0){
             if ("-?".equals(args[0])){
                 System.out.println("\nargs: {-N<engine name>} {-P<rmi server port>} \nex: -Nprolog -P1099\n");
                 System.exit(-1);
             }
-            String name=getOpt(args,"-N");
+            var name=getOpt(args,"-N");
             if (name!=null)
                 engineName=name;
-            String portSt=getOpt(args,"-P");
+            var portSt=getOpt(args,"-P");
             if (portSt!=null){
                 try {
                     port=Integer.parseInt(portSt);
@@ -36,10 +36,10 @@ public class Daemon {
         } catch (Exception ex){
         }
         try {
-            PrologImpl engine=new PrologImpl();
+            var engine=new PrologImpl();
 
-            String hostName=InetAddress.getLocalHost().toString();
-            int index=hostName.indexOf('/');
+            var hostName=InetAddress.getLocalHost().toString();
+            var index=hostName.indexOf('/');
             if (index>=0)
                 hostName=hostName.substring(0,index);
             Naming.rebind("//"+hostName+ ':' +portString+ '/' +engineName,engine);
@@ -50,7 +50,7 @@ public class Daemon {
     }
 
     static String getOpt(String[] args,String prefix){
-        for (String s : args) {
+        for (var s : args) {
             if (s.startsWith(prefix)) {
                 return Optional.of(s).map(arg -> arg.substring(prefix.length())).orElse(null);
             }

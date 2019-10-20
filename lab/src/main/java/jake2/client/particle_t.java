@@ -42,7 +42,7 @@ public class particle_t {
 	
 	
 	public static void setColorPalette(int[] palette) {
-		for (int i=0; i < 256; i++) {
+		for (var i = 0; i < 256; i++) {
 			colorTable[i] = palette[i] & 0x00FFFFFF;
 		}
 	}

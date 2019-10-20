@@ -103,7 +103,7 @@ public enum $ { ;
     }
 
     public static Atom quote(Object text) {
-        String s = text.toString();
+        var s = text.toString();
         return quote(s);
     }
 
@@ -214,7 +214,7 @@ public enum $ { ;
         if (from == to)
             return Op.EmptyProduct;
 
-        Term[] x = new Term[to - from];
+        var x = new Term[to - from];
 
         for (int j = 0, i = from; i < to; i++)
             x[j++] = l.get(i);
@@ -244,7 +244,7 @@ public enum $ { ;
         if (t.length == 0) return Op.EmptyProduct;
 
         if (t.length < 31) {
-            int b = IntStream.range(0, t.length).filter(i -> t[i]).map(i -> 1 << i).reduce(0, (a, b1) -> a | b1);
+            var b = IntStream.range(0, t.length).filter(i -> t[i]).map(i -> 1 << i).reduce(0, (a, b1) -> a | b1);
             return Int.the(b);
         } else {
             throw new TODO();
@@ -258,14 +258,14 @@ public enum $ { ;
         //special case: interpret normalized variables
         switch (name.length()) {
             case 1:
-                char c0 = name.charAt(0);
+                var c0 = name.charAt(0);
                 if (isDigit(c0))
                     return $.v(type, (byte) (c0 - '0'));
                 break;
             case 2:
-                char d0 = name.charAt(0);
+                var d0 = name.charAt(0);
                 if (isDigit(d0)) {
-                    char d1 = name.charAt(1);
+                    var d1 = name.charAt(1);
                     if (isDigit(d1))
                         return $.v(type, (byte) ((d0 - '0') * 10 + (d1 - '0')));
                 }
@@ -324,7 +324,7 @@ public enum $ { ;
     }
 
     public static Term p(char[] c, CharToObjectFunction<Term> f) {
-        Term[] x = IntStream.range(0, c.length).mapToObj(i -> f.valueOf(c[i])).toArray(Term[]::new);
+        var x = IntStream.range(0, c.length).mapToObj(i -> f.valueOf(c[i])).toArray(Term[]::new);
         return $.p(x);
     }
 
@@ -341,9 +341,9 @@ public enum $ { ;
     }
 
     private static Term[] array(String... s) throws Narsese.NarseseException {
-        int l = s.length;
-        Term[] tt = new Term[l];
-        for (int i = 0; i < l; i++)
+        var l = s.length;
+        var tt = new Term[l];
+        for (var i = 0; i < l; i++)
             tt[i] = $.$(s[i]);
 
         return tt;
@@ -366,10 +366,10 @@ public enum $ { ;
     }
 
     public static Term[] ints(RoaringBitmap b) {
-        int size = b.getCardinality();
-        PeekableIntIterator ii = b.getIntIterator();
-        Term[] t = new Term[size];
-        int k = 0;
+        var size = b.getCardinality();
+        var ii = b.getIntIterator();
+        var t = new Term[size];
+        var k = 0;
         while (ii.hasNext())
             t[k++] = Int.the(ii.next());
         return t;
@@ -465,11 +465,11 @@ public enum $ { ;
     }
 
     public static Term[] ints(short... i) {
-        int l = i.length;
+        var l = i.length;
         return IntStream.range(0, l).mapToObj(j -> the(i[j])).toArray(Term[]::new);
     }
     public static Term[] ints(int... i) {
-        int l = i.length;
+        var l = i.length;
         return Arrays.stream(i).mapToObj($::the).toArray(Term[]::new);
     }
 
@@ -484,7 +484,7 @@ public enum $ { ;
         if (x != x)
             throw new TODO("NaN");
 
-        int rx = (int) Util.round(x, 1);
+        var rx = (int) Util.round(x, 1);
         return Util.equals(rx, x) ? Int.the(rx) : the(new Fraction(x));
 
         //return quote(Float.toString(v));
@@ -493,7 +493,7 @@ public enum $ { ;
     public static Term the(double x) {
         if (x != x)
             throw new TODO("NaN");
-        int rx = (int) Util.round(x, 1);
+        var rx = (int) Util.round(x, 1);
         return Util.equals(rx, x, Double.MIN_NORMAL) ? Int.the(rx) : the(new Fraction(x));
     }
 
@@ -547,13 +547,13 @@ public enum $ { ;
         } else if (n instanceof Byte) {
             result = Int.the((Byte) n);
         } else if (n instanceof Float) {
-            float d = n.floatValue();
-            int id = (int) d;
+            var d = n.floatValue();
+            var id = (int) d;
             result = d == d && Util.equals(d, id) ? Int.the(id) : Atomic.the(n.toString());
 
         } else {
-            double d = n.doubleValue();
-            int id = (int) d;
+            var d = n.doubleValue();
+            var id = (int) d;
             result = d == d && Util.equals(d, id) ? Int.the(id) : Atomic.the(n.toString());
 
         }
@@ -579,10 +579,10 @@ public enum $ { ;
         assert(x >= 0);
         x %= maxValue; //auto-wraparound
 
-        int decimals = (int) Math.ceil(Math.log(maxValue)/Math.log(radix));
-        int[] y = new int[decimals];
-        int X = -x;
-        int yi = 0;
+        var decimals = (int) Math.ceil(Math.log(maxValue)/Math.log(radix));
+        var y = new int[decimals];
+        var X = -x;
+        var yi = 0;
         do {
             y[yi++] = -(X % radix);
             X /= radix;
@@ -596,7 +596,7 @@ public enum $ { ;
      */
     public static Term[] radixArray(int x, int radix, int maxX) {
 
-        int[] xx = radix(x, radix, maxX);
+        var xx = radix(x, radix, maxX);
 
         //$.the(BinTxt.symbols[xx[i]]);
         return Arrays.stream(xx).mapToObj(Int::the).toArray(Term[]::new);
@@ -606,16 +606,16 @@ public enum $ { ;
 
 
     public static Term pRecurse(boolean innerStart, Term... t) {
-        int j = t.length - 1;
-        int n = innerStart ? 0 : j - 1;
-        Term inner = t[n];
-        Term nextInner = inner.op() != PROD ? $.p(inner) : inner;
+        var j = t.length - 1;
+        var n = innerStart ? 0 : j - 1;
+        var inner = t[n];
+        var nextInner = inner.op() != PROD ? $.p(inner) : inner;
         while (--j > 0) {
             n += innerStart ? +1 : -1;
-            Term next = t[n];
+            var next = t[n];
 
 
-            Term[] nextArray = ArrayUtil.add(next.subterms().arrayShared(), nextInner);
+            var nextArray = ArrayUtil.add(next.subterms().arrayShared(), nextInner);
 
             nextInner = next.op() != PROD ?
                     (innerStart ? $.p(nextInner, next) : $.p(next, nextInner)) : $.p(nextArray);
@@ -625,8 +625,8 @@ public enum $ { ;
     }
 
     public static @Nullable Compound inhRecurse(Term... t) {
-        int tl = t.length;
-        Term bottom = t[--tl];
+        var tl = t.length;
+        var bottom = t[--tl];
         Compound nextInner = $.inh(t[--tl], bottom);
         while (nextInner != null && tl > 0) {
             nextInner = $.inh(t[--tl], nextInner);
@@ -728,7 +728,7 @@ public enum $ { ;
             case 0:
                 return Op.EmptySubterms;
             case 1: {
-                Term a = t[0];
+                var a = t[0];
                 if (Intrin.intrin(a.unneg()))
                     return new IntrinSubterms(a);
                 break;
@@ -741,7 +741,7 @@ public enum $ { ;
             }
             case 3: {
                 Term a = t[0], b = t[1], c = t[2];
-                boolean result = Stream.of(a, b, c).allMatch(term -> Intrin.intrin(term.unneg()));
+                var result = Stream.of(a, b, c).allMatch(term -> Intrin.intrin(term.unneg()));
                 if (result)
                     return new IntrinSubterms(a, b, c);
                 break;
@@ -781,7 +781,7 @@ public enum $ { ;
 
     public static Term funcImg(Atomic f, Term... x) {
 //        if (x.length > 1) {
-        Term[] xx = ArrayUtil.insert(0, x, f);
+        var xx = ArrayUtil.insert(0, x, f);
         xx[x.length] = ImgExt;
         return INH.the(x[x.length - 1], PROD.the(xx));
 //        } else {
@@ -792,7 +792,7 @@ public enum $ { ;
 
     public static Term diff(Term a, Term b) {
         //throw new TODO("use setAt/sect methods");
-        Op aop = a.op();
+        var aop = a.op();
         if (aop == b.op()) {
             switch (aop) {
                 case SETi:
@@ -810,7 +810,7 @@ public enum $ { ;
         if (x instanceof Term)
             return ((Term) x);
         else if (x instanceof Termed) {
-            Term u = ((Termed) x).term();
+            var u = ((Termed) x).term();
             if (u != null)
                 return u;
             //else: probably still in the constructor before x.term() has been set, continue:
@@ -819,7 +819,7 @@ public enum $ { ;
         if (x instanceof String)
             return Atomic.the((String) x);
         else {
-            Class<?> c = x.getClass();
+            var c = x.getClass();
             Term idHash = $.intRadix(System.identityHashCode(x), 36);
             return !c.isSynthetic() ? $.p($.quote(c.getName()), idHash) : $.p($.quote(c.getSimpleName()), idHash);
         }
@@ -831,7 +831,7 @@ public enum $ { ;
     }
 
     public static Atom uuid(@Nullable String prefix) {
-        String u = Util.uuid64();
+        var u = Util.uuid64();
         return $.quote(prefix != null ? prefix + u : u);
     }
 
@@ -840,9 +840,9 @@ public enum $ { ;
         if (u.getQuery()!=null)
             throw new TODO();
 
-        String schemeStr = u.getProtocol();
-        String authorityStr = u.getAuthority();
-        String pathStr = u.getPath();
+        var schemeStr = u.getProtocol();
+        var authorityStr = u.getAuthority();
+        var pathStr = u.getPath();
 
         return URI(schemeStr, authorityStr, pathStr);
     }
@@ -852,9 +852,9 @@ public enum $ { ;
         if (u.getFragment()!=null || u.getQuery()!=null)
             throw new TODO();
 
-        String schemeStr = u.getScheme();
-        String authorityStr = u.getAuthority();
-        String pathStr = u.getPath();
+        var schemeStr = u.getScheme();
+        var authorityStr = u.getAuthority();
+        var pathStr = u.getPath();
 
         return URI(schemeStr, authorityStr, pathStr);
     }
@@ -902,12 +902,12 @@ public enum $ { ;
 
         */
 
-        Atom scheme = (Atom) the(schemeStr); //TODO cache these commonly used
+        var scheme = (Atom) the(schemeStr); //TODO cache these commonly used
 
         //TODO use more reliable path parser
-        List<String> pathComponents = Splitter.on('/').omitEmptyStrings().splitToList(pathStr);
+        var pathComponents = Splitter.on('/').omitEmptyStrings().splitToList(pathStr);
 
-        Term path = p(pathComponents.toArray(ArrayUtil.EMPTY_STRING_ARRAY));
+        var path = p(pathComponents.toArray(ArrayUtil.EMPTY_STRING_ARRAY));
         return (authority == null || authority.isEmpty()) ?
                 inh(path, scheme) : inh( PROD.the(INH.the(path, /*TODO parse*/the(authority))), scheme);
     }

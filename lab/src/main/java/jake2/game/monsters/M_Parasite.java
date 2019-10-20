@@ -642,7 +642,7 @@ public class M_Parasite {
             }
             Math3D.VectorCopy(self.enemy.s.origin, end);
 
-            trace_t tr = game_import_t.trace(start, null, null, end, self,
+            var tr = game_import_t.trace(start, null, null, end, self,
                     Defines.MASK_SHOT);
             if (tr.ent != self.enemy)
                 return true;

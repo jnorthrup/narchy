@@ -115,13 +115,13 @@ public class Repetition extends Parser {
 	@Override
 	public Set<Assembly> match(Set<Assembly> in) {
 		if (preAssembler != null) {
-			for (Assembly assembly : in) {
+			for (var assembly : in) {
 				preAssembler.accept(assembly);
 			}
 		}
 		Set<Assembly> out = numberOfRequiredMatches == 0 ? elementClone(in) : new HashSet<>();
-		Set<Assembly> s = in; 
-		int countNumberOfMatches = 0;
+		var s = in;
+		var countNumberOfMatches = 0;
 		while (!s.isEmpty()) {
 			s = subparser.matchAndAssemble(s);
 			countNumberOfMatches++;
@@ -142,9 +142,9 @@ public class Repetition extends Parser {
 			return v;
 		}
 
-		int n = (int) (EXPWIDTH * Math.random());
-		for (int j = 0; j < n; j++) {
-			List<String> w = subparser.randomExpansion(maxDepth, depth++);
+		var n = (int) (EXPWIDTH * Math.random());
+		for (var j = 0; j < n; j++) {
+			var w = subparser.randomExpansion(maxDepth, depth++);
 			v.addAll(w);
 		}
 		return v;

@@ -31,8 +31,8 @@ public class PathSurface extends PaintSurface {
     }
 
     public void set(int point, float x, float y) {
-        int n = point * 2;
-        float[] p = path.array();
+        var n = point * 2;
+        var p = path.array();
         //TODO test if the value actually changed
         p[n++] = x;
         p[n] = y;
@@ -43,7 +43,7 @@ public class PathSurface extends PaintSurface {
     protected void render(ReSurface r) {
         if (invalid) {
             //update bounds
-            RectFloat newBounds = path.bounds();
+            var newBounds = path.bounds();
             //System.out.println(path + " " + newBounds);
 //            pos(newBounds);
             invalid = false;

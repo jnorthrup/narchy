@@ -58,13 +58,13 @@ public class Renderer extends JComponent {
         renderPlayer(graphics2D, world.opponentPlayer);
         renderPlayer(graphics2D, world.rlPlayer);
         List<Hit> hits = new ArrayList<>(world.hits);
-        for (Hit h : hits) {
+        for (var h : hits) {
             if (h.reward > 0) {
                 graphics2D.setColor(Color.green);
             } else {
                 graphics2D.setColor(Color.red);
             }
-            int r = h.progress;
+            var r = h.progress;
             graphics2D.fillArc(h.x - r, h.y - r, 2 * r, 2 * r, 0, 360);
         }
         g.drawImage(bufferedImage, 0, 0, getWidth(), getHeight(), null);
@@ -75,7 +75,7 @@ public class Renderer extends JComponent {
     }
 
     public AffineTransform computePlayerTransform(Player player) {
-        AffineTransform t = new AffineTransform();
+        var t = new AffineTransform();
         t.translate(player.x, 0);
         if (player.mirror) {
             t.scale(-1, 1);
@@ -94,8 +94,8 @@ public class Renderer extends JComponent {
     }
 
     private void renderPlayer(Graphics2D g, Player player) {
-        int a = 0;
-        int b = 0;
+        var a = 0;
+        var b = 0;
 
         if (player.moveIndex >= 0) {
             a = player.moveIndex;

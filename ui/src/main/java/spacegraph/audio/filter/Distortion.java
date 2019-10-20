@@ -13,7 +13,7 @@ public class Distortion {
 //        return y;
 
 
-        double max = 1.0 / atan(gain_pre);
+        var max = 1.0 / atan(gain_pre);
 
         return atan(x * gain_pre) * max * gain_post;
 

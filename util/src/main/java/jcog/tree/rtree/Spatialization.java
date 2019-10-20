@@ -84,9 +84,9 @@ public class Spatialization<X> {
 
     public HyperRegion mbr(X[] data) {
        //return HyperRegion.mbr(this, data);
-        HyperRegion bounds = bounds(data[0]);
-        for (int k = 1; k < data.length; k++) {
-            X kk = data[k];
+        var bounds = bounds(data[0]);
+        for (var k = 1; k < data.length; k++) {
+            var kk = data[k];
             if (kk == null)
                 break; //null terminator
             bounds = bounds.mbr(bounds(kk));

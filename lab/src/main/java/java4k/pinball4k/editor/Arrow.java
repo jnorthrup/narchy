@@ -12,15 +12,15 @@ public class Arrow extends LevelObject {
 
     public Arrow(Point p1, Point p2) {
 		this.p = new Point(p1);
-		int dx = p2.x - p1.x;
-		int dy = p2.y - p1.y;
+		var dx = p2.x - p1.x;
+		var dy = p2.y - p1.y;
 		angle = (int) Math.toDegrees(Math.atan2(dy, dx));
 		if (angle < 0) {
 			angle += 360;
 		}
 		angle /= 2;
 
-        Arrow outerInstance = this;
+		var outerInstance = this;
     	handle = new ArrowHandle();
     	handles.add(handle);
 	}

@@ -49,7 +49,7 @@ public class ConsoleRegexTurtle {
      * @param args the command line arguments
      */
     public static void main(String[] args) throws IOException {
-        SimpleConfig simpleConfiguration = new SimpleConfig();
+        var simpleConfiguration = new SimpleConfig();
 
         
         simpleConfiguration.datasetName = "./dataset.json"; 
@@ -73,19 +73,19 @@ public class ConsoleRegexTurtle {
             System.exit(1);
         }
 
-        long count = simpleConfiguration.dataset.getExamples().stream().filter(example -> example.getNumberMatches() > 0).count();
-        int numberPositiveExamples = (int) count;
+        var count = simpleConfiguration.dataset.getExamples().stream().filter(example -> example.getNumberMatches() > 0).count();
+        var numberPositiveExamples = (int) count;
         String message = null;
         if (simpleConfiguration.dataset.getNumberMatches() < 25 || numberPositiveExamples < 2) {
             message = WARNING_MESSAGE;
         }
-        Configuration config = simpleConfiguration.buildConfiguration();
+        var config = simpleConfiguration.buildConfiguration();
         
         config.setPostProcessor(new JsonPostProcessor());
         config.getPostprocessorParameters().put(BasicPostprocessor.PARAMETER_NAME_POPULATE_OPTIONAL_FIELDS, Boolean.toString(simpleConfiguration.populateOptionalFields));
         config.setOutputFolderName(simpleConfiguration.outputFolder);
 
-        Results results = new Results(config);
+        var results = new Results(config);
         results.setComment(simpleConfiguration.comment);
         try {
             
@@ -93,10 +93,10 @@ public class ConsoleRegexTurtle {
         } catch (IOException ex) {
             Logger.getLogger(ConsoleRegexTurtle.class.getName()).log(Level.SEVERE, null, ex);
         }
-        CoolTextualExecutionListener consolelistener = new CoolTextualExecutionListener(message, config, results);
+        var consolelistener = new CoolTextualExecutionListener(message, config, results);
 
-        long startTime = System.currentTimeMillis();
-        ExecutionStrategy strategy = config.getStrategy();
+        var startTime = System.currentTimeMillis();
+        var strategy = config.getStrategy();
         try {
             strategy.execute(config, consolelistener);
         } catch (Exception ex) {
@@ -111,17 +111,17 @@ public class ConsoleRegexTurtle {
     }
 
     private static DataSet loadDataset(String dataSetFilename) throws IOException {
-        FileInputStream fis = new FileInputStream(new File(dataSetFilename));
-        InputStreamReader isr = new InputStreamReader(fis);
+        var fis = new FileInputStream(new File(dataSetFilename));
+        var isr = new InputStreamReader(fis);
         StringBuilder sb;
-        try (BufferedReader bufferedReader = new BufferedReader(isr)) {
+        try (var bufferedReader = new BufferedReader(isr)) {
             sb = new StringBuilder();
             String line;
             while ((line = bufferedReader.readLine()) != null) {
                 sb.append(line);
             }
         }
-        String json = sb.toString();
+        var json = sb.toString();
         return loadDatasetJson(json);
     }
 
@@ -208,11 +208,11 @@ public class ConsoleRegexTurtle {
             if (args.length == 0) {
                 System.out.println(HELP_MESSAGE);
             }
-            boolean mandatoryDatasetCheck = true;
-            for (int i = 0; i < args.length; i++) {
-                String string = args[i];
+            var mandatoryDatasetCheck = true;
+            for (var i = 0; i < args.length; i++) {
+                var string = args[i];
                 i += 1;
-                String parameter = args[i];
+                var parameter = args[i];
                 switch (string) {
                     case "-t":
                         simpleConfig.numberThreads = Integer.parseInt(parameter);

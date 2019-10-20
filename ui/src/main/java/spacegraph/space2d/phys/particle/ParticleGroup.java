@@ -113,11 +113,11 @@ public class ParticleGroup {
 
     public void updateStatistics() {
         if (m_timestamp != m_system.m_timestamp) {
-            float m = m_system.getParticleMass();
+            var m = m_system.getParticleMass();
             m_mass = 0;
             m_center.setZero();
             m_linearVelocity.setZero();
-            for (int i = m_firstIndex; i < m_lastIndex; i++) {
+            for (var i = m_firstIndex; i < m_lastIndex; i++) {
                 m_mass += m;
                 v2 pos = m_system.m_positionBuffer.data[i];
                 m_center.x += m * pos.x;
@@ -134,13 +134,13 @@ public class ParticleGroup {
             }
             m_inertia = 0;
             m_angularVelocity = 0;
-            for (int i = m_firstIndex; i < m_lastIndex; i++) {
+            for (var i = m_firstIndex; i < m_lastIndex; i++) {
                 v2 pos = m_system.m_positionBuffer.data[i];
                 v2 vel = m_system.m_velocityBuffer.data[i];
-                float px = pos.x - m_center.x;
-                float py = pos.y - m_center.y;
-                float vx = vel.x - m_linearVelocity.x;
-                float vy = vel.y - m_linearVelocity.y;
+                var px = pos.x - m_center.x;
+                var py = pos.y - m_center.y;
+                var vx = vel.x - m_linearVelocity.x;
+                var vy = vel.y - m_linearVelocity.y;
                 m_inertia += m * (px * px + py * py);
                 m_angularVelocity += m * (px * vy - py * vx);
             }

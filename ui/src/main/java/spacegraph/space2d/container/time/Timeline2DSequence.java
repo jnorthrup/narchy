@@ -51,22 +51,22 @@ public class Timeline2DSequence implements Timeline2D.EventBuffer<Pair<Longerval
 
     @Override
     public Iterable<Pair<Longerval, Tensor>> events(long start, long end) {
-        int v = buffer.volume();
-        int sampleStart = sample(start);
+        var v = buffer.volume();
+        var sampleStart = sample(start);
         if (sampleStart > v + 1)
             return Util.emptyIterable; //starts after
         sampleStart = Math.max(0, sampleStart);
-        int sampleEnd = sample(end);
+        var sampleEnd = sample(end);
         if (sampleEnd < - 1)
             return Util.emptyIterable; //ends before
         sampleEnd = Math.min(v, sampleEnd);
 
 
         List<Pair<Longerval, Tensor>> l = new FasterList();
-        int w = buffer.width;
-        int ss = sampleStart / w;
-        for (int i = sampleStart; i < sampleEnd; ) {
-            int ee = ss + w;
+        var w = buffer.width;
+        var ss = sampleStart / w;
+        for (var i = sampleStart; i < sampleEnd; ) {
+            var ee = ss + w;
             l.add(Tuples.pair(new Longerval(ss, ee), subTensor(ss)));
             i += w;
             ss += w;

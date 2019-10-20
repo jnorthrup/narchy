@@ -42,7 +42,7 @@ public class KeyboardChip extends Widget implements KeyPressed {
 
     protected void out(int keyCode) {
 
-        int kc = map(keyCode);
+        var kc = map(keyCode);
         if (kc!=0)
             txt.text(label(kc));
         else

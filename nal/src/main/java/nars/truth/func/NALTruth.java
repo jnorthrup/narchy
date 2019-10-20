@@ -54,14 +54,14 @@ public enum NALTruth implements TruthFunction {
     @AllowOverlap @SinglePremise StructuralReduction() {
         @Override
         public Truth apply(Truth T, Truth Bignored, float minConf, NAL n) {
-            float c = confCompose(T, NALTruth.confDefault(n));
+            var c = confCompose(T, NALTruth.confDefault(n));
             return c >= minConf ? $.tt(T.freq(), c) : null;
         }
     },
     @AllowOverlap @SinglePremise StructuralReductionWeak() {
         @Override
         public Truth apply(Truth T, Truth Bignored, float minConf, NAL n) {
-            float c = confCompose(T, NALTruth.confDefault(n));
+            var c = confCompose(T, NALTruth.confDefault(n));
             return c >= minConf ? weak($.tt(T.freq(), c),minConf) : null;
         }
     },
@@ -390,7 +390,7 @@ public enum NALTruth implements TruthFunction {
         @Override
         public Truth apply(Truth T, Truth B, float minConf, NAL n) {
             if (B == null) return null;
-            Truth res = BeliefStructuralDeduction.apply(T, B, minConf, n);
+            var res = BeliefStructuralDeduction.apply(T, B, minConf, n);
             return (res != null) ? res.neg() : null;
         }
     },

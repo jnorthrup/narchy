@@ -78,7 +78,7 @@ public class TarEntry {
 	}
 
 	public String getName() {
-		String name = header.name.toString();
+		var name = header.name.toString();
 		if (header.namePrefix != null && !header.namePrefix.toString().isEmpty()) {
 			name = header.namePrefix + "/" + name;
 		}
@@ -172,7 +172,7 @@ public class TarEntry {
 	 * Extract header from File
 	 */
 	private void extractTarHeader(String entryName) {
-		int permissions = PermissionUtils.permissions(file);
+		var permissions = PermissionUtils.permissions(file);
 		header = TarHeader.createHeader(entryName, file.length(), file.lastModified() / 1000, file.isDirectory(), permissions);
 	}
 
@@ -182,7 +182,7 @@ public class TarEntry {
 	private static long computeCheckSum(byte[] buf) {
 		long sum = 0;
 
-		for (byte aBuf : buf) {
+		for (var aBuf : buf) {
 			sum += 255 & aBuf;
 		}
 
@@ -193,20 +193,20 @@ public class TarEntry {
 	 * Writes the header to the byte buffer
 	 */
 	public void writeEntryHeader(byte[] outbuf) {
-		int offset = 0;
+		var offset = 0;
 
 		offset = TarHeader.getNameBytes(header.name, outbuf, offset, TarHeader.NAMELEN);
 		offset = Octal.getOctalBytes(header.mode, outbuf, offset, TarHeader.MODELEN);
 		offset = Octal.getOctalBytes(header.userId, outbuf, offset, TarHeader.UIDLEN);
 		offset = Octal.getOctalBytes(header.groupId, outbuf, offset, TarHeader.GIDLEN);
 
-		long size = header.size;
+		var size = header.size;
 
 		offset = Octal.getLongOctalBytes(size, outbuf, offset, TarHeader.SIZELEN);
 		offset = Octal.getLongOctalBytes(header.modTime, outbuf, offset, TarHeader.MODTIMELEN);
 
-		int csOffset = offset;
-		for (int c = 0; c < TarHeader.CHKSUMLEN; ++c)
+		var csOffset = offset;
+		for (var c = 0; c < TarHeader.CHKSUMLEN; ++c)
 			outbuf[offset++] = (byte) ' ';
 
 		outbuf[offset++] = header.linkFlag;
@@ -222,7 +222,7 @@ public class TarEntry {
 		for (; offset < outbuf.length;)
 			outbuf[offset++] = 0;
 
-		long checkSum = TarEntry.computeCheckSum(outbuf);
+		var checkSum = TarEntry.computeCheckSum(outbuf);
 
 		Octal.getCheckSumOctalBytes(checkSum, outbuf, csOffset, TarHeader.CHKSUMLEN);
 	}
@@ -231,7 +231,7 @@ public class TarEntry {
 	 * Parses the tar header to the byte buffer
 	 */
 	private void parseTarHeader(byte[] bh) {
-		int offset = 0;
+		var offset = 0;
 
 		header.name = TarHeader.parseName(bh, offset, TarHeader.NAMELEN);
 		offset += TarHeader.NAMELEN;

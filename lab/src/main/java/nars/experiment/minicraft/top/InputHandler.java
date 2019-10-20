@@ -52,13 +52,13 @@ public class InputHandler implements KeyListener {
     public final Key menu = new Key();
 
     public void releaseAll() {
-        for (int i = 0; i < keys.size(); i++) {
+        for (var i = 0; i < keys.size(); i++) {
             keys.get(i).down = false;
         }
     }
 
     public void tick() {
-        for (int i = 0; i < keys.size(); i++) {
+        for (var i = 0; i < keys.size(); i++) {
             keys.get(i).tick();
         }
     }

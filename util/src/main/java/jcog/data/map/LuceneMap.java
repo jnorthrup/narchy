@@ -57,7 +57,7 @@ public class LuceneMap<K extends Serializable, V extends Serializable> implement
 
 
         Analyzer analyzer = new StandardAnalyzer();
-        IndexWriterConfig writerConfig = new IndexWriterConfig(analyzer);
+        var writerConfig = new IndexWriterConfig(analyzer);
         writerConfig.setCommitOnClose(true);
         writerConfig.setOpenMode(OpenMode.CREATE_OR_APPEND);
 
@@ -67,14 +67,14 @@ public class LuceneMap<K extends Serializable, V extends Serializable> implement
                 directory = new RAMDirectory();
             } else {
                 folderUrl = folderUrl == null ? DEFAULT_DIRECTORY : folderUrl;
-                File folder = new File(folderUrl);
+                var folder = new File(folderUrl);
                 if (!folder.exists()) {
                     folder.mkdir();
                 }
                 directory = new SimpleFSDirectory(folder.toPath());
             }
             writer = new IndexWriter(directory, writerConfig);
-            int numDocs = writer.getDocStats().numDocs;
+            var numDocs = writer.getDocStats().numDocs;
             searcherManager = new SearcherManager(writer, true, true, null);
             log.info("Map loaded, size: " + numDocs);
 
@@ -85,7 +85,7 @@ public class LuceneMap<K extends Serializable, V extends Serializable> implement
         //=========================================================
         // This thread handles the actual reader reopening. (http://www.lucenetutorial.com/lucene-nrt-hello-world.html)
         //=========================================================
-        ControlledRealTimeReopenThread<IndexSearcher> nrtReopenThread = new ControlledRealTimeReopenThread<>(
+        var nrtReopenThread = new ControlledRealTimeReopenThread<IndexSearcher>(
                 writer, searcherManager, 1.0, 0.1);
         nrtReopenThread.setName("NRT Reopen Thread");
         nrtReopenThread.setDaemon(true);
@@ -100,9 +100,9 @@ public class LuceneMap<K extends Serializable, V extends Serializable> implement
      * Read the object from Base64 string.
      */
     private static Object fromString(String s) throws IOException, ClassNotFoundException {
-        byte[] data = Base64.getDecoder().decode(s);
-        ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(data));
-        Object o = ois.readObject();
+        var data = Base64.getDecoder().decode(s);
+        var ois = new ObjectInputStream(new ByteArrayInputStream(data));
+        var o = ois.readObject();
         ois.close();
         return o;
     }
@@ -111,8 +111,8 @@ public class LuceneMap<K extends Serializable, V extends Serializable> implement
      * Write the object to a Base64 string.
      */
     private static String toString(Serializable o) throws IOException {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ObjectOutputStream oos = new ObjectOutputStream(baos);
+        var baos = new ByteArrayOutputStream();
+        var oos = new ObjectOutputStream(baos);
         oos.writeObject(o);
         oos.close();
         return Base64.getEncoder().encodeToString(baos.toByteArray());
@@ -120,10 +120,10 @@ public class LuceneMap<K extends Serializable, V extends Serializable> implement
 
     public Optional<V> lookup(Object key, boolean refresh) {
 
-        K k = (K) key;
+        var k = (K) key;
         try {
             Optional<V> result = Optional.empty();
-            Optional<Document> doc = document(LuceneMap.toString(k), refresh);
+            var doc = document(LuceneMap.toString(k), refresh);
             if (doc.isPresent()) {
                 result = Optional.of((V) fromString(doc.get().get(VALUE_FIELD)));
             }
@@ -135,7 +135,7 @@ public class LuceneMap<K extends Serializable, V extends Serializable> implement
 
     private Optional<Document> document(String id, boolean refresh) {
 
-        Builder builder = new BooleanQuery.Builder();
+        var builder = new BooleanQuery.Builder();
         builder.add(new TermQuery(new Term(KEY_FIELD, id)), Occur.MUST);
         return loadDoc(builder.build(), refresh);
     }
@@ -146,11 +146,11 @@ public class LuceneMap<K extends Serializable, V extends Serializable> implement
         try {
             if (refresh)
                 this.searcherManager.maybeRefresh();
-            IndexSearcher searcher = this.searcherManager.acquire();
+            var searcher = this.searcherManager.acquire();
             try {
-                TopDocs docs = searcher.search(q, 1);
+                var docs = searcher.search(q, 1);
                 if (docs.scoreDocs.length > 0) {
-                    Document document = searcher.doc(docs.scoreDocs[0].doc);
+                    var document = searcher.doc(docs.scoreDocs[0].doc);
                     if (document != null) {
                         d = Optional.of(document);
                     }
@@ -167,11 +167,11 @@ public class LuceneMap<K extends Serializable, V extends Serializable> implement
     private void save(K key, V val) {
 
         try {
-            Document doc = new Document();
-            String valueString = LuceneMap.toString(val);
-            String keyString = LuceneMap.toString(key);
-            StringField valueField = new StringField(VALUE_FIELD, valueString, Store.YES);
-            StringField keyField = new StringField(KEY_FIELD, keyString, Store.YES);
+            var doc = new Document();
+            var valueString = LuceneMap.toString(val);
+            var keyString = LuceneMap.toString(key);
+            var valueField = new StringField(VALUE_FIELD, valueString, Store.YES);
+            var keyField = new StringField(KEY_FIELD, keyString, Store.YES);
             doc.add(keyField);
             doc.add(valueField);
             writer.updateDocument(new Term(KEY_FIELD, keyString), doc);
@@ -187,7 +187,7 @@ public class LuceneMap<K extends Serializable, V extends Serializable> implement
         int indexSize;
         try {
             this.searcherManager.maybeRefresh();
-            IndexSearcher searcher = this.searcherManager.acquire();
+            var searcher = this.searcherManager.acquire();
             try {
                 indexSize = searcher.getIndexReader().numDocs();
             } finally {
@@ -214,8 +214,8 @@ public class LuceneMap<K extends Serializable, V extends Serializable> implement
     public boolean containsValue(Object o) {
 
         try {
-            Builder builder = new BooleanQuery.Builder();
-            V v = (V) o;
+            var builder = new BooleanQuery.Builder();
+            var v = (V) o;
             builder.add(new TermQuery(new Term(VALUE_FIELD, LuceneMap.toString(v))), Occur.MUST);
             return loadDoc(builder.build(), true).isPresent();
         } catch (IOException e) {
@@ -226,15 +226,15 @@ public class LuceneMap<K extends Serializable, V extends Serializable> implement
     @Override
     public Object get(Object o) {
 
-        Optional<V> val = this.lookup(o, true);
+        var val = this.lookup(o, true);
         return val.orElse(null);
     }
 
     @Override
     public Object put(Object o, Object o2) {
-        Optional<V> val = this.lookup(o, false);
-        K k = (K) o;
-        V v = (V) o2;
+        var val = this.lookup(o, false);
+        var k = (K) o;
+        var v = (V) o2;
         this.save(k, v);
         return val.orElse(null);
     }
@@ -242,9 +242,9 @@ public class LuceneMap<K extends Serializable, V extends Serializable> implement
     @Override
     public Object remove(Object o) {
 
-        Object old = this.get(o);
+        var old = this.get(o);
         try {
-            K k = (K) o;
+            var k = (K) o;
             writer.deleteDocuments(new Term(KEY_FIELD, LuceneMap.toString(k)));
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -283,13 +283,13 @@ public class LuceneMap<K extends Serializable, V extends Serializable> implement
         Set<Entry<K, V>> entries = new HashSet<>();
         try {
             this.searcherManager.maybeRefresh();
-            IndexSearcher searcher = this.searcherManager.acquire();
+            var searcher = this.searcherManager.acquire();
             try {
-                IndexReader reader = searcher.getIndexReader();
-                for (int i = 0; i < reader.maxDoc(); i++) {
-                    Document doc = reader.document(i);
-                    V v = (V) LuceneMap.fromString(doc.get(VALUE_FIELD));
-                    K k = (K) LuceneMap.fromString(doc.get(KEY_FIELD));
+                var reader = searcher.getIndexReader();
+                for (var i = 0; i < reader.maxDoc(); i++) {
+                    var doc = reader.document(i);
+                    var v = (V) LuceneMap.fromString(doc.get(VALUE_FIELD));
+                    var k = (K) LuceneMap.fromString(doc.get(KEY_FIELD));
                     entries.add(new Entry<>() {
                         @Override
                         public K getKey() {

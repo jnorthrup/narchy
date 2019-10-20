@@ -36,10 +36,10 @@ public class Tournament implements Selection {
     @Override
     public Node select(Ranking[] population) {
 
-        int size = population.length;
-        int best = size;
-        for (int t = 0; t < 7; t++) {
-            int index = context.getRandom().nextInt(size);
+        var size = population.length;
+        var best = size;
+        for (var t = 0; t < 7; t++) {
+            var index = context.getRandom().nextInt(size);
             best = Math.min(best, index);
         }
 

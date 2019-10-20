@@ -38,10 +38,10 @@ public class ZeroCross extends UGen {
     @Override
     public void gen() {
 
-        float[] bi = bufIn[0];
-        float[] bo = bufOut[0];
+        var bi = bufIn[0];
+        var bo = bufOut[0];
 
-        for (int i = 0; i < bufferSize; i++) {
+        for (var i = 0; i < bufferSize; i++) {
 
             if (cross[index]) {
                 sum--;

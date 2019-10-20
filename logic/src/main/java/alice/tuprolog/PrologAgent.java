@@ -86,7 +86,7 @@ public class PrologAgent extends Prolog {
      * Starts agent execution in another thread
      */
     public final Thread spawn(){
-        Thread t = new Thread(this::run);
+        var t = new Thread(this::run);
         t.start();
         return t;
     }

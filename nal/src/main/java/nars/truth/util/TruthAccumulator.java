@@ -35,12 +35,12 @@ public class TruthAccumulator extends AtomicReference<double[]> {
 
     private static @Nullable PreciseTruth truth(double[] fc, boolean sumOrAverage) {
 
-        double e = fc[1];
+        var e = fc[1];
         if (e <= 0)
             return null;
 
-        int n = (int)fc[2];
-        float ee = ((sumOrAverage) ? ((float)e) : ((float)e)/n);
+        var n = (int)fc[2];
+        var ee = ((sumOrAverage) ? ((float)e) : ((float)e)/n);
         return PreciseTruth.byEvi((float)(fc[0]/e), ee);
     }
 
@@ -52,12 +52,12 @@ public class TruthAccumulator extends AtomicReference<double[]> {
 
 
         double f = t.freq();
-        double e = t.evi();
+        var e = t.evi();
         add(f, e);
     }
 
     private void add(double f, double e) {
-        double fe = f * e;
+        var fe = f * e;
 
         getAndUpdate(fc->{
             fc[0] += fe;

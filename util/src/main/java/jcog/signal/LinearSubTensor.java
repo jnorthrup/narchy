@@ -27,7 +27,7 @@ public class LinearSubTensor implements Tensor, Comparable<LinearSubTensor> {
     public final boolean equals(Object obj) {
         if (this == obj) return true;
         if (obj instanceof LinearSubTensor) {
-            LinearSubTensor t = (LinearSubTensor)obj;
+            var t = (LinearSubTensor)obj;
             return (parent == t.parent && linearStart == t.linearStart && linearEnd == t.linearEnd);
         }
         return false;
@@ -52,9 +52,9 @@ public class LinearSubTensor implements Tensor, Comparable<LinearSubTensor> {
     @Override
     public final int compareTo(LinearSubTensor o) {
         if (this == o) return 0;
-        int a = Long.compare(linearStart, o.linearStart);
+        var a = Long.compare(linearStart, o.linearStart);
         if (a == 0) {
-            int b = Long.compare(linearEnd, o.linearEnd);
+            var b = Long.compare(linearEnd, o.linearEnd);
             if (b == 0) {
                 return Integer.compare(System.identityHashCode(parent), System.identityHashCode(o.parent));
             } else return b;

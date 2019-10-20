@@ -34,11 +34,11 @@ public class DecideEpsilonGreedy implements Deciding {
 
     @Override
     public int applyAsInt(float[] vector) {
-        int actions = vector.length;
+        var actions = vector.length;
 
         if (motivationOrder == null || motivationOrder.length!=actions) {
             motivationOrder = new int[actions];
-            for (int i = 0; i < actions; i++)
+            for (var i = 0; i < actions; i++)
                 motivationOrder[i] = i;
         }
 
@@ -48,11 +48,11 @@ public class DecideEpsilonGreedy implements Deciding {
 
         ArrayUtil.shuffle(motivationOrder, random);
 
-        float nextMotivation = Float.NEGATIVE_INFINITY;
-        int nextAction = -1;
-        for (int j = 0; j < actions; j++) {
-            int i = motivationOrder[j];
-            float m = vector[i];
+        var nextMotivation = Float.NEGATIVE_INFINITY;
+        var nextAction = -1;
+        for (var j = 0; j < actions; j++) {
+            var i = motivationOrder[j];
+            var m = vector[i];
 
             if (m > nextMotivation) {
                 nextAction = i;
@@ -61,8 +61,8 @@ public class DecideEpsilonGreedy implements Deciding {
 
 
         }
-        
-        int a = nextAction;
+
+        var a = nextAction;
         if (a < 0)
             return random.nextInt(actions);
         return a;

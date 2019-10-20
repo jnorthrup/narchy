@@ -161,8 +161,8 @@ public class SplitMix64Random implements Rand {
         if (n <= 0) throw new IllegalArgumentException();
         
         while (true) {
-            long bits = staffordMix13(x += PHI) >>> 1;
-            long value = bits % n;
+            var bits = staffordMix13(x += PHI) >>> 1;
+            var value = bits % n;
             if (bits - value + (n - 1) >= 0) return value;
         }
     }
@@ -250,7 +250,7 @@ public class SplitMix64Random implements Rand {
             int i = bytes.length, n = 0;
             while (i != 0) {
                 n = Math.min(i, 8);
-                for (long bits = staffordMix13(x += PHI); n-- != 0; bits >>= 8) bytes[--i] = (byte) bits;
+                for (var bits = staffordMix13(x += PHI); n-- != 0; bits >>= 8) bytes[--i] = (byte) bits;
             }
         }
 

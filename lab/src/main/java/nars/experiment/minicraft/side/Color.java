@@ -36,9 +36,9 @@ public class Color implements java.io.Serializable {
 
 
     public Color interpolateTo(Color c, float amount) {
-        int dR = (int) (amount * (c.R - this.R));
-        int dG = (int) (amount * (c.G - this.G));
-        int dB = (int) (amount * (c.B - this.B));
+        var dR = (int) (amount * (c.R - this.R));
+        var dG = (int) (amount * (c.G - this.G));
+        var dB = (int) (amount * (c.B - this.B));
         return new Color(this.R + dR, this.G + dG, this.B + dB, this.A);
     }
 }

@@ -53,15 +53,15 @@ public class ItemEntity extends Entity {
             ya *= 0.6;
         }
         za -= 0.15;
-        int ox = x;
-        int oy = y;
-        int nx = (int) xx;
-        int ny = (int) yy;
-        int expectedx = nx - x;
-        int expectedy = ny - y;
+        var ox = x;
+        var oy = y;
+        var nx = (int) xx;
+        var ny = (int) yy;
+        var expectedx = nx - x;
+        var expectedy = ny - y;
         move(nx - x, ny - y);
-        int gotx = x - ox;
-        int goty = y - oy;
+        var gotx = x - ox;
+        var goty = y - oy;
         xx += gotx - expectedx;
         yy += goty - expectedy;
 

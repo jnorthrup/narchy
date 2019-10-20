@@ -10,8 +10,8 @@ public class PitchProcessor {
     }
 
     public boolean process(AudioEvent var1) {
-        float[] var2 = var1.getFloatBuffer();
-        PitchDetectionResult var3 = this.detector.getPitch(var2);
+        var var2 = var1.getFloatBuffer();
+        var var3 = this.detector.getPitch(var2);
         this.handler.handlePitch(var3, var1);
         return true;
     }
@@ -143,12 +143,12 @@ public class PitchProcessor {
             cumulativeMeanNormalizedDifference();
 
             // step 4
-            int tauEstimate = absoluteThreshold();
+            var tauEstimate = absoluteThreshold();
 
             // step 5
             float pitchInHertz;
             if (tauEstimate != -1) {
-                float betterTau = parabolicInterpolation(tauEstimate);
+                var betterTau = parabolicInterpolation(tauEstimate);
 
                 // step 6
                 // TODO Implement optimization for the AUBIO_YIN algorithm.
@@ -178,8 +178,8 @@ public class PitchProcessor {
                 yinBuffer[tau] = 0;
             }
             for (tau = 1; tau < yinBuffer.length; tau++) {
-                for (int index = 0; index < yinBuffer.length; index++) {
-                    float delta = audioBuffer[index] - audioBuffer[index + tau];
+                for (var index = 0; index < yinBuffer.length; index++) {
+                    var delta = audioBuffer[index] - audioBuffer[index + tau];
                     yinBuffer[tau] += delta * delta;
                 }
             }
@@ -195,7 +195,7 @@ public class PitchProcessor {
         private void cumulativeMeanNormalizedDifference() {
             yinBuffer[0] = 1;
             float runningSum = 0;
-            for (int tau = 1; tau < yinBuffer.length; tau++) {
+            for (var tau = 1; tau < yinBuffer.length; tau++) {
                 runningSum += yinBuffer[tau];
                 yinBuffer[tau] *= tau / runningSum;
             }
@@ -281,9 +281,9 @@ public class PitchProcessor {
                     betterTau = x0;
                 }
             } else {
-                float s0 = yinBuffer[x0];
-                float s1 = yinBuffer[tauEstimate];
-                float s2 = yinBuffer[x2];
+                var s0 = yinBuffer[x0];
+                var s1 = yinBuffer[tauEstimate];
+                var s2 = yinBuffer[x2];
                 // fixed AUBIO implementation, thanks to Karl Helgason:
                 // (2.0f * s1 - s2 - s0) was incorrectly multiplied with -1
                 betterTau = tauEstimate + (s2 - s0) / (2 * (2 * s1 - s2 - s0));

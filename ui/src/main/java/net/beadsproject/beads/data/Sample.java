@@ -198,7 +198,7 @@ public class Sample {
         if (frame < 0 || frame >= nFrames) {
             return;
         }
-        for (int i = 0; i < nChannels; i++) {
+        for (var i = 0; i < nChannels; i++) {
             frameData[i] = theSampleData[i][frame];
         }
     }
@@ -211,8 +211,8 @@ public class Sample {
      * @param result  The framedata to fill.
      */
     public void getFrameNoInterp(double posInMS, float[] result) {
-        double frame = msToSamples(posInMS);
-        int frame_floor = (int) Math.floor(frame);
+        var frame = msToSamples(posInMS);
+        var frame_floor = (int) Math.floor(frame);
         getFrame(frame_floor, result);
     }
 
@@ -224,8 +224,8 @@ public class Sample {
      * @param result  The framedata to fill.
      */
     public void getFrameLinear(double posInMS, float[] result) {
-        double frame = msToSamples(posInMS);
-        int frame_floor = (int) Math.floor(frame);
+        var frame = msToSamples(posInMS);
+        var frame_floor = (int) Math.floor(frame);
         if (frame_floor > 0 && frame_floor < nFrames) {
             if (frame_floor == nFrames - 1) {
                 getFrame(frame_floor, result);
@@ -233,13 +233,13 @@ public class Sample {
             {
                 getFrame(frame_floor, current);
                 getFrame(frame_floor + 1, next);
-                double frame_frac = frame - frame_floor;
-                for (int i = 0; i < nChannels; i++) {
+                var frame_frac = frame - frame_floor;
+                for (var i = 0; i < nChannels; i++) {
                     result[i] = (float) ((1 - frame_frac) * current[i] + frame_frac * next[i]);
                 }
             }
         } else {
-            for (int i = 0; i < nChannels; i++) {
+            for (var i = 0; i < nChannels; i++) {
                 result[i] = 0.0f;
             }
         }
@@ -253,10 +253,10 @@ public class Sample {
      * @param result  The framedata to fill.
      */
     public void getFrameCubic(double posInMS, float[] result) {
-        double frame = msToSamples(posInMS);
-        for (int i = 0; i < nChannels; i++) {
-            int realCurrentSample = (int) Math.floor(frame);
-            float fractionOffset = (float) (frame - realCurrentSample);
+        var frame = msToSamples(posInMS);
+        for (var i = 0; i < nChannels; i++) {
+            var realCurrentSample = (int) Math.floor(frame);
+            var fractionOffset = (float) (frame - realCurrentSample);
 
             if (realCurrentSample >= 0 && realCurrentSample < (nFrames - 1)) {
                 realCurrentSample--;
@@ -270,24 +270,24 @@ public class Sample {
                     ym1 = current[i];
                 }
                 getFrame(realCurrentSample++, current);
-                float y0 = current[i];
+                var y0 = current[i];
                 if (realCurrentSample >= nFrames) {
                     getFrame((int) nFrames - 1, current);
                 } else {
                     getFrame(realCurrentSample++, current);
                 }
-                float y1 = current[i];
+                var y1 = current[i];
                 if (realCurrentSample >= nFrames) {
                     getFrame((int) nFrames - 1, current);
                 } else {
                     getFrame(realCurrentSample++, current);
                 }
-                float y2 = current[i];
-                float mu2 = fractionOffset * fractionOffset;
-                float a0 = y2 - y1 - ym1 + y0;
-                float a1 = ym1 - y0 - a0;
-                float a2 = y1 - ym1;
-                float a3 = y0;
+                var y2 = current[i];
+                var mu2 = fractionOffset * fractionOffset;
+                var a0 = y2 - y1 - ym1 + y0;
+                var a1 = ym1 - y0 - a0;
+                var a2 = y1 - ym1;
+                var a3 = y0;
                 result[i] = a0 * fractionOffset * mu2 + a1 * mu2 + a2
                         * fractionOffset + a3;
             } else {
@@ -312,8 +312,8 @@ public class Sample {
         if (frame >= nFrames) {
             return;
         }
-        int numFloats = Math.min(frameData[0].length, (int) (nFrames - frame));
-        for (int i = 0; i < nChannels; i++) {
+        var numFloats = Math.min(frameData[0].length, (int) (nFrames - frame));
+        for (var i = 0; i < nChannels; i++) {
             System.arraycopy(theSampleData[i], frame, frameData[i], 0, numFloats);
         }
     }
@@ -322,7 +322,7 @@ public class Sample {
      * Clears the (writeable) sample.
      */
     public void clear() {
-        for (int i = 0; i < nChannels; i++) {
+        for (var i = 0; i < nChannels; i++) {
             Arrays.fill(theSampleData[i], 0f);
         }
 
@@ -338,7 +338,7 @@ public class Sample {
      * @param frameData The frame data to write.
      */
     public void putFrame(int frame, float[] frameData) {
-        for (int i = 0; i < nChannels; i++) {
+        for (var i = 0; i < nChannels; i++) {
             theSampleData[i][frame] = frameData[i];
         }
     }
@@ -353,12 +353,12 @@ public class Sample {
      * @param frameData The frames to write.
      */
     public void putFrames(int frame, float[][] frameData) {
-        int numFrames = Math.min(frameData[0].length, (int) (nFrames - frame));
+        var numFrames = Math.min(frameData[0].length, (int) (nFrames - frame));
         if (frame < 0) {
             return;
         }
         
-        for (int i = 0; i < nChannels; i++) {
+        for (var i = 0; i < nChannels; i++) {
             System.arraycopy(frameData[i], 0, theSampleData[i], frame, numFrames);
         }
     }
@@ -381,7 +381,7 @@ public class Sample {
         }
         
         numFrames = Math.min(numFrames, (int) (nFrames - frame));
-        for (int i = 0; i < nChannels; i++) {
+        for (var i = 0; i < nChannels; i++) {
             System.arraycopy(frameData[i], offset, theSampleData[i], frame,
                     numFrames);
         }
@@ -419,7 +419,7 @@ public class Sample {
      * @throws IOException Signals that an I/O exception has occurred.
      */
     private void write(String fn, AudioFileType type, SampleAudioFormat saf) throws IOException {
-        Class<? extends AudioFileWriter> theRealAudioFileWriterClass = audioFileWriterClass == null ? defaultAudioFileWriterClass : audioFileWriterClass;
+        var theRealAudioFileWriterClass = audioFileWriterClass == null ? defaultAudioFileWriterClass : audioFileWriterClass;
         
         if (type == AudioFileType.WAV) {
             try {
@@ -432,7 +432,7 @@ public class Sample {
             throw new IOException("Sample: No AudioFile Class has been setAt and the default JavaSoundAudioFile Class cannot be found. Aborting write(). You may need to link to beads-io.jar.");
         }
         try {
-            AudioFileWriter audioFileWriter = theRealAudioFileWriterClass.getConstructor().newInstance();
+            var audioFileWriter = theRealAudioFileWriterClass.getConstructor().newInstance();
             audioFileWriter.writeAudioFile(theSampleData, fn, type, saf);
         } catch (Exception e) {
             throw new IOException("Sample: Unable to create or use the AudioFileWriter class.", e);
@@ -451,10 +451,10 @@ public class Sample {
      * @param frames The total number of frames the sample should have.
      */
     public void resize(long frames) {
-        int framesToCopy = (int) Math.min(frames, nFrames);
-        float[][] olddata = theSampleData;
+        var framesToCopy = (int) Math.min(frames, nFrames);
+        var olddata = theSampleData;
         theSampleData = new float[nChannels][(int) frames];
-        for (int i = 0; i < nChannels; i++)
+        for (var i = 0; i < nChannels; i++)
             System.arraycopy(olddata[i], 0, theSampleData[i], 0,
                     framesToCopy);
         nFrames = frames;
@@ -518,10 +518,10 @@ public class Sample {
     public String getSimpleName() {
         if (simpleName != null)
             return simpleName;
-        String fileName = getFileName();
+        var fileName = getFileName();
         if (fileName == null)
             return null;
-        String[] nameParts = fileName.split("/");
+        var nameParts = fileName.split("/");
         return nameParts[nameParts.length - 1];
     }
 
@@ -578,10 +578,9 @@ public class Sample {
      * @throws IOException
      */
     private void loadAudioFile(String file) throws IOException {
-        
-        
-        
-        Class<? extends AudioFileReader> theRealAudioFileReaderClass = audioFileReaderClass == null ? defaultAudioFileReaderClass : audioFileReaderClass;
+
+
+        var theRealAudioFileReaderClass = audioFileReaderClass == null ? defaultAudioFileReaderClass : audioFileReaderClass;
         if (file.endsWith(".wav") || file.endsWith(".WAV")) {
             try {
                 theRealAudioFileReaderClass = (Class<? extends AudioFileReader>) Class.forName("net.beadsproject.beads.data.audiofile.WavFileReaderWriter");

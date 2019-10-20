@@ -83,7 +83,7 @@ public interface Stamp {
             return b;
         }
 
-        int abLength = aa + bb;
+        var abLength = aa + bb;
         if (abLength <= capacity) {
             //TODO simple 2-ary case
             return !Stamp.overlapsAny(a, b) ?
@@ -95,17 +95,17 @@ public interface Stamp {
     }
 
     private static long[] mergeShuffle(long[] a, long[] b, Random rng, float aToB, int capacity, int aa, int bb, int abLength) {
-        LongArrayList A = Stamp.toList(a);
+        var A = Stamp.toList(a);
         if (aa > 1)
             ArrayUtil.shuffle(A.elements(), rng);
-        LongArrayList B = Stamp.toList(b);
+        var B = Stamp.toList(b);
         if (bb > 1)
             ArrayUtil.shuffle(B.elements(), rng);
 
-        MetalLongSet AB = new MetalLongSet(abLength);
+        var AB = new MetalLongSet(abLength);
         do {
-            LongArrayList x = (A!=B && rng.nextFloat() <= aToB) ? A : B;
-            int xs = x.size();
+            var x = (A!=B && rng.nextFloat() <= aToB) ? A : B;
+            var xs = x.size();
             AB.add(x.removeLong(--xs));
             if (xs == 0) {
                 if (x == A && x == B)
@@ -121,16 +121,16 @@ public interface Stamp {
         //duplicates, with no contention
         if (aa > bb) {
             //swap so that 'a' is smaller
-            long[] _a = a;
+            var _a = a;
             a = b;
             b = _a;
         }
 
-        final int preTestThresh = 16;
+        final var preTestThresh = 16;
         if (aa * bb < preTestThresh) {
             //optimistic pre-test for if a (the shorter of the two) is contained entirely in b
-            boolean aInB = true;
-            for (long A : a) {
+            var aInB = true;
+            for (var A : a) {
                 if (!ArrayUtil.contains(b, A)) {
                     aInB = false;
                     break;
@@ -140,7 +140,7 @@ public interface Stamp {
                 return b;
         }
 
-        MetalLongSet ab = new MetalLongSet(aa + bb);
+        var ab = new MetalLongSet(aa + bb);
 
         ab.addAll(a);
         if (!ab.addAll(b))
@@ -151,11 +151,11 @@ public interface Stamp {
 
     private static long[] mergeSimple(long[] a, long[] b, int aa, int bb, int abLength) {
         //simple case: direct sequential merge with no contention
-        long[] ab = new long[abLength];
+        var ab = new long[abLength];
         int ia = 0, ib = 0;
-        for (int i = 0; i < abLength; i++) {
-            long an = ia < aa ? a[ia] : Long.MAX_VALUE;
-            long bn = ib < bb ? b[ib] : Long.MAX_VALUE;
+        for (var i = 0; i < abLength; i++) {
+            var an = ia < aa ? a[ia] : Long.MAX_VALUE;
+            var bn = ib < bb ? b[ib] : Long.MAX_VALUE;
             long abn;
             if (an < bn) {
                 abn = an; ia++;
@@ -204,14 +204,14 @@ public interface Stamp {
 
 
             if (aToB <= 0.5f) {
-                int usedA = Math.max(1, (int) Math.floor(aToB * (aLen + bLen)));
+                var usedA = Math.max(1, (int) Math.floor(aToB * (aLen + bLen)));
                 if (usedA < aLen) {
                     if (bLen + usedA < maxLen)
                         usedA += maxLen - usedA - bLen;
                     aMin = Math.max(0, aLen - usedA);
                 }
             } else /* aToB > 0.5f */ {
-                int usedB = Math.max(1, (int) Math.floor((1f - aToB) * (aLen + bLen)));
+                var usedB = Math.max(1, (int) Math.floor((1f - aToB) * (aLen + bLen)));
                 if (usedB < bLen) {
                     if (aLen + usedB < maxLen)
                         usedB += maxLen - usedB - aLen;
@@ -221,12 +221,12 @@ public interface Stamp {
 
         }
 
-        int baseLength = Math.min(aLen + bLen, maxLen);
-        long[] c = new long[baseLength];
+        var baseLength = Math.min(aLen + bLen, maxLen);
+        var c = new long[baseLength];
         if (newToOld) {
 
             int ib = bLen - 1, ia = aLen - 1;
-            for (int i = baseLength - 1; i >= 0; ) {
+            for (var i = baseLength - 1; i >= 0; ) {
                 boolean ha = (ia >= aMin), hb = (ib >= bMin);
 
 
@@ -246,7 +246,7 @@ public interface Stamp {
         } else {
 
             int ib = 0, ia = 0;
-            for (int i = 0; i < baseLength; ) {
+            for (var i = 0; i < baseLength; ) {
 
                 boolean ha = ia < (aLen - aMin), hb = ib < (bLen - bMin);
                 c[i++] = ((ha && hb) ?
@@ -275,9 +275,9 @@ public interface Stamp {
             case 0: throw new NullPointerException();
             case 1: return toMutableSet(t.apply(0));
             default:
-                MetalLongSet e = new MetalLongSet(n * expectedCap / 2);
-                for (int i = 0; i < n; i++) {
-                    long[] s = t.apply(i);
+                var e = new MetalLongSet(n * expectedCap / 2);
+                for (var i = 0; i < n; i++) {
+                    var s = t.apply(i);
                     if (s!=null)
                         e.addAll(s);
                 }
@@ -287,8 +287,8 @@ public interface Stamp {
     }
 
     static MetalLongSet toSet(int expectedCap, long[]... t) {
-        MetalLongSet e = new MetalLongSet(expectedCap);
-        for (long[] tt : t)
+        var e = new MetalLongSet(expectedCap);
+        for (var tt : t)
             e.addAll(tt);
         //e.trim();
         return e;
@@ -299,7 +299,7 @@ public interface Stamp {
             if (stamp.length > NAL.STAMP_CAPACITY)
                 throw new WTF();
             for (int i = 1, stampLength = stamp.length; i < stampLength; i++) {
-                long x = stamp[i];
+                var x = stamp[i];
                 if (stamp[i - 1] >= x)
                     return false; //out of order or duplicate
             }
@@ -319,15 +319,15 @@ public interface Stamp {
         if (a.length == b.length) {
             return Arrays.equals(a, b) ? 0 : Integer.MIN_VALUE;
         } else {
-            boolean swap = a.length < b.length;
+            var swap = a.length < b.length;
             if (swap) {
                 //swap
-                long[] c = a;
+                var c = a;
                 a = b;
                 b = c;
             }
-            nextB: for (long bb : b) {
-                for (long aa : a) {
+            nextB: for (var bb : b) {
+                for (var aa : a) {
                     if (aa == bb)
                         break nextB; //found, try next B
                     if (aa > bb)
@@ -345,18 +345,18 @@ public interface Stamp {
 
     /*@NotNull*/
     default StringBuilder appendOccurrenceTime(StringBuilder sb) {
-        long oc = start();
+        var oc = start();
 
         /*if (oc == Stamp.TIMELESS)
             throw new RuntimeException("invalid occurrence time");*/
 
 
         if (oc != ETERNAL) {
-            int estTimeLength = 8; /* # digits */
+            var estTimeLength = 8; /* # digits */
             sb.ensureCapacity(estTimeLength);
             sb.append(oc);
 
-            long end = end();
+            var end = end();
             if (end != oc) {
                 sb.append((char) 0x22c8 /* bowtie, horizontal hourglass */).append(end);
             }
@@ -371,11 +371,11 @@ public interface Stamp {
     /*@NotNull*/
     default CharSequence stampAsStringBuilder() {
 
-        long[] ev = stamp();
-        int len = ev.length;
-        int estimatedInitialSize = 8 + (len * 3);
+        var ev = stamp();
+        var len = ev.length;
+        var estimatedInitialSize = 8 + (len * 3);
 
-        StringBuilder buffer = new StringBuilder(estimatedInitialSize);
+        var buffer = new StringBuilder(estimatedInitialSize);
         buffer.append(Op.STAMP_OPENER);
 
         /*if (creation() == TIMELESS) {
@@ -388,7 +388,7 @@ public interface Stamp {
 
         buffer.append(Op.STAMP_STARTER).append(' ');
 
-        for (int i = 0; i < len; i++) {
+        for (var i = 0; i < len; i++) {
 
             BinTxt.append(buffer, ev[i]);
             if (i < (len - 1)) {
@@ -414,7 +414,7 @@ public interface Stamp {
 
     /*@NotNull*/
     static long[] toSetArray(long[] x, int outputLen) {
-        int l = x.length;
+        var l = x.length;
 
 
         return (l < 2) ? x : _toSetArray(outputLen, Arrays.copyOf(x, l));
@@ -429,9 +429,9 @@ public interface Stamp {
 
 
         long lastValue = -1;
-        int uniques = 0;
+        var uniques = 0;
 
-        for (long v : sorted) {
+        for (var v : sorted) {
             if (lastValue != v)
                 uniques++;
             lastValue = v;
@@ -443,11 +443,11 @@ public interface Stamp {
         }
 
 
-        int outSize = Math.min(uniques, outputLen);
-        long[] dedupAndTrimmed = new long[outSize];
-        int uniques2 = 0;
+        var outSize = Math.min(uniques, outputLen);
+        var dedupAndTrimmed = new long[outSize];
+        var uniques2 = 0;
         long lastValue2 = -1;
-        for (long v : sorted) {
+        for (var v : sorted) {
             if (lastValue2 != v)
                 dedupAndTrimmed[uniques2++] = v;
             if (uniques2 == outSize)
@@ -467,11 +467,11 @@ public interface Stamp {
      */
     static boolean overlapsAny(long[] a, long[] b) {
 
-        int A = a.length; if (A==0) return false;
+        var A = a.length; if (A==0) return false;
 
         if (a==b) return true; //now test for identity after 0-length
 
-        int B = b.length; if (B==0) return false;
+        var B = b.length; if (B==0) return false;
 
 		return A == 1 && B == 1 ? a[0] == b[0] : LongInterval.intersectsRaw(a[0], a[A - 1], b[0], b[B - 1]) //intervals are completely disjoint
 			&&
@@ -481,15 +481,15 @@ public interface Stamp {
     private static boolean overlapsAnyExhaustive(long[] a, long[] b, int a2, int b2) {
         if (a2 > b2) {
             //swap to get the larger stamp in the inner loop
-            long[] _a = a;
+            var _a = a;
             a = b;
             b = _a;
         }
 
         /** TODO there may be additional ways to exit early from this loop */
 
-        for (long x : a) {
-            for (long y : b) {
+        for (var x : a) {
+            for (var y : b) {
                 if (y > x)
                     break;
                 else if (x == y)
@@ -544,7 +544,7 @@ public interface Stamp {
      */
     @Deprecated static ObjectFloatPair<long[]> zip(List<? extends Stamp> s, int maxLen) {
 
-        int S = s.size();
+        var S = s.size();
         assert (S > 0);
         if (S == 1) {
             return pair(s.get(0).stamp(), 0f);
@@ -554,14 +554,14 @@ public interface Stamp {
             S = maxLen;
         }
 
-        LongHashSet l = new LongHashSet(maxLen);
+        var l = new LongHashSet(maxLen);
 
-        int totalEvidence = 0;
+        var totalEvidence = 0;
 
-        byte[] ptr = new byte[S];
+        var ptr = new byte[S];
         for (int i = 0, sSize = S; i < sSize; i++) {
-            Stamp si = s.get(i);
-            long[] x = si.stamp();
+            var si = s.get(i);
+            var x = si.stamp();
 //            if (x == UNSTAMPED_OVERLAPPING)
 //                continue;
             totalEvidence += x.length;
@@ -572,17 +572,17 @@ public interface Stamp {
             //return pair(Stamp.UNSTAMPED_OVERLAPPING, 1f);
         }
 
-        List<long[]> stamps = Lists.transform(s, Stamp::stamp);
+        var stamps = Lists.transform(s, Stamp::stamp);
 
-        int size = 0;
-        boolean halted = false;
-        int repeats = 0;
-        int done = 0;
+        var size = 0;
+        var halted = false;
+        var repeats = 0;
+        var done = 0;
         main:
         while (done < S) {
             done = 0;
-            for (int i = 0; i < S; i++) {
-                long[] x = stamps.get(i);
+            for (var i = 0; i < S; i++) {
+                var x = stamps.get(i);
 
                 int xi = --ptr[i];
                 if (xi < 0) {
@@ -607,8 +607,8 @@ public interface Stamp {
             for (int i = 0, ptrLength = ptr.length; i < ptrLength; i++) {
                 int rr = ptr[i];
                 if (rr >= 0) {
-                    long[] ss = stamps.get(i);
-                    long count = IntStream.range(0, rr).filter(j -> l.contains(ss[j])).count();
+                    var ss = stamps.get(i);
+                    var count = IntStream.range(0, rr).filter(j -> l.contains(ss[j])).count();
                     repeats += count;
                 }
             }
@@ -618,9 +618,9 @@ public interface Stamp {
         assert (size <= maxLen);
 
 
-        long[] e = l.toSortedArray();
+        var e = l.toSortedArray();
 
-        float overlap = ((float) repeats) / totalEvidence;
+        var overlap = ((float) repeats) / totalEvidence;
 
 
         return pair(e, Util.unitize(overlap));
@@ -629,15 +629,15 @@ public interface Stamp {
     static long[] sample(int capacity, MetalLongSet evi, Random rng) {
 
 
-        int nab = evi.size();
+        var nab = evi.size();
         if (nab <= capacity)
             return evi.toSortedArray();
         else {
-            MutableLongList x = evi.toList();
-            int toRemove = nab - capacity;
-            for (int i = 0; i < toRemove; i++)
+            var x = evi.toList();
+            var toRemove = nab - capacity;
+            for (var i = 0; i < toRemove; i++)
                 x.removeAtIndex(rng.nextInt(nab--));
-            long[] aa = x.toArray();
+            var aa = x.toArray();
             if (aa.length > 1)
                 Arrays.sort(aa);
             return aa;
@@ -673,8 +673,8 @@ public interface Stamp {
      */
     static float overlapFraction(long[] a, long[] b) {
 
-        int al = a.length;
-        int bl = b.length;
+        var al = a.length;
+        var bl = b.length;
 
         if (al == 1 && bl == 1) {
             return (a[0] == b[0]) ? 1 : 0;
@@ -682,16 +682,16 @@ public interface Stamp {
 
         if (al > bl) {
 
-            long[] ab = a;
+            var ab = a;
             a = b;
             b = ab;
         }
 
-        int common = overlapCount(LongSets.immutable.of(a), b);
+        var common = overlapCount(LongSets.immutable.of(a), b);
         if (common == 0)
             return 0f;
 
-        int denom = Math.min(al, bl);
+        var denom = Math.min(al, bl);
         assert (denom != 0);
 
         return Util.unitize(((float) common) / denom);

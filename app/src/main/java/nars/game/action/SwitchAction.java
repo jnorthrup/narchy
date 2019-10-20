@@ -37,7 +37,7 @@ public class SwitchAction extends DigitizedScalar implements FloatSupplier {
     protected int decide(long start, long end) {
         for (int i = 0, sensorsSize = sensors.size(); i < sensorsSize; i++) {
             Signal x = sensors.get(i);
-            Truth g = x.goals().truth(start, end, nar);
+            var g = x.goals().truth(start, end, nar);
 
             exp[i] = g != null ? q(g) : EXP_IF_UNKNOWN;
         }
@@ -55,9 +55,9 @@ public class SwitchAction extends DigitizedScalar implements FloatSupplier {
     @Override
     public void accept(Game g) {
 
-        When<What> w = g.nowPercept;
+        var w = g.nowPercept;
 
-        int d = decide(w.start, w.end);
+        var d = decide(w.start, w.end);
 
         if (d!=-1 && action.test(d))
             value.set((d +0.5f)/exp.length);

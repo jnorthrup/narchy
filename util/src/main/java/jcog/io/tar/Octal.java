@@ -38,10 +38,10 @@ class Octal {
      */
     public static long parseOctal(byte[] header, int offset, int length) {
         long result = 0;
-        boolean stillPadding = true;
+        var stillPadding = true;
 
-        int end = offset + length;
-        for (int i = offset; i < end; ++i) {
+        var end = offset + length;
+        for (var i = offset; i < end; ++i) {
             if (header[i] == 0)
                 break;
 
@@ -76,7 +76,7 @@ class Octal {
      * @return The integer value of the octal bytes.
      */
     public static int getOctalBytes(long value, byte[] buf, int offset, int length) {
-        int idx = length - 1;
+        var idx = length - 1;
 
         buf[offset + idx] = 0;
         --idx;
@@ -87,7 +87,7 @@ class Octal {
             buf[offset + idx] = (byte) '0';
             --idx;
         } else {
-            for (long val = value; idx >= 0 && val > 0; --idx) {
+            for (var val = value; idx >= 0 && val > 0; --idx) {
                 buf[offset + idx] = (byte) ( (byte) '0' + (byte) ( val & 7 ) );
                 val >>= 3;
             }
@@ -135,7 +135,7 @@ class Octal {
      * @return The long value of the octal bytes.
      */
     public static int getLongOctalBytes(long value, byte[] buf, int offset, int length) {
-        byte[] temp = new byte[length + 1];
+        var temp = new byte[length + 1];
         getOctalBytes( value, temp, 0, length + 1 );
         System.arraycopy( temp, 0, buf, offset, length );
         return offset + length;

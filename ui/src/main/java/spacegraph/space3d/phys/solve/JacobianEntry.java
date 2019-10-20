@@ -161,9 +161,9 @@ public class JacobianEntry {
 	 * For two constraints on the same rigidbody (for example vehicle friction).
 	 */
 	public float getNonDiagonal(JacobianEntry jacB, float massInvA) {
-		JacobianEntry jacA = this;
-		float lin = massInvA * jacA.linearJointAxis.dot(jacB.linearJointAxis);
-		float ang = jacA.m_0MinvJt.dot(jacB.aJ);
+		var jacA = this;
+		var lin = massInvA * jacA.linearJointAxis.dot(jacB.linearJointAxis);
+		var ang = jacA.m_0MinvJt.dot(jacB.aJ);
 		return lin + ang;
 	}
 
@@ -171,37 +171,37 @@ public class JacobianEntry {
 	 * For two constraints on sharing two same rigidbodies (for example two contact points between two rigidbodies).
 	 */
 	public float getNonDiagonal(JacobianEntry jacB, float massInvA, float massInvB) {
-		JacobianEntry jacA = this;
+		var jacA = this;
 
-		v3 lin = new v3();
+		var lin = new v3();
 		VectorUtil.mul(lin, jacA.linearJointAxis, jacB.linearJointAxis);
 
-		v3 ang0 = new v3();
+		var ang0 = new v3();
 		VectorUtil.mul(ang0, jacA.m_0MinvJt, jacB.aJ);
 
-		v3 ang1 = new v3();
+		var ang1 = new v3();
 		VectorUtil.mul(ang1, jacA.m_1MinvJt, jacB.bJ);
 
-		v3 lin0 = new v3();
+		var lin0 = new v3();
 		lin0.scale(massInvA, lin);
 
-		v3 lin1 = new v3();
+		var lin1 = new v3();
 		lin1.scale(massInvB, lin);
 
-		v3 sum = new v3();
+		var sum = new v3();
 		VectorUtil.add(sum, ang0, ang1, lin0, lin1);
 
 		return sum.x + sum.y + sum.z;
 	}
 
 	public float getRelativeVelocity(v3 linvelA, v3 angvelA, v3 linvelB, v3 angvelB) {
-		v3 linrel = new v3();
+		var linrel = new v3();
 		linrel.sub(linvelA, linvelB);
 
-		v3 angvela = new v3();
+		var angvela = new v3();
 		VectorUtil.mul(angvela, angvelA, aJ);
 
-		v3 angvelb = new v3();
+		var angvelb = new v3();
 		VectorUtil.mul(angvelb, angvelB, bJ);
 
 		VectorUtil.mul(linrel, linrel, linearJointAxis);
@@ -209,7 +209,7 @@ public class JacobianEntry {
 		angvela.add(angvelb);
 		angvela.add(linrel);
 
-		float rel_vel2 = angvela.x + angvela.y + angvela.z;
+		var rel_vel2 = angvela.x + angvela.y + angvela.z;
 		return rel_vel2 + BulletGlobals.FLT_EPSILON;
 	}
 	

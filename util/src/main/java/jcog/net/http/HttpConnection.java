@@ -68,7 +68,7 @@ public class HttpConnection {
         lastReceivedNS = System.nanoTime();
 
 
-        for (STATE v : Arrays.asList(STATE.CLOSED, STATE.BAD_REQUEST, STATE.UPGRADE)) {
+        for (var v : Arrays.asList(STATE.CLOSED, STATE.BAD_REQUEST, STATE.UPGRADE)) {
             if (state == v) {
                 return;
             }
@@ -92,7 +92,7 @@ public class HttpConnection {
 
             if (requestReady) {
 
-                int r = responses.size();
+                var r = responses.size();
 
                 model.response(this);
 
@@ -157,7 +157,7 @@ public class HttpConnection {
 
         if (lineBuffer != null && lineBuffer.limit() > 0) {
             assert lineBuffer.position() == 0 : "lineBuffer should have been flip()ed";
-            int pos = buf.position() - lineBuffer.limit();
+            var pos = buf.position() - lineBuffer.limit();
             buf.position(pos);
             buf.put(lineBuffer);
             lineBuffer.clear();
@@ -177,7 +177,7 @@ public class HttpConnection {
         }
 
         if (state == STATE.DONE_READING) {
-            String upgradeField = request.get("upgrade");
+            var upgradeField = request.get("upgrade");
             if (upgradeField != null && "websocket".equalsIgnoreCase(upgradeField)) {
                 websocket = true;
                 setState(STATE.UPGRADE);
@@ -222,11 +222,11 @@ public class HttpConnection {
 
             rawHead = ByteBuffer.allocate((remaining / RAWHEAD_SIZE + 1) * RAWHEAD_SIZE);
         } else if (remaining > rawHead.remaining()) {
-            int newCap = rawHead.capacity();
+            var newCap = rawHead.capacity();
             newCap += remaining - rawHead.remaining();
             newCap = (newCap / RAWHEAD_SIZE + 1) * RAWHEAD_SIZE;
 
-            ByteBuffer newBuf = ByteBuffer.allocate(newCap);
+            var newBuf = ByteBuffer.allocate(newCap);
 
             rawHead.flip();
             newBuf.put(rawHead);
@@ -238,8 +238,8 @@ public class HttpConnection {
     }
 
     private void rawHead_putToPos(ByteBuffer buf, int beforeLinePosition) {
-        int position = buf.position();
-        int limit = buf.limit();
+        var position = buf.position();
+        var limit = buf.limit();
 
 
         buf.position(beforeLinePosition);
@@ -261,13 +261,13 @@ public class HttpConnection {
      * Read the request line and move the buffer position beyond the request line
      */
     private void readRequestLine(ByteBuffer buf) throws HttpException {
-        StringBuilder line = lineParser.get();
+        var line = lineParser.get();
 
         try {
             while (true) {
                 line.setLength(0);
 
-                int beforeLinePosition = buf.position();
+                var beforeLinePosition = buf.position();
 
                 if (!HttpUtil.readLine(line, buf, false)) {
                     return;
@@ -282,7 +282,7 @@ public class HttpConnection {
                 if (line.length() > 300) {
                     throw new HttpException(414, true, "Request-Line Too Long");
                 } else {
-                    Matcher requestLine = HttpUtil.requestLine.matcher(line.subSequence(0, line.length()));
+                    var requestLine = HttpUtil.requestLine.matcher(line.subSequence(0, line.length()));
                     if (requestLine.matches()) {
                         method = METHOD.fromRequestLine(requestLine.group(1));
 
@@ -290,7 +290,7 @@ public class HttpConnection {
                             throw new HttpException(501, true, "Unknown Method");
                         }
 
-                        String uri = requestLine.group(2);
+                        var uri = requestLine.group(2);
                         if (uri.length() > 255) {
                             throw new HttpException(414, true, "Request-URI Too Long");
                         } else {
@@ -315,12 +315,12 @@ public class HttpConnection {
     }
 
     private void readHeaders(ByteBuffer buf) throws HttpException {
-        StringBuilder line = new StringBuilder();
+        var line = new StringBuilder();
         try {
             while (true) {
                 line.setLength(0);
 
-                int beforeLinePosition = buf.position();
+                var beforeLinePosition = buf.position();
                 if (!HttpUtil.readLine(line, buf, true)) {
                     return;
                 }
@@ -328,10 +328,10 @@ public class HttpConnection {
                 rawHead_putToPos(buf, beforeLinePosition);
 
 
-                Matcher headerLine = HttpUtil.headerLine.matcher(line.subSequence(0, line.length()));
+                var headerLine = HttpUtil.headerLine.matcher(line.subSequence(0, line.length()));
                 if (headerLine.matches()) {
-                    String name = headerLine.group(1);
-                    String value = headerLine.group(2);
+                    var name = headerLine.group(1);
+                    var value = headerLine.group(2);
 
                     request.put(name.toLowerCase(), value.trim());
                     if (request.size() > 50) {
@@ -366,7 +366,7 @@ public class HttpConnection {
             return;
         }
 
-        STATE oldState = this.state;
+        var oldState = this.state;
         this.state = newState;
 
         if (newState == STATE.DONE_READING) {

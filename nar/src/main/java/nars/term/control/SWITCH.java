@@ -45,9 +45,9 @@ public final class SWITCH<D extends PreDerivation> extends AbstractPred<D> {
                 $.p(cases.entrySet().stream().map(e -> $.p($.quote(e.getKey().toString()), e.getValue())).toArray(Term[]::new))));
 
         swtch = new PREDICATE[24];
-        for (Map.Entry<Op, PREDICATE<D>> entry : cases.entrySet()) {
-            Op k = entry.getKey();
-            PREDICATE<D> v = entry.getValue();
+        for (var entry : cases.entrySet()) {
+            var k = entry.getKey();
+            var v = entry.getValue();
             swtch[k.id] = v;
         }
         this.taskOrBelief = taskOrBelief;
@@ -56,10 +56,10 @@ public final class SWITCH<D extends PreDerivation> extends AbstractPred<D> {
 
     @Override
     public PREDICATE<D> transform(Function<PREDICATE<D>, PREDICATE<D>> f) {
-        EnumMap<Op, PREDICATE<D>> e2 = cases.clone();
+        var e2 = cases.clone();
         boolean[] changed = {false};
         e2.replaceAll(((k, x) -> {
-            PREDICATE<D> y = x.transform(f);
+            var y = x.transform(f);
             if (y != x)
                 changed[0] = true;
             return y;

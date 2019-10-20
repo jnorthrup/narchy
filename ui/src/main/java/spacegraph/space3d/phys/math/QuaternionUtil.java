@@ -35,22 +35,22 @@ import spacegraph.util.math.Quat4f;
 public class QuaternionUtil {
 
 	public static float getAngle(Quat4f q) {
-		float s = 2f * (float) Math.acos(q.w);
+		var s = 2f * (float) Math.acos(q.w);
 		return s;
 	}
 	
 	public static void setRotation(Quat4f q, v3 axis, float angle) {
-		float d = axis.length();
+		var d = axis.length();
 		assert (d != 0f);
-		float s = (float) Math.sin(angle * 0.5f) / d;
+		var s = (float) Math.sin(angle * 0.5f) / d;
 		q.set(axis.x * s, axis.y * s, axis.z * s, (float) Math.cos(angle * 0.5f));
 	}
 	
 	
 	public static Quat4f shortestArcQuat(v3 v0, v3 v1, Quat4f out) {
-		v3 c = new v3();
+		var c = new v3();
 		c.cross(v0, v1);
-		float d = v0.dot(v1);
+		var d = v0.dot(v1);
 
 		if (d < -1.0 + BulletGlobals.FLT_EPSILON) {
 			
@@ -58,26 +58,26 @@ public class QuaternionUtil {
 			return out;
 		}
 
-		float s = (float) Math.sqrt((1.0f + d) * 2.0f);
-		float rs = 1.0f / s;
+		var s = (float) Math.sqrt((1.0f + d) * 2.0f);
+		var rs = 1.0f / s;
 
 		out.set(c.x * rs, c.y * rs, c.z * rs, s * 0.5f);
 		return out;
 	}
 	
 	private static void mul(Quat4f q, v3 w) {
-		float rx = q.w * w.x + q.y * w.z - q.z * w.y;
-		float ry = q.w * w.y + q.z * w.x - q.x * w.z;
-		float rz = q.w * w.z + q.x * w.y - q.y * w.x;
-		float rw = -q.x * w.x - q.y * w.y - q.z * w.z;
+		var rx = q.w * w.x + q.y * w.z - q.z * w.y;
+		var ry = q.w * w.y + q.z * w.x - q.x * w.z;
+		var rz = q.w * w.z + q.x * w.y - q.y * w.x;
+		var rw = -q.x * w.x - q.y * w.y - q.z * w.z;
 		q.set(rx, ry, rz, rw);
 	}
 	
 	public static v3 quatRotate(Quat4f rotation, v3 v, v3 out) {
-		Quat4f q = new Quat4f(rotation);
+		var q = new Quat4f(rotation);
 		mul(q, v);
 
-		Quat4f tmp = new Quat4f();
+		var tmp = new Quat4f();
 		inverse(tmp, rotation);
 		q.mul(tmp);
 		
@@ -99,15 +99,15 @@ public class QuaternionUtil {
 	}
 
 	public static void setEuler(Quat4f q, float yaw, float pitch, float roll) {
-		float halfYaw = yaw * 0.5f;
-		float halfPitch = pitch * 0.5f;
-		float halfRoll = roll * 0.5f;
-		float cosYaw = (float) Math.cos(halfYaw);
-		float sinYaw = (float) Math.sin(halfYaw);
-		float cosPitch = (float) Math.cos(halfPitch);
-		float sinPitch = (float) Math.sin(halfPitch);
-		float cosRoll = (float) Math.cos(halfRoll);
-		float sinRoll = (float) Math.sin(halfRoll);
+		var halfYaw = yaw * 0.5f;
+		var halfPitch = pitch * 0.5f;
+		var halfRoll = roll * 0.5f;
+		var cosYaw = (float) Math.cos(halfYaw);
+		var sinYaw = (float) Math.sin(halfYaw);
+		var cosPitch = (float) Math.cos(halfPitch);
+		var sinPitch = (float) Math.sin(halfPitch);
+		var cosRoll = (float) Math.cos(halfRoll);
+		var sinRoll = (float) Math.sin(halfRoll);
 		q.x = cosRoll * sinPitch * cosYaw + sinRoll * cosPitch * sinYaw;
 		q.y = cosRoll * cosPitch * sinYaw - sinRoll * sinPitch * cosYaw;
 		q.z = sinRoll * cosPitch * cosYaw - cosRoll * sinPitch * sinYaw;

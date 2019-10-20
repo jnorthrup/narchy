@@ -23,14 +23,14 @@ public class SoundMixer extends FastCoWList<Sound> implements StereoSoundProduce
 	}
 
 	public <S extends SoundProducer> Sound<S> add(S producer, SoundSource soundSource, float volume, float priority) {
-		Sound s = new Sound(producer, soundSource, volume, priority);
+		var s = new Sound(producer, soundSource, volume, priority);
 		s.playing = true;
 		add(s);
 		return s;
 	}
 
 	public void update(float receiverBalance) {
-		boolean updating = (soundSource != null);
+		var updating = (soundSource != null);
 
 		this.removeIf(sound -> !updating || !sound.update(soundSource, receiverBalance));
 	}
@@ -39,8 +39,8 @@ public class SoundMixer extends FastCoWList<Sound> implements StereoSoundProduce
 	@SuppressWarnings("unchecked")
 	public void read(float[] leftBuf, float[] rightBuf, int readRate) {
 
-		Sound[] ss = array();
-		int s = ss.length;
+		var ss = array();
+		var s = ss.length;
 
 		if (s == 0)
 			return;
@@ -56,25 +56,25 @@ public class SoundMixer extends FastCoWList<Sound> implements StereoSoundProduce
 		Arrays.fill(leftBuf, 0);
 		Arrays.fill(rightBuf, 0);
 
-		int l = leftBuf.length;
+		var l = leftBuf.length;
 
-		for (int i = 0; i < s; i++) {
-			Sound sound = ss[i];
+		for (var i = 0; i < s; i++) {
+			var sound = ss[i];
 
 			if (i < audibleSources) {
-				float[] buf = this.buf;
+				var buf = this.buf;
 				Arrays.fill(buf, 0);
 
-				boolean kontinues = sound.producer.read(buf, readRate);
+				var kontinues = sound.producer.read(buf, readRate);
 
-				float pan = sound.pan;
+				var pan = sound.pan;
 
-				float amp = sound.amplitude;
-				float rp = (pan <= 0 ? 1 : 1 + pan) * amp;
-				float lp = (pan >= 0 ? 1 : 1 - pan) * amp;
+				var amp = sound.amplitude;
+				var rp = (pan <= 0 ? 1 : 1 + pan) * amp;
+				var lp = (pan >= 0 ? 1 : 1 - pan) * amp;
 
-				for (int j = 0; j < l; j++) {
-					float bj = buf[j];
+				for (var j = 0; j < l; j++) {
+					var bj = buf[j];
 					leftBuf[j] += bj * lp;
 					rightBuf[j] += bj * rp;
 				}
@@ -93,6 +93,6 @@ public class SoundMixer extends FastCoWList<Sound> implements StereoSoundProduce
 
 	@Override
 	public void skip(int samplesToSkip, int readRate) {
-		for (Sound sound : this) sound.skip(samplesToSkip, readRate);
+		for (var sound : this) sound.skip(samplesToSkip, readRate);
 	}
 }

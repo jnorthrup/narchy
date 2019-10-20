@@ -23,14 +23,14 @@ import java.util.function.Supplier;
 
     private static ViewFunction2D arrayRenderer(float[][] ww) {
         return (x, y, gl) -> {
-            float v = ww[x][y];
+            var v = ww[x][y];
             Draw.colorBipolar(gl, v);
             return 0;
         };
     }
     private static ViewFunction2D arrayRenderer(double[][] ww) {
         return (x, y, gl) -> {
-            float v = (float) ww[x][y];
+            var v = (float) ww[x][y];
             Draw.colorBipolar(gl, v);
             return 0;
         };
@@ -38,7 +38,7 @@ import java.util.function.Supplier;
 
     public static ViewFunction2D arrayRenderer(float[] w) {
         return (x, y, gl) -> {
-            float v = w[y];
+            var v = w[y];
             Draw.colorBipolar(gl, v);
             return 0;
         };
@@ -46,7 +46,7 @@ import java.util.function.Supplier;
 
     public static ViewFunction2D arrayRenderer(double[] w) {
         return (x, y, gl) -> {
-            float v = (float) w[y];
+            var v = (float) w[y];
             Draw.colorBipolar(gl, v);
             return 0;
         };
@@ -108,28 +108,28 @@ import java.util.function.Supplier;
 
     public MatrixView(float[] d, int stride, ViewFunction1D view) {
         this(stride, (int) Math.ceil(((float) d.length) / stride), (x, y, gl) -> {
-            int i = y * stride + x;
+            var i = y * stride + x;
             return i < d.length ? view.update(d[i], gl) : Float.NaN;
         });
     }
 
     public MatrixView(IntToFloatFunction d, int len, int stride, ViewFunction1D view) {
         this(stride, (int) Math.ceil(((float) len) / stride), (x, y, gl) -> {
-            int i = y * stride + x;
+            var i = y * stride + x;
             return i < len ? view.update(d.valueOf(i), gl) : Float.NaN;
         });
     }
 
     public MatrixView(double[] d, int stride, ViewFunction1D view) {
         this(stride, (int) Math.ceil(((float) d.length) / stride), (x, y, gl) -> {
-            int i = y * stride + x;
+            var i = y * stride + x;
             return i < d.length ? view.update((float) d[i], gl) : Float.NaN;
         });
     }
 
     public <P extends FloatSupplier> MatrixView(P[] d, int stride, ViewFunction1D view) {
         this(stride, (int) Math.ceil(((float) d.length) / stride), (x, y, gl) -> {
-            int i = y * stride + x;
+            var i = y * stride + x;
             return i < d.length ? view.update(d[i].asFloat(), gl) : Float.NaN;
         });
     }
@@ -140,19 +140,19 @@ import java.util.function.Supplier;
 
 
     public static MatrixView get(ArrayTensor t, int stride, ViewFunction1D view) {
-        float[] d = t.data;
+        var d = t.data;
         return new MatrixView(stride, (int) Math.ceil(((float) t.volume()) / stride), (x, y, gl) -> {
-            float v = d[x * stride + y];
+            var v = d[x * stride + y];
             return view.update(v, gl);
         });
     }
 
     public MatrixView(Supplier<double[]> e, int length, int stride, ViewFunction1D view) {
         this(stride, (int) Math.ceil(((float) length) / stride), (x, y, gl) -> {
-            double[] d = e.get();
+            var d = e.get();
             if (d != null) {
 
-                int i = y * stride + x;
+                var i = y * stride + x;
                 if (i < d.length)
                     return view.update((float) d[i], gl);
             }
@@ -170,20 +170,20 @@ import java.util.function.Supplier;
             return;
 
 
-        float dw = 1f / w * w();
-        float dh = 1f / h * h();
+        var dw = 1f / w * w();
+        var dh = 1f / h * h();
 
 
-        float tx = x();
-        float ty = y();
-        for (int y = 0; y < h; y++) {
+        var tx = x();
+        var ty = y();
+        for (var y = 0; y < h; y++) {
 
-            float yy = ty + 1f - (y + 1) * dh;
+            var yy = ty + 1f - (y + 1) * dh;
 
-            for (int x = 0; x < w; x++) {
+            for (var x = 0; x < w; x++) {
 
-                
-                float dz = view.update(x, y, gl);
+
+                var dz = view.update(x, y, gl);
                 if (dz == dz) {
                     Draw.rect(gl, tx + x * dw, yy, dw, dh, dz);
                 }

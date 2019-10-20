@@ -53,23 +53,17 @@ public abstract class TriangleConvexcastCallback extends TriangleCallback {
 	
 	@Override
 	public void processTriangle(v3[] triangle, int partId, int triangleIndex) {
-		TriangleShape triangleShape = new TriangleShape(triangle[0], triangle[1], triangle[2]);
+		var triangleShape = new TriangleShape(triangle[0], triangle[1], triangle[2]);
 		triangleShape.setMargin(triangleCollisionMargin);
 
-		VoronoiSimplexSolver simplexSolver = new VoronoiSimplexSolver();
-		GjkEpaPenetrationDepthSolver gjkEpaPenetrationSolver = new GjkEpaPenetrationDepthSolver();
+		var simplexSolver = new VoronoiSimplexSolver();
+		var gjkEpaPenetrationSolver = new GjkEpaPenetrationDepthSolver();
 
-		
-		
-		
-		
-		SubsimplexConvexCast convexCaster = new SubsimplexConvexCast(convexShape, triangleShape, simplexSolver);
-		
-		
-		
-		
 
-		ConvexCast.CastResult castResult = new ConvexCast.CastResult();
+		var convexCaster = new SubsimplexConvexCast(convexShape, triangleShape, simplexSolver);
+
+
+		var castResult = new ConvexCast.CastResult();
 		castResult.fraction = 1f;
 		if (convexCaster.calcTimeOfImpact(convexShapeFrom, convexShapeTo, triangleToWorld, triangleToWorld, castResult)) {
 			

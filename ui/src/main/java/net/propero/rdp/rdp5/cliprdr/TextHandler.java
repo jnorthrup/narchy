@@ -39,9 +39,9 @@ import java.awt.datatransfer.Transferable;
 public class TextHandler extends TypeHandler {
 
     public static Transferable handleData(RdpPacket data, int length) {
-        String thingy = "";
-        for (int i = 0; i < length; i++) {
-            int aByte = data.get8();
+        var thingy = "";
+        for (var i = 0; i < length; i++) {
+            var aByte = data.get8();
             if (aByte != 0)
                 thingy += (char) (aByte & 0xFF);
         }
@@ -96,9 +96,9 @@ public class TextHandler extends TypeHandler {
      */
     @Override
     public void handleData(RdpPacket data, int length, ClipInterface c) {
-        String thingy = "";
-        for (int i = 0; i < length; i++) {
-            int aByte = data.get8();
+        var thingy = "";
+        for (var i = 0; i < length; i++) {
+            var aByte = data.get8();
             if (aByte != 0)
                 thingy += (char) (aByte & 0xFF);
         }

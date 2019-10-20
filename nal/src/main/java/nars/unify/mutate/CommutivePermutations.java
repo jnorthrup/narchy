@@ -29,7 +29,7 @@ public final class CommutivePermutations extends Termutator.AbstractTermutator {
         this.x = X;
         this.y = Y;
 
-        int xs = X.subs();
+        var xs = X.subs();
         assert(xs > 1 && xs == Y.subs());
     }
 
@@ -40,12 +40,12 @@ public final class CommutivePermutations extends Termutator.AbstractTermutator {
 
     @Override
     public @Nullable Termutator preprocess(Unify u) {
-		TermList x = u.resolveListIfChanged(this.x, true);
-		TermList y = u.resolveListIfChanged(this.y, true);
+        var x = u.resolveListIfChanged(this.x, true);
+        var y = u.resolveListIfChanged(this.y, true);
         if (x!=null || y!=null) {
             if (x == null) x = this.x.toList();
             if (y == null) y = this.y.toList();
-            boolean preUnified = false;
+            var preUnified = false;
             switch (Subterms.possiblyUnifiableWhileEliminatingEqualAndConstants(x, y, u)) {
                 case 1:
                     preUnified = true;
@@ -109,9 +109,9 @@ public final class CommutivePermutations extends Termutator.AbstractTermutator {
 //            x = this.x; y = this.y;
 //        }
 
-        int start = u.size();
+        var start = u.size();
 
-        ShuffledSubterms p = new ShuffledSubterms(x, u.random);
+        var p = new ShuffledSubterms(x, u.random);
 
 
         while (p.shuffle()) {

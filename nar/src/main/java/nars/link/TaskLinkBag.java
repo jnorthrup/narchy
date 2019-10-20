@@ -78,7 +78,7 @@ public class TaskLinkBag extends SimpleBufferedBag<TaskLink, TaskLink> {
 
         @Override
         protected TaskLink merge(TaskLink existing, TaskLink incoming, NumberX overflowing) {
-            float o = existing.merge(incoming, merge(), PriReturn.Overflow);
+            var o = existing.merge(incoming, merge(), PriReturn.Overflow);
             if (overflowing != null)
                 overflowing.add(o);
             return existing;

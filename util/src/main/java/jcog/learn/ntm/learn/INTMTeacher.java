@@ -12,7 +12,7 @@ public interface INTMTeacher {
 
     default List<double[]> trainAndGetOutput(double[][] input, double[][] knownOutput) {
 
-        NTM[] machines = trainInternal(input, knownOutput);
+        var machines = trainInternal(input, knownOutput);
         return getMachineOutputs(machines);
 
     }

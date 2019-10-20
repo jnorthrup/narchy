@@ -56,7 +56,7 @@ public class ScaledBitmap2D extends MonoBufImgBitmap2D /* TODO extends ArrayBitm
         if (source == null)
             return;
 
-        BufferedImage in = source.get();
+        var in = source.get();
         if (in == null)
             return;
 

@@ -20,7 +20,7 @@ public class Debris extends VectorSprite {
         xposition = x;
         yposition = y;
 
-        double a = Math.random() * 2 * Math.PI;
+        var a = Math.random() * 2 * Math.PI;
         angle = a;
 
         THRUST = Math.random() * 5 + 5;

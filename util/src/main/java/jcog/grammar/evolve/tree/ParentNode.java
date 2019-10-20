@@ -25,7 +25,7 @@ public abstract class ParentNode extends AbstractNode {
     }
 
     public final void forEach(Consumer<Node> eachChild) {
-        for (Node child : children) {
+        for (var child : children) {
             eachChild.accept(child);
         }
     }
@@ -62,7 +62,7 @@ public abstract class ParentNode extends AbstractNode {
 
     @Override
     public int hashCode() {
-        int hash = this.hash;
+        var hash = this.hash;
         if (hash == 0)
             return this.hash = rehash();
         return hash;
@@ -73,7 +73,7 @@ public abstract class ParentNode extends AbstractNode {
     }
 
     protected int rehash() {
-        int h = children.hashCode();
+        var h = children.hashCode();
         h = 31 * h + getClass().hashCode();
         if (h == 0) h = 1;
         return h;
@@ -104,13 +104,13 @@ public abstract class ParentNode extends AbstractNode {
     public final boolean equals(Object o) {
         if (this == o) return true;
         if (getClass() != o.getClass()) return false;
-        ParentNode an = (ParentNode) o;
+        var an = (ParentNode) o;
         if (hashCode() != an.hashCode()) return false;
         return children.equals(an.children);
     }
 
     protected static void cloneChild(Node child, ParentNode parent) {
-        Node newChild = child.cloneTree();
+        var newChild = child.cloneTree();
         newChild.setParent(parent);
         parent.add(newChild);
     }

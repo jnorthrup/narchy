@@ -45,7 +45,7 @@ public class ContactVelocityConstraint {
     public int contactIndex;
 
     public ContactVelocityConstraint() {
-        for (int i = 0; i < points.length; i++) {
+        for (var i = 0; i < points.length; i++) {
             points[i] = new VelocityConstraintPoint();
         }
     }

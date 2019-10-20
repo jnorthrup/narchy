@@ -34,7 +34,7 @@ public class AStarGoalFind<F extends Solution> {
 
     public AStarGoalFind(Problem<F> problem, F initialNode, F goalNode) {
 
-        F endNode = this.search(problem, initialNode, goalNode);
+        var endNode = this.search(problem, initialNode, goalNode);
 
         this.plan = endNode!=null ? AStarGoalFind.path(endNode) : null;
 
@@ -55,7 +55,7 @@ public class AStarGoalFind<F extends Solution> {
         path.add(node);
         Solution currentNode = node;
         while (currentNode.parent() != null) {
-            Solution parent = currentNode.parent();
+            var parent = currentNode.parent();
             path.add(0, parent);
             currentNode = parent;
         }
@@ -84,9 +84,9 @@ public class AStarGoalFind<F extends Solution> {
         this.iteration = 0;
 
         while (openSet.size() > 0 && (maxSteps < 0 || this.iteration < maxSteps)) {
-            
-            
-            F currentNode = openSet.poll();
+
+
+            var currentNode = openSet.poll();
 
 
 
@@ -98,16 +98,16 @@ public class AStarGoalFind<F extends Solution> {
                 this.bestNodeAfterSearch = currentNode;
                 return currentNode;
             }
-            
-            Iterable<F> successorNodes = problem.next(currentNode);
-            for (F successorNode : successorNodes) {
+
+            var successorNodes = problem.next(currentNode);
+            for (var successorNode : successorNodes) {
                 if (closedSet.contains(successorNode))
                     continue;
                 /* Special rule for nodes that are generated within other nodes:
                  * We need to ensure that we use the node and
                  * its g value from the openSet if its already discovered
                  */
-                F discSuccessorNode = openSet.getNode(successorNode);
+                var discSuccessorNode = openSet.getNode(successorNode);
                 boolean inOpenSet;
                 if (discSuccessorNode != null) {
                     successorNode = discSuccessorNode;
@@ -115,8 +115,8 @@ public class AStarGoalFind<F extends Solution> {
                 } else {
                     inOpenSet = false;
                 }
-                
-                double tentativeG = currentNode.g() + problem.cost(currentNode,successorNode);
+
+                var tentativeG = currentNode.g() + problem.cost(currentNode,successorNode);
                 
                 if (inOpenSet && tentativeG >= successorNode.g())
                     continue;

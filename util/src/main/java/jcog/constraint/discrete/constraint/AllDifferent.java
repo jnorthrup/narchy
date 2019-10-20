@@ -31,7 +31,7 @@ public class AllDifferent extends Propagator {
 
     @Override
     public boolean setup() {
-        for (int i = 0; i < unassigned.length; i++) {
+        for (var i = 0; i < unassigned.length; i++) {
             unassigned[i].watchAssign(this);
         }
         return propagate();
@@ -39,23 +39,23 @@ public class AllDifferent extends Propagator {
 
     @Override
     public boolean propagate() {
-        int nUnassigned = nUnassignedT.getValue();
+        var nUnassigned = nUnassignedT.getValue();
         if (nUnassigned == 1)
             return true;
-        boolean reduce = true;
+        var reduce = true;
         while (reduce) {
             reduce = false;
-            for (int i = nUnassigned - 1; i >= 0; i--) {
-                IntVar variable = unassigned[i];
+            for (var i = nUnassigned - 1; i >= 0; i--) {
+                var variable = unassigned[i];
                 if (variable.isAssigned()) {
                     
                     nUnassigned--;
                     unassigned[i] = unassigned[nUnassigned];
                     unassigned[nUnassigned] = variable;
-                    
-                    int value = variable.min();
-                    for (int j = 0; j < nUnassigned; j++) {
-                        IntVar var = unassigned[j];
+
+                    var value = variable.min();
+                    for (var j = 0; j < nUnassigned; j++) {
+                        var var = unassigned[j];
                         if (var.contains(value)) {
                             if (!var.remove(value))
                                 return false;

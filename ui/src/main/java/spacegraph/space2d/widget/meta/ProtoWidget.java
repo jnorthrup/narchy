@@ -45,7 +45,7 @@ public class ProtoWidget extends Bordering {
 
         WidgetLibrary add(String name, Supplier<Surface> s, String... tags) {
             byName.put(name, s);
-            for (String t : tags) {
+            for (var t : tags) {
                 byTag.put(t, pair(name, s));
             }
             return this;
@@ -67,11 +67,11 @@ public class ProtoWidget extends Bordering {
         add("java", ()->new ReplChip((cmd,done)-> done.accept("TODO")), "Value"); //java expression evaluation
         add("shell", ()->new ReplChip((cmd,done)->{
             try {
-                Process proc = new ProcessBuilder().command(cmd.split(" "))
+                var proc = new ProcessBuilder().command(cmd.split(" "))
                         .redirectOutput(ProcessBuilder.Redirect.PIPE)
                         .redirectError(ProcessBuilder.Redirect.PIPE)
                         .start();
-                InputStream is = proc.getInputStream();
+                var is = proc.getInputStream();
                 proc.onExit().whenComplete((p,t)->{
                     try {
                         done.accept(new String(IOUtil.copyStream2ByteArray(is)));
@@ -114,7 +114,7 @@ public class ProtoWidget extends Bordering {
         add("OneHotBit", ()-> new BiFunctionChip<>(Integer.class, Integer.class, Tensor.class, (signal, range) -> {
             //TODO optimize with a special Tensor impl
             if (signal >= 0 && signal < range) {
-                float[] x = new float[range];
+                var x = new float[range];
                 x[signal] = 1;
                 return new ArrayTensor(x);
             } else {
@@ -174,13 +174,13 @@ public class ProtoWidget extends Bordering {
 
         Map<String,Supplier<Surface>> categories = new TreeMap<>();
         //categories.put("...", OmniBox::new);
-        for (Map.Entry<String, Collection<Pair<String, Supplier<Surface>>>> entry : library.byTag.asMap().entrySet()) {
-            String t = entry.getKey();
-            Collection<Pair<String, Supplier<Surface>>> v = entry.getValue();
-            Surface[] fields = v.stream()
+        for (var entry : library.byTag.asMap().entrySet()) {
+            var t = entry.getKey();
+            var v = entry.getValue();
+            var fields = v.stream()
                     .sorted(Comparator.comparing(Pair::getOne))
                     .map(x -> {
-                        String name = x.getOne();
+                        var name = x.getOne();
                         return becoming(name, x.getTwo());
                     })
                     .toArray(Surface[]::new);
@@ -239,7 +239,7 @@ public class ProtoWidget extends Bordering {
 
         set(N, new LazySurface(()->{
 
-            User u = new User();
+            var u = new User();
 
 //            library.byName.forEach((t,v)-> u.put(t, t));
 

@@ -54,9 +54,9 @@ public abstract class JoglDisplay extends SpaceGraph {
     public JoglDisplay() {
         video = new MyJoglWindow();
 
-        float cameraSpeed = 100f;
+        var cameraSpeed = 100f;
         video.onUpdate(camPos = new v3Anim(0, 0, 5, cameraSpeed));
-        float cameraRotateSpeed = cameraSpeed;
+        var cameraRotateSpeed = cameraSpeed;
         video.onUpdate(camFwd = new v3Anim(0, 0, -1, cameraRotateSpeed));
         video.onUpdate(camUp = new v3Anim(0, 1, 0, cameraRotateSpeed));
     }
@@ -92,7 +92,7 @@ public abstract class JoglDisplay extends SpaceGraph {
     }
 
     @Deprecated public void camera(v3 target, float radius) {
-        v3 fwd = v();
+        var fwd = v();
         fwd.sub(target, camPos);
         fwd.normalize();
         camFwd.set(fwd);

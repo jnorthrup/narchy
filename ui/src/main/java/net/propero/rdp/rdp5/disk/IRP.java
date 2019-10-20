@@ -16,8 +16,8 @@ class IRP {
 
     public IRP(int fileId, int majorFunction, int minorFunction) {
 
-        ByteArrayOutputStream bout = new ByteArrayOutputStream();
-        DataOutputStream out = new DataOutputStream(bout);
+        var bout = new ByteArrayOutputStream();
+        var out = new DataOutputStream(bout);
     }
 
 }

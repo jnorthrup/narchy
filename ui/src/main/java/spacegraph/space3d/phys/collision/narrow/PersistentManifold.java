@@ -66,7 +66,7 @@ public class PersistentManifold {
 	public int index1a;
 	
 	{
-		for (int i=0; i<pointCache.length; i++) pointCache[i] = new ManifoldPoint();
+		for (var i = 0; i<pointCache.length; i++) pointCache[i] = new ManifoldPoint();
 	}
 
 	public PersistentManifold(BulletGlobals globals) {
@@ -86,16 +86,15 @@ public class PersistentManifold {
 
 	
 	private int sortCachedPoints(ManifoldPoint pt) {
-		
-		
-
-		int maxPenetrationIndex = -1;
 
 
-        float maxPenetration = pt.distance1;
-		for (int i = 0; i < 4; i++) {
-			ManifoldPoint pii = pointCache[i];
-            float pid = pii.distance1;
+		var maxPenetrationIndex = -1;
+
+
+		var maxPenetration = pt.distance1;
+		for (var i = 0; i < 4; i++) {
+			var pii = pointCache[i];
+			var pid = pii.distance1;
 			if (pid < maxPenetration) {
 				maxPenetrationIndex = i;
 				maxPenetration = pid;
@@ -103,63 +102,63 @@ public class PersistentManifold {
 		}
 
 
-		float res0 = 0f;
+		var res0 = 0f;
         if (maxPenetrationIndex != 0) {
-			v3 a0 = new v3(pt.localPointA);
+			var a0 = new v3(pt.localPointA);
 			a0.sub(pointCache[1].localPointA);
 
-			v3 b0 = new v3(pointCache[3].localPointA);
+			var b0 = new v3(pointCache[3].localPointA);
 			b0.sub(pointCache[2].localPointA);
 
-			v3 cross = new v3();
+			var cross = new v3();
 			cross.cross(a0, b0);
 
 			res0 = cross.lengthSquared();
 		}
 
-        float res1 = 0f;
+		var res1 = 0f;
         if (maxPenetrationIndex != 1) {
-			v3 a1 = new v3(pt.localPointA);
+			var a1 = new v3(pt.localPointA);
 			a1.sub(pointCache[0].localPointA);
 
-			v3 b1 = new v3(pointCache[3].localPointA);
+			var b1 = new v3(pointCache[3].localPointA);
 			b1.sub(pointCache[2].localPointA);
 
-			v3 cross = new v3();
+			var cross = new v3();
 			cross.cross(a1, b1);
 			res1 = cross.lengthSquared();
 		}
 
-        float res2 = 0f;
+		var res2 = 0f;
         if (maxPenetrationIndex != 2) {
-			v3 a2 = new v3(pt.localPointA);
+			var a2 = new v3(pt.localPointA);
 			a2.sub(pointCache[0].localPointA);
 
-			v3 b2 = new v3(pointCache[3].localPointA);
+			var b2 = new v3(pointCache[3].localPointA);
 			b2.sub(pointCache[1].localPointA);
 
-			v3 cross = new v3();
+			var cross = new v3();
 			cross.cross(a2, b2);
 
 			res2 = cross.lengthSquared();
 		}
 
-        float res3 = 0f;
+		var res3 = 0f;
         if (maxPenetrationIndex != 3) {
-			v3 a3 = new v3(pt.localPointA);
+			var a3 = new v3(pt.localPointA);
 			a3.sub(pointCache[0].localPointA);
 
-			v3 b3 = new v3(pointCache[2].localPointA);
+			var b3 = new v3(pointCache[2].localPointA);
 			b3.sub(pointCache[1].localPointA);
 
-			v3 cross = new v3();
+			var cross = new v3();
 			cross.cross(a3, b3);
 			res3 = cross.lengthSquared();
 		}
 
-		Vector4f maxvec = new Vector4f();
+		var maxvec = new Vector4f();
 		maxvec.set(res0, res1, res2, res3);
-		int biggestarea = VectorUtil.closestAxis4(maxvec);
+		var biggestarea = VectorUtil.closestAxis4(maxvec);
 		return biggestarea;
 	}
 
@@ -179,11 +178,11 @@ public class PersistentManifold {
 	}
 	
 	private void clearUserCache(ManifoldPoint pt) {
-		Object oldPtr = pt.userPersistentData;
+		var oldPtr = pt.userPersistentData;
 		if (oldPtr != null) {
 
 
-			ContactDestroyedCallback cb = globals.getContactDestroyedCallback();
+			var cb = globals.getContactDestroyedCallback();
 			if (cb != null) {
 				cb.contactDestroyed(pt.userPersistentData);
 				pt.userPersistentData = null;
@@ -210,15 +209,15 @@ public class PersistentManifold {
 
 	public int getCacheEntry(ManifoldPoint newPoint, float shortestDist) {
 
-        int size = cachedPoints;
-		int nearestPoint = -1;
-		v3 diffA = new v3();
-		for (int i = 0; i < size; i++) {
-			ManifoldPoint mp = pointCache[i];
+		var size = cachedPoints;
+		var nearestPoint = -1;
+		var diffA = new v3();
+		for (var i = 0; i < size; i++) {
+			var mp = pointCache[i];
 
 			diffA.sub(mp.localPointA, newPoint.localPointA);
 
-			float distToManiPoint = diffA.dot(diffA);
+			var distToManiPoint = diffA.dot(diffA);
 			if (distToManiPoint < shortestDist) {
 				shortestDist = distToManiPoint;
 				nearestPoint = i;
@@ -230,7 +229,7 @@ public class PersistentManifold {
 	public int addManifoldPoint(ManifoldPoint newPoint) {
 		assert (validContactDistance(newPoint));
 
-        int insertIndex = cachedPoints;
+		var insertIndex = cachedPoints;
 		if (insertIndex == MANIFOLD_CACHE_SIZE) {
 			
 			insertIndex = MANIFOLD_CACHE_SIZE >= 4 ? sortCachedPoints(newPoint) : 0;
@@ -249,7 +248,7 @@ public class PersistentManifold {
 	private void removeContactPoint(int index) {
 		clearUserCache(pointCache[index]);
 
-        int lastUsedIndex = cachedPoints - 1;
+		var lastUsedIndex = cachedPoints - 1;
 
 		if (index != lastUsedIndex) {
 			
@@ -271,14 +270,13 @@ public class PersistentManifold {
 		assert (validContactDistance(newPoint));
 
 
-
-		int lifeTime = pointCache[insertIndex].lifeTime;
-		float appliedImpulse = pointCache[insertIndex].appliedImpulse;
-		float appliedLateralImpulse1 = pointCache[insertIndex].appliedImpulseLateral1;
-		float appliedLateralImpulse2 = pointCache[insertIndex].appliedImpulseLateral2;
+		var lifeTime = pointCache[insertIndex].lifeTime;
+		var appliedImpulse = pointCache[insertIndex].appliedImpulse;
+		var appliedLateralImpulse1 = pointCache[insertIndex].appliedImpulseLateral1;
+		var appliedLateralImpulse2 = pointCache[insertIndex].appliedImpulseLateral2;
 
 		assert (lifeTime >= 0);
-		Object cache = pointCache[insertIndex].userPersistentData;
+		var cache = pointCache[insertIndex].userPersistentData;
 
 		pointCache[insertIndex].set(newPoint);
 
@@ -300,7 +298,7 @@ public class PersistentManifold {
 
 	
 	public void refreshContactPoints(Transform trA, Transform trB) {
-		v3 tmp = new v3();
+		var tmp = new v3();
 		int i;
 
 
@@ -314,7 +312,7 @@ public class PersistentManifold {
 		
 		for (i = numContacts() - 1; i >= 0; i--) {
 
-			ManifoldPoint manifoldPoint = pointCache[i];
+			var manifoldPoint = pointCache[i];
 
 			manifoldPoint.positionWorldOnA.set(manifoldPoint.localPointA);
 			trA.transform(manifoldPoint.positionWorldOnA);
@@ -334,7 +332,7 @@ public class PersistentManifold {
 
 		for (i = numContacts() - 1; i >= 0; i--) {
 
-			ManifoldPoint manifoldPoint = pointCache[i];
+			var manifoldPoint = pointCache[i];
 			
 			if (!validContactDistance(manifoldPoint)) {
 				removeContactPoint(i);
@@ -344,13 +342,13 @@ public class PersistentManifold {
 				tmp.scale(manifoldPoint.distance1, manifoldPoint.normalWorldOnB);
 				projectedPoint.sub(manifoldPoint.positionWorldOnA, tmp);
 				projectedDifference.sub(manifoldPoint.positionWorldOnB, projectedPoint);
-                float distance2d = projectedDifference.dot(projectedDifference);
+				var distance2d = projectedDifference.dot(projectedDifference);
                 if (distance2d > getContactBreakingThreshold() * getContactBreakingThreshold()) {
 					removeContactPoint(i);
 				}
 				else {
-					
-					ContactProcessedCallback cpc = globals.getContactProcessedCallback();
+
+					var cpc = globals.getContactProcessedCallback();
 					if (cpc != null) {
 						cpc.contactProcessed(manifoldPoint, body0, body1);
 					}
@@ -363,7 +361,7 @@ public class PersistentManifold {
 	}
 
 	public void clearManifold() {
-        for (int i = 0; i < cachedPoints; i++) {
+        for (var i = 0; i < cachedPoints; i++) {
 			clearUserCache(pointCache[i]);
 		}
 		cachedPoints = 0;

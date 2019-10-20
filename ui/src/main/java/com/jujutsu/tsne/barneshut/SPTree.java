@@ -33,29 +33,29 @@ public class SPTree {
 
 	public SPTree(int D, double[] inp_data, int N) {
 
-        double []  min_Y = new double [D];
-		double []  max_Y = new double [D]; 
-		for(int d = 0; d < D; d++)  {
+		var min_Y = new double [D];
+		var max_Y = new double [D];
+		for(var d = 0; d < D; d++)  {
 			min_Y[d] = Double.POSITIVE_INFINITY;
 			max_Y[d] = Double.NEGATIVE_INFINITY;
 		}
-        double[] mean_Y = new double[D];
-        int nD = 0;
-        for(int n = 0; n < N; n++) {
-			for( int d = 0; d < D; d++) {
+		var mean_Y = new double[D];
+		var nD = 0;
+        for(var n = 0; n < N; n++) {
+			for(var d = 0; d < D; d++) {
 				mean_Y[d] += inp_data[n * D + d];
 				if(inp_data[nD + d] < min_Y[d]) min_Y[d] = inp_data[nD + d];
 				if(inp_data[nD + d] > max_Y[d]) max_Y[d] = inp_data[nD + d];
 			}
 			nD += D;
 		}
-		for(int d = 0; d < D; d++) mean_Y[d] /= N;
+		for(var d = 0; d < D; d++) mean_Y[d] /= N;
 
 
-        double[] width = new double[10];
-        int count = 0;
-        for (int d = 0; d < D; d++) {
-            double v = max(max_Y[d] - mean_Y[d], mean_Y[d] - min_Y[d]) + 1e-5;
+		var width = new double[10];
+		var count = 0;
+        for (var d = 0; d < D; d++) {
+			var v = max(max_Y[d] - mean_Y[d], mean_Y[d] - min_Y[d]) + 1e-5;
             if (width.length == count) width = Arrays.copyOf(width, count * 2);
             width[count++] = v;
         }
@@ -70,7 +70,7 @@ public class SPTree {
 		parent = inp_parent;
 		dimension = D;
 		no_children = 2;
-		for(int d = 1; d < D; d++) no_children *= 2;
+		for(var d = 1; d < D; d++) no_children *= 2;
 		data = inp_data;
 		is_leaf = true;
 		size = 0;
@@ -78,14 +78,14 @@ public class SPTree {
 
 		center_of_mass = new double[D];
 		boundary = new Cell(dimension);
-		for(int d = 0; d < D; d++) {
+		for(var d = 0; d < D; d++) {
 			boundary.setCorner(d, inp_corner[d]);
 			boundary.setWidth( d, inp_width[d]);
 			center_of_mass[d] = .0;
 		}
 
 		children = getTreeArray(no_children);
-		for(int i = 0; i < no_children; i++) children[i] = null;
+		for(var i = 0; i < no_children; i++) children[i] = null;
 	}
 	
 	
@@ -136,17 +136,17 @@ public class SPTree {
 	
 	private boolean insert(int new_index)
 	{
-		
-		double [] point = MatrixOps.extractRowFromFlatMatrix(data,new_index,dimension);
+
+		var point = MatrixOps.extractRowFromFlatMatrix(data,new_index,dimension);
 
 		if(!boundary.containsPoint(point))
 			return false;
 
 		
 		cum_size++;
-		double mult1 = (double) (cum_size - 1) / cum_size;
-		double mult2 = 1.0 / cum_size;
-		for(int d = 0; d < dimension; d++) {
+		var mult1 = (double) (cum_size - 1) / cum_size;
+		var mult2 = 1.0 / cum_size;
+		for(var d = 0; d < dimension; d++) {
 			center_of_mass[d] *= mult1;
 			center_of_mass[d] += mult2 * point[d];
 		}
@@ -158,11 +158,11 @@ public class SPTree {
 			return true;
 		}
 
-		
-		boolean any_duplicate = false;
-		for(int n = 0; n < size; n++) {
-			boolean duplicate = true;
-			for(int d = 0; d < dimension; d++) {
+
+		var any_duplicate = false;
+		for(var n = 0; n < size; n++) {
+			var duplicate = true;
+			for(var d = 0; d < dimension; d++) {
 				if(point[d] != data[index[n] * dimension + d]) { duplicate = false; break; }
 			}
 			any_duplicate = any_duplicate || duplicate;
@@ -173,7 +173,7 @@ public class SPTree {
 		if(is_leaf) subdivide();
 
 		
-		for(int i = 0; i < no_children; i++) {
+		for(var i = 0; i < no_children; i++) {
 			if(children[i].insert(new_index)) return true;
 		}
 
@@ -185,12 +185,12 @@ public class SPTree {
 	
 	private void subdivide() {
 
-		
-		double [] new_corner = new double[dimension];
-		double [] new_width  = new double[dimension];
-		for(int i = 0; i < no_children; i++) {
-			int div = 1;
-			for(int d = 0; d < dimension; d++) {
+
+		var new_corner = new double[dimension];
+		var new_width  = new double[dimension];
+		for(var i = 0; i < no_children; i++) {
+			var div = 1;
+			for(var d = 0; d < dimension; d++) {
 				new_width[d] = .5 * boundary.getWidth(d);
 				if((i / div) % 2 == 1) new_corner[d] = boundary.getCorner(d) - .5 * boundary.getWidth(d);
 				else                   new_corner[d] = boundary.getCorner(d) + .5 * boundary.getWidth(d);
@@ -200,9 +200,9 @@ public class SPTree {
 		}
 
 		
-		for(int i = 0; i < size; i++) {
-			boolean success = false;
-			for(int j = 0; j < no_children; j++) {
+		for(var i = 0; i < size; i++) {
+			var success = false;
+			for(var j = 0; j < no_children; j++) {
 				if(!success) success = children[j].insert(index[i]);
 			}
 			index[i] = -1;
@@ -220,20 +220,20 @@ public class SPTree {
 	
 	private void fill(int N)
 	{
-		for(int i = 0; i < N; i++) insert(i);
+		for(var i = 0; i < N; i++) insert(i);
 	}
 
 
 	
 	private boolean isCorrect()
 	{
-        int bound = size;
+		var bound = size;
 		if (IntStream.range(0, bound).mapToObj(n -> MatrixOps.extractRowFromFlatMatrix(data, index[n], dimension)).anyMatch(point -> !boundary.containsPoint(point))) {
 			return false;
 		}
         if(!is_leaf) {
-			boolean correct = true;
-			for(int i = 0; i < no_children; i++) correct = correct && children[i].isCorrect();
+			var correct = true;
+			for(var i = 0; i < no_children; i++) correct = correct && children[i].isCorrect();
 			return correct;
 		}
 		else return true;
@@ -258,7 +258,7 @@ public class SPTree {
 
 		
 		if(!is_leaf) {
-			for(int i = 0; i < no_children; i++) loc = children[i].getAllIndices(indices, loc);
+			for(var i = 0; i < no_children; i++) loc = children[i].getAllIndices(indices, loc);
 		}
 		return loc;
 	}
@@ -266,8 +266,8 @@ public class SPTree {
 
 	private int getDepth() {
 		if(is_leaf) return 1;
-		int depth = 0;
-		for(int i = 0; i < no_children; i++) depth = max(depth, children[i].getDepth());
+		var depth = 0;
+		for(var i = 0; i < no_children; i++) depth = max(depth, children[i].getDepth());
 		return 1 + depth;
 	}
 
@@ -275,35 +275,35 @@ public class SPTree {
 	
 	public double computeNonEdgeForces(int point_index, double theta, double[] neg_f, Object accumulator)
 	{
-		double [] sum_Q = (double []) accumulator;
-		double [] buff = new double[dimension];
+		var sum_Q = (double []) accumulator;
+		var buff = new double[dimension];
 		
 		if(cum_size == 0 || (is_leaf && size == 1 && index[0] == point_index)) return 0.0;
 
-		
-		double D = .0;
-		int ind = point_index * dimension;
-		
-		double max_width = 0.0;
-        for(int d = 0; d < dimension; d++) {
+
+		var D = .0;
+		var ind = point_index * dimension;
+
+		var max_width = 0.0;
+        for(var d = 0; d < dimension; d++) {
 			buff[d] = data[ind + d] - center_of_mass[d];
 			D += buff[d] * buff[d];
-            double cur_width = boundary.getWidth(d);
+			var cur_width = boundary.getWidth(d);
             max_width = Math.max(max_width, cur_width);
 		} 
 
 		if(is_leaf || max_width / sqrt(D) < theta) {
 			
 			D = 1.0 / (1.0 + D);
-			double mult = cum_size * D;
+			var mult = cum_size * D;
 			sum_Q[0] += mult;
 			mult *= D;
-			for(int d = 0; d < dimension; d++) neg_f[d] += mult * buff[d];
+			for(var d = 0; d < dimension; d++) neg_f[d] += mult * buff[d];
 		}
 		else {
 
 			
-			for(int i = 0; i < no_children; i++) children[i].computeNonEdgeForces(point_index, theta, neg_f, sum_Q);
+			for(var i = 0; i < no_children; i++) children[i].computeNonEdgeForces(point_index, theta, neg_f, sum_Q);
 		}
 		return sum_Q[0];
 	}
@@ -312,24 +312,24 @@ public class SPTree {
 	
 	public void computeEdgeForces(int [] row_P, int [] col_P, double [] val_P, int N, double [] pos_f)
 	{
-		
-		double [] buff = new double[dimension];
-		int ind1 = 0;
-		int ind2 = 0;
-        for(int n = 0; n < N; n++) {
-			for(int i = row_P[n]; i < row_P[n + 1]; i++) {
+
+		var buff = new double[dimension];
+		var ind1 = 0;
+		var ind2 = 0;
+        for(var n = 0; n < N; n++) {
+			for(var i = row_P[n]; i < row_P[n + 1]; i++) {
 
 
                 ind2 = col_P[i] * dimension;
-                double D = 1.0;
-                for(int d = 0; d < dimension; d++) {
+				var D = 1.0;
+                for(var d = 0; d < dimension; d++) {
 					buff[d] = data[ind1 + d] - data[ind2 + d];
 					D += buff[d] * buff[d];
 				} 
 				D = val_P[i] / D;
 
 				
-				for(int d = 0; d < dimension; d++) pos_f[ind1 + d] += D * buff[d];
+				for(var d = 0; d < dimension; d++) pos_f[ind1 + d] += D * buff[d];
 			}
 			ind1 += dimension;
 		}
@@ -346,9 +346,9 @@ public class SPTree {
 
 		if(is_leaf) {
 			System.out.print("Leaf node; data = [");
-			for(int i = 0; i < size; i++) {
-				double [] point = MatrixOps.extractRowFromFlatMatrix(data, index[i], dimension);
-				for(int d = 0; d < dimension; d++) System.out.printf("%f, ", point[d]);
+			for(var i = 0; i < size; i++) {
+				var point = MatrixOps.extractRowFromFlatMatrix(data, index[i], dimension);
+				for(var d = 0; d < dimension; d++) System.out.printf("%f, ", point[d]);
 				System.out.printf(" (index = %d)", index[i]);
 				if(i < size - 1) System.out.print("\n");
 				else System.out.print("]\n");
@@ -356,9 +356,9 @@ public class SPTree {
 		}
 		else {
 			System.out.print("Intersection node with center-of-mass = [");
-			for(int d = 0; d < dimension; d++) System.out.printf("%f, ", center_of_mass[d]);
+			for(var d = 0; d < dimension; d++) System.out.printf("%f, ", center_of_mass[d]);
 			System.out.print("]; children are:\n");
-			for(int i = 0; i < no_children; i++) children[i].print();
+			for(var i = 0; i < no_children; i++) children[i].print();
 		}
 	}
 	
@@ -378,8 +378,8 @@ public class SPTree {
 			dimension = inp_dimension;
 			corner = new double[dimension];
 			width  = new double[dimension];
-			for(int d = 0; d < dimension; d++) setCorner(d, inp_corner[d]);
-			for(int d = 0; d < dimension; d++) setWidth( d,  inp_width[d]);
+			for(var d = 0; d < dimension; d++) setCorner(d, inp_corner[d]);
+			for(var d = 0; d < dimension; d++) setWidth( d,  inp_width[d]);
 		}
 
 		double getCorner(int d) {
@@ -401,7 +401,7 @@ public class SPTree {
 		
 		boolean containsPoint(double[] point)
 		{
-			for(int d = 0; d < dimension; d++) {
+			for(var d = 0; d < dimension; d++) {
 				if(corner[d] - width[d] > point[d]) return false;
 				if(corner[d] + width[d] < point[d]) return false;
 			}

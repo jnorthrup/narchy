@@ -18,13 +18,13 @@ public class DutyCycleMeter {
      * doing something without interruption.
      */
     public void stop() {
-        long previousStopTime = stopTime;
+        var previousStopTime = stopTime;
         stopTime = System.nanoTime();
-        long onTime = stopTime - startTime;
-        long totalTime = stopTime - previousStopTime;
+        var onTime = stopTime - startTime;
+        var totalTime = stopTime - previousStopTime;
         if (totalTime > 0) {
-            
-            double rate = 0.01;
+
+            var rate = 0.01;
             averageOnTime = (averageOnTime * (1.0 - rate)) + (onTime * rate);
             averageTotalTime = (averageTotalTime * (1.0 - rate)) + (totalTime * rate);
         }

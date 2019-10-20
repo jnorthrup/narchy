@@ -42,7 +42,7 @@ public class SimpleIntSet extends AbstractSet<Integer> implements Serializable {
      * @param capacity the number of items to store
      */
     public SimpleIntSet(int capacity) {
-        int size = getNextPow2TwinPrime((int) Math.max(capacity / loadFactor, 4));
+        var size = getNextPow2TwinPrime((int) Math.max(capacity / loadFactor, 4));
         alloc(size);
         this.size = 0;
     }
@@ -90,20 +90,20 @@ public class SimpleIntSet extends AbstractSet<Integer> implements Serializable {
      */
     private int index(int key) {
 
-        int hash = key & 0x7fffffff;
+        var hash = key & 0x7fffffff;
 
-        int[] k = this.keys;
-        int len = k.length;
+        var k = this.keys;
+        var len = k.length;
 
-        int i = hash % len;
+        var i = hash % len;
 
 
-        MetalBitSet s = this.status;
+        var s = this.status;
         if (!s.get(i) || k[i] == key)
             return i;
 
 
-        int c = 1 + (hash % (len - 2));
+        var c = 1 + (hash % (len - 2));
 
         while (true) {
 
@@ -121,14 +121,14 @@ public class SimpleIntSet extends AbstractSet<Integer> implements Serializable {
             return;
 
 
-        MetalBitSet oldSatus = status;
-        int[] oldKeys = keys;
+        var oldSatus = status;
+        var oldKeys = keys;
 
-        int newSize = getNextPow2TwinPrime(keys.length * 3 / 2);
+        var newSize = getNextPow2TwinPrime(keys.length * 3 / 2);
         alloc(newSize);
 
         size = 0;
-        for (int oldIndex = 0; oldIndex < oldKeys.length; oldIndex++)
+        for (var oldIndex = 0; oldIndex < oldKeys.length; oldIndex++)
             if (oldSatus.get(oldIndex))
                 add(oldKeys[oldIndex]);
     }
@@ -149,17 +149,17 @@ public class SimpleIntSet extends AbstractSet<Integer> implements Serializable {
      * @return true if this set did not already contain the specified element
      */
     public boolean add(int e) {
-        int key = e;
-        int pair_index = index(key);
+        var key = e;
+        var pair_index = index(key);
 
 
-        int valOrFreeIndex = pair_index;
+        var valOrFreeIndex = pair_index;
 
         if (status.get(valOrFreeIndex))
             return false;
 
 
-        int i = valOrFreeIndex;
+        var i = valOrFreeIndex;
 
 
         status.set(i);
@@ -188,13 +188,13 @@ public class SimpleIntSet extends AbstractSet<Integer> implements Serializable {
     @Override
     public Iterator<Integer> iterator() {
 
-        int START = 0;
+        var START = 0;
         while (START < keys.length && !status.get(START))
             START++;
         if (START == keys.length)
             return Util.emptyIterator;
 
-        int startPos = START;
+        var startPos = START;
 
         return new IntegerIterator(startPos);
     }
@@ -213,8 +213,8 @@ public class SimpleIntSet extends AbstractSet<Integer> implements Serializable {
      * @return the a twin prime greater than or equal to
      */
     static int getNextPow2TwinPrime(int m) {
-        int pos = Arrays.binarySearch(twinPrimesP2, m + 1);
-        int p = (pos >= 0) ? pos : -pos - 1;
+        var pos = Arrays.binarySearch(twinPrimesP2, m + 1);
+        var p = (pos >= 0) ? pos : -pos - 1;
         return twinPrimesP2[p];
     }
 
@@ -278,11 +278,11 @@ public class SimpleIntSet extends AbstractSet<Integer> implements Serializable {
         @Override
         public Integer next() {
 
-            int oldPos = prevPos = pos++;
+            var oldPos = prevPos = pos++;
 
-            int pos = this.pos;
-            MetalBitSet s = SimpleIntSet.this.status;
-            int[] k = SimpleIntSet.this.keys;
+            var pos = this.pos;
+            var s = SimpleIntSet.this.status;
+            var k = SimpleIntSet.this.keys;
             while (pos < k.length && !s.get(pos))
                 pos++;
             this.pos = pos;

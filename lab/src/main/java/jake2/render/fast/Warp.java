@@ -96,10 +96,10 @@ public abstract class Warp extends Model {
 		mins[0] = mins[1] = mins[2] = 9999;
 		maxs[0] = maxs[1] = maxs[2] = -9999;
 
-		for (int i=0 ; i<numverts ; i++) {
-			float[] v = verts[i];
-			for (int j = 0; j<3 ; j++) {
-				float vj = v[j];
+		for (var i = 0; i<numverts ; i++) {
+			var v = verts[i];
+			for (var j = 0; j<3 ; j++) {
+				var vj = v[j];
 				if (vj < mins[j])
 					mins[j] = vj;
 				if (vj > maxs[j])
@@ -119,18 +119,18 @@ public abstract class Warp extends Model {
 		if (numverts > 60)
 			Com.Error(Defines.ERR_DROP, "numverts = " + numverts);
 
-		float[] mins = Vec3Cache.get();
-		float[] maxs = Vec3Cache.get();
+		var mins = Vec3Cache.get();
+		var maxs = Vec3Cache.get();
 
 		BoundPoly(numverts, verts, mins, maxs);
 
-		float[] dist = new float[64];
-		float[][] back = new float[64][3];
-		float[][] front = new float[64][3];
+		var dist = new float[64];
+		var back = new float[64][3];
+		var front = new float[64][3];
 		int i;
 		for (i=0 ; i<3 ; i++)
 		{
-			float m = (mins[i] + maxs[i]) * 0.5f;
+			var m = (mins[i] + maxs[i]) * 0.5f;
 			m = SUBDIVIDE_SIZE * (float)Math.floor(m / SUBDIVIDE_SIZE + 0.5f);
 			if (maxs[i] - m < 8)
 				continue;
@@ -149,10 +149,10 @@ public abstract class Warp extends Model {
 			Math3D.VectorCopy(verts[0], verts[numverts]);
 
 			int b;
-			int f = b = 0;
+			var f = b = 0;
 			for (j=0 ; j<numverts ; j++)
 			{
-				float[] v = verts[j];
+				var v = verts[j];
 				if (dist[j] >= 0)
 				{
 					Math3D.VectorCopy(v, front[f]);
@@ -168,8 +168,8 @@ public abstract class Warp extends Model {
 				if ( (dist[j] > 0) != (dist[j+1] > 0) )
 				{
 
-					float frac = dist[j] / (dist[j] - dist[j + 1]);
-					for (int k = 0; k<3 ; k++)
+					var frac = dist[j] / (dist[j] - dist[j + 1]);
+					for (var k = 0; k<3 ; k++)
 						front[f][k] = back[b][k] = v[k] + frac*(verts[j+1][k] - v[k]);
 						
 					f++;
@@ -184,20 +184,15 @@ public abstract class Warp extends Model {
 			return;
 		}
 		
-		Vec3Cache.release(2); 
-		
-		
-		
-		
-		
+		Vec3Cache.release(2);
 
-		
-		glpoly_t poly = Polygon.create(numverts + 2);
+
+		var poly = Polygon.create(numverts + 2);
 
 		poly.next = warpface.polys;
 		warpface.polys = poly;
-		
-		float[] total = Vec3Cache.get();
+
+		var total = Vec3Cache.get();
 		Math3D.VectorClear(total);
 		float total_s = 0;
 		float total_t = 0;
@@ -205,8 +200,8 @@ public abstract class Warp extends Model {
             poly.x(i + 1, verts[i][0]);
             poly.y(i + 1, verts[i][1]);
             poly.z(i + 1, verts[i][2]);
-			float s = Math3D.DotProduct(verts[i], warpface.texinfo.vecs[0]);
-			float t = Math3D.DotProduct(verts[i], warpface.texinfo.vecs[1]);
+			var s = Math3D.DotProduct(verts[i], warpface.texinfo.vecs[0]);
+			var t = Math3D.DotProduct(verts[i], warpface.texinfo.vecs[1]);
 
 			total_s += s;
             total_t += t;
@@ -215,8 +210,8 @@ public abstract class Warp extends Model {
             poly.s1(i + 1, s);
             poly.t1(i + 1, t);
         }
-        
-        float scale = 1.0f / numverts; 
+
+		var scale = 1.0f / numverts;
         poly.x(0, total[0] * scale);
         poly.y(0, total[1] * scale);
         poly.z(0, total[2] * scale);
@@ -243,14 +238,13 @@ public abstract class Warp extends Model {
 	 */
     @Override
     void GL_SubdivideSurface(msurface_t fa) {
-        float[][] verts = tmpVerts;
+		var verts = tmpVerts;
 		warpface = fa;
-        
-        
-        
-        int numverts = 0;
-        for (int i = 0; i < fa.numedges; i++) {
-            int lindex = loadmodel.surfedges[fa.firstedge + i];
+
+
+		var numverts = 0;
+        for (var i = 0; i < fa.numedges; i++) {
+			var lindex = loadmodel.surfedges[fa.firstedge + i];
 
 			float[] vec;
 			if (lindex > 0)
@@ -273,7 +267,7 @@ public abstract class Warp extends Model {
     @Override
     void EmitWaterPolys(msurface_t fa)
 	{
-		float rdt = r_newrefdef.time;
+		var rdt = r_newrefdef.time;
 
 		float scroll;
 		if ((fa.texinfo.flags & Defines.SURF_FLOWING) != 0)
@@ -281,20 +275,20 @@ public abstract class Warp extends Model {
 		else
 			scroll = 0;
 
-		for (glpoly_t bp = fa.polys; bp != null; bp = bp.next) {
-			glpoly_t p = bp;
+		for (var bp = fa.polys; bp != null; bp = bp.next) {
+			var p = bp;
 
 			gl.glBegin(GL_TRIANGLE_FAN);
-            for (int i = 0; i < p.numverts; i++) {
-				float os = p.s1(i);
-				float ot = p.t1(i);
+            for (var i = 0; i < p.numverts; i++) {
+				var os = p.s1(i);
+				var ot = p.t1(i);
 
-				float s = os
+				var s = os
 						+ Warp.SIN[(int) ((ot * 0.125f + r_newrefdef.time) * TURBSCALE) & 255];
 				s += scroll;
                 s *= (1.0f / 64);
 
-				float t = ot
+				var t = ot
 						+ Warp.SIN[(int) ((os * 0.125f + rdt) * TURBSCALE) & 255];
 				t *= (1.0f / 64);
 
@@ -397,7 +391,7 @@ public abstract class Warp extends Model {
 
 		for (i=0 ; i<nump ; i++)
 		{
-			int j = vec_to_st[axis][2];
+			var j = vec_to_st[axis][2];
 			float dv;
 			if (j > 0)
 				dv = vecs[i][j - 1];
@@ -456,9 +450,9 @@ public abstract class Warp extends Model {
 			return;
 		}
 
-		boolean front = false;
-		boolean back = false;
-		float[] norm = skyclip[stage];
+		var front = false;
+		var back = false;
+		var norm = skyclip[stage];
 
 		int i;
 		float d;
@@ -491,10 +485,11 @@ public abstract class Warp extends Model {
 		dists[i] = dists[0];
 		Math3D.VectorCopy(vecs[0], vecs[i]);
 
-		int newc0 = 0; 	int  newc1 = 0;
+		var newc0 = 0;
+		var newc1 = 0;
 		for (i=0; i<nump ; i++)
 		{
-			float[] v = vecs[i];
+			var v = vecs[i];
 			switch (sides[i])
 			{
 			case SIDE_FRONT:
@@ -517,9 +512,9 @@ public abstract class Warp extends Model {
 				continue;
 
 			d = dists[i] / (dists[i] - dists[i+1]);
-			for (int j = 0; j<3 ; j++)
+			for (var j = 0; j<3 ; j++)
 			{
-				float e = v[j] + d * (vecs[i + 1][j] - v[j]);
+				var e = v[j] + d * (vecs[i + 1][j] - v[j]);
 				newv[stage][0][newc0][j] = e;
 				newv[stage][1][newc1][j] = e;
 			}
@@ -541,8 +536,8 @@ public abstract class Warp extends Model {
     void R_AddSkySurface(msurface_t fa)
 	{
 	    
-        for (glpoly_t p = fa.polys; p != null; p = p.next) {
-            for (int i = 0; i < p.numverts; i++) {
+        for (var p = fa.polys; p != null; p = p.next) {
+            for (var i = 0; i < p.numverts; i++) {
                 verts[i][0] = p.x(i) - r_origin[0];
                 verts[i][1] = p.y(i) - r_origin[1];
                 verts[i][2] = p.z(i) - r_origin[2];
@@ -557,12 +552,12 @@ public abstract class Warp extends Model {
     @Override
     void R_ClearSkyBox()
 	{
-		float[] skymins0 = skymins[0];
-		float[] skymins1 = skymins[1];
-		float[] skymaxs0 = skymaxs[0];
-		float[] skymaxs1 = skymaxs[1];
+		var skymins0 = skymins[0];
+		var skymins1 = skymins[1];
+		var skymaxs0 = skymaxs[0];
+		var skymaxs1 = skymaxs[1];
 		
-		for (int i=0 ; i<6 ; i++)
+		for (var i = 0; i<6 ; i++)
 		{
 			skymins0[i] = skymins1[i] = 9999;
 			skymaxs0[i] = skymaxs1[i] = -9999;
@@ -584,9 +579,9 @@ public abstract class Warp extends Model {
 		b[1] = t*2300;
 		b[2] = 2300;
 
-		for (int j = 0; j<3 ; j++)
+		for (var j = 0; j<3 ; j++)
 		{
-			int k = st_to_vec[axis][j];
+			var k = st_to_vec[axis][j];
 			if (k < 0)
 				v1[j] = -b[-k - 1];
 			else
@@ -679,7 +674,7 @@ public abstract class Warp extends Model {
 		skyrotate = rotate;
 		Math3D.VectorCopy(axis, skyaxis);
 
-		for (int i=0 ; i<6 ; i++)
+		for (var i = 0; i<6 ; i++)
 		{
 			
 			if (gl_skymip.value != 0 || skyrotate != 0)

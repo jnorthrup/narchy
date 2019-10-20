@@ -84,11 +84,11 @@ public class MeshMap<K,V> extends UDPeer /* implements Map<K,V>*/ {
     protected void receive(@Nullable UDPeer.UDProfile connected, @NotNull UDPeer.Msg m) {
 
         try {
-            MapKeyValue mkv = Util.fromBytes(m.data(), MapKeyValue.class);
+            var mkv = Util.fromBytes(m.data(), MapKeyValue.class);
             if (Arrays.equals(map, mkv.map)) {
-                
-                K k = (K)mkv.key;
-                V v = (V)mkv.val;
+
+                var k = (K)mkv.key;
+                var v = (V)mkv.val;
                 
                 model.accept(k, v);
             }
@@ -101,7 +101,7 @@ public class MeshMap<K,V> extends UDPeer /* implements Map<K,V>*/ {
     public static <K,V> MeshMap<K,V> get(String id, BiConsumer<K,V> x) {
         return the.computeIfAbsent(id, i -> {
             try {
-                MeshMap<K, V> y = new MeshMap<>(id, x);
+                var y = new MeshMap<K, V>(id, x);
                 y.setFPS(mapFPS);
                 return y;
             } catch (IOException e) {

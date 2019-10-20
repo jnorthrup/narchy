@@ -59,18 +59,18 @@ public class SmoothValue {
     private void set(double nextValue, int delayTime, Interpolator interpolator, int numOfDiv) {
         this.interpolator = interpolator;
 
-        double delta = nextValue - this.value;
+        var delta = nextValue - this.value;
         if (Util.equals(this.value, nextValue))
             return;
 
         this.value = nextValue;
-        double[] gains = interpolator.curve(numOfDiv);
+        var gains = interpolator.curve(numOfDiv);
 
         //queue.clear();
-        for (int i = 0; i < delayTime; i++) {
+        for (var i = 0; i < delayTime; i++) {
             queue.offer(0.0);
         }
-        for (int i = 0; i < numOfDiv; i++) {
+        for (var i = 0; i < numOfDiv; i++) {
             if (queue.isEmpty()) {
                 queue.offer(gains[i] * delta);
             } else {
@@ -95,7 +95,7 @@ public class SmoothValue {
     }
 
     private void update() {
-        Double next = queue.poll();
+        var next = queue.poll();
         if (next == null) {
             currentValue = value;
         } else {

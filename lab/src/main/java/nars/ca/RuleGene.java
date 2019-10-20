@@ -19,7 +19,7 @@ public class RuleGene {
 	
 	public void ResetToDefaults() {
 		iClo = 3; 
-		for (int i = 0; i <= 8; i++) {
+		for (var i = 0; i <= 8; i++) {
 			RulesS[i] = false;
 			RulesB[i] = false;
 		}
@@ -33,10 +33,10 @@ public class RuleGene {
 
         ResetToDefaults();
 
-        StringTokenizer st = new StringTokenizer(sStr, ",/", true);
-        int iNum = 1;
+		var st = new StringTokenizer(sStr, ",/", true);
+		var iNum = 1;
         while (st.hasMoreTokens()) {
-            String sTok = st.nextToken();
+			var sTok = st.nextToken();
             if ((sTok.compareTo("/") == 0) || (sTok.compareTo(",") == 0)) {
 				iNum++;
 				continue;
@@ -44,10 +44,10 @@ public class RuleGene {
 			switch (iNum) {
 			case 1: 
 			case 2: 
-				for (int i = 0; i < sTok.length(); i++) {
-                    char cChar = sTok.charAt(i);
+				for (var i = 0; i < sTok.length(); i++) {
+					var cChar = sTok.charAt(i);
                     if (Character.isDigit(cChar)) {
-                        int iCharVal = cChar - '0';
+						var iCharVal = cChar - '0';
                         if ((iCharVal >= 0) && (iCharVal <= 8)) {
 							if (iNum == 1)
 								RulesS[iCharVal] = true;
@@ -70,7 +70,7 @@ public class RuleGene {
 	
 	public void InitFromPrm(int i_Clo, boolean[] rulS, boolean[] rulB) {
 		iClo = i_Clo;
-		for (int i = 0; i <= 8; i++) {
+		for (var i = 0; i <= 8; i++) {
 			RulesS[i] = rulS[i];
 			RulesB[i] = rulB[i];
 		}
@@ -88,7 +88,7 @@ public class RuleGene {
 
 
         int i;
-        String sBff = "";
+		var sBff = "";
         for (i = 0; i <= 8; i++)
 			
 			if (RulesS[i])
@@ -119,25 +119,25 @@ public class RuleGene {
 	
 	public int OnePass(int sizX, int sizY, boolean isWrap, int ColoringMethod,
 					   short[][] crrState, short[][] tmpState, MJBoard mjb) {
-        int modCnt = 0;
-        int[] lurd = new int[4];
+		var modCnt = 0;
+		var lurd = new int[4];
 
-		for (int i = 0; i < sizX; ++i) {
+		for (var i = 0; i < sizX; ++i) {
 			
 			lurd[0] = (i > 0) ? i - 1 : (isWrap) ? sizX - 1 : sizX;
 			lurd[2] = (i < sizX - 1) ? i + 1 : (isWrap) ? 0 : sizX;
-			for (int j = 0; j < sizY; ++j) {
+			for (var j = 0; j < sizY; ++j) {
 				
 				lurd[1] = (j > 0) ? j - 1 : (isWrap) ? sizY - 1 : sizY;
 				lurd[3] = (j < sizY - 1) ? j + 1 : (isWrap) ? 0 : sizY;
-                short bOldVal = crrState[i][j];
-                short bNewVal = bOldVal;
+				var bOldVal = crrState[i][j];
+				var bNewVal = bOldVal;
                 if (bOldVal > 1)
 				{
 					bNewVal = bOldVal < iClo - 1 ? (short) (bOldVal + 1) : 0;
 				} else 
 				{
-                    int iCnt = 0;
+					var iCnt = 0;
                     if (crrState[lurd[0]][lurd[1]] == 1)
 						++iCnt;
 					if (crrState[i][lurd[1]] == 1)

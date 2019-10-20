@@ -87,14 +87,14 @@ public class PreciseHMM {
 
 
         pi[0] = 1.0;
-		for(int i=1; i<numStates; i++) {
+		for(var i = 1; i<numStates; i++) {
 			pi[i] = 0;
 		}
 
 
-        int jumplimit = 2;
-        for(int i = 0; i<numStates; i++) {
-			for(int j=0; j<numStates; j++) {
+		var jumplimit = 2;
+        for(var i = 0; i<numStates; i++) {
+			for(var j = 0; j<numStates; j++) {
 				if(i==numStates-1 && j==numStates-1) { 
 					a[i][j] = 1.0;
 				} else if(i==numStates-2 && j==numStates-2) { 
@@ -110,8 +110,8 @@ public class PreciseHMM {
 		}
 		
 		
-		for(int i=0; i<numStates; i++) {
-			for(int j=0; j<sigmaSize; j++) {
+		for(var i = 0; i<numStates; i++) {
+			for(var j = 0; j<sigmaSize; j++) {
 				b[i][j] = 1.0/(double)sigmaSize;
 			}
 		}
@@ -133,26 +133,26 @@ public class PreciseHMM {
 	 */
 	public void train(Vector<int[]> trainsequence) {
 
-		double[][] a_new = new double[a.length][a.length];
-		double[][] b_new = new double[b.length][b[0].length];
+		var a_new = new double[a.length][a.length];
+		var b_new = new double[b.length][b[0].length];
 		
-		for(int i=0; i<a.length; i++) {
-			for(int j=0; j<a[i].length; j++) {	
+		for(var i = 0; i<a.length; i++) {
+			for(var j = 0; j<a[i].length; j++) {
 				double zaehler=0;
 				double nenner=0;
 			
-				for(int k=0; k<trainsequence.size(); k++) {
-					
-					int[] sequence = trainsequence.elementAt(k);
-					
-					double[] sf = this.calculateScalingFactor(sequence);
-					double[][] fwd = this.scaledForwardProc(sequence);
-					double[][] bwd = this.scaledBackwardProc(sequence, sf);
+				for(var k = 0; k<trainsequence.size(); k++) {
+
+					var sequence = trainsequence.elementAt(k);
+
+					var sf = this.calculateScalingFactor(sequence);
+					var fwd = this.scaledForwardProc(sequence);
+					var bwd = this.scaledBackwardProc(sequence, sf);
 		
 					double zaehler_innersum=0;
 					double nenner_innersum=0;
 					
-					for(int t=0; t<sequence.length-1; t++) {
+					for(var t = 0; t<sequence.length-1; t++) {
 						zaehler_innersum+=fwd[i][t]*a[i][j]*b[j][sequence[t+1]]*bwd[j][t+1]*sf[t+1];
 						nenner_innersum+=fwd[i][t]*bwd[i][t];
 					}
@@ -165,23 +165,23 @@ public class PreciseHMM {
 		} 
 		
 		
-		for(int i=0; i<b.length; i++) { 
-			for(int j=0; j<b[i].length; j++) {	
+		for(var i = 0; i<b.length; i++) {
+			for(var j = 0; j<b[i].length; j++) {
 				double zaehler=0;
 				double nenner=0;
 			
-				for(int k=0; k<trainsequence.size(); k++) {
-					
-					int[] sequence = trainsequence.elementAt(k);
-					
-					double[] sf = this.calculateScalingFactor(sequence);
-					double[][] fwd = this.scaledForwardProc(sequence);
-					double[][] bwd = this.scaledBackwardProc(sequence, sf);
+				for(var k = 0; k<trainsequence.size(); k++) {
+
+					var sequence = trainsequence.elementAt(k);
+
+					var sf = this.calculateScalingFactor(sequence);
+					var fwd = this.scaledForwardProc(sequence);
+					var bwd = this.scaledBackwardProc(sequence, sf);
 		
 					double zaehler_innersum=0;
 					double nenner_innersum=0;
 					
-					for(int t=0; t<sequence.length-1; t++) {
+					for(var t = 0; t<sequence.length-1; t++) {
 						if(sequence[t]==j) {
 							zaehler_innersum+=fwd[i][t]*bwd[i][t]*sf[t];
 						}
@@ -201,23 +201,23 @@ public class PreciseHMM {
 	
 	
 	private double[] calculateScalingFactor(int[] sequence) {
-		
-		double[][] fwd = this.forwardProc(sequence); 
-		double[][] help = new double[fwd.length][fwd[0].length];
-		double[][] scaled = new double[fwd.length][fwd[0].length];
-		double[] sf = new double[sequence.length];
-		
-		
+
+		var fwd = this.forwardProc(sequence);
+		var help = new double[fwd.length][fwd[0].length];
+		var scaled = new double[fwd.length][fwd[0].length];
+		var sf = new double[sequence.length];
 		
 		
-		for(int i=0; i<help.length; i++) {
+		
+		
+		for(var i = 0; i<help.length; i++) {
 			help[i][0] = fwd[i][0];
 		}
 
 
-        double sum0 = Arrays.stream(help).mapToDouble(doubles -> doubles[0]).sum();
+		var sum0 = Arrays.stream(help).mapToDouble(doubles -> doubles[0]).sum();
 
-		for(int i=0; i<scaled.length; i++) {
+		for(var i = 0; i<scaled.length; i++) {
 			scaled[i][0] = help[i][0] / sum0;
 		}
 		
@@ -228,20 +228,20 @@ public class PreciseHMM {
 		
 		
 		
-		for(int t=1; t<sequence.length; t++) {
+		for(var t = 1; t<sequence.length; t++) {
 			
-			for(int i=0; i<help.length; i++) {
-				for(int j=0; j<this.numStates; j++) {
+			for(var i = 0; i<help.length; i++) {
+				for(var j = 0; j<this.numStates; j++) {
 					help[i][t]+=scaled[j][t-1]*a[j][i]*b[i][sequence[t]];
 				}
 			}
 			
 			double sum = 0;
-			for(int i=0; i<help.length; i++) {
+			for(var i = 0; i<help.length; i++) {
 				sum+=help[i][t];
 			}
 			
-			for(int i=0; i<scaled.length; i++) {
+			for(var i = 0; i<scaled.length; i++) {
 				scaled[i][t] = help[i][t] / sum;
 			}
 
@@ -260,12 +260,12 @@ public class PreciseHMM {
 	 * @return
 	 */
 	private double[][] scaledForwardProc(int[] sequence) {
-		double[][] fwd = this.forwardProc(sequence);
-		double[][] out = new double[fwd.length][fwd[0].length];
-		for(int i=0; i<fwd.length; i++) {
-			for(int t=0; t<sequence.length; t++) {
+		var fwd = this.forwardProc(sequence);
+		var out = new double[fwd.length][fwd[0].length];
+		for(var i = 0; i<fwd.length; i++) {
+			for(var t = 0; t<sequence.length; t++) {
 				double sum = 0;
-				for(int j=0; j<fwd.length; j++) {
+				for(var j = 0; j<fwd.length; j++) {
 					sum+=fwd[j][t];
 				}
 				out[i][t] = fwd[i][t] / sum;
@@ -275,12 +275,12 @@ public class PreciseHMM {
 	}
 	
 	private double[][] scaledBackwardProc(int[] sequence, double[] sf) {
-		double[][] bwd = this.backwardProc(sequence);
-		double[][] out = new double[bwd.length][bwd[0].length];
-		for(int i=0; i<bwd.length; i++) {
-			for(int t=0; t<sequence.length; t++) {
+		var bwd = this.backwardProc(sequence);
+		var out = new double[bwd.length][bwd[0].length];
+		for(var i = 0; i<bwd.length; i++) {
+			for(var t = 0; t<sequence.length; t++) {
 				out[i][t]=1;
-				for(int r=t+1; r<sequence.length; r++) {
+				for(var r = t+1; r<sequence.length; r++) {
 					out[i][t]*=sf[r]*bwd[i][t];
 				}
 			}
@@ -309,11 +309,11 @@ public class PreciseHMM {
 	}
 	
 	public double sProbability(int[] o) {
-		double prod = 1.0;
-		double[][] fwd = this.scaledForwardProc(o);
-		for(int t=0; t<o.length; t++) {
-			double sum = 0.0;
-			for(int i=0; i<this.numStates; i++) {
+		var prod = 1.0;
+		var fwd = this.scaledForwardProc(o);
+		for(var t = 0; t<o.length; t++) {
+			var sum = 0.0;
+			for(var i = 0; i<this.numStates; i++) {
 				sum+=fwd[i][t];
 			}
 			sum = 1/sum;
@@ -323,17 +323,17 @@ public class PreciseHMM {
 	}
 	
 	public double scaledViterbi(int[] o) {
-		double[][] phi = new double[this.numStates][o.length]; 
+		var phi = new double[this.numStates][o.length];
 		
-		for(int i=0; i<this.numStates; i++) {
+		for(var i = 0; i<this.numStates; i++) {
 			phi[i][0] = Math.log(pi[i]) + Math.log(b[i][o[0]]);
 		}
 		
-		for(int t=1; t<o.length; t++) {
-			for(int j=0; j<this.numStates; j++) {
-				double max = Double.NEGATIVE_INFINITY;
-				for(int i=0; i<this.numStates; i++) {
-					double val = phi[i][t-1] + Math.log(this.a[i][j]);
+		for(var t = 1; t<o.length; t++) {
+			for(var j = 0; j<this.numStates; j++) {
+				var max = Double.NEGATIVE_INFINITY;
+				for(var i = 0; i<this.numStates; i++) {
+					var val = phi[i][t-1] + Math.log(this.a[i][j]);
 					if(val>max) {
 						max = val;
 					}
@@ -343,10 +343,10 @@ public class PreciseHMM {
 			}
 		}
 
-        boolean seen = false;
+		var seen = false;
         double best = 0;
-        for (int i = 0; i < this.numStates; i++) {
-            double v = phi[i][o.length - 1];
+        for (var i = 0; i < this.numStates; i++) {
+			var v = phi[i][o.length - 1];
             if (v >= Double.NEGATIVE_INFINITY) {
                 if (!seen || Double.compare(v, best) > 0) {
                     seen = true;
@@ -354,7 +354,7 @@ public class PreciseHMM {
                 }
             }
         }
-        double lp = seen ? best : Double.NEGATIVE_INFINITY;
+		var lp = seen ? best : Double.NEGATIVE_INFINITY;
 
 
         System.out.println("prob = "+Math.exp(lp));
@@ -370,14 +370,14 @@ public class PreciseHMM {
 	 * 
 	 */
 	private double[][] forwardProc(int[] o) {
-		double[][] f = new double[numStates][o.length];
-		for (int l = 0; l < f.length; l++) {
+		var f = new double[numStates][o.length];
+		for (var l = 0; l < f.length; l++) {
 			f[l][0] = pi[l] * b[l][o[0]];
 		}
-		for (int i = 1; i < o.length; i++) {
-			for (int k = 0; k < f.length; k++) {
+		for (var i = 1; i < o.length; i++) {
+			for (var k = 0; k < f.length; k++) {
 				double sum = 0;
-				for (int l = 0; l < numStates; l++) {
+				for (var l = 0; l < numStates; l++) {
 					sum += f[l][i-1] * a[l][k];
 				}
 				f[k][i] = sum * b[k][o[i]];
@@ -393,16 +393,16 @@ public class PreciseHMM {
 	 * @return Array[State][Time]
 	 */
 	private double[][] backwardProc(int[] o) {
-		int T = o.length;
-		double[][] bwd = new double[numStates][T];
+		var T = o.length;
+		var bwd = new double[numStates][T];
 		/* Basisfall */
-		for (int i = 0; i < numStates; i++)
+		for (var i = 0; i < numStates; i++)
 			bwd[i][T - 1] = 1;
 		/* Induktion */
-		for (int t = T - 2; t >= 0; t--) {
-			for (int i = 0; i < numStates; i++) {
+		for (var t = T - 2; t >= 0; t--) {
+			for (var i = 0; i < numStates; i++) {
 				bwd[i][t] = 0;
-				for (int j = 0; j < numStates; j++)
+				for (var j = 0; j < numStates; j++)
 					bwd[i][t] += (bwd[j][t + 1] * a[i][j] * b[j][o[t + 1]]);
 			}
 		}
@@ -418,21 +418,21 @@ public class PreciseHMM {
 	 * 
 	 */
 	public void print() {
-		DecimalFormat fmt = new DecimalFormat();
+		var fmt = new DecimalFormat();
 		fmt.setMinimumFractionDigits(10);
 		fmt.setMaximumFractionDigits(10);
-		for (int i = 0; i < numStates; i++)
+		for (var i = 0; i < numStates; i++)
 			System.out.println("pi(" + i + ") = " + fmt.format(pi[i]));
 		System.out.println();
-		for (int i = 0; i < numStates; i++) {
-			for (int j = 0; j < numStates; j++)
+		for (var i = 0; i < numStates; i++) {
+			for (var j = 0; j < numStates; j++)
 				System.out.println("a(" + i + ',' + j + ") = "
 						+ fmt.format(a[i][j]) + ' ');
 			System.out.println();
 		}
 		System.out.println();
-		for (int i = 0; i < numStates; i++) {
-			for (int k = 0; k < sigmaSize; k++)
+		for (var i = 0; i < numStates; i++) {
+			for (var k = 0; k < sigmaSize; k++)
 				System.out.println("b(" + i + ',' + k + ") = "
 						+ fmt.format(b[i][k]) + ' ');
 			System.out.println();

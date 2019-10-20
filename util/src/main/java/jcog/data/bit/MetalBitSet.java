@@ -26,7 +26,7 @@ public abstract class MetalBitSet {
     public abstract void set(int i);
 
     public final MetalBitSet set(int... ii) {
-        for (int i : ii)
+        for (var i : ii)
             set(i);
         return this;
     }
@@ -50,10 +50,10 @@ public abstract class MetalBitSet {
 
     public void set(int start, int end, boolean v) {
         if (v) {
-            for (int i = start; i < end; i++)
+            for (var i = start; i < end; i++)
                 set(i);
         } else {
-            for (int i = start; i < end; i++)
+            for (var i = start; i < end; i++)
                 clear(i);
         }
     }
@@ -107,7 +107,7 @@ public abstract class MetalBitSet {
 
     public void setAll(int bitVector, int o) {
         assert(o < 32);
-        for (int i = 0; bitVector!=0 && i < o; i++) {
+        for (var i = 0; bitVector!=0 && i < o; i++) {
             if ((bitVector & 1) != 0)
                 set(i);
             bitVector >>= 1;
@@ -150,7 +150,7 @@ public abstract class MetalBitSet {
         public void resize(long bits) {
 
 
-            long[] prev = data;
+            var prev = data;
 
             if (bits == 0)
                 data = ArrayUtil.EMPTY_LONG_ARRAY;
@@ -176,7 +176,7 @@ public abstract class MetalBitSet {
          * number of bits set to true
          */
         public int cardinality() {
-            int sum = Arrays.stream(data).mapToInt(Long::bitCount).sum();
+            var sum = Arrays.stream(data).mapToInt(Long::bitCount).sum();
             return sum;
         }
 
@@ -202,10 +202,10 @@ public abstract class MetalBitSet {
 
 
         public boolean getAndSet(int index, boolean next) {
-            int i = index >>> 6;
-            int j = (int) (1L << index);
-            long[] d = this.data;
-            boolean prev = (d[i] & j) != 0;
+            var i = index >>> 6;
+            var j = (int) (1L << index);
+            var d = this.data;
+            var prev = (d[i] & j) != 0;
             if (prev != next) {
                 if (next) {
                     d[i] |= j;
@@ -244,7 +244,7 @@ public abstract class MetalBitSet {
         public void putAll(LongArrayBitSet array) {
             assert data.length == array.data.length :
                     "BitArrays must be of equal length (" + data.length + "!= " + array.data.length + ')';
-            for (int i = 0; i < data.length; i++) {
+            for (var i = 0; i < data.length; i++) {
                 data[i] |= array.data[i];
             }
         }
@@ -351,7 +351,7 @@ public abstract class MetalBitSet {
         }
 
         @Override public MetalBitSet negated() {
-            IntBitSet i = new IntBitSet();
+            var i = new IntBitSet();
             i.x = ~this.x;
             return i;
         }

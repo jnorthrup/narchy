@@ -35,10 +35,10 @@ public enum SetSectDiff {
      *          2 (optional):   "*" enabling product splice
      */
     public static @Nullable Term sect(Term a, Term b, boolean union, Subterms s) {
-        Op op = //s.sub(2).equals(Op.SECTe.strAtom) ? Op.SECTe : Op.SECTi;
+        var op = //s.sub(2).equals(Op.SECTe.strAtom) ? Op.SECTe : Op.SECTi;
             CONJ;
 
-        boolean productSplice = s.subs() > 2 && s.sub(2).equals(Op.PROD.strAtom);
+        var productSplice = s.subs() > 2 && s.sub(2).equals(Op.PROD.strAtom);
 
         /* && rng? */
         return productSplice && a.unneg().subs() == b.unneg().subs() && a.unneg().op() == PROD && b.unneg().op() == PROD ? SetSectDiff.intersectProd(op, union, a, b) : SetSectDiff.intersect(op, union, a, b);
@@ -83,11 +83,11 @@ public enum SetSectDiff {
         }
 
 
-        Op oSet = t[0].op();
+        var oSet = t[0].op();
         if ((oSet == SETe) || (oSet == SETi)) {
-            boolean allSet = true;
+            var allSet = true;
             for (int i = 1, tLength = t.length; i < tLength; i++) {
-                Term x = t[i];
+                var x = t[i];
                 if (x.op() != oSet) {
                     allSet = false;
                     break;
@@ -102,17 +102,17 @@ public enum SetSectDiff {
         //TODO if there are no negations or embedded sect's, use a simple deduplication
 
         /** if the boolean value of a key is false, then the entry is negated */
-        ObjectByteHashMap<Term> y = intersect(o, o==CONJ, union, ArrayIterator.iterable(t), new ObjectByteHashMap<>(t.length));
+        var y = intersect(o, o==CONJ, union, ArrayIterator.iterable(t), new ObjectByteHashMap<>(t.length));
         if (y == null)
             return Null;
-        int s = y.size();
+        var s = y.size();
         switch (s) {
             case 0:
                 return empty(o);
             case 1:
                 return single(y.keysView().getOnly(), o, B);
             default:
-                TermList yyy = new TermList(s);
+                var yyy = new TermList(s);
                 y.keyValuesView().forEachWith((e, YYY) -> YYY.addFast(e.getOne().negIf(e.getTwo() == -1)), yyy);
 
 //            //Filter temporal terms that resolve to the same roots
@@ -128,7 +128,7 @@ public enum SetSectDiff {
 //                }
 //            }
 
-                Term[] yyyy = yyy.arrayKeep();
+                var yyyy = yyy.arrayKeep();
                 return o == SETe || o == SETi || !union ? B.compound(o, yyyy) : DISJ(B, yyyy);
         }
 
@@ -158,22 +158,22 @@ public enum SetSectDiff {
         if ((xNeg ^ yNeg) && x.unneg().equals(y.unneg()))
             return union ? x : Null;
 
-        Term X = !xNeg ? x : x.unneg();
+        var X = !xNeg ? x : x.unneg();
         if (X.op()!=PROD) return Null; //both must be PROD
-        Term Y = !yNeg ? y : y.unneg();
+        var Y = !yNeg ? y : y.unneg();
         if (Y.op()!=PROD) return Null; //both must be PROD
 
-        Subterms xx = X.subterms();
-        int n = xx.subs();
-        Subterms yy = Y.subterms();
+        var xx = X.subterms();
+        var n = xx.subs();
+        var yy = Y.subterms();
         if (n != yy.subs())
             return Null;
 
 
-        Term[] xy = new Term[n];
-        for (int i = 0; i < n; i++) {
-            Term a = xx.sub(i).negIf(xNeg);
-            Term b = yy.sub(i).negIf(yNeg);
+        var xy = new Term[n];
+        for (var i = 0; i < n; i++) {
+            var a = xx.sub(i).negIf(xNeg);
+            var b = yy.sub(i).negIf(yNeg);
             Term ab;
             if (a.equals(b))
                 ab = a;
@@ -199,7 +199,7 @@ public enum SetSectDiff {
             return null;
 
 
-        for (Term x : t) {
+        for (var x : t) {
             if (x instanceof Bool) {
                 if (x == True)
                     continue;
@@ -207,12 +207,12 @@ public enum SetSectDiff {
                     return null; //fail on null or false
             }
 
-            Op xo = x.op();
+            var xo = x.op();
 
 
             if (xo != o) {
                 if (sect) {
-                    byte p = (byte) (x.op() != NEG ? +1 : -1);
+                    var p = (byte) (x.op() != NEG ? +1 : -1);
                     if (p == -1) x = x.unneg();
                     int existing = y.getIfAbsent(x, Byte.MIN_VALUE);
                     if (existing == Byte.MIN_VALUE) {
@@ -443,18 +443,18 @@ public enum SetSectDiff {
         if (a.equals(b))
             return o==CONJ ? True : Null;
 
-        Subterms aa = a.subterms();
+        var aa = a.subterms();
 
-        int size = aa.subs();
+        var size = aa.subs();
 
-        MetalBitSet removals = MetalBitSet.bits(size);
+        var removals = MetalBitSet.bits(size);
 
-        for (int i = 0; i < size; i++) {
+        for (var i = 0; i < size; i++) {
             if (b.contains(aa.sub(i)))
                 removals.set(i);
         }
 
-        int retained = size - removals.cardinality();
+        var retained = size - removals.cardinality();
         if (retained == size) {
             return a;
         } else if (retained == 0) {

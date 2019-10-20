@@ -143,7 +143,7 @@ public class Thing<T, P /* service key */  /* context */> {
 
     public boolean stop(P p) {
         //return set(p, part(p), false);
-        Part<T> P = parts.get(p);
+        var P = parts.get(p);
         if (P != null) {
             tryStop(P, null);
             return true;
@@ -153,13 +153,13 @@ public class Thing<T, P /* service key */  /* context */> {
 
     public final boolean stop(Part<T> p) {
         //HACK TODO improve
-        P k = term(p);
+        var k = term(p);
         return stop(k);
     }
 
     public final boolean remove(Part<T> p) {
         //HACK TODO improve
-        P k = term(p);
+        var k = term(p);
         return remove(k);
     }
 
@@ -168,7 +168,7 @@ public class Thing<T, P /* service key */  /* context */> {
      */
     public @Nullable P term(Part<T> p) {
         //HACK TODO improve
-        for (Map.Entry<P, Part<T>> z : entrySet()) {
+        for (var z : entrySet()) {
             if (z.getValue() == p) {
                 return Optional.of(z).get().getKey();
             }
@@ -185,7 +185,7 @@ public class Thing<T, P /* service key */  /* context */> {
     }
 
     public final Part<T> set(P key, Class<? extends Part<T>> instanceOf, boolean start) {
-        Part<T> p = build(key, instanceOf).get();
+        var p = build(key, instanceOf).get();
         if (set(key, p, start))
             return p;
         else
@@ -197,7 +197,7 @@ public class Thing<T, P /* service key */  /* context */> {
      * stops all parts (but does not remove them)
      */
     public Thing<T, P> stopAll() {
-        for (P p : parts.keySet()) {
+        for (var p : parts.keySet()) {
             stop(p);
         }
         return this;
@@ -207,7 +207,7 @@ public class Thing<T, P /* service key */  /* context */> {
     public void delete() {
         eventOnOff.clear();
 
-        for (P p : parts.keySet()) {
+        for (var p : parts.keySet()) {
             remove(p);
         }
         assert(parts.isEmpty());
@@ -233,9 +233,9 @@ public class Thing<T, P /* service key */  /* context */> {
      * Class valueClass
      */
     public void print(PrintStream out) {
-        for (Map.Entry<P, Part<T>> entry : parts.entrySet()) {
-            P p = entry.getKey();
-            Part<T> s = entry.getValue();
+        for (var entry : parts.entrySet()) {
+            var p = entry.getKey();
+            var s = entry.getValue();
             out.println(s.state() + "\t" + p + "\t" + s + "\t" + s.getClass());
         }
     }
@@ -256,7 +256,7 @@ public class Thing<T, P /* service key */  /* context */> {
 
                     x.start(id);
 
-                    boolean nowOn = x.state.compareAndSet(ServiceState.OffToOn, ServiceState.On);
+                    var nowOn = x.state.compareAndSet(ServiceState.OffToOn, ServiceState.On);
                     assert (nowOn);
 
                     eventOnOff.emit(pair(x, true)/*, executor*/);
@@ -282,7 +282,7 @@ public class Thing<T, P /* service key */  /* context */> {
 
                     x.stop(id);
 
-                    boolean nowOff = x.state.compareAndSet(Thing.ServiceState.OnToOff, Thing.ServiceState.Off);
+                    var nowOff = x.state.compareAndSet(Thing.ServiceState.OnToOff, Thing.ServiceState.Off);
                     assert (nowOff);
 
                     eventOnOff.emit(pair(x, false)/*, executor*/);
@@ -319,7 +319,7 @@ public class Thing<T, P /* service key */  /* context */> {
         if (x == null && start)
             throw new WTF();
 
-        Part<T> removed = x != null ? parts.put(key, x) : parts.remove(key);
+        var removed = x != null ? parts.put(key, x) : parts.remove(key);
 
         if (x != removed) {
             //something removed
@@ -413,7 +413,7 @@ public class Thing<T, P /* service key */  /* context */> {
 
 
             Object[] args = null;
-            int constructor = -1;
+            var constructor = -1;
 
             //TODO try new Part(key, thisContext) constructors
 
@@ -421,7 +421,7 @@ public class Thing<T, P /* service key */  /* context */> {
 
             //try new Part(thisContext) constructors
             if (args == null) {
-                int partsIDSettable = ArrayUtil.indexOf(constructors, c -> c.getParameterTypes().length == 1 && c.getParameterTypes()[0].isAssignableFrom(id.getClass()));
+                var partsIDSettable = ArrayUtil.indexOf(constructors, c -> c.getParameterTypes().length == 1 && c.getParameterTypes()[0].isAssignableFrom(id.getClass()));
                 if (partsIDSettable != -1) {
                     constructor = partsIDSettable;
                     args = new Object[]{id};
@@ -430,7 +430,7 @@ public class Thing<T, P /* service key */  /* context */> {
 
             //try no-arg constructors
             if (args == null) {
-                int noArgConstructor = ArrayUtil.indexOf(constructors, c -> c.getParameterTypes().length == 0);
+                var noArgConstructor = ArrayUtil.indexOf(constructors, c -> c.getParameterTypes().length == 0);
                 if (noArgConstructor != -1) {
                     constructor = noArgConstructor;
                     args = ArrayUtil.EMPTY_OBJECT_ARRAY;
@@ -439,7 +439,7 @@ public class Thing<T, P /* service key */  /* context */> {
 
             if (args != null) {
                 try {
-                    Constructor cc = constructors[constructor];
+                    var cc = constructors[constructor];
                     if (cc.trySetAccessible())
                         return (X) cc.newInstance(args);
                 } catch (Throwable e) {

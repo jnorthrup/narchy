@@ -37,7 +37,7 @@ public interface PriProxy<X, Y> extends UnitPrioritizable, Supplier<Y> {
 
         @Override
         public boolean equals(Object obj) {
-            StrongProxy h = (StrongProxy) obj;
+            var h = (StrongProxy) obj;
             return xEquals(h.x, h.hash);
         }
 
@@ -80,7 +80,7 @@ public interface PriProxy<X, Y> extends UnitPrioritizable, Supplier<Y> {
 
         @Override
         public boolean equals(Object obj) {
-            SoftProxy h = (SoftProxy) obj;
+            var h = (SoftProxy) obj;
             return xEquals(h.x, h.hash);
         }
 
@@ -115,7 +115,7 @@ public interface PriProxy<X, Y> extends UnitPrioritizable, Supplier<Y> {
 
         @Override
         public Y get() {
-            Y y = super.get();
+            var y = super.get();
             if (y == null) {
                 this.pri = Float.NaN;
                 return null;

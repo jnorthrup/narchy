@@ -42,7 +42,7 @@ public abstract class AtomicTreeNode<T extends AtomicTreeNode<T>> {
 
         assert(this!=parent);
         if (!this.parent.compareAndSet(null, parent)) {
-            T curParent = parent();
+            var curParent = parent();
             if (curParent == parent)
                 return; //same parent
             
@@ -53,7 +53,7 @@ public abstract class AtomicTreeNode<T extends AtomicTreeNode<T>> {
 
     public T reparent(T newParent) {
         assert(this!=newParent);
-        T prevParent = parent.getAndSet(newParent);
+        var prevParent = parent.getAndSet(newParent);
         if (prevParent!=newParent) {
             if (prevParent!=null)
                 prevParent.children.remove(this);

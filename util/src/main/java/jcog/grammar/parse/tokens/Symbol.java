@@ -90,7 +90,7 @@ public class Symbol extends Terminal {
 	public boolean equals(Object obj) {
 		if (obj == null || obj.getClass() != this.getClass())
 			return false;
-		Symbol s = (Symbol) obj;
+		var s = (Symbol) obj;
 		return symbol.sval.equals(s.symbol.sval);
 	}
 

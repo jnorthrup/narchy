@@ -38,7 +38,7 @@ public enum AutoTranscodeTensor { ;
         public float[] snapshot() {
 
             synchronized (ae) {
-                float[] ii = in.snapshot();
+                var ii = in.snapshot();
 
 
                 //setAt(a.train(dii, learnRate, 0));
@@ -48,16 +48,16 @@ public enum AutoTranscodeTensor { ;
                 set(ae.y);
 
                 if (noise > 0) {
-                    float max = Float.NEGATIVE_INFINITY;
-                    float min = Float.POSITIVE_INFINITY;
-                    for (int i = 0; i < data.length; i++) {
+                    var max = Float.NEGATIVE_INFINITY;
+                    var min = Float.POSITIVE_INFINITY;
+                    for (var i = 0; i < data.length; i++) {
                         double v = (data[i] += (((ae.rng.nextFloat()) - 0.5f) * 2f) * noise);
                         max = Math.max((float) v, max);
                         min = Math.min((float) v, min);
                     }
 
                     if (max != min) {
-                        for (int i = 0; i < data.length; i++) {
+                        for (var i = 0; i < data.length; i++) {
                             data[i] = (data[i] - min) / (max - min);
                         }
                     }

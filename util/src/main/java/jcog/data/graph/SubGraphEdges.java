@@ -74,7 +74,7 @@ public class SubGraphEdges implements Graph {
     @Override
     public IntHashSet neighborsOut(int i) {
 
-        IntHashSet result = new IntHashSet();
+        var result = new IntHashSet();
         if (nodes.get(i)) {
             g.neighborsOut(i).forEach(j -> {
                 if (nodes.get(j)) result.add(j);
@@ -176,7 +176,7 @@ public class SubGraphEdges implements Graph {
      */
     public boolean removeNode(int i) {
 
-        boolean was = nodes.get(i);
+        var was = nodes.get(i);
         nodes.clear(i);
         return was;
     }
@@ -190,7 +190,7 @@ public class SubGraphEdges implements Graph {
      */
     public boolean addNode(int i) {
 
-        boolean was = nodes.get(i);
+        var was = nodes.get(i);
         nodes.set(i);
         return was;
     }

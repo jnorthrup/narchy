@@ -8,7 +8,7 @@ public class AgentControlFeedback {
 
     public AgentControlFeedback(Game a) {
 
-        NAR n = a.nar();
+        var n = a.nar();
         /*mean*/
         //System.out.println("reward: " + Texts.n4(reward) + " : ");
         //s.print();

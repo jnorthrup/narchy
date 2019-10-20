@@ -56,9 +56,9 @@ public class TinySpeech {
             this.plosive = ((int) x.get("plosive")) == 1;
 
             this.f = new int[3]; this.w = new int[3];
-            List<Integer> F = (List<Integer>) x.get("f");
-            List<Integer> W = (List<Integer>) x.get("w");
-            for (int i  = 0; i < 3; i++) {
+            var F = (List<Integer>) x.get("f");
+            var W = (List<Integer>) x.get("w");
+            for (var i = 0; i < 3; i++) {
                 f[i] = F.get(i); w[i] = W.get(i);
             }
         }
@@ -104,7 +104,7 @@ public class TinySpeech {
         }
         g_phonemes_json = g;
 
-        ByteObjectHashMap gg = new ByteObjectHashMap(g_phonemes_json.size());
+        var gg = new ByteObjectHashMap(g_phonemes_json.size());
         g_phonemes_json.forEach((c, p)-> gg.put((byte) ((String)c).charAt(0), new Phoneme((Map)p)));
         g_phonemes = gg.toImmutable();
     }
@@ -116,9 +116,9 @@ public class TinySpeech {
 //    }
 
     private SoundSample _say(String text) {
-        float[] buf = new float[10 * SAMPLE_FREQUENCY];
-        int bufPos = 0;
-        float amp = 0.01f;
+        var buf = new float[10 * SAMPLE_FREQUENCY];
+        var bufPos = 0;
+        var amp = 0.01f;
         return say(text, amp, f0, period, buf, bufPos);
     }
 
@@ -126,8 +126,8 @@ public class TinySpeech {
     private SoundSample say(String text, float amp, float f0, float speed, float[] buf, int bufPos) {
 
 
-        int tlen = text.length();
-        for (int textPos = 0; textPos < tlen; textPos++)
+        var tlen = text.length();
+        for (var textPos = 0; textPos < tlen; textPos++)
             bufPos = say(text.charAt(textPos), f0, speed, buf, bufPos, amp);
 
 //        for (int i = 0; i < bufPos; i++)
@@ -142,31 +142,31 @@ public class TinySpeech {
             bufPos += (int)(SAMPLE_FREQUENCY * 0.2f * speed); //skip
         }
 
-        Phoneme p = g_phonemes.get((byte) c);
+        var p = g_phonemes.get((byte) c);
         if (p==null)
             return bufPos;
 
-        float v = p.amp * amp;
-        int sl = Math.round(speed * p.len * SAMPLE_FREQUENCY / 15);
-        int[] pf = p.f;
-        int[] pw = p.w;
-        boolean osc = p.osc;
-        for (int formant = 0; formant < 3; formant++) {
+        var v = p.amp * amp;
+        var sl = Math.round(speed * p.len * SAMPLE_FREQUENCY / 15);
+        var pf = p.f;
+        var pw = p.w;
+        var osc = p.osc;
+        for (var formant = 0; formant < 3; formant++) {
             float ff = pf[formant];
             if (ff == 0)
                 continue;
 
-            float freq = ff * 50f / SAMPLE_FREQUENCY;
+            var freq = ff * 50f / SAMPLE_FREQUENCY;
 
             float xx = 0, xxx = 0;
-            float q =
+            var q =
                 1.0f - pw[formant] * (PI * 10/ SAMPLE_FREQUENCY); //adjust 10 to tune resonance
                 //(float) (1 / (pw[formant] * tan(2 * PI * 0.5)));
 
-            int pos = bufPos;
+            var pos = bufPos;
             float xp = 0;
 
-            for (int s = 0; s < sl; s++) {
+            for (var s = 0; s < sl; s++) {
                 float x;
 
                 if (!osc) {
@@ -184,7 +184,7 @@ public class TinySpeech {
                 xp = x;
 
                 // envelope
-                double e = Math.sin((PI * s) / sl); //sine  /-\
+                var e = Math.sin((PI * s) / sl); //sine  /-\
 
                 x *= e;
 
@@ -200,7 +200,7 @@ public class TinySpeech {
             }
         }
 
-        float overlap =
+        var overlap =
             //0.5f;
             0.25f;
             //0.1f;
@@ -211,12 +211,12 @@ public class TinySpeech {
     }
 
     private static float resonator(float f0, int s) {
-        float x = sawtooth(s * (f0 * PI_2 / SAMPLE_FREQUENCY));
+        var x = sawtooth(s * (f0 * PI_2 / SAMPLE_FREQUENCY));
         return x;
     }
 
     private float noise() {
-        float x = (rng.nextFloat() - 0.5f);
+        var x = (rng.nextFloat() - 0.5f);
         return x;
     }
 

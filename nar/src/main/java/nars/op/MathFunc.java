@@ -89,13 +89,13 @@ public enum MathFunc {
     };
 
     public static Term add(Term x, Term y) {
-        boolean xInt = x.op() == INT;
+        var xInt = x.op() == INT;
         if (xInt) {
-            int X = ((Int) x).i;
+            var X = ((Int) x).i;
             if (X == 0) return y;
         }
         if (y.op() == INT) {
-            int Y = ((Int) y).i;
+            var Y = ((Int) y).i;
             if (Y == 0) return x;
             if (xInt && ((Int) x).i == Y) return mul(x, Int.the(2));
         }
@@ -106,13 +106,13 @@ public enum MathFunc {
 
     public static Term mul(Term x, Term y) {
         if (x.op() == INT) {
-            int X = ((Int) x).i;
+            var X = ((Int) x).i;
             if (X == 0) return Int.ZERO;
             if (X == 1) return y;
         }
 
         if (y.op() == INT) {
-            int Y = ((Int) y).i;
+            var Y = ((Int) y).i;
             if (Y == 0) return Int.ZERO;
             if (Y == 1) return x;
         }
@@ -179,13 +179,13 @@ public enum MathFunc {
         @Override
         protected Term compute(Evaluation e, Term x, Term y) {
 
-            boolean xi = x.op() == INT;
-            int xx = xi ? ((Int) x).i : Integer.MIN_VALUE;
-            boolean yi = y.op() == INT;
-            int yy = yi ? ((Int) y).i : Integer.MIN_VALUE;
+            var xi = x.op() == INT;
+            var xx = xi ? ((Int) x).i : Integer.MIN_VALUE;
+            var yi = y.op() == INT;
+            var yy = yi ? ((Int) y).i : Integer.MIN_VALUE;
 
             if (xi || yi) {
-                Term preReduction = preFilter(x, xx, xi, y, yy, yi);
+                var preReduction = preFilter(x, xx, xi, y, yy, yi);
                 if (preReduction != null)
                     return preReduction;
             }
@@ -201,10 +201,10 @@ public enum MathFunc {
                 return compute(xx, yy);
 
             } else {
-                boolean changed = false;
+                var changed = false;
                 if (x.compareTo(y) > 0) {
 
-                    Term t = x;
+                    var t = x;
                     x = y;
                     y = t;
 
@@ -232,11 +232,11 @@ public enum MathFunc {
         @Override
         protected Term computeXfromYandXY(Evaluation e, Term x, Term y, Term xy) {
             if (y.op() == INT && xy.op() == INT) {
-                int XY = ((Int) xy).i;
-                int Y = ((Int) y).i;
+                var XY = ((Int) xy).i;
+                var Y = ((Int) y).i;
                 if (Y == 0) return xy;
 
-                Term X = uncompute(XY, Y);
+                var X = uncompute(XY, Y);
 
                 return e.is(x, X) ? null : Null;
             }

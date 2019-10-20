@@ -20,11 +20,11 @@ public abstract class FunctionMeter<M> implements Meters<M>, Serializable {
     private M[] vector;
 
     public static String[] newDefaultSignalIDs(String prefix, int n) {
-        String[] s = IntStream.range(0, n).mapToObj(i -> prefix + '_' + i).toArray(String[]::new);
+        var s = IntStream.range(0, n).mapToObj(i -> prefix + '_' + i).toArray(String[]::new);
         return s;
     }
     public static String[] newDefaultSignalIDs(String prefix, String... prefixes) {
-        String[] s = Arrays.stream(prefixes).map(item -> prefix + '_' + item).toArray(String[]::new);
+        var s = Arrays.stream(prefixes).map(item -> prefix + '_' + item).toArray(String[]::new);
         return s;
     }
     
@@ -40,9 +40,9 @@ public abstract class FunctionMeter<M> implements Meters<M>, Serializable {
         signals = Arrays.stream(ids).map(n -> new ScalarColumn(n, null)).collect(Collectors.toUnmodifiableList());
     }
     
-    public void setUnits(String... units) { 
-        int i = 0;
-        for (ScalarColumn s : signals)
+    public void setUnits(String... units) {
+        var i = 0;
+        for (var s : signals)
             s.unit = units[i++];
     }
 
@@ -54,10 +54,10 @@ public abstract class FunctionMeter<M> implements Meters<M>, Serializable {
     public abstract M getValue(Object key, int index);
 
     protected void fillVector(Object key, int fromIndex, int toIndex) {
-        M[] v = this.vector;
-        int len = v.length;
+        var v = this.vector;
+        var len = v.length;
 
-        for (int i = 0; i < len; i++) {
+        for (var i = 0; i < len; i++) {
             v[i] = getValue(key, i);
         }
 
@@ -65,7 +65,7 @@ public abstract class FunctionMeter<M> implements Meters<M>, Serializable {
 
     @Override
     public M[] sample(Object key) {
-        M[] vector = this.vector;
+        var vector = this.vector;
 
         if (vector == null) {
             

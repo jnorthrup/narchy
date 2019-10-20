@@ -103,8 +103,8 @@ public class DynGrid<X> extends MutableMapContainer<Integer, X> implements Scrol
         if (parent == null)
             return;
 
-        ScrollXY xy = parentOrSelf(ScrollXY.class);
-        RectFloat v = xy.view();
+        var xy = parentOrSelf(ScrollXY.class);
+        var v = xy.view();
         float vx = v.x, vy = v.y, vw = v.w, vh = v.h;
         this.x1 = Math.max(0, (int) Math.floor(vx));
         this.y1 = Math.max(0, (int) Math.floor(vy));
@@ -113,21 +113,21 @@ public class DynGrid<X> extends MutableMapContainer<Integer, X> implements Scrol
 
         dx = x();
         dy = y();
-        float ww = w();
-        float hh = h();
+        var ww = w();
+        var hh = h();
         cw = ww / vw;
         ch = hh / vh;
 
 
         cells.map.removeIf(e -> {
-            Surface s = ((SurfaceCacheCell) e).surface;
+            var s = ((SurfaceCacheCell) e).surface;
 
             if (s == null) {
                 //return true;
             } else {
                 int cellID = e.key;
-                short sx = (short) (cellID >> 16);
-                short sy = (short) (cellID & 0xffff);
+                var sx = (short) (cellID >> 16);
+                var sy = (short) (cellID & 0xffff);
                 return !cellVisible(sx, sy);
             }
 
@@ -138,11 +138,11 @@ public class DynGrid<X> extends MutableMapContainer<Integer, X> implements Scrol
 
 
 
-        for (short sx = (short) x1; sx < x2; sx++) {
-            for (short sy = (short) y1; sy < y2; sy++) {
-                SurfaceCacheCell e = (SurfaceCacheCell) set(sx, sy, value(sx, sy), true);
+        for (var sx = (short) x1; sx < x2; sx++) {
+            for (var sy = (short) y1; sy < y2; sy++) {
+                var e = (SurfaceCacheCell) set(sx, sy, value(sx, sy), true);
                 if (e != null) {
-                    Surface s = e.surface;
+                    var s = e.surface;
                     if (s == null)
                         continue;
 
@@ -158,8 +158,8 @@ public class DynGrid<X> extends MutableMapContainer<Integer, X> implements Scrol
 
 
     void doLayout(Surface s, float vx, float vy, short sx, short sy) {
-        float cx = dx + (sx - vx + 0.5f) * cw;
-        float cy = dy + h() - ((sy - vy + 0.5f) * ch);
+        var cx = dx + (sx - vx + 0.5f) * cw;
+        var cy = dy + h() - ((sy - vy + 0.5f) * ch);
         cellVisible(s, cw, ch, cx, cy);
     }
 
@@ -187,8 +187,8 @@ public class DynGrid<X> extends MutableMapContainer<Integer, X> implements Scrol
     }
 
     private Surface renderer(int cellID, X value) {
-        short sx = (short) (cellID >> 16);
-        short sy = (short) (cellID & 0xffff);
+        var sx = (short) (cellID >> 16);
+        var sy = (short) (cellID & 0xffff);
         return surface(sx, sy, value);
     }
 
@@ -204,9 +204,10 @@ public class DynGrid<X> extends MutableMapContainer<Integer, X> implements Scrol
 
     @Override
     public void update(ScrollXY s) {
-        float minX = 0.5f; float minY = 0.5f;
-        v2 min = new v2(minX, minY);
-        v2 max = new v2(Math.max(minX, cellsX()), Math.max(minY, cellsY()));
+        var minX = 0.5f;
+        var minY = 0.5f;
+        var min = new v2(minX, minY);
+        var max = new v2(Math.max(minX, cellsX()), Math.max(minY, cellsY()));
         s.viewMinMax(min, max);
         s.view(max); //TODO reasonable # of items cut-off
     }

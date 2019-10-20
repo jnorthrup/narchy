@@ -15,10 +15,10 @@ public class TriangularWindow extends WaveFactory {
 
     @Override
     public ArrayTensor get(int bufferSize) {
-        int size = bufferSize;
-        ArrayTensor b = new ArrayTensor(size);
+        var size = bufferSize;
+        var b = new ArrayTensor(size);
 
-        for (int i = 0; i < bufferSize; i++) {
+        for (var i = 0; i < bufferSize; i++) {
             b.data[i] = tri((i + 0.5f) / bufferSize) / bufferSize;
         }
         return b;

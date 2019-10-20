@@ -71,7 +71,7 @@ public class JCTermSwingFrame extends JFrame implements ActionListener, Runnable
 
         JCTermSwing.setCR(new ConfigurationRepositoryFS());
 
-        String s = System.getProperty("jcterm.config.use_ssh_agent");
+        var s = System.getProperty("jcterm.config.use_ssh_agent");
         if (s != null && "true".equals(s))
             JSchSession.useSSHAgent(true);
 
@@ -82,7 +82,7 @@ public class JCTermSwingFrame extends JFrame implements ActionListener, Runnable
         enableEvents(AWTEvent.KEY_EVENT_MASK);
 
 
-        JMenuBar mb = getJMenuBar();
+        var mb = getJMenuBar();
         setJMenuBar(mb);
 
         term = new JCTermSwing();
@@ -91,12 +91,12 @@ public class JCTermSwingFrame extends JFrame implements ActionListener, Runnable
 
         ComponentListener l = new ComponentAdapter() {
             public void componentResized(ComponentEvent e) {
-                Component c = e.getComponent();
-                Container cp = ((RootPaneContainer) c).getContentPane();
-                int cw = c.getWidth();
-                int ch = c.getHeight();
-                int cwm = c.getWidth() - cp.getWidth();
-                int chm = c.getHeight() - cp.getHeight();
+                var c = e.getComponent();
+                var cp = ((RootPaneContainer) c).getContentPane();
+                var cw = c.getWidth();
+                var ch = c.getHeight();
+                var cwm = c.getWidth() - cp.getWidth();
+                var chm = c.getHeight() - cp.getHeight();
                 cw -= cwm;
                 ch -= chm;
                 JCTermSwingFrame.this.term.setSize(cw, ch);
@@ -110,7 +110,7 @@ public class JCTermSwingFrame extends JFrame implements ActionListener, Runnable
     }
 
     public static void main(String[] arg) {
-        JCTermSwingFrame frame = new JCTermSwingFrame("JCTerm");
+        var frame = new JCTermSwingFrame("JCTerm");
         frame.setVisible(true);
     }
 
@@ -119,17 +119,17 @@ public class JCTermSwingFrame extends JFrame implements ActionListener, Runnable
         String destination = null;
         while (thread != null) {
             try {
-                int port = 22;
-                String host1 = "127.0.0.1";
-                String user1 = "";
+                var port = 22;
+                var host1 = "127.0.0.1";
+                var user1 = "";
                 try {
-                    String[] destinations = JCTermSwing.getCR().load(configName).destinations;
-                    String _host = promptDestination(term, destinations);
+                    var destinations = JCTermSwing.getCR().load(configName).destinations;
+                    var _host = promptDestination(term, destinations);
                     destination = _host;
                     if (_host == null) {
                         break;
                     }
-                    String _user = _host.substring(0, _host.indexOf('@'));
+                    var _user = _host.substring(0, _host.indexOf('@'));
                     _host = _host.substring(_host.indexOf('@') + 1);
                     if (_host.isEmpty()) {
                         continue;
@@ -147,11 +147,11 @@ public class JCTermSwingFrame extends JFrame implements ActionListener, Runnable
                     continue;
                 }
 
-                String user = user1;
-                String host = host1;
+                var user = user1;
+                var host = host1;
 
 
-                Configuration conf = JCTermSwing.getCR().load(configName);
+                var conf = JCTermSwing.getCR().load(configName);
                 conf.addDestination(destination);
                 JCTermSwing.getCR().save(conf);
 
@@ -221,9 +221,9 @@ public class JCTermSwingFrame extends JFrame implements ActionListener, Runnable
                 break;
         }
 
-        OutputStream fout = out;
-        InputStream fin = in;
-        Channel fchannel = channel;
+        var fout = out;
+        var fin = in;
+        var fchannel = channel;
 
         return new Connection() {
             public InputStream getInputStream() {
@@ -236,8 +236,8 @@ public class JCTermSwingFrame extends JFrame implements ActionListener, Runnable
 
             public void requestResize(Terminal term) {
                 if (fchannel instanceof ChannelShell) {
-                    int c = term.getColumnCount();
-                    int r = term.getRowCount();
+                    var c = term.getColumnCount();
+                    var r = term.getRowCount();
                     ((ChannelShell) fchannel).setPtySize(c, r, c * term.getCharWidth(),
                             r * term.getCharHeight());
                 }
@@ -308,15 +308,15 @@ public class JCTermSwingFrame extends JFrame implements ActionListener, Runnable
     }
 
     private void setFontSize(int size) {
-        Configuration conf = JCTermSwing.getCR().load(configName);
+        var conf = JCTermSwing.getCR().load(configName);
         conf.font_size = size;
         JCTermSwing.getCR().save(conf);
         _setFontSize(size);
     }
 
     private void _setFontSize(int size) {
-        int mwidth = getWidth() - term.getTermWidth();
-        int mheight = getHeight() - term.getTermHeight();
+        var mwidth = getWidth() - term.getTermWidth();
+        var mheight = getHeight() - term.getTermHeight();
         term.setFont("Monospaced-" + size);
         setSize(mwidth + term.getTermWidth(), mheight + term.getTermHeight());
         term.clear();
@@ -384,9 +384,9 @@ public class JCTermSwingFrame extends JFrame implements ActionListener, Runnable
     }
 
     public void actionPerformed(ActionEvent e) {
-        String action = e.getActionCommand();
+        var action = e.getActionCommand();
 
-        int _mode = SHELL;
+        var _mode = SHELL;
         switch (action) {
             case "Open SHELL Session...":
                 _mode = SHELL;
@@ -407,9 +407,9 @@ public class JCTermSwingFrame extends JFrame implements ActionListener, Runnable
                 }
                 break;
             case "HTTP...": {
-                String foo = getProxyHttpHost();
-                int bar = getProxyHttpPort();
-                String proxy = JOptionPane.showInputDialog(this,
+                var foo = getProxyHttpHost();
+                var bar = getProxyHttpPort();
+                var proxy = JOptionPane.showInputDialog(this,
                         "HTTP proxy server (hostname:port)", ((foo != null && bar != 0) ? foo + ':'
                                 + bar : ""));
                 if (proxy == null)
@@ -430,9 +430,9 @@ public class JCTermSwingFrame extends JFrame implements ActionListener, Runnable
                 break;
             }
             case "SOCKS5...": {
-                String foo = getProxySOCKS5Host();
-                int bar = getProxySOCKS5Port();
-                String proxy = JOptionPane.showInputDialog(this,
+                var foo = getProxySOCKS5Host();
+                var bar = getProxySOCKS5Port();
+                var proxy = JOptionPane.showInputDialog(this,
                         "SOCKS5 server (hostname:1080)", ((foo != null && bar != 0) ? foo + ':' + bar
                                 : ""));
                 if (proxy == null)
@@ -453,7 +453,7 @@ public class JCTermSwingFrame extends JFrame implements ActionListener, Runnable
                 break;
             }
             case "X11 Forwarding...":
-                String display = JOptionPane.showInputDialog(this,
+                var display = JOptionPane.showInputDialog(this,
                         "XDisplay name (hostname:0)", (xhost == null) ? "" : (xhost + ':' + xport));
                 try {
                     if (display != null) {
@@ -470,7 +470,7 @@ public class JCTermSwingFrame extends JFrame implements ActionListener, Runnable
                 setAntiAliasing(!getAntiAliasing());
                 break;
             case "Compression...": {
-                String foo = JOptionPane
+                var foo = JOptionPane
                         .showInputDialog(
                                 this,
                                 "Compression level(0-9)\n0 means no compression.\n1 means fast.\n9 means slow, but best.",
@@ -496,7 +496,7 @@ public class JCTermSwingFrame extends JFrame implements ActionListener, Runnable
                 }
 
                 try {
-                    String title = "";
+                    var title = "";
                     if ("Local Port...".equals(action)) {
                         title += "Local port forwarding";
                     } else {
@@ -504,13 +504,13 @@ public class JCTermSwingFrame extends JFrame implements ActionListener, Runnable
                     }
                     title += "(port:host:hostport)";
 
-                    String foo = JOptionPane.showInputDialog(this, title, "");
+                    var foo = JOptionPane.showInputDialog(this, title, "");
                     if (foo == null)
                         return;
-                    int port1 = Integer.parseInt(foo.substring(0, foo.indexOf(':')));
+                    var port1 = Integer.parseInt(foo.substring(0, foo.indexOf(':')));
                     foo = foo.substring(foo.indexOf(':') + 1);
-                    String host = foo.substring(0, foo.indexOf(':'));
-                    int port2 = Integer.parseInt(foo.substring(foo.indexOf(':') + 1));
+                    var host = foo.substring(0, foo.indexOf(':'));
+                    var port2 = Integer.parseInt(foo.substring(foo.indexOf(':') + 1));
 
                     if ("Local Port...".equals(action)) {
                         setPortForwardingL(port1, host, port2);
@@ -527,10 +527,10 @@ public class JCTermSwingFrame extends JFrame implements ActionListener, Runnable
     }
 
     public JMenuBar getJMenuBar() {
-        JMenuBar mb = new JMenuBar();
+        var mb = new JMenuBar();
 
-        JMenu m = new JMenu("File");
-        JMenuItem mi = new JMenuItem("Open SHELL Session...");
+        var m = new JMenu("File");
+        var mi = new JMenuItem("Open SHELL Session...");
         mi.addActionListener(this);
         mi.setActionCommand("Open SHELL Session...");
         m.add(mi);
@@ -582,15 +582,15 @@ public class JCTermSwingFrame extends JFrame implements ActionListener, Runnable
         mi.setActionCommand("Compression...");
         m.add(mi);
 
-        JMenu mcolor = new JMenu("Color");
+        var mcolor = new JMenu("Color");
         ActionListener mcolor_action = e -> setFgBg(e.getActionCommand());
         mcolor.addMenuListener(new MenuListener() {
             public void menuSelected(MenuEvent me) {
-                JMenu jm = (JMenu) me.getSource();
-                String[] fg_bg = JCTermSwing.getCR().load(configName).fg_bg;
-                for (String aFg_bg : fg_bg) {
-                    String[] tmp = aFg_bg.split(":");
-                    JMenuItem mi = new JMenuItem("ABC");
+                var jm = (JMenu) me.getSource();
+                var fg_bg = JCTermSwing.getCR().load(configName).fg_bg;
+                for (var aFg_bg : fg_bg) {
+                    var tmp = aFg_bg.split(":");
+                    var mi = new JMenuItem("ABC");
                     mi.setForeground(JCTermSwing.toColor(tmp[0]));
                     mi.setBackground(JCTermSwing.toColor(tmp[1]));
                     mi.setActionCommand(aFg_bg);
@@ -600,7 +600,7 @@ public class JCTermSwingFrame extends JFrame implements ActionListener, Runnable
             }
 
             public void menuDeselected(MenuEvent me) {
-                JMenu jm = (JMenu) me.getSource();
+                var jm = (JMenu) me.getSource();
                 jm.removeAll();
             }
 
@@ -609,9 +609,9 @@ public class JCTermSwingFrame extends JFrame implements ActionListener, Runnable
         });
         m.add(mcolor);
 
-        JMenu mfsize = new JMenu("Font size");
+        var mfsize = new JMenu("Font size");
         ActionListener mfsize_action = e -> {
-            String _font_size = e.getActionCommand();
+            var _font_size = e.getActionCommand();
             try {
                 setFontSize(Integer.parseInt(_font_size));
             } catch (NumberFormatException nfe) {
@@ -619,9 +619,9 @@ public class JCTermSwingFrame extends JFrame implements ActionListener, Runnable
         };
         mfsize.addMenuListener(new MenuListener() {
             public void menuSelected(MenuEvent me) {
-                JMenu jm = (JMenu) me.getSource();
-                int font_size = JCTermSwing.getCR().load(configName).font_size;
-                JMenuItem mi = new JMenuItem("Smaller (" + (font_size - 1) + ')');
+                var jm = (JMenu) me.getSource();
+                var font_size = JCTermSwing.getCR().load(configName).font_size;
+                var mi = new JMenuItem("Smaller (" + (font_size - 1) + ')');
                 mi.setActionCommand(String.valueOf(font_size - 1));
                 mi.addActionListener(mfsize_action);
                 jm.add(mi);
@@ -632,7 +632,7 @@ public class JCTermSwingFrame extends JFrame implements ActionListener, Runnable
             }
 
             public void menuDeselected(MenuEvent me) {
-                JMenu jm = (JMenu) me.getSource();
+                var jm = (JMenu) me.getSource();
                 jm.removeAll();
             }
 
@@ -672,7 +672,7 @@ public class JCTermSwingFrame extends JFrame implements ActionListener, Runnable
     }
 
     private void openFrame(int _mode, String configName) {
-        JCTermSwingFrame c = new JCTermSwingFrame("JCTerm", configName);
+        var c = new JCTermSwingFrame("JCTerm", configName);
         c.mode = _mode;
         c.setXForwarding(true);
         c.setXPort(xport);
@@ -683,16 +683,16 @@ public class JCTermSwingFrame extends JFrame implements ActionListener, Runnable
     }
 
     private void setFgBg(String fg_bg) {
-        Configuration conf = JCTermSwing.getCR().load(configName);
+        var conf = JCTermSwing.getCR().load(configName);
         conf.addFgBg(fg_bg);
         JCTermSwing.getCR().save(conf);
         _setFgBg(fg_bg);
     }
 
     private void _setFgBg(String fg_bg) {
-        String[] tmp = fg_bg.split(":");
-        Color fg = JCTermSwing.toColor(tmp[0]);
-        Color bg = JCTermSwing.toColor(tmp[1]);
+        var tmp = fg_bg.split(":");
+        var fg = JCTermSwing.toColor(tmp[0]);
+        var bg = JCTermSwing.toColor(tmp[1]);
         term.setForeGround(fg);
         term.setDefaultForeGround(fg);
         term.setBackGround(bg);
@@ -703,27 +703,27 @@ public class JCTermSwingFrame extends JFrame implements ActionListener, Runnable
     }
 
     private String promptDestination(JComponent term, String[] destinations) {
-        JComboBox jb = new JComboBox();
+        var jb = new JComboBox();
         jb.setEditable(true);
 
-        for (String destination : destinations) {
+        for (var destination : destinations) {
             jb.addItem(destination);
         }
 
 
         jb.requestFocusInWindow();
-        JOptionPane pane = new JOptionPane(jb,
+        var pane = new JOptionPane(jb,
                 JOptionPane.QUESTION_MESSAGE,
                 JOptionPane.OK_CANCEL_OPTION) {
             public void selectInitialValue() {
             }
         };
 
-        JDialog dialog = pane.createDialog(JCTermSwingFrame.this.term,
+        var dialog = pane.createDialog(JCTermSwingFrame.this.term,
                 "Enter username@hostname");
         dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         dialog.setVisible(true);
-        Object o = pane.getValue();
+        var o = pane.getValue();
 
         String d = null;
         if (o != null && (Integer) o == JOptionPane.OK_OPTION) {
@@ -737,7 +737,7 @@ public class JCTermSwingFrame extends JFrame implements ActionListener, Runnable
 
     private void applyConfig(String configName) {
         this.configName = configName;
-        Configuration conf = JCTermSwing.getCR().load(configName);
+        var conf = JCTermSwing.getCR().load(configName);
         _setFontSize(conf.font_size);
         _setFgBg(conf.fg_bg[0]);
     }
@@ -753,7 +753,7 @@ public class JCTermSwingFrame extends JFrame implements ActionListener, Runnable
 
         public boolean promptYesNo(String str) {
             Object[] options = {"yes", "no"};
-            int foo = JOptionPane.showOptionDialog(JCTermSwingFrame.this.term, str,
+            var foo = JOptionPane.showOptionDialog(JCTermSwingFrame.this.term, str,
                     "Warning", JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
                     null, options, options[0]);
             return foo == 0;
@@ -769,21 +769,21 @@ public class JCTermSwingFrame extends JFrame implements ActionListener, Runnable
 
         public boolean promptPassword(String message) {
             Object[] ob = {pword};
-            JPanel panel = new JPanel();
+            var panel = new JPanel();
             panel.add(pword);
             pword.requestFocusInWindow();
-            JOptionPane pane = new JOptionPane(panel,
+            var pane = new JOptionPane(panel,
                     JOptionPane.QUESTION_MESSAGE,
                     JOptionPane.OK_CANCEL_OPTION) {
                 public void selectInitialValue() {
                 }
             };
 
-            JDialog dialog = pane.createDialog(JCTermSwingFrame.this.term,
+            var dialog = pane.createDialog(JCTermSwingFrame.this.term,
                     message);
             dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
             dialog.setVisible(true);
-            Object o = pane.getValue();
+            var o = pane.getValue();
 
             if (o != null && (Integer) o == JOptionPane.OK_OPTION) {
                 passwd = pword.getText();
@@ -814,8 +814,8 @@ public class JCTermSwingFrame extends JFrame implements ActionListener, Runnable
 
             gbc.gridwidth = GridBagConstraints.RELATIVE;
 
-            JTextField[] texts = new JTextField[prompt.length];
-            for (int i = 0; i < prompt.length; i++) {
+            var texts = new JTextField[prompt.length];
+            for (var i = 0; i < prompt.length; i++) {
                 gbc.fill = GridBagConstraints.NONE;
                 gbc.gridx = 0;
                 gbc.weightx = 1;
@@ -833,22 +833,22 @@ public class JCTermSwingFrame extends JFrame implements ActionListener, Runnable
                 panel.add(texts[i], gbc);
                 gbc.gridy++;
             }
-            for (int i = prompt.length - 1; i > 0; i--) {
+            for (var i = prompt.length - 1; i > 0; i--) {
                 texts[i].requestFocusInWindow();
             }
-            JOptionPane pane = new JOptionPane(panel,
+            var pane = new JOptionPane(panel,
                     JOptionPane.QUESTION_MESSAGE,
                     JOptionPane.OK_CANCEL_OPTION) {
                 public void selectInitialValue() {
                 }
             };
-            JDialog dialog = pane.createDialog(JCTermSwingFrame.this.term,
+            var dialog = pane.createDialog(JCTermSwingFrame.this.term,
                     destination + ": " + name);
             dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
             dialog.setVisible(true);
-            Object o = pane.getValue();
+            var o = pane.getValue();
             if (o != null && (Integer) o == JOptionPane.OK_OPTION) {
-                String[] response = IntStream.range(0, prompt.length).mapToObj(i -> texts[i].getText()).toArray(String[]::new);
+                var response = IntStream.range(0, prompt.length).mapToObj(i -> texts[i].getText()).toArray(String[]::new);
                 return response;
             } else {
                 return null;

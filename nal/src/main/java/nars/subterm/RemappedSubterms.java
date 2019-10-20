@@ -24,18 +24,18 @@ public abstract class RemappedSubterms<S extends Subterms> extends MappedSubterm
 
     public static <S extends Subterms> ArrayRemappedSubterms<S> the(Term[] x, S base) {
 
-        byte[] m = new byte[x.length];
+        var m = new byte[x.length];
 
-        int hash = 1;
+        var hash = 1;
         for (int i = 0, xLength = x.length; i < xLength; i++) {
-            Term xx = x[i];
+            var xx = x[i];
             hash = Util.hashCombine(hash, xx);
 
-            boolean neg = (xx instanceof Neg);
+            var neg = (xx instanceof Neg);
 
-            Term xi = neg ? xx.unneg() : xx;
+            var xi = neg ? xx.unneg() : xx;
 
-            int mi = base.indexOf(xi)+1;
+            var mi = base.indexOf(xi)+1;
 
             if (mi <= 0)
                 throw new WTF
@@ -58,7 +58,7 @@ public abstract class RemappedSubterms<S extends Subterms> extends MappedSubterm
     }
 
     public static Subterms reverse(Subterms x) {
-        int n = x.subs();
+        var n = x.subs();
         if (n <= 1)
             return x;
 
@@ -301,7 +301,7 @@ public abstract class RemappedSubterms<S extends Subterms> extends MappedSubterm
         public boolean equals(Object obj) {
             if (this == obj) return true;
             if (obj instanceof RemappedSubterms.ArrayRemappedSubterms) {
-                ArrayRemappedSubterms m = (ArrayRemappedSubterms) obj;
+                var m = (ArrayRemappedSubterms) obj;
                 return hash == m.hash && ref.equals(m.ref) && Arrays.equals(map, m.map);
             } else {
                 return obj instanceof Subterms && /*hash == obj.hashCodeSubterms() && */
@@ -340,7 +340,7 @@ public abstract class RemappedSubterms<S extends Subterms> extends MappedSubterm
 
     /** optimized to avoid wrapping in Neg temporarily */
     @Override public final int subEventRange(int i) {
-        int xy = subMap(i);
+        var xy = subMap(i);
         if (xy < 0)
             return 0;
         return mapTerm(xy).eventRange();
@@ -351,7 +351,7 @@ public abstract class RemappedSubterms<S extends Subterms> extends MappedSubterm
 
     @Override
     public final int structure() {
-        int s = ref.structure();
+        var s = ref.structure();
         if (wrapsNeg())
             s |= NEG.bit;
         return s;
@@ -359,14 +359,14 @@ public abstract class RemappedSubterms<S extends Subterms> extends MappedSubterm
 
     @Override
     public final int structureSurface() {
-        int s = ref.structureSurface();
+        var s = ref.structureSurface();
         if (wrapsNeg())
             s |= NEG.bit;
         return s;
     }
 
     protected boolean wrapsNeg() {
-        int s = subs();
+        var s = subs();
         return IntStream.range(0, s).anyMatch(i -> subMap(i) < 0);
     }
 
@@ -416,7 +416,7 @@ public abstract class RemappedSubterms<S extends Subterms> extends MappedSubterm
     }
 
     public Term mapTerm(int xy) {
-        boolean neg = (xy < 0);
+        var neg = (xy < 0);
         if (neg) xy = -xy;
         return mapSub(xy).negIf(neg);
     }

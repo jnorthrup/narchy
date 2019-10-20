@@ -28,9 +28,9 @@ public final class HersheyFont {
         String[] lines = null;
 
 
-        for (int tries = 0; tries < 2; tries++) {
+        for (var tries = 0; tries < 2; tries++) {
             try {
-                String font =
+                var font =
                         "futural";
 
                 lines = new String(Draw.class.getClassLoader().getResourceAsStream("spacegraph/font/hershey/" + font + ".jhf").readAllBytes()).split("\n");
@@ -44,16 +44,16 @@ public final class HersheyFont {
             lines = ArrayUtil.EMPTY_STRING_ARRAY;
         }
 
-        String scratch = "";
+        var scratch = "";
         List<HersheyFont> glyphs = new FasterList(256);
-        for (String line : lines) {
-            String c = line;
+        for (var line : lines) {
+            var c = line;
             if (c.endsWith("\n"))
                 c = c.substring(0, c.length() - 1);
 
 
             if (Character.isDigit(c.charAt(4))) {
-                HersheyFont nextGlyph = new HersheyFont(c + scratch);
+                var nextGlyph = new HersheyFont(c + scratch);
 
                 glyphs.add(nextGlyph);
                 scratch = "";
@@ -77,7 +77,7 @@ public final class HersheyFont {
 
     public static void textNext(GL2 gl, char c, float x) {
 
-        int ci = c - 32;
+        var ci = c - 32;
         if (ci >= 0 && ci < fontMono.length) {
             fontMono[ci].draw(gl, x * 20);
         }
@@ -86,7 +86,7 @@ public final class HersheyFont {
 
     /** load glyphs into GL context */
     public static void load(GL2 gl) {
-        for (HersheyFont x : fontMono)
+        for (var x : fontMono)
             x.init(gl);
     }
 
@@ -97,12 +97,12 @@ public final class HersheyFont {
         rightPos = (hspec.charAt(9)) - offsetR;
 
         //        boolean penUp = true;
-        ByteArrayList currentSeg = new ByteArrayList(8);
+        var currentSeg = new ByteArrayList(8);
 
-        String spec = (hspec.substring(10));
-        int ss = spec.length() - 1;
+        var spec = (hspec.substring(10));
+        var ss = spec.length() - 1;
         FasterList<byte[]> segments = new FasterList();
-        for (int i = 0; i < ss; i += 2) {
+        for (var i = 0; i < ss; i += 2) {
 
             char ci = spec.charAt(i), cii = spec.charAt(i + 1);
 
@@ -113,9 +113,9 @@ public final class HersheyFont {
                 continue;
             }
 
-            int curX = ci - offsetR;
+            var curX = ci - offsetR;
             currentSeg.add((byte) curX);
-            int curY = cii - offsetR;
+            var curY = cii - offsetR;
             currentSeg.add((byte) (10 - curY));
         }
         if (!currentSeg.isEmpty())
@@ -137,11 +137,11 @@ public final class HersheyFont {
     public static void hersheyText(GL2 gl, CharSequence s, float scaleX, float scaleY, float x, float y, float z, Draw.TextAlignment a) {
 
 
-        int sl = s.length();
+        var sl = s.length();
         if (sl == 0)
             return;
 
-        float totalWidth = sl * scaleX;
+        var totalWidth = sl * scaleX;
         switch (a) {
             case Left:
                 x += scaleX / 2f;
@@ -158,7 +158,7 @@ public final class HersheyFont {
 
         textStart(gl, scaleX, scaleY, x, y, z);
 
-        for (int i = 0; i < sl; i++) {
+        for (var i = 0; i < sl; i++) {
             textNext(gl, s.charAt(i), i);
         }
 
@@ -171,13 +171,13 @@ public final class HersheyFont {
 
     private static void hersheyText(GL2 gl, char c, float scaleX, float scaleY, float x, float y, float z) {
 
-        int ci = c - 32;
+        var ci = c - 32;
         if (ci >= 0 && (ci < fontMono.length)) {
 
             Draw.push(gl);
 
-            float sx = scaleX / 20f;
-            float sy = scaleY / 20f;
+            var sx = scaleX / 20f;
+            var sy = scaleY / 20f;
             gl.glScalef(sx, sy, 1f);
 
             gl.glTranslatef(x / sx, y / sy, z);
@@ -190,7 +190,7 @@ public final class HersheyFont {
     void draw(GL2 gl, float x) {
 
 
-        boolean xShifted = Math.abs(x) > Float.MIN_NORMAL;
+        var xShifted = Math.abs(x) > Float.MIN_NORMAL;
 
         if (xShifted)
             gl.glTranslatef(x, 0, 0);
@@ -209,12 +209,12 @@ public final class HersheyFont {
         id = gl.glGenLists(1);
         gl.glNewList(id, GL2.GL_COMPILE);
 
-        for (byte[] seg : segments) {
+        for (var seg : segments) {
 
-            int ss = seg.length;
+            var ss = seg.length;
 
             gl.glBegin(GL.GL_LINE_STRIP);
-            for (int j = 0; j < ss; )
+            for (var j = 0; j < ss; )
                 gl.glVertex2i(seg[j++], seg[j++]);
             gl.glEnd();
         }

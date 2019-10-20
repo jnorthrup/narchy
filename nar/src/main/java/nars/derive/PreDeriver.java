@@ -59,13 +59,13 @@ import static jcog.memoize.Memoizers.DEFAULT_HIJACK_REPROBES;
      *  TODO use Concept Snapshot API
      *  */
     PreDeriver SnapshotMemoizer = preDerivation -> {
-        Derivation d = (Derivation) preDerivation;
+        var d = (Derivation) preDerivation;
 
         ByteHijackMemoize<PremiseKey, short[]> whats = Snapshot.get(preDerivation.taskTerm, d.nar,
             "ConceptMetaMemoizer_" + System.identityHashCode(d.deriver), d.time, -1, (c, w) -> {
-                    ByteHijackMemoize<PremiseKey, short[]> w1 = w;
+                    var w1 = w;
                     if (w1 == null) {
-                int capacity = 512;
+                        var capacity = 512;
                 w1 = new ByteHijackMemoize<>(PreDeriver::run,
                     capacity,
                     DEFAULT_HIJACK_REPROBES, false);

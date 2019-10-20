@@ -9,7 +9,7 @@ public class DefaultHasher<E> extends AbstractHasher<E> {
 
     @Override
     public byte[] asBytes(Object element) {
-        ByteBuffer buffer = ByteBuffer
+        var buffer = ByteBuffer
                 .allocate(4)
                 .putInt(element.hashCode());
         return buffer.array();

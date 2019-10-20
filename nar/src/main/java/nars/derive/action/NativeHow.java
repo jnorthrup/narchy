@@ -18,7 +18,7 @@ public abstract class NativeHow/*Builder*/ extends CondHow {
 
 	@Override
 	protected PREDICATE<PreDerivation>[] conditions() {
-		PREDICATE<PreDerivation>[] c = super.conditions();
+		var c = super.conditions();
 
 		this.id = $.impl($.p(c), $.identity(this));
 		this.source = id.toString();

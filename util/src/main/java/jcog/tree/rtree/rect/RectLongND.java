@@ -45,16 +45,16 @@ public class RectLongND implements HyperRegion, Serializable, Comparable<RectLon
 
 
     public RectLongND(LongND a, LongND b) {
-        int dim = a.dim();
+        var dim = a.dim();
 
-        long[] min = new long[dim];
-        long[] max = new long[dim];
+        var min = new long[dim];
+        var max = new long[dim];
 
-        long[] ad = a.coord;
-        long[] bd = b.coord;
-        for (int i = 0; i < dim; i++) {
-            long ai = ad[i];
-            long bi = bd[i];
+        var ad = a.coord;
+        var bd = b.coord;
+        for (var i = 0; i < dim; i++) {
+            var ai = ad[i];
+            var bi = bd[i];
             min[i] = Math.min(ai, bi);
             max[i] = Math.max(ai, bi);
         }
@@ -68,17 +68,17 @@ public class RectLongND implements HyperRegion, Serializable, Comparable<RectLon
 
     @Override
     public boolean contains(HyperRegion _inner) {
-        RectLongND inner = (RectLongND) _inner;
+        var inner = (RectLongND) _inner;
 
-        int dim = dim();
+        var dim = dim();
         return IntStream.range(0, dim).noneMatch(i -> min.coord[i] > inner.min.coord[i] || max.coord[i] < inner.max.coord[i]);
     }
 
     @Override
     public boolean intersects(HyperRegion r) {
-        RectLongND x = (RectLongND) r;
+        var x = (RectLongND) r;
 
-        int dim = dim();
+        var dim = dim();
         /*return !((min.x > r2.max.x) || (r2.min.x > max.x) ||
                     (min.y > r2.max.y) || (r2.min.y > max.y));*/
         return IntStream.range(0, dim).noneMatch(i -> min.coord[i] > x.max.coord[i] || x.min.coord[i] > max.coord[i]);
@@ -86,9 +86,9 @@ public class RectLongND implements HyperRegion, Serializable, Comparable<RectLon
 
     @Override
     public double cost() {
-        float sigma = 1f;
-        int dim = dim();
-        for (int i = 0; i < dim; i++) {
+        var sigma = 1f;
+        var dim = dim();
+        for (var i = 0; i < dim; i++) {
             sigma *= rangeIfFinite(i, 1 /* an infinite dimension can not be compared, so just ignore it */);
         }
         return sigma;
@@ -96,12 +96,12 @@ public class RectLongND implements HyperRegion, Serializable, Comparable<RectLon
 
     @Override
     public HyperRegion mbr(HyperRegion r) {
-        RectLongND x = (RectLongND) r;
+        var x = (RectLongND) r;
 
-        int dim = dim();
-        long[] newMin = new long[dim];
-        long[] newMax = new long[dim];
-        for (int i = 0; i < dim; i++) {
+        var dim = dim();
+        var newMin = new long[dim];
+        var newMax = new long[dim];
+        for (var i = 0; i < dim; i++) {
             newMin[i] = Math.min(min.coord[i], x.min.coord[i]);
             newMax[i] = Math.max(max.coord[i], x.max.coord[i]);
         }
@@ -115,8 +115,8 @@ public class RectLongND implements HyperRegion, Serializable, Comparable<RectLon
     }
 
     public double centerF(int dim) {
-        long min = this.min.coord[dim];
-        long max = this.max.coord[dim];
+        var min = this.min.coord[dim];
+        var max = this.max.coord[dim];
         if ((min == Long.MIN_VALUE) && (max == Long.MAX_VALUE))
             return 0;
         if (min == Long.MIN_VALUE)
@@ -128,11 +128,11 @@ public class RectLongND implements HyperRegion, Serializable, Comparable<RectLon
     }
 
     public LongND center() {
-        int dim = dim();
-        long[] c = new long[10];
-        int count = 0;
-        for (int i = 0; i < dim; i++) {
-            long l = (min.coord(i) + max.coord(i)) / 2;
+        var dim = dim();
+        var c = new long[10];
+        var count = 0;
+        for (var i = 0; i < dim; i++) {
+            var l = (min.coord(i) + max.coord(i)) / 2;
             if (c.length == count) c = Arrays.copyOf(c, count * 2);
             c[count++] = l;
         }
@@ -171,20 +171,20 @@ public class RectLongND implements HyperRegion, Serializable, Comparable<RectLon
         if (this == o) return true;
         if (o == null /*|| getClass() != o.getClass()*/) return false;
 
-        RectLongND r = (RectLongND) o;
+        var r = (RectLongND) o;
         return min.equals(r.min) && max.equals(r.max);
     }
 
     @Override
     public int compareTo(RectLongND o) {
-        int a = min.compareTo(o.min);
+        var a = min.compareTo(o.min);
         if (a != 0) return a;
         return max.compareTo(o.max);
     }
 
     @Override
     public int hashCode() {
-        int result = min.hashCode();
+        var result = min.hashCode();
         result = 31 * result + max.hashCode();
         return result;
     }

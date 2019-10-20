@@ -38,10 +38,10 @@ public class RBM {
 
         if (W == null) {
             this.W = new double[this.n_hidden][this.n_visible];
-            double a = 1.0; 
+            var a = 1.0;
 
-            for (int i = 0; i < this.n_hidden; i++) {
-                for (int j = 0; j < this.n_visible; j++) {
+            for (var i = 0; i < this.n_hidden; i++) {
+                for (var j = 0; j < this.n_visible; j++) {
                     this.W[i][j] = utils.uniform(-a, a, rng);
                 }
             }
@@ -51,14 +51,14 @@ public class RBM {
 
         if (hbias == null) {
             this.hbias = new double[this.n_hidden];
-            for (int i = 0; i < this.n_hidden; i++) this.hbias[i] = 0;
+            for (var i = 0; i < this.n_hidden; i++) this.hbias[i] = 0;
         } else {
             this.hbias = hbias;
         }
 
         if (vbias == null) {
             this.vbias = new double[this.n_visible];
-            for (int i = 0; i < this.n_visible; i++) this.vbias[i] = 0;
+            for (var i = 0; i < this.n_visible; i++) this.vbias[i] = 0;
         } else {
             this.vbias = vbias;
         }
@@ -71,12 +71,12 @@ public class RBM {
         /* CD-k */
         sample_h_given_v(input, ph_mean, ph_sample);
 
-        for (int step = 0; step < k; step++) {
+        for (var step = 0; step < k; step++) {
             gibbs_hvh(step == 0 ? ph_sample : nh_samples, nv_means, nv_samples, nh_means, nh_samples);
         }
 
-        for (int i = 0; i < n_hidden; i++) {
-            for (int j = 0; j < n_visible; j++) {
+        for (var i = 0; i < n_hidden; i++) {
+            for (var j = 0; j < n_visible; j++) {
                 
                 W[i][j] += lr * (ph_mean[i] * input[j] - nh_means[i] * nv_samples[j]) /* / N */;
             }
@@ -84,7 +84,7 @@ public class RBM {
         }
 
 
-        for (int i = 0; i < n_visible; i++) {
+        for (var i = 0; i < n_visible; i++) {
             vbias[i] += lr * (input[i] - nv_samples[i]) /* / N*/;
         }
 
@@ -92,22 +92,22 @@ public class RBM {
 
 
     public void sample_h_given_v(double[] v0_sample, double[] mean, double[] sample) {
-        for (int i = 0; i < n_hidden; i++) {
+        for (var i = 0; i < n_hidden; i++) {
             mean[i] = propup(v0_sample, W[i], hbias[i]);
             sample[i] = (int) utils.binomial(1, mean[i], rng);
         }
     }
 
     public void sample_v_given_h(double[] h0_sample, double[] mean, double[] sample) {
-        for (int i = 0; i < n_visible; i++) {
+        for (var i = 0; i < n_visible; i++) {
             mean[i] = propdown(h0_sample, i, vbias[i]);
             sample[i] = (int) utils.binomial(1, mean[i], rng);
         }
     }
 
     public double propup(double[] v, double[] w, double b) {
-        int bound = n_visible;
-        double pre_sigmoid_activation = IntStream.range(0, bound).mapToDouble(j -> w[j] * v[j]).sum();
+        var bound = n_visible;
+        var pre_sigmoid_activation = IntStream.range(0, bound).mapToDouble(j -> w[j] * v[j]).sum();
         pre_sigmoid_activation += b;
         return activate(pre_sigmoid_activation);
     }
@@ -117,8 +117,8 @@ public class RBM {
     }
 
     public double propdown(double[] h, int i, double b) {
-        int bound = n_hidden;
-        double pre_sigmoid_activation = IntStream.range(0, bound).mapToDouble(j -> W[j][i] * h[j]).sum();
+        var bound = n_hidden;
+        var pre_sigmoid_activation = IntStream.range(0, bound).mapToDouble(j -> W[j][i] * h[j]).sum();
         pre_sigmoid_activation += b;
         return activate(pre_sigmoid_activation);
     }
@@ -133,13 +133,13 @@ public class RBM {
 
     public void reconstruct(double[] v, double[] reconstructed_v) {
 
-        for (int i = 0; i < n_hidden; i++) {
+        for (var i = 0; i < n_hidden; i++) {
             h[i] = propup(v, W[i], hbias[i]);
         }
 
-        for (int i = 0; i < n_visible; i++) {
-            double a = 0.0;
-            for (int j = 0; j < n_hidden; j++) {
+        for (var i = 0; i < n_visible; i++) {
+            var a = 0.0;
+            for (var j = 0; j < n_hidden; j++) {
                 a += W[j][i] * h[j];
             }
             a += vbias[i];

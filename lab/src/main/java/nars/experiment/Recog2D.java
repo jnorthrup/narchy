@@ -80,8 +80,8 @@ public class Recog2D extends GameX {
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
 
-        int sh = 9;
-        int sw = 7;
+        var sh = 9;
+        var sw = 7;
         sp = senseCamera(
                 $.p(id,$.the("x"))
 
@@ -100,13 +100,13 @@ public class Recog2D extends GameX {
 //                outs, nar);
 //        train = null;
 
-        Reward r = rewardNormalized("correct", -1, +1, compose(() -> {
+        var r = rewardNormalized("correct", -1, +1, compose(() -> {
             double error = 0;
             double pcSum = 0;
-            for (int i = 0; i < maxImages; i++) {
-                BeliefVector.Neuron ni = this.outs.neurons[i];
+            for (var i = 0; i < maxImages; i++) {
+                var ni = this.outs.neurons[i];
                 ni.update();
-                float pc = ni.predictedConf;
+                var pc = ni.predictedConf;
                 pcSum += pc;
                 error += ni.error * pc;
             }
@@ -132,8 +132,8 @@ public class Recog2D extends GameX {
 
 //        int history = 256;
 
-        int bound = tv.concepts.length;
-        Gridding g = new Gridding(
+        var bound = tv.concepts.length;
+        var g = new Gridding(
 
 //                p = new Plot2D(history, Plot2D.Line).addAt("Reward", () ->
 //                        reward
@@ -149,17 +149,17 @@ public class Recog2D extends GameX {
                     @Override
                     protected void paintIt(GL2 gl, ReSurface r) {
                         Concept c = tv.concepts[i];
-                        BeliefVector.Neuron nn = tv.neurons[i];
+                        var nn = tv.neurons[i];
 
                         float freq;
 
-                        Truth t = nar.beliefTruth(c, nar.time());
+                        var t = nar.beliefTruth(c, nar.time());
                         if (t != null) {
-                            float conf = t.conf();
+                            var conf = t.conf();
                             freq = t.freq();
                         } else {
 //                            conf = nar.confMin.floatValue();
-                            float defaultFreq =
+                            var defaultFreq =
                                     0.5f;
 
                             freq = defaultFreq;
@@ -177,7 +177,7 @@ public class Recog2D extends GameX {
                         Draw.rect(bounds, gl);
 
                         if (tv.verify) {
-                            float error = nn.error;
+                            var error = nn.error;
                             if (error != error) {
 
 
@@ -217,9 +217,9 @@ public class Recog2D extends GameX {
 
     @Deprecated
     public List<Surface> beliefTableCharts(NAR nar, Collection<? extends Termed> terms, long window) {
-        long[] btRange = new long[2];
+        var btRange = new long[2];
         onFrame(() -> {
-            long now = nar.time();
+            var now = nar.time();
             btRange[0] = now - window;
             btRange[1] = now + window;
         });
@@ -237,11 +237,11 @@ public class Recog2D extends GameX {
 
     private void redraw() {
         g.clearRect(0, 0, w, h);
-        FontMetrics fontMetrics = g.getFontMetrics();
+        var fontMetrics = g.getFontMetrics();
 
-        String s = String.valueOf((char) ('0' + image));
+        var s = String.valueOf((char) ('0' + image));
 
-        Rectangle2D sb = fontMetrics.getStringBounds(s, g);
+        var sb = fontMetrics.getStringBounds(s, g);
 
 
         g.drawString(s, Math.round(w / 2f - sb.getCenterX()), Math.round(h / 2f - sb.getCenterY()));
@@ -252,7 +252,7 @@ public class Recog2D extends GameX {
 
         GameX.Companion.initFn(FPS*2, (n) -> {
 
-            Recog2D a = new Recog2D(n);
+            var a = new Recog2D(n);
             n.add(a);
             SpaceGraph.window(a.conceptTraining(a.outs, n), 800, 600);
 
@@ -370,8 +370,8 @@ public class Recog2D extends GameX {
             }
 
             protected void update() {
-                float a = this.predictedFreq;
-                float e = this.expectedFreq;
+                var a = this.predictedFreq;
+                var e = this.expectedFreq;
                 if (e != e) {
                     this.error = 0;
                 } else if (a != a) {
@@ -384,14 +384,14 @@ public class Recog2D extends GameX {
 
         public float[] expected(float[] output) {
             output = sized(output);
-            for (int i = 0; i < concepts.length; i++)
+            for (var i = 0; i < concepts.length; i++)
                 output[i] = expected(i);
             return output;
         }
 
         public float[] actual(float[] output) {
             output = sized(output);
-            for (int i = 0; i < concepts.length; i++)
+            for (var i = 0; i < concepts.length; i++)
                 output[i] = actual(i);
             return output;
         }
@@ -418,14 +418,14 @@ public class Recog2D extends GameX {
             this.states = maxStates;
             this.neurons = new Neuron[maxStates];
             this.concepts = IntStream.range(0, maxStates).mapToObj(i -> {
-                        Term tt = namer.apply(i);
+                var tt = namer.apply(i);
 
-                        Neuron n = neurons[i] = new Neuron();
+                var n = neurons[i] = new Neuron();
 
                         return a.action(tt, (bb, x) -> {
 
 
-                            float predictedFreq = x != null ? x.freq() : 0.5f;
+                            var predictedFreq = x != null ? x.freq() : 0.5f;
 
 
                             n.actual(predictedFreq, x != null ? x.conf() : 0);
@@ -456,12 +456,12 @@ public class Recog2D extends GameX {
 
         void expect(IntToFloatFunction stateValue) {
 
-            for (int i = 0; i < states; i++)
+            for (var i = 0; i < states; i++)
                 neurons[i].expect(stateValue.valueOf(i));
         }
 
         public void expect(int onlyStateToBeOn) {
-            float offValue =
+            var offValue =
                     0f;
 
 

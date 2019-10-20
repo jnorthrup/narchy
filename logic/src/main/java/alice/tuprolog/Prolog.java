@@ -111,7 +111,7 @@ public class Prolog {
     public Prolog(String... libs) {
         this(new ConcurrentHashClauseIndex());
         if (libs != null) {
-            for (String lib : libs) {
+            for (var lib : libs) {
                 try {
                     addLibrary(lib);
                 } catch (InvalidLibraryException e) {
@@ -155,7 +155,7 @@ public class Prolog {
      * Gets the last Element of the path list
      */
     public String getCurrentDirectory() {
-        String directory = "";
+        var directory = "";
         if (absolutePathList.isEmpty()) {
             directory = /*this.lastPath != null ? this.lastPath : */System.getProperty("user.dir");
         } else {
@@ -176,9 +176,9 @@ public class Prolog {
 
         Consumer<Theory> ifSuccessful;
         if (!onTheory.isEmpty()) {
-            Theory oldTh = getTheory();
+            var oldTh = getTheory();
             ifSuccessful = (newTheory) -> {
-                for (TheoryListener tl : onTheory) {
+                for (var tl : onTheory) {
                     tl.theoryChanged(new TheoryEvent(this, oldTh, newTheory));
                 }
             };
@@ -188,7 +188,7 @@ public class Prolog {
 
         theories.consult(th, true, null);
         theories.solveTheoryGoal();
-        Theory newTh = getTheory();
+        var newTh = getTheory();
 
         if (ifSuccessful != null)
             ifSuccessful.accept(newTh);
@@ -324,7 +324,7 @@ public class Prolog {
 
         this.clearSinfoSetOf();
 
-        Solution sinfo = run.solve(g);
+        var sinfo = run.solve(g);
 
         solution(this, sinfo);
 
@@ -406,7 +406,7 @@ public class Prolog {
             synchronized (run) {
                 result = run.solveNext();
             }
-            Solution sinfo = result;
+            var sinfo = result;
             solution(this, sinfo);
             return sinfo;
         } else
@@ -494,10 +494,10 @@ public class Prolog {
     protected void spy(State s, PrologSolve e) {
 
         if (spy) {
-            PrologContext ctx = e.currentContext;
+            var ctx = e.currentContext;
             if (ctx != null) {
-                int i = 0;
-                String g = "-";
+                var i = 0;
+                var g = "-";
                 if (ctx.fatherCtx != null) {
                     i = ctx.depth - 1;
                     g = ctx.fatherCtx.currentGoal.toString();
@@ -514,9 +514,9 @@ public class Prolog {
      */
     public void exception(Throwable e) {
         if (exception && !onException.isEmpty()) {
-            ExceptionEvent e1 = new ExceptionEvent(this, e);
+            var e1 = new ExceptionEvent(this, e);
 
-            for (ExceptionListener exceptionListener : onException)
+            for (var exceptionListener : onException)
                 exceptionListener.onException(e1);
 
             logger.error("{} {}", e1.getSource(), e1.getException());
@@ -530,10 +530,10 @@ public class Prolog {
      */
     public void output(String m) {
 
-        int outputListenersSize = onOut.size();
+        var outputListenersSize = onOut.size();
         if (outputListenersSize > 0) {
-            OutputEvent e = new OutputEvent(this, m);
-            for (OutputListener outputListener : onOut) {
+            var e = new OutputEvent(this, m);
+            for (var outputListener : onOut) {
                 outputListener.onOutput(e);
             }
         }
@@ -697,7 +697,7 @@ public class Prolog {
      * @param e the event
      */
     private void notifySpy(SpyEvent e) {
-        for (SpyListener spyListener : onSpy) {
+        for (var spyListener : onSpy) {
             spyListener.onSpy(e);
         }
     }
@@ -708,7 +708,7 @@ public class Prolog {
      * @param e the event
      */
     protected void notifyLoadedLibrary(/* TODO Supplier< */ LibraryEvent e) {
-        for (LibraryListener ll : onLibrary) {
+        for (var ll : onLibrary) {
             ll.libraryLoaded(e);
         }
     }
@@ -719,7 +719,7 @@ public class Prolog {
      * @param e the event
      */
     protected void notifyUnloadedLibrary(LibraryEvent e) {
-        for (LibraryListener ll : onLibrary) {
+        for (var ll : onLibrary) {
             ll.libraryUnloaded(e);
         }
     }
@@ -731,9 +731,9 @@ public class Prolog {
      */
     protected void solution(Prolog source, Solution info) {
 
-        int qls = onQuery.size();
+        var qls = onQuery.size();
         if (qls > 0) {
-            QueryEvent e = new QueryEvent(source, info);
+            var e = new QueryEvent(source, info);
             for (int i = 0, queryListenersSize = qls; i < queryListenersSize; i++) {
                 onQuery.get(i).accept(e);
             }
@@ -781,7 +781,7 @@ public class Prolog {
     }
 
     public boolean isTrue(Term s) {
-        Solution r = solve(s);
+        var r = solve(s);
         return r.isSuccess();
     }
 
@@ -933,7 +933,7 @@ public class Prolog {
 
                 @Override
                 public Term next() {
-                    Term next = this.next;
+                    var next = this.next;
 
                     try {
                         this.next = solveNext().getSolutionOrNull();

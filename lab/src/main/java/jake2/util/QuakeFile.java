@@ -56,13 +56,13 @@ public class QuakeFile extends RandomAccessFile {
 
     /** Reads a length specified string from a file. */
     public String readString() throws IOException {
-        int len = readInt();
+        var len = readInt();
 
         switch (len) {
             case -1: return null;
             case 0: return "";
             default:
-                byte[] bb = new byte[len];
+                var bb = new byte[len];
                 super.read(bb, 0, len);
                 return new String(bb, 0, len);
         }
@@ -75,7 +75,7 @@ public class QuakeFile extends RandomAccessFile {
             return;
         }
 
-        int l = s.length();
+        var l = s.length();
         writeInt(l);
         if (l != 0)
             writeBytes(s);
@@ -95,7 +95,7 @@ public class QuakeFile extends RandomAccessFile {
      */
 
     public edict_t readEdictRef() throws IOException {
-        int i = readInt();
+        var i = readInt();
 
         
         if (i < 0)
@@ -116,7 +116,7 @@ public class QuakeFile extends RandomAccessFile {
         if (a == null)
             writeString(null);
         else {
-            String str = a.getID();
+            var str = a.getID();
             if (a == null) {
                 Com.DPrintf("writeAdapter: invalid Adapter id for " + a + '\n');
             }
@@ -129,7 +129,7 @@ public class QuakeFile extends RandomAccessFile {
         if (readInt() != 3988)
             Com.DPrintf("wrong read position: readadapter 3988 \n");
 
-        String id = readString();
+        var id = readString();
 
         if (id == null) {
             
@@ -149,7 +149,7 @@ public class QuakeFile extends RandomAccessFile {
 
     /** Reads the item index and returns the game item. */
     public gitem_t readItem() throws IOException {
-        int ndx = readInt();
+        var ndx = readInt();
         if (ndx == -1)
             return null;
         else

@@ -83,11 +83,11 @@ abstract class AbstractUnitSubterm implements Subterms {
 
     @Override
     public @Nullable Term subSub(int start, int end, byte[] path) {
-        byte a = path[start];
+        var a = path[start];
         if (a != 0)
             return null;
         else {
-            Term s = sub();
+            var s = sub();
             return end - start == 1 ?
                     s :
                     s.subPath(start + 1, end);
@@ -103,7 +103,7 @@ abstract class AbstractUnitSubterm implements Subterms {
     public boolean equals(Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof Subterms)) return false;
-        Subterms s = (Subterms) obj;
+        var s = (Subterms) obj;
         return
                 (s.subs() == 1) &&
                         (sub().equals(s.sub(0)));
@@ -148,7 +148,7 @@ abstract class AbstractUnitSubterm implements Subterms {
 
     @Override
     public boolean isNormalized() {
-        Term s = sub();
+        var s = sub();
         if (s instanceof Variable) {
             return s instanceof NormalizedVariable && ((NormalizedVariable) s).id() == 1;
         }

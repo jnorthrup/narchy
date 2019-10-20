@@ -14,7 +14,7 @@ public class FloatPolarNormalizer extends FloatNormalizer {
     public float valueOf(float raw) {
         if (raw==raw) {
             updateRange(Math.abs(raw));
-            float range = Math.max(Math.abs(min), Math.abs(max));
+            var range = Math.max(Math.abs(min), Math.abs(max));
             return normalize(raw, min = -range, max = range);
         } else {
             return Float.NaN;

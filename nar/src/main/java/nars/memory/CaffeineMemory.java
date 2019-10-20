@@ -95,7 +95,7 @@ public class CaffeineMemory extends Memory implements /*CacheLoader<Term, Concep
 
 	@Override
 	public void forEach(Consumer<? super Concept> c) {
-		for (Concept concept : concepts.asMap().values()) {
+		for (var concept : concepts.asMap().values()) {
 			c.accept(concept);
 		}
 	}
@@ -108,7 +108,7 @@ public class CaffeineMemory extends Memory implements /*CacheLoader<Term, Concep
 
 	@Override
 	public Concept get(Term x, boolean createIfMissing) {
-		Concept y = createIfMissing ?
+		var y = createIfMissing ?
 			concepts.get(x, nar.conceptBuilder::apply) :
 			concepts.getIfPresent(x);
 
@@ -122,7 +122,7 @@ public class CaffeineMemory extends Memory implements /*CacheLoader<Term, Concep
 	@Override
 	public String summary() {
 
-		String s = concepts.estimatedSize() + " concepts, ";
+		var s = concepts.estimatedSize() + " concepts, ";
 
 		if (NAL.DEBUG)
 			s += ' ' + concepts.stats().toString();

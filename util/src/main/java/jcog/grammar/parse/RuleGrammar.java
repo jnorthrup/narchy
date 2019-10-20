@@ -78,16 +78,16 @@ public class RuleGrammar extends Grammar {
 	}
 
 	private static Seq seq(Parser... parsers) {
-		Seq seq = new Seq();
-		for (Parser each : parsers) {
+		var seq = new Seq();
+		for (var each : parsers) {
 			seq.get(each);
 		}
 		return seq;
 	}
 
 	private static Alternation alt(Parser... parsers) {
-		Alternation alt = new Alternation();
-		for (Parser each : parsers) {
+		var alt = new Alternation();
+		for (var each : parsers) {
 			alt.get(each);
 		}
 		return alt;
@@ -99,8 +99,8 @@ public class RuleGrammar extends Grammar {
 
 	static class SequenceAssembler implements IAssembler {
 		public void accept(Assembly a) {
-			Parser last = (Parser) a.pop();
-			Parser butlast = (Parser) a.pop();
+			var last = (Parser) a.pop();
+			var butlast = (Parser) a.pop();
 			Seq seq;
 			if (last instanceof Seq) {
 				seq = (Seq) last;
@@ -114,8 +114,8 @@ public class RuleGrammar extends Grammar {
 
 	static class AlternationAssembler implements IAssembler {
 		public void accept(Assembly a) {
-			Parser last = (Parser) a.pop();
-			Parser butlast = (Parser) a.pop();
+			var last = (Parser) a.pop();
+			var butlast = (Parser) a.pop();
 			Alternation alt;
 			if (butlast instanceof Alternation) {
 				alt = (Alternation) butlast;
@@ -131,8 +131,8 @@ public class RuleGrammar extends Grammar {
 		public void accept(Assembly a) {
 			if (a.elementsRemaining() > 0)
 				return;
-			Parser parser = (Parser) a.pop();
-			String ruleName = ((Token) a.pop()).sval();
+			var parser = (Parser) a.pop();
+			var ruleName = ((Token) a.pop()).sval();
 			targetGrammar.addRule(ruleName, parser);
 			a.push(ruleName);
 		}
@@ -140,9 +140,9 @@ public class RuleGrammar extends Grammar {
 
 	class CaselessAssembler implements IAssembler {
 		public void accept(Assembly a) {
-			String quoted = ((Token) a.pop()).sval();
-			String caseless = quoted.substring(1, quoted.length() - 1);
-			CaselessLiteral constant = new CaselessLiteral(caseless);
+			var quoted = ((Token) a.pop()).sval();
+			var caseless = quoted.substring(1, quoted.length() - 1);
+			var constant = new CaselessLiteral(caseless);
 			if (targetGrammar.areAllConstantsDiscarded())
 				constant.ok();
 			a.push(constant);
@@ -151,16 +151,16 @@ public class RuleGrammar extends Grammar {
 
 	static class DiscardAssembler implements IAssembler {
 		public void accept(Assembly a) {
-			Terminal t = (Terminal) a.getStack().peek();
+			var t = (Terminal) a.getStack().peek();
 			t.ok();
 		}
 	}
 
 	class SymbolAssembler implements IAssembler {
 		public void accept(Assembly a) {
-			String quoted = ((Token) a.pop()).sval();
-			String symbol = quoted.substring(1, quoted.length() - 1);
-			Symbol constant = new Symbol(symbol);
+			var quoted = ((Token) a.pop()).sval();
+			var symbol = quoted.substring(1, quoted.length() - 1);
+			var constant = new Symbol(symbol);
 			if (targetGrammar.areAllConstantsDiscarded())
 				constant.ok();
 			a.push(constant);
@@ -169,14 +169,14 @@ public class RuleGrammar extends Grammar {
 
 	class TerminalAssembler implements IAssembler {
 		public void accept(Assembly a) {
-			String terminalType = ((Token) a.pop()).sval();
+			var terminalType = ((Token) a.pop()).sval();
 			a.push(targetGrammar.terminal(terminalType));
 		}
 	}
 
 	class ReferenceAssembler implements IAssembler {
 		public void accept(Assembly a) {
-			String ruleName = ((Token) a.pop()).sval();
+			var ruleName = ((Token) a.pop()).sval();
 			a.push(new RuleReference(ruleName, targetGrammar));
 		}
 	}
@@ -189,7 +189,7 @@ public class RuleGrammar extends Grammar {
 		}
 
 		public void accept(Assembly a) {
-			Parser atomicStep = (Parser) a.pop();
+			var atomicStep = (Parser) a.pop();
 			a.push(new Repetition(atomicStep).requireMatches(requiredMatches));
 		}
 	}
@@ -206,8 +206,8 @@ class CaselessLiteralDef extends QuotedString {
 	protected boolean qualifies(Object o) {
 		if (!super.qualifies(o))
 			return false;
-		Token t = (Token) o;
-		String quotedString = t.sval();
+		var t = (Token) o;
+		var quotedString = t.sval();
         return CASELESS.matcher(quotedString).matches();
     }
 
@@ -232,8 +232,8 @@ class SymbolDef extends QuotedString {
 	protected boolean qualifies(Object o) {
 		if (!super.qualifies(o))
 			return false;
-		Token t = (Token) o;
-		String quotedString = t.sval();
+		var t = (Token) o;
+		var quotedString = t.sval();
         return SYMBOL.matcher(quotedString).matches();
     }
 

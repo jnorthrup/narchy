@@ -55,13 +55,13 @@ public class Triplet<F, S, T> {
         if (getClass() != obj.getClass())
             return false;
 
-        Triplet<F, S, T> other = (Triplet<F, S, T>) obj;
+        var other = (Triplet<F, S, T>) obj;
         return Objects.equals(first, other.first) && Objects.equals(second, other.second) && Objects.equals(third, other.third);
     }
 
     @Override
     public int hashCode() {
-        int hash = 7;
+        var hash = 7;
         hash = 29 * hash + (this.first != null ? this.first.hashCode() : 0);
         hash = 29 * hash + (this.second != null ? this.second.hashCode() : 0);
         hash = 29 * hash + (this.third != null ? this.third.hashCode() : 0);

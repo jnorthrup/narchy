@@ -62,12 +62,12 @@ public abstract class SpaceWidget<T> extends SurfacedCuboid<T> {
     private static void render(GL2 gl, SimpleSpatial src, float twist, Iterable<? extends EDraw> ee) {
 
 
-        Quat4f tmpQ = new Quat4f();
+        var tmpQ = new Quat4f();
         for (EDraw e : ee) {
-            float width = e.width;
-            float thresh = 0.1f;
+            var width = e.width;
+            var thresh = 0.1f;
             if (width <= thresh) {
-                float aa = e.a * (width / thresh);
+                var aa = e.a * (width / thresh);
                 if (aa < 1 / 256f)
                     continue;
                 gl.glColor4f(e.r, e.g, e.b, aa /* fade opacity */);
@@ -110,7 +110,7 @@ public abstract class SpaceWidget<T> extends SurfacedCuboid<T> {
     @FunctionalInterface
     public interface SimpleNodeVis<X extends SpaceWidget<?>> extends Consumer<List<X>> {
         default void accept(List<X> l) {
-            for (X x : l) {
+            for (var x : l) {
                 each(x);
             }
         }

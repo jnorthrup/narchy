@@ -28,11 +28,11 @@ public class TimeRange extends Longerval implements HyperRegion {
 
     @Override
     public boolean intersects(HyperRegion x) {
-        long s = this.start;
+        var s = this.start;
         if (s == Tense.ETERNAL)
             return true;
 
-        LongInterval t = (LongInterval)x;
+        var t = (LongInterval)x;
         return LongInterval.intersectsSafe(s, end, t.start(), t.end());
     }
 
@@ -40,7 +40,7 @@ public class TimeRange extends Longerval implements HyperRegion {
     @Override
     public boolean contains(HyperRegion x) {
         //return ((LongInterval)x).containedBy(start, end);
-        LongInterval t = ((LongInterval) x);
+        var t = ((LongInterval) x);
         return containsSafe(t.start(), t.end());
     }
 

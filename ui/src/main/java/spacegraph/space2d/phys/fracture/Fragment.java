@@ -49,23 +49,23 @@ public class Fragment extends Polygon {
      * vrcholov
      */
     public void resort() {
-        int size = size();
-        double[] comparer = new double[10];
-        int count = 0;
-        for (int i1 = 0; i1 < size; i1++) {
-            double angle = PlatformMathUtils.angle(get(i1), focus);
+        var size = size();
+        var comparer = new double[10];
+        var count = 0;
+        for (var i1 = 0; i1 < size; i1++) {
+            var angle = PlatformMathUtils.angle(get(i1), focus);
             if (comparer.length == count) comparer = Arrays.copyOf(comparer, count * 2);
             comparer[count++] = angle;
         }
         comparer = Arrays.copyOfRange(comparer, 0, count);
-        for (int i = 0; i != size; ++i) {
-            int maxIndex = i;
-            for (int j = i + 1; j != size; ++j) {
+        for (var i = 0; i != size; ++i) {
+            var maxIndex = i;
+            for (var j = i + 1; j != size; ++j) {
                 if (comparer[j] < comparer[maxIndex]) {
                     maxIndex = j;
                 }
             }
-            double swap = comparer[i];
+            var swap = comparer[i];
             comparer[i] = comparer[maxIndex];
             comparer[maxIndex] = swap;
             swap(i, maxIndex);
@@ -94,8 +94,8 @@ public class Fragment extends Polygon {
      * @param j
      */
     private void swap(int i, int j) {
-        v2[] a = this.vertices;
-        v2 item = a[i];
+        var a = this.vertices;
+        var item = a[i];
         a[i] = a[j];
         a[j] = item;
     }

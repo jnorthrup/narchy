@@ -24,7 +24,7 @@ public abstract class RectAnimator implements Animator<MutableRectFloat> {
         @Override
         protected void animate(MutableRectFloat from, MutableRectFloat to, float dt) {
 
-            float r = (float) Math.exp(-dt * duration  /* ? */); //TODO verify
+            var r = (float) Math.exp(-dt * duration  /* ? */); //TODO verify
             from.x = Util.lerpSafe(r, from.x, to.x);
             from.y = Util.lerpSafe(r, from.y, to.y);
             from.size(
@@ -53,7 +53,7 @@ public abstract class RectAnimator implements Animator<MutableRectFloat> {
     @Override public final boolean animate(float dt/*..*/) {
 
 
-        ObjectFloatPair<MutableRectFloat> n = next.getAndSet(null);
+        var n = next.getAndSet(null);
         if (n!=null) {
             if (target.setIfChanged(n.getOne(), Spatialization.EPSILONf)) {
                 this.duration = n.getTwo();

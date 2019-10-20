@@ -131,9 +131,9 @@ public abstract class TerminalEmulator {
         }
         if (len > buflen)
             len = buflen;
-        int foo = len;
+        var foo = len;
         while (len > 0) {
-            byte tmp = buf[bufs++];
+            var tmp = buf[bufs++];
             if (0x20 <= tmp && tmp <= 0x7f) {
                 buflen--;
                 len--;
@@ -297,7 +297,7 @@ public abstract class TerminalEmulator {
 
     void tab() {
         term.draw_cursor();
-        int tab = 8;
+        var tab = 8;
         x = (((x / char_width) / tab + 1) * tab * char_width);
         if (x >= term_width * char_width) {
             x = 0;
@@ -338,10 +338,10 @@ public abstract class TerminalEmulator {
 
         check_region();
 
-        int rx = x;
-        int ry = y;
+        var rx = x;
+        var ry = y;
 
-        byte b = getChar();
+        var b = getChar();
         term.draw_cursor();
 
         int w;
@@ -355,7 +355,7 @@ public abstract class TerminalEmulator {
             w = char_width * 2;
 		} else {
             pushChar(b);
-            int foo = getASCII(term_width - (x / char_width));
+            var foo = getASCII(term_width - (x / char_width));
             if (foo != 0) {
                 
                 
@@ -371,7 +371,7 @@ public abstract class TerminalEmulator {
             x += (char_width * foo);
             w = char_width * foo;
 		}
-        int h = char_height;
+        var h = char_height;
         term.redraw(rx, ry - char_height, w, h);
         term.setCursor(x, y);
         term.draw_cursor();

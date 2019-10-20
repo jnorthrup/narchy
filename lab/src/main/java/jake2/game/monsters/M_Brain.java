@@ -1085,7 +1085,7 @@ public class M_Brain {
             if (GameBase.skill.value == 3)
                 return;
 
-            float r = Lib.random();
+            var r = Lib.random();
             if (r < 0.33) {
                 game_import_t.sound(self, Defines.CHAN_VOICE, sound_pain1, 1,
                         Defines.ATTN_NORM, 0);

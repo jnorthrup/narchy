@@ -175,7 +175,7 @@ public final class SHA1 extends BlockMessageDigest implements Cloneable {
      */
     @Override
     public byte[] engineDigest(byte[] in, int length) {
-        byte[] b = java_digest(in, length);
+        var b = java_digest(in, length);
         engineReset();
         return b;
     }
@@ -200,21 +200,19 @@ public final class SHA1 extends BlockMessageDigest implements Cloneable {
 
         byte2int(tmp, 0, data, 0, (DATA_LENGTH / 4) - 2);
 
-        
-        
-        
-        int bc = bitcount();
+
+        var bc = bitcount();
         data[14] = 0;
         data[15] = bc;
 
         transform(data);
 
-        byte[] buf = new byte[HASH_LENGTH];
+        var buf = new byte[HASH_LENGTH];
 
-        
-        int off = 0;
-        for (int i = 0; i < HASH_LENGTH / 4; ++i) {
-            int d = digest[i];
+
+        var off = 0;
+        for (var i = 0; i < HASH_LENGTH / 4; ++i) {
+            var d = digest[i];
             buf[off++] = (byte) (d >>> 24);
             buf[off++] = (byte) (d >>> 16);
             buf[off++] = (byte) (d >>> 8);
@@ -224,16 +222,16 @@ public final class SHA1 extends BlockMessageDigest implements Cloneable {
     }
 
     private void transform(int[] X) {
-        int A = digest[0];
-        int B = digest[1];
-        int C = digest[2];
-        int D = digest[3];
-        int E = digest[4];
+        var A = digest[0];
+        var B = digest[1];
+        var C = digest[2];
+        var D = digest[3];
+        var E = digest[4];
 
-        int[] W = w;
+        var W = w;
         System.arraycopy(X, 0, W, 0, 16);
-        for (int i = 16; i < 80; i++) {
-            int j = W[i - 16] ^ W[i - 14] ^ W[i - 8] ^ W[i - 3];
+        for (var i = 16; i < 80; i++) {
+            var j = W[i - 16] ^ W[i - 14] ^ W[i - 8] ^ W[i - 3];
             W[i] = j;
             W[i] = (j << 1) | (j >>> 31);
         }

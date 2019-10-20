@@ -34,11 +34,11 @@ public class Interleaver {
     public static final int kSkipFactor = 4;
 
     public static void interleave(byte[] items) {
-        int jump = (int) Math.ceil(items.length / kSkipFactor);
-        byte[] result = new byte[items.length];
-        int k = 0;
-        for (int i = 0; i < jump; ++i) {
-            for (int j = i; j < items.length; j += jump) {
+        var jump = (int) Math.ceil(items.length / kSkipFactor);
+        var result = new byte[items.length];
+        var k = 0;
+        for (var i = 0; i < jump; ++i) {
+            for (var j = i; j < items.length; j += jump) {
                 result[k++] = items[j];
             }
         }
@@ -46,11 +46,11 @@ public class Interleaver {
     }
 
     public static void deinterleave(byte[] items) {
-        int jump = (int) Math.ceil(items.length / kSkipFactor);
-        byte[] result = new byte[items.length];
-        int k = 0;
-        for (int i = 0; i < jump; ++i) {
-            for (int j = i; j < items.length; j += jump) {
+        var jump = (int) Math.ceil(items.length / kSkipFactor);
+        var result = new byte[items.length];
+        var k = 0;
+        for (var i = 0; i < jump; ++i) {
+            for (var j = i; j < items.length; j += jump) {
                 result[j] = items[k++];
             }
         }

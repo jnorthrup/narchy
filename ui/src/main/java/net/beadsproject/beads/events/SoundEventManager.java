@@ -27,10 +27,10 @@ class SoundEventManager {
     @SuppressWarnings("unchecked")
     public static UGen play(UGen output, Map<String, Object> parameters) {
         try {
-            Class<? extends SoundEvent> soundEventClass = (Class<? extends SoundEvent>) parameters.get("class");
+            var soundEventClass = (Class<? extends SoundEvent>) parameters.get("class");
             if (soundEventClass == null) System.out.println("could not find class for SoundEvent");
-            Method playMethod = soundEventClass.getMethod("play", UGen.class, Map.class);
-            SoundEvent event = soundEventClass.getConstructor().newInstance();
+            var playMethod = soundEventClass.getMethod("play", UGen.class, Map.class);
+            var event = soundEventClass.getConstructor().newInstance();
             return (UGen) playMethod.invoke(event, output, parameters);
         } catch (Exception e) {
             e.printStackTrace();

@@ -33,7 +33,7 @@ public class MIDITaskifier {
     float[] volume = new float[128];
 
     public MIDITaskifier() {
-        NAR nar = NARS.threadSafe();
+        var nar = NARS.threadSafe();
         nar.termVolMax.set(16);
 
 
@@ -43,15 +43,13 @@ public class MIDITaskifier {
                 System.err.println(t.proof());
             }
         });
-        
-        
 
 
-        MidiInReceiver midi = MIDI(nar);
+        var midi = MIDI(nar);
 
         Arrays.fill(volume, Float.NaN);
 
-        SoNAR s = new SoNAR(nar);
+        var s = new SoNAR(nar);
         
 
 
@@ -62,26 +60,22 @@ public class MIDITaskifier {
 
 
         List<Concept> keys = $.newArrayList();
-        for (int i = 36; i <= 51; i++) {
-            Term key =
+        for (var i = 36; i <= 51; i++) {
+            var key =
                     channelKey(9, i);
 
-            Term keyTerm = $.p(key);
+            var keyTerm = $.p(key);
 
-            int finalI = i;
-
-
+            var finalI = i;
 
 
-
-
-            GoalActionConcept c = new GoalActionConcept(keyTerm, (b, d) -> {
+            var c = new GoalActionConcept(keyTerm, (b, d) -> {
 
 
 
                 if (d == null)
                     return null;
-                float v = d.freq();
+                var v = d.freq();
                 if (v > 0.55f)
                     return $.t(v, nar.confDefault(BELIEF));
                 else if (b != null && b.freq() > 0.5f)
@@ -96,7 +90,7 @@ public class MIDITaskifier {
             nar.input(NALTask.the(c.term(), GOAL, $.t(0f, 0.1f), (long) 0, ETERNAL, ETERNAL, nar.evidence()));
             nar.onCycle(n -> {
 
-                float v = volume[finalI];
+                var v = volume[finalI];
 
                 if (v == 0) {
                     volume[finalI] = Float.NaN;
@@ -151,14 +145,14 @@ public class MIDITaskifier {
 
     public MidiInReceiver MIDI(Timed timed) {
 
-        MidiDevice.Info[] infos = MidiSystem.getMidiDeviceInfo();
+        var infos = MidiSystem.getMidiDeviceInfo();
 
 
-        for (int i = 0; i < infos.length; i++) {
+        for (var i = 0; i < infos.length; i++) {
             try {
-                MidiDevice.Info ii = infos[i];
+                var ii = infos[i];
 
-                MidiDevice device = MidiSystem.getMidiDevice(ii);
+                var device = MidiSystem.getMidiDevice(ii);
 
                 System.out.println(device + "\t" + device.getClass());
                 System.out.println("\t" + device.getDeviceInfo());
@@ -203,8 +197,8 @@ public class MIDITaskifier {
 
 
             if (m instanceof ShortMessage) {
-                ShortMessage s = (ShortMessage) m;
-                int cmd = s.getCommand();
+                var s = (ShortMessage) m;
+                var cmd = s.getCommand();
                 switch (cmd) {
                     case ShortMessage.NOTE_OFF:
                         if ((volume[s.getData1()] == volume[s.getData1()]) && (volume[s.getData1()] > 0))

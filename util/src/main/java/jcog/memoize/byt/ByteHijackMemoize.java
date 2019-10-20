@@ -20,14 +20,14 @@ public class ByteHijackMemoize<X extends ByteKeyExternal,Y> extends HijackMemoiz
 
     @Override
     public final PriProxy<X, Y> put(X x, Y y) {
-        PriProxy<X, Y> xy = super.put(x, y);
+        var xy = super.put(x, y);
         x.close();
         return xy;
     }
 
     @Override
     public final @Nullable Y apply(X x) {
-        Y y = super.apply(x);
+        var y = super.apply(x);
         x.close();
         return y;
     }

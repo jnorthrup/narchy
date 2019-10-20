@@ -53,7 +53,7 @@ public final class RuleMethodInterpreter extends BasicInterpreter {
     }
 
     private static boolean isLabelOrJump(AbstractInsnNode node) {
-        int t = node.getType();
+        var t = node.getType();
         return t == AbstractInsnNode.LABEL || t == AbstractInsnNode.JUMP_INSN;
     }
 
@@ -65,7 +65,7 @@ public final class RuleMethodInterpreter extends BasicInterpreter {
 
     @Override
     public BasicValue newValue(Type type) {
-        BasicValue basicValue = super.newValue(type);
+        var basicValue = super.newValue(type);
         if (basicValue == BasicValue.REFERENCE_VALUE)
 
             basicValue = new BasicValue(type);
@@ -126,7 +126,7 @@ public final class RuleMethodInterpreter extends BasicInterpreter {
     public void returnOperation(AbstractInsnNode insn,
                                 BasicValue value, BasicValue expected) {
         Preconditions.checkState(insn.getOpcode() == ARETURN);
-        Type type = Type.getType(Rule.class);
+        var type = Type.getType(Rule.class);
         Preconditions.checkState(unwrap(value).getType().equals(
                 type));
         Preconditions.checkState(unwrap(expected).getType().equals(
@@ -150,9 +150,9 @@ public final class RuleMethodInterpreter extends BasicInterpreter {
 
     public void newControlFlowEdge(int instructionIndex,
                                    int successorIndex) {
-        AbstractInsnNode fromInsn
+        var fromInsn
                 = method.instructions.get(instructionIndex);
-        AbstractInsnNode toInsn = method.instructions.get(successorIndex);
+        var toInsn = method.instructions.get(successorIndex);
         if (isLabelOrJump(fromInsn) || isLabelOrJump(toInsn))
             additionalEdges.add(new Edge(fromInsn, toInsn));
 
@@ -163,16 +163,16 @@ public final class RuleMethodInterpreter extends BasicInterpreter {
         if (!(value instanceof InstructionGraphNode))
             throw new InvalidGrammarException(errorMessage);
 
-        InstructionGraphNode node = (InstructionGraphNode) value;
+        var node = (InstructionGraphNode) value;
 
         while (true) {
-            int opcode = node.getInstruction().getOpcode();
+            var opcode = node.getInstruction().getOpcode();
 
             if (opcode == ANEWARRAY || opcode == NEWARRAY
                     || opcode == MULTIANEWARRAY)
                 break;
 
-            List<InstructionGraphNode> predecessors
+            var predecessors
                     = node.getPredecessors();
 
             if (predecessors.size() != 1)
@@ -186,11 +186,11 @@ public final class RuleMethodInterpreter extends BasicInterpreter {
 
     public void finish() {
 
-        for (Edge edge : additionalEdges) {
-            InstructionGraphNode node = getGraphNode(edge.from);
+        for (var edge : additionalEdges) {
+            var node = getGraphNode(edge.from);
             if (node == null)
                 node = createNode(edge.from, null);
-            InstructionGraphNode succ = getGraphNode(edge.to);
+            var succ = getGraphNode(edge.to);
             if (succ == null)
                 succ = createNode(edge.to, null);
             succ.addPredecessor(node);

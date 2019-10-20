@@ -53,7 +53,7 @@ public class TextEditActions {
     }
 
     public void run(TextEditModel editor, String name, String... args) {
-        Action r = actionMap.get(name);
+        var r = actionMap.get(name);
         if (r == null)
             throw new RuntimeException("Unregistered action [" + name + ']');
         r.execute(editor, args);

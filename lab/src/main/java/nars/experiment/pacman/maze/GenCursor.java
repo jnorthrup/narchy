@@ -33,13 +33,13 @@ public class GenCursor {
 
     public boolean advance() {
 
-        Direction[] openDirs = maze.getUngeneratedDirections(new Point(this.x, this.y), area);
+        var openDirs = maze.getUngeneratedDirections(new Point(this.x, this.y), area);
 
         if (openDirs.length > 0) {
 
             trigger = true;
 
-            Direction move = openDirs[rand.nextInt(openDirs.length)];
+            var move = openDirs[rand.nextInt(openDirs.length)];
             maze.tiles[motion(move, 1).x][motion(move, 1).y] = 1;
             this.x = motion(move, 2).x;
             this.y = motion(move, 2).y;
@@ -49,9 +49,9 @@ public class GenCursor {
 
             if (trigger) {
 
-                Direction[] dirs = getPunchDirections();
+                var dirs = getPunchDirections();
 
-                for (int x = 0; x < dirs.length; x++)
+                for (var x = 0; x < dirs.length; x++)
                     maze.tiles[motion(dirs[x], 1).x][motion(dirs[x], 1).y] = 1;
 
                 trigger = false;
@@ -60,7 +60,7 @@ public class GenCursor {
 
             if (path.size() > 0) {
 
-                Direction move = path.get(path.size() - 1).opposite();
+                var move = path.get(path.size() - 1).opposite();
                 this.x = motion(move, 2).x;
                 this.y = motion(move, 2).y;
 
@@ -110,7 +110,7 @@ public class GenCursor {
         if (path.size() > 2)
             past = path.get(path.size() - 2);
 
-        ArrayList<Direction> openDirs = new ArrayList<>();
+        var openDirs = new ArrayList<Direction>();
         if (past != Direction.right)
             if (maze.isWall(x - 1, y) && x > area.x)
                 openDirs.add(Direction.left);
@@ -133,7 +133,7 @@ public class GenCursor {
                 openDirs.remove(path.get(path.size() - 1));
         }
 
-        Direction[] returnedDirs = new Direction[openDirs.size()];
+        var returnedDirs = new Direction[openDirs.size()];
         openDirs.toArray(returnedDirs);
         return returnedDirs;
 

@@ -1061,7 +1061,7 @@ public class M_Tank {
 
             float[] forward = { 0, 0, 0 }, right = { 0, 0, 0 };
 
-            int flash_number = Defines.MZ2_TANK_MACHINEGUN_1
+            var flash_number = Defines.MZ2_TANK_MACHINEGUN_1
                     + (self.s.frame - FRAME_attak406);
 
             Math3D.AngleVectors(self.s.angles, forward, right, null);
@@ -1368,9 +1368,9 @@ public class M_Tank {
 
             float[] vec = {0, 0, 0};
             Math3D.VectorSubtract(self.enemy.s.origin, self.s.origin, vec);
-            float range = Math3D.VectorLength(vec);
+            var range = Math3D.VectorLength(vec);
 
-            float r = Lib.random();
+            var r = Lib.random();
 
             if (range <= 125) {
                 if (r < 0.4)

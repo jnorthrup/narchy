@@ -41,16 +41,16 @@ public class ScalarUtil {
 	}
 
 	public static float atan2Fast(float y, float x) {
-		float coeff_1 = BulletGlobals.SIMD_PI / 4.0f;
-        float abs_y = Math.abs(y);
+		var coeff_1 = BulletGlobals.SIMD_PI / 4.0f;
+		var abs_y = Math.abs(y);
 		float angle;
 		if (x >= 0.0f) {
-			float r = (x - abs_y) / (x + abs_y);
+			var r = (x - abs_y) / (x + abs_y);
 			angle = coeff_1 - coeff_1 * r;
 		}
 		else {
-			float r = (x + abs_y) / (abs_y - x);
-            float coeff_2 = 3.0f * coeff_1;
+			var r = (x + abs_y) / (abs_y - x);
+			var coeff_2 = 3.0f * coeff_1;
             angle = coeff_2 - coeff_1 * r;
 		}
 		return (y < 0.0f) ? -angle : angle;

@@ -32,12 +32,12 @@ public class Array2DIterable<X> implements Iterable<X> {
 
     public Array2DIterable(X[][] x) {
 
-        int cols = x[0].length;
-        int rows = x.length;
-        int area = rows * cols;
+        var cols = x[0].length;
+        var rows = x.length;
+        var area = rows * cols;
         order = new FasterList(area);
 
-        for (X[] xes : x) {
+        for (var xes : x) {
             order.addAll(Arrays.asList(xes).subList(0, cols));
         }
 

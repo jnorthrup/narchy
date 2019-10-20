@@ -38,7 +38,7 @@ public class PlayerWeapon {
 
         @Override
         public boolean think(edict_t ent) {
-            boolean result = false;
+            var result = false;
             if (ent.client.newweapon != null) if (ent.client.weaponstate == Defines.WEAPON_READY) {
                 ChangeWeapon(ent);
                 result = true;
@@ -65,7 +65,7 @@ public class PlayerWeapon {
                     }
                     result = true;
                 } else {
-                    boolean b = IntStream.of(29, 34, 39, 48).anyMatch(i -> (ent.client.ps.gunframe == i));
+                    var b = IntStream.of(29, 34, 39, 48).anyMatch(i -> (ent.client.ps.gunframe == i));
                     if (b)
                         if ((Lib.rand() & 15) != 0) result = true;
                     if (!result) {
@@ -148,7 +148,7 @@ public class PlayerWeapon {
                     }
                     result = true;
                 } else {
-                    boolean b = IntStream.of(29, 34, 39, 48).anyMatch(i -> (ent.client.ps.gunframe == i));
+                    var b = IntStream.of(29, 34, 39, 48).anyMatch(i -> (ent.client.ps.gunframe == i));
                     if (b)
                         if ((Lib.rand() & 15) != 0) result = true;
                     if (!result) {
@@ -227,7 +227,7 @@ public class PlayerWeapon {
 
         @Override
         public boolean think(edict_t ent) {
-            int damage = 120;
+            var damage = 120;
 
             float radius = damage + 40;
             if (is_quad)
@@ -294,8 +294,8 @@ public class PlayerWeapon {
         @Override
         public boolean think(edict_t ent) {
 
-            int damage = 100 + (int) (Lib.random() * 20.0);
-            int radius_damage = 120;
+            var damage = 100 + (int) (Lib.random() * 20.0);
+            var radius_damage = 120;
             if (is_quad) {
                 damage *= 4;
                 radius_damage *= 4;
@@ -408,7 +408,7 @@ public class PlayerWeapon {
                     }
                     NoAmmoWeaponChange(ent);
                 } else {
-                    float rotation = (float) ((ent.client.ps.gunframe - 5) * 2
+                    var rotation = (float) ((ent.client.ps.gunframe - 5) * 2
                             * Math.PI / 6);
                     float[] offset = {0, 0, 0};
                     offset[0] = (float) (-4 * Math.sin(rotation));
@@ -537,8 +537,8 @@ public class PlayerWeapon {
             P_ProjectSource(ent.client, ent.s.origin, offset, forward, right,
                     start);
 
-            int kick = 8;
-            int damage = 4;
+            var kick = 8;
+            var damage = 4;
             if (is_quad) {
                 damage *= 4;
                 kick *= 4;
@@ -603,8 +603,8 @@ public class PlayerWeapon {
             P_ProjectSource(ent.client, ent.s.origin, offset, forward, right,
                     start);
 
-            int kick = 12;
-            int damage = 6;
+            var kick = 12;
+            var damage = 6;
             if (is_quad) {
                 damage *= 4;
                 kick *= 4;
@@ -849,8 +849,8 @@ public class PlayerWeapon {
             if (item.ammo != null && 0 == GameBase.g_select_empty.value
                     && 0 == (item.flags & Defines.IT_AMMO)) {
 
-                gitem_t ammo_item = GameItems.FindItem(item.ammo);
-                int ammo_index = GameItems.ITEM_INDEX(ammo_item);
+                var ammo_item = GameItems.FindItem(item.ammo);
+                var ammo_index = GameItems.ITEM_INDEX(ammo_item);
 
                 if (0 == ent.client.pers.inventory[ammo_index]) {
                     game_import_t.cprintf(ent, Defines.PRINT_HIGH, "No "
@@ -887,7 +887,7 @@ public class PlayerWeapon {
             if (0 != ((int) (GameBase.dmflags.value) & Defines.DF_WEAPONS_STAY))
                 return;
 
-            int index = GameItems.ITEM_INDEX(item);
+            var index = GameItems.ITEM_INDEX(item);
             
             if (((item == ent.client.pers.weapon) || (item == ent.client.newweapon))
                     && (ent.client.pers.inventory[index] == 1)) {
@@ -939,14 +939,14 @@ public class PlayerWeapon {
                 return true;
             }
 
-            int kick = 2;
-            int damage = 8;
+            var kick = 2;
+            var damage = 8;
             if (is_quad) {
                 damage *= 4;
                 kick *= 4;
             }
 
-            for (int i = 1; i < 3; i++) {
+            for (var i = 1; i < 3; i++) {
                 ent.client.kick_origin[i] = Lib.crandom() * 0.35f;
                 ent.client.kick_angles[i] = Lib.crandom() * 0.7f;
             }
@@ -1074,7 +1074,7 @@ public class PlayerWeapon {
                 return true;
             }
 
-            int kick = 2;
+            var kick = 2;
             if (is_quad) {
                 damage *= 4;
                 kick *= 4;
@@ -1094,8 +1094,8 @@ public class PlayerWeapon {
             for (i = 0; i < shots; i++) {
                 
                 Math3D.AngleVectors(ent.client.v_angle, forward, right, up);
-                float r = 7 + Lib.crandom() * 4;
-                float u = Lib.crandom() * 4;
+                var r = 7 + Lib.crandom() * 4;
+                var u = Lib.crandom() * 4;
                 Math3D.VectorSet(offset, 0, r, u + ent.viewheight - 8);
                 P_ProjectSource(ent.client, ent.s.origin, offset, forward,
                         right, start);
@@ -1132,7 +1132,7 @@ public class PlayerWeapon {
         @Override
         public boolean interact(edict_t ent, edict_t other) {
 
-            int index = GameItems.ITEM_INDEX(ent.item);
+            var index = GameItems.ITEM_INDEX(ent.item);
     
             if ((((int) (GameBase.dmflags.value) & Defines.DF_WEAPONS_STAY) != 0 || GameBase.coop.value != 0)
                     && 0 != other.client.pers.inventory[index])
@@ -1143,7 +1143,7 @@ public class PlayerWeapon {
     
             if (0 == (ent.spawnflags & Defines.DROPPED_ITEM)) {
 
-                gitem_t ammo = GameItems.FindItem(ent.item.ammo);
+                var ammo = GameItems.FindItem(ent.item.ammo);
                 if (((int) GameBase.dmflags.value & Defines.DF_INFINITE_AMMO) != 0)
                     GameItems.Add_Ammo(other, ammo, 1000);
                 else
@@ -1349,7 +1349,7 @@ public class PlayerWeapon {
             return;
         }
 
-        int FRAME_IDLE_FIRST = (FRAME_FIRE_LAST + 1);
+        var FRAME_IDLE_FIRST = (FRAME_FIRE_LAST + 1);
         if (ent.client.weaponstate == Defines.WEAPON_ACTIVATING) {
             if (ent.client.ps.gunframe == FRAME_ACTIVATE_LAST) {
                 ent.client.weaponstate = Defines.WEAPON_READY;
@@ -1364,7 +1364,7 @@ public class PlayerWeapon {
         if ((ent.client.newweapon != null)
                 && (ent.client.weaponstate != Defines.WEAPON_FIRING)) {
             ent.client.weaponstate = Defines.WEAPON_DROPPING;
-            int FRAME_DEACTIVATE_FIRST = (FRAME_IDLE_LAST + 1);
+            var FRAME_DEACTIVATE_FIRST = (FRAME_IDLE_LAST + 1);
             ent.client.ps.gunframe = FRAME_DEACTIVATE_FIRST;
 
             if ((FRAME_DEACTIVATE_LAST - FRAME_DEACTIVATE_FIRST) < 4) {
@@ -1387,7 +1387,7 @@ public class PlayerWeapon {
                 ent.client.latched_buttons &= ~Defines.BUTTON_ATTACK;
                 if ((0 == ent.client.ammo_index)
                         || (ent.client.pers.inventory[ent.client.ammo_index] >= ent.client.pers.weapon.quantity)) {
-                    int FRAME_FIRE_FIRST = (FRAME_ACTIVATE_LAST + 1);
+                    var FRAME_FIRE_FIRST = (FRAME_ACTIVATE_LAST + 1);
                     ent.client.ps.gunframe = FRAME_FIRE_FIRST;
                     ent.client.weaponstate = Defines.WEAPON_FIRING;
 
@@ -1452,7 +1452,7 @@ public class PlayerWeapon {
      */
 
     public static void weapon_grenade_fire(edict_t ent, boolean held) {
-        int damage = 125;
+        var damage = 125;
 
         float radius = damage + 40;
         if (is_quad)
@@ -1466,8 +1466,8 @@ public class PlayerWeapon {
         float[] start = {0, 0, 0};
         P_ProjectSource(ent.client, ent.s.origin, offset, forward, right, start);
 
-        float timer = ent.client.grenade_time - GameBase.level.time;
-        int speed = (int) (Defines.GRENADE_MINSPEED + (Defines.GRENADE_TIMER - timer)
+        var timer = ent.client.grenade_time - GameBase.level.time;
+        var speed = (int) (Defines.GRENADE_MINSPEED + (Defines.GRENADE_TIMER - timer)
                 * ((Defines.GRENADE_MAXSPEED - Defines.GRENADE_MINSPEED) / Defines.GRENADE_TIMER));
         GameWeapon.fire_grenade2(ent, start, forward, damage, speed, timer, radius,
                 held);

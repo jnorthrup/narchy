@@ -43,7 +43,7 @@ public abstract class SuperAdapter {
 
 	/** Returns the adapter from the repository given by its ID. */
 	public static SuperAdapter getFromID(String key) {
-		SuperAdapter sa= adapters.get(key);
+		var sa= adapters.get(key);
 
 		
 		if (sa == null) {

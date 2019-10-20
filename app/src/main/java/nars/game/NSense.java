@@ -70,8 +70,8 @@ public interface NSense {
      * interpret an int as a selector between enumerated values
      TODO move to a SelectorSensor constuctor */
     default <E extends Enum> void senseSwitch(String term, Supplier<E> value) throws Narsese.NarseseException {
-        E[] values = ((Class<? extends E>) value.get().getClass()).getEnumConstants();
-        for (E e : values) {
+        var values = ((Class<? extends E>) value.get().getClass()).getEnumConstants();
+        for (var e : values) {
             sense(switchTerm(term, e.toString()), () -> value.get() == e);
         }
     }
@@ -108,7 +108,7 @@ public interface NSense {
      * interpret an int as a selector between (enumerated) integer values
      */
     default SelectorSensor senseSwitch(IntSupplier value, int[] values, IntFunction<Term> termizer) {
-        SelectorSensor ss = new SelectorSensor(nar(), values, value, termizer);
+        var ss = new SelectorSensor(nar(), values, value, termizer);
         addSensor(ss);
         return ss;
     }
@@ -118,7 +118,7 @@ public interface NSense {
      * interpret an int as a selector between (enumerated) object values
      */
     default <O> void senseSwitch(String term, Supplier<O> value, O... values) throws Narsese.NarseseException {
-        for (O e : values)
+        for (var e : values)
             sense(switchTerm(term, '"' + e.toString() + '"'), () -> value.get().equals(e));
     }
 
@@ -168,7 +168,7 @@ public interface NSense {
 
     default List<Signal> senseNumber(int from, int to, IntFunction<String> id, IntFunction<FloatSupplier> v) {
         List<Signal> l = newArrayList(to - from);
-        for (int i = from; i < to; i++) {
+        for (var i = from; i < to; i++) {
             l.add(senseNumber(id.apply(i), v.apply(i)));
         }
         return l;
@@ -199,10 +199,10 @@ public interface NSense {
     }
 
     default FloatNormalized difference(FloatSupplier v, float clampRange) {
-        FloatFirstOrderDifference delta = new FloatFirstOrderDifference(nar()::time, v) {
+        var delta = new FloatFirstOrderDifference(nar()::time, v) {
             @Override
             public float asFloat() {
-                float x = super.asFloat();
+                var x = super.asFloat();
                 if (x == x)
                     return Util.clamp(x, -clampRange, clampRange);
                 return x;
@@ -222,7 +222,7 @@ public interface NSense {
 
         assert (states.length > 1);
 
-        DigitizedScalar fs = new DigitizedScalar(
+        var fs = new DigitizedScalar(
                 new FloatCached(v, nar()::time),
                 model, nar(),
                 states
@@ -250,7 +250,7 @@ public interface NSense {
     }
 
     default DigitizedScalar senseAngle(int divisions, Term root, FloatSupplier angleInRadians, IntFunction<Term> termizer) {
-        DigitizedScalar ang = senseNumber(divisions, DigitizedScalar.FuzzyNeedle, ()->(float) (0.5 + 0.5 * MathUtils.normalizeAngle(angleInRadians.asFloat(), 0) / (2 * Math.PI)), termizer
+        var ang = senseNumber(divisions, DigitizedScalar.FuzzyNeedle, ()->(float) (0.5 + 0.5 * MathUtils.normalizeAngle(angleInRadians.asFloat(), 0) / (2 * Math.PI)), termizer
                 //$.inst($.the(angle), ANGLE),
                 //$.func("ang", id, $.the(angle)) /*SETe.the($.the(angle)))*/,
                 //$.funcImageLast("ang", id, $.the(angle)) /*SETe.the($.the(angle)))*/,
@@ -288,21 +288,21 @@ public interface NSense {
             template = $.inh(template, $.varQuery(1));
         }
 
-        Term t = template;
+        var t = template;
         return actionBipolarFrequencyDifferential(
                 fair, posOrNeg -> t.replace($.varQuery(1), posOrNeg ? POS : NEG),
                 motor);
     }
     default BiPolarAction actionBipolarFrequencyDifferential(boolean fair, BooleanToObjectFunction<Term> s, FloatToFloatFunction motor) {
-        BiPolarAction pn = new BiPolarAction(s,
+        var pn = new BiPolarAction(s,
                 new BiPolarAction.DefaultPolarization(fair),
                 motor, nar());
 
-        Game g = (Game) this;
+        var g = (Game) this;
 //        a.addAction(pn.pos);
 //        a.addAction(pn.neg);
 
-        NAR nar = g.nar();
+        var nar = g.nar();
 
         //HACK until BipolarAction imjplemetns Action
         nar.add(pn);
@@ -325,7 +325,7 @@ public interface NSense {
      */
     default BiPolarAction actionTriState(Term cc, IntPredicate i) {
 
-        float deadZoneFreqRadius =
+        var deadZoneFreqRadius =
                 1 / 6f;
 
         return actionBipolar(cc, false, f -> {
@@ -364,13 +364,13 @@ public interface NSense {
 //        return g;
     }
     default void actionBipolarSteering(Term s, FloatConsumer act) {
-        float[] amp = new float[1];
-        float dt = 0.1f;
-        float max = 1f;
-        float decay = 0.9f;
+        var amp = new float[1];
+        var dt = 0.1f;
+        var max = 1f;
+        var decay = 0.9f;
         actionTriState(s, (i) -> {
-            float a = amp[0];
-            float b = Util.clamp((a * decay) + dt * i, -max, max);
+            var a = amp[0];
+            var b = Util.clamp((a * decay) + dt * i, -max, max);
             amp[0] = b;
 
             act.accept(b);

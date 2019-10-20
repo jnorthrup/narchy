@@ -427,31 +427,31 @@ public class ExtendedCastGraph extends CastGraph {
         @Override
         public Object apply(Object from) {
             if (from instanceof Byte) {
-                Byte b = ((Byte) from);
+                var b = ((Byte) from);
                 return new BigDecimal(b.intValue());
             }
             if (from instanceof Short) {
-                Short s = (Short) from;
+                var s = (Short) from;
                 return new BigDecimal(s.intValue());
             }
             if (from instanceof Integer) {
-                Integer i = (Integer) from;
+                var i = (Integer) from;
                 return new BigDecimal(i);
             }
             if (from instanceof Long) {
-                Long l = (Long) from;
+                var l = (Long) from;
                 return new BigDecimal(l);
             }
             if (from instanceof Float) {
-                Float f = (Float) from;
+                var f = (Float) from;
                 return new BigDecimal(f);
             }
             if (from instanceof Double) {
-                Double d = (Double) from;
+                var d = (Double) from;
                 return new BigDecimal(d);
             }
             if (from instanceof Number) {
-                double d = ((Number) from).doubleValue();
+                var d = ((Number) from).doubleValue();
                 return new BigDecimal(d);
             }
             throw new Error("can't " + from + " cast to BigDecimal");
@@ -479,27 +479,27 @@ public class ExtendedCastGraph extends CastGraph {
         @Override
         public Object apply(Object from) {
             if (from instanceof Byte) {
-                Byte b = ((Byte) from);
+                var b = ((Byte) from);
                 return BigInteger.valueOf(b);
             }
             if (from instanceof Short) {
-                Short s = (Short) from;
+                var s = (Short) from;
                 return BigInteger.valueOf(s);
             }
             if (from instanceof Integer) {
-                Integer i = (Integer) from;
+                var i = (Integer) from;
                 return BigInteger.valueOf(i);
             }
             if (from instanceof Long) {
-                Long l = (Long) from;
+                var l = (Long) from;
                 return BigInteger.valueOf(l);
             }
             if (from instanceof Float) {
-                Float f = (Float) from;
+                var f = (Float) from;
                 return BigInteger.valueOf(f.longValue());
             }
             if (from instanceof Double) {
-                Double d = (Double) from;
+                var d = (Double) from;
                 return BigInteger.valueOf(d.longValue());
             }
             if (from instanceof Number) {
@@ -518,7 +518,7 @@ public class ExtendedCastGraph extends CastGraph {
     public static final Function BigInteger2BigDecimal = new MutableWeightedCaster() {
         @Override
         public Object apply(Object from) {
-            BigInteger v = (BigInteger) from;
+            var v = (BigInteger) from;
             return new BigDecimal(v);
         }
 
@@ -530,7 +530,7 @@ public class ExtendedCastGraph extends CastGraph {
     public static final Function BigDecimal2BigInteger = new MutableWeightedCaster() {
         @Override
         public Object apply(Object from) {
-            BigDecimal v = (BigDecimal) from;
+            var v = (BigDecimal) from;
             return v.toBigInteger();
         }
 
@@ -579,7 +579,7 @@ public class ExtendedCastGraph extends CastGraph {
     public static final Function String2Boolean = new MutableWeightedCaster() {
         @Override
         public Object apply(Object from) {
-            String str = from.toString().trim();
+            var str = from.toString().trim();
             if ("true".equalsIgnoreCase(str)) return true;
             if ("false".equalsIgnoreCase(str)) return false;
             throw new Error("can't cast string(" + str + ") to boolean");
@@ -657,7 +657,7 @@ public class ExtendedCastGraph extends CastGraph {
     public static final Function String2char = new MutableWeightedCaster(2) {
         @Override
         public Object apply(Object from) {
-            String str = (String) from;
+            var str = (String) from;
             return !str.isEmpty() ? str.charAt(0) : (char) 0;
         }
 
@@ -712,7 +712,7 @@ public class ExtendedCastGraph extends CastGraph {
     public static final Function String2Integer = new MutableWeightedCaster() {
         @Override
         public Object apply(Object from) {
-            String str = (String) from;
+            var str = (String) from;
             return Integer.parseInt(str);
         }
 
@@ -727,7 +727,7 @@ public class ExtendedCastGraph extends CastGraph {
     public static final Function String2int = new MutableWeightedCaster() {
         @Override
         public Object apply(Object from) {
-            String str = (String) from;
+            var str = (String) from;
             return (int) Math.round(Double.parseDouble(str));
         }
 
@@ -740,7 +740,7 @@ public class ExtendedCastGraph extends CastGraph {
     public static final Function String2Long = new MutableWeightedCaster() {
         @Override
         public Object apply(Object from) {
-            String str = (String) from;
+            var str = (String) from;
             return Long.parseLong(str);
         }
 
@@ -755,7 +755,7 @@ public class ExtendedCastGraph extends CastGraph {
     public static final Function String2long = new MutableWeightedCaster() {
         @Override
         public Object apply(Object from) {
-            String str = (String) from;
+            var str = (String) from;
             return Long.parseLong(str);
         }
 
@@ -768,7 +768,7 @@ public class ExtendedCastGraph extends CastGraph {
     public static final Function String2Double = new MutableWeightedCaster(2) {
         @Override
         public Object apply(Object from) {
-            String str = (String) from;
+            var str = (String) from;
             return Double.parseDouble(str);
         }
 
@@ -783,7 +783,7 @@ public class ExtendedCastGraph extends CastGraph {
     public static final Function String2double = new MutableWeightedCaster(2) {
         @Override
         public Object apply(Object from) {
-            String str = (String) from;
+            var str = (String) from;
             return Double.parseDouble(str);
         }
 
@@ -796,7 +796,7 @@ public class ExtendedCastGraph extends CastGraph {
     public static final Function String2BigDecimal = new MutableWeightedCaster(2) {
         @Override
         public Object apply(Object from) {
-            String str = (String) from;
+            var str = (String) from;
             return new BigDecimal(str);
         }
 
@@ -810,7 +810,7 @@ public class ExtendedCastGraph extends CastGraph {
     public static final Function charArr2String = new MutableWeightedCaster() {
         @Override
         public Object apply(Object from) {
-            char[] ca = (char[]) from;
+            var ca = (char[]) from;
             return new String(ca);
         }
 
@@ -823,7 +823,7 @@ public class ExtendedCastGraph extends CastGraph {
     public static final Function CharArr2String = new MutableWeightedCaster() {
         @Override
         public Object apply(Object from) {
-            Character[] ca = (Character[]) from;
+            var ca = (Character[]) from;
             return Arrays.stream(ca).map(String::valueOf).collect(Collectors.joining());
         }
 
@@ -837,9 +837,9 @@ public class ExtendedCastGraph extends CastGraph {
     public static final Function String2charArr = new MutableWeightedCaster() {
         @Override
         public Object apply(Object from) {
-            String str = ((String) from);
-            char[] arr = new char[str.length()];
-            for (int i = 0; i < arr.length; i++) arr[i] = str.charAt(i);
+            var str = ((String) from);
+            var arr = new char[str.length()];
+            for (var i = 0; i < arr.length; i++) arr[i] = str.charAt(i);
             return arr;
         }
 
@@ -853,8 +853,8 @@ public class ExtendedCastGraph extends CastGraph {
     public static final Function String2CharArr = new MutableWeightedCaster() {
         @Override
         public Object apply(Object from) {
-            String str = ((String) from);
-            int bound = str.length();
+            var str = ((String) from);
+            var bound = str.length();
             return IntStream.range(0, bound).mapToObj(str::charAt).toArray(Character[]::new);
         }
 
@@ -867,7 +867,7 @@ public class ExtendedCastGraph extends CastGraph {
     public static final Function Clob2String = new MutableWeightedCaster() {
         @Override
         public Object apply(Object from) {
-            Clob clob = ((Clob) from);
+            var clob = ((Clob) from);
             return ClobToString.stringOf(clob);
         }
 
@@ -982,7 +982,7 @@ public class ExtendedCastGraph extends CastGraph {
     public final Function Date2SqlDate = new MutableWeightedCaster() {
         @Override
         public Object apply(Object from) {
-            Date d = (Date) from;
+            var d = (Date) from;
             return new java.sql.Date(d.getTime());
         }
 
@@ -1006,7 +1006,7 @@ public class ExtendedCastGraph extends CastGraph {
     public final Function Date2SqlTime = new MutableWeightedCaster() {
         @Override
         public Object apply(Object from) {
-            Date d = (Date) from;
+            var d = (Date) from;
             return new java.sql.Time(d.getTime());
         }
 
@@ -1182,7 +1182,7 @@ public class ExtendedCastGraph extends CastGraph {
     public final Function Date2SqlTimestamp = new MutableWeightedCaster() {
         @Override
         public Object apply(Object from) {
-            Date d = (Date) from;
+            var d = (Date) from;
             return new java.sql.Timestamp(d.getTime());
         }
 
@@ -1292,8 +1292,8 @@ public class ExtendedCastGraph extends CastGraph {
 
         addEdge(String.class, String2BigDecimal, BigDecimal.class);
 
-        byte[] ba = ArrayUtil.EMPTY_BYTE_ARRAY;
-        Byte[] Ba = ArrayUtil.EMPTY_BYTE_OBJECT_ARRAY;
+        var ba = ArrayUtil.EMPTY_BYTE_ARRAY;
+        var Ba = ArrayUtil.EMPTY_BYTE_OBJECT_ARRAY;
 
         // TODO use proj text
         addEdge(String.class, String2byteArr, ba.getClass());
@@ -1305,9 +1305,9 @@ public class ExtendedCastGraph extends CastGraph {
         // TODO use proj text
 //        setAt( String.class, Ba.getClass(), String2ByteArr );
 
-        char[] ca = ArrayUtil.EMPTY_CHAR_ARRAY;
+        var ca = ArrayUtil.EMPTY_CHAR_ARRAY;
         addEdge(ca.getClass(), charArr2String, String.class);
-        Character[] Ca = ArrayUtil.EMPTY_CHARACTER_OBJECT_ARRAY;
+        var Ca = ArrayUtil.EMPTY_CHARACTER_OBJECT_ARRAY;
         addEdge(Ca.getClass(), CharArr2String, String.class);
 
         addEdge(String.class, String2charArr, ca.getClass());
@@ -1354,13 +1354,13 @@ public class ExtendedCastGraph extends CastGraph {
 //        setAt( xyz.cofe.io.File.class, java.io.File.class, CofeIOFile2File );
 //        setAt( java.io.File.class, xyz.cofe.io.File.class, JavaFile2CofeIOFile );
 
-        for (GetTypeConvertor gtc : ServiceLoader.load(GetTypeConvertor.class)) {
+        for (var gtc : ServiceLoader.load(GetTypeConvertor.class)) {
             if (gtc == null) continue;
-            Function conv = gtc.getConvertor();
+            var conv = gtc.getConvertor();
             if (conv == null) continue;
-            Class srcType = gtc.getSourceType();
+            var srcType = gtc.getSourceType();
             if (srcType == null) continue;
-            Class trgType = gtc.getTargetType();
+            var trgType = gtc.getTargetType();
             if (trgType == null) continue;
             addEdge(srcType, conv, trgType);
         }

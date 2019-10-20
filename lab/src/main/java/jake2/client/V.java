@@ -67,11 +67,11 @@ public final class V extends Globals {
 
     static final lightstyle_t[] r_lightstyles = new lightstyle_t[MAX_LIGHTSTYLES];
     static {
-        for (int i = 0; i < r_dlights.length; i++)
+        for (var i = 0; i < r_dlights.length; i++)
             r_dlights[i] = new dlight_t();
-        for (int i = 0; i < r_entities.length; i++)
+        for (var i = 0; i < r_entities.length; i++)
             r_entities[i] = new entity_t();
-        for (int i = 0; i < r_lightstyles.length; i++)
+        for (var i = 0; i < r_lightstyles.length; i++)
             r_lightstyles[i] = new lightstyle_t();
     }
 
@@ -106,14 +106,14 @@ public final class V extends Globals {
         if (r_numparticles >= MAX_PARTICLES)
             return;
 
-        int i = r_numparticles++;
+        var i = r_numparticles++;
 
-        int c = particle_t.colorTable[color];
+        var c = particle_t.colorTable[color];
         c |= (int) (alpha * 255) << 24;
         particle_t.colorArray.put(i, c);
 
         i *= 3;
-        FloatBuffer vertexBuf = particle_t.vertexArray;
+        var vertexBuf = particle_t.vertexArray;
         vertexBuf.put(i++, org[0]);
         vertexBuf.put(i++, org[1]);
         vertexBuf.put(i++, org[2]);
@@ -128,7 +128,7 @@ public final class V extends Globals {
 
         if (r_numdlights >= MAX_DLIGHTS)
             return;
-        dlight_t dl = r_dlights[r_numdlights++];
+        var dl = r_dlights[r_numdlights++];
         Math3D.VectorCopy(org, dl.origin);
         dl.intensity = intensity;
         dl.color[0] = r;
@@ -145,7 +145,7 @@ public final class V extends Globals {
 
         if (style < 0 || style > MAX_LIGHTSTYLES)
             Com.Error(ERR_DROP, "Bad light style " + style);
-        lightstyle_t ls = r_lightstyles[style];
+        var ls = r_lightstyles[style];
 
         ls.white = r + g + b;
         ls.rgb[0] = r;
@@ -164,12 +164,12 @@ public final class V extends Globals {
     static void TestParticles() {
 
         r_numparticles = 0;
-        for (int i = 0; i < MAX_PARTICLES; i++) {
-            float d = i * 0.25f;
-            float r = 4 * ((i & 7) - 3.5f);
-            float u = 4 * (((i >> 3) & 7) - 3.5f);
+        for (var i = 0; i < MAX_PARTICLES; i++) {
+            var d = i * 0.25f;
+            var r = 4 * ((i & 7) - 3.5f);
+            var u = 4 * (((i >> 3) & 7) - 3.5f);
 
-            for (int j = 0; j < 3; j++)
+            for (var j = 0; j < 3; j++)
                 origin[j] = cl.refdef.vieworg[j] + cl.v_forward[j] * d
                         + cl.v_right[j] * r + cl.v_up[j] * u;
 
@@ -191,12 +191,12 @@ public final class V extends Globals {
         	r_entities[i].clear();
 
         for (i = 0; i < r_numentities; i++) {
-            entity_t ent = r_entities[i];
+            var ent = r_entities[i];
 
-            float r = 64 * ((i % 4) - 1.5f);
-            float f = 64 * (i / 4f) + 128;
+            var r = 64 * ((i % 4) - 1.5f);
+            var f = 64 * (i / 4f) + 128;
 
-            for (int j = 0; j < 3; j++)
+            for (var j = 0; j < 3; j++)
                 ent.origin[j] = cl.refdef.vieworg[j] + cl.v_forward[j] * f
                         + cl.v_right[j] * r;
 
@@ -219,12 +219,12 @@ public final class V extends Globals {
             r_dlights[i] = new dlight_t();
 
         for (i = 0; i < r_numdlights; i++) {
-            dlight_t dl = r_dlights[i];
+            var dl = r_dlights[i];
 
-            float r = 64 * ((i % 4) - 1.5f);
-            float f = 64 * (i / 4f) + 128;
+            var r = 64 * ((i % 4) - 1.5f);
+            var f = 64 * (i / 4f) + 128;
 
-            for (int j = 0; j < 3; j++)
+            for (var j = 0; j < 3; j++)
                 dl.origin[j] = cl.refdef.vieworg[j] + cl.v_forward[j] * f
                         + cl.v_right[j] * r;
             dl.color[0] = ((i % 6) + 1) & 1;
@@ -259,7 +259,7 @@ public final class V extends Globals {
                 gun_model = null;
                 return;
             }
-            String name = "models/" + Cmd.Argv(1) + "/tris.md2";
+            var name = "models/" + Cmd.Argv(1) + "/tris.md2";
             gun_model = re.RegisterModel(name);
         }
     };
@@ -311,7 +311,7 @@ public final class V extends Globals {
 
             
             if (stereo_separation != 0) {
-                float[] tmp = new float[3];
+                var tmp = new float[3];
 
                 Math3D.VectorScale(cl.v_right, stereo_separation, tmp);
                 Math3D.VectorAdd(cl.refdef.vieworg, tmp, cl.refdef.vieworg);

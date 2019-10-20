@@ -32,19 +32,19 @@ public class Replace extends Functor implements InlineFunctor<Evaluation>, The {
     @Override
     public @Nullable Term apply(Evaluation e, Subterms xx) {
 
-        Term input = xx.sub(0);
+        var input = xx.sub(0);
 
-        Term x = xx.sub(1);
+        var x = xx.sub(1);
 
-        Term y = xx.sub(2);
+        var y = xx.sub(2);
 
         return apply(xx, input, x, y);
     }
 
     protected static Term apply(Subterms xx, Term input, Term x, Term y) {
-        boolean strict = xx.subEquals(3, UniSubst.NOVEL);
+        var strict = xx.subEquals(3, UniSubst.NOVEL);
 
-        Term result = !x.equals(y) ?
+        var result = !x.equals(y) ?
                 input.replace(x, y)
                 :
                 (strict ? Null : input);

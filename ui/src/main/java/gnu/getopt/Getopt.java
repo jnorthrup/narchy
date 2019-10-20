@@ -764,18 +764,18 @@ public class Getopt  {
      */
     private void
     exchange(String[] argv) {
-        int bottom = first_nonopt;
-        int middle = last_nonopt;
-        int top = optind;
+        var bottom = first_nonopt;
+        var middle = last_nonopt;
+        var top = optind;
 
         while (top > middle && middle > bottom) {
             String tem;
             if (top - middle > middle - bottom) {
-                
-                int len = middle - bottom;
+
+                var len = middle - bottom;
 
                 
-                for (int i = 0; i < len; i++) {
+                for (var i = 0; i < len; i++) {
                     tem = argv[bottom + i];
                     argv[bottom + i] = argv[top - (middle - bottom) + i];
                     argv[top - (middle - bottom) + i] = tem;
@@ -783,11 +783,11 @@ public class Getopt  {
                 
                 top -= len;
             } else {
-                
-                int len = top - middle;
+
+                var len = top - middle;
 
                 
-                for (int i = 0; i < len; i++) {
+                for (var i = 0; i < len; i++) {
                     tem = argv[bottom + i];
                     argv[bottom + i] = argv[middle + i];
                     argv[middle + i] = tem;
@@ -819,15 +819,15 @@ public class Getopt  {
         longopt_handled = true;
         longind = -1;
 
-        int nameend = nextchar.indexOf('=');
+        var nameend = nextchar.indexOf('=');
         if (nameend == -1)
             nameend = nextchar.length();
 
         
         LongOpt pfound = null;
-        boolean exact = false;
-        boolean ambig = false;
-        for (int i = 0; i < long_options.length; i++) {
+        var exact = false;
+        var ambig = false;
+        for (var i = 0; i < long_options.length; i++) {
             if (long_options[i].getName().startsWith(nextchar.substring(0, nameend))) {
                 if (long_options[i].getName().equals(nextchar.substring(0, nameend))) {
                     
@@ -948,9 +948,9 @@ public class Getopt  {
     getopt() {
         optarg = null;
 
-        int result = -1;
+        var result = -1;
         if (!endparse) {
-            boolean finished = false;
+            var finished = false;
             if (nextchar == null || nextchar.isEmpty()) {
 
 
@@ -1029,7 +1029,7 @@ public class Getopt  {
                 if (long_options != null && (argv[optind].startsWith("--")
                         || long_only && (argv[optind].length() > 2 ||
                         optstring.indexOf(argv[optind].charAt(1)) == -1))) {
-                    int c = checkLongOption();
+                    var c = checkLongOption();
 
                     if (longopt_handled) {
                         result = c;
@@ -1189,7 +1189,7 @@ public class Getopt  {
                 }
             }
         }
-        int res = result;
+        var res = result;
 
 
         return res;

@@ -190,8 +190,8 @@ public class LPRezFilter extends IIRFilter implements DataBeadReceiver {
 
         if (channels == 1) {
 
-            float[] bi = bufIn[0];
-            float[] bo = bufOut[0];
+            var bi = bufIn[0];
+            var bo = bufOut[0];
 
             if (isFreqStatic && isResStatic) {
 
@@ -199,7 +199,7 @@ public class LPRezFilter extends IIRFilter implements DataBeadReceiver {
                 bo[1] = bi[1] * b0 - a1 * bo[0] - a2 * y1;
 
                 
-                for (int currsamp = 2; currsamp < bufferSize; currsamp++) {
+                for (var currsamp = 2; currsamp < bufferSize; currsamp++) {
                     bo[currsamp] = bi[currsamp] * b0 - a1 * bo[currsamp - 1]
                             - a2 * bo[currsamp - 2];
                 }
@@ -230,7 +230,7 @@ public class LPRezFilter extends IIRFilter implements DataBeadReceiver {
                 bo[1] = bi[1] * b0 - a1 * bo[0] - a2 * y1;
 
                 
-                for (int currsamp = 2; currsamp < bufferSize; currsamp++) {
+                for (var currsamp = 2; currsamp < bufferSize; currsamp++) {
 
                     cosw = (float) (Math.cos(_2pi_over_sr
                             * (freq = freqUGen.getValue(0, currsamp))));
@@ -257,15 +257,15 @@ public class LPRezFilter extends IIRFilter implements DataBeadReceiver {
             
 
             if (isFreqStatic && isResStatic) {
-                for (int i = 0; i < channels; i++) {
-                    float[] bi = bufIn[i];
-                    float[] bo = bufOut[i];
+                for (var i = 0; i < channels; i++) {
+                    var bi = bufIn[i];
+                    var bo = bufOut[i];
 
                     bo[0] = bi[0] * b0 - a1 * y1m[i] - a2 * y2m[i];
                     bo[1] = bi[1] * b0 - a1 * bo[0] - a2 * y1m[i];
 
                     
-                    for (int currsamp = 2; currsamp < bufferSize; currsamp++) {
+                    for (var currsamp = 2; currsamp < bufferSize; currsamp++) {
                         bo[currsamp] = bi[currsamp] * b0 - a1
                                 * bo[currsamp - 1] - a2 * bo[currsamp - 2];
                     }
@@ -290,7 +290,7 @@ public class LPRezFilter extends IIRFilter implements DataBeadReceiver {
                     res = 0;
                 }
                 calcVals();
-                for (int i = 0; i < channels; i++) {
+                for (var i = 0; i < channels; i++) {
                     bufOut[i][0] = bufIn[i][0] * b0 - a1 * y1m[i] - a2 * y2m[i];
                 }
 
@@ -303,13 +303,13 @@ public class LPRezFilter extends IIRFilter implements DataBeadReceiver {
                     res = 0;
                 }
                 calcVals();
-                for (int i = 0; i < channels; i++) {
+                for (var i = 0; i < channels; i++) {
                     bufOut[i][1] = bufIn[i][1] * b0 - a1 * bufOut[i][0] - a2
                             * y1m[i];
                 }
 
                 
-                for (int currsamp = 2; currsamp < bufferSize; currsamp++) {
+                for (var currsamp = 2; currsamp < bufferSize; currsamp++) {
 
                     cosw = (float) (Math.cos(_2pi_over_sr
                             * (freq = freqUGen.getValue(0, currsamp))));
@@ -320,14 +320,14 @@ public class LPRezFilter extends IIRFilter implements DataBeadReceiver {
                     }
                     calcVals();
 
-                    for (int i = 0; i < channels; i++) {
+                    for (var i = 0; i < channels; i++) {
                         bufOut[i][currsamp] = bufIn[i][currsamp] * b0 - a1
                                 * bufOut[i][currsamp - 1] - a2
                                 * bufOut[i][currsamp - 2];
                     }
                 }
 
-                for (int i = 0; i < channels; i++) {
+                for (var i = 0; i < channels; i++) {
                     y2m[i] = bufOut[i][bufferSize - 2];
                     if (Float.isNaN(y1m[i] = bufOut[i][bufferSize - 1])) {
                         reset();
@@ -344,7 +344,7 @@ public class LPRezFilter extends IIRFilter implements DataBeadReceiver {
     private void reset() {
         y1 = 0;
         y2 = 0;
-        for (int i = 0; i < channels; i++) {
+        for (var i = 0; i < channels; i++) {
             y1m[i] = 0;
             y2m[i] = 0;
         }
@@ -527,7 +527,7 @@ public class LPRezFilter extends IIRFilter implements DataBeadReceiver {
      * @return The parameter DataBead.
      */
     public DataAuvent getParams() {
-        DataAuvent db = new DataAuvent();
+        var db = new DataAuvent();
         if (isFreqStatic) {
             db.put("frequency", freq);
         } else {
@@ -550,7 +550,7 @@ public class LPRezFilter extends IIRFilter implements DataBeadReceiver {
      * @return The static parameter DataBead.
      */
     public DataAuvent getStaticParams() {
-        DataAuvent db = new DataAuvent();
+        var db = new DataAuvent();
         db.put("frequency", freq);
         db.put("resonance", res);
         return db;

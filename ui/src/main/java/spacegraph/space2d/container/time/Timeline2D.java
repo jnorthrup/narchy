@@ -62,14 +62,14 @@ public class Timeline2D extends Stacking implements Finger.ScrollWheelConsumer {
 
 
         synchronized (this) {
-            long width = endNext - startNext;
+            var width = endNext - startNext;
 //        int N = buffer.capacity();
 //        if (width < N) {
             double mid = ((startNext + endNext) / 2);
-            double nextMid = mid + (pct * width);
+            var nextMid = mid + (pct * width);
 
-            double first = nextMid - width / 2;
-            double last = nextMid + width / 2;
+            var first = nextMid - width / 2;
+            var last = nextMid + width / 2;
 //            if (first < 0) {
 //                first = 0;
 //                last = first + width;
@@ -91,9 +91,9 @@ public class Timeline2D extends Stacking implements Finger.ScrollWheelConsumer {
 
         synchronized (this) {
             double first = this.startNext, last = this.endNext;
-            double width = last - first;
-            double mid = (last + first) / 2;
-            double viewNext = width * pct;
+            var width = last - first;
+            var mid = (last + first) / 2;
+            var viewNext = width * pct;
 
             first = mid - viewNext / 2;
             last = mid + viewNext / 2;
@@ -114,20 +114,20 @@ public class Timeline2D extends Stacking implements Finger.ScrollWheelConsumer {
     }
 
     public Bordering controls() {
-        Bordering b = new Bordering();
+        var b = new Bordering();
 
         float sticking = 0; //0.05f;
-        double tEpsilon = Spatialization.EPSILON;
-        double speed = 0.1;
+        var tEpsilon = Spatialization.EPSILON;
+        var speed = 0.1;
 
-        FloatSlider whenSlider = new FloatSlider(0.5f, 0, 1) {
+        var whenSlider = new FloatSlider(0.5f, 0, 1) {
 
 
             @Override
             public boolean canRender(ReSurface r) {
-                float v = this.get();
-                float d = (v - 0.5f) * 2;
-                double delta = d * (end - start) * speed;
+                var v = this.get();
+                var d = (v - 0.5f) * 2;
+                var delta = d * (end - start) * speed;
 
                 if (Math.abs(d) > tEpsilon) {
                     timeShift(delta);
@@ -145,10 +145,10 @@ public class Timeline2D extends Stacking implements Finger.ScrollWheelConsumer {
 
         b.center(whenSlider);
 
-        FloatSlider zoomSlider = new FloatSlider(0.5f, 0.48f, 0.52f) {
+        var zoomSlider = new FloatSlider(0.5f, 0.48f, 0.52f) {
             @Override
             public boolean canRender(ReSurface r) {
-                float v = this.get();
+                var v = this.get();
                 timeScale((v + 0.5f));
                 set(Util.lerp(0.5f + sticking/2, v, 0.5f));
 
@@ -183,7 +183,7 @@ public class Timeline2D extends Stacking implements Finger.ScrollWheelConsumer {
             return this;
 
         synchronized (this) {
-            double range = (endNext - startNext) * dPct;
+            var range = (endNext - startNext) * dPct;
             double tCenter = (endNext + startNext) / 2;
             return setTime(tCenter - range / 2, tCenter + range / 2);
         }
@@ -260,19 +260,19 @@ public class Timeline2D extends Stacking implements Finger.ScrollWheelConsumer {
 //        @Nullable X last();
 
         default boolean intersects(X x, long start, long end) {
-            long[] r = range(x);
+            var r = range(x);
             return LongInterval.intersects(r[0], r[1], start, end);
         }
 
         default int compareStart(X x, X y) {
-            long rx = range(x)[0];
-            long ry = range(y)[0];
+            var rx = range(x)[0];
+            var ry = range(y)[0];
             return Long.compare(rx, ry);
         }
 
         default int compareDur(X x, X y) {
-            long[] rx = range(x);
-            long[] ry = range(y);
+            var rx = range(x);
+            var ry = range(y);
             return compareDur(rx, ry);
         }
 
@@ -281,20 +281,20 @@ public class Timeline2D extends Stacking implements Finger.ScrollWheelConsumer {
         }
 
         default long intersectLength(X x, X y) {
-            long[] rx = range(x);
-            long[] ry = range(y);
+            var rx = range(x);
+            var ry = range(y);
             return LongInterval.intersectLength(rx[0], rx[1], ry[0], ry[1]);
         }
 
         default int compareDurThenStart(X x, X y) {
             if (x.equals(y)) return 0;
 
-            long[] rx = range(x);
-            long[] ry = range(y);
-            int wc = -compareDur(rx, ry);
+            var rx = range(x);
+            var ry = range(y);
+            var wc = -compareDur(rx, ry);
             if (wc != 0)
                 return wc;
-            int xc = Long.compare(rx[0], ry[0]);
+            var xc = Long.compare(rx[0], ry[0]);
             if (xc != 0)
                 return xc;
 
@@ -322,7 +322,7 @@ public class Timeline2D extends Stacking implements Finger.ScrollWheelConsumer {
         @Override
         public int compareTo(Timeline2D.SimpleEvent x) {
             if (this == x) return 0;
-            int s = Long.compare((start+end)/2, (x.start+x.end)/2);
+            var s = Long.compare((start+end)/2, (x.start+x.end)/2);
             if (s != 0)
                 return s;
             return Integer.compare(System.identityHashCode(this), System.identityHashCode(x));
@@ -374,7 +374,7 @@ public class Timeline2D extends Stacking implements Finger.ScrollWheelConsumer {
         @Override
         public Iterable<E> events(long start, long end) {
 
-            List<E> list = this.stream().filter(x -> intersects(x, start, end)).collect(Collectors.toList());
+            var list = this.stream().filter(x -> intersects(x, start, end)).collect(Collectors.toList());
             return list;
         }
 
@@ -409,17 +409,17 @@ public class Timeline2D extends Stacking implements Finger.ScrollWheelConsumer {
         protected void render(ReSurface r) {
             if (paintGrid == null) {
                 double range = end-start;
-                double interval = interval(range);
-                double phase = start % interval;
-                double iMax = (range / interval) + 0.5f;
+                var interval = interval(range);
+                var phase = start % interval;
+                var iMax = (range / interval) + 0.5f;
                 paintGrid = (gl,sr)->{
                     float H = h(), W = w(), LEFT = x(), BOTTOM = y();
                     gl.glColor4f(0.3f,0.3f,0.3f,0.9f);
 
                     gl.glLineWidth(THICKNESS);
-                    long x = Math.round(start - phase);
-                    for (int i = 0; i <= iMax; i++) {
-                        float xx = Timeline2D.x(x, LEFT, W, start, end);
+                    var x = Math.round(start - phase);
+                    for (var i = 0; i <= iMax; i++) {
+                        var xx = Timeline2D.x(x, LEFT, W, start, end);
                         Draw.line(xx, BOTTOM, xx, BOTTOM + H, gl);
                         x += interval;
                     }
@@ -430,7 +430,7 @@ public class Timeline2D extends Stacking implements Finger.ScrollWheelConsumer {
 
         /** TODO refine */
         static double interval(double range) {
-            double x = Math.pow(10.0, Math.floor(Math.log10(range)));
+            var x = Math.pow(10.0, Math.floor(Math.log10(range)));
             if (range / (x / 2.0) >= 10)
                 return x / 2.0;
             else if (range / (x / 5.0) >= 10)

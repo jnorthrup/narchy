@@ -49,7 +49,7 @@ public final class SV {
         else
             mask = Defines.MASK_SOLID;
 
-        trace_t trace = game_import_t.trace(ent.s.origin, ent.mins, ent.maxs,
+        var trace = game_import_t.trace(ent.s.origin, ent.mins, ent.maxs,
                 ent.s.origin, ent, mask);
 
         if (trace.startsolid)
@@ -62,7 +62,7 @@ public final class SV {
     public static void SV_CheckVelocity(edict_t ent) {
 
 
-        for (int i = 0; i < 3; i++) {
+        for (var i = 0; i < 3; i++) {
             if (ent.velocity[i] > GameBase.sv_maxvelocity.value)
                 ent.velocity[i] = GameBase.sv_maxvelocity.value;
             else if (ent.velocity[i] < -GameBase.sv_maxvelocity.value)
@@ -75,7 +75,7 @@ public final class SV {
      */
     public static boolean SV_RunThink(edict_t ent) {
 
-        float thinktime = ent.nextthink;
+        var thinktime = ent.nextthink;
         if (thinktime <= 0)
             return true;
         if (thinktime > GameBase.level.time + 0.001)
@@ -96,7 +96,7 @@ public final class SV {
      */
     public static void SV_Impact(edict_t e1, trace_t trace) {
 
-        edict_t e2 = trace.ent;
+        var e2 = trace.ent;
 
         if (e1.touch != null && e1.solid != Defines.SOLID_NOT)
             e1.touch.touch(e1, e2, trace.plane, trace.surface);
@@ -122,20 +122,20 @@ public final class SV {
         Math3D.VectorCopy(ent.velocity, primal_velocity);
 
         ent.groundentity = null;
-        float time_left = time;
-        int numplanes = 0;
-        int blocked = 0;
-        int numbumps = 4;
+        var time_left = time;
+        var numplanes = 0;
+        var blocked = 0;
+        var numbumps = 4;
         float[] end = {0.0f, 0.0f, 0.0f};
         float[] new_velocity = {0.0f, 0.0f, 0.0f};
-        float[][] planes = new float[MAX_CLIP_PLANES][3];
+        var planes = new float[MAX_CLIP_PLANES][3];
         float[] dir = {0.0f, 0.0f, 0.0f};
-        for (int bumpcount = 0; bumpcount < numbumps; bumpcount++) {
+        for (var bumpcount = 0; bumpcount < numbumps; bumpcount++) {
             int i;
             for (i = 0; i < 3; i++)
                 end[i] = ent.s.origin[i] + time_left * ent.velocity[i];
 
-            trace_t trace = game_import_t.trace(ent.s.origin, ent.mins, ent.maxs, end,
+            var trace = game_import_t.trace(ent.s.origin, ent.mins, ent.maxs, end,
                     ent, mask);
 
             if (trace.allsolid) { 
@@ -152,7 +152,7 @@ public final class SV {
             if (trace.fraction == 1)
                 break;
 
-            edict_t hit = trace.ent;
+            var hit = trace.ent;
 
             if (trace.plane.normal[2] > 0.7) {
                 blocked |= 1; 
@@ -212,7 +212,7 @@ public final class SV {
                     return 7;
                 }
                 Math3D.CrossProduct(planes[0], planes[1], dir);
-                float d = Math3D.DotProduct(dir, ent.velocity);
+                var d = Math3D.DotProduct(dir, ent.velocity);
                 Math3D.VectorScale(dir, d, ent.velocity);
             }
 
@@ -247,13 +247,12 @@ public final class SV {
         float[] end = {0, 0, 0};
         Math3D.VectorAdd(start, push, end);
 
-        
-        
-        boolean retry = false;
+
+        var retry = false;
 
         trace_t trace;
         do {
-            int mask = ent.clipmask != 0 ? ent.clipmask : Defines.MASK_SOLID;
+            var mask = ent.clipmask != 0 ? ent.clipmask : Defines.MASK_SOLID;
 
             trace = game_import_t
                     .trace(start, ent.mins, ent.maxs, end, ent, mask);
@@ -291,7 +290,7 @@ public final class SV {
 
 
         for (i = 0; i < 3; i++) {
-            float temp = move[i] * 8.0f;
+            var temp = move[i] * 8.0f;
             if (temp > 0.0)
                 temp += 0.5;
             else
@@ -335,8 +334,8 @@ public final class SV {
 
         float[] move2 = {0, 0, 0};
         float[] org2 = {0, 0, 0};
-        for (int e = 1; e < GameBase.num_edicts; e++) {
-            edict_t check = GameBase.g_edicts[e];
+        for (var e = 1; e < GameBase.num_edicts; e++) {
+            var check = GameBase.g_edicts[e];
             if (!check.inuse)
                 continue;
             if (check.movetype == Defines.MOVETYPE_PUSH
@@ -392,7 +391,7 @@ public final class SV {
                 if (check.groundentity != pusher)
                     check.groundentity = null;
 
-                edict_t[] block = SV_TestEntityPosition(check);
+                var block = SV_TestEntityPosition(check);
                 if (block == null) { 
                     game_import_t.linkentity(check);
                     
@@ -417,8 +416,8 @@ public final class SV {
             
             
             
-            for (int ip = GameBase.pushed_p - 1; ip >= 0; ip--) {
-                pushed_t p = GameBase.pushed[ip];
+            for (var ip = GameBase.pushed_p - 1; ip >= 0; ip--) {
+                var p = GameBase.pushed[ip];
                 Math3D.VectorCopy(p.origin, p.ent.s.origin);
                 Math3D.VectorCopy(p.angles, p.ent.s.angles);
                 if (p.ent.client != null) {
@@ -431,7 +430,7 @@ public final class SV {
 
         
         
-        for (int ip = GameBase.pushed_p - 1; ip >= 0; ip--)
+        for (var ip = GameBase.pushed_p - 1; ip >= 0; ip--)
             GameBase.G_TouchTriggers(GameBase.pushed[ip].ent);
 
         return true;
@@ -474,7 +473,7 @@ public final class SV {
 
         if (part != null) {
             
-            for (edict_t mv = ent; mv != null; mv = mv.teamchain) {
+            for (var mv = ent; mv != null; mv = mv.teamchain) {
                 if (mv.nextthink > 0)
                     mv.nextthink += Defines.FRAMETIME;
             }
@@ -556,7 +555,7 @@ public final class SV {
 
         float[] move = {0, 0, 0};
         Math3D.VectorScale(ent.velocity, Defines.FRAMETIME, move);
-        trace_t trace = SV_PushEntity(ent, move);
+        var trace = SV_PushEntity(ent, move);
         if (!ent.inuse)
             return;
 
@@ -586,9 +585,9 @@ public final class SV {
         }
 
 
-        boolean wasinwater = (ent.watertype & Defines.MASK_WATER) != 0;
+        var wasinwater = (ent.watertype & Defines.MASK_WATER) != 0;
         ent.watertype = GameBase.gi.pointcontents.pointcontents(ent.s.origin);
-        boolean isinwater = (ent.watertype & Defines.MASK_WATER) != 0;
+        var isinwater = (ent.watertype & Defines.MASK_WATER) != 0;
 
         if (isinwater)
             ent.waterlevel = 1;
@@ -603,7 +602,7 @@ public final class SV {
                     game_import_t.soundindex("misc/h2ohit1.wav"), 1, 1, 0);
 
         
-        for (edict_t slave = ent.teamchain; slave != null; slave = slave.teamchain) {
+        for (var slave = ent.teamchain; slave != null; slave = slave.teamchain) {
             Math3D.VectorCopy(ent.s.origin, slave.s.origin);
             game_import_t.linkentity(slave);
         }
@@ -615,9 +614,9 @@ public final class SV {
 
         Math3D.VectorMA(ent.s.angles, Defines.FRAMETIME, ent.avelocity,
                 ent.s.angles);
-        float adjustment = Defines.FRAMETIME * Defines.sv_stopspeed
+        var adjustment = Defines.FRAMETIME * Defines.sv_stopspeed
                 * Defines.sv_friction;
-        for (int n = 0; n < 3; n++) {
+        for (var n = 0; n < 3; n++) {
             if (ent.avelocity[n] > 0) {
                 ent.avelocity[n] -= adjustment;
                 if (ent.avelocity[n] < 0)
@@ -645,18 +644,18 @@ public final class SV {
         if (ent.groundentity == null)
             M.M_CheckGround(ent);
 
-        edict_t groundentity = ent.groundentity;
+        var groundentity = ent.groundentity;
 
         SV_CheckVelocity(ent);
 
-        boolean wasonground = groundentity != null;
+        var wasonground = groundentity != null;
 
         if (IntStream.of(0, 1, 2).anyMatch(v -> ent.avelocity[v] != 0)) {
             SV_AddRotationalFriction(ent);
         }
 
 
-        boolean hitsound = false;
+        var hitsound = false;
         if (!wasonground)
             if (0 == (ent.flags & Defines.FL_FLY))
                 if (!((ent.flags & Defines.FL_SWIM) != 0 && (ent.waterlevel > 2))) {
@@ -696,14 +695,14 @@ public final class SV {
             ent.velocity[2] *= newspeed;
         }
 
-        boolean b = IntStream.of(2, 1, 0).anyMatch(i -> ent.velocity[i] != 0);
+        var b = IntStream.of(2, 1, 0).anyMatch(i -> ent.velocity[i] != 0);
         if (b) {
             
             
             if ((wasonground)
                     || 0 != (ent.flags & (Defines.FL_SWIM | Defines.FL_FLY)))
                 if (!(ent.health <= 0.0 && !M.M_CheckBottom(ent))) {
-                    float[] vel = ent.velocity;
+                    var vel = ent.velocity;
                     speed = (float) Math
                             .sqrt(vel[0] * vel[0] + vel[1] * vel[1]);
                     if (speed != 0) {
@@ -770,12 +769,12 @@ public final class SV {
         trace_t trace = null;
         if ((ent.flags & (Defines.FL_SWIM | Defines.FL_FLY)) != 0) {
             
-            for (int i = 0; i < 2; i++) {
+            for (var i = 0; i < 2; i++) {
                 Math3D.VectorAdd(ent.s.origin, move, neworg);
                 if (i == 0 && ent.enemy != null) {
                     if (ent.goalentity == null)
                         ent.goalentity = ent.enemy;
-                    float dz = ent.s.origin[2] - ent.goalentity.s.origin[2];
+                    var dz = ent.s.origin[2] - ent.goalentity.s.origin[2];
                     if (ent.goalentity.client != null) {
                         if (dz > 40)
                             neworg[2] -= 8;
@@ -937,7 +936,7 @@ public final class SV {
         float[] oldorigin = {0, 0, 0};
         Math3D.VectorCopy(ent.s.origin, oldorigin);
         if (SV_movestep(ent, move, false)) {
-            float delta = ent.s.angles[Defines.YAW] - ent.ideal_yaw;
+            var delta = ent.s.angles[Defines.YAW] - ent.ideal_yaw;
             if (delta > 45 && delta < 315) { 
                                              
                 Math3D.VectorCopy(oldorigin, ent.s.origin);
@@ -966,11 +965,11 @@ public final class SV {
             Com.DPrintf("SV_NewChaseDir without enemy!\n");
             return;
         }
-        float olddir = Math3D.anglemod((int) (actor.ideal_yaw / 45) * 45);
-        float turnaround = Math3D.anglemod(olddir - 180);
+        var olddir = Math3D.anglemod((int) (actor.ideal_yaw / 45) * 45);
+        var turnaround = Math3D.anglemod(olddir - 180);
 
-        float deltax = enemy.s.origin[0] - actor.s.origin[0];
-        float deltay = enemy.s.origin[1] - actor.s.origin[1];
+        var deltax = enemy.s.origin[0] - actor.s.origin[0];
+        var deltay = enemy.s.origin[1] - actor.s.origin[1];
         float[] d = {0, 0, 0};
         if (deltax > 10)
             d[1] = 0;
@@ -1047,7 +1046,7 @@ public final class SV {
      */
     public static boolean SV_CloseEnough(edict_t ent, edict_t goal, float dist) {
 
-        for (int i = 0; i < 3; i++) {
+        for (var i = 0; i < 3; i++) {
             if (goal.absmin[i] > ent.absmax[i] + dist)
                 return false;
             if (goal.absmax[i] < ent.absmin[i] - dist)

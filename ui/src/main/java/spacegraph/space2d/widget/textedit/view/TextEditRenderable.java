@@ -17,7 +17,7 @@ public final @Nullable v3 scale = null;
         gl.glPushMatrix();
         gl.glTranslatef(position.x, position.y, position.z);
 
-        v3 scale = this.scale;
+        var scale = this.scale;
         if (scale!=null)
             gl.glScalef(scale.x, scale.y, scale.z);
 

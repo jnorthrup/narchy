@@ -120,7 +120,7 @@ public class Pacman extends GameX {
         reward("score", ()->{
             g.update();
 
-            int nextScore = g.score;
+            var nextScore = g.score;
 
             float r = (nextScore - lastScore);
 //            if(r == 0)
@@ -143,7 +143,7 @@ public class Pacman extends GameX {
     public static void main(String[] args) {
         GameX.Companion.initFn(fps*2, (n) -> {
 
-            Pacman a = new Pacman(n);
+            var a = new Pacman(n);
             n.add(a);
             return a;
 

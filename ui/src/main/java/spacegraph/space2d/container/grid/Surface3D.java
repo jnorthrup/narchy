@@ -35,7 +35,7 @@ public class Surface3D extends PaintSurface {
         g.putEdge(("b"), ("c"));
         g.putEdge(("b"), ("d"));
 
-        MapNodeGraph h = new MapNodeGraph();
+        var h = new MapNodeGraph();
         h.addNode(("x"));
         h.addNode(("y"));
         h.addNode(("z"));
@@ -45,7 +45,7 @@ public class Surface3D extends PaintSurface {
         h.addEdgeIfNodesExist(("y"), ("yz"), ("z"));
         h.addEdgeIfNodesExist(("w"), ("wy"), ("y"));
 
-        SimpleGraph3D sg = new SimpleGraph3D();
+        var sg = new SimpleGraph3D();
 
         sg.commit(h);
 

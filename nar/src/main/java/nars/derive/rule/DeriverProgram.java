@@ -71,22 +71,22 @@ public class DeriverProgram {
 
         if (x instanceof DeriverProgram) {
 
-            DeriverProgram r = (DeriverProgram) x;
+            var r = (DeriverProgram) x;
             r.print(out, indent);
 
         } else if (x instanceof Forkable) {
 
-            Forkable b = (Forkable)x;
+            var b = (Forkable)x;
 
             out.println(b.getClass().getSimpleName().toLowerCase() + " {");
-            for (short c : b.can) {
+            for (var c : b.can) {
                 print(branch[c], out, indent+2);
             }
             Texts.indent(indent);out.println("}");
 
 
         } else if (x instanceof How) {
-            How a = (How)x;
+            var a = (How)x;
 
             out.println(a.why.id + " ==> {");
             Object aa;
@@ -104,7 +104,7 @@ public class DeriverProgram {
 
         } else if (x instanceof AND) {
             out.println("and {");
-            AND ac = (AND) x;
+            var ac = (AND) x;
             ac.subStream().forEach(b->
                 print(b, out, indent + 2)
             );
@@ -125,16 +125,16 @@ public class DeriverProgram {
         } */ else if (x instanceof FORK) {
 
             out.println("fork {");
-            for (PREDICATE b : ((FORK) x).branch)
+            for (var b : ((FORK) x).branch)
                 print(b, out, indent + 2);
             Texts.indent(indent);
             out.println("}");
 
         } else if (x instanceof SWITCH) {
-            SWITCH sw = (SWITCH) x;
+            var sw = (SWITCH) x;
             out.println("switch(op(" + (sw.taskOrBelief ? "task" : "belief") + ")) {");
-            int i = -1;
-            for (PREDICATE b : sw.swtch) {
+            var i = -1;
+            for (var b : sw.swtch) {
                 i++;
                 if (b == null) continue;
 

@@ -39,7 +39,7 @@ public class TetrahedronShapeEx extends BU_Simplex1to4 {
 
 	public TetrahedronShapeEx() {
 		numVertices = 4;
-		for (int i = 0; i < numVertices; i++) {
+		for (var i = 0; i < numVertices; i++) {
 			vertices[i] = new v3();
 		}
 	}

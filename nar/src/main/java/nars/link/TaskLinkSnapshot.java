@@ -26,7 +26,7 @@ public abstract class TaskLinkSnapshot implements Runnable {
 			snapshot.ensureCapacity(c);
 			active.forEach(snapshot::addFast);
 			items = snapshot.array();
-			int s = snapshot.size();
+			var s = snapshot.size();
 			if (s < c)
 				Arrays.fill(items, s, items.length,null); //clear remainder of array
 			next();

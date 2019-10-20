@@ -28,7 +28,7 @@ public final class Equal extends InlineCommutiveBinaryBidiFunctor implements The
     }
 
     public static Term the(Term x, Term y) {
-        @Nullable Term p = pretest(x, y);
+        @Nullable var p = pretest(x, y);
         return p != null ? p : CommutiveBinaryBidiFunctor.the(equal, x, y);
     }
 
@@ -43,7 +43,7 @@ public final class Equal extends InlineCommutiveBinaryBidiFunctor implements The
     public static Term cmp(Term a, Term b, int c) {
         if (a.compareTo(b) > 0) {
             c *= -1;
-            Term x = a;
+            var x = a;
             a = b;
             b = x;
         }
@@ -86,7 +86,7 @@ public final class Equal extends InlineCommutiveBinaryBidiFunctor implements The
 
     @Override
     protected Term compute(Evaluation e, Term x, Term y) {
-        Term p = pretest(x, y);
+        var p = pretest(x, y);
         if (p != null)
             return p;
 
@@ -104,12 +104,12 @@ public final class Equal extends InlineCommutiveBinaryBidiFunctor implements The
 
         if (x.volume() < y.volume()) {
             //swap for canonical comparison
-            Term z = x;
+            var z = x;
             x = y;
             y = z;
             xHasVar = true;
             yHasVar = false;
-            Op zOp = xOp;
+            var zOp = xOp;
             xOp = yOp;
             yOp = zOp;
         }
@@ -119,7 +119,7 @@ public final class Equal extends InlineCommutiveBinaryBidiFunctor implements The
             //algebraic solutions TODO use symbolic algebra system
             Term xf = Functor.func(x);
             if (xf.equals(MathFunc.add)) {
-                Subterms xa = Functor.args((Compound) x, 2);
+                var xa = Functor.args((Compound) x, 2);
                 Term xa0 = xa.sub(0), xa1 = xa.sub(1);
                 if (yOp == INT && xa0 instanceof Variable && xa1.op() == INT) {
                     return e.is(xa0, Int.the(((Int) y).i - ((Int) xa1).i)) ? True : Null; //"equal(add(#x,a),y)"
@@ -141,7 +141,7 @@ public final class Equal extends InlineCommutiveBinaryBidiFunctor implements The
 //                }
 
             } else if (xf.equals(MathFunc.mul)) {
-                Subterms xa = Functor.args((Compound) x, 2);
+                var xa = Functor.args((Compound) x, 2);
                 Term xa0 = xa.sub(0), xa1 = xa.sub(1);
                 if (yOp == INT && xa0 instanceof Variable && xa1 instanceof Int)
                     return e.is(xa0, $.the(((double) ((Int) y).i) / ((Int) xa1).i)) ? True : Null; //"equal(mul(#x,a),b)"

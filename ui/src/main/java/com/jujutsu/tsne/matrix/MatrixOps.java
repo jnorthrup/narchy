@@ -82,15 +82,15 @@ public enum MatrixOps { ;
 
 
 	private static String doubleArrayToPrintString(double[][] m, String colDelimiter, int toprowlim, int btmrowlim, int collim, String sentenceDelimiter) {
-		StringBuilder str = new StringBuilder(m.length * m[0].length);
+		var str = new StringBuilder(m.length * m[0].length);
 
 		str.append("Dim:").append(m.length).append(" x ").append(m[0].length).append('\n');
 
-		int i = 0;
+		var i = 0;
 		for (; i < m.length && i < toprowlim; i++) {
-			String rowPref = i < 1000 ? String.format("%03d", i) : String.format("%04d", i);
+			var rowPref = i < 1000 ? String.format("%03d", i) : String.format("%04d", i);
 			str.append(rowPref).append(": [");
-			for (int j = 0; j < m[i].length - 1 && j < collim; j++) {
+			for (var j = 0; j < m[i].length - 1 && j < collim; j++) {
 				str.append(formatDouble(m[i][j])).append(colDelimiter);
 			}
 			str.append(formatDouble(m[i][m[i].length - 1])).append(collim == Integer.MAX_VALUE ? "]" : "...]");
@@ -103,9 +103,9 @@ public enum MatrixOps { ;
 		while(i<(m.length-btmrowlim)) i++;
 		if( i < m.length) str.append("\t.\n\t.\n\t.\n");
 		for (; i < m.length; i++) {
-			String rowPref = i < 1000 ? String.format("%03d", i) : String.format("%04d", i);
+			var rowPref = i < 1000 ? String.format("%03d", i) : String.format("%04d", i);
 			str.append(rowPref).append(": [");
-			for (int j = 0; j < m[i].length - 1 && j < collim; j++) {
+			for (var j = 0; j < m[i].length - 1 && j < collim; j++) {
 				str.append(formatDouble(m[i][j])).append(colDelimiter);
 			}
 			str.append(formatDouble(m[i][m[i].length - 1]));
@@ -260,12 +260,12 @@ public enum MatrixOps { ;
 	 * @return
 	 */
 	public static double[][] transposeSerial(double[][] matrix) {
-		int rows = matrix.length;
-		int cols = matrix[0].length;
-		double[][] transpose = new double[cols][rows];
-		for (int col = 0; col < cols; col++) {
-			double[] tc = transpose[col];
-			for (int row = 0; row < rows; row++) {
+		var rows = matrix.length;
+		var cols = matrix[0].length;
+		var transpose = new double[cols][rows];
+		for (var col = 0; col < cols; col++) {
+			var tc = transpose[col];
+			for (var row = 0; row < rows; row++) {
 				tc[row] = matrix[row][col];
 			}
 		}
@@ -284,12 +284,12 @@ public enum MatrixOps { ;
 	 * @return
 	 */
 	public static double[][] transpose(double[][] matrix, int ll) {
-		int cols = matrix[0].length;
-		int rows = matrix.length;
-		double[][] transpose = new double[cols][rows];
+		var cols = matrix[0].length;
+		var rows = matrix.length;
+		var transpose = new double[cols][rows];
 
-			for (int i = 0; i < cols; i++)
-				for (int j = 0; j < rows; j++)
+			for (var i = 0; i < cols; i++)
+				for (var j = 0; j < rows; j++)
 					transpose[i][j] = matrix[j][i];
 
 
@@ -354,9 +354,9 @@ public enum MatrixOps { ;
 	 * @return new matrix with values exponentiated
 	 */
 	public static double [][] exp(double [][] m1) {
-		double[][] matrix = new double[m1.length][m1[0].length];
-		for (int i = 0; i < matrix.length; i++) {
-			for (int j = 0; j < matrix[0].length; j++) {
+		var matrix = new double[m1.length][m1[0].length];
+		for (var i = 0; i < matrix.length; i++) {
+			for (var j = 0; j < matrix[0].length; j++) {
 				matrix[i][j] = Math.exp(m1[i][j]);
 			}
 		}
@@ -370,11 +370,11 @@ public enum MatrixOps { ;
 	 * @return new vector with values sqrt'ed
 	 */
 	public static double [] sqrt(double [] v1) {
-		double[] vector = new double[10];
-		int count = 0;
-		for (double v : v1) {
+		var vector = new double[10];
+		var count = 0;
+		for (var v : v1) {
 			if (vector.length == count) vector = Arrays.copyOf(vector, count * 2);
-			double sqrt = Math.sqrt(v);
+			var sqrt = Math.sqrt(v);
 			vector[count++] = sqrt;
 		}
 		vector = Arrays.copyOfRange(vector, 0, count);
@@ -387,7 +387,7 @@ public enum MatrixOps { ;
 	 * @return mean of values in vector
 	 */
 	public static double mean(double [] vector) {
-		double sum = Arrays.stream(vector).sum();
+		var sum = Arrays.stream(vector).sum();
 		return sum/vector.length;
 	}
 
@@ -398,9 +398,9 @@ public enum MatrixOps { ;
 	 * @return  same matrix with values log'ed
 	 */
 	public static double [][] log(double [][] m1) {
-		double[][] matrix = new double[m1.length][m1[0].length];
-		for (int i = 0; i < matrix.length; i++) {
-			for (int j = 0; j < matrix[0].length; j++) {
+		var matrix = new double[m1.length][m1[0].length];
+		for (var i = 0; i < matrix.length; i++) {
+			for (var j = 0; j < matrix[0].length; j++) {
 				matrix[i][j] = Math.log(m1[i][j]);
 			}
 		}
@@ -414,9 +414,9 @@ public enum MatrixOps { ;
 	 * @return  same matrix with values pow'ed
 	 */
 	public static double [][] pow(double [][] m1, double power) {
-		double[][] matrix = new double[m1.length][m1[0].length];
-		for (int i = 0; i < matrix.length; i++) {
-			for (int j = 0; j < matrix[0].length; j++) {
+		var matrix = new double[m1.length][m1[0].length];
+		for (var i = 0; i < matrix.length; i++) {
+			for (var j = 0; j < matrix[0].length; j++) {
 				matrix[i][j] = Math.pow(m1[i][j], power);
 			}
 		}
@@ -430,11 +430,11 @@ public enum MatrixOps { ;
 	 * @return  same matrix with values pow'ed
 	 */
 	public static double [] pow(double [] m1, double power) {
-		double[] matrix = new double[10];
-		int count = 0;
-		for (double v : m1) {
+		var matrix = new double[10];
+		var count = 0;
+		for (var v : m1) {
 			if (matrix.length == count) matrix = Arrays.copyOf(matrix, count * 2);
-			double pow = Math.pow(v, power);
+			var pow = Math.pow(v, power);
 			matrix[count++] = pow;
 		}
 		matrix = Arrays.copyOfRange(matrix, 0, count);
@@ -449,9 +449,9 @@ public enum MatrixOps { ;
 	 * @return  same matrix with values log'ed
 	 */
 	public static double [][] log(double [][] m1, boolean infAsZero) {
-		double[][] matrix = new double[m1.length][m1[0].length];
-		for (int i = 0; i < matrix.length; i++) {
-			for (int j = 0; j < matrix[0].length; j++) {
+		var matrix = new double[m1.length][m1[0].length];
+		for (var i = 0; i < matrix.length; i++) {
+			for (var j = 0; j < matrix[0].length; j++) {
 				matrix[i][j] = Math.log(m1[i][j]);
 				if(infAsZero && Double.isInfinite(matrix[i][j]))
 					matrix[i][j] = 0.0;
@@ -473,9 +473,9 @@ public enum MatrixOps { ;
 		if (y == null)
 			y = new double[x.length][x[0].length];
 
-		for (int i = 0; i < y.length; i++) {
+		for (var i = 0; i < y.length; i++) {
 			double[] mi = x[i], ri = y[i];
-			for (int j = 0; j < y[0].length; j++)
+			for (var j = 0; j < y[0].length; j++)
 				ri[j] = 1 / mi[j];
 		}
 		return y;
@@ -486,11 +486,11 @@ public enum MatrixOps { ;
 	 * @return scalar inverse of vector
 	 */
 	public static double [] scalarInverse(double [] v1) {
-		double[] vector = new double[10];
-		int count = 0;
-		for (double v : v1) {
+		var vector = new double[10];
+		var count = 0;
+		for (var v : v1) {
 			if (vector.length == count) vector = Arrays.copyOf(vector, count * 2);
-			double v2 = 1 / v;
+			var v2 = 1 / v;
 			vector[count++] = v2;
 		}
 		vector = Arrays.copyOfRange(vector, 0, count);
@@ -503,9 +503,9 @@ public enum MatrixOps { ;
 	 * @return new 2D matrix with normal random values with mean 0 and std. dev 1
 	 */
 	public static double[][] rnorm(int m, int n) {
-		double[][] array = new double[m][n];
-		for (int i = 0; i < m; i++) {
-			for (int j = 0; j < array[i].length; j++) {				
+		var array = new double[m][n];
+		for (var i = 0; i < m; i++) {
+			for (var j = 0; j < array[i].length; j++) {
 				array[i][j] = rnorm(0.0,1.0);
 			}
 		}
@@ -513,10 +513,10 @@ public enum MatrixOps { ;
 	}
 	
 	public static double [] rnorm(int n, double [] mus, double [] sigmas) {
-		double[] res = new double[10];
-		int count = 0;
-		for (int i = 0; i < n; i++) {
-			double v = mus[i] + (ThreadLocalRandom.current().nextGaussian() * sigmas[i]);
+		var res = new double[10];
+		var count = 0;
+		for (var i = 0; i < n; i++) {
+			var v = mus[i] + (ThreadLocalRandom.current().nextGaussian() * sigmas[i]);
 			if (res.length == count) res = Arrays.copyOf(res, count * 2);
 			res[count++] = v;
 		}
@@ -525,10 +525,10 @@ public enum MatrixOps { ;
 	}
 
 	public static double [] rnorm(int n, double mu, double [] sigmas) {
-		double[] res = new double[10];
-		int count = 0;
-		for (int i = 0; i < n; i++) {
-			double v = mu + (ThreadLocalRandom.current().nextGaussian() * sigmas[i]);
+		var res = new double[10];
+		var count = 0;
+		for (var i = 0; i < n; i++) {
+			var v = mu + (ThreadLocalRandom.current().nextGaussian() * sigmas[i]);
 			if (res.length == count) res = Arrays.copyOf(res, count * 2);
 			res[count++] = v;
 		}
@@ -559,15 +559,15 @@ public enum MatrixOps { ;
 	 * @return new matrix with booelans with values matrix1[i,j] == matrix2[i,j]
 	 */
 	public static boolean [][] equal(double [][] matrix1, double [][] matrix2) {
-		boolean [][] equals = new boolean[matrix1.length][matrix1[0].length];
+		var equals = new boolean[matrix1.length][matrix1[0].length];
 		if( matrix1.length != matrix2.length) {
 			throw new IllegalArgumentException("Dimensions does not match");
 		}
 		if( matrix1[0].length != matrix2[0].length) {
 			throw new IllegalArgumentException("Dimensions does not match");
 		}
-		for (int i = 0; i < matrix1.length; i++) {
-			for (int j = 0; j < matrix1[0].length; j++) {
+		for (var i = 0; i < matrix1.length; i++) {
+			for (var j = 0; j < matrix1[0].length; j++) {
 				equals[i][j] = Double.compare(matrix1[i][j], matrix2[i][j]) == 0;
 			}
 		}
@@ -582,15 +582,15 @@ public enum MatrixOps { ;
 	 * @return new matrix with booelans with values matrix1[i,j] == matrix2[i,j]
 	 */
 	public static boolean [][] equal(boolean [][] matrix1, boolean [][] matrix2) {
-		boolean [][] equals = new boolean[matrix1.length][matrix1[0].length];
+		var equals = new boolean[matrix1.length][matrix1[0].length];
 		if( matrix1.length != matrix2.length) {
 			throw new IllegalArgumentException("Dimensions does not match");
 		}
 		if( matrix1[0].length != matrix2[0].length) {
 			throw new IllegalArgumentException("Dimensions does not match");
 		}
-		for (int i = 0; i < matrix1.length; i++) {
-			for (int j = 0; j < matrix1[0].length; j++) {
+		for (var i = 0; i < matrix1.length; i++) {
+			for (var j = 0; j < matrix1[0].length; j++) {
 				equals[i][j] = (matrix1[i][j] == matrix2[i][j]);
 			}
 		}
@@ -605,9 +605,9 @@ public enum MatrixOps { ;
 	 * @return new matrix with booelans with values matrix1[i,j] == matrix2[i,j]
 	 */
 	public static boolean [][] biggerThan(double [][] matrix, double value) {
-		boolean [][] equals = new boolean[matrix.length][matrix[0].length];
-		for (int i = 0; i < matrix.length; i++) {
-			for (int j = 0; j < matrix[0].length; j++) {
+		var equals = new boolean[matrix.length][matrix[0].length];
+		for (var i = 0; i < matrix.length; i++) {
+			for (var j = 0; j < matrix[0].length; j++) {
 				equals[i][j] = Double.compare(matrix[i][j], value) == 1;
 			}
 		}
@@ -619,9 +619,9 @@ public enum MatrixOps { ;
 	 * @return new matrix with booleans which are the negations of the input
 	 */
 	public static boolean [][] negate(boolean [][] booleans) {
-		boolean [][] negates = new boolean[booleans.length][booleans[0].length];
-		for (int i = 0; i < booleans.length; i++) {
-			for (int j = 0; j < booleans[0].length; j++) {
+		var negates = new boolean[booleans.length][booleans[0].length];
+		for (var i = 0; i < booleans.length; i++) {
+			for (var j = 0; j < booleans[0].length; j++) {
 				negates[i][j] = !booleans[i][j];
 			}
 		}
@@ -633,9 +633,9 @@ public enum MatrixOps { ;
 	 * @return
 	 */
 	public static double [][] abs(boolean [][] booleans) {
-		double [][] absolutes = new double[booleans.length][booleans[0].length];
-		for (int i = 0; i < booleans.length; i++) {
-			for (int j = 0; j < booleans[0].length; j++) {
+		var absolutes = new double[booleans.length][booleans[0].length];
+		for (var i = 0; i < booleans.length; i++) {
+			for (var j = 0; j < booleans[0].length; j++) {
 				absolutes[i][j] = booleans[i][j] ? 1 : 0;
 			}
 		}
@@ -647,9 +647,9 @@ public enum MatrixOps { ;
 	 * @return
 	 */
 	public static double [][] abs(double [][] vals) {
-		double [][] absolutes = new double[vals.length][vals[0].length];
-		for (int i = 0; i < vals.length; i++) {
-			for (int j = 0; j < vals[0].length; j++) {
+		var absolutes = new double[vals.length][vals[0].length];
+		for (var i = 0; i < vals.length; i++) {
+			for (var j = 0; j < vals[0].length; j++) {
 				absolutes[i][j] = Math.abs(vals[i][j]);
 			}
 		}
@@ -661,11 +661,11 @@ public enum MatrixOps { ;
 	 * @return
 	 */
 	public static double [] abs(double [] vals) {
-		double[] absolutes = new double[10];
-		int count = 0;
-		for (double val : vals) {
+		var absolutes = new double[10];
+		var count = 0;
+		for (var val : vals) {
 			if (absolutes.length == count) absolutes = Arrays.copyOf(absolutes, count * 2);
-			double abs = Math.abs(val);
+			var abs = Math.abs(val);
 			absolutes[count++] = abs;
 		}
 		absolutes = Arrays.copyOfRange(absolutes, 0, count);
@@ -673,9 +673,9 @@ public enum MatrixOps { ;
 	}
 
 	public static double [][] sign(double [][] matrix) {
-		double [][] signs = new double[matrix.length][matrix[0].length];
-		for (int i = 0; i < matrix.length; i++) {
-			for (int j = 0; j < matrix[0].length; j++) {
+		var signs = new double[matrix.length][matrix[0].length];
+		for (var i = 0; i < matrix.length; i++) {
+			for (var j = 0; j < matrix[0].length; j++) {
 				signs[i][j] = matrix[i][j] >= 0 ? 1 : -1;
 			}
 		}
@@ -695,9 +695,9 @@ public enum MatrixOps { ;
         switch (axis) {
             case 0:
                 result = new double[1][matrix[0].length];
-                for (int j = 0; j < matrix[0].length; j++) {
-                    double colsum = 0.0;
-                    for (double[] aMatrix : matrix) {
+                for (var j = 0; j < matrix[0].length; j++) {
+					var colsum = 0.0;
+                    for (var aMatrix : matrix) {
                         colsum += aMatrix[j];
                     }
                     result[0][j] = colsum / matrix.length;
@@ -705,9 +705,9 @@ public enum MatrixOps { ;
                 break;
             case 1:
                 result = new double[matrix.length][1];
-                for (int i = 0; i < matrix.length; i++) {
-                    double rowsum = 0.0;
-                    for (int j = 0; j < matrix[0].length; j++) {
+                for (var i = 0; i < matrix.length; i++) {
+					var rowsum = 0.0;
+                    for (var j = 0; j < matrix[0].length; j++) {
                         rowsum += matrix[i][j];
                     }
                     result[i][0] = rowsum / matrix[0].length;
@@ -715,8 +715,8 @@ public enum MatrixOps { ;
                 break;
             case 2:
                 result = new double[1][1];
-                for (int j = 0; j < matrix[0].length; j++) {
-                    for (double[] aMatrix : matrix) {
+                for (var j = 0; j < matrix[0].length; j++) {
+                    for (var aMatrix : matrix) {
                         result[0][0] += aMatrix[j];
                     }
                 }
@@ -737,9 +737,9 @@ public enum MatrixOps { ;
         switch (axis) {
             case 0:
                 result = new double[1][matrix[0].length];
-                for (int j = 0; j < matrix[0].length; j++) {
-                    double rowsum = 0.0;
-                    for (double[] aMatrix : matrix) {
+                for (var j = 0; j < matrix[0].length; j++) {
+					var rowsum = 0.0;
+                    for (var aMatrix : matrix) {
                         rowsum += aMatrix[j];
                     }
                     result[0][j] = rowsum;
@@ -747,9 +747,9 @@ public enum MatrixOps { ;
                 break;
             case 1:
                 result = new double[matrix.length][1];
-                for (int i = 0; i < matrix.length; i++) {
-                    double colsum = 0.0;
-                    for (int j = 0; j < matrix[0].length; j++) {
+                for (var i = 0; i < matrix.length; i++) {
+					var colsum = 0.0;
+                    for (var j = 0; j < matrix[0].length; j++) {
                         colsum += matrix[i][j];
                     }
                     result[i][0] = colsum;
@@ -769,10 +769,10 @@ public enum MatrixOps { ;
 	 */
 	public static double sumPar(double[][] matrix) {
 
-		int cols = matrix[0].length;
-		int rows = matrix.length;
-		double sum = Arrays.stream(matrix).mapToDouble(aMatrix -> {
-			double result = Arrays.stream(aMatrix, 0, cols).sum();
+		var cols = matrix[0].length;
+		var rows = matrix.length;
+		var sum = Arrays.stream(matrix).mapToDouble(aMatrix -> {
+			var result = Arrays.stream(aMatrix, 0, cols).sum();
 			return result;
 		}).sum();
 
@@ -836,12 +836,12 @@ public enum MatrixOps { ;
 	 * @return sum of all values in the matrix
 	 */
 	public static double sum(double [][] matrix) {
-		double sum = Arrays.stream(matrix).mapToDouble(MatrixOps::sum).sum();
+		var sum = Arrays.stream(matrix).mapToDouble(MatrixOps::sum).sum();
 		return sum;
 	}
 
 	public static double sum(double [] vector) {
-		double res = Arrays.stream(vector).sum();
+		var res = Arrays.stream(vector).sum();
 		return res;
 	}
 
@@ -853,12 +853,12 @@ public enum MatrixOps { ;
 	 * @return
 	 */
 	public static double [][] maximum(double [][] matrix, double maxval) {
-		int l = matrix[0].length;
-		double [][] maxed = new double[matrix.length][l];
-		for (int i = 0; i < matrix.length; i++) {
-			double[] maxI = maxed[i];
-			double[] mmi = matrix[i];
-			for (int j = 0; j < l; j++) {
+		var l = matrix[0].length;
+		var maxed = new double[matrix.length][l];
+		for (var i = 0; i < matrix.length; i++) {
+			var maxI = maxed[i];
+			var mmi = matrix[i];
+			for (var j = 0; j < l; j++) {
 				maxI[j] = Math.max(mmi[j], maxval);
 			}
 		}
@@ -875,10 +875,10 @@ public enum MatrixOps { ;
 	 * @return
 	 */
 	public static void assignAllLessThan(double[][] matrix, double lessthan, double assign) {
-		int l = matrix[0].length;
-		for (int i = 0; i < matrix.length; i++) {
-			double[] mi = matrix[i];
-			for (int j = 0; j < l; j++) {
+		var l = matrix[0].length;
+		for (var i = 0; i < matrix.length; i++) {
+			var mi = matrix[i];
+			for (var j = 0; j < l; j++) {
 				if( mi[j] < lessthan) {
 					mi[j] = assign;
 				}
@@ -902,13 +902,13 @@ public enum MatrixOps { ;
 	 * @return
 	 */
 	public static double [][] replaceNaN(double [][] matrix, double repl) {
-		int l = matrix[0].length;
-		double [][] result = new double[matrix.length][l];
-		for (int i = 0; i < matrix.length; i++) {
-			double[] mi = matrix[i];
-			double[] ri = result[i];
-			for (int j = 0; j < l; j++) {
-				double mij = mi[j];
+		var l = matrix[0].length;
+		var result = new double[matrix.length][l];
+		for (var i = 0; i < matrix.length; i++) {
+			var mi = matrix[i];
+			var ri = result[i];
+			for (var j = 0; j < l; j++) {
+				var mij = mi[j];
 				ri[j] = Double.isNaN(mij) ? repl : mij;
 			}
 		}
@@ -922,9 +922,9 @@ public enum MatrixOps { ;
 	 * @return
 	 */
 	public static double [][] replaceInf(double [][] matrix, double repl) {
-		double [][] result = new double[matrix.length][matrix[0].length];
-		for (int i = 0; i < matrix.length; i++) {
-			for (int j = 0; j < matrix[0].length; j++) {
+		var result = new double[matrix.length][matrix[0].length];
+		for (var i = 0; i < matrix.length; i++) {
+			for (var j = 0; j < matrix[0].length; j++) {
 				if(Double.isInfinite(matrix[i][j])) {
 					result[i][j] = repl;
 				} else {
@@ -937,9 +937,9 @@ public enum MatrixOps { ;
 
 	
 	private static double [][] scalarPow(double[][] matrix, double power) {
-		double [][] result = new double[matrix.length][matrix[0].length];
-		for (int i = 0; i < matrix.length; i++) {
-			for (int j = 0; j < matrix[0].length; j++) {
+		var result = new double[matrix.length][matrix[0].length];
+		for (var i = 0; i < matrix.length; i++) {
+			for (var j = 0; j < matrix[0].length; j++) {
 				result[i][j] += Math.pow(matrix[i][j],power);
 			}
 		}
@@ -947,9 +947,9 @@ public enum MatrixOps { ;
 	}
 
 	public static double [][] addColumnVector(double [][] matrix, double [][] colvector) {
-		double [][] result = new double[matrix.length][matrix[0].length];
-		for (int i = 0; i < matrix.length; i++) {
-			for (int j = 0; j < matrix[0].length; j++) {
+		var result = new double[matrix.length][matrix[0].length];
+		for (var i = 0; i < matrix.length; i++) {
+			for (var j = 0; j < matrix[0].length; j++) {
 				result[i][j] = matrix[i][j] + colvector[i][0];
 			}
 		}
@@ -957,9 +957,9 @@ public enum MatrixOps { ;
 	}
 
 	public static double [][] addRowVector(double [][] matrix, double [][] rowvector) {
-		double [][] result = new double[matrix.length][matrix[0].length];
-		for (int i = 0; i < matrix.length; i++) {
-			for (int j = 0; j < matrix[0].length; j++) {
+		var result = new double[matrix.length][matrix[0].length];
+		for (var i = 0; i < matrix.length; i++) {
+			for (var j = 0; j < matrix[0].length; j++) {
 				result[i][j] = matrix[i][j] + rowvector[0][j];
 			}
 		}
@@ -967,18 +967,18 @@ public enum MatrixOps { ;
 	}
 
 	public static double [][] fillWithRowOld(double [][] matrix, int row) {
-		double [][] result = new double[matrix.length][matrix[0].length];
-		for (int i = 0; i < matrix.length; i++) {
+		var result = new double[matrix.length][matrix[0].length];
+		for (var i = 0; i < matrix.length; i++) {
             System.arraycopy(matrix[row], 0, result[i], 0, matrix[0].length);
 		}
 		return result;
 	}
 
 	public static double [][] fillWithRow(double [][] matrix, int row) {
-		int rows = matrix.length;
-		int cols = matrix[0].length;
-		double [][] result = new double[rows][cols];
-		for (int i = 0; i < rows; i++) {
+		var rows = matrix.length;
+		var cols = matrix[0].length;
+		var result = new double[rows][cols];
+		for (var i = 0; i < rows; i++) {
 			System.arraycopy(matrix[row], 0, result[i], 0, cols);
 		}
 		return result;
@@ -986,11 +986,11 @@ public enum MatrixOps { ;
 
 	
 	public static double [][] tile(double [][] matrix, int rowtimes, int coltimes) {
-		double [][] result = new double[matrix.length*rowtimes][matrix[0].length*coltimes];
+		var result = new double[matrix.length*rowtimes][matrix[0].length*coltimes];
 		for (int i = 0, resultrow = 0; i < rowtimes; i++) {
-			for (double[] aMatrix : matrix) {
+			for (var aMatrix : matrix) {
 				for (int k = 0, resultcol = 0; k < coltimes; k++) {
-					for (int l = 0; l < matrix[0].length; l++) {
+					for (var l = 0; l < matrix[0].length; l++) {
 						result[resultrow][resultcol++] = aMatrix[l];
 					}
 				}
@@ -1002,17 +1002,17 @@ public enum MatrixOps { ;
 	}
 
 	public static double[][] normalize(double[][] x, double[] meanX, double[] stdevX) {
-		double[][] y = new double[x.length][x[0].length];
-		for (int i = 0; i < y.length; i++)
-			for (int j = 0; j < y[i].length; j++)
+		var y = new double[x.length][x[0].length];
+		for (var i = 0; i < y.length; i++)
+			for (var j = 0; j < y[i].length; j++)
 				y[i][j] = (x[i][j] - meanX[j]) / stdevX[j];
 		return y;
 	}
 	
 	public static int [] range(int n) {
-		int[] result = new int[10];
-		int count = 0;
-		for (int i = 0; i < n; i++) {
+		var result = new int[10];
+		var count = 0;
+		for (var i = 0; i < n; i++) {
 			if (result.length == count) result = Arrays.copyOf(result, count * 2);
 			result[count++] = i;
 		}
@@ -1024,9 +1024,9 @@ public enum MatrixOps { ;
 		if( b < a ) {
 			throw new IllegalArgumentException("b has to be larger than a");
 		}
-		int val = a;
-		int [] result = new int[b-a];
-		for (int i = 0; i < (b-a); i++) {
+		var val = a;
+		var result = new int[b-a];
+		for (var i = 0; i < (b-a); i++) {
 			result[i] = val++;
 		}
 		return result;
@@ -1034,12 +1034,12 @@ public enum MatrixOps { ;
 
 	
 	public static int [] concatenate(int [] v1,int [] v2) {
-		int [] result = new int[v1.length+v2.length];
-		int index = 0;
-		for (int i = 0; i < v1.length; i++, index++) {
+		var result = new int[v1.length+v2.length];
+		var index = 0;
+		for (var i = 0; i < v1.length; i++, index++) {
 			result[index] = v1[index];
 		}
-		for (int i = 0; i < v2.length; i++, index++) {
+		for (var i = 0; i < v2.length; i++, index++) {
 			result[index] = v2[i];
 		}
 		return result;
@@ -1047,12 +1047,12 @@ public enum MatrixOps { ;
 	
 	
 		public static double [] concatenate(double [] v1,double [] v2) {
-			double [] result = new double[v1.length+v2.length];
-			int index = 0;
-			for (int i = 0; i < v1.length; i++, index++) {
+			var result = new double[v1.length+v2.length];
+			var index = 0;
+			for (var i = 0; i < v1.length; i++, index++) {
 				result[index] = v1[index];
 			}
-			for (int i = 0; i < v2.length; i++, index++) {
+			for (var i = 0; i < v2.length; i++, index++) {
 				result[index] = v2[i];
 			}
 			return result;
@@ -1061,14 +1061,14 @@ public enum MatrixOps { ;
 	
 	public static double [][] concatenate(double [][] m1,double[][] m2) {
 		if(m1.length!=m2.length) throw new IllegalArgumentException("m1 and m2 must have the same number of rows:" + m1.length + " != " + m2.length);
-		double [][] result = new double[m1.length][m1[0].length+m2[0].length];
-		int resCol = 0;
-		for (int i = 0; i < m1.length; i++) {
+		var result = new double[m1.length][m1[0].length+m2[0].length];
+		var resCol = 0;
+		for (var i = 0; i < m1.length; i++) {
 			resCol = 0;
-			for (int j = 0; j < m1[i].length; j++) {
+			for (var j = 0; j < m1[i].length; j++) {
 				result[i][resCol++] = m1[i][j];
 			}
-			for (int j = 0; j < m2[i].length; j++) {
+			for (var j = 0; j < m2[i].length; j++) {
 				result[i][resCol++] = m2[i][j];
 			}
 		}	
@@ -1078,11 +1078,11 @@ public enum MatrixOps { ;
 	
 	public static double [][] concatenate(double [][] m1,double[] v2) {
 		if(m1.length!=v2.length) throw new IllegalArgumentException("m1 and v2 must have the same number of rows:" + m1.length + " != " + v2.length);
-		double [][] result = new double[m1.length][m1[0].length+1];
-		int resCol = 0;
-		for (int i = 0; i < m1.length; i++) {
+		var result = new double[m1.length][m1[0].length+1];
+		var resCol = 0;
+		for (var i = 0; i < m1.length; i++) {
 			resCol = 0;
-			for (int j = 0; j < m1[i].length; j++) {
+			for (var j = 0; j < m1[i].length; j++) {
 				result[i][resCol++] = m1[i][j];
 			}
 			result[i][resCol++] = v2[i];
@@ -1099,9 +1099,9 @@ public enum MatrixOps { ;
 		if( v1.length != v2.length || v1[0].length != v2[0].length ) {
 			throw new IllegalArgumentException("a and b has to be of equal dimensions");
 		}
-		double [][] result = new double[v1.length][v1[0].length];
-		for (int i = 0; i < v1.length; i++) {
-			for (int j = 0; j < v1[0].length; j++) {
+		var result = new double[v1.length][v1[0].length];
+		for (var i = 0; i < v1.length; i++) {
+			for (var j = 0; j < v1[0].length; j++) {
 				result[i][j] = v1[i][j] * v2[i][j];
 			}
 		}
@@ -1185,14 +1185,14 @@ public enum MatrixOps { ;
 
 
 	public static void assignAtIndex(double[][] num, int[] range, int[] range1, double value) {
-		for (int j = 0; j < range.length; j++) {
+		for (var j = 0; j < range.length; j++) {
 			num[range[j]][range1[j]] = value;
 		}
 	}
 
 	public static double [][] getValuesFromRow(double[][] matrix, int row, int[] indicies) {
-		double [][] values = new double[1][indicies.length];
-		for (int j = 0; j < indicies.length; j++) {
+		var values = new double[1][indicies.length];
+		for (var j = 0; j < indicies.length; j++) {
 			values[0][j] = matrix[row][indicies[j]];
 		}
 		return values;
@@ -1202,18 +1202,18 @@ public enum MatrixOps { ;
 		if( indicies.length != values.length ) {
 			throw new IllegalArgumentException("Length of indicies and values have to be equal");
 		}
-		for (int j = 0; j < indicies.length; j++) {
+		for (var j = 0; j < indicies.length; j++) {
 			matrix[row][indicies[j]] = values[j];
 		}
 	}
 
 	private static double stdev(double[][] matrix) {
-		double m = mean(matrix);
+		var m = mean(matrix);
 
-        int N = matrix.length * matrix[0].length;
+		var N = matrix.length * matrix[0].length;
 
-        double total = Arrays.stream(matrix).mapToDouble(aMatrix -> {
-			double sum = Arrays.stream(aMatrix).map(x -> (x - m) * (x - m)).sum();
+		var total = Arrays.stream(matrix).mapToDouble(aMatrix -> {
+			var sum = Arrays.stream(aMatrix).map(x -> (x - m) * (x - m)).sum();
 			return sum;
 		}).sum();
 
@@ -1221,23 +1221,23 @@ public enum MatrixOps { ;
 	}
 	
 	private static double[] colStddev(double[][] v) {
-		double[] var = variance(v);
-		for (int i = 0; i < var.length; i++)
+		var var = variance(v);
+		for (var i = 0; i < var.length; i++)
 			var[i] = Math.sqrt(var[i]);
 		return var;
 	}
 
 	private static double[] variance(double[][] v) {
-		int m = v.length;
-		int n = v[0].length;
-		double[] var = new double[n];
-		int degrees = (m - 1);
-		for (int j = 0; j < n; j++) {
+		var m = v.length;
+		var n = v[0].length;
+		var var = new double[n];
+		var degrees = (m - 1);
+		for (var j = 0; j < n; j++) {
             double s = 0;
-			for (double[] aV1 : v) s += aV1[j];
+			for (var aV1 : v) s += aV1[j];
 			s /= m;
             double c = 0;
-            for (double[] aV : v) c += (aV[j] - s) * (aV[j] - s);
+            for (var aV : v) c += (aV[j] - s) * (aV[j] - s);
 			var[j] = c / degrees;
 		}
 		return var;
@@ -1248,44 +1248,44 @@ public enum MatrixOps { ;
 	 * @return a new vector with the column means of matrix
 	 */
 	private static double[] colMeans(double[][] matrix) {
-		int rows = matrix.length;
-		int cols = matrix[0].length;
-		double[] mean = new double[cols];
-		for (double[] aMatrix : matrix)
-			for (int j = 0; j < cols; j++)
+		var rows = matrix.length;
+		var cols = matrix[0].length;
+		var mean = new double[cols];
+		for (var aMatrix : matrix)
+			for (var j = 0; j < cols; j++)
 				mean[j] += aMatrix[j];
-		for (int j = 0; j < cols; j++)
+		for (var j = 0; j < cols; j++)
 			mean[j] /= rows;
 		return mean;
 	}
 
 	public static double[][] copyRows(double[][] input, int... indices) {
-		double[][] matrix = new double[indices.length][input[0].length];
-		for (int i = 0; i < indices.length; i++)
+		var matrix = new double[indices.length][input[0].length];
+		for (var i = 0; i < indices.length; i++)
 			System.arraycopy(input[indices[i]], 0, matrix[i], 0, input[indices[i]].length);
 		return matrix;
 	}
 
 	public static double[][] copyCols(double[][] input, int... indices) {
-		double[][] matrix = new double[indices.length][input.length];
-		for (int i = 0; i < indices.length; i++)
-			for (int j = 0; j < input.length; j++) {
+		var matrix = new double[indices.length][input.length];
+		for (var i = 0; i < indices.length; i++)
+			for (var j = 0; j < input.length; j++) {
 				matrix[i][j] = input[j][indices[i]];
 			}
 		return matrix;
 	}
 
 	public static double[][] fillMatrix(int rows, int cols, double fillvalue) {
-		double[][] matrix = new double[rows][cols];
-		for (int i = 0; i < matrix.length; i++)
+		var matrix = new double[rows][cols];
+		for (var i = 0; i < matrix.length; i++)
 			Arrays.fill(matrix[i], fillvalue);
 		return matrix;
 	}
 
 	public static double[][] plus(double[][] m1, double[][] m2) {
-		double[][] matrix = new double[m1.length][m1[0].length];
-		for (int i = 0; i < m1.length; i++)
-			for (int j = 0; j < m1[0].length; j++)
+		var matrix = new double[m1.length][m1[0].length];
+		for (var i = 0; i < m1.length; i++)
+			for (var j = 0; j < m1[0].length; j++)
 				matrix[i][j] = m1[i][j] + m2[i][j];
 		return matrix;
 	}
@@ -1293,13 +1293,13 @@ public enum MatrixOps { ;
 	public static double[][] plusLerp(double[][] a, double[][] b, double ab) {
 		if (ab == 0) return a;
 		else if (ab == 1) return b;
-		double ba = 1-ab;
-		double[][] c = new double[a.length][a[0].length];
-		for (int i = 0; i < a.length; i++) {
-			double[] ci = c[i];
-			double[] ai = a[i];
-			double[] bi = b[i];
-			for (int j = 0; j < a[0].length; j++) {
+		var ba = 1-ab;
+		var c = new double[a.length][a[0].length];
+		for (var i = 0; i < a.length; i++) {
+			var ci = c[i];
+			var ai = a[i];
+			var bi = b[i];
+			for (var j = 0; j < a[0].length; j++) {
 				ci[j] = (ab* ai[j]) + (ba* bi[j]);
 			}
 		}
@@ -1307,20 +1307,20 @@ public enum MatrixOps { ;
 	}
 	
 	public static double[][] scalarPlus(double[][] m1, double m2) {
-		double[][] matrix = new double[m1.length][m1[0].length];
-		for (int i = 0; i < m1.length; i++)
-			for (int j = 0; j < m1[0].length; j++)
+		var matrix = new double[m1.length][m1[0].length];
+		for (var i = 0; i < m1.length; i++)
+			for (var j = 0; j < m1[0].length; j++)
 				matrix[i][j] = m1[i][j] + m2;
 		return matrix;
 	}
 
 	
 	public static double [] scalarPlus(double[] m1, double m2) {
-		double[] matrix = new double[10];
-		int count = 0;
-		for (double v : m1) {
+		var matrix = new double[10];
+		var count = 0;
+		for (var v : m1) {
 			if (matrix.length == count) matrix = Arrays.copyOf(matrix, count * 2);
-			double v1 = v + m2;
+			var v1 = v + m2;
 			matrix[count++] = v1;
 		}
 		matrix = Arrays.copyOfRange(matrix, 0, count);
@@ -1333,29 +1333,29 @@ public enum MatrixOps { ;
 
 	
 	public static double[][] sMinus(double[][] m1, double[][] m2) {
-		double[][] matrix = new double[m1.length][m1[0].length];
-		for (int i = 0; i < m1.length; i++)
-			for (int j = 0; j < m1[0].length; j++)
+		var matrix = new double[m1.length][m1[0].length];
+		for (var i = 0; i < m1.length; i++)
+			for (var j = 0; j < m1[0].length; j++)
 				matrix[i][j] = m1[i][j] - m2[i][j];
 		return matrix;
 	}
 
 	
 	public static double[][] scalarDivide(double[][] numerator, double denom) {
-		double[][] matrix = new double[numerator.length][numerator[0].length];
-		for (int i = 0; i < numerator.length; i++)
-			for (int j = 0; j < numerator[i].length; j++)
+		var matrix = new double[numerator.length][numerator[0].length];
+		for (var i = 0; i < numerator.length; i++)
+			for (var j = 0; j < numerator[i].length; j++)
 				matrix[i][j] = numerator[i][j] / denom;
 		return matrix;
 	}
 
 	
 	public static double [] scalarDivide(double numerator, double[] denom) {
-		double[] vector = new double[10];
-		int count = 0;
-		for (double v : denom) {
+		var vector = new double[10];
+		var count = 0;
+		for (var v : denom) {
 			if (vector.length == count) vector = Arrays.copyOf(vector, count * 2);
-			double v1 = numerator / v;
+			var v1 = numerator / v;
 			vector[count++] = v1;
 		}
 		vector = Arrays.copyOfRange(vector, 0, count);
@@ -1364,11 +1364,11 @@ public enum MatrixOps { ;
 
 	
 	public static double [] scalarDivide(double[] numerator, double denom) {
-		double[] vector = new double[10];
-		int count = 0;
-		for (double v : numerator) {
+		var vector = new double[10];
+		var count = 0;
+		for (var v : numerator) {
 			if (vector.length == count) vector = Arrays.copyOf(vector, count * 2);
-			double v1 = v / denom;
+			var v1 = v / denom;
 			vector[count++] = v1;
 		}
 		vector = Arrays.copyOfRange(vector, 0, count);
@@ -1377,10 +1377,10 @@ public enum MatrixOps { ;
 
 	
 	public static double [] scalarDivide(double [] numerator, double[] denom) {
-		double[] vector = new double[10];
-		int count = 0;
-		for (int i = 0; i < denom.length; i++) {
-			double v = numerator[i] / denom[i];
+		var vector = new double[10];
+		var count = 0;
+		for (var i = 0; i < denom.length; i++) {
+			var v = numerator[i] / denom[i];
 			if (vector.length == count) vector = Arrays.copyOf(vector, count * 2);
 			vector[count++] = v;
 		}
@@ -1390,18 +1390,18 @@ public enum MatrixOps { ;
 
 	
 	public static double[][] scalarDivide(double[][] numerator, double[][] denom) {
-		double[][] matrix = new double[numerator.length][numerator[0].length];
-		for (int i = 0; i < numerator.length; i++)
-			for (int j = 0; j < numerator[i].length; j++)
+		var matrix = new double[numerator.length][numerator[0].length];
+		for (var i = 0; i < numerator.length; i++)
+			for (var j = 0; j < numerator[i].length; j++)
 				matrix[i][j] = numerator[i][j] / denom[i][j];
 		return matrix;
 	}
 	
 	
 	public static double[][] scalarMult(double[][] m1, double mul) {
-		double[][] matrix = new double[m1.length][m1[0].length];
-		for (int i = 0; i < m1.length; i++)
-			for (int j = 0; j < m1[i].length; j++)
+		var matrix = new double[m1.length][m1[0].length];
+		for (var i = 0; i < m1.length; i++)
+			for (var j = 0; j < m1[i].length; j++)
 				matrix[i][j] = m1[i][j] * mul;
 		return matrix;
 	}
@@ -1409,16 +1409,16 @@ public enum MatrixOps { ;
 	
 	public static double[][] times(double[][] a, double[][] b){
 		if(a.length == 0) return ArrayUtil.EMPTY_DOUBLE_DOUBLE;
-		if(a[0].length != b.length) return null; 
+		if(a[0].length != b.length) return null;
 
-		int n = a[0].length;
-		int m = a.length;
-		int p = b[0].length;
-        double[][] ans = new double[m][p];
+		var n = a[0].length;
+		var m = a.length;
+		var p = b[0].length;
+		var ans = new double[m][p];
 
-		for(int i = 0;i < m;i++){
-			for(int j = 0;j < p;j++){
-				for(int k = 0;k < n;k++){
+		for(var i = 0; i < m; i++){
+			for(var j = 0; j < p; j++){
+				for(var k = 0; k < n; k++){
 					ans[i][j] += a[i][k] * b[k][j];
 				}
 			}
@@ -1427,11 +1427,11 @@ public enum MatrixOps { ;
 	}
 
 	public static double [] scalarMultiply(double[] m1, double mul) {
-		double[] matrix = new double[10];
-		int count = 0;
-		for (double v : m1) {
+		var matrix = new double[10];
+		var count = 0;
+		for (var v : m1) {
 			if (matrix.length == count) matrix = Arrays.copyOf(matrix, count * 2);
-			double v1 = v * mul;
+			var v1 = v * mul;
 			matrix[count++] = v1;
 		}
 		matrix = Arrays.copyOfRange(matrix, 0, count);
@@ -1439,10 +1439,10 @@ public enum MatrixOps { ;
 	}
 
 	public static double [] scalarMultiply(double[] m1, double [] m2) {
-		double[] matrix = new double[10];
-		int count = 0;
-		for (int i = 0; i < m1.length; i++) {
-			double v = m1[i] * m2[i];
+		var matrix = new double[10];
+		var count = 0;
+		for (var i = 0; i < m1.length; i++) {
+			var v = m1[i] * m2[i];
 			if (matrix.length == count) matrix = Arrays.copyOf(matrix, count * 2);
 			matrix[count++] = v;
 		}
@@ -1451,11 +1451,11 @@ public enum MatrixOps { ;
 	}
 
 	public static double[][] diag(double[][] ds) {
-		boolean isLong = ds.length > ds[0].length;
-		int dim = Math.max(ds.length,ds[0].length);
-		double [][] result = new double [dim][dim];
-		for (int i = 0; i < result.length; i++) {
-			for (int j = 0; j < result.length; j++) {
+		var isLong = ds.length > ds[0].length;
+		var dim = Math.max(ds.length,ds[0].length);
+		var result = new double [dim][dim];
+		for (var i = 0; i < result.length; i++) {
+			for (var j = 0; j < result.length; j++) {
 				if(i==j) {
 					if(isLong)
 						result[i][j] = ds[i][0];
@@ -1470,10 +1470,10 @@ public enum MatrixOps { ;
 
 	public static double [][] dot(double [][] a, double [][] b) {
 		if(a[0].length!=b.length) throw new IllegalArgumentException("Dims does not match: " + a[0].length  + "!=" + b.length);
-		double [][] res = new double[a.length][b[0].length];
-		for (int row = 0; row < a.length; row++) {
-			for (int col = 0; col < b[row].length; col++) {
-				for (int i = 0; i < a[0].length; i++) {
+		var res = new double[a.length][b[0].length];
+		for (var row = 0; row < a.length; row++) {
+			for (var col = 0; col < b[row].length; col++) {
+				for (var i = 0; i < a[0].length; i++) {
 					res[row][col] = a[row][i] * b[i][col];
 				}
 			}
@@ -1485,7 +1485,7 @@ public enum MatrixOps { ;
 		if(a.length!=b.length) {
 			throw new IllegalArgumentException("Vectors are not of equal length");
 		}
-		double res = IntStream.range(0, b.length).mapToDouble(i -> a[i] * b[i]).sum();
+		var res = IntStream.range(0, b.length).mapToDouble(i -> a[i] * b[i]).sum();
 		return res;
 	}
 	
@@ -1493,21 +1493,21 @@ public enum MatrixOps { ;
 		if((a1.length+a2.length)!=b.length) {
 			throw new IllegalArgumentException("Vectors are not of equal length");
 		}
-		double res = 0.0;
-		int bidx = 0;
-		for (int i = 0; i < a1.length; i++, bidx++) {
+		var res = 0.0;
+		var bidx = 0;
+		for (var i = 0; i < a1.length; i++, bidx++) {
 			res += a1[i] * b[bidx];
 		}
-		for (int i = 0; i < a2.length; i++, bidx++) {
+		for (var i = 0; i < a2.length; i++, bidx++) {
 			res += a2[i] * b[bidx];
 		}
 		return res;
 	}
 
 	public static int maxIdx(double[] probs) {
-		int maxIdx = 0;
-		double max = probs[maxIdx];
-		for (int i = 0; i < probs.length; i++) {
+		var maxIdx = 0;
+		var max = probs[maxIdx];
+		for (var i = 0; i < probs.length; i++) {
 			if(probs[i]>max) {
 				max = probs[i];
 				maxIdx = i;
@@ -1517,18 +1517,18 @@ public enum MatrixOps { ;
 	}
 
 	public static double[][] extractCol(int col, double[][] matrix) {
-		double [][] res = new double[matrix.length][1];
-		for (int row = 0; row < matrix.length; row++) {
+		var res = new double[matrix.length][1];
+		for (var row = 0; row < matrix.length; row++) {
 			res[row][0] = matrix[row][col];
 		}
 		return res;
 	}
 
 	public static double[] extractColVector(int col, double[][] matrix) {
-		double[] res = new double[10];
-		int count = 0;
-		for (double[] doubles : matrix) {
-			double aDouble = doubles[col];
+		var res = new double[10];
+		var count = 0;
+		for (var doubles : matrix) {
+			var aDouble = doubles[col];
 			if (res.length == count) res = Arrays.copyOf(res, count * 2);
 			res[count++] = aDouble;
 		}
@@ -1537,11 +1537,11 @@ public enum MatrixOps { ;
 	}
 
 	public static double [][] extractDoubleArray(DMatrix p) {
-		int rows = p.getNumRows();
-		int cols = p.getNumCols();
-		double [][] result = new double[rows][cols];
-		for (int i = 0; i < rows; i++) {
-			for (int j = 0; j < cols; j++) {
+		var rows = p.getNumRows();
+		var cols = p.getNumCols();
+		var result = new double[rows][cols];
+		for (var i = 0; i < rows; i++) {
+			for (var j = 0; j < cols; j++) {
 				result[i][j] = p.get(i, j);
 			}
 		}
@@ -1549,8 +1549,8 @@ public enum MatrixOps { ;
 	}
 	
 	public static double [] extractDoubleVector(DMatrixRBlock p) {
-		int rows = p.getNumRows();
-		int cols = p.getNumCols();
+		var rows = p.getNumRows();
+		var cols = p.getNumCols();
 		
 		if(rows != 1 && cols != 1) {
 			throw new IllegalArgumentException("Cannot convert a " + rows + 'x' + cols + " matrix to a vector");
@@ -1559,12 +1559,12 @@ public enum MatrixOps { ;
 		double [] result;
 		if(cols == 1) {
 			result = new double[rows];
-			for (int j = 0; j < rows; j++) {
+			for (var j = 0; j < rows; j++) {
 				result[j] = p.get(j,0);
 			}
 		} else {
 			result = new double[cols];
-			for (int j = 0; j < cols; j++) {
+			for (var j = 0; j < cols; j++) {
 				result[j] = p.get(0,j);
 			}			
 		}
@@ -1572,8 +1572,8 @@ public enum MatrixOps { ;
 	}
 
 	public static double[][] extractRowCols(int col, double[][] zs2, int[] cJIdxs) {
-		double [][] res = new double[cJIdxs.length][1];
-		for (int row = 0; row < cJIdxs.length; row++) {
+		var res = new double[cJIdxs.length][1];
+		for (var row = 0; row < cJIdxs.length; row++) {
 			res[row][0] = zs2[cJIdxs[row]][col];
 		}
 		return res;
@@ -1590,9 +1590,9 @@ public enum MatrixOps { ;
 
 
 	public static double[][] makeDesignMatrix(double[][] xstmp) {
-		double [][] xs = new double[xstmp.length][xstmp[0].length+1];
-		for (int row = 0; row < xs.length; row++) {
-			for (int col = 0; col < xs[0].length; col++) {
+		var xs = new double[xstmp.length][xstmp[0].length+1];
+		for (var row = 0; row < xs.length; row++) {
+			for (var col = 0; col < xs[0].length; col++) {
 				if(col==0) {
 					xs[row][0] = 1.0;
 				} else {
@@ -1604,9 +1604,9 @@ public enum MatrixOps { ;
 	}
 
 	public static double[][] addIntercept(double[][] xs) {
-		double [][] result = new double [xs.length][xs[0].length+1];
-		for (int i = 0; i < result.length; i++) {
-			for (int j = 0; j < result[0].length; j++) {
+		var result = new double [xs.length][xs[0].length+1];
+		for (var i = 0; i < result.length; i++) {
+			for (var j = 0; j < result[0].length; j++) {
 				if(j==0) {
 					result[i][0] = 1.0;
 				} else {
@@ -1618,9 +1618,9 @@ public enum MatrixOps { ;
 	}
 
 	public static double[] toPrimitive(Double[] ds) {
-		double[] result = new double[10];
-		int count = 0;
-		for (Double d : ds) {
+		var result = new double[10];
+		var count = 0;
+		for (var d : ds) {
 			if (result.length == count) result = Arrays.copyOf(result, count * 2);
 			double v = d;
 			result[count++] = v;
@@ -1630,8 +1630,8 @@ public enum MatrixOps { ;
 	}
 	
 	public static double [] extractRowFromFlatMatrix(double[] flatMatrix, int rowIdx, int dimension) {
-		double [] point = new double[dimension];
-		int offset = rowIdx * dimension;
+		var point = new double[dimension];
+		var offset = rowIdx * dimension;
         System.arraycopy(flatMatrix, offset, point, 0, dimension);
 		return point;
 	}

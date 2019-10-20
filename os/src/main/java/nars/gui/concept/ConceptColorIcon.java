@@ -33,7 +33,7 @@ public class ConceptColorIcon extends ConceptView {
 
     @Override
     protected void update() {
-        Concept c = concept();
+        var c = concept();
         colorize.accept(c, color);
     }
 }

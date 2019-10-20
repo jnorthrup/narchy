@@ -66,7 +66,7 @@ public class BiQuadFilter {
 		  /* apply filtering */
 		  accept(in);
 		  /* invert  */
-		  for (int j = 0; j < in.length; j++){
+		  for (var j = 0; j < in.length; j++){
 		    tmp[in.length-j-1] = in[j];
 		  }
 		  /* mirror again */
@@ -76,16 +76,16 @@ public class BiQuadFilter {
 		  /* apply filtering */
 		  accept(tmp);
 		  /* invert back */
-		  for (int j = 0; j < in.length; j++){
+		  for (var j = 0; j < in.length; j++){
 		    in[j] = tmp[in.length-j-1];
 		  }
 	}
 
 	private void accept(float[] in) {
 		double i1 = this.i1, i2 = this.i2, o2 = this.o2, o1 = this.o1;
-		for (int j = 0; j < in.length; j++) {
+		for (var j = 0; j < in.length; j++) {
 			double i0 = in[j];
-			double o0 = b1 * i0 + b2 * i1 + b3 * i2 - a2 * o1 - a3 * o2;
+			var o0 = b1 * i0 + b2 * i1 + b3 * i2 - a2 * o1 - a3 * o2;
 			in[j] = (float) o0;
 			i2 = i1;
 			i1 = i0;

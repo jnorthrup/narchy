@@ -87,7 +87,7 @@ public class BomberPlayer extends Thread {
         /** if java runtime is Java 2 */
         if (Main.J2) {
             /** create the rendering hints for better graphics output */
-            RenderingHints h = new RenderingHints(null);
+            var h = new RenderingHints(null);
             h.put(RenderingHints.KEY_TEXT_ANTIALIASING,
                     RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
             h.put(RenderingHints.KEY_FRACTIONALMETRICS,
@@ -103,14 +103,14 @@ public class BomberPlayer extends Thread {
 
         /** create the images */
         sprites = new Image[4][5][5];
-        Toolkit tk = Toolkit.getDefaultToolkit();
+        var tk = Toolkit.getDefaultToolkit();
         /** open the files */
         try {
-            String path = "";
+            var path = "";
             int[] states = {UP, DOWN, LEFT, RIGHT, EXPLODING};
-            for (int p = 0; p < 4; p++) {
-                for (int d = 0; d < 5; d++) {
-                    for (int f = 0; f < 5; f++) {
+            for (var p = 0; p < 4; p++) {
+                for (var d = 0; d < 5; d++) {
+                    for (var f = 0; f < 5; f++) {
                         /** generate file name */
                         path = BomberMain.RP + "Images/";
                         path += "Bombermans/Player " + (p + 1) + "/";
@@ -139,8 +139,8 @@ public class BomberPlayer extends Thread {
 
         /** create the bomb grid */
         bombGrid = new boolean[17][17];
-        for (int i = 0; i < 17; i++)
-            for (int j = 0; j < 17; j++)
+        for (var i = 0; i < 17; i++)
+            for (var j = 0; j < 17; j++)
                 bombGrid[i][j] = false;
 
         int r = 0, c = 0;
@@ -164,13 +164,13 @@ public class BomberPlayer extends Thread {
         x = r << BomberMain.shiftCount;
         y = c << BomberMain.shiftCount;
 
-        MediaTracker tracker = new MediaTracker(game);
+        var tracker = new MediaTracker(game);
         try {
-            int counter = 0;
+            var counter = 0;
             /** load the images */
-            for (int p = 0; p < 4; p++) {
-                for (int d = 0; d < 5; d++) {
-                    for (int f = 0; f < 5; f++) {
+            for (var p = 0; p < 4; p++) {
+                for (var d = 0; d < 5; d++) {
+                    for (var f = 0; f < 5; f++) {
                         tracker.addImage(sprites[p][d][f], counter++);
                     }
                 }
@@ -270,7 +270,7 @@ public class BomberPlayer extends Thread {
     public void keyReleased(KeyEvent evt) {
         /** if a direction key is released */
         if (!isExploding && !isDead) {
-            boolean b = IntStream.of(UP, DOWN, LEFT, RIGHT).anyMatch(i -> evt.getKeyCode() == keys[i]);
+            var b = IntStream.of(UP, DOWN, LEFT, RIGHT).anyMatch(i -> evt.getKeyCode() == keys[i]);
             if (b) {
                 /** if down key is released */
                 if (evt.getKeyCode() == keys[DOWN]) {
@@ -311,7 +311,7 @@ public class BomberPlayer extends Thread {
                 /** if no key is currently down */
                 if (currentDirKeyDown == 0) {
                     /** see if last key pressed is still pressed or not */
-                    boolean keyFound = false;
+                    var keyFound = false;
                     /** search for last key pressed */
                     while (!keyFound && keyQueue.size() > 0) {
                         /** if key is found then exit the loop */
@@ -402,15 +402,15 @@ public class BomberPlayer extends Thread {
     public void run() {
         /** can move flat */
         /** keeps track of last key state */
-        boolean lastState = false;
+        var lastState = false;
         /** shift count */
-        int shiftCount = BomberMain.shiftCount;
+        var shiftCount = BomberMain.shiftCount;
         /** offset size */
-        int offset = 1 << (BomberMain.shiftCount / 2);
+        var offset = 1 << (BomberMain.shiftCount / 2);
         /** block size */
-        int size = BomberMain.size;
+        var size = BomberMain.size;
         /** half the block size */
-        int halfSize = BomberMain.size / 2;
+        var halfSize = BomberMain.size / 2;
         /** temporary variables */
         int bx = 0, by = 0;
         /** unconditional loop */
@@ -443,7 +443,7 @@ public class BomberPlayer extends Thread {
                 /** make sure a key is down */
                 if (dirKeysDown > 0) {
                     /** if left key is down */
-                    boolean canMove = false;
+                    var canMove = false;
                     if ((currentDirKeyDown & BLEFT) > 0) {
                         state = LEFT;
                         /** if west slot is empty then it can move */
@@ -453,7 +453,7 @@ public class BomberPlayer extends Thread {
 
                         /** if it can't move */
                         if (!canMove) {
-                            int oy = 0;
+                            var oy = 0;
                             /** if it's a little bit north */
                             for (oy = -offset; oy < 0; oy += (size / 4)) {
                                 /** and west slot is empty */
@@ -527,7 +527,7 @@ public class BomberPlayer extends Thread {
 
                         /** if it can't move */
                         if (!canMove) {
-                            int oy = 0;
+                            var oy = 0;
                             /** see if it's a bit south */
                             for (oy = -offset; oy < 0; oy += (size / 4)) {
                                 /** and the east slot is empty */
@@ -601,7 +601,7 @@ public class BomberPlayer extends Thread {
 
                         /** if it can't move */
                         if (!canMove) {
-                            int ox = 0;
+                            var ox = 0;
                             /** see if it's a bit to the left */
                             for (ox = -offset; ox < 0; ox += (size / 4)) {
                                 /** and the north slot is empty */
@@ -672,7 +672,7 @@ public class BomberPlayer extends Thread {
 
                         /** if it can't move */
                         if (!canMove) {
-                            int ox = 0;
+                            var ox = 0;
                             /** see if it's a bit to the west */
                             for (ox = -offset; ox < 0; ox += (size / 4)) {
                                 /** and the south block is empty */
@@ -800,7 +800,7 @@ public class BomberPlayer extends Thread {
      * Drawing method.
      */
     public void paint(Graphics graphics) {
-        Graphics g = graphics;
+        var g = graphics;
         /** if java runtime is Java 2 */
         if (Main.J2) {
             paint2D(graphics);
@@ -828,7 +828,7 @@ public class BomberPlayer extends Thread {
      * @param graphics graphics handle
      */
     public void paint2D(Graphics graphics) {
-        Graphics2D g2 = (Graphics2D) graphics;
+        var g2 = (Graphics2D) graphics;
         /** set the rendering hints */
         g2.setRenderingHints((RenderingHints) hints);
         /** if player isn't dead and clear mode isn't on */

@@ -28,7 +28,7 @@ public abstract class AND<X> extends AbstractPred<X> {
                 $.p(cond)
         );
 
-        for (PREDICATE<X> x : cond)
+        for (var x : cond)
             if (x instanceof AND)
                 throw new UnsupportedOperationException("should have been flattened");
 
@@ -153,7 +153,7 @@ public abstract class AND<X> extends AbstractPred<X> {
     }
 
     public static @Nullable <D> PREDICATE<D> the(List<PREDICATE<D>> cond) {
-        int s = cond.size();
+        var s = cond.size();
         switch (s) {
             case 0: return null;
             case 1: return cond.get(0);
@@ -162,12 +162,12 @@ public abstract class AND<X> extends AbstractPred<X> {
     }
 
     public static @Nullable <D> PREDICATE<D> the(Term[] cond) {
-        int s = cond.length;
+        var s = cond.length;
         switch (s) {
             case 0: return null;
             case 1: return (PREDICATE<D>) cond[0];
             default:
-                boolean needsFlat = Arrays.stream(cond).anyMatch(c -> c instanceof AND);
+                var needsFlat = Arrays.stream(cond).anyMatch(c -> c instanceof AND);
                 if (needsFlat || !(cond instanceof PREDICATE[])) {
                     cond = stream(cond).flatMap(
                             x -> x instanceof AND ?
@@ -216,7 +216,7 @@ public abstract class AND<X> extends AbstractPred<X> {
         return b;
     }
     public static @Nullable <X> PREDICATE<X>  first(AND<X>  b, Predicate<PREDICATE<X> > test) {
-        int s = b.subs();
+        var s = b.subs();
         return IntStream.range(0, s).mapToObj(i -> (PREDICATE<X>) b.sub(i)).filter(test).findFirst().orElse(null);
     }
 

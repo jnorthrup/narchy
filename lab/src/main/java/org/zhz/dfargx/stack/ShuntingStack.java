@@ -57,10 +57,10 @@ public class ShuntingStack {
 
     public void finish(List<Node> result) {
 
-        ArrayDeque<BranchNode> bs = this.branchStack;
-        ArrayDeque<Node> fs = this.finalStack;
+        var bs = this.branchStack;
+        var fs = this.finalStack;
 
-        for (BranchNode b : bs) {
+        for (var b : bs) {
             fs.push(b);
         }
         bs.clear();

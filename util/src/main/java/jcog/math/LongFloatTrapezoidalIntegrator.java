@@ -21,7 +21,7 @@ public abstract class LongFloatTrapezoidalIntegrator implements LongToDoubleFunc
 //    }
 
     public double integrate2(long a, long b) {
-        double aa = applyAsDouble(a);
+        var aa = applyAsDouble(a);
         return a == b ?
             aa :
             (((b - a) + 1) * (aa + applyAsDouble(b))) / 2;
@@ -50,14 +50,14 @@ public abstract class LongFloatTrapezoidalIntegrator implements LongToDoubleFunc
     }
 
     public double integrateN(long... x) {
-        double sum = Double.NaN;
-        long xPrev = x[0];
-        double yPrev = applyAsDouble(xPrev);
+        var sum = Double.NaN;
+        var xPrev = x[0];
+        var yPrev = applyAsDouble(xPrev);
         for (int i = 1, xLength = x.length; i < xLength; i++) {
-            long xNext = x[i];
+            var xNext = x[i];
             if (xPrev != xNext) {
                 assert(xNext > xPrev);
-                double yNext = applyAsDouble(xNext);
+                var yNext = applyAsDouble(xNext);
                 sum = sample(xPrev, yPrev, xNext, yNext, sum);
                 yPrev = yNext;
                 xPrev = xNext;
@@ -90,7 +90,7 @@ public abstract class LongFloatTrapezoidalIntegrator implements LongToDoubleFunc
                 //accumulate sum
                 if (sum != sum)
                     sum = 0; //initialize first summation
-                long dt = xNext - xPrev;
+                var dt = xNext - xPrev;
                 sum += (yNext + yPrev) / 2.0 * (dt + 1);
             }
         }

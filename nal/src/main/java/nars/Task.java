@@ -91,7 +91,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
      */
     static boolean equal(Task a, Task b) {
 
-        byte p = a.punc();
+        var p = a.punc();
         if (p != b.punc())
             return false;
 
@@ -99,7 +99,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
             if (!a.truth().equals(b.truth())) return false;
         }
 
-        long[] evidence = a.stamp();
+        var evidence = a.stamp();
         if ((!Arrays.equals(evidence, b.stamp())))
             return false;
 
@@ -142,13 +142,13 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
         if (e == i)
             return 0;
 
-        float y = merge.merge(e, i.pri(), returning);
+        var y = merge.merge(e, i.pri(), returning);
 
         mergeWhy(e, i);
 
         if (e != null) {
             if (updateCreationTime) {
-                long inCreation = i.creation();
+                var inCreation = i.creation();
                 if (inCreation > e.creation())
                     e.setCreation(inCreation);
             }
@@ -170,7 +170,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
      * see equals()
      */
     static int hash(Term term, Truth truth, byte punc, long start, long end, long[] stamp) {
-        int h = Util.hashCombine(
+        var h = Util.hashCombine(
                 term.hashCode(),
                 punc
         );
@@ -211,13 +211,13 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
 
 
         if (task instanceof DerivedTask) {
-            Task pt = ((DerivedTask) task).parentTask();
+            var pt = ((DerivedTask) task).parentTask();
             if (pt != null) {
 
                 proof(pt, indent + 1, sb);
             }
 
-            Task pb = ((DerivedTask) task).parentBelief();
+            var pb = ((DerivedTask) task).parentBelief();
             if (pb != null) {
 
                 proof(pb, indent + 1, sb);
@@ -250,7 +250,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
 //            }
         }
 
-        Op o = t.op();
+        var o = t.op();
 
         if (!o.taskable)
             return fail(t, "not taskable", safe);
@@ -315,7 +315,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
     }
     static @Nullable Task clone(Task x, Term newContent, Truth newTruth, byte newPunc, long start, long end, long[] stamp) {
 
-        Term c = Task.taskValid(newContent, newPunc, newTruth, false);
+        var c = Task.taskValid(newContent, newPunc, newTruth, false);
         AbstractTask y = NALTask.the(c, newPunc, newTruth, x.creation(), start, end, stamp);
 
         y.pri(x.pri());
@@ -345,7 +345,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
                 throw new TaskException("null truth required for questions or quests", t);
         }
 
-        Term x = taskTerm(t, punc, safe);
+        var x = taskTerm(t, punc, safe);
         return x != null ? withResult.apply(x.unneg(), tr != null ? tr.negIf(x instanceof Neg) : null) : null;
     }
 
@@ -365,7 +365,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
     /** validates and prepares a term for use as a task's content */
     static Term taskTerm(/*@NotNull*/Term t, byte punc, boolean safe) {
 
-        boolean negated = (t instanceof Neg);
+        var negated = (t instanceof Neg);
         if (negated)
             t = t.unneg();
 
@@ -379,17 +379,17 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
 
     static Compound postNormalize(Compound t) {
 
-        int v = t.vars();
+        var v = t.vars();
         //TODO VAR_QUERY and VAR_INDEP, including non-0th variable id
         if (v > 0 && t.hasAny(NEG.bit)) {
-            ShortByteHashMap counts = new ShortByteHashMap(v);
+            var counts = new ShortByteHashMap(v);
             boolean[] skipNext = {false};
             t.recurseTermsOrdered(Termlike::hasVars, x -> {
                 if (skipNext[0]) {
                     skipNext[0] = false;
                     return true; //this is the variable contained inside a Neg that was counted
                 } if (x instanceof Neg) {
-                    Term xu = x.unneg();
+                    var xu = x.unneg();
                     if (xu instanceof Variable) {
                         counts.addToValue(((NormalizedVariable)xu).i, (byte)-1);
                         skipNext[0] = true;
@@ -399,11 +399,11 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
                 }
                 return true;
             }, null);
-            int cs = counts.size();
+            var cs = counts.size();
             if (cs == 1) {
-                ShortBytePair ee = counts.keyValuesView().getOnly();
+                var ee = counts.keyValuesView().getOnly();
                 if (ee.getTwo() < 0) {
-                    Term vv = Intrin.term(ee.getOne());
+                    var vv = Intrin.term(ee.getOne());
                     return (Compound) t.replace(vv, vv.neg());
                 }
             } else if (cs > 1) {
@@ -428,7 +428,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
             end = Tense.dither(end, dtDither, +1);
         }
 
-        long ts = t.start();
+        var ts = t.start();
         if ((ts == ETERNAL) || (ts == start && t.end() == end))
             return t;
 
@@ -551,14 +551,14 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
      * TODO to be refined
      * TODO make Iterable<Task> x version so that callee's avoid constructing Task[] only for this */
     static void fund(Task y, Task[] x, boolean priCopyOrMove) {
-        int volSum = Util.sum(TermedDelegate::volume, x);
-        double volFactor =
+        var volSum = Util.sum(TermedDelegate::volume, x);
+        var volFactor =
                 min(1, ((double)volSum) / y.volume() );
 
         double confFactor;
-        boolean xHasTruth = x[0].isBeliefOrGoal();
+        var xHasTruth = x[0].isBeliefOrGoal();
         if (y.isBeliefOrGoal() && xHasTruth) {
-            double yConf = y.truth().confDouble();
+            var yConf = y.truth().confDouble();
             //double xConfMax = Util.max(Task::conf, x);
             double xConfMean = Util.mean(Task::conf, x);
             confFactor = min(1, (yConf / xConfMean));
@@ -577,8 +577,8 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
         if (y.isEternal())
             rangeFactor = 1;
         else {
-            long xRangeMax = Util.max((Task t) -> t.rangeIfNotEternalElse(1), x);
-            long yRange = y.range();
+            var xRangeMax = Util.max((Task t) -> t.rangeIfNotEternalElse(1), x);
+            var yRange = y.range();
             rangeFactor = min(1, ((double) yRange) / xRangeMax);
         }
 
@@ -586,9 +586,9 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
         //double priSum = Util.sumDouble(Task::priElseZero, x);
         //double priAvg = priSum / Xn;
         double priMean = Util.sum(Task::priElseZero, x)/x.length;
-        float p = (float)(priMean * volFactor * confFactor * rangeFactor);
+        var p = (float)(priMean * volFactor * confFactor * rangeFactor);
 
-        float yp = Prioritizable.fund(p, priCopyOrMove, x);
+        var yp = Prioritizable.fund(p, priCopyOrMove, x);
 
         merge(y, x, yp);
     }
@@ -724,12 +724,12 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
     }
 
     default boolean isQuestionOrQuest() {
-        byte c = punc();
+        var c = punc();
         return c == Op.QUESTION || c == Op.QUEST;
     }
 
     default boolean isBeliefOrGoal() {
-        byte c = punc();
+        var c = punc();
         return c == Op.BELIEF || c == Op.GOAL;
     }
 
@@ -742,7 +742,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
      */
     default @Nullable Task onAnswered(/*@NotNull*/Task answer) {
 
-        Task question = this;
+        var question = this;
 
 //        if (!(question.isInput() && question.isEternal()) && !(answer.isInput() && answer.isEternal()) && !Stamp.overlap(question, answer)) {
 //            answer.take(question, answer.priElseZero() * question.priElseZero(), true, false);
@@ -771,7 +771,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
 
     @Deprecated
     default StringBuilder appendTo(StringBuilder buffer, boolean showStamp) {
-        boolean notCommand = punc() != Op.COMMAND;
+        var notCommand = punc() != Op.COMMAND;
         return appendTo(buffer, true, showStamp && notCommand,
                 notCommand,
                 showStamp
@@ -780,7 +780,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
 
     default StringBuilder appendTo(@Nullable StringBuilder buffer, boolean term, boolean showStamp, boolean showBudget, boolean showLog) {
 
-        String contentName = term ? term().toString() : "";
+        var contentName = term ? term().toString() : "";
 
         CharSequence tenseString;
 
@@ -789,11 +789,11 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
                 (StringBuilder) (tenseString = new StringBuilder()));
 
 
-        CharSequence stampString = showStamp ? stampAsStringBuilder() : null;
+        var stampString = showStamp ? stampAsStringBuilder() : null;
 
-        int stringLength = contentName.length() + tenseString.length() + 1 + 1;
+        var stringLength = contentName.length() + tenseString.length() + 1 + 1;
 
-        boolean hasTruth = isBeliefOrGoal();
+        var hasTruth = isBeliefOrGoal();
         if (hasTruth)
             stringLength += 11;
 
@@ -861,7 +861,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
             return truth();
         else {
 
-            double e = eviAvg(qStart, qEnd, dur, eternalize);
+            var e = eviAvg(qStart, qEnd, dur, eternalize);
 
             return (e < NAL.truth.EVI_MIN) ?
                 null :
@@ -873,7 +873,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
 
     default double eviAvg(long qStart, long qEnd, float dur, boolean eternalize) {
         assert(qStart!=ETERNAL);
-        long range = 1 + (qEnd - qStart);
+        var range = 1 + (qEnd - qStart);
         return TruthIntegration.eviAbsolute(this, qStart, qEnd, dur, eternalize) / range;
     }
 
@@ -883,7 +883,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
     }
 
     default String proof() {
-        StringBuilder sb = new StringBuilder(1024);
+        var sb = new StringBuilder(1024);
         return proof(sb).toString().trim();
     }
 
@@ -940,7 +940,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
             if (!c.hasVars()) return c; //TODO test by structure
 
             if (c instanceof Neg) {
-                Term d = c.unneg();
+                var d = c.unneg();
                 if (d instanceof Variable && invert((Variable)d))
                     return d;
             }

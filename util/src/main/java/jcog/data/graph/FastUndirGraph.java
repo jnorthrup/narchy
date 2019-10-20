@@ -52,15 +52,15 @@ public class FastUndirGraph extends ConstUndirGraph {
 
     @Override
     protected void initGraph() {
-        int max = g.size();
+        var max = g.size();
         triangle = new BitSet[max];
-        for (int i = 0; i < max; ++i) {
+        for (var i = 0; i < max; ++i) {
             in[i] = new IntArrayList();
             triangle[i] = new BitSet(i);
         }
 
-        for (int i = 0; i < max; ++i) {
-            int ii = i;
+        for (var i = 0; i < max; ++i) {
+            var ii = i;
             g.neighborsOut(i).forEach(out -> {
                 if (!g.isEdge(out, ii))
                     in[out].add(ii);
@@ -81,8 +81,8 @@ public class FastUndirGraph extends ConstUndirGraph {
     @Override
     public boolean isEdge(int i, int j) {
         if (i < j) {
-            
-            int ii = i;
+
+            var ii = i;
             i = j;
             j = ii;
         }

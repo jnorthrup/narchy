@@ -13,7 +13,7 @@ public class drum_machine_01 {
     private Envelope snareGainEnvelope;
 
     public static void main(String[] args) {
-        drum_machine_01 synth = new drum_machine_01();
+        var synth = new drum_machine_01();
         synth.setup();
         while (true) {
             synth.keyDown(148);
@@ -23,17 +23,17 @@ public class drum_machine_01 {
 
     
     private void setup() {
-        AudioContext ac = new AudioContext();
+        var ac = new AudioContext();
 
         
         kickGainEnvelope = new Envelope(ac, 0.0f);
 
-        WavePlayer kick = new WavePlayer(ac, 100.0f, WaveFactory.SINE);
+        var kick = new WavePlayer(ac, 100.0f, WaveFactory.SINE);
 
-        BiquadFilter kickFilter = new BiquadFilter(ac, BiquadFilter.BESSEL_LP, 500.0f, 1.0f);
+        var kickFilter = new BiquadFilter(ac, BiquadFilter.BESSEL_LP, 500.0f, 1.0f);
         kickFilter.in(kick);
 
-        Gain kickGain = new Gain(ac, 1, kickGainEnvelope);
+        var kickGain = new Gain(ac, 1, kickGainEnvelope);
         kickGain.in(kickFilter);
 
         
@@ -43,14 +43,14 @@ public class drum_machine_01 {
         
         snareGainEnvelope = new Envelope(ac, 0.0f);
 
-        WavePlayer snareNoise = new WavePlayer(ac, 1.0f, WaveFactory.NOISE);
-        WavePlayer snareTone = new WavePlayer(ac, 200.0f, WaveFactory.SINE);
+        var snareNoise = new WavePlayer(ac, 1.0f, WaveFactory.NOISE);
+        var snareTone = new WavePlayer(ac, 200.0f, WaveFactory.SINE);
 
-        BiquadFilter snareFilter = new BiquadFilter(ac, BiquadFilter.BP_SKIRT, 2500.0f, 1.0f);
+        var snareFilter = new BiquadFilter(ac, BiquadFilter.BP_SKIRT, 2500.0f, 1.0f);
         snareFilter.in(snareNoise);
         snareFilter.in(snareTone);
 
-        Gain snareGain = new Gain(ac, 1, snareGainEnvelope);
+        var snareGain = new Gain(ac, 1, snareGainEnvelope);
         snareGain.in(snareFilter);
 
         

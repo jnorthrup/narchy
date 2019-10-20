@@ -43,7 +43,7 @@ public class PrimitiveTriangle {
 	private final OArrayList<v3> tmpVecList3 = new OArrayList<>(TriangleContact.MAX_TRI_CLIPPING);
 	
 	{
-		for (int i = 0; i< TriangleContact.MAX_TRI_CLIPPING; i++) {
+		for (var i = 0; i< TriangleContact.MAX_TRI_CLIPPING; i++) {
 			tmpVecList1.add(new v3());
 			tmpVecList2.add(new v3());
 			tmpVecList3.add(new v3());
@@ -55,7 +55,7 @@ public class PrimitiveTriangle {
 	public float margin = 0.01f;
 
 	public PrimitiveTriangle() {
-		for (int i=0; i<vertices.length; i++) {
+		for (var i = 0; i<vertices.length; i++) {
 			vertices[i] = new v3();
 		}
 	}
@@ -65,10 +65,10 @@ public class PrimitiveTriangle {
 	}
 	
 	public void buildTriPlane() {
-		v3 tmp1 = new v3();
-		v3 tmp2 = new v3();
+		var tmp1 = new v3();
+		var tmp2 = new v3();
 
-		v3 normal = new v3();
+		var normal = new v3();
 		tmp1.sub(vertices[1], vertices[0]);
 		tmp2.sub(vertices[2], vertices[0]);
 		normal.cross(tmp1, tmp2);
@@ -81,13 +81,13 @@ public class PrimitiveTriangle {
 	 * Test if triangles could collide.
 	 */
 	public boolean overlap_test_conservative(PrimitiveTriangle other) {
-		float total_margin = margin + other.margin;
-		
-		float dis0 = ClipPolygon.distance_point_plane(plane, other.vertices[0]) - total_margin;
+		var total_margin = margin + other.margin;
 
-		float dis1 = ClipPolygon.distance_point_plane(plane, other.vertices[1]) - total_margin;
+		var dis0 = ClipPolygon.distance_point_plane(plane, other.vertices[0]) - total_margin;
 
-		float dis2 = ClipPolygon.distance_point_plane(plane, other.vertices[2]) - total_margin;
+		var dis1 = ClipPolygon.distance_point_plane(plane, other.vertices[1]) - total_margin;
+
+		var dis2 = ClipPolygon.distance_point_plane(plane, other.vertices[2]) - total_margin;
 
 		if (dis0 > 0.0f && dis1 > 0.0f && dis2 > 0.0f) {
 			return false; 
@@ -107,10 +107,10 @@ public class PrimitiveTriangle {
 	 * This triangle must have its plane calculated.
 	 */
     private void get_edge_plane(int edge_index, Vector4f plane) {
-		v3 e0 = vertices[edge_index];
-		v3 e1 = vertices[(edge_index + 1) % 3];
+		var e0 = vertices[edge_index];
+		var e1 = vertices[(edge_index + 1) % 3];
 
-		v3 tmp = new v3();
+		var tmp = new v3();
 		tmp.set(this.plane.x, this.plane.y, this.plane.z);
 
 		GeometryOperations.edge_plane(e0, e1, tmp, plane);
@@ -129,19 +129,19 @@ public class PrimitiveTriangle {
 	 * @return the number of clipped points
 	 */
     private int clip_triangle(PrimitiveTriangle other, OArrayList<v3> clipped_points) {
-		
-		OArrayList<v3> temp_points = tmpVecList1;
 
-		Vector4f edgeplane = new Vector4f();
+		var temp_points = tmpVecList1;
+
+		var edgeplane = new Vector4f();
 
 		get_edge_plane(0, edgeplane);
 
-		int clipped_count = ClipPolygon.plane_clip_triangle(edgeplane, other.vertices[0], other.vertices[1], other.vertices[2], temp_points);
+		var clipped_count = ClipPolygon.plane_clip_triangle(edgeplane, other.vertices[0], other.vertices[1], other.vertices[2], temp_points);
 
 		if (clipped_count == 0) {
 			return 0;
 		}
-		OArrayList<v3> temp_points1 = tmpVecList2;
+		var temp_points1 = tmpVecList2;
 
 		
 		get_edge_plane(1, edgeplane);
@@ -163,16 +163,16 @@ public class PrimitiveTriangle {
 	 * This triangle and other must have their triangles calculated.
 	 */
 	public boolean find_triangle_collision_clip_method(PrimitiveTriangle other, TriangleContact contacts) {
-		float margin = this.margin + other.margin;
+		var margin = this.margin + other.margin;
 
-		OArrayList<v3> clipped_points = tmpVecList3;
+		var clipped_points = tmpVecList3;
 
 
-        TriangleContact contacts1 = new TriangleContact();
+		var contacts1 = new TriangleContact();
 
 		contacts1.separating_normal.set(plane);
 
-        int clipped_count = clip_triangle(other, clipped_points);
+		var clipped_count = clip_triangle(other, clipped_points);
 
 		if (clipped_count == 0) {
 			return false; 
@@ -188,8 +188,8 @@ public class PrimitiveTriangle {
 		contacts1.separating_normal.y *= -1.f;
 		contacts1.separating_normal.z *= -1.f;
 
-		
-		TriangleContact contacts2 = new TriangleContact();
+
+		var contacts2 = new TriangleContact();
 		contacts2.separating_normal.set(other.plane);
 
 		clipped_count = other.clip_triangle(this, clipped_points);

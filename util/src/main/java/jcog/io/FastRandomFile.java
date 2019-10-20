@@ -129,20 +129,13 @@ public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
   private final byte[] intWriteBuf = new byte[4];
   public void writeIntAtOffset(long targetFp, int s) throws java.io.IOException
   {
-    byte b1 = (byte)((s >>> 24) & 0xFF);
-    byte b2 = (byte)((s >>> 16) & 0xFF);
-    byte b3 = (byte)((s >>> 8) & 0xFF);
-    byte b4 = (byte)(s & 0xFF);
+    var b1 = (byte)((s >>> 24) & 0xFF);
+    var b2 = (byte)((s >>> 16) & 0xFF);
+    var b3 = (byte)((s >>> 8) & 0xFF);
+    var b4 = (byte)(s & 0xFF);
 
 
-
-
-
-
-
-    
-    
-    int skipBackWriteAmount = Math.min(4, (int)(fp - buffptr - targetFp));
+    var skipBackWriteAmount = Math.min(4, (int)(fp - buffptr - targetFp));
     if (skipBackWriteAmount > 0)
     {
       intWriteBuf[0] = b1; intWriteBuf[1] = b2; intWriteBuf[2] = b3; intWriteBuf[3] = b4;
@@ -172,7 +165,7 @@ public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
     {
       while (len > 0)
       {
-        int rem = buff.length - buffptr;
+        var rem = buff.length - buffptr;
         if (len < rem)
         {
           System.arraycopy(b, off, buff, buffptr, len);
@@ -222,7 +215,7 @@ public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
 
   public boolean readBoolean() throws java.io.IOException
   {
-    int ch = read();
+    var ch = read();
     if (ch < 0)
       throw new java.io.EOFException();
     return (ch != 0);
@@ -230,7 +223,7 @@ public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
 
   public byte readByte() throws java.io.IOException
   {
-    int ch = read();
+    var ch = read();
     if (ch < 0)
       throw new java.io.EOFException();
     return (byte)(ch);
@@ -239,7 +232,7 @@ public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
   public byte readUnencryptedByte() throws java.io.IOException
   {
     fp++;
-    int ch = raf.read();
+    var ch = raf.read();
     if (ch < 0)
       throw new java.io.EOFException();
     return (byte)(ch);
@@ -247,10 +240,10 @@ public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
 
   public int readInt() throws java.io.IOException
   {
-    int b1 = this.read();
-    int b2 = this.read();
-    int b3 = this.read();
-    int b4 = this.read();
+    var b1 = this.read();
+    var b2 = this.read();
+    var b3 = this.read();
+    var b4 = this.read();
     if ((b1 | b2 | b3 | b4) < 0)
       throw new java.io.EOFException();
     return (b1 << 24) + (b2 << 16) + (b3 << 8) + b4;
@@ -270,7 +263,7 @@ public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
   {
     if (isI18N)
     {
-      int utflen = readUnsignedShort();
+      var utflen = readUnsignedShort();
         switch (utflen) {
             case 0:
                 return "";
@@ -286,8 +279,8 @@ public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
 
         readFully(bytearr, 0, utflen);
 
-        int outcount = 0;
-        int incount = 0;
+      var outcount = 0;
+      var incount = 0;
         int c;
         while (incount < utflen) {
         
@@ -305,7 +298,7 @@ public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
           continue;
         }
 
-            int x = c >> 4;
+          var x = c >> 4;
             int c2;
             switch (x) {
                 case 12:
@@ -347,7 +340,7 @@ public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
       int len = readShort();
       if (len > 0)
       {
-        byte[] bytes = new byte[len];
+        var bytes = new byte[len];
         readFully(bytes, 0, len);
         return new String(bytes, myCharset);
       }
@@ -359,7 +352,7 @@ public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
   {
     if (isI18N)
     {
-      int utflen = readUnsignedShort();
+      var utflen = readUnsignedShort();
       if (utflen == 0xFFFF)
         utflen = readInt();
       if (bytearr == null || bytearr.length < utflen)
@@ -374,8 +367,8 @@ public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
 
         readFully(bytearr, 0, utflen);
 
-        int outcount = 0;
-        int incount = 0;
+      var outcount = 0;
+      var incount = 0;
         int c;
         while (incount < utflen) {
         
@@ -393,7 +386,7 @@ public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
           continue;
         }
 
-            int x = c >> 4;
+          var x = c >> 4;
             int c2;
             switch (x) {
                 case 12:
@@ -437,7 +430,7 @@ public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
       int len = readShort();
       if (len > 0)
       {
-        byte[] bytes = new byte[len];
+        var bytes = new byte[len];
         readFully(bytes, 0, len);
         return new StringBuffer(new String(bytes, myCharset));
       }
@@ -450,11 +443,11 @@ public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
     if (s == null) s = "";
     if (isI18N)
     {
-      int strlen = s.length();
-      int utflen = 0;
-      int c = 0;
+      var strlen = s.length();
+      var utflen = 0;
+      var c = 0;
 
-      for (int i = 0; i < strlen; i++) {
+      for (var i = 0; i < strlen; i++) {
         c = s.charAt(i);
         if (c < 128) {
           utflen++;
@@ -479,7 +472,7 @@ public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
         write((byte) ((utflen >>> 8) & 0xFF));
         write((byte) ((utflen) & 0xFF));
       }
-      for (int i = 0; i < strlen; i++) {
+      for (var i = 0; i < strlen; i++) {
         c = s.charAt(i);
         if (c < 128) {
           write((byte) c);
@@ -524,8 +517,8 @@ public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
 
   public final void writeBytes(String s) throws java.io.IOException
   {
-    int len = s.length();
-    for (int i = 0; i < len; i++)
+    var len = s.length();
+    for (var i = 0; i < len; i++)
       write((byte)s.charAt(i));
   }
 
@@ -587,8 +580,8 @@ public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
 
   public short readShort() throws java.io.IOException
   {
-    int b1 = this.read();
-    int b2 = this.read();
+    var b1 = this.read();
+    var b2 = this.read();
     if ((b1 | b2) < 0)
       throw new java.io.EOFException();
     return (short)((b1 << 8) + b2);
@@ -607,8 +600,8 @@ public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
 
   public final void writeChars(String s) throws java.io.IOException
   {
-    int len = s.length();
-    for (int i = 0 ; i < len ; i++)
+    var len = s.length();
+    for (var i = 0; i < len ; i++)
     {
       int v = s.charAt(i);
       write((byte)((v >>> 8) & 0xFF));
@@ -633,8 +626,8 @@ public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
 
   public char readChar() throws java.io.IOException
   {
-    int b1 = this.read();
-    int b2 = this.read();
+    var b1 = this.read();
+    var b2 = this.read();
     if ((b1 | b2) < 0)
       throw new java.io.EOFException();
     return (char)((b1 << 8) + b2);
@@ -651,7 +644,7 @@ public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
 
   public int readUnsignedByte() throws java.io.IOException
   {
-    int b = this.read();
+    var b = this.read();
     if (b < 0)
       throw new java.io.EOFException();
     return b;
@@ -659,8 +652,8 @@ public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
 
   public int readUnsignedShort() throws java.io.IOException
   {
-    int b1 = this.read();
-    int b2 = this.read();
+    var b1 = this.read();
+    var b2 = this.read();
     if ((b1 | b2) < 0)
       throw new java.io.EOFException();
     return (b1 << 8) + b2;

@@ -60,7 +60,7 @@ class PstCache {
             return;
 
         try {
-            FileOutputStream fd = new FileOutputStream(g_pstcache_fd[cache_id]);
+            var fd = new FileOutputStream(g_pstcache_fd[cache_id]);
 
             fd.write(toBigEndian32(stamp), 12 + cache_idx
                     * (g_pstcache_Bpp * MAX_CELL_SIZE + CELLHEADER.size()), 4);
@@ -76,7 +76,7 @@ class PstCache {
     }
 
     private static byte[] toBigEndian32(int value) {
-        byte[] out = new byte[4];
+        var out = new byte[4];
         out[0] = (byte) (value & 0xFF);
         out[1] = (byte) (value & 0xFF00);
         out[2] = (byte) (value & 0xFF0000);
@@ -95,19 +95,19 @@ class PstCache {
         if (!IS_PERSISTENT(cache_id) || cache_idx >= Rdp.BMPCACHE2_NUM_PSTCELLS)
             return false;
 
-        FileInputStream fd = new FileInputStream(g_pstcache_fd[cache_id]);
-        int offset = cache_idx
+        var fd = new FileInputStream(g_pstcache_fd[cache_id]);
+        var offset = cache_idx
                 * (g_pstcache_Bpp * MAX_CELL_SIZE + CELLHEADER.size());
         byte[] cellHead = null;
         fd.read(cellHead, offset, CELLHEADER.size());
-        CELLHEADER c = new CELLHEADER(cellHead);
+        var c = new CELLHEADER(cellHead);
 
 
-        byte[] celldata = new byte[c.length];
+        var celldata = new byte[c.length];
         fd.read(celldata);
         logger.debug("Loading bitmap from disk ({}" + ':' + "{})\n", cache_id, cache_idx);
 
-        Bitmap bitmap = new Bitmap(celldata, c.width, c.height, 0, 0, Options.Bpp);
+        var bitmap = new Bitmap(celldata, c.width, c.height, 0, 0, Options.Bpp);
         
         Orders.cache.putBitmap(cache_id, cache_idx, bitmap, c.stamp);
 
@@ -120,7 +120,7 @@ class PstCache {
                                        byte[] bitmap_id, int width, int height, int length, byte[] data)
             throws IOException {
         logger.info("PstCache.pstcache_put_bitmap");
-        CELLHEADER cellhdr = new CELLHEADER();
+        var cellhdr = new CELLHEADER();
 
         if (!IS_PERSISTENT(cache_id) || cache_idx >= Rdp.BMPCACHE2_NUM_PSTCELLS)
             return false;
@@ -133,8 +133,8 @@ class PstCache {
         cellhdr.length = length;
         cellhdr.stamp = 0;
 
-        FileOutputStream fd = new FileOutputStream(g_pstcache_fd[cache_id]);
-        int offset = cache_idx
+        var fd = new FileOutputStream(g_pstcache_fd[cache_id]);
+        var offset = cache_idx
                 * (Options.Bpp * MAX_CELL_SIZE + CELLHEADER.size());
         fd.write(CELLHEADER.toBytes(), offset, CELLHEADER.size());
         fd.write(data);
@@ -162,12 +162,12 @@ class PstCache {
 
         logger.debug("pstcache enumeration... ");
         CELLHEADER cellhdr = null;
-        int c = 0;
+        var c = 0;
         int n;
         for (n = 0; n < Rdp.BMPCACHE2_NUM_PSTCELLS; n++) {
-            FileInputStream fd = new FileInputStream(g_pstcache_fd[cache_id]);
+            var fd = new FileInputStream(g_pstcache_fd[cache_id]);
 
-            byte[] cellhead_data = new byte[CELLHEADER.size()];
+            var cellhead_data = new byte[CELLHEADER.size()];
             if (fd.read(cellhead_data, n
                             * (g_pstcache_Bpp * MAX_CELL_SIZE + CELLHEADER.size()),
                     CELLHEADER.size()) <= 0)
@@ -175,13 +175,13 @@ class PstCache {
 
             cellhdr = new CELLHEADER(cellhead_data);
 
-            int result = 0;
-            for (int i = 0; i < cellhdr.bitmap_id.length; i++) {
+            var result = 0;
+            for (var i = 0; i < cellhdr.bitmap_id.length; i++) {
                 result += cellhdr.bitmap_id[i];
             }
 
             if (result != 0) {
-                for (int i = 0; i < 8; i++) {
+                for (var i = 0; i < 8; i++) {
                     idlist[(n * 8) + i] = cellhdr.bitmap_id[i];
                 }
 
@@ -219,16 +219,16 @@ class PstCache {
             return false;
 
         g_pstcache_Bpp = Options.Bpp;
-        String filename = "./cache/pstcache_" + cache_id + '_' + g_pstcache_Bpp;
+        var filename = "./cache/pstcache_" + cache_id + '_' + g_pstcache_Bpp;
         logger.debug("persistent bitmap cache file: {}", filename);
 
-        File cacheDir = new File("./cache/");
+        var cacheDir = new File("./cache/");
         if (!cacheDir.exists() && !cacheDir.mkdir()) {
             logger.warn("failed to get/make cache directory");
             return false;
         }
 
-        File f = new File(filename);
+        var f = new File(filename);
 
         try {
             if (!f.exists() && !f.createNewFile()) {

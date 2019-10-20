@@ -39,12 +39,12 @@ public class MartialArts implements RLEnvironment {
     private PseudoAIState pseudoAIState = PseudoAIState.START;
 
     public MartialArts() {
-        JFrame f = new JFrame();
+        var f = new JFrame();
         f.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         f.setSize(200, 100);
         f.setLayout(new GridLayout(0, 1));
-        JLabel l = new JLabel();
-        JProgressBar pb = new JProgressBar();
+        var l = new JLabel();
+        var pb = new JProgressBar();
         f.add(l);
         f.add(pb);
         f.setVisible(true);
@@ -74,23 +74,23 @@ public class MartialArts implements RLEnvironment {
     }
 
     private static void computePlayer(Player player) {
-        int[] pixel = new int[1];
-        int w = 0;
-        int h = 0;
+        var pixel = new int[1];
+        var w = 0;
+        var h = 0;
 
-        for (int i = 0; i < player.moves.length; ++i) {
-            for (int j = 0; j < player.moves[i].images.length; ++j) {
-                Move move = player.moves[i];
-                BufferedImage im = move.images[j];
+        for (var i = 0; i < player.moves.length; ++i) {
+            for (var j = 0; j < player.moves[i].images.length; ++j) {
+                var move = player.moves[i];
+                var im = move.images[j];
                 if (im.getWidth() > w) {
                     w = im.getWidth();
                 }
                 if (im.getHeight() > h) {
                     h = im.getHeight();
                 }
-                WritableRaster r = im.getAlphaRaster();
-                for (int x = 0; x < im.getWidth(); ++x) {
-                    for (int y = 0; y < im.getHeight(); ++y) {
+                var r = im.getAlphaRaster();
+                for (var x = 0; x < im.getWidth(); ++x) {
+                    for (var y = 0; y < im.getHeight(); ++y) {
                         r.getPixel(x, y, pixel);
                         if (pixel[0] == 1) {
                             if (x > player.maxX) {
@@ -116,16 +116,16 @@ public class MartialArts implements RLEnvironment {
     }
 
     private void loadImages(String prefix, Player player) {
-        int i = 0;
+        var i = 0;
 
-        ArrayList<Move> moves = new ArrayList<>();
+        var moves = new ArrayList<Move>();
 
-        for (int k = 0; k < 2; ++k) {
-            Move m = new Move();
-            ArrayList<BufferedImage> ims = new ArrayList<>();
-            for (int j = 0; j < 5; ++j) {
+        for (var k = 0; k < 2; ++k) {
+            var m = new Move();
+            var ims = new ArrayList<BufferedImage>();
+            for (var j = 0; j < 5; ++j) {
                 try {
-                    BufferedImage im = ImageIO.read(getClass().getResource(
+                    var im = ImageIO.read(getClass().getResource(
                             "/jurls/reinforcementlearning/domains/martialarts/images/"
                             + prefix + String.format("%04d", i) + ".png"
                     ));
@@ -140,10 +140,10 @@ public class MartialArts implements RLEnvironment {
         }
         try {
             while (true) {
-                Move m = new Move();
-                ArrayList<BufferedImage> ims = new ArrayList<>();
-                for (int j = 0; j < 10; ++j) {
-                    BufferedImage im = ImageIO.read(getClass().getResource(
+                var m = new Move();
+                var ims = new ArrayList<BufferedImage>();
+                for (var j = 0; j < 10; ++j) {
+                    var im = ImageIO.read(getClass().getResource(
                             "/jurls/reinforcementlearning/domains/martialarts/images/"
                             + prefix + String.format("%04d", i) + ".png"
                     ));
@@ -197,7 +197,7 @@ public class MartialArts implements RLEnvironment {
         animate(world.opponentPlayer);
         animate(world.rlPlayer);
 
-        int dx = world.rlPlayer.x - world.opponentPlayer.x;
+        var dx = world.rlPlayer.x - world.opponentPlayer.x;
 
         switch (pseudoAIState) {
             case START:
@@ -224,7 +224,7 @@ public class MartialArts implements RLEnvironment {
                         && world.opponentPlayer.mirror) {
                     takeAction(0, world.opponentPlayer);
                 } else {
-                    int m = (int) Math.round(Math.random() * 4 * (world.opponentPlayer.moves.length - 1)) + 1;
+                    var m = (int) Math.round(Math.random() * 4 * (world.opponentPlayer.moves.length - 1)) + 1;
                     if (m < world.opponentPlayer.moves.length) {
                         takeAction(m, world.opponentPlayer);
                     }else if(Math.random() < 0.2){
@@ -247,23 +247,23 @@ public class MartialArts implements RLEnvironment {
 
     private int reward(int factor, Player player, Player opponent) {
         if (player.moveIndex >= 2) {
-            Move move = player.moves[player.moveIndex];
+            var move = player.moves[player.moveIndex];
             if (player.moveImageIndex == move.hitIndex) {
                 renderer.clearCollisionBuffer();
                 renderer.renderPlayer(opponent);
                 Point2D src = new Point2D.Double(move.hitX, move.hitY);
                 Point2D dst = new Point2D.Double();
-                AffineTransform t = new AffineTransform(renderer.getTransform());
+                var t = new AffineTransform(renderer.getTransform());
                 t.concatenate(renderer.computePlayerTransform(player));
                 t.transform(src, dst);
-                Hit h = new Hit(
+                var h = new Hit(
                         (int) dst.getX(),
                         (int) dst.getY(),
                         factor * player.moveImageIndex
                 );
                 if (h.x >= 0 && h.x < world.width
                         && h.y >= 0 && h.y < world.height) {
-                    int rgb = renderer.getCollisionBufferRGB(h.x, h.y) & 0xffffff;
+                    var rgb = renderer.getCollisionBufferRGB(h.x, h.y) & 0xffffff;
                     if (rgb != 0) {
                         world.hits.add(h);
                         return h.reward;
@@ -297,9 +297,9 @@ public class MartialArts implements RLEnvironment {
             }
         }
 
-        Iterator<Hit> i = world.hits.iterator();
+        var i = world.hits.iterator();
         while (i.hasNext()) {
-            Hit h = i.next();
+            var h = i.next();
             h.progress++;
             if (h.progress > 20) {
                 i.remove();

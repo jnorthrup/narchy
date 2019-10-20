@@ -60,7 +60,7 @@ public abstract class GameTime {
 
         @Override
         public GameTime chain(float periodMultiplier) {
-            FPS parent = this;
+            var parent = this;
             return new FPS(initialFPS /* HACK */ / periodMultiplier) {
 
                 {
@@ -81,11 +81,11 @@ public abstract class GameTime {
 
         @Override
         public long next(long now) {
-            RealTime t = (RealTime) g.nar.time;
+            var t = (RealTime) g.nar.time;
 
-            double unitsPerSec = 1/t.secondsPerUnit();
+            var unitsPerSec = 1/t.secondsPerUnit();
             double secondsPerFrame = 1/loop.getFPS();
-            double unitsPerFrame = unitsPerSec * secondsPerFrame;
+            var unitsPerFrame = unitsPerSec * secondsPerFrame;
             this.dur = (float) Math.max(1, unitsPerFrame);
             return now + Math.round(t.secondsToUnits(loop.periodS()));
         }
@@ -143,7 +143,7 @@ public abstract class GameTime {
 
         @Override
         public GameTime chain(float periodMultiplier) {
-            Durs parent = this;
+            var parent = this;
             return new Durs(durPeriod * periodMultiplier) {
                 @Override
                 public float dur() {
@@ -170,7 +170,7 @@ public abstract class GameTime {
 
         @Override
         public long next(long now) {
-            DurLoop l = this.loop;
+            var l = this.loop;
             this.dur = Tense.occToDT(l.durCycles());
             return now + l.durCycles();
         }

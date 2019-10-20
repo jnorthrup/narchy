@@ -97,14 +97,14 @@ public class ConcurrentMapStream<K, V> extends ConcurrentHashMap<K, ConcurrentMa
         public String toString() {
 
 
-            String sb = String.valueOf(this.the) +
+            var sb = String.valueOf(this.the) +
                     ':' +
                     this.doubleValue();
             return sb;
         }
 
         public boolean isNewItem() {
-            double d = get();
+            var d = get();
             return d!=d;
         }
 
@@ -118,22 +118,22 @@ public class ConcurrentMapStream<K, V> extends ConcurrentHashMap<K, ConcurrentMa
     public V put(K key, V element, double incrementCount) {
         
         V result;
-        RankedItem<V> value = new RankedItem<>(element);
-        RankedItem<V> oldVal = putIfAbsent(key, value);
+        var value = new RankedItem<V>(element);
+        var oldVal = putIfAbsent(key, value);
         if (oldVal != null) {
             oldVal.addAndGetCount(incrementCount);
             result = oldVal.the;
         } else if (reachCapacity.get() || size.incrementAndGet() > capacity) {
             reachCapacity.set(true);
 
-            RankedItem<V> oldMinVal = minVal.getAndSet(value);
+            var oldMinVal = minVal.getAndSet(value);
             remove(oldMinVal.the);
 
             while (oldMinVal.isNewItem()) {
                 
                 
             }
-            double count = oldMinVal.doubleValue();
+            var count = oldMinVal.doubleValue();
 
             value.addAndGetCount(count);
             
@@ -150,7 +150,7 @@ public class ConcurrentMapStream<K, V> extends ConcurrentHashMap<K, ConcurrentMa
 
     private RankedItem<V> getMinValue() {
         RankedItem<V> minVal = null;
-        for (RankedItem<V> entry : values()) {
+        for (var entry : values()) {
             if (minVal == null || (!entry.isNewItem() && entry.doubleValue() < minVal.doubleValue())) {
                 minVal = entry;
             }
@@ -160,7 +160,7 @@ public class ConcurrentMapStream<K, V> extends ConcurrentHashMap<K, ConcurrentMa
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
+        var sb = new StringBuilder();
         sb.append('[');
         for (RankedItem entry : values()) {
             sb.append('(').append(entry.doubleValue()).append(": ").append(entry.the).append("),");

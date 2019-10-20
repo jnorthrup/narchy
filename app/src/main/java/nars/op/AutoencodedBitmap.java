@@ -25,13 +25,13 @@ public class AutoencodedBitmap implements Bitmap2D {
     public AutoencodedBitmap(Bitmap2D b, int sx, int sy, int ox, int oy) {
         this.source = b;
 
-        int w = b.width();
-        int h = b.height();
+        var w = b.width();
+        var h = b.height();
         this.sx = sx;
         this.sy = sy;
 
 
-        int i = sx * sy;
+        var i = sx * sy;
         this.input = new float[i];
         this.ae = new Autoencoder(i, ox * oy, new XoRoShiRo128PlusRandom(1));
 
@@ -44,18 +44,18 @@ public class AutoencodedBitmap implements Bitmap2D {
     public void updateBitmap() {
         source.updateBitmap();
 
-        
-        int w = source.width();
-        int h = source.height();
 
-        int k = 0;
-        for (int Y = 0; Y < h; Y+=sy) {
-            for (int X = 0; X < w; X+=sx) {
+        var w = source.width();
+        var h = source.height();
 
-                int j = 0;
-                for (int y = 0; y < sy; y++) {
-                    for (int x = 0; x < sx; x++) {
-                        float b = source.brightness(X + x, Y + y);
+        var k = 0;
+        for (var Y = 0; Y < h; Y+=sy) {
+            for (var X = 0; X < w; X+=sx) {
+
+                var j = 0;
+                for (var y = 0; y < sy; y++) {
+                    for (var x = 0; x < sx; x++) {
+                        var b = source.brightness(X + x, Y + y);
                         if (b!=b)
                             b = 0.5f;
                         input[j++] = b;
@@ -65,8 +65,8 @@ public class AutoencodedBitmap implements Bitmap2D {
 
                 ae.put(input, LEARNING_RATE, NOISE_LEVEL, 0, true);
 
-                float[] o = ae.output();
-                for (float anO : o) {
+                var o = ae.output();
+                for (var anO : o) {
                     output[k++] = anO;
                 }
             }

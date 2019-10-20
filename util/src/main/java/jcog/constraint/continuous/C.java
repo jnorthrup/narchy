@@ -42,7 +42,7 @@ public enum C { ;
 
         List<DoubleTerm> terms = new FasterList<>(expression.terms.size());
 
-        for (DoubleTerm term : expression.terms) {
+        for (var term : expression.terms) {
             terms.add(multiply(term, coefficient));
         }
 

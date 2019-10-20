@@ -41,8 +41,8 @@ public abstract class NormalizedVariable extends IntrinAtomic implements Variabl
     private static final NormalizedVariable[][] varCache = new NormalizedVariable[4][NAL.term.MAX_INTERNED_VARS];
 
     static {
-        for (Op o: new Op[]{VAR_PATTERN, Op.VAR_QUERY, VAR_DEP, VAR_INDEP}) {
-            int t = opToVarIndex(o);
+        for (var o: new Op[]{VAR_PATTERN, Op.VAR_QUERY, VAR_DEP, VAR_INDEP}) {
+            var t = opToVarIndex(o);
             for (byte i = 1; i < NAL.term.MAX_INTERNED_VARS; i++)
                 varCache[t][i] = vNew(o, i);
         }

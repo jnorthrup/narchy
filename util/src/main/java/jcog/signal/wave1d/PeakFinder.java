@@ -79,13 +79,13 @@ public class PeakFinder {
 	 **/
 	public boolean pickPeak(float onset) {
 
-        int length = win_post + win_pre + 1;
+		var length = win_post + win_pre + 1;
 		
 		
 		/* store onset in onset_keep */
 		/* shift all elements but last, then write last */
 		/* for (i=0;i<channels;i++) { */
-		for(int j=0;j<length-1;j++) {
+		for(var j = 0; j<length-1; j++) {
 			onset_keep[j] = onset_keep[j+1];
 			onset_proc[j] = onset_keep[j];
 		}
@@ -99,13 +99,13 @@ public class PeakFinder {
 		/* calculate mean and median for onset_proc */
 		
 		/* copy to scratch */
-		float sum = 0.0f;
-		for (int j = 0; j < length; j++){
+		var sum = 0.0f;
+		for (var j = 0; j < length; j++){
 			sum += (scratch[j] = onset_proc[j]);
 		}
 		Arrays.sort(scratch);
-        float median = scratch[scratch.length / 2];
-        float mean = sum / length;
+		var median = scratch[scratch.length / 2];
+		var mean = sum / length;
 				
 		/* shift peek array */
 		System.arraycopy(onset_peek, 1, onset_peek, 0, 3 - 1);
@@ -114,8 +114,8 @@ public class PeakFinder {
 
 		/* calculate new peek value */
 		onset_peek[2] = (float) (onset_proc[win_post] - median - mean * threshold);
-		
-		boolean isPeak = isPeak(1);
+
+		var isPeak = isPeak(1);
 		lastPeekValue = onset;
 	
 		return isPeak;
@@ -137,7 +137,7 @@ public class PeakFinder {
 	 * @return True if the onset is a peak, false otherwise.
 	 */
 	private boolean isPeak(int index) {
-		float a = onset_peek[index];
+		var a = onset_peek[index];
 		return (	a > onset_peek[index - 1] &&
 					a > onset_peek[index + 1] &&
 					a > 0.0);

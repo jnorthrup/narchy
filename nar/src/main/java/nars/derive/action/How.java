@@ -63,7 +63,7 @@ public abstract class How extends AbstractPred<Derivation>  {
 //	}
 
 	public final float pri(Derivation d) {
-		float v = why.pri; //priElseZero();
+		var v = why.pri; //priElseZero();
 		return v >= Float.MIN_NORMAL ? v * priHeuristic(d) : 0;
 	}
 

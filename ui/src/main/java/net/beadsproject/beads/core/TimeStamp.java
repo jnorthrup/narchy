@@ -65,7 +65,7 @@ public class TimeStamp {
         /**
          * The time ms.
          */
-        double timeMs = context.samplesToMs(getTimeSamples());
+        var timeMs = context.samplesToMs(getTimeSamples());
         return timeMs;
     }
 

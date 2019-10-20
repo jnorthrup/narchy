@@ -83,13 +83,13 @@ public class SurfaceConstraints {
     }
 
     public void update() {
-        for (DoubleVar doubleVar : constraints.vars.keySet()) {
+        for (var doubleVar : constraints.vars.keySet()) {
             if (doubleVar instanceof BoundVar) {
                 ((BoundVar) doubleVar).load();
             }
         }
         constraints.update();
-        for (DoubleVar v : constraints.vars.keySet()) {
+        for (var v : constraints.vars.keySet()) {
             if (v instanceof BoundVar) {
                 ((BoundVar) v).save();
             }

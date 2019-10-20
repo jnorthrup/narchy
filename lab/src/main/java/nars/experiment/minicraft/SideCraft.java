@@ -42,18 +42,18 @@ public class SideCraft extends GameX {
         this.craft = new SideScrollMinicraft();
 
 
-        BufferedImage camBuffer = ((AwtGraphicsHandler) craft.gfx).buffer;
+        var camBuffer = ((AwtGraphicsHandler) craft.gfx).buffer;
 
-        PixelBag cam = new PixelBag(new MonoBufImgBitmap2D(() -> camBuffer), 48, 32)
+        var cam = new PixelBag(new MonoBufImgBitmap2D(() -> camBuffer), 48, 32)
                 .addActions($.$("cra"), this);
 
 
-        AutoclassifiedBitmap camAE = new AutoclassifiedBitmap("cra", cam.pixels, 8, 8, 32, this);
+        var camAE = new AutoclassifiedBitmap("cra", cam.pixels, 8, 8, 32, this);
         camAE.alpha.set(0.1f);
         SpaceGraph.window(camAE.newChart(), 500, 500);
 
 
-        Bitmap2DSensor<PixelBag> pixels = senseCamera("cra", cam);
+        var pixels = senseCamera("cra", cam);
 
 
         /* slow */
@@ -84,18 +84,18 @@ public class SideCraft extends GameX {
 
         actionPushButton($("cra(key,mouseR)"), (BooleanProcedure) (b) -> craft.rightClick = b);
 
-        float mSpeed = 45f;
+        var mSpeed = 45f;
         actionBipolar($("cra(mouse,X)"), (v) -> {
-            int x = craft.screenMousePos.x;
-            int xx = Util.clamp(Math.round(x + v * mSpeed), 0, camBuffer.getWidth() - 1);
+            var x = craft.screenMousePos.x;
+            var xx = Util.clamp(Math.round(x + v * mSpeed), 0, camBuffer.getWidth() - 1);
 
             craft.screenMousePos.x = xx;
             return v;
 
         });
         actionBipolar($("cra(mouse,Y)"), (v) -> {
-            int y = craft.screenMousePos.y;
-            int yy = Util.clamp(Math.round(y + v * mSpeed), 0, camBuffer.getHeight() - 1);
+            var y = craft.screenMousePos.y;
+            var yy = Util.clamp(Math.round(y + v * mSpeed), 0, camBuffer.getHeight() - 1);
             craft.screenMousePos.y = yy;
             return v;
         });
@@ -104,9 +104,9 @@ public class SideCraft extends GameX {
         reward(() -> {
 
             float nextScore = 0;
-            for (int i = 0; i < gameFramesPerCycle; i++)
+            for (var i = 0; i < gameFramesPerCycle; i++)
                 nextScore += craft.frame();
-            float ds = nextScore - prevScore;
+            var ds = nextScore - prevScore;
             this.prevScore = nextScore;
             return ds;
         });

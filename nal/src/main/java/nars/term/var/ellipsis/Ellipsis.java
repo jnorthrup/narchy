@@ -42,9 +42,9 @@ public abstract class Ellipsis extends UnnormalizedVariable implements Ellipsisl
         if (x.varPattern() == 0)
             return null;
 
-        int xsize = x.subs();
-        for (int i = 0; i < xsize; i++) {
-            Term xi = x.sub(i);
+        var xsize = x.subs();
+        for (var i = 0; i < xsize; i++) {
+            var xi = x.sub(i);
             if (xi instanceof Ellipsislike) {
                 return (Ellipsislike) xi;
             }
@@ -72,7 +72,7 @@ public abstract class Ellipsis extends UnnormalizedVariable implements Ellipsisl
 
 
         public static Ellipsis make(byte serial, int minArity) {
-            NormalizedVariable v = $.v(VAR_PATTERN, serial);
+            var v = $.v(VAR_PATTERN, serial);
             switch (minArity) {
                 case 0:
                     return new EllipsisZeroOrMore(v);

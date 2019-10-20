@@ -38,7 +38,7 @@ public abstract class DynamicListSpace<X> extends AbstractSpace<X> {
 
     @Override
     public void forEach(Consumer<? super Spatial<X>> each) {
-        for (Spatial<X> xSpatial : active) {
+        for (var xSpatial : active) {
             each.accept(xSpatial);
         }
     }
@@ -66,7 +66,7 @@ public abstract class DynamicListSpace<X> extends AbstractSpace<X> {
             }
         }
 
-        for (Spatial<X> x : active) {
+        for (var x : active) {
             x.update(s.dyn);
         }
 
@@ -87,10 +87,10 @@ public abstract class DynamicListSpace<X> extends AbstractSpace<X> {
     public SpaceGraph3D show(int w, int h, boolean flat) {
 
 
-        AbstractSpace ss = flat ? with(new Flatten(0.25f, 0.25f)) : this;
+        var ss = flat ? with(new Flatten(0.25f, 0.25f)) : this;
         SpaceGraph3D<X> s = new SpaceGraph3D<>(ss);
 
-        EdgeDirected3D fd = new EdgeDirected3D();
+        var fd = new EdgeDirected3D();
         fd.condense.set(fd.condense.get() * 1);
         s.dyn.addBroadConstraint(fd);
 
@@ -104,8 +104,8 @@ public abstract class DynamicListSpace<X> extends AbstractSpace<X> {
 
     public void clear() {
         synchronized (this) {
-            SpaceGraph3D<X> spatials = space;
-            for (Spatial<X> xSpatial : active) {
+            var spatials = space;
+            for (var xSpatial : active) {
                 spatials.remove(xSpatial);
             }
             active.clear();

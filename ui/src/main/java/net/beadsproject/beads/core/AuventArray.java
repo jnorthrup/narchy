@@ -119,8 +119,8 @@ public class AuventArray extends Auvent {
      */
     @Override
     public AuventArray clone() {
-        AuventArray clone = new AuventArray();
-        for (Auvent bead : beads) {
+        var clone = new AuventArray();
+        for (var bead : beads) {
             clone.add(bead);
         }
         return clone;

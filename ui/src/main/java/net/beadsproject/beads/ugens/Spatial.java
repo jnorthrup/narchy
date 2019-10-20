@@ -62,8 +62,8 @@ public class Spatial extends UGen {
         Location(UGen source) {
             this.source = source;
             pos = new UGen[source.getOuts()][dimensions];
-            for (int i = 0; i < pos.length; i++) {
-                for (int j = 0; j < dimensions; j++) {
+            for (var i = 0; i < pos.length; i++) {
+                for (var j = 0; j < dimensions; j++) {
                     pos[i][j] = new Glide(context, 100f, 5f); 
                 }
             }
@@ -90,7 +90,7 @@ public class Spatial extends UGen {
          */
         void move(int channel, float[] newPos) {
             if (!ownsPosition) return;
-            for (int i = 0; i < pos[channel].length; i++) {
+            for (var i = 0; i < pos[channel].length; i++) {
                 pos[channel][i].setValue(newPos[i]);
             }
         }
@@ -103,7 +103,7 @@ public class Spatial extends UGen {
          */
         void moveImmediately(int channel, float[] newPos) {
             if (!ownsPosition) return;
-            for (int i = 0; i < pos[channel].length; i++) {
+            for (var i = 0; i < pos[channel].length; i++) {
                 ((Glide) pos[channel][i]).setValueImmediately(newPos[i]);
             }
         }
@@ -117,23 +117,23 @@ public class Spatial extends UGen {
             
             source.update();
             
-            for (int outputChannel = 0; outputChannel < pos.length; outputChannel++) {
+            for (var outputChannel = 0; outputChannel < pos.length; outputChannel++) {
                 
-                for (int dim = 0; dim < dimensions; dim++) {
+                for (var dim = 0; dim < dimensions; dim++) {
                     pos[outputChannel][dim].update();
                 }
                 
-                for (int time = 0; time < bufferSize; time++) {
-                    
-                    float[] currentPos = new float[dimensions];
-                    for (int dim = 0; dim < dimensions; dim++) {
+                for (var time = 0; time < bufferSize; time++) {
+
+                    var currentPos = new float[dimensions];
+                    for (var dim = 0; dim < dimensions; dim++) {
                         currentPos[dim] = pos[outputChannel][dim].getValue(0, time);
                     }
-                    float[] speakerGains = new float[speakerPositions.length];
+                    var speakerGains = new float[speakerPositions.length];
                     
-                    for (int speaker = 0; speaker < speakerPositions.length; speaker++) {
-                        float distance = distance(speakerPositions[speaker], currentPos);
-                        float linearGain = Math.max(0, 1f - distance / sphereDiameter);
+                    for (var speaker = 0; speaker < speakerPositions.length; speaker++) {
+                        var distance = distance(speakerPositions[speaker], currentPos);
+                        var linearGain = Math.max(0, 1f - distance / sphereDiameter);
                         /*
                          * TODO I've removed the math pow because it was really slowing things down.
                          * the fastPow01 method doesn't help much either. Surprising this should make such
@@ -143,7 +143,7 @@ public class Spatial extends UGen {
 
                     }
                     
-                    for (int speaker = 0; speaker < speakerPositions.length; speaker++) {
+                    for (var speaker = 0; speaker < speakerPositions.length; speaker++) {
                         output[speaker][time] += speakerGains[speaker] * source.getValue(outputChannel, time);
                     }
                 }
@@ -308,17 +308,17 @@ public class Spatial extends UGen {
      */
     public static float[][] speakerPositionsFromFile(String file, int dimensions) {
         try {
-            FileInputStream fis = new FileInputStream(new File(file));
-            Scanner scanner = new Scanner(fis);
-            LinkedList<Float> coords = new LinkedList<>();
+            var fis = new FileInputStream(new File(file));
+            var scanner = new Scanner(fis);
+            var coords = new LinkedList<Float>();
             while (scanner.hasNext()) {
                 coords.add(scanner.nextFloat());
             }
             System.out.print("Spatial: Loaded speaker positions from " + file + ' ');
-            float[][] speakerPositions = new float[coords.size() / dimensions][dimensions];
-            for (int i = 0; i < speakerPositions.length; i++) {
+            var speakerPositions = new float[coords.size() / dimensions][dimensions];
+            for (var i = 0; i < speakerPositions.length; i++) {
                 System.out.print("[");
-                for (int j = 0; j < dimensions; j++) {
+                for (var j = 0; j < dimensions; j++) {
                     speakerPositions[i][j] = coords.poll();
                     System.out.print(speakerPositions[i][j] + " ");
                 }
@@ -346,7 +346,7 @@ public class Spatial extends UGen {
             return;
         }
         speakerPositions = new float[locations.length][dimensions];
-        for (int i = 0; i < speakerPositions.length; i++) {
+        for (var i = 0; i < speakerPositions.length; i++) {
             System.arraycopy(locations[i], 0, speakerPositions[i], 0, dimensions);
         }
     }
@@ -360,7 +360,7 @@ public class Spatial extends UGen {
      */
     private static float distance(float[] a, float[] b) {
         float distance = 0;
-        for (int i = 0; i < a.length; i++) {
+        for (var i = 0; i < a.length; i++) {
             distance += (a[i] - b[i]) * (a[i] - b[i]);
         }
         distance = (float) Math.sqrt(distance);
@@ -372,7 +372,7 @@ public class Spatial extends UGen {
      */
     @Override
     public synchronized UGen in(UGen source) {
-        Location location = new Location(source);
+        var location = new Location(source);
         sources.put(source, location);
         return this;
     }
@@ -394,7 +394,7 @@ public class Spatial extends UGen {
      * @param controllers the controllers.
      */
     public void addInput(UGen source, UGen[][] controllers) {
-        Location location = new Location(source, controllers);
+        var location = new Location(source, controllers);
         sources.put(source, location);
     }
 
@@ -407,7 +407,7 @@ public class Spatial extends UGen {
      * @param newPos  the new pos
      */
     public void setLocation(UGen source, int channel, float[] newPos) {
-        Location l = sources.get(source);
+        var l = sources.get(source);
         if (l != null) l.move(channel, newPos);
     }
 
@@ -472,14 +472,14 @@ public class Spatial extends UGen {
     @Override
     public void gen() {
         synchronized (sources) {
-            for (Map.Entry<UGen, Location> uGenLocationEntry : sources.entrySet()) {
-                Location location = uGenLocationEntry.getValue();
+            for (var uGenLocationEntry : sources.entrySet()) {
+                var location = uGenLocationEntry.getValue();
                 location.mixInAudio(bufOut);
                 if ((uGenLocationEntry.getKey()).isDeleted()) {
                     deadSources.add(uGenLocationEntry.getKey());
                 }
             }
-            for (UGen source : deadSources) {
+            for (var source : deadSources) {
                 sources.remove(source);
             }
             deadSources.clear();

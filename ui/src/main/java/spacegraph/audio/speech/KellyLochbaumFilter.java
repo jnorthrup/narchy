@@ -72,7 +72,7 @@ public class KellyLochbaumFilter /*implements Filter*/ {
 		go=new double[nTubeSections+1]; 	//to glottis output of reflection
         cylRadius = new double[nTubeSections+1];
         kCoeff = new double[nTubeSections+1]; //reflections coefficients
-        for(int i=0;i<=nTubeSections;i++) {
+        for(var i = 0; i<=nTubeSections; i++) {
             cylRadius[i] = 1;
             li[i]=lo[i]=gi[i]=go[i]=0;
             kCoeff[i]=0;
@@ -84,7 +84,7 @@ public class KellyLochbaumFilter /*implements Filter*/ {
     /** Compute low level filter values from geometry */
     protected void computeKCoeff() {
         kCoeff[0]=1.0; //Zgl=0
-        for(int i=1;i<nTubeSections;i++) {
+        for(var i = 1; i<nTubeSections; i++) {
             kCoeff[i] = (cylRadius[i]*cylRadius[i]-cylRadius[i-1]*
                          cylRadius[i-1])/(cylRadius[i]*cylRadius[i]+cylRadius[i-1]*cylRadius[i-1]);
         }
@@ -117,7 +117,7 @@ public class KellyLochbaumFilter /*implements Filter*/ {
 
     /** Clear filter of past history */
     public void resetFilter() {
-        for(int i=0;i<=nTubeSections;i++) {
+        for(var i = 0; i<=nTubeSections; i++) {
             li[i]=lo[i]=gi[i]=go[i]=0;
         }
     }
@@ -135,13 +135,13 @@ public class KellyLochbaumFilter /*implements Filter*/ {
         @param inputOffset where to start in circular buffer input.
     */
     public void filter(float [] output, float[] input, int nsamples, int inputOffset) {
-        int inputLen = input.length;
-        int ii = inputOffset;
-        for (int k=0;k<nsamples;k++) {
+		var inputLen = input.length;
+		var ii = inputOffset;
+        for (var k = 0; k<nsamples; k++) {
 			//Input into system
 			li[0]=input[k]/2.0;
 			//Calculate all reflections
-			for (int i=nTubeSections;i>=0;i--)
+			for (var i = nTubeSections; i>=0; i--)
 			{
 		  		//to lips
 		  		lo[i]=dampingCoeff*((1+kCoeff[i])*li[i]+kCoeff[i]*gi[i]);
@@ -154,7 +154,7 @@ public class KellyLochbaumFilter /*implements Filter*/ {
 		  		}
 			}
 			//calculate delays towards lips
-			for (int i=0;i<nTubeSections;i++) {
+			for (var i = 0; i<nTubeSections; i++) {
 				li[i+1]=dampingCoeff*lo[i];
 			}
 			//Lip output
@@ -251,15 +251,15 @@ public class KellyLochbaumFilter /*implements Filter*/ {
 
 		protected void computeBuffer(float[] buf, int bufsz) {
 			//int bufsz = getBufferSize();
-			for(int i=0;i<bufsz;i++) {
+			for(var i = 0; i<bufsz; i++) {
 				float y;
 				if(phase > (Tn+Tp)) {
 					y=0;
 				} else if(phase<Tp) {
-					float tmp = phase/Tp;
+					var tmp = phase/Tp;
 					y = (3-2*tmp)*tmp*tmp;
 				} else {
-					float tmp = (phase-Tp)/T;
+					var tmp = (phase-Tp)/T;
 					y = 1-tmp*tmp;
 				}
 				phase += 1/srate;

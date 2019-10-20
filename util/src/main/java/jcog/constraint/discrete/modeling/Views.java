@@ -32,7 +32,7 @@ public class Views {
     private static final HashMap<Pair<IntVar, Integer>, IntVar> offsetViews = new HashMap<>();
 
     public static IntVar opposite(IntVar x) {
-        IntVar view = oppositeViews.get(x);
+        var view = oppositeViews.get(x);
         if (view == null) {
             view = new IntVarOpposite(x);
             oppositeViews.put(x, view);
@@ -42,8 +42,8 @@ public class Views {
     }
 
     public static IntVar offset(IntVar x, int k) {
-        Pair<IntVar, Integer> t = Tuples.pair(x, k);
-        IntVar view = offsetViews.get(x);
+        var t = Tuples.pair(x, k);
+        var view = offsetViews.get(x);
         if (view == null) {
             view = new IntVarOffset(x, k);
             offsetViews.put(t, view);

@@ -48,27 +48,27 @@ public class O extends Applet implements Runnable {
 			Thread.yield();
 		}
 
-		int[] STATIC = new int[STATIC_DATA_LENGTH];
+		var STATIC = new int[STATIC_DATA_LENGTH];
 
 		{
 
-			for (int i = 0; i < 726; i++) {
+			for (var i = 0; i < 726; i++) {
 				int j = STATIC_DATA.charAt(i);
 				STATIC[i] = (0xfffffffe * (j & 0x8000)) | j;
 			}
 		}
 
-		
-		BufferedImage image = new BufferedImage(RENDER_WIDTH, RENDER_HEIGHT, BufferedImage.TYPE_INT_RGB);
-		Graphics ogr = image.getGraphics();
 
-		Random random = new Random();
-		int[] display = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
+		var image = new BufferedImage(RENDER_WIDTH, RENDER_HEIGHT, BufferedImage.TYPE_INT_RGB);
+		var ogr = image.getGraphics();
 
-		long nextFrame = System.nanoTime();
+		var random = new Random();
+		var display = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
 
-		int[] units = new int[UNIT_SIZE];
-		for (int pp = STAR_INDEX; pp < STAR_INDEX_FINAL; pp += UNIT_LEN) {
+		var nextFrame = System.nanoTime();
+
+		var units = new int[UNIT_SIZE];
+		for (var pp = STAR_INDEX; pp < STAR_INDEX_FINAL; pp += UNIT_LEN) {
 			
 			units[pp + UNIT_IDX_X] = random.nextInt(UNIT_MAX_X);
 			units[pp + UNIT_IDX_Y] = random.nextInt(UNIT_MAX_Y);
@@ -84,34 +84,31 @@ public class O extends Applet implements Runnable {
 			units[pp + UNIT_IDX_SHIP_TEMPLATE] = STAR_SHIP_TEMPLATE;
 		}
 
-		int lives = 0;
-		int highScore = 0;
+		var lives = 0;
+		var highScore = 0;
 		startGame: while (true) {
-			
-			
-			int score = 0;
 
-			int powerupLaser = LASER_START;
-			int powerupPlasma = PLASMA_START;
-			boolean firingLaser = true;
 
-			int viewStartX = 0;
+			var score = 0;
 
-			
-			
-			int levelSwarmPos = NORMAL_SWARM_START_POS;
-			int swarmShipsRemaining = 10; 
-			int nextShipFrameCount = FIRST_SWARM_DELAY;
-			int swarmShipIndex = 0;
-			int levelDifficulty = INITIAL_DIFFICULTY;
-			int wavesUntilBoss = BOSS_WAVE_FREQUENCY;
+			var powerupLaser = LASER_START;
+			var powerupPlasma = PLASMA_START;
+			var firingLaser = true;
 
-			
-			
-			
-			int bossUnitIndex = 0;
-			int nextBossSwarmIndex = SWARM_BOSS1_POS;
-			int nextLevelSwarmIndex = 0;
+			var viewStartX = 0;
+
+
+			var levelSwarmPos = NORMAL_SWARM_START_POS;
+			var swarmShipsRemaining = 10;
+			var nextShipFrameCount = FIRST_SWARM_DELAY;
+			var swarmShipIndex = 0;
+			var levelDifficulty = INITIAL_DIFFICULTY;
+			var wavesUntilBoss = BOSS_WAVE_FREQUENCY;
+
+
+			var bossUnitIndex = 0;
+			var nextBossSwarmIndex = SWARM_BOSS1_POS;
+			var nextLevelSwarmIndex = 0;
 
 			startLevel: while (true) {
 				
@@ -119,16 +116,14 @@ public class O extends Applet implements Runnable {
 				units[PLAYER_UNIT_IDX_X] = PLAYER_START_X;
 				units[PLAYER_UNIT_IDX_Y] = PLAYER_START_Y;
 
-				int[] plasmaHittingUnitIndex = new int[PLASMA_MAX_HITS_COUNT];
+				var plasmaHittingUnitIndex = new int[PLASMA_MAX_HITS_COUNT];
 
-				
-				
 
-				Graphics sg = getGraphics();
+				var sg = getGraphics();
 				loopGame: while (true) {
 
 
-					for (int i = 0; i < RENDER_PIXEL_COUNT; i++) {
+					for (var i = 0; i < RENDER_PIXEL_COUNT; i++) {
 						display[i] = 0;
 					}
 
@@ -142,7 +137,7 @@ public class O extends Applet implements Runnable {
 						
 						viewStartX = 0;
 					}
-					int viewEndX = viewStartX + RENDER_WIDTH;
+					var viewEndX = viewStartX + RENDER_WIDTH;
 
 					if (lives > 0) {
 
@@ -151,7 +146,7 @@ public class O extends Applet implements Runnable {
 							keys[KEY_CHANGE_WEAPON] = false;
 
 							
-							for (int i = 1; i < PLASMA_MAX_HITS_COUNT; i++) {
+							for (var i = 1; i < PLASMA_MAX_HITS_COUNT; i++) {
 								plasmaHittingUnitIndex[i] = 0;
 							}
 						}
@@ -246,8 +241,8 @@ public class O extends Applet implements Runnable {
 						
 						
 						while (--nextShipFrameCount <= 0) {
-							
-							int swarmShipPos = levelSwarmPos + SWARM_BASE_LEN + (swarmShipIndex * SWARM_IDX_SHIP_LEN);
+
+							var swarmShipPos = levelSwarmPos + SWARM_BASE_LEN + (swarmShipIndex * SWARM_IDX_SHIP_LEN);
 							nextShipFrameCount = (STATIC[swarmShipPos + SWARM_IDX_SHIP_IDX_FRAMES_TO_NEXT] & SWARM_FRAMES_TO_NEXT_SPAWN_MASK) + levelDifficulty;
 							if (--swarmShipsRemaining < 0) {
 								
@@ -296,14 +291,14 @@ public class O extends Applet implements Runnable {
 
 							
 
-							for (int pp = OTHER_START_INDEX; pp < UNIT_SIZE; pp += UNIT_LEN) {
+							for (var pp = OTHER_START_INDEX; pp < UNIT_SIZE; pp += UNIT_LEN) {
 								if (units[pp + UNIT_IDX_SHIP_TEMPLATE] == 0) {
 									
 									if (nextLevelSwarmIndex > 0 && bossUnitIndex == 0) {
 										bossUnitIndex = pp;
 									}
 
-									int templatePos = STATIC[swarmShipPos + SWARM_IDX_SHIP_IDX_TEMPLATE_POS];
+									var templatePos = STATIC[swarmShipPos + SWARM_IDX_SHIP_IDX_TEMPLATE_POS];
 									units[pp + UNIT_IDX_SHIP_TEMPLATE] = templatePos;
 									units[pp + UNIT_IDX_X] = (STATIC[swarmShipPos + SWARM_IDX_SHIP_IDX_X] + (STATIC[swarmShipPos + SWARM_IDX_SHIP_IDX_DX] * (STATIC[swarmShipPos
 											+ SWARM_IDX_SHIP_IDX_SHIP_COUNT] - swarmShipsRemaining))) << UNIT_POSITION_SHIFT;
@@ -360,7 +355,7 @@ public class O extends Applet implements Runnable {
 							units[HEALTHBAR_UNIT_IDX_SHIP_TEMPLATE] = HEALTHBAR_SHIP_TEMPLATE;
 
 
-							for (int pp = OTHER_START_INDEX; pp < UNIT_SIZE; pp++) {
+							for (var pp = OTHER_START_INDEX; pp < UNIT_SIZE; pp++) {
 								units[pp] = 0;
 							}
 
@@ -370,12 +365,12 @@ public class O extends Applet implements Runnable {
 					}
 
 
-					int[] hitDetect = new int[SCENE_PIXEL_COUNT];
-					unitDrawLoop: for (int upos = 0; upos < UNIT_SIZE; upos += UNIT_LEN) {
-						int templatePos = units[upos + UNIT_IDX_SHIP_TEMPLATE];
+					var hitDetect = new int[SCENE_PIXEL_COUNT];
+					unitDrawLoop: for (var upos = 0; upos < UNIT_SIZE; upos += UNIT_LEN) {
+						var templatePos = units[upos + UNIT_IDX_SHIP_TEMPLATE];
 
 						if (templatePos > 0) {
-							int ai = STATIC[templatePos + SHIP_IDX_AI_HIT];
+							var ai = STATIC[templatePos + SHIP_IDX_AI_HIT];
 
 							if ((ai & SHIP_LIFE_COUNTDOWN) != 0) {
 								units[upos + UNIT_IDX_HP]--;
@@ -392,7 +387,7 @@ public class O extends Applet implements Runnable {
 								
 								
 								
-								for (int i = 0; i < PLASMA_MAX_HITS_COUNT; i++) {
+								for (var i = 0; i < PLASMA_MAX_HITS_COUNT; i++) {
 									if (plasmaHittingUnitIndex[i] == upos) {
 										while (i < PLASMA_MAX_HITS_COUNT - 1) {
 											plasmaHittingUnitIndex[i] = plasmaHittingUnitIndex[i + 1];
@@ -416,8 +411,8 @@ public class O extends Applet implements Runnable {
 									
 
 									
-									for (int spos = OTHER_START_INDEX; spos < UNIT_SIZE; spos += UNIT_LEN) {
-										int tpos = units[spos + UNIT_IDX_SHIP_TEMPLATE];
+									for (var spos = OTHER_START_INDEX; spos < UNIT_SIZE; spos += UNIT_LEN) {
+										var tpos = units[spos + UNIT_IDX_SHIP_TEMPLATE];
 										if (tpos > 0 && (STATIC[tpos + SHIP_IDX_AI_HIT] & SHIP_IS_BOSS) != 0) {
 											units[spos + UNIT_IDX_HP] = 0;
 										}
@@ -436,7 +431,7 @@ public class O extends Applet implements Runnable {
 										levelDifficulty = MAX_DIFFICULTY;
 									}
 								}
-								int deathMask = (ai & SHIP_ONDEATH_MASK);
+								var deathMask = (ai & SHIP_ONDEATH_MASK);
 								if (deathMask == SHIP_ONDEATH_SPAWN_BULLETS_DOWN) {
 									
 								}
@@ -465,9 +460,8 @@ public class O extends Applet implements Runnable {
 
 							units[upos + UNIT_IDX_TIMER]++;
 
-							
-							
-							int aiMask = ai & SHIP_AI_MASK;
+
+							var aiMask = ai & SHIP_AI_MASK;
 							if (aiMask == SHIP_AI_BOUNCE) {
 								if (units[upos + UNIT_IDX_X] <= UNIT_MIN_X) {
 									units[upos + UNIT_IDX_VX] = (random.nextInt(3) + 1) << UNIT_POSITION_SHIFT;
@@ -553,31 +547,29 @@ public class O extends Applet implements Runnable {
 								units[upos + UNIT_IDX_HP] = 0;
 							}
 
-							
-							
 
-							int basex = ((units[upos + UNIT_IDX_X]) >> UNIT_POSITION_SHIFT);
-							int basey = (units[upos + UNIT_IDX_Y]) >> UNIT_POSITION_SHIFT;
-							int pcount = STATIC[templatePos + SHIP_IDX_DAMAGE_PART_COUNT] & SHIP_PART_COUNT_MASK;
+							var basex = ((units[upos + UNIT_IDX_X]) >> UNIT_POSITION_SHIFT);
+							var basey = (units[upos + UNIT_IDX_Y]) >> UNIT_POSITION_SHIFT;
+							var pcount = STATIC[templatePos + SHIP_IDX_DAMAGE_PART_COUNT] & SHIP_PART_COUNT_MASK;
 
-							int sppos = templatePos + SHIP_BASE_LEN;
-							int playerDamage = 0;
-							for (int j = 0; j < pcount; j++, sppos += SHIP_IDX_PART_LEN) {
-								int scaleX = STATIC[sppos + SHIP_IDX_PART_IDX_SCALE_X] + units[upos + UNIT_IDX_SCALE_X];
-								int scaleY = STATIC[sppos + SHIP_IDX_PART_IDX_SCALE_Y] + units[upos + UNIT_IDX_SCALE_Y];
-								int ppos = STATIC[sppos + SHIP_IDX_PART_IDX_IDX];
-								int partx = basex + STATIC[sppos + SHIP_IDX_PART_IDX_X];
-								int party = basey + STATIC[sppos + SHIP_IDX_PART_IDX_Y];
-								int baseColor = STATIC[sppos + SHIP_IDX_PART_IDX_BASECOLOR];
+							var sppos = templatePos + SHIP_BASE_LEN;
+							var playerDamage = 0;
+							for (var j = 0; j < pcount; j++, sppos += SHIP_IDX_PART_LEN) {
+								var scaleX = STATIC[sppos + SHIP_IDX_PART_IDX_SCALE_X] + units[upos + UNIT_IDX_SCALE_X];
+								var scaleY = STATIC[sppos + SHIP_IDX_PART_IDX_SCALE_Y] + units[upos + UNIT_IDX_SCALE_Y];
+								var ppos = STATIC[sppos + SHIP_IDX_PART_IDX_IDX];
+								var partx = basex + STATIC[sppos + SHIP_IDX_PART_IDX_X];
+								var party = basey + STATIC[sppos + SHIP_IDX_PART_IDX_Y];
+								var baseColor = STATIC[sppos + SHIP_IDX_PART_IDX_BASECOLOR];
 
 
-								int ccount = STATIC[ppos + PART_IDX_COMPONENT_COUNT];
+								var ccount = STATIC[ppos + PART_IDX_COMPONENT_COUNT];
 
 
-								int spawnVY = 0;
-								int spawnTemplate = 0;
+								var spawnVY = 0;
+								var spawnTemplate = 0;
 
-								int partAi = STATIC[ppos + PART_IDX_AI];
+								var partAi = STATIC[ppos + PART_IDX_AI];
 								if (partAi == PART_AI_LIGHT_FIRE) {
 									
 
@@ -586,9 +578,9 @@ public class O extends Applet implements Runnable {
 										spawnTemplate = LONG_BULLET_SHIP_TEMPLATE;
 									}
 								}
-								int spawnVX = 0;
+								var spawnVX = 0;
 								if (partAi == PART_AI_RADIAL_FIRE) {
-									int time = units[upos + UNIT_IDX_TIMER] % (RADIAL_FIRE_RATE * 8);
+									var time = units[upos + UNIT_IDX_TIMER] % (RADIAL_FIRE_RATE * 8);
 									if (time == 0) {
 										
 										spawnVY = BULLET_SPEED_SLOW;
@@ -629,7 +621,7 @@ public class O extends Applet implements Runnable {
 									}
 								}
 								if (partAi == PART_AI_SQUARE_FIRE) {
-									int time = units[upos + UNIT_IDX_TIMER] % SLOW_FIRE_RATE;
+									var time = units[upos + UNIT_IDX_TIMER] % SLOW_FIRE_RATE;
 									if (time < 4) {
 										spawnTemplate = SHORT_BULLET_SHIP_TEMPLATE;
 									}
@@ -652,7 +644,7 @@ public class O extends Applet implements Runnable {
 								}
 								if (spawnTemplate != 0) {
 									
-									for (int k = OTHER_START_INDEX; k < UNIT_SIZE; k += UNIT_LEN) {
+									for (var k = OTHER_START_INDEX; k < UNIT_SIZE; k += UNIT_LEN) {
 										if (units[k + UNIT_IDX_SHIP_TEMPLATE] == 0) {
 											
 											units[k + UNIT_IDX_X] = partx << UNIT_POSITION_SHIFT;
@@ -668,21 +660,21 @@ public class O extends Applet implements Runnable {
 									}
 								}
 
-								int cpos = ppos + PART_BASE_LEN;
-								int colorB = ((baseColor & 0x00f) << 8) | ((baseColor & 0x00f) << 12);
-								int colorG = ((baseColor & 0x0f0) << 4) | ((baseColor & 0x0f0) << 8);
-								int colorR = (baseColor & 0xf00) | ((baseColor & 0xf00) << 4);
-								for (int k = 0; k < ccount; k++, cpos += PART_IDX_COMPONENT_LEN) {
-									
-									
-									int alpha = STATIC[cpos + PART_IDX_COMPONENT_IDX_GRADIENT];
+								var cpos = ppos + PART_BASE_LEN;
+								var colorB = ((baseColor & 0x00f) << 8) | ((baseColor & 0x00f) << 12);
+								var colorG = ((baseColor & 0x0f0) << 4) | ((baseColor & 0x0f0) << 8);
+								var colorR = (baseColor & 0xf00) | ((baseColor & 0xf00) << 4);
+								for (var k = 0; k < ccount; k++, cpos += PART_IDX_COMPONENT_LEN) {
 
 
-									int startX = partx + ((scaleX * STATIC[cpos + PART_IDX_COMPONENT_IDX_X]) >> SHIP_SCALE_X_SHR);
-									int endX = startX + ((scaleX * STATIC[cpos + PART_IDX_COMPONENT_IDX_WIDTH]) >> SHIP_SCALE_X_SHR);
+									var alpha = STATIC[cpos + PART_IDX_COMPONENT_IDX_GRADIENT];
+
+
+									var startX = partx + ((scaleX * STATIC[cpos + PART_IDX_COMPONENT_IDX_X]) >> SHIP_SCALE_X_SHR);
+									var endX = startX + ((scaleX * STATIC[cpos + PART_IDX_COMPONENT_IDX_WIDTH]) >> SHIP_SCALE_X_SHR);
 									if (endX < startX) {
-										
-										int temp = endX;
+
+										var temp = endX;
 										endX = startX;
 										startX = temp;
 									}
@@ -708,12 +700,12 @@ public class O extends Applet implements Runnable {
 									
 									
 									if (endX > startX) {
-										int y = party + ((scaleY * STATIC[cpos + PART_IDX_COMPONENT_IDX_Y]) >> SHIP_SCALE_Y_SHR);
-										int endY = y + ((scaleY * STATIC[cpos + PART_IDX_COMPONENT_IDX_HEIGHT]) >> SHIP_SCALE_Y_SHR);
+										var y = party + ((scaleY * STATIC[cpos + PART_IDX_COMPONENT_IDX_Y]) >> SHIP_SCALE_Y_SHR);
+										var endY = y + ((scaleY * STATIC[cpos + PART_IDX_COMPONENT_IDX_HEIGHT]) >> SHIP_SCALE_Y_SHR);
 
 										
 										if (y > endY) {
-											int temp = y;
+											var temp = y;
 											y = endY;
 											endY = temp;
 										}
@@ -724,17 +716,14 @@ public class O extends Applet implements Runnable {
 										if (endY > RENDER_HEIGHT) {
 											endY = RENDER_HEIGHT;
 										}
-										int gradient = (alpha & 0xff) + 1;
-										for (int color = (((gradient * colorR)) & 0xff0000) | (((gradient * colorG) >>> 8) & 0xff00) | (((gradient * colorB) >>> 16) & 0xff); y < endY; y++) {
-											for (int x = startX; x < endX; x++) {
-												
-												int hitPos = x + (y * SCENE_WIDTH);
+										var gradient = (alpha & 0xff) + 1;
+										for (var color = (((gradient * colorR)) & 0xff0000) | (((gradient * colorG) >>> 8) & 0xff00) | (((gradient * colorB) >>> 16) & 0xff); y < endY; y++) {
+											for (var x = startX; x < endX; x++) {
 
-												
-												
-												
-												
-												int hitDamage = (STATIC[templatePos + SHIP_IDX_DAMAGE_PART_COUNT] >> SHIP_DAMAGE_SHIFT) & SHIP_DAMAGE_MASK;
+												var hitPos = x + (y * SCENE_WIDTH);
+
+
+												var hitDamage = (STATIC[templatePos + SHIP_IDX_DAMAGE_PART_COUNT] >> SHIP_DAMAGE_SHIFT) & SHIP_DAMAGE_MASK;
 												if (hitDetect[hitPos] == PLAYER_INDEX && upos != PLAYER_INDEX) {
 													if (hitDamage > playerDamage) {
 														playerDamage = hitDamage;
@@ -774,7 +763,7 @@ public class O extends Applet implements Runnable {
 										powerupPlasma = PLASMA_MAX;
 									}
 								}
-								int aiHit = STATIC[templatePos + SHIP_IDX_AI_HIT];
+								var aiHit = STATIC[templatePos + SHIP_IDX_AI_HIT];
 								if ((aiHit & SHIP_HIT_PLAYER_COLLIDE_DESTROYS_UNIT) != 0) {
 									units[upos + UNIT_IDX_HP] = 0;
 								}
@@ -810,21 +799,18 @@ public class O extends Applet implements Runnable {
 					
 					if (lives > 0) {
 						if (firingLaser) {
-							
-							
 
-							
-							
-							int p2x = (units[PLAYER_UNIT_IDX_X] - units[PLAYER_UNIT_IDX_VX]) >> UNIT_POSITION_SHIFT;
-							for (int z = -powerupLaser; z < powerupLaser; z++) {
+
+							var p2x = (units[PLAYER_UNIT_IDX_X] - units[PLAYER_UNIT_IDX_VX]) >> UNIT_POSITION_SHIFT;
+							for (var z = -powerupLaser; z < powerupLaser; z++) {
 								if (p2x + z >= viewStartX && p2x + z < viewEndX) {
 									
-									for (int y = ((units[PLAYER_UNIT_IDX_Y] - units[PLAYER_UNIT_IDX_VY]) >> UNIT_POSITION_SHIFT); y >= 0; y--) {
-										
-										
-										int hitUnitIndex = hitDetect[p2x + z + (y * SCENE_WIDTH)];
+									for (var y = ((units[PLAYER_UNIT_IDX_Y] - units[PLAYER_UNIT_IDX_VY]) >> UNIT_POSITION_SHIFT); y >= 0; y--) {
+
+
+										var hitUnitIndex = hitDetect[p2x + z + (y * SCENE_WIDTH)];
 										if (hitUnitIndex > PLAYER_INDEX) {
-											int hitTemplatePos = units[hitUnitIndex + UNIT_IDX_SHIP_TEMPLATE];
+											var hitTemplatePos = units[hitUnitIndex + UNIT_IDX_SHIP_TEMPLATE];
 											if ((STATIC[hitTemplatePos + SHIP_IDX_AI_HIT] & SHIP_HIT_PLAYER_WEAPON_DAMAGES_UNIT) > 0) {
 												
 												
@@ -832,7 +818,7 @@ public class O extends Applet implements Runnable {
 												break;
 											}
 										}
-										int intensity = z * 3 + 80;
+										var intensity = z * 3 + 80;
 										if (z < 0) {
 											intensity = 80 - z * 3;
 										}
@@ -841,49 +827,34 @@ public class O extends Applet implements Runnable {
 								}
 							}
 						} else {
-							
 
-							
-							
-							
-							
-							
 
-							
-							
-							
-							
-							
-							
-							
-							int p2x = units[PLAYER_UNIT_IDX_X] - units[PLAYER_UNIT_IDX_VX];
-							int p2y = units[PLAYER_UNIT_IDX_Y] - BEND_SHOT_Y;
-							int pp0 = PLAYER_INDEX;
+							var p2x = units[PLAYER_UNIT_IDX_X] - units[PLAYER_UNIT_IDX_VX];
+							var p2y = units[PLAYER_UNIT_IDX_Y] - BEND_SHOT_Y;
+							var pp0 = PLAYER_INDEX;
 							plasmaUnitTraceList: for (int i = 0, loopCount = 0; i < PLASMA_UNIT_LOOP && loopCount < MAX_PLASMA_UNIT_LOOP; i++, loopCount++) {
-								int pp3 = 1;
+								var pp3 = 1;
 								if (i < PLASMA_MAX_HITS_COUNT) {
 									pp3 = plasmaHittingUnitIndex[i];
                                 }
 								if (pp3 > 0) {
-									int p0x = units[pp0 + UNIT_IDX_X];
-									int p0y = units[pp0 + UNIT_IDX_Y];
+									var p0x = units[pp0 + UNIT_IDX_X];
+									var p0y = units[pp0 + UNIT_IDX_Y];
 									if (pp0 == PLAYER_INDEX) {
 										p0x -= units[PLAYER_UNIT_IDX_VX];
 										p0y -= units[PLAYER_UNIT_IDX_VY];
 									}
-									int p3x = p0x;
-									int p3y = 0;
+									var p3x = p0x;
+									var p3y = 0;
 									if (pp3 > 1) {
 										p3x = units[pp3 + UNIT_IDX_X];
 										p3y = units[pp3 + UNIT_IDX_Y];
 									}
 
-									
-									
-									
-									int p1x = 2 * p0x - p2x;
-									int p1y = 2 * p0y - p2y;
-									int pp2 = i + 1;
+
+									var p1x = 2 * p0x - p2x;
+									var p1y = 2 * p0y - p2y;
+									var pp2 = i + 1;
 									for (; pp2 < PLASMA_MAX_HITS_COUNT && plasmaHittingUnitIndex[pp2] == 0; pp2++)
 										;
 									if (pp2 >= PLASMA_MAX_HITS_COUNT) {
@@ -896,53 +867,49 @@ public class O extends Applet implements Runnable {
 										p2y = 2 * p3y - units[pp2 + UNIT_IDX_Y];
 									}
 
-									
-									
-									
-									int steps = (((p0x > p3x ? (p0x - p3x) : (p3x - p0x)) + (p0y > p3y ? (p0y - p3y) : (p3y - p0y))) >> UNIT_POSITION_SHIFT) / powerupPlasma / 2;
+
+									var steps = (((p0x > p3x ? (p0x - p3x) : (p3x - p0x)) + (p0y > p3y ? (p0y - p3y) : (p3y - p0y))) >> UNIT_POSITION_SHIFT) / powerupPlasma / 2;
 									
 									if (steps > MAX_PLASMA_STEPS) {
 										steps = MAX_PLASMA_STEPS;
 									}
-									float du = 0.25f / (float) steps;
+									var du = 0.25f / (float) steps;
 
-									for (float t1 = 0.f; t1 <= 1.f; t1 += du) {
-										float it1 = (1.f - t1);
-										float it2 = it1 * it1;
-										float it3 = it2 * it1;
-										float t2 = t1 * t1;
-										float t3 = t2 * t1;
-										float it2_t1_3 = 3 * it2 * t1;
-										float it1_t2_3 = 3 * it1 * t2;
-										int x0 = ((int) ((p0x * it3) + (it2_t1_3 * p1x) + (it1_t2_3 * p2x) + (t3 * p3x))) >> UNIT_POSITION_SHIFT;
-										int y0 = ((int) ((p0y * it3) + (it2_t1_3 * p1y) + (it1_t2_3 * p2y) + (t3 * p3y))) >> UNIT_POSITION_SHIFT;
+									for (var t1 = 0.f; t1 <= 1.f; t1 += du) {
+										var it1 = (1.f - t1);
+										var it2 = it1 * it1;
+										var it3 = it2 * it1;
+										var t2 = t1 * t1;
+										var t3 = t2 * t1;
+										var it2_t1_3 = 3 * it2 * t1;
+										var it1_t2_3 = 3 * it1 * t2;
+										var x0 = ((int) ((p0x * it3) + (it2_t1_3 * p1x) + (it1_t2_3 * p2x) + (t3 * p3x))) >> UNIT_POSITION_SHIFT;
+										var y0 = ((int) ((p0y * it3) + (it2_t1_3 * p1y) + (it1_t2_3 * p2y) + (t3 * p3y))) >> UNIT_POSITION_SHIFT;
 
-										for (int z = -powerupPlasma; z < powerupPlasma; z++) {
+										for (var z = -powerupPlasma; z < powerupPlasma; z++) {
 											
 											
 											if (x0 + z >= 0 && x0 + z < SCENE_WIDTH) {
 												
 
-												for (int q = -powerupPlasma; q < powerupPlasma; q++) {
+												for (var q = -powerupPlasma; q < powerupPlasma; q++) {
 													if (y0 + q >= 0 && y0 + q < RENDER_HEIGHT) {
-														
-														
-														int hitPos = x0 + z + ((y0 + q) * SCENE_WIDTH);
-														int hitUnitIndex = hitDetect[hitPos];
+
+
+														var hitPos = x0 + z + ((y0 + q) * SCENE_WIDTH);
+														var hitUnitIndex = hitDetect[hitPos];
 														if (hitUnitIndex == PLAYER_INDEX) {
 															
 															continue;
 														}
 														if (hitUnitIndex > PLAYER_INDEX) {
-															int hitTemplatePos = units[hitUnitIndex + UNIT_IDX_SHIP_TEMPLATE];
+															var hitTemplatePos = units[hitUnitIndex + UNIT_IDX_SHIP_TEMPLATE];
 															if ((STATIC[hitTemplatePos + SHIP_IDX_AI_HIT] & SHIP_HIT_PLAYER_WEAPON_DAMAGES_UNIT) > 0) {
 
-																
-																
-																
-																boolean found = IntStream.range(0, PLASMA_MAX_HITS_COUNT).anyMatch(j -> plasmaHittingUnitIndex[j] == hitUnitIndex);
+
+																var found = IntStream.range(0, PLASMA_MAX_HITS_COUNT).anyMatch(j -> plasmaHittingUnitIndex[j] == hitUnitIndex);
 																if (!found) {
-																	for (int j = PLASMA_MAX_HITS_COUNT; --j > i;) {
+																	for (var j = PLASMA_MAX_HITS_COUNT; --j > i;) {
 																		plasmaHittingUnitIndex[j] = plasmaHittingUnitIndex[j - 1];
 																	}
 																	
@@ -961,7 +928,7 @@ public class O extends Applet implements Runnable {
 
 														if (x0 + z >= viewStartX && x0 + z < viewEndX) {
 
-															int j = (20 + z + q) << 2;
+															var j = (20 + z + q) << 2;
 															if (j < 80) {
 																j = 80 - j;
 															}
@@ -1025,12 +992,9 @@ public class O extends Applet implements Runnable {
 
 	@Override
     public boolean handleEvent(Event e) {
-		
-		
-		
-		
-		
-		boolean down = IntStream.of(KEY_PRESS, KEY_ACTION, MOUSE_DOWN).anyMatch(i -> e.id == i);
+
+
+		var down = IntStream.of(KEY_PRESS, KEY_ACTION, MOUSE_DOWN).anyMatch(i -> e.id == i);
 
 
 		if (e.id >= KEY_PRESS && e.id <= KEY_ACTION_RELEASE) {

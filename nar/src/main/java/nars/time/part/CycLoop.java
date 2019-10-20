@@ -44,7 +44,7 @@ public abstract class CycLoop extends NARPart implements Consumer<NAR> {
 
     @Override
     protected void stopping(NAR nar) {
-        @Nullable Off o = off;
+        @Nullable var o = off;
         if (o!=null) {
             this.off = null;
             o.close();

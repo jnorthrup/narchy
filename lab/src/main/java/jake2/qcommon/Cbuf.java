@@ -49,7 +49,7 @@ public final class Cbuf {
     public static void InsertText(String text) {
 
 
-        int templen = Globals.cmd_text.cursize;
+        var templen = Globals.cmd_text.cursize;
         if (templen != 0) {
             System.arraycopy(Globals.cmd_text.data, 0, tmp, 0, templen);
             SZ.Clear(Globals.cmd_text);
@@ -69,8 +69,8 @@ public final class Cbuf {
      */
     static void AddEarlyCommands(boolean clear) {
 
-        for (int i = 0; i < Com.Argc(); i++) {
-            String s = Com.Argv(i);
+        for (var i = 0; i < Com.Argc(); i++) {
+            var s = Com.Argv(i);
             if (!"+setAt".equals(s))
                 continue;
             Cbuf.AddText("setAt " + Com.Argv(i + 1) + ' ' + Com.Argv(i + 2)
@@ -91,23 +91,23 @@ public final class Cbuf {
         int i;
 
 
-        int s = 0;
-        int argc = Com.Argc();
+        var s = 0;
+        var argc = Com.Argc();
         for (i = 1; i < argc; i++) {
             s += Com.Argv(i).length();
         }
         if (s == 0)
             return false;
 
-        String text = "";
+        var text = "";
         for (i = 1; i < argc; i++) {
             text += Com.Argv(i);
             if (i != argc - 1)
                 text += " ";
         }
 
-        
-        String build = "";
+
+        var build = "";
         for (i = 0; i < text.length(); i++) {
             if (text.charAt(i) == '+') {
                 i++;
@@ -122,7 +122,7 @@ public final class Cbuf {
             }
         }
 
-        boolean ret = (build.length() != 0);
+        var ret = (build.length() != 0);
         if (ret)
             Cbuf.AddText(build);
 
@@ -136,7 +136,7 @@ public final class Cbuf {
      * @param text
      */
     public static void AddText(String text) {
-        int l = text.length();
+        var l = text.length();
 
         if (Globals.cmd_text.cursize + l >= Globals.cmd_text.maxsize) {
             Com.Printf("Cbuf_AddText: overflow\n");
@@ -157,7 +157,7 @@ public final class Cbuf {
             
             text = Globals.cmd_text.data;
 
-            int quotes = 0;
+            var quotes = 0;
             int i;
 
             for (i = 0; i < Globals.cmd_text.cursize; i++) {
@@ -191,10 +191,10 @@ public final class Cbuf {
 
             }
 
-            
-            int len = Lib.strlen(line);
 
-            String cmd = new String(line, 0, len);
+            var len = Lib.strlen(line);
+
+            var cmd = new String(line, 0, len);
             Cmd.ExecuteString(cmd);
 
             if (Globals.cmd_wait) {

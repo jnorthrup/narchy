@@ -61,7 +61,7 @@ public class NoiseVectorChip extends Splitting {
         if (o == null || o.volume()!=size.intValue()) {
 
             //TODO abstract;
-            TensorFunc oNext = Tensor.randomVectorGauss(size.intValue(), 0, 1, rng);
+            var oNext = Tensor.randomVectorGauss(size.intValue(), 0, 1, rng);
 
 
             L(view = new BitmapMatrixView((this.outputVector = new TensorLERP(oNext, momentum)).data));

@@ -28,20 +28,20 @@ public class GradientFitter implements ParameterizedFunction {
 
     @Override
     public void learn(double[] xs, double y) {
-        double q = parameterizedFunction.value(xs);
+        var q = parameterizedFunction.value(xs);
 
         parameterGradient(gradient, xs);
-        double e = y - q;
+        var e = y - q;
         Utils.multiplySelf(gradient,e);
 
-        double l = Utils.length(gradient);
+        var l = Utils.length(gradient);
         if (l < 1) {
             l = 1;
         }
 
-        double a = approxParameters.getAlpha();
-        double m = approxParameters.getMomentum();
-        for (int i = 0; i < gradient.length; ++i) {
+        var a = approxParameters.getAlpha();
+        var m = approxParameters.getMomentum();
+        for (var i = 0; i < gradient.length; ++i) {
             previousDeltas[i] = gradient[i] = a * gradient[i] / l + m * previousDeltas[i];
         }
 

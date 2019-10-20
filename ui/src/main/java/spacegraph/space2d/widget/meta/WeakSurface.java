@@ -33,7 +33,7 @@ public class WeakSurface extends AbstractUnitContainer {
 
     @Override
     public Surface the() {
-        Surface s = the.get();
+        var s = the.get();
         if (s == null) {
             delete();
             return new EmptySurface();

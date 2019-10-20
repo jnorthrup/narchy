@@ -36,16 +36,16 @@ public class Info {
 	 */
     public static String Info_ValueForKey(String s, String key) {
 
-        StringTokenizer tk = new StringTokenizer(s, "\\");
+        var tk = new StringTokenizer(s, "\\");
 
         while (tk.hasMoreTokens()) {
-            String key1 = tk.nextToken();
+            var key1 = tk.nextToken();
 
             if (!tk.hasMoreTokens()) {
                 Com.Printf("MISSING VALUE\n");
                 return s;
             }
-            String value1 = tk.nextToken();
+            var value1 = tk.nextToken();
 
             if (key.equals(key1))
                 return value1;
@@ -83,7 +83,7 @@ public class Info {
             return s;
         }
 
-        StringBuilder sb = new StringBuilder(Info_RemoveKey(s, key));
+        var sb = new StringBuilder(Info_RemoveKey(s, key));
 
         if (sb.length() + 2 + key.length() + value.length() > Defines.MAX_INFO_STRING) {
 
@@ -101,23 +101,23 @@ public class Info {
      */
     public static String Info_RemoveKey(String s, String key) {
 
-        StringBuilder sb = new StringBuilder(512);
+        var sb = new StringBuilder(512);
 
         if (key.indexOf('\\') != -1) {
             Com.Printf("Can't use a key with a \\\n");
             return s;
         }
 
-        StringTokenizer tk = new StringTokenizer(s, "\\");
+        var tk = new StringTokenizer(s, "\\");
 
         while (tk.hasMoreTokens()) {
-            String key1 = tk.nextToken();
+            var key1 = tk.nextToken();
 
             if (!tk.hasMoreTokens()) {
                 Com.Printf("MISSING VALUE\n");
                 return s;
             }
-            String value1 = tk.nextToken();
+            var value1 = tk.nextToken();
 
             if (!key.equals(key1))
                 sb.append('\\').append(key1).append('\\').append(value1);
@@ -137,26 +137,26 @@ public class Info {
 
     public static void Print(String s) {
 
-        StringBuilder sb = new StringBuilder(512);
-        StringTokenizer tk = new StringTokenizer(s, "\\");
+        var sb = new StringBuilder(512);
+        var tk = new StringTokenizer(s, "\\");
 
         while (tk.hasMoreTokens()) {
 
-            String key1 = tk.nextToken();
+            var key1 = tk.nextToken();
 
             if (!tk.hasMoreTokens()) {
                 Com.Printf("MISSING VALUE\n");
                 return;
             }
 
-            String value1 = tk.nextToken();
+            var value1 = tk.nextToken();
 
             sb.append(key1);
 
-            int len = key1.length();
+            var len = key1.length();
 
             if (len < 20) {
-                String fillspaces = "                     ";
+                var fillspaces = "                     ";
                 sb.append(fillspaces.substring(len));
             }
             sb.append('=').append(value1).append('\n');

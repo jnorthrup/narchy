@@ -36,8 +36,8 @@ public class SignalInput extends Loop {
 
         this.s = this.e = src.time();
 
-        int r = src.sampleRate();
-        int samples = Math.round(bufferSeconds * r);
+        var r = src.sampleRate();
+        var samples = Math.round(bufferSeconds * r);
         return set(src, r, samples);
     }
 
@@ -62,14 +62,14 @@ public class SignalInput extends Loop {
 
     @Override
     public boolean next() {
-        DigitizedSignal source = this.source;
+        var source = this.source;
         if (source!=null) {
-            boolean hasListeners = !wave.isEmpty();
+            var hasListeners = !wave.isEmpty();
             if (hasListeners) {
                 if (source.hasNext((data.length - dataPtr))) {
 
 
-                    int read = source.next(data, dataPtr, data.length - dataPtr);
+                    var read = source.next(data, dataPtr, data.length - dataPtr);
 
                     //noinspection NonAtomicOperationOnVolatileField
                     dataPtr += read; assert(dataPtr <= data.length);

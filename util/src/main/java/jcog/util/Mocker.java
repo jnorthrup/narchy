@@ -112,8 +112,8 @@ public enum Mocker {
 
         private static MethodHandles.Lookup acquireLookup(Class<?> c) {
             try {
-                
-                Constructor<MethodHandles.Lookup> lookupConstructor =
+
+                var lookupConstructor =
                         MethodHandles.Lookup.class.getDeclaredConstructor(Class.class, Integer.TYPE);
                 if (!lookupConstructor.isAccessible()) {
                     lookupConstructor.setAccessible(true);
@@ -122,8 +122,8 @@ public enum Mocker {
             } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException ignored) {
             }
             try {
-                
-                Field field = MethodHandles.Lookup.class.getDeclaredField("IMPL_LOOKUP");
+
+                var field = MethodHandles.Lookup.class.getDeclaredField("IMPL_LOOKUP");
                 field.setAccessible(true);
                 return (MethodHandles.Lookup) field.get(null);
             } catch (Exception e) {
@@ -134,7 +134,7 @@ public enum Mocker {
 
         @Override
         public final Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-            Class<?> declaringClass = method.getDeclaringClass();
+            var declaringClass = method.getDeclaringClass();
             if (declaringClass == Object.class) {
                 return method.invoke(this, args);
 
@@ -153,14 +153,14 @@ public enum Mocker {
             if (args == null)
                 args = NO_ARGS;
 
-            Object o = doInvoke(proxy, method, args);
+            var o = doInvoke(proxy, method, args);
 
             return o == null ? defaultValues.getOrDefault(method.getReturnType(), null) : o;
         }
 
         static void closeQuietly(@Nullable Object o) {
             if (o instanceof Object[]) {
-                for (Object o2 : (Object[]) o) {
+                for (var o2 : (Object[]) o) {
                     closeQuietly(o2);
                 }
             } else if (o instanceof java.io.Closeable) {
@@ -191,8 +191,8 @@ public enum Mocker {
         @SuppressWarnings("WeakerAccess")
         static MethodHandle methodHandleForProxy(Object proxy, Method m) {
             try {
-                Class<?> declaringClass = m.getDeclaringClass();
-                MethodHandles.Lookup lookup = PRIVATE_LOOKUP.get(declaringClass);
+                var declaringClass = m.getDeclaringClass();
+                var lookup = PRIVATE_LOOKUP.get(declaringClass);
                 return lookup
                         .in(declaringClass)
                         .unreflectSpecial(m, declaringClass)

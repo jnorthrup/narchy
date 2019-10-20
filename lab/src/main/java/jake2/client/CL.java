@@ -81,7 +81,7 @@ public final class CL {
 
     static {
         cheatvars = new cheatvar_t[cheatvarsinfo.length];
-        for (int n = 0; n < cheatvarsinfo.length; n++) {
+        for (var n = 0; n < cheatvarsinfo.length; n++) {
             cheatvars[n] = new cheatvar_t();
             cheatvars[n].name = cheatvarsinfo[n][0];
             cheatvars[n].value = cheatvarsinfo[n][1];
@@ -106,7 +106,7 @@ public final class CL {
                 }
 
 
-                int len = -1;
+                var len = -1;
                 Globals.cls.demofile.writeInt(EndianHandler.swapInt(len));
                 Globals.cls.demofile.close();
                 Globals.cls.demofile = null;
@@ -129,7 +129,7 @@ public final class CL {
         @Override
         public void execute() {
             try {
-                sizebuf_t buf = new sizebuf_t();
+                var buf = new sizebuf_t();
 
                 if (Cmd.Argc() != 2) {
                     Com.Printf("record <demoname>\n");
@@ -147,7 +147,7 @@ public final class CL {
                 }
 
 
-                String name = FS.Gamedir() + "/demos/" + Cmd.Argv(1) + ".dm2";
+                var name = FS.Gamedir() + "/demos/" + Cmd.Argv(1) + ".dm2";
 
                 Com.Printf("recording to " + name + ".\n");
                 FS.CreatePath(name);
@@ -163,7 +163,7 @@ public final class CL {
                 Globals.cls.demowaiting = true;
 
 
-                byte[] buf_data = new byte[Defines.MAX_MSGLEN];
+                var buf_data = new byte[Defines.MAX_MSGLEN];
                 SZ.Init(buf, buf_data, Defines.MAX_MSGLEN);
 
                 
@@ -199,7 +199,7 @@ public final class CL {
                 
                 nullstate.clear();
                 for (i = 0; i < Defines.MAX_EDICTS; i++) {
-                    entity_state_t ent = Globals.cl_entities[i].baseline;
+                    var ent = Globals.cl_entities[i].baseline;
                     if (ent.modelindex == 0)
                         continue;
 
@@ -296,7 +296,7 @@ public final class CL {
                 Disconnect();
             }
 
-            String server = Cmd.Argv(1);
+            var server = Cmd.Argv(1);
 
             NET.Config(true); 
 
@@ -324,7 +324,7 @@ public final class CL {
                 return;
             }
 
-            StringBuilder message = new StringBuilder(1024);
+            var message = new StringBuilder(1024);
 
             
             message.append('\u00ff');
@@ -339,12 +339,12 @@ public final class CL {
             message.append(Globals.rcon_client_password.string);
             message.append(' ');
 
-            for (int i = 1; i < Cmd.Argc(); i++) {
+            for (var i = 1; i < Cmd.Argc(); i++) {
                 message.append(Cmd.Argv(i));
                 message.append(' ');
             }
 
-            netadr_t to = new netadr_t();
+            var to = new netadr_t();
 
             if (Globals.cls.state >= Defines.ca_connected)
                 to = Globals.cls.netchan.remote_address;
@@ -357,7 +357,7 @@ public final class CL {
                 if (to.port == 0) to.port = Defines.PORT_SERVER;
             }
             message.append('\0');
-            String b = message.toString();
+            var b = message.toString();
             NET.SendPacket(Defines.NS_CLIENT, b.length(), Lib.stringToBytes(b), to);
         }
     };
@@ -434,14 +434,14 @@ public final class CL {
     static final xcommand_t PingServers_f = new xcommand_t() {
         @Override
         public void execute() {
-            netadr_t adr = new netadr_t();
+            var adr = new netadr_t();
 
             NET.Config(true);
 
             
             Com.Printf("pinging broadcast...\n");
 
-            cvar_t noudp = Cvar.Get("noudp", "0", Defines.CVAR_NOSET);
+            var noudp = Cvar.Get("noudp", "0", Defines.CVAR_NOSET);
             if (noudp.value == 0.0f) {
                 adr.type = Defines.NA_BROADCAST;
                 adr.port = Defines.PORT_SERVER;
@@ -451,7 +451,7 @@ public final class CL {
             }
 
 
-            cvar_t noipx = Cvar.Get("noipx", "1", Defines.CVAR_NOSET);
+            var noipx = Cvar.Get("noipx", "1", Defines.CVAR_NOSET);
             if (noipx.value == 0.0f) {
                 adr.type = Defines.NA_BROADCAST_IPX;
                 
@@ -461,10 +461,10 @@ public final class CL {
             }
 
             
-            for (int i = 0; i < 16; i++) {
+            for (var i = 0; i < 16; i++) {
 
-                String name = "adr" + i;
-                String adrstring = Cvar.VariableString(name);
+                var name = "adr" + i;
+                var adrstring = Cvar.VariableString(name);
                 if (adrstring == null || adrstring.length() == 0)
                     continue;
 
@@ -491,7 +491,7 @@ public final class CL {
         @Override
         public void execute() {
 
-            for (int i = 0; i < Defines.MAX_CLIENTS; i++) {
+            for (var i = 0; i < Defines.MAX_CLIENTS; i++) {
                 if (Globals.cl.configstrings[Defines.CS_PLAYERSKINS + i] == null)
                     continue;
                 Com.Printf("client " + i + ": "
@@ -587,7 +587,7 @@ public final class CL {
     static void WriteDemoMessage() {
 
 
-        int swlen = Globals.net_message.cursize - 8;
+        var swlen = Globals.net_message.cursize - 8;
 
         try {
             Globals.cls.demofile.writeInt(EndianHandler.swapInt(swlen));
@@ -603,7 +603,7 @@ public final class CL {
      * We have gotten a challenge from the server, so try and connect.
      */
     static void SendConnectPacket() {
-        netadr_t adr = new netadr_t();
+        var adr = new netadr_t();
 
         if (!NET.StringToAdr(Globals.cls.servername, adr)) {
             Com.Printf("Bad server address\n");
@@ -614,7 +614,7 @@ public final class CL {
             adr.port = Defines.PORT_SERVER;
 
 
-        int port = (int) Cvar.VariableValue("qport");
+        var port = (int) Cvar.VariableValue("qport");
         Globals.userinfo_modified = false;
 
         Netchan.OutOfBandPrint(Defines.NS_CLIENT, adr, "connect "
@@ -646,7 +646,7 @@ public final class CL {
         if (Globals.cls.realtime - Globals.cls.connect_time < 3000)
             return;
 
-        netadr_t adr = new netadr_t();
+        var adr = new netadr_t();
         if (!NET.StringToAdr(Globals.cls.servername, adr)) {
             Com.Printf("Bad server address\n");
             Globals.cls.state = Defines.ca_disconnected;
@@ -675,7 +675,7 @@ public final class CL {
         
 
         Globals.cl = new client_state_t();
-        for (int i = 0; i < Globals.cl_entities.length; i++) {
+        for (var i = 0; i < Globals.cl_entities.length; i++) {
             Globals.cl_entities[i] = new centity_t();
         }
 
@@ -696,7 +696,7 @@ public final class CL {
 
         if (Globals.cl_timedemo != null && Globals.cl_timedemo.value != 0.0f) {
 
-            int time = Timer.Milliseconds() - Globals.cl.timedemo_start;
+            var time = Timer.Milliseconds() - Globals.cl.timedemo_start;
             if (time > 0)
                 Com.Printf("%i frames, %3.1f seconds: %3.1f fps\n",
                         new Vargs(3).add(Globals.cl.timedemo_frames).add(
@@ -718,7 +718,7 @@ public final class CL {
             Stop_f.execute();
 
 
-        String fin = (char) Defines.clc_stringcmd + "disconnect";
+        var fin = (char) Defines.clc_stringcmd + "disconnect";
         Netchan.Transmit(Globals.cls.netchan, fin.length(), Lib.stringToBytes(fin));
         Netchan.Transmit(Globals.cls.netchan, fin.length(), Lib.stringToBytes(fin));
         Netchan.Transmit(Globals.cls.netchan, fin.length(), Lib.stringToBytes(fin));
@@ -741,7 +741,7 @@ public final class CL {
      */
     static void ParseStatusMessage() {
 
-        String s = MSG.ReadString(Globals.net_message);
+        var s = MSG.ReadString(Globals.net_message);
 
         Com.Printf(s + '\n');
         Menu.AddToServerList(Globals.net_from, s);
@@ -757,11 +757,11 @@ public final class CL {
         MSG.BeginReading(Globals.net_message);
         MSG.ReadLong(Globals.net_message);
 
-        String s = MSG.ReadStringLine(Globals.net_message);
+        var s = MSG.ReadStringLine(Globals.net_message);
 
         Cmd.TokenizeString(s.toCharArray(), false);
 
-        String c = Cmd.Argv(0);
+        var c = Cmd.Argv(0);
         
         Com.Println(Globals.net_from + ": " + c);
 
@@ -836,7 +836,7 @@ public final class CL {
                 Globals.net_message)) {
 
 
-            boolean b = IntStream.of(0, 1, 2, 3).noneMatch(i -> Globals.net_message.data[i] != -1);
+            var b = IntStream.of(0, 1, 2, 3).noneMatch(i -> Globals.net_message.data[i] != -1);
             if (b) {
                 
                 ConnectionlessPacket();
@@ -896,7 +896,7 @@ public final class CL {
                 return;
             }
 
-            String sk = Globals.skin.string;
+            var sk = Globals.skin.string;
             if (sk.startsWith("male") || sk.startsWith("cyborg"))
                 Cvar.Set("gender", "male");
             else if (sk.startsWith("female") || sk.startsWith("crackhor"))
@@ -912,7 +912,7 @@ public final class CL {
         if (Globals.cls.state == Defines.ca_connected) {
             if (SV_MAIN.allow_download.value == 0 && CL.precache_check < ENV_CNT)
                 CL.precache_check = ENV_CNT;
-            boolean finished = false;
+            var finished = false;
             if (CL.precache_check == Defines.CS_MODELS) {
                 CL.precache_check = Defines.CS_MODELS + 2;
                 if (SV_MAIN.allow_download_maps.value != 0)
@@ -955,10 +955,10 @@ public final class CL {
                                     CL.precache_check++;
                                     continue;
                                 }
-                                ByteBuffer bb = ByteBuffer.wrap(CL.precache_model);
+                                var bb = ByteBuffer.wrap(CL.precache_model);
                                 bb.order(ByteOrder.LITTLE_ENDIAN);
 
-                                int header = bb.getInt();
+                                var header = bb.getInt();
 
                                 if (header != qfiles.IDALIASHEADER) {
 
@@ -981,12 +981,12 @@ public final class CL {
                             pheader = new qfiles.dmdl_t(ByteBuffer.wrap(
                                     CL.precache_model).order(ByteOrder.LITTLE_ENDIAN));
 
-                            int num_skins = pheader.num_skins;
+                            var num_skins = pheader.num_skins;
 
                             while (CL.precache_model_skin - 1 < num_skins) {
 
 
-                                String name = Lib.CtoJava(CL.precache_model,
+                                var name = Lib.CtoJava(CL.precache_model,
                                         pheader.ofs_skins
                                                 + (CL.precache_model_skin - 1)
                                                 * Defines.MAX_SKINNAME,
@@ -1065,9 +1065,9 @@ public final class CL {
                                     while (CL.precache_check < Defines.CS_PLAYERSKINS
                                             + Defines.MAX_CLIENTS * CL.PLAYER_MULT) {
 
-                                        int i = (CL.precache_check - Defines.CS_PLAYERSKINS)
+                                        var i = (CL.precache_check - Defines.CS_PLAYERSKINS)
                                                 / CL.PLAYER_MULT;
-                                        int n = (CL.precache_check - Defines.CS_PLAYERSKINS)
+                                        var n = (CL.precache_check - Defines.CS_PLAYERSKINS)
                                                 % CL.PLAYER_MULT;
 
                                         if (Globals.cl.configstrings[Defines.CS_PLAYERSKINS + i]
@@ -1077,23 +1077,23 @@ public final class CL {
                                             continue;
                                         }
 
-                                        int pos = Globals.cl.configstrings[Defines.CS_PLAYERSKINS + i].indexOf('\\');
+                                        var pos = Globals.cl.configstrings[Defines.CS_PLAYERSKINS + i].indexOf('\\');
 
                                         if (pos != -1)
                                             pos++;
                                         else
                                             pos = 0;
 
-                                        int pos2 = Globals.cl.configstrings[Defines.CS_PLAYERSKINS + i].indexOf('\\', pos);
+                                        var pos2 = Globals.cl.configstrings[Defines.CS_PLAYERSKINS + i].indexOf('\\', pos);
 
                                         if (pos2 == -1)
                                             pos2 = Globals.cl.configstrings[Defines.CS_PLAYERSKINS + i].indexOf('/', pos);
 
 
-                                        String model = Globals.cl.configstrings[Defines.CS_PLAYERSKINS + i]
+                                        var model = Globals.cl.configstrings[Defines.CS_PLAYERSKINS + i]
                                                 .substring(pos, pos2);
 
-                                        String skin = Globals.cl.configstrings[Defines.CS_PLAYERSKINS + i].substring(pos2 + 1);
+                                        var skin = Globals.cl.configstrings[Defines.CS_PLAYERSKINS + i].substring(pos2 + 1);
 
                                         switch (n) {
                                             case 0:
@@ -1168,7 +1168,7 @@ public final class CL {
                                 if (CL.precache_check == ENV_CNT) {
                                     CL.precache_check = ENV_CNT + 1;
 
-                                    int map_checksum = 0;
+                                    var map_checksum = 0;
                                     int[] iw = {map_checksum};
 
                                     CM.CM_LoadMap(Globals.cl.configstrings[Defines.CS_MODELS + 1],
@@ -1193,7 +1193,7 @@ public final class CL {
                                         if (SV_MAIN.allow_download.value != 0
                                                 && SV_MAIN.allow_download_maps.value != 0) {
                                             while (CL.precache_check < TEXTURE_CNT) {
-                                                int n = CL.precache_check++ - ENV_CNT - 1;
+                                                var n = CL.precache_check++ - ENV_CNT - 1;
 
                                                 if ((n & 1) != 0)
                                                     fn = "env/" + Globals.cl.configstrings[Defines.CS_SKY]
@@ -1413,8 +1413,8 @@ public final class CL {
     public static void WriteConfiguration() {
 
 
-        String path = FS.Gamedir() + "/config.cfg";
-        RandomAccessFile f = Lib.fopen(path, "rw");
+        var path = FS.Gamedir() + "/config.cfg";
+        var f = Lib.fopen(path, "rw");
         if (f == null) {
             Com.Printf("Couldn't write config.cfg.\n");
             return;
@@ -1455,8 +1455,8 @@ public final class CL {
         }
 
         
-        for (int i = 0; i < CL.numcheatvars; i++) {
-            cheatvar_t var = CL.cheatvars[i];
+        for (var i = 0; i < CL.numcheatvars; i++) {
+            var var = CL.cheatvars[i];
             if (!var.var.string.equals(var.value)) {
                 Cvar.Set(var.name, var.value);
             }

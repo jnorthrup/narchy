@@ -466,7 +466,7 @@ public class NARui {
 				input.text("");
 				try {
 					var t = n.input(s);
-					for (Task task : t) {
+					for (var task : t) {
 						onTask.accept(task);
 					}
 				} catch (Narsese.NarseseException e) {
@@ -585,7 +585,7 @@ public class NARui {
 
 
 		Map<String, Supplier<Surface>> attentions = new HashMap();
-		for (What v : n.what) {
+		for (var v : n.what) {
 			attentions.put(v.id.toString(), () -> attentionUI(v));
 		}
 		var atMenu = new TabMenu(attentions);
@@ -631,7 +631,7 @@ public class NARui {
 		var s = new Spectrogram(true, history, width);
 
 
-		Bordering Z = new Bordering(s).west(m);
+		var Z = new Bordering(s).west(m);
 
 		var tls = new TaskLinkSnapshot(active) {
 			final int[] opColors = new int[]{
@@ -653,15 +653,15 @@ public class NARui {
 				Draw.rgbInt(0.5f, 0.5f, 0.5f)
 			};
 			final IntToIntFunction opColor = _x -> {
-				TaskLink x = items[_x];
+				var x = items[_x];
 				if (x == null) return 0;
-				Op o = x.term().op();
+				var o = x.term().op();
 				return opColors[o.id];
 			};
 			final IntToIntFunction volColor = _x -> {
-				TaskLink x = items[_x];
+				var x = items[_x];
 				if (x == null) return 0;
-				float v = (float) Math.log(1 + x.term().volume());
+				var v = (float) Math.log(1 + x.term().volume());
 				return Draw.colorHSB(v / 10f, 0.5f + 0.5f * v / 10f, v / 10f); //TODO
 			};
 			final IntToIntFunction puncColor = _x -> {
@@ -710,25 +710,25 @@ public class NARui {
 						filter.setFrequency(filterFreq.asFloat());
 
 
-						TaskLink[] ii = items;
-						int n = ii.length;
+						var ii = items;
+						var n = ii.length;
 						Random rng = ThreadLocalRandom.current();
-						float baseFreq = freqSlider.asFloat();
-						float vol = ampSlider.asFloat();
-						for (int i = 0; i < n; i++) {
-							TaskLink x = items[i];
+						var baseFreq = freqSlider.asFloat();
+						var vol = ampSlider.asFloat();
+						for (var i = 0; i < n; i++) {
+							var x = items[i];
 							if (x == null) continue;
-							float amp = vol * (float) ((Math.exp(x.pri() * 10) - 1) / Util.sqrt(n));
-							Op o = x.op();
+							var amp = vol * (float) ((Math.exp(x.pri() * 10) - 1) / Util.sqrt(n));
+							var o = x.op();
 
 							//stupid grain synth
-							float f = baseFreq * (1 + Pitch.forceToScale(o.id + 1, Pitch.dorian));
-							float grainTime = Util.lerp(Math.min(1, x.term().volume() / 30f), 0.1f, 0.33f);
-							int sw = Math.round(buf.length * grainTime);
-							int ss = (int) (rng.nextFloat() * (buf.length - sw - 1));
-							int se = ss + sw;
-							for (int s = ss; s < se; s++) {
-								float env = 2 * Math.min(Math.abs(s - ss), Math.abs(s - se)) / (sw + 1f); //triangular
+							var f = baseFreq * (1 + Pitch.forceToScale(o.id + 1, Pitch.dorian));
+							var grainTime = Util.lerp(Math.min(1, x.term().volume() / 30f), 0.1f, 0.33f);
+							var sw = Math.round(buf.length * grainTime);
+							var ss = (int) (rng.nextFloat() * (buf.length - sw - 1));
+							var se = ss + sw;
+							for (var s = ss; s < se; s++) {
+								var env = 2 * Math.min(Math.abs(s - ss), Math.abs(s - se)) / (sw + 1f); //triangular
 								buf[s] += amp * (float) Math.sin(f * s * 2 * 1f / readRate) * env;
 							}
 						}

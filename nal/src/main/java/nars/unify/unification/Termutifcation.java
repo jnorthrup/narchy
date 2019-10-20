@@ -30,9 +30,9 @@ public class Termutifcation extends ArrayHashSet<DeterministicUnification> imple
         super(0);
         this.termutes = termutes;
 
-        UnifiedMap<Term, Term> baseMap = new UnifiedMap<>(4, 1f);
-        Unify.ContinueUnify base = new Unify.ContinueUnify(u, baseMap);
-        boolean applied = pre.apply(base);
+        var baseMap = new UnifiedMap<Term, Term>(4, 1f);
+        var base = new Unify.ContinueUnify(u, baseMap);
+        var applied = pre.apply(base);
         assert(applied);
         baseMap.trimToSize();
         this.base = base;
@@ -48,12 +48,12 @@ public class Termutifcation extends ArrayHashSet<DeterministicUnification> imple
     public void discover(Unify ctx, int discoveriesMax, int ttl) {
 
 
-        Discovery u = new Discovery(this.base, discoveriesMax);
+        var u = new Discovery(this.base, discoveriesMax);
         u.setTTL(ttl);
 
         u.matches(termutes);
 
-        int spent = Util.clamp(ttl - u.ttl, 0, ttl);
+        var spent = Util.clamp(ttl - u.ttl, 0, ttl);
 
         ctx.use(spent);
     }
@@ -75,7 +75,7 @@ public class Termutifcation extends ArrayHashSet<DeterministicUnification> imple
                 /* equals between Term and Unification:
                 Reports calls to .equals() where the target and argument are of incompatible types. While such a call might theoretically be useful, most likely it represents a bug. */
                 List<Term> result;
-                List<Term> list1 = shuffle(this, base.random).stream().map(a -> a.transform(x)).collect(Collectors.toList());
+                var list1 = shuffle(this, base.random).stream().map(a -> a.transform(x)).collect(Collectors.toList());
                 result = list1.stream().filter(z -> z != null
                         &&
                         z != Unification.Null).collect(Collectors.toList());
@@ -88,7 +88,7 @@ public class Termutifcation extends ArrayHashSet<DeterministicUnification> imple
     }
 
     public List<DeterministicUnification> listClone() {
-        FasterList<DeterministicUnification> l = list;
+        var l = list;
         switch (l.size()) {
             case 0: return EMPTY_LIST;
             case 1: return List.of(l.getOnly());
@@ -117,7 +117,7 @@ public class Termutifcation extends ArrayHashSet<DeterministicUnification> imple
 
         @Override
         @Deprecated public Term resolveVar(Variable x) {
-            Term y = parent.resolveVar(x);
+            var y = parent.resolveVar(x);
             if (y != null && y != x) {
                 if (size==0 || !var(y))
                     return y; //constant
@@ -136,7 +136,7 @@ public class Termutifcation extends ArrayHashSet<DeterministicUnification> imple
         @Override
         protected boolean match() {
 
-            Unification z = unification(false);
+            var z = unification(false);
             if (z != Unification.Null) {
                 if (z!=Self && z instanceof DeterministicUnification) {
                     if (Termutifcation.this.add((DeterministicUnification) z)) {

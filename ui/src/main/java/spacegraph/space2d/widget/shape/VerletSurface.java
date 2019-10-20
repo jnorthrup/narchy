@@ -73,13 +73,13 @@ public class VerletSurface extends PaintSurface implements Animated {
 
     @Override
     public boolean animate(float dt) {
-        boolean animateWhenInvisible = false;
+        var animateWhenInvisible = false;
         if (animateWhenInvisible || showing()) {
 
             /**
              * constrained to the surface's rectangular bounds
              */
-            boolean bounded = true;
+            var bounded = true;
             if (bounded)
                 physics.setBounds(bounds);
             else
@@ -112,18 +112,18 @@ public class VerletSurface extends PaintSurface implements Animated {
         NearestSurfaceEdge {
             @Override
             Vec2D targetVerlet(VerletParticle2D p, Surface ss) {
-                float px = p.x;
-                float L = ss.left();
-                float distLeft = Math.abs(px - L);
-                float R = ss.right();
-                float distRight = Math.abs(px - R);
-                float distLR = Math.min(distLeft, distRight);
-                float py = p.y;
-                float T = ss.bottom();
-                float distTop = Math.abs(py - T);
-                float B = ss.top();
-                float distBottom = Math.abs(py - B);
-                float distTB = Math.min(distTop, distBottom);
+                var px = p.x;
+                var L = ss.left();
+                var distLeft = Math.abs(px - L);
+                var R = ss.right();
+                var distRight = Math.abs(px - R);
+                var distLR = Math.min(distLeft, distRight);
+                var py = p.y;
+                var T = ss.bottom();
+                var distTop = Math.abs(py - T);
+                var B = ss.top();
+                var distBottom = Math.abs(py - B);
+                var distTB = Math.min(distTop, distBottom);
 
                 if (distLR < distTB) {
                     //along either left or right
@@ -157,7 +157,7 @@ public class VerletSurface extends PaintSurface implements Animated {
     }
 
     public VerletParticle2D bind(Surface a, VerletSurfaceBinding b, boolean surfaceOverrides) {
-        VerletParticle2D ap = new VerletParticle2D(a.cx(), a.cy());
+        var ap = new VerletParticle2D(a.cx(), a.cy());
         ap.constrainAll(physics.bounds);
         bind(a, ap, surfaceOverrides, b);
 
@@ -174,17 +174,17 @@ public class VerletSurface extends PaintSurface implements Animated {
 
     public ParticleConstraint2D bind(Surface s, VerletParticle2D v, boolean surfaceOverrides, VerletSurfaceBinding b) {
 
-        WeakReference<Surface> wrs = new WeakReference<>(s);
+        var wrs = new WeakReference<Surface>(s);
 
 
         v.addBehavior((vv) -> {
-            Surface ss = wrs.get();
+            var ss = wrs.get();
             if (ss == null || ss.parent == null) {
                 vv.delete();
                 return;
             }
 
-            Vec2D pNext = b.targetVerlet(vv, ss);
+            var pNext = b.targetVerlet(vv, ss);
             if (pNext != null) {
                 //p.next.setAt(pNext);
                 //System.out.println(vv.id + " " + vv.x + "," + vv.y);
@@ -197,7 +197,7 @@ public class VerletSurface extends PaintSurface implements Animated {
                 //immediate
                 vv.next.set(pNext);
 
-                float density = 0.01f;
+                var density = 0.01f;
                 vv.mass = ss.bounds.area() * density;
 
 //                    vv.setAt(pNext);
@@ -217,7 +217,7 @@ public class VerletSurface extends PaintSurface implements Animated {
 
             //pre
             v.addConstraint(vv -> {
-                Surface ss = wrs.get();
+                var ss = wrs.get();
 //                vv.next.setAt(b.targetVerlet(vv, ss));
 //                vv.constrainAll(physics.bounds);
 
@@ -226,7 +226,7 @@ public class VerletSurface extends PaintSurface implements Animated {
                     return;
                 }
 
-                Vec2D sNext = b.targetSurface(vv, ss);
+                var sNext = b.targetSurface(vv, ss);
                 if (sNext != null) {
                     //ss.pos(Util.lerp(0.5f, sNext.x, ss.x()))
                     //ss.pos(RectFloat2D.XYWH(sNext.x, sNext.y, ss.w(), ss.h()));
@@ -265,13 +265,13 @@ public class VerletSurface extends PaintSurface implements Animated {
             //auto
             chainLength = a.distanceTo(b);
         }
-        float linkLength = chainLength / (num + 1);
-        VerletParticle2D prev = a;
-        FasterList pp = new FasterList(num);
-        FasterList ss = new FasterList(num + 1);
-        for (int i = 0; i < num; i++) {
-            float p = ((float) i + 1) / (num + 1);
-            VerletParticle2D next =
+        var linkLength = chainLength / (num + 1);
+        var prev = a;
+        var pp = new FasterList(num);
+        var ss = new FasterList(num + 1);
+        for (var i = 0; i < num; i++) {
+            var p = ((float) i + 1) / (num + 1);
+            var next =
                     new VerletParticle2D(
                             Util.lerp(p, a.x, b.x),
                             Util.lerp(p, a.y, b.y)
@@ -279,13 +279,13 @@ public class VerletSurface extends PaintSurface implements Animated {
             next.mass(Util.lerp(p, a.mass(), b.mass()));
             pp.add(next);
             physics.addParticle(next);
-            VerletSpring2D s = new VerletSpring2D(prev, next, linkLength, strength);
+            var s = new VerletSpring2D(prev, next, linkLength, strength);
             ss.add(s);
             physics.addSpring(s);
             prev = next;
         }
         {
-            VerletSpring2D s = new VerletSpring2D(prev, b, linkLength, strength);
+            var s = new VerletSpring2D(prev, b, linkLength, strength);
             ss.add(s);
             physics.addSpring(s);
         }
@@ -297,14 +297,14 @@ public class VerletSurface extends PaintSurface implements Animated {
      * basic renderer
      */
     public static void render(VerletPhysics2D physics, GL2 gl) {
-        for (VerletParticle2D p : physics.particles) {
-            float t = 2 * p.mass();
+        for (var p : physics.particles) {
+            var t = 2 * p.mass();
             Draw.colorGrays(gl, 0.3f + 0.7f * Util.tanhFast(p.getSpeed()), 0.7f);
             Draw.rect(p.x - t / 2, p.y - t / 2, t, t, gl);
         }
 
         gl.glColor3f(0, 0.5f, 0);
-        for (VerletSpring2D s : physics.springs) {
+        for (var s : physics.springs) {
             VerletParticle2D a = s.a, b = s.b;
             gl.glLineWidth(Math.min(a.mass(), b.mass()));
             Draw.line(a.x, a.y, b.x, b.y, gl);

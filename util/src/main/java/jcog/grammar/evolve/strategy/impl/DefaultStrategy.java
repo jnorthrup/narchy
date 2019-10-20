@@ -86,7 +86,7 @@ public class DefaultStrategy implements RunStrategy {
     }
 
     protected void readParameters(Configuration configuration) {
-        Map<String, String> parameters = configuration.getStrategyParameters();
+        var parameters = configuration.getStrategyParameters();
         if (parameters != null) {
             
             if (parameters.containsKey("terminationCriteriaGenerations")) {
@@ -103,13 +103,13 @@ public class DefaultStrategy implements RunStrategy {
         try {
             listener.evolutionStarted(this);
 
-            Context ctx = this.context;
+            var ctx = this.context;
 
-            InitialPopulationBuilder populationBuilder = ctx.getConfiguration().getPopulationBuilder();
+            var populationBuilder = ctx.getConfiguration().getPopulationBuilder();
 
             populationBuilder.init(population);
             Generation ramped = new Ramped(this.maxDepth, this.context);
-            int popSize = param.getPopulationSize();
+            var popSize = param.getPopulationSize();
             population.addAll(ramped.generate(popSize - this.population.size()));
 
             
@@ -133,26 +133,26 @@ public class DefaultStrategy implements RunStrategy {
 
             
             String oldGenerationBestValue = null;
-            int terminationCriteriaGenerationsCounter = 0;
-            int doneGenerations = 0;
+            var terminationCriteriaGenerationsCounter = 0;
+            var doneGenerations = 0;
 
-            for (int generation = 0; generation < param.getGenerations(); generation++) {
+            for (var generation = 0; generation < param.getGenerations(); generation++) {
                 ctx.setStripedPhase(ctx.getDataSetContainer().isDataSetStriped() && ((generation % ctx.getDataSetContainer().getProposedNormalDatasetInterval()) != 0));
 
                 evolve();
 
-                Ranking best = rankings.first();
+                var best = rankings.first();
                 doneGenerations = generation + 1;
                 if (listener != null) {
                     listener.logGeneration(this, doneGenerations, best.getNode(), best.getFitness(), rankings);
                 }
-                boolean allPerfect = Arrays.stream(best.getFitness()).noneMatch(fitness -> Math.round(fitness * 10000) != 0);
+                var allPerfect = Arrays.stream(best.getFitness()).noneMatch(fitness -> Math.round(fitness * 10000) != 0);
                 if (allPerfect) {
                     break;
                 }
 
                 if (terminationCriteria) {
-                    String newBestValue = best.getDescription();
+                    var newBestValue = best.getDescription();
                     if (newBestValue.equals(oldGenerationBestValue)) {
                         terminationCriteriaGenerationsCounter++;
                     } else {
@@ -257,7 +257,7 @@ public class DefaultStrategy implements RunStrategy {
     }
 
     protected static void eachRankings(List<Node> population, Objective objective, BiConsumer<Node, double[]> each) {
-        for (Node tree : population) {
+        for (var tree : population) {
             each.accept(tree, objective.fitness(tree));
         }
     }
@@ -291,15 +291,15 @@ public class DefaultStrategy implements RunStrategy {
     static final Comparator<Ranking> RankingComparator = (o1, o2) -> {
         if (o1 == o2) return 0;
 
-        double[] f1 = o1.getFitness();
-        double[] f2 = o2.getFitness();
-        int n = f1.length;
+        var f1 = o1.getFitness();
+        var f2 = o2.getFitness();
+        var n = f1.length;
 
         double balance = 0;
 
-        for (int i = 0; i < n; i++) {
-            double v1 = f1[i];
-            double v2 = f2[i];
+        for (var i = 0; i < n; i++) {
+            var v1 = f1[i];
+            var v2 = f2[i];
             if (v1==v2) continue;
 
 

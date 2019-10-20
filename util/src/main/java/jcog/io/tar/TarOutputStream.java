@@ -52,8 +52,8 @@ public class TarOutputStream extends OutputStream {
      */
     public TarOutputStream(File fout, boolean append) throws IOException {
         @SuppressWarnings("resource")
-        RandomAccessFile raf = new RandomAccessFile(fout, "rw");
-        long fileSize = fout.length();
+        var raf = new RandomAccessFile(fout, "rw");
+        var fileSize = fout.length();
         if (append && fileSize > TarConstants.EOF_BLOCK) {
             raf.seek(fileSize - TarConstants.EOF_BLOCK);
         }
@@ -118,7 +118,7 @@ public class TarOutputStream extends OutputStream {
     public void putNextEntry(TarEntry entry) throws IOException {
         closeCurrentEntry();
 
-        byte[] header = new byte[TarConstants.HEADER_BLOCK];
+        var header = new byte[TarConstants.HEADER_BLOCK];
         entry.writeEntryHeader( header );
 
         write( header );
@@ -152,7 +152,7 @@ public class TarOutputStream extends OutputStream {
      */
     private void pad() throws IOException {
         if (bytesWritten > 0) {
-            int extra = (int) ( bytesWritten % TarConstants.DATA_BLOCK );
+            var extra = (int) ( bytesWritten % TarConstants.DATA_BLOCK );
 
             if (extra > 0) {
                 write( new byte[TarConstants.DATA_BLOCK - extra] );

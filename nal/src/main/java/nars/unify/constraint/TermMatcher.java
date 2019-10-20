@@ -27,16 +27,16 @@ public abstract class TermMatcher {
         {
             //structure constraint
 
-            Op o = x.op(); assert (o != VAR_PATTERN);
-            int xs = x.subStructure() & (~VAR_PATTERN.bit);
-            TermMatcher s = xs != 0 ? new IsHas(o, xs, depth) : new Is(o);
+            var o = x.op(); assert (o != VAR_PATTERN);
+            var xs = x.subStructure() & (~VAR_PATTERN.bit);
+            var s = xs != 0 ? new IsHas(o, xs, depth) : new Is(o);
 
             pre.add(new TermMatch(s, accessor, depth));
         }
 
         {
             //volume constraint
-            int v = x.volume();
+            var v = x.volume();
             if (v > 1)
                 pre.add(new TermMatch(new VolMin(v, depth), accessor, depth));
         }
@@ -315,7 +315,7 @@ public abstract class TermMatcher {
 
             this.cost = (0.07f + (0.01f * depth)) * (1f / (1 + (Integer.bitCount(struct))));
 
-            Atom isParam = Op.the(this.is).strAtom;
+            var isParam = Op.the(this.is).strAtom;
 			this.param = structSubs != 0 ? $.p(isParam, Op.strucTerm(structSubs)) : isParam;
         }
         @Override

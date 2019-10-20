@@ -96,7 +96,7 @@ public abstract class MetaAgent extends Game {
 
 	public MetaAgent addRLBoost() {
 //        meta.what().pri(0.05f);
-		RLBooster metaBoost = new RLBooster(true, this, 4, 5, (i, o) ->
+		var metaBoost = new RLBooster(true, this, 4, 5, (i, o) ->
 			//new HaiQae(i, 12, o).alpha(0.01f).gamma(0.9f).lambda(0.9f),
 			new DQN3(i, o, Map.of(
 			))
@@ -183,20 +183,20 @@ public abstract class MetaAgent extends Game {
 
 		public SelfMetaAgent(NAR nar, float durs) {
 			super($.inh(nar.self(), $$("meta")), GameTime.durs(durs), nar);
-			NAR n = nar;
+			var n = nar;
 
-			Term SELF = n.self();
+			var SELF = n.self();
 
 
-			Emotion e = n.emotion;
+			var e = n.emotion;
 
 			sense($.inh(SELF, $$("busy")), new FloatNormalized(e.busyVol));
 			sense($.inh(SELF, $$("premiseRun")), new FloatNormalized(e.premiseRun));
 			sense($.inh(SELF, $$("deriveTask")), new FloatNormalized(e.deriveTask));
 			sense($.inh(SELF, $$("lag")), new FloatNormalized(e.durLoopLag));
 
-			for (MetaGoal mg : MetaGoal.values()) {
-				GoalActionConcept a = actionUnipolar($.inh(SELF, $.the(mg.name())), (x) -> {
+			for (var mg : MetaGoal.values()) {
+				var a = actionUnipolar($.inh(SELF, $.the(mg.name())), (x) -> {
 					nar.emotion.want(mg,
 						x >= 0.5f ?
 							(float) Util.lerp(Math.pow((x - 0.5f) * 2, 1 /* 2 */), 0, +1) //positive (0.5..1)
@@ -213,7 +213,7 @@ public abstract class MetaAgent extends Game {
 //        actionCtl($.inh(SELF, goalPri), n.goalPriDefault.amp.subRange(maxPri/dynamic, maxPri));
 
 			actionUnipolar($.inh(SELF, precise), (x) -> {
-				float x1 = x;
+				var x1 = x;
 				float y;
 				if (x1 >= 0.75f) {
 					x1 = 0.01f;
@@ -338,9 +338,9 @@ public abstract class MetaAgent extends Game {
 		public GameMetaAgent(Game g, boolean allowPause) {
 			super($.inh(g.what().id, $$("meta")), g.time.chain(2 /* nyquist */), g.nar);
 
-			What w = g.what();
+			var w = g.what();
 
-			Term gid = w.id; //$.p(w.nar.self(), w.id);
+			var gid = w.id; //$.p(w.nar.self(), w.id);
 			//this.what().accept(new EternalTask($.inh(aid,this.id), BELIEF, $.t(1f, 0.9f), nar));
 
 
@@ -363,7 +363,7 @@ public abstract class MetaAgent extends Game {
 //            float curiMin = 0.005f, curiMax = 0.05f;
 //            actionCtl($.inh(gid, CURIOSITY), g.curiosity.rate.subRange(curiMin, curiMax));
 
-			float initialDur = w.dur();
+			var initialDur = w.dur();
 //			FloatRange durRange = new FloatRange(initialDur, Math.max(nar.dtDither(), initialDur / 4), initialDur * 16) {
 //				@Override
 //				public float get() {
@@ -385,7 +385,7 @@ public abstract class MetaAgent extends Game {
 
 			actionUnipolar($.inh(gid, duration), (x) -> {
 				float ditherDT = nar.dtDither();
-				float nextDur =
+				var nextDur =
 					//(float) Math.pow(initialDur, Util.sqr((x + 0.5f)*2));
 					//ditherDT + initialDur * (float) Math.pow(2, ((x - 0.5f)*2));
 					(float) (ditherDT + Util.lerp(Math.pow(x, 4), 0, initialDur * 16));
@@ -411,7 +411,7 @@ public abstract class MetaAgent extends Game {
 					return g.isOn() ? (float) g.dexterity() : Float.NaN;
 				});
 
-			for (GameLoop s : g.sensors) {
+			for (var s : g.sensors) {
 				if (s instanceof VectorSensor)
 					floatAction($.inh(((AbstractSensor) s).id, pri), ((VectorSensor) s).pri.amp);
 			}
@@ -428,7 +428,7 @@ public abstract class MetaAgent extends Game {
 
 
 			if (allowPause) {
-				float playThresh = 0.25f;
+				var playThresh = 0.25f;
 				actionPushButton($.inh(gid, MetaAgent.play), new BooleanProcedure() {
 
 					private volatile int autoResumeID = 0;
@@ -455,9 +455,9 @@ public abstract class MetaAgent extends Game {
 						if (resume == null) {
 
 							resume = g.pause();
-							NAR n = nar();
+							var n = nar();
 
-							int a = autoResumeID;
+							var a = autoResumeID;
 							autoResume = n.runAt(Math.round(n.time() + autoResumePeriod * n.dur()), () -> {
 								if (autoResumeID == a)
 									tryResume();

@@ -41,7 +41,7 @@ abstract class OrderedStack<E> {
     public OrderedStack(int argStackSize, int argContainerSize) {
         size = argStackSize;
         pool = new Object[argStackSize];
-        for (int i = 0; i < argStackSize; i++) {
+        for (var i = 0; i < argStackSize; i++) {
             pool[i] = newInstance();
         }
         index = 0;

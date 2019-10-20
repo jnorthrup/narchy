@@ -59,37 +59,37 @@ public class ParallelSPTree extends SPTree {
 	@Override
 	public double computeNonEdgeForces(int point_index, double theta, double [] neg_f, Object accumulator)
 	{
-		Double sum_Q = (Double) accumulator;
+		var sum_Q = (Double) accumulator;
 		double input_sum_Q = sum_Q;
-		double [] buff = new double[dimension];
+		var buff = new double[dimension];
 
 		
 		if(cum_size == 0 || (is_leaf && size == 1 && index[0] == point_index)) return 0.0;
 
+
+		var D = .0;
+		var ind = point_index * dimension;
+		var max_width = 0.0;
 		
-		double D = .0;
-		int ind = point_index * dimension;
-		double max_width = 0.0;
-		
-		for(int d = 0; d < dimension; d++) {
+		for(var d = 0; d < dimension; d++) {
 			buff[d] = data[ind + d] - center_of_mass[d];
 			D += buff[d] * buff[d];
-			
-			double cur_width = boundary.getWidth(d);
+
+			var cur_width = boundary.getWidth(d);
 			max_width = Math.max(max_width, cur_width);
 		}
 
 		if(is_leaf || max_width / sqrt(D) < theta) {
 			
 			D = 1.0 / (1.0 + D);
-			double mult = cum_size * D;
+			var mult = cum_size * D;
 			sum_Q += mult;
 			mult *= D;
-			for(int d = 0; d < dimension; d++) neg_f[d] += mult * buff[d];
+			for(var d = 0; d < dimension; d++) neg_f[d] += mult * buff[d];
 		}
 		else {
 			
-			for(int i = 0; i < no_children; i++) sum_Q += children[i].computeNonEdgeForces(point_index, theta, neg_f, input_sum_Q);
+			for(var i = 0; i < no_children; i++) sum_Q += children[i].computeNonEdgeForces(point_index, theta, neg_f, input_sum_Q);
 		}
 
 		return sum_Q;

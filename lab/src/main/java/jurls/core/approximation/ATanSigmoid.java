@@ -19,9 +19,9 @@ public class ATanSigmoid implements DiffableFunctionSource {
 
     @Override
     public String partialDeriveToSource(SourceEnvironment se) {
-        String xv = x.valueToSource(se);
-        String xdv = x.partialDeriveToSource(se);
-        String y = se.allocateVariable();
+        var xv = x.valueToSource(se);
+        var xdv = x.partialDeriveToSource(se);
+        var y = se.allocateVariable();
         se.assign(y).append(xdv).
                 append(" * 1.0 / (1.0 + ").append(xv).append(" * ").
                 append(xv).append(");").nl();
@@ -31,8 +31,8 @@ public class ATanSigmoid implements DiffableFunctionSource {
 
     @Override
     public String valueToSource(SourceEnvironment se) {
-        String xv = x.valueToSource(se);
-        String y = se.allocateVariable();
+        var xv = x.valueToSource(se);
+        var y = se.allocateVariable();
         se.assign(y).append("Math.atan(").append(xv).append(");").nl();
         return y;
     }

@@ -82,10 +82,10 @@ public class RandomPWM extends UGen implements DataBeadReceiver {
 
     @Override
     public void gen() {
-        float[] bo = bufOut[0];
+        var bo = bufOut[0];
 
         if (mode == PULSING) {
-            for (int i = 0; i < bo.length; i++) {
+            for (var i = 0; i < bo.length; i++) {
                 if (count <= 0) {
                     calcVals();
                     targetVal = targetVal > 0 ? 0 : 1;
@@ -95,7 +95,7 @@ public class RandomPWM extends UGen implements DataBeadReceiver {
                 count--;
             }
         } else if (mode == ALTERNATING) {
-            for (int i = 0; i < bo.length; i++) {
+            for (var i = 0; i < bo.length; i++) {
                 if (count <= 0) {
                     calcVals();
                     targetVal = targetVal > 0 ? -1 : 1;
@@ -105,7 +105,7 @@ public class RandomPWM extends UGen implements DataBeadReceiver {
                 count--;
             }
         } else if (mode == SAW) {
-            for (int i = 0; i < bo.length; i++) {
+            for (var i = 0; i < bo.length; i++) {
                 if (count <= 0) {
                     calcVals();
                     targetVal = targetVal > 0 ? -1 : 1;
@@ -115,7 +115,7 @@ public class RandomPWM extends UGen implements DataBeadReceiver {
                 count--;
             }
         } else if (mode == RAMPED_NOISE) {
-            for (int i = 0; i < bo.length; i++) {
+            for (var i = 0; i < bo.length; i++) {
                 if (count <= 0) {
                     calcVals();
                     targetVal = (float) (Math.random() * 2 - 1);
@@ -125,7 +125,7 @@ public class RandomPWM extends UGen implements DataBeadReceiver {
                 count--;
             }
         } else if (mode == NOISE_ENVELOPE) {
-            for (int i = 0; i < bo.length; i++) {
+            for (var i = 0; i < bo.length; i++) {
                 if (count <= 0) {
                     calcVals();
                     targetVal = (float) Math.random();
@@ -136,7 +136,7 @@ public class RandomPWM extends UGen implements DataBeadReceiver {
             }
         } else {
             
-            for (int i = 0; i < bo.length; i++) {
+            for (var i = 0; i < bo.length; i++) {
                 if (count <= 0) {
                     calcVals();
                     targetVal = (float) (Math.random() * 2 - 1);
@@ -150,7 +150,7 @@ public class RandomPWM extends UGen implements DataBeadReceiver {
     }
 
     private void calcVals() {
-        float d = (float) Math.pow(Math.random(), lengthExponent) * lengthDiff
+        var d = (float) Math.pow(Math.random(), lengthExponent) * lengthDiff
                 + minLength;
         count += d;
         pulseLen = count;
@@ -287,8 +287,8 @@ public class RandomPWM extends UGen implements DataBeadReceiver {
     @Override
     public DataBeadReceiver sendData(DataAuvent db) {
         if (db != null) {
-            Object m = db.get("mode");
-            Mode mod = mode;
+            var m = db.get("mode");
+            var mod = mode;
             if (m instanceof Mode) {
                 mod = (Mode) m;
             }
@@ -313,7 +313,7 @@ public class RandomPWM extends UGen implements DataBeadReceiver {
      * @return The parameter DataBead.
      */
     public DataAuvent getParams() {
-        DataAuvent db = new DataAuvent();
+        var db = new DataAuvent();
         db.put("mode", mode);
         db.put("minLength", minLength);
         db.put("maxLength", maxLength);

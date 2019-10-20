@@ -143,16 +143,16 @@ public class IRCNLP extends IRC {
     public void onGenericMessage(GenericMessageEvent event) {
 
         if (event instanceof MessageEvent) {
-            MessageEvent pevent = (MessageEvent) event;
+            var pevent = (MessageEvent) event;
 
             if (pevent.getUser().equals(irc.getUserBot())) {
                 return;
             }
 
-            String msg = pevent.getMessage().trim();
+            var msg = pevent.getMessage().trim();
 
-            String src = pevent.getUser().getNick();
-            String channel = pevent.getChannel().getName();
+            var src = pevent.getUser().getNick();
+            var channel = pevent.getChannel().getName();
 
             try {
 
@@ -172,10 +172,10 @@ public class IRCNLP extends IRC {
     public static void main(String[] args) {
 
 
-        float durFPS = 1f;
+        var durFPS = 1f;
         //NAR n = NARS.realtime(durFPS).get();
         //new MatrixDeriver(Derivers.nal(n, 0, 8), n);
-        NAR n = new NARS.DefaultNAR(8, true)
+        var n = new NARS.DefaultNAR(8, true)
                 .time(new RealTime.MS(false).durFPS(durFPS)).get();
 
         n.freqResolution.set(0.1f);
@@ -183,7 +183,7 @@ public class IRCNLP extends IRC {
 
         n.termVolMax.set(32);
 
-        Deriver d = new Deriver(Derivers.nal(n, 1, 8));
+        var d = new Deriver(Derivers.nal(n, 1, 8));
 //        d.timing = new ActionTiming(n);
 
 
@@ -202,7 +202,7 @@ public class IRCNLP extends IRC {
 //        }).start();
 
 
-        IRCNLP bot = new IRCNLP(n,
+        var bot = new IRCNLP(n,
 
                 "nar" + Math.round(64 * 1024 * Math.random()),
                 "irc.freenode.net",
@@ -225,13 +225,13 @@ public class IRCNLP extends IRC {
         n.onTask(t -> {
 
 
-            long taskTime = t.mid();
+            var taskTime = t.mid();
             if (taskTime != ETERNAL) {
                 if (t.isGoal() && t.isPositive()) { //t.isBeliefOrGoal() /* BOTH */) {
                     //long now = n.time();
                     //int dur = n.dur();
                     //if (taskTime >= now - dur) {
-                    Term tt = t.term();
+                    var tt = t.term();
                         if (tt.op() == INH && HEAR.equals(tt.sub(1))) {
                             if (((Compound)tt).subIs(0, PROD) && tt.sub(0).sub(0).op().taskable) {
                                 bot.speak(tt.sub(0).sub(0), taskTime, t.truth());
@@ -277,9 +277,9 @@ public class IRCNLP extends IRC {
     protected float send(Term o) {
         Runnable r = null;
         synchronized (channels) {
-            String w = $.unquote(o);
+            var w = $.unquote(o);
             this.s += w;
-            boolean punctuation = List.of(".", "!", "?").contains(w);
+            var punctuation = List.of(".", "!", "?").contains(w);
             if (!punctuation)
                 s += " ";
             if ((!s.isEmpty() && punctuation) || this.s.length() >= minSendLength) {

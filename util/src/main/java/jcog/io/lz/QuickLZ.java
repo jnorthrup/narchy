@@ -31,7 +31,7 @@ public final class QuickLZ {
 	}
 
 	private static void write_header(byte[] dst, int level, boolean compressible, int size_compressed, int size_decompressed) {
-		byte b = (byte) (2 | (compressible ? 1 : 0));
+		var b = (byte) (2 | (compressible ? 1 : 0));
 		b |= (byte) (level << 2);
 		b |= (1 << 6);
 		//b |= (0 << 4);
@@ -49,11 +49,11 @@ public final class QuickLZ {
 	}
 
 	public static byte[] compress(byte[] in, int level, int prefixReserved) {
-		byte[] tmp = new byte[in.length + 400];
+		var tmp = new byte[in.length + 400];
 
-		int dst = compress(in, tmp, level);
+		var dst = compress(in, tmp, level);
 
-		byte[] out = new byte[dst + prefixReserved];
+		var out = new byte[dst + prefixReserved];
 		System.arraycopy(tmp, 0, out, prefixReserved, dst);
 		return out;
 	}
@@ -63,27 +63,27 @@ public final class QuickLZ {
 	 */
 	public static int compress(byte[] in, byte[] out, int level) {
 
-        int last_matchstart = (in.length - UNCONDITIONAL_MATCHLEN - UNCOMPRESSED_END - 1);
+		var last_matchstart = (in.length - UNCONDITIONAL_MATCHLEN - UNCOMPRESSED_END - 1);
 
         if (level != 1 && level != 3)
 			throw new RuntimeException("Java version only supports level 1 and 3");
 
-		int[][] hashtable = new int[HASH_VALUES][level == 1 ? QLZ_POINTERS_1 : QLZ_POINTERS_3];
+		var hashtable = new int[HASH_VALUES][level == 1 ? QLZ_POINTERS_1 : QLZ_POINTERS_3];
 
 		if (in.length == 0)
 			return 0;
 
-        int fetch = 0;
-        int src = 0;
+		var fetch = 0;
+		var src = 0;
         if (src <= last_matchstart)
 			fetch = fast_read_int(in, src, 3);
 
-        int lits = 0;
-        byte[] hash_counter = new byte[HASH_VALUES];
-        int[] cachetable = new int[HASH_VALUES];
-        int cword_ptr = DEFAULT_HEADERLEN;
-        long cword_val = 0x80000000L;
-        int dst = DEFAULT_HEADERLEN + CWORD_LEN;
+		var lits = 0;
+		var hash_counter = new byte[HASH_VALUES];
+		var cachetable = new int[HASH_VALUES];
+		var cword_ptr = DEFAULT_HEADERLEN;
+		var cword_val = 0x80000000L;
+		var dst = DEFAULT_HEADERLEN + CWORD_LEN;
         while (src <= last_matchstart) {
 			if ((cword_val & 1) == 1) {
 				if (src > 3 * (in.length >> 2) && dst > src - (src >> 5)) {
@@ -100,9 +100,9 @@ public final class QuickLZ {
 			}
 
 			if (level == 1) {
-				int hash = ((fetch >>> 12) ^ fetch) & (HASH_VALUES - 1);
-				int o = hashtable[hash][0];
-				int cache = cachetable[hash] ^ fetch;
+				var hash = ((fetch >>> 12) ^ fetch) & (HASH_VALUES - 1);
+				var o = hashtable[hash][0];
+				var cache = cachetable[hash] ^ fetch;
 
 				cachetable[hash] = fetch;
 				hashtable[hash][0] = src;
@@ -110,14 +110,14 @@ public final class QuickLZ {
 				if (cache == 0 && hash_counter[hash] != 0 && (src - o > MINOFFSET || (src == o + 1 && lits >= 3 && src > 3 && in[src] == in[src - 3] && in[src] == in[src - 2] && in[src] == in[src - 1] && in[src] == in[src + 1] && in[src] == in[src + 2]))) {
 					cword_val = ((cword_val >>> 1) | 0x80000000L);
 					if (in[o + 3] != in[src + 3]) {
-						int f = 3 - 2 | (hash << 4);
+						var f = 3 - 2 | (hash << 4);
 						out[dst] = (byte) (f >>> 0);
 						out[dst + 1] = (byte) (f >>> 8);
 						src += 3;
 						dst += 2;
 					} else {
-						int old_src = src;
-						int remaining = (Math.min((in.length - UNCOMPRESSED_END - src + 1 - 1), 255));
+						var old_src = src;
+						var remaining = (Math.min((in.length - UNCOMPRESSED_END - src + 1 - 1), 255));
 
 						src += 4;
 						if (in[o + src - old_src] == in[src]) {
@@ -129,11 +129,11 @@ public final class QuickLZ {
 							}
 						}
 
-						int matchlen = src - old_src;
+						var matchlen = src - old_src;
 
 						hash <<= 4;
 						if (matchlen < 18) {
-							int f = hash | (matchlen - 2);
+							var f = hash | (matchlen - 2);
 
 							out[dst] = (byte) (f >>> 0);
 							out[dst + 1] = (byte) (f >>> 8);
@@ -158,19 +158,19 @@ public final class QuickLZ {
 				fetch = fast_read_int(in, src, 3);
 
 				int o;
-                int remaining = (Math.min((in.length - UNCOMPRESSED_END - src + 1 - 1), 255));
-				int hash = ((fetch >>> 12) ^ fetch) & (HASH_VALUES - 1);
+				var remaining = (Math.min((in.length - UNCOMPRESSED_END - src + 1 - 1), 255));
+				var hash = ((fetch >>> 12) ^ fetch) & (HASH_VALUES - 1);
 
-                byte c = hash_counter[hash];
-                int matchlen = 0;
-                int offset2 = 0;
+				var c = hash_counter[hash];
+				var matchlen = 0;
+				var offset2 = 0;
 
-                int[] hth = hashtable[hash];
-				for (int k = 0; k < QLZ_POINTERS_3 && (c > k || c < 0); k++) {
+				var hth = hashtable[hash];
+				for (var k = 0; k < QLZ_POINTERS_3 && (c > k || c < 0); k++) {
 					o = hth[k];
 					if ((byte) fetch == in[o] && (byte) (fetch >>> 8) == in[o + 1] && (byte) (fetch >>> 16) == in[o + 2] && o < src - MINOFFSET) {
                         /*, best_k = 0*/
-                        int m = 3;
+						var m = 3;
                         while (in[o + m] == in[src + m] && m < remaining)
 							m++;
 						if ((m > matchlen) || (m == matchlen && o > offset2)) {
@@ -185,8 +185,8 @@ public final class QuickLZ {
 				hash_counter[hash] = c;
 
 				if (matchlen >= 3 && src - o < 131071) {
-					int offset = src - o;
-					for (int u = 1; u < matchlen; u++) {
+					var offset = src - o;
+					for (var u = 1; u < matchlen; u++) {
 						fetch = fast_read_int(in, src + u, 3);
 						hash = ((fetch >>> 12) ^ fetch) & (HASH_VALUES - 1);
 						c = hash_counter[hash]++;
@@ -245,20 +245,20 @@ public final class QuickLZ {
 
 	static long fast_read_long(byte[] a, int i, int numbytes) {
 		long l = 0;
-		for (int j = 0; j < numbytes; j++)
+		for (var j = 0; j < numbytes; j++)
 			l |= ((a[i++] & 0xffL) << j * 8);
 		return l;
 	}
     static int fast_read_int(byte[] a, int i, int numbytes) {
-        int l = 0;
-        for (int j = 0; j < numbytes; j++)
+		var l = 0;
+        for (var j = 0; j < numbytes; j++)
             l |= ((a[i++] & 0xffL) << j * 8);
         return l;
     }
 
     /** TODO separate int (< 4 numbytes) and long versions */
 	static void fast_write(byte[] a, int i, long value, int numbytes) {
-		for (int j = 0; j < numbytes; j++)
+		for (var j = 0; j < numbytes; j++)
 			a[i++] = (byte) (value >>> (j * 8));
 	}
 
@@ -267,32 +267,32 @@ public final class QuickLZ {
 	}
 
 	public static byte[] decompress(byte[] in, int offset) {
-		int size = (int) sizeDecompressed(in, offset);
-		int initSrc = headerLen(in, offset);
+		var size = (int) sizeDecompressed(in, offset);
+		var initSrc = headerLen(in, offset);
 
         //byte[] hash_counter = new byte[4096];
 
-        byte first = in[offset];
-		int level = (first >>> 2) & 0x3;
+		var first = in[offset];
+		var level = (first >>> 2) & 0x3;
 
 		if (level != 1 && level != 3)
 			throw new RuntimeException("Java version only supports level 1 and 3");
 
 		if ((first & 1) != 1) {
-			byte[] d2 = new byte[size];
+			var d2 = new byte[size];
 			System.arraycopy(in, initSrc, d2, 0, size);
 			return d2;
 		}
 
-        int last_hashed = -1;
-        int last_matchstart = size - UNCONDITIONAL_MATCHLEN - UNCOMPRESSED_END - 1;
+		var last_hashed = -1;
+		var last_matchstart = size - UNCONDITIONAL_MATCHLEN - UNCOMPRESSED_END - 1;
         //new int[hashtable_size];
         int[] hashtable = null;
-        byte[] out = new byte[size];
+		var out = new byte[size];
         long cword_val = 1;
-        int dst = 0;
-        int src = initSrc;
-        for (int fetch = 0; ; ) {
+		var dst = 0;
+		var src = initSrc;
+        for (var fetch = 0; ; ) {
 			if (cword_val == 1) {
 				cword_val = fast_read_long(in, src, 4);
 				src += 4;
@@ -346,7 +346,7 @@ public final class QuickLZ {
 
                 //for some reason System.arraycopy doesnt ever work here... i dont know
 				//noinspection ManualArrayCopy
-				for (int i = 0; i < matchlen; i++)
+				for (var i = 0; i < matchlen; i++)
 					out[dst + i] = out[offset2 + i];
 
 				dst += matchlen;
@@ -380,7 +380,7 @@ public final class QuickLZ {
                             hashtable = new int[HASH_VALUES]; //lazy alloc
 
 						do {
-							int fetch2 = fast_read_int(out, ++last_hashed, 3);
+							var fetch2 = fast_read_int(out, ++last_hashed, 3);
                             hashtable[((fetch2 >>> 12) ^ fetch2) & (HASH_VALUES - 1)] = last_hashed;
 							//hash_counter[hash] = 1;
 						} while (last_hashed < dst - 3);

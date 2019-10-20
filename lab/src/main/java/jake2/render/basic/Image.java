@@ -86,7 +86,7 @@ public abstract class Image extends Main {
 
     Image() {
         
-        for (int i = 0; i < gltextures.length; i++) {
+        for (var i = 0; i < gltextures.length; i++) {
             gltextures[i] = new image_t(i);
         }
         numgltextures = 0;
@@ -98,8 +98,8 @@ public abstract class Image extends Main {
         assert (palette != null && palette.length == 256) : "int palette[256] bug";
 
         if (qglColorTableEXT && gl_ext_palettedtexture.value != 0.0f) {
-            ByteBuffer temptable = Lib.newByteBuffer(768);
-            for (int i = 0; i < 256; i++) {
+            var temptable = Lib.newByteBuffer(768);
+            for (var i = 0; i < 256; i++) {
                 temptable.put(i * 3 + 0, (byte) ((palette[i] >> 0) & 0xff));
                 temptable.put(i * 3 + 1, (byte) ((palette[i] >> 8) & 0xff));
                 temptable.put(i * 3 + 2, (byte) ((palette[i] >> 16) & 0xff));
@@ -274,7 +274,7 @@ public abstract class Image extends Main {
         gl_filter_max = modes[i].maximize;
 
         for (i = 0; i < numgltextures; i++) {
-            image_t glt = gltextures[i];
+            var glt = gltextures[i];
 
             if (glt.type != it_pic && glt.type != it_sky) {
                 GL_Bind(glt.texnum);
@@ -334,11 +334,11 @@ public abstract class Image extends Main {
     void GL_ImageList_f() {
 
         VID.Printf(Defines.PRINT_ALL, "------------------\n");
-        int texels = 0;
+        var texels = 0;
 
         String[] palstrings = {"RGB", "PAL"};
-        for (int i = 0; i < numgltextures; i++) {
-            image_t image = gltextures[i];
+        for (var i = 0; i < numgltextures; i++) {
+            var image = gltextures[i];
             if (image.texnum <= 0)
                 continue;
 
@@ -406,12 +406,12 @@ public abstract class Image extends Main {
     
     int Scrap_AllocBlock(int w, int h, pos_t pos) {
 
-        for (int texnum = 0; texnum < MAX_SCRAPS; texnum++) {
-            int best = BLOCK_HEIGHT;
+        for (var texnum = 0; texnum < MAX_SCRAPS; texnum++) {
+            var best = BLOCK_HEIGHT;
 
             int i;
             for (i = 0; i < BLOCK_WIDTH - w; i++) {
-                int best2 = 0;
+                var best2 = 0;
 
                 int j;
                 for (j = 0; j < w; j++) {
@@ -462,7 +462,7 @@ public abstract class Image extends Main {
     static byte[] LoadPCX(String filename, byte[][] palette, Dimension dim) {
 
 
-        byte[] raw = FS.LoadFile(filename);
+        var raw = FS.LoadFile(filename);
 
         if (raw == null) {
             VID.Printf(Defines.PRINT_DEVELOPER, "Bad pcx file " + filename
@@ -471,7 +471,7 @@ public abstract class Image extends Main {
         }
 
 
-        qfiles.pcx_t pcx = new qfiles.pcx_t(raw);
+        var pcx = new qfiles.pcx_t(raw);
 
         if (pcx.manufacturer != 0x0a || pcx.version != 5 || pcx.encoding != 1
                 || pcx.bits_per_pixel != 8 || pcx.xmax >= 640
@@ -481,8 +481,8 @@ public abstract class Image extends Main {
             return null;
         }
 
-        int width = pcx.xmax - pcx.xmin + 1;
-        int height = pcx.ymax - pcx.ymin + 1;
+        var width = pcx.xmax - pcx.xmin + 1;
+        var height = pcx.ymax - pcx.ymin + 1;
 
         if (palette != null) {
             palette[0] = new byte[768];
@@ -494,16 +494,14 @@ public abstract class Image extends Main {
             dim.setHeight(height);
         }
 
-        
-        
-        
-        int count = 0;
-        byte dataByte = 0;
-        int runLength = 0;
 
-        byte[] pix = new byte[width * height];
-        for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width;) {
+        var count = 0;
+        byte dataByte = 0;
+        var runLength = 0;
+
+        var pix = new byte[width * height];
+        for (var y = 0; y < height; y++) {
+            for (var x = 0; x < width;) {
 
                 dataByte = pcx.data.get();
 
@@ -538,14 +536,14 @@ public abstract class Image extends Main {
     static byte[] LoadTGA(String name, Dimension dim) {
 
 
-        byte[] raw = FS.LoadFile(name);
+        var raw = FS.LoadFile(name);
 
         if (raw == null) {
             VID.Printf(Defines.PRINT_DEVELOPER, "Bad tga file " + name + '\n');
             return null;
         }
 
-        qfiles.tga_t targa_header = new qfiles.tga_t(raw);
+        var targa_header = new qfiles.tga_t(raw);
 
         if (targa_header.image_type != 2 && targa_header.image_type != 10)
             Com.Error(Defines.ERR_DROP,
@@ -557,8 +555,8 @@ public abstract class Image extends Main {
                     .Error(Defines.ERR_DROP,
                             "LoadTGA: Only 32 or 24 bit images supported (no colormaps)\n");
 
-        int columns = targa_header.width;
-        int rows = targa_header.height;
+        var columns = targa_header.width;
+        var rows = targa_header.height;
 
         if (dim != null) {
             dim.setWidth(columns);
@@ -569,13 +567,13 @@ public abstract class Image extends Main {
             targa_header.data.position(targa_header.id_length);
 
 
-        ByteBuffer buf_p = targa_header.data;
+        var buf_p = targa_header.data;
 
         byte green, blue, alphabyte;
-        byte red = green = blue = alphabyte = 0;
+        var red = green = blue = alphabyte = 0;
 
-        int numPixels = columns * rows;
-        byte[] pic = new byte[numPixels * 4];
+        var numPixels = columns * rows;
+        var pic = new byte[numPixels * 4];
         int column;
         int row;
         int pixbuf;
@@ -620,8 +618,8 @@ public abstract class Image extends Main {
 
                         for (column = 0; column < columns; ) {
 
-                            int packetHeader = buf_p.get() & 0xFF;
-                            int packetSize = 1 + (packetHeader & 0x7f);
+                            var packetHeader = buf_p.get() & 0xFF;
+                            var packetSize = 1 + (packetHeader & 0x7f);
 
                             int j;
                             if ((packetHeader & 0x80) != 0) {
@@ -754,7 +752,7 @@ public abstract class Image extends Main {
     
     static final floodfill_t[] fifo = new floodfill_t[FLOODFILL_FIFO_SIZE];
     static {
-        for (int j = 0; j < fifo.length; j++) {
+        for (var j = 0; j < fifo.length; j++) {
             fifo[j] = new floodfill_t();
         }
     }
@@ -762,14 +760,14 @@ public abstract class Image extends Main {
     
     
     static void R_FloodFillSkin(byte[] skin, int skinwidth, int skinheight) {
-        
-        int fillcolor = skin[0] & 0xff;
-        int filledcolor = -1;
+
+        var fillcolor = skin[0] & 0xff;
+        var filledcolor = -1;
 
         if (filledcolor == -1) {
             filledcolor = 0;
             
-            for (int i = 0; i < 256; ++i)
+            for (var i = 0; i < 256; ++i)
                 
                 if (d_8to24table[i] == 0xFF000000) { 
                     
@@ -784,22 +782,22 @@ public abstract class Image extends Main {
             return;
         }
 
-        int inpt = 0;
+        var inpt = 0;
         fifo[inpt].x = 0;
         fifo[inpt].y = 0;
         inpt = (inpt + 1) & FLOODFILL_FIFO_MASK;
 
-        int outpt = 0;
+        var outpt = 0;
         while (outpt != inpt) {
             int x = fifo[outpt].x;
             int y = fifo[outpt].y;
-            int fdc = filledcolor;
+            var fdc = filledcolor;
 
             outpt = (outpt + 1) & FLOODFILL_FIFO_MASK;
 
             int off, dx, dy;
 
-            int pos = x + skinwidth * y;
+            var pos = x + skinwidth * y;
             if (x > 0) {
                 
                 off = -1;
@@ -942,30 +940,30 @@ public abstract class Image extends Main {
             boolean only_gamma) {
         if (only_gamma) {
 
-            int c = inwidth * inheight;
-            for (int i = 0; i < c; i++) {
-                int color = in[i];
-                int r = (color >> 0) & 0xFF;
+            var c = inwidth * inheight;
+            for (var i = 0; i < c; i++) {
+                var color = in[i];
+                var r = (color >> 0) & 0xFF;
 
                 r = gammatable[r] & 0xFF;
-                int g = (color >> 8) & 0xFF;
+                var g = (color >> 8) & 0xFF;
                 g = gammatable[g] & 0xFF;
-                int b = (color >> 16) & 0xFF;
+                var b = (color >> 16) & 0xFF;
                 b = gammatable[b] & 0xFF;
 
                 in[i] = (r << 0) | (g << 8) | (b << 16) | (color & 0xFF000000);
             }
         } else {
 
-            int c = inwidth * inheight;
-            for (int i = 0; i < c; i++) {
-                int color = in[i];
-                int r = (color >> 0) & 0xFF;
+            var c = inwidth * inheight;
+            for (var i = 0; i < c; i++) {
+                var color = in[i];
+                var r = (color >> 0) & 0xFF;
 
                 r = gammatable[intensitytable[r] & 0xFF] & 0xFF;
-                int g = (color >> 8) & 0xFF;
+                var g = (color >> 8) & 0xFF;
                 g = gammatable[intensitytable[g] & 0xFF] & 0xFF;
-                int b = (color >> 16) & 0xFF;
+                var b = (color >> 16) & 0xFF;
                 b = gammatable[intensitytable[b] & 0xFF] & 0xFF;
 
                 in[i] = (r << 0) | (g << 8) | (b << 16) | (color & 0xFF000000);
@@ -981,26 +979,26 @@ public abstract class Image extends Main {
      */
     static void GL_MipMap(int[] in, int width, int height) {
 
-        int[] out = in;
+        var out = in;
 
-        int inIndex = 0;
-        int outIndex = 0;
+        var inIndex = 0;
+        var outIndex = 0;
 
-        for (int i = 0; i < height; i += 2, inIndex += width) {
-            for (int j = 0; j < width; j += 2, outIndex += 1, inIndex += 2) {
+        for (var i = 0; i < height; i += 2, inIndex += width) {
+            for (var j = 0; j < width; j += 2, outIndex += 1, inIndex += 2) {
 
-                int p1 = in[inIndex + 0];
-                int p2 = in[inIndex + 1];
-                int p3 = in[inIndex + width + 0];
-                int p4 = in[inIndex + width + 1];
+                var p1 = in[inIndex + 0];
+                var p2 = in[inIndex + 1];
+                var p3 = in[inIndex + width + 0];
+                var p4 = in[inIndex + width + 1];
 
-                int r = (((p1 >> 0) & 0xFF) + ((p2 >> 0) & 0xFF)
+                var r = (((p1 >> 0) & 0xFF) + ((p2 >> 0) & 0xFF)
                         + ((p3 >> 0) & 0xFF) + ((p4 >> 0) & 0xFF)) >> 2;
-                int g = (((p1 >> 8) & 0xFF) + ((p2 >> 8) & 0xFF)
+                var g = (((p1 >> 8) & 0xFF) + ((p2 >> 8) & 0xFF)
                         + ((p3 >> 8) & 0xFF) + ((p4 >> 8) & 0xFF)) >> 2;
-                int b = (((p1 >> 16) & 0xFF) + ((p2 >> 16) & 0xFF)
+                var b = (((p1 >> 16) & 0xFF) + ((p2 >> 16) & 0xFF)
                         + ((p3 >> 16) & 0xFF) + ((p4 >> 16) & 0xFF)) >> 2;
-                int a = (((p1 >> 24) & 0xFF) + ((p2 >> 24) & 0xFF)
+                var a = (((p1 >> 24) & 0xFF) + ((p2 >> 24) & 0xFF)
                         + ((p3 >> 24) & 0xFF) + ((p4 >> 24) & 0xFF)) >> 2;
 
                 out[outIndex] = (r << 0) | (g << 8) | (b << 16) | (a << 24);
@@ -1016,15 +1014,15 @@ public abstract class Image extends Main {
     void GL_BuildPalettedTexture(ByteBuffer paletted_texture, int[] scaled,
             int scaled_width, int scaled_height) {
 
-        int size = scaled_width * scaled_height;
+        var size = scaled_width * scaled_height;
 
-        for (int i = 0; i < size; i++) {
+        for (var i = 0; i < size; i++) {
 
-            int r = (scaled[i] >> 3) & 31;
-            int g = (scaled[i] >> 10) & 63;
-            int b = (scaled[i] >> 19) & 31;
+            var r = (scaled[i] >> 3) & 31;
+            var g = (scaled[i] >> 10) & 63;
+            var b = (scaled[i] >> 19) & 31;
 
-            int c = r | (g << 5) | (b << 11);
+            var c = r | (g << 5) | (b << 11);
 
             paletted_texture.put(i, gl_state.d_16to8table[c]);
         }
@@ -1050,7 +1048,7 @@ public abstract class Image extends Main {
 
         Arrays.fill(scaled, 0);
         paletted_texture.clear();
-        for (int j=0; j<256*256; j++) paletted_texture.put(j,(byte)0);
+        for (var j = 0; j<256*256; j++) paletted_texture.put(j,(byte)0);
         
         uploaded_paletted = false;
 
@@ -1089,10 +1087,10 @@ public abstract class Image extends Main {
             Com.Error(Defines.ERR_DROP, "GL_Upload32: too big");
 
 
-        int c = width * height;
-        int samples = gl_solid_format;
+        var c = width * height;
+        var samples = gl_solid_format;
 
-        for (int i = 0; i < c; i++) {
+        for (var i = 0; i < c; i++) {
             if ((data[i] & 0xff000000) != 0xff000000) {
                 samples = gl_alpha_format;
                 break;
@@ -1163,7 +1161,7 @@ public abstract class Image extends Main {
             }
 
             if (mipmap) {
-                int miplevel = 0;
+                var miplevel = 0;
                 while (scaled_width > 1 || scaled_height > 1) {
                     GL_MipMap(scaled, scaled_width, scaled_height);
                     scaled_width >>= 1;
@@ -1226,7 +1224,7 @@ public abstract class Image extends Main {
 
         Arrays.fill(trans, 0);
 
-        int s = width * height;
+        var s = width * height;
 
         if (s > trans.length)
             Com.Error(Defines.ERR_DROP, "GL_Upload8: too large");
@@ -1243,8 +1241,8 @@ public abstract class Image extends Main {
             
             return false;
         } else {
-            for (int i = 0; i < s; i++) {
-                int p = data[i] & 0xff;
+            for (var i = 0; i < s; i++) {
+                var p = data[i] & 0xff;
                 trans[i] = d_8to24table[p];
 
                 if (p == 255) { 
@@ -1317,9 +1315,9 @@ public abstract class Image extends Main {
         
         if (image.type == it_pic && bits == 8 && image.width < 64
                 && image.height < 64) {
-            pos_t pos = new pos_t(0, 0);
+            var pos = new pos_t(0, 0);
 
-            int texnum = Scrap_AllocBlock(image.width, image.height, pos);
+            var texnum = Scrap_AllocBlock(image.width, image.height, pos);
 
             if (texnum == -1) {
                 
@@ -1335,7 +1333,7 @@ public abstract class Image extends Main {
                             (image.type != it_pic && image.type != it_sky),
                             image.type == it_sky);
                 } else {
-                    int[] tmp = new int[pic.length / 4];
+                    var tmp = new int[pic.length / 4];
 
                     for (i = 0; i < tmp.length; i++) {
                         tmp[i] = ((pic[4 * i + 0] & 0xFF) << 0); 
@@ -1367,9 +1365,9 @@ public abstract class Image extends Main {
             scrap_dirty = true;
 
 
-            int k = 0;
+            var k = 0;
             for (i = 0; i < image.height; i++)
-                for (int j = 0; j < image.width; j++, k++)
+                for (var j = 0; j < image.width; j++, k++)
                     scrap_texels[texnum][(pos.y + i) * BLOCK_WIDTH + pos.x + j] = pic[k];
 
             image.texnum = TEXNUM_SCRAPS + texnum;
@@ -1393,7 +1391,7 @@ public abstract class Image extends Main {
                         (image.type != it_pic && image.type != it_sky),
                         image.type == it_sky);
             } else {
-                int[] tmp = new int[pic.length / 4];
+                var tmp = new int[pic.length / 4];
 
                 for (i = 0; i < tmp.length; i++) {
                     tmp[i] = ((pic[4 * i + 0] & 0xFF) << 0); 
@@ -1421,19 +1419,19 @@ public abstract class Image extends Main {
      */
     image_t GL_LoadWal(String name) {
 
-        byte[] raw = FS.LoadFile(name);
+        var raw = FS.LoadFile(name);
         if (raw == null) {
             VID.Printf(Defines.PRINT_ALL, "GL_FindImage: can't load " + name
                     + '\n');
             return r_notexture;
         }
 
-        qfiles.miptex_t mt = new qfiles.miptex_t(raw);
+        var mt = new qfiles.miptex_t(raw);
 
-        byte[] pix = new byte[mt.width * mt.height];
+        var pix = new byte[mt.width * mt.height];
         System.arraycopy(raw, mt.offsets[0], pix, 0, pix.length);
 
-        image_t image = GL_LoadPic(name, pix, mt.width, mt.height, it_wall, 8);
+        var image = GL_LoadPic(name, pix, mt.width, mt.height, it_wall, 8);
 
         return image;
     }
@@ -1447,8 +1445,8 @@ public abstract class Image extends Main {
 
 
         name = name.toLowerCase();
-        
-        int index = name.indexOf('\0');
+
+        var index = name.indexOf('\0');
         if (index != -1)
             name = name.substring(0, index);
 
@@ -1457,7 +1455,7 @@ public abstract class Image extends Main {
 
 
         image_t image = null;
-        for (int i = 0; i < numgltextures; i++) {
+        for (var i = 0; i < numgltextures; i++) {
             image = gltextures[i];
             if (name.equals(image.name)) {
                 image.registration_sequence = registration_sequence;
@@ -1469,7 +1467,7 @@ public abstract class Image extends Main {
         
         
         byte[] pic = null;
-        Dimension dim = new Dimension();
+        var dim = new Dimension();
 
         if (name.endsWith(".pcx")) {
 
@@ -1521,7 +1519,7 @@ public abstract class Image extends Main {
 
         image_t image = null;
 
-        for (int i = 0; i < numgltextures; i++) {
+        for (var i = 0; i < numgltextures; i++) {
             image = gltextures[i];
             
             if (image.registration_sequence == registration_sequence)
@@ -1545,7 +1543,7 @@ public abstract class Image extends Main {
      */
     @Override
     protected void Draw_GetPalette() {
-        byte[][] palette = new byte[1][];
+        var palette = new byte[1][];
 
         
 
@@ -1554,13 +1552,13 @@ public abstract class Image extends Main {
         if (palette[0] == null || palette[0].length != 768)
             Com.Error(Defines.ERR_FATAL, "Couldn't load pics/colormap.pcx");
 
-        byte[] pal = palette[0];
+        var pal = palette[0];
 
-        int j = 0;
-        for (int i = 0; i < 256; i++) {
-            int r = pal[j++] & 0xFF;
-            int g = pal[j++] & 0xFF;
-            int b = pal[j++] & 0xFF;
+        var j = 0;
+        for (var i = 0; i < 256; i++) {
+            var r = pal[j++] & 0xFF;
+            var g = pal[j++] & 0xFF;
+            var b = pal[j++] & 0xFF;
 
             d_8to24table[i] = (255 << 24) | (b << 16) | (g << 8) | (r << 0);
         }
@@ -1575,7 +1573,7 @@ public abstract class Image extends Main {
      */
     @Override
     void GL_InitImages() {
-        float g = vid_gamma.value;
+        var g = vid_gamma.value;
 
         registration_sequence = 1;
 
@@ -1606,7 +1604,7 @@ public abstract class Image extends Main {
                 gammatable[i] = (byte) i;
             } else {
 
-                int inf = (int) (255.0f * Math.pow((i + 0.5) / 255.5, g) + 0.5);
+                var inf = (int) (255.0f * Math.pow((i + 0.5) / 255.5, g) + 0.5);
                 if (inf < 0)
                     inf = 0;
                 if (inf > 255)
@@ -1616,7 +1614,7 @@ public abstract class Image extends Main {
         }
 
         for (i = 0; i < 256; i++) {
-            int j = (int) (i * intensity.value);
+            var j = (int) (i * intensity.value);
             if (j > 255)
                 j = 255;
             intensitytable[i] = (byte) j;
@@ -1629,8 +1627,8 @@ public abstract class Image extends Main {
     @Override
     void GL_ShutdownImages() {
 
-        for (int i = 0; i < numgltextures; i++) {
-            image_t image = gltextures[i];
+        for (var i = 0; i < numgltextures; i++) {
+            var image = gltextures[i];
 
             if (image.registration_sequence == 0)
                 continue; 

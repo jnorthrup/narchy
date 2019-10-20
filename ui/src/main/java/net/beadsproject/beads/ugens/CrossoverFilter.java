@@ -109,7 +109,7 @@ public class CrossoverFilter extends UGen implements DataBeadReceiver {
             hyms = new float[channels][3];
             hzms = new float[channels][3];
         }
-        float sr = context.getSampleRate();
+        var sr = context.getSampleRate();
         pi_sr = (float) (Math.PI / sr);
         setFrequency(freq);
     }
@@ -127,18 +127,18 @@ public class CrossoverFilter extends UGen implements DataBeadReceiver {
         float[] lo;
         float[] bi;
         if (channels > 1) {
-            for (int chan = 0; chan < channels; chan++) {
+            for (var chan = 0; chan < channels; chan++) {
                 bi = bufIn[chan];
                 lo = bufOut[chan * 2];
                 hi = bufOut[chan * 2 + 1];
 
-                float[] ly = lyms[chan];
-                float[] lz = lzms[chan];
-                float[] hy = hyms[chan];
-                float[] hz = hzms[chan];
-                float[] x = xms[chan];
+                var ly = lyms[chan];
+                var lz = lzms[chan];
+                var hy = hyms[chan];
+                var hz = hzms[chan];
+                var x = xms[chan];
 
-                for (int i = 0; i < bufferSize; i++) {
+                for (var i = 0; i < bufferSize; i++) {
 
                     
                     ly[0] = (lb0 * (bi[i] + x[2]) + lb1 * x[1] - a1 * ly[1] - a2
@@ -178,16 +178,16 @@ public class CrossoverFilter extends UGen implements DataBeadReceiver {
             lo = bufOut[0];
             hi = bufOut[1];
 
-            for (int i = 0; i < bufferSize; i++) {
+            for (var i = 0; i < bufferSize; i++) {
 
 
-                float ly0 = (lb0 * (bi[i] + x2) + lb1 * x1 - a1 * ly1 - a2 * ly2)
+                var ly0 = (lb0 * (bi[i] + x2) + lb1 * x1 - a1 * ly1 - a2 * ly2)
                         / a0;
                 lo[i] = (lb0 * (ly0 + ly2) + lb1 * ly1 - a1 * lz1 - a2 * lz2)
                         / a0;
 
 
-                float hy0 = (bi[i] - 2 * x1 + x2 - a1 * hy1 - a2 * hy2) / a0;
+                var hy0 = (bi[i] - 2 * x1 + x2 - a1 * hy1 - a2 * hy2) / a0;
                 hi[i] = (hy0 - 2 * hy1 + hy2 - a1 * hz1 - a2 * hz2) / a0;
 
                 
@@ -211,7 +211,7 @@ public class CrossoverFilter extends UGen implements DataBeadReceiver {
 
     private void calcVals() {
 
-        float k = (float) Math.tan(freq * pi_sr);
+        var k = (float) Math.tan(freq * pi_sr);
         lb0 = k * k;
         lb1 = 2f * lb0;
         
@@ -343,7 +343,7 @@ public class CrossoverFilter extends UGen implements DataBeadReceiver {
      */
     @Override
     public DataBeadReceiver sendData(DataAuvent db) {
-        UGen u = db.getUGen("frequency");
+        var u = db.getUGen("frequency");
         if (u == null) {
             setFrequency(db.getFloat("frequency", freq));
         } else {
@@ -360,7 +360,7 @@ public class CrossoverFilter extends UGen implements DataBeadReceiver {
     }
 
     public CrossoverFilter drawFromLowOutput(UGen target) {
-        for (int i = 0; i < target.getIns(); i++) {
+        for (var i = 0; i < target.getIns(); i++) {
             if (i >= channels) {
                 break;
             }
@@ -376,7 +376,7 @@ public class CrossoverFilter extends UGen implements DataBeadReceiver {
     }
 
     public CrossoverFilter drawFromHighOutput(UGen target) {
-        for (int i = 0; i < target.getIns(); i++) {
+        for (var i = 0; i < target.getIns(); i++) {
             if (i >= channels) {
                 break;
             }

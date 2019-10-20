@@ -47,8 +47,8 @@ public class Shell extends Sprite {
     public boolean fireballCollideCheck(Fireball fireball) {
         if (deadTime != 0) return false;
 
-        float xD = fireball.x - x;
-        float yD = fireball.y - y;
+        var xD = fireball.x - x;
+        var yD = fireball.y - y;
 
         if (xD > -16 && xD < 16) {
             if (yD > -height && yD < fireball.height) {
@@ -71,8 +71,8 @@ public class Shell extends Sprite {
     public void collideCheck() {
         if (carried || dead || deadTime > 0) return;
 
-        float xMarioD = world.mario.x - x;
-        float yMarioD = world.mario.y - y;
+        var xMarioD = world.mario.x - x;
+        var yMarioD = world.mario.y - y;
         float w = 16;
         if (xMarioD > -w && xMarioD < w) {
             if (yMarioD > -height && yMarioD < world.mario.height) {
@@ -108,7 +108,7 @@ public class Shell extends Sprite {
 
             if (deadTime == 0) {
                 deadTime = 1;
-                for (int i = 0; i < 8; i++) {
+                for (var i = 0; i < 8; i++) {
                     world.addSprite(new Sparkle((int) (x + Math.random() * 16 - 8) + 4, (int) (y - Math.random() * 8) + 4, (float) (Math.random() * 2 - 1), (float) Math.random() * -1, 0, 1, 5));
                 }
                 spriteContext.removeSprite(this);
@@ -132,7 +132,7 @@ public class Shell extends Sprite {
             facing = -1;
         }
 
-        float sideWaysSpeed = 11f;
+        var sideWaysSpeed = 11f;
         xa = facing * sideWaysSpeed;
 
         if (facing != 0) {
@@ -184,7 +184,7 @@ public class Shell extends Sprite {
             ya += 8;
         }
 
-        boolean collide = false;
+        var collide = false;
         if (ya > 0) {
             if (isBlocking(x + xa - width, y + ya, xa, 0)) collide = true;
             else if (isBlocking(x + xa + width, y + ya, xa, 0)) collide = true;
@@ -239,14 +239,14 @@ public class Shell extends Sprite {
     }
 
     private boolean isBlocking(float _x, float _y, float xa, float ya) {
-        int x = (int) (_x / 16);
-        int y = (int) (_y / 16);
+        var x = (int) (_x / 16);
+        var y = (int) (_y / 16);
         if (x == (int) (this.x / 16) && y == (int) (this.y / 16)) return false;
 
-        boolean blocking = world.level.isBlocking(x, y, xa, ya);
+        var blocking = world.level.isBlocking(x, y, xa, ya);
 
         @SuppressWarnings("unused")
-        byte block = world.level.getBlock(x, y);
+        var block = world.level.getBlock(x, y);
 
         if (blocking && ya == 0 && xa != 0) {
             world.bump(x, y, true);
@@ -277,8 +277,8 @@ public class Shell extends Sprite {
     public boolean shellCollideCheck(Shell shell) {
         if (deadTime != 0) return false;
 
-        float xD = shell.x - x;
-        float yD = shell.y - y;
+        var xD = shell.x - x;
+        var yD = shell.y - y;
 
         if (xD > -16 && xD < 16) {
             if (yD > -height && yD < shell.height) {

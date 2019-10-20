@@ -24,8 +24,8 @@ public class Template implements java.io.Serializable {
         if (matrix != null) {
 
             this.matrix = new char[matrix.length][matrix[0].length];
-            for (int i = 0; i < matrix.length; i++) {
-                for (int j = 0; j < matrix[0].length; j++) {
+            for (var i = 0; i < matrix.length; i++) {
+                for (var j = 0; j < matrix[0].length; j++) {
                     this.matrix[i][j] = (char) matrix[i][j];
                 }
             }
@@ -38,13 +38,13 @@ public class Template implements java.io.Serializable {
             return false;
         }
 
-        for (int x = 0; x <= (input.length - matrix.length); x++) {
-            for (int y = 0; y <= (input[0].length - matrix[0].length); y++) {
-                boolean isGood = false;
-                boolean isBad = false;
+        for (var x = 0; x <= (input.length - matrix.length); x++) {
+            for (var y = 0; y <= (input[0].length - matrix[0].length); y++) {
+                var isGood = false;
+                var isBad = false;
 
-                for (int i = 0; i < matrix.length; i++) {
-                    for (int j = 0; j < matrix[0].length; j++) {
+                for (var i = 0; i < matrix.length; i++) {
+                    for (var j = 0; j < matrix[0].length; j++) {
                         if (matrix[i][j] != input[x + i][y + j]) {
                             if (input[x + i][y + j] != 0) {
                                 return false;

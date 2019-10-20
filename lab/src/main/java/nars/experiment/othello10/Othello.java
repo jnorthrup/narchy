@@ -12,20 +12,20 @@ public class Othello extends JFrame {
 
         setResizable(false);
 
-        Container contentPane = getContentPane();
+        var contentPane = getContentPane();
 
 
-        InfoPanel infoPanel = new InfoPanel();
+        var infoPanel = new InfoPanel();
         contentPane.add(infoPanel, BorderLayout.NORTH);
 
-        MainPanel mainPanel = new MainPanel(infoPanel);
+        var mainPanel = new MainPanel(infoPanel);
         contentPane.add(mainPanel, BorderLayout.CENTER);
 
         pack();
     }
 
     public static void main(String[] args) {
-        Othello frame = new Othello();
+        var frame = new Othello();
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.setVisible(true);
     }

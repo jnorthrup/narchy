@@ -51,10 +51,10 @@ class BaseMusic_FastFourierTransform {
 
     
     private static int bitrev(int pJ, int pNu) {
-        int j1 = pJ;
-        int k = 0;
-        for( int i = 0; i < pNu; i++ ) {
-            int j2 = j1 >> 1;
+        var j1 = pJ;
+        var k = 0;
+        for(var i = 0; i < pNu; i++ ) {
+            var j2 = j1 >> 1;
             k  = ( k << 1 ) + j1 - ( j2 << 1 );
             j1 = j2;
         }
@@ -69,26 +69,26 @@ class BaseMusic_FastFourierTransform {
      */
     public float[] calculate( float[] pSample ) {
 
-        for ( int a = 0; a < pSample.length; a++ ) {
+        for (var a = 0; a < pSample.length; a++ ) {
             xre[ a ] = pSample[ a ];
             xim[ a ] = 0.0f;
         }
         
-        for ( int a = pSample.length; a < ss; a++ ) {
+        for (var a = pSample.length; a < ss; a++ ) {
             xre[ a ] = 0.0f;
             xim[ a ] = 0.0f;
         }
         float tr, ti;
         int   k, x = 0;
-        int n2 = ss2;
-        for (int l = 0; l < nu; l++ ) {
+        var n2 = ss2;
+        for (var l = 0; l < nu; l++ ) {
             k = 0;
             while ( k < ss ) {
-                for ( int i = 0; i < n2; i++ ) {
+                for (var i = 0; i < n2; i++ ) {
 
-                    float c = fftCos[x];
-                    float s = fftSin[x];
-                    int kn2 = k + n2;
+                    var c = fftCos[x];
+                    var s = fftSin[x];
+                    var kn2 = k + n2;
                     tr = xre[ kn2 ] * c + xim[ kn2 ] * s;
                     ti = xim[ kn2 ] * c - xre[ kn2 ] * s;
                     xre[ kn2 ] = xre[ k ] - tr;
@@ -105,7 +105,7 @@ class BaseMusic_FastFourierTransform {
 
         for( k = 0; k < ss; k++ ) {
 
-            int r = fftBr[k];
+            var r = fftBr[k];
             if ( r > k ) {
                 tr = xre[ k ];
                 xre[ k ] = xre[ r ];
@@ -116,7 +116,7 @@ class BaseMusic_FastFourierTransform {
             }
         }
         
-        for ( int i = 0; i < ss2; i++ ) {
+        for (var i = 0; i < ss2; i++ ) {
             mag[ i ] = Math.abs( ( (float)( Math.sqrt( ( xre[ i ] * xre[ i ] ) + ( xim[ i ] * xim[ i ] ) ) ) / ss ) );
         }
         return mag;
@@ -139,14 +139,14 @@ class BaseMusic_FastFourierTransform {
      * @return             An array of frequency limits for each band. 
      */
     public float[] calculateFrequencyTable( float pSampleRate ) {
-        float wFr = pSampleRate / 2.0f;
-        
-        float wBw = wFr / ss2;
-        
-        float[] wFt = new float[ss2];
-        
-        int b = 0;
-        for( float wFp = ( wBw / 2.0f ); wFp <= wFr; wFp += wBw ) {
+        var wFr = pSampleRate / 2.0f;
+
+        var wBw = wFr / ss2;
+
+        var wFt = new float[ss2];
+
+        var b = 0;
+        for(var wFp = ( wBw / 2.0f ); wFp <= wFr; wFp += wBw ) {
             wFt[ b ] = wFp;
             b++;
         }
@@ -175,16 +175,16 @@ class BaseMusic_FastFourierTransform {
      * Pre-calculates SIN/COS and bitrev tables in memory.
      */
     private void prepareTables() {
-        int n2 = ss2;
-        int nu1 = nu - 1;
+        var n2 = ss2;
+        var nu1 = nu - 1;
         int   k = 0, x = 0;
         
-        for ( int l = 0; l < nu; l++ ) {
+        for (var l = 0; l < nu; l++ ) {
             k = 0;
             while ( k < ss ) {
-                for ( int i = 0; i < n2; i++ ) {
+                for (var i = 0; i < n2; i++ ) {
                     float p = bitrev(k >> nu1, nu);
-                    float arg = 2 * (float) Math.PI * p / ss;
+                    var arg = 2 * (float) Math.PI * p / ss;
                     fftSin[ x ] = (float)Math.sin( arg );
                     fftCos[ x ] = (float)Math.cos( arg );
                     k++;

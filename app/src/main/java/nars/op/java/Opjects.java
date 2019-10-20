@@ -170,19 +170,19 @@ public class Opjects extends DefaultTermizer {
             //new SoftMemoize<>(
         x -> {
 
-            Class c = x.getOne().getOne();
-            Term methodTerm = x.getOne().getTwo();
-            List<Class<?>> types = x.getTwo();
+            var c = x.getOne().getOne();
+            var methodTerm = x.getOne().getTwo();
+            var types = x.getTwo();
 
-            String mName = methodTerm.toString();
-            Class<?>[] cc = types.isEmpty() ? ArrayUtil.EMPTY_CLASS_ARRAY : ((FasterList<Class<?>>) types).array();
-            Method m = findMethod(c, mName, cc);
+            var mName = methodTerm.toString();
+            var cc = types.isEmpty() ? ArrayUtil.EMPTY_CLASS_ARRAY : ((FasterList<Class<?>>) types).array();
+            var m = findMethod(c, mName, cc);
             if (m == null || !methodEvokable(m))
                 return null;
 
             m.setAccessible(true);
             try {
-                MethodHandle mh = MethodHandles.lookup()
+                var mh = MethodHandles.lookup()
                         .unreflect(m)
                         .asFixedArity()
                 ;
@@ -206,7 +206,7 @@ public class Opjects extends DefaultTermizer {
 
 
     static boolean isPublic(Method m) {
-        int mm = m.getModifiers();
+        var mm = m.getModifiers();
         return Modifier.isPublic(mm);
     }
 
@@ -217,27 +217,27 @@ public class Opjects extends DefaultTermizer {
         this.what = w;
         in = (nar = w.nar).newChannel(this);
         update(w.nar);
-        DurLoop on = w.nar.onDur(this::update);
+        var on = w.nar.onDur(this::update);
     }
 
     /**
      * called every duration to update all the operators in one batch, so they dont register events individually
      */
     protected void update(NAR nar) {
-        float cMin = (float) c2wSafe(nar.confMin.evi());
-        float cMax = c2wSafe(nar.confDefault(BELIEF));
+        var cMin = (float) c2wSafe(nar.confMin.evi());
+        var cMax = c2wSafe(nar.confDefault(BELIEF));
         beliefEvi = Util.lerp(beliefEviFactor, cMin, cMax);
-        float doubtEvi = Util.lerp(doubtEviFactor, cMin, cMax);
+        var doubtEvi = Util.lerp(doubtEviFactor, cMin, cMax);
         invokeEvi = Util.lerp(invokeEviFactor, cMin, cMax);
-        float uninvokeEvi = Util.lerp(uninvokeEviFactor, cMin, cMax);
-        float invokePri = beliefPri = pri.floatValue() * nar.priDefault(BELIEF);
+        var uninvokeEvi = Util.lerp(uninvokeEviFactor, cMin, cMax);
+        var invokePri = beliefPri = pri.floatValue() * nar.priDefault(BELIEF);
 
         probing.forEachWith(AtomicOperations::update, nar);
     }
 
     @Override
     protected Term classInPackage(Term classs, Term packagge) {
-        Term t = $.inst(classs, packagge);
+        var t = $.inst(classs, packagge);
 
 
         return t;
@@ -271,27 +271,26 @@ public class Opjects extends DefaultTermizer {
         public void update(Term instance, Object obj, Method method, Object[] args, Object nextValue, NAR nar) {
 
 
-
-            long now = nar.time();
-            float dur = nar.dur();
+            var now = nar.time();
+            var dur = nar.dur();
             long start = round(now - dur / 2);
             long end = round(now + dur / 2);
 
-            float f = beliefFreq;
+            var f = beliefFreq;
 
-            Class<?> methodReturnType = method.getReturnType();
-            boolean isVoid = methodReturnType == void.class;
+            var methodReturnType = method.getReturnType();
+            var isVoid = methodReturnType == void.class;
 
             Task value;
 
             if (!isVoid) {
-                Term t = opTerm(instance, method, args, nextValue);
+                var t = opTerm(instance, method, args, nextValue);
                 value = value(t, f, start, end, nar);
             } else {
                 value = null;
             }
 
-            boolean evokedOrInvoked = evoking.get().getOpaque();
+            var evokedOrInvoked = evoking.get().getOpaque();
 
             Task feedback;
             if (isVoid || evokedOrInvoked) {
@@ -330,7 +329,7 @@ public class Opjects extends DefaultTermizer {
 
 
         public Task value(Term nextTerm, float freq, long start, long end, NAR nar) {
-            Term nt = nextTerm;
+            var nt = nextTerm;
             if (nt.op() == NEG) {
                 nt = nt.unneg();
                 freq = 1 - freq;
@@ -392,11 +391,11 @@ public class Opjects extends DefaultTermizer {
     Term opTerm(Term instance, Method method, Object[] args, Object result) {
 
 
-        Class<?> returnType = method.getReturnType();
-        boolean isVoid = result == null && returnType == void.class;
-        boolean isBoolean = returnType == boolean.class || (returnType == Boolean.class && result!=null);
+        var returnType = method.getReturnType();
+        var isVoid = result == null && returnType == void.class;
+        var isBoolean = returnType == boolean.class || (returnType == Boolean.class && result!=null);
 
-        int xn = 3;
+        var xn = 3;
         if (args.length == 0) {
             xn--;
         }
@@ -404,8 +403,8 @@ public class Opjects extends DefaultTermizer {
             xn--;
         }
 
-        Term[] x = new Term[xn];
-        int resultTerm = xn - 1;
+        var x = new Term[xn];
+        var resultTerm = xn - 1;
 
         x[0] = instance;
 
@@ -426,10 +425,10 @@ public class Opjects extends DefaultTermizer {
             assert (x[1] != null) : "could not termize: " + Arrays.toString(args);
         }
 
-        boolean negate = false;
+        var negate = false;
 
         if (result instanceof Term) {
-            Term tr = (Term) result;
+            var tr = (Term) result;
             if (tr.op() == NEG) {
                 tr = tr.unneg();
                 negate = true;
@@ -456,8 +455,8 @@ public class Opjects extends DefaultTermizer {
     }
 
     static String methodName(Method method) {
-        String n = method.getName();
-        int i = n.indexOf("$accessor$");
+        var n = method.getName();
+        var i = n.indexOf("$accessor$");
         if (i != -1) {
             return n.substring(0, i);
         } else {
@@ -484,21 +483,21 @@ public class Opjects extends DefaultTermizer {
 
             runCache = CaffeineMemoize.build(term -> {
 
-                Subterms args = validArgs(Functor.args(term));
+                var args = validArgs(Functor.args(term));
                 if (args == null)
                     return null;
 
-                Term instanceTerm = args.sub(0);
-                Object instance = termToObj.get(instanceTerm);
+                var instanceTerm = args.sub(0);
+                var instance = termToObj.get(instanceTerm);
                 if (instance == null)
                     return null;
 
-                int as = args.subs();
-                Term methodArgs = as > 1 && (as > 2 || !args.sub(as - 1).op().var) ? args.sub(1) : Op.EmptyProduct;
+                var as = args.subs();
+                var methodArgs = as > 1 && (as > 2 || !args.sub(as - 1).op().var) ? args.sub(1) : Op.EmptyProduct;
 
-                boolean maWrapped = methodArgs.op() == PROD;
+                var maWrapped = methodArgs.op() == PROD;
 
-                int aa = maWrapped ? methodArgs.subs() : 1;
+                var aa = maWrapped ? methodArgs.subs() : 1;
 
                 Object[] instanceAndArgs;
                 List<Class<?>> types;
@@ -512,14 +511,14 @@ public class Opjects extends DefaultTermizer {
 
 
                 Pair<Pair<Class, Term>, List<Class<?>>> key = pair(pair(instance.getClass(), methodName), types);
-                MethodHandle mh = methodCache.apply(key);
+                var mh = methodCache.apply(key);
                 if (mh == null) {
                     return null;
                 }
 
                 return () -> {
 
-                    AtomicBoolean flag = evoking.get();
+                    var flag = evoking.get();
                     flag.set(true);
 
                     try {
@@ -596,7 +595,7 @@ public class Opjects extends DefaultTermizer {
         reflect(instance.getClass());
 
         try {
-            Class cl = bb
+            var cl = bb
                     .with(TypeValidation.DISABLED)
                     .subclass(instance.getClass())
                     .method(ElementMatchers.isPublic().and(ElementMatchers.not(ElementMatchers.isDeclaredBy(Object.class))))
@@ -610,7 +609,7 @@ public class Opjects extends DefaultTermizer {
                             classLoadingStrategy
                     )
                     .getLoaded();
-            T instWrapped = (T) cl.getConstructor(Util.typesOfArray(args)).newInstance(args);
+            var instWrapped = (T) cl.getConstructor(Util.typesOfArray(args)).newInstance(args);
 
             register(id, instWrapped);
 
@@ -626,7 +625,7 @@ public class Opjects extends DefaultTermizer {
 
     private void reflect(Class<?> cl) {
         clCache.computeIfAbsent(cl, (clazz) -> {
-            for (Method m: clazz.getMethods())
+            for (var m: clazz.getMethods())
                 reflect(m);
             return true;
         });
@@ -638,10 +637,10 @@ public class Opjects extends DefaultTermizer {
 
         m.setAccessible(true);
 
-        String n = m.getName();
+        var n = m.getName();
         return opCache.computeIfAbsent(n, (mn) -> {
-            MethodExec methodExec = new MethodExec(mn);
-            Operator op = nar.setOp(Atomic.atom(mn), methodExec);
+            var methodExec = new MethodExec(mn);
+            var op = nar.setOp(Atomic.atom(mn), methodExec);
             methodExec.operator = op;
             return methodExec;
         });
@@ -656,9 +655,9 @@ public class Opjects extends DefaultTermizer {
      */
     public <T> T a(Term id, Class<? extends T> cl, Object... args) {
 
-        Class ccc = proxyCache.computeIfAbsent(cl, (baseClass) -> {
+        var ccc = proxyCache.computeIfAbsent(cl, (baseClass) -> {
 
-            Class cc = bb
+            var cc = bb
                     .with(TypeValidation.DISABLED)
                     .subclass(baseClass)
 
@@ -682,7 +681,7 @@ public class Opjects extends DefaultTermizer {
 
 
         try {
-            T inst = (T) ccc.getConstructor(Util.typesOfArray(args)).newInstance(args);
+            var inst = (T) ccc.getConstructor(Util.typesOfArray(args)).newInstance(args);
             return register(id, inst);
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -696,7 +695,7 @@ public class Opjects extends DefaultTermizer {
     public final Object intercept(@AllArguments Object[] args, @SuperMethod Method method, @SuperCall Callable supercall, @This final Object obj) {
 //        try {
             try {
-                final Object returned = supercall.call();
+                final var returned = supercall.call();
                 return this.tryInvoked(obj, method, args, returned);
             } catch (final Exception e) {
                 //e.printStackTrace();
@@ -727,14 +726,14 @@ public class Opjects extends DefaultTermizer {
             return null;
 
 
-        final int a = args.subs();
+        final var a = args.subs();
         switch (a) {
 
             case 1:
                 return args;
 
             case 2: {
-                final Op o1 = args.sub(1).op();
+                final var o1 = args.sub(1).op();
                 if (Opjects.validParamTerm(o1)) {
                     return args;
                 }
@@ -743,9 +742,9 @@ public class Opjects extends DefaultTermizer {
 
             case 3: {
 
-                final Op o1 = args.sub(1).op();
+                final var o1 = args.sub(1).op();
                 if (Opjects.validParamTerm(o1)) {
-                    final Op o2 = args.sub(2).op();
+                    final var o2 = args.sub(2).op();
                     if (o2 == VAR_DEP)
                         return args;
                 }
@@ -766,7 +765,7 @@ public class Opjects extends DefaultTermizer {
         if (Opjects.methodExclusions.contains(m.getName()))
             return false;
         else {
-            final int mm = m.getModifiers();
+            final var mm = m.getModifiers();
 
             return Modifier.isPublic(mm) && !Modifier.isStatic(mm);
         }
@@ -776,19 +775,19 @@ public class Opjects extends DefaultTermizer {
     private static Method findMethod(final Class<?> clazz, final Predicate<Method> predicate) {
 
 
-        for (Class<?> current = clazz; current != null; current = current.getSuperclass()) {
+        for (var current = clazz; current != null; current = current.getSuperclass()) {
 
 
-            final Method[] methods = current.isInterface() ? current.getMethods() : current.getDeclaredMethods();
-            for (final Method method: methods) {
+            final var methods = current.isInterface() ? current.getMethods() : current.getDeclaredMethods();
+            for (final var method: methods) {
                 if (predicate.test(method)) {
                     return method;
                 }
             }
 
 
-            for (final Class<?> ifc: current.getInterfaces()) {
-                final Method m = Opjects.findMethod(ifc, predicate);
+            for (final var ifc: current.getInterfaces()) {
+                final var m = Opjects.findMethod(ifc, predicate);
                 if (m != null)
                     return m;
             }
@@ -818,15 +817,15 @@ public class Opjects extends DefaultTermizer {
         }
 
 
-        final Class<?>[] ctp = candidate.getParameterTypes();
+        final var ctp = candidate.getParameterTypes();
         if (Arrays.equals(parameterTypes, ctp)) {
             return true;
         }
 
 
-        for (int i = 0; i < parameterTypes.length; i++) {
-            final Class<?> lowerType = parameterTypes[i];
-            final Class<?> upperType = ctp[i];
+        for (var i = 0; i < parameterTypes.length; i++) {
+            final var lowerType = parameterTypes[i];
+            final var upperType = ctp[i];
             if (!upperType.isAssignableFrom(lowerType)) {
                 return false;
             }
@@ -865,7 +864,7 @@ public class Opjects extends DefaultTermizer {
 
 
     protected Object invoked(final Object obj, final Method m, final Object[] args, final Object result) {
-        final Instance in = (Instance) this.objToTerm.get(obj);
+        final var in = (Instance) this.objToTerm.get(obj);
         return (in == null) ?
                 result :
                 in.update(obj, m, args, result);

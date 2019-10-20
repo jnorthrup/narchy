@@ -20,9 +20,9 @@ public class RetinaGrid extends SimpleSpatial {
         super(id);
 
         retinas = new RetinaPixel[w][h];
-        for (int x = 0; x < w; x++) {
-            for (int y = 0; y < h; y++) {
-                RetinaPixel r = new RetinaPixel(this);
+        for (var x = 0; x < w; x++) {
+            for (var y = 0; y < h; y++) {
+                var r = new RetinaPixel(this);
 
                 r.localPosition = src;
 
@@ -45,7 +45,7 @@ public class RetinaGrid extends SimpleSpatial {
 
     @Override
     public void update(Dynamics3D world) {
-        for (RetinaPixel[] rr : retinas)
+        for (var rr : retinas)
             for (RetinaPixel r : rr)
                 r.update(world);
 
@@ -54,7 +54,7 @@ public class RetinaGrid extends SimpleSpatial {
 
     @Override
     public void renderAbsolute(GL2 gl, int dtMS) {
-        for (RetinaPixel[] rr : retinas)
+        for (var rr : retinas)
             for (RetinaPixel r : rr)
                 r.render(gl);
 

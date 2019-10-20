@@ -42,8 +42,8 @@ public class Mushroom extends Sprite {
 
     @Override
     public void collideCheck() {
-        float xMarioD = world.mario.x - x;
-        float yMarioD = world.mario.y - y;
+        var xMarioD = world.mario.x - x;
+        var yMarioD = world.mario.y - y;
         float w = 16;
         if (xMarioD > -w && xMarioD < w) {
             if (yMarioD > -height && yMarioD < world.mario.height) {
@@ -71,10 +71,10 @@ public class Mushroom extends Sprite {
             facing = -1;
         }
 
-        float sideWaysSpeed = 1.75f;
+        var sideWaysSpeed = 1.75f;
         xa = facing * sideWaysSpeed;
 
-        boolean mayJump = (onGround);
+        var mayJump = (onGround);
 
         xFlipPic = facing == -1;
 
@@ -115,7 +115,7 @@ public class Mushroom extends Sprite {
             ya += 8;
         }
 
-        boolean collide = false;
+        var collide = false;
         if (ya > 0) {
             if (isBlocking(x + xa - width, y + ya, xa, 0)) collide = true;
             else if (isBlocking(x + xa + width, y + ya, xa, 0)) collide = true;
@@ -155,7 +155,7 @@ public class Mushroom extends Sprite {
             }
             if (ya < 0) {
                 y = (int) ((y - height) / 16) * 16 + height;
-                int jumpTime = 0;
+                var jumpTime = 0;
                 this.ya = 0;
             }
             if (ya > 0) {
@@ -171,14 +171,14 @@ public class Mushroom extends Sprite {
     }
 
     private boolean isBlocking(float _x, float _y, float xa, float ya) {
-        int x = (int) (_x / 16);
-        int y = (int) (_y / 16);
+        var x = (int) (_x / 16);
+        var y = (int) (_y / 16);
         if (x == (int) (this.x / 16) && y == (int) (this.y / 16)) return false;
 
-        boolean blocking = world.level.isBlocking(x, y, xa, ya);
+        var blocking = world.level.isBlocking(x, y, xa, ya);
 
         @SuppressWarnings("unused")
-        byte block = world.level.getBlock(x, y);
+        var block = world.level.getBlock(x, y);
 
         return blocking;
     }

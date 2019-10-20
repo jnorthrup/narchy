@@ -53,7 +53,7 @@ public final class M {
         point[1] = ent.s.origin[1];
         point[2] = ent.s.origin[2] - 0.25f;
 
-        trace_t trace = game_import_t.trace(ent.s.origin, ent.mins, ent.maxs, point, ent,
+        var trace = game_import_t.trace(ent.s.origin, ent.mins, ent.maxs, point, ent,
                 Defines.MASK_MONSTERSOLID);
 
         
@@ -95,7 +95,7 @@ public final class M {
             start[0] = x != 0 ? maxs[0] : mins[0];
 
         float[] stop = {0, 0, 0};
-        for (int y = 0; y <= 1; y++) {
+        for (var y = 0; y <= 1; y++) {
 
                 start[1] = y != 0 ? maxs[1] : mins[1];
                 if (GameBase.gi.pointcontents.pointcontents(start) != Defines.CONTENTS_SOLID) {
@@ -109,14 +109,14 @@ public final class M {
                     start[0] = stop[0] = (mins[0] + maxs[0]) * 0.5f;
                     start[1] = stop[1] = (mins[1] + maxs[1]) * 0.5f;
                     stop[2] = start[2] - 2 * GameBase.STEPSIZE;
-                    trace_t trace = game_import_t.trace(start, Globals.vec3_origin,
+                    var trace = game_import_t.trace(start, Globals.vec3_origin,
                             Globals.vec3_origin, stop, ent,
                             Defines.MASK_MONSTERSOLID);
 
                     if (trace.fraction == 1.0)
                         return false;
                     float bottom;
-                    float mid = bottom = trace.endpos[2];
+                    var mid = bottom = trace.endpos[2];
 
 
                     for (x = 0; x <= 1; x++)
@@ -130,7 +130,7 @@ public final class M {
                                     Globals.vec3_origin, Globals.vec3_origin,
                                     stop, ent, Defines.MASK_MONSTERSOLID);
 
-                            float te2 = trace.endpos[2];
+                            var te2 = trace.endpos[2];
                             if (trace.fraction != 1.0
                                     && te2 > bottom)
                                 bottom = te2;
@@ -153,14 +153,14 @@ public final class M {
      */
     public static void M_ChangeYaw(edict_t ent) {
 
-        float current = Math3D.anglemod(ent.s.angles[Defines.YAW]);
-        float ideal = ent.ideal_yaw;
+        var current = Math3D.anglemod(ent.s.angles[Defines.YAW]);
+        var ideal = ent.ideal_yaw;
 
         if (current == ideal)
             return;
 
-        float move = ideal - current;
-        float speed = ent.yaw_speed;
+        var move = ideal - current;
+        var speed = ent.yaw_speed;
         if (ideal > current) {
             if (move >= 180)
                 move -= 360;
@@ -183,7 +183,7 @@ public final class M {
      * M_MoveToGoal.
      */
     public static void M_MoveToGoal(edict_t ent, float dist) {
-        edict_t goal = ent.goalentity;
+        var goal = ent.goalentity;
 
         if (ent.groundentity == null
                 && (ent.flags & (Defines.FL_FLY | Defines.FL_SWIM)) == 0)
@@ -227,7 +227,7 @@ public final class M {
         point[0] = ent.s.origin[0];
         point[1] = ent.s.origin[1];
         point[2] = ent.s.origin[2] + ent.mins[2] + 1;
-        int cont = GameBase.gi.pointcontents.pointcontents(point);
+        var cont = GameBase.gi.pointcontents.pointcontents(point);
 
         if (0 == (cont & Defines.MASK_WATER)) {
             ent.waterlevel = 0;
@@ -358,7 +358,7 @@ public final class M {
             Math3D.VectorCopy(ent.s.origin, end);
             end[2] -= 256;
 
-            trace_t trace = game_import_t.trace(ent.s.origin, ent.mins, ent.maxs, end,
+            var trace = game_import_t.trace(ent.s.origin, ent.mins, ent.maxs, end,
                     ent, Defines.MASK_MONSTERSOLID);
 
             if (trace.fraction == 1 || trace.allsolid)
@@ -401,7 +401,7 @@ public final class M {
     
     public static void M_MoveFrame(edict_t self) {
 
-        mmove_t move = self.monsterinfo.currentmove;
+        var move = self.monsterinfo.currentmove;
         self.nextthink = GameBase.level.time + Defines.FRAMETIME;
 
         if ((self.monsterinfo.nextframe != 0)
@@ -435,7 +435,7 @@ public final class M {
             }
         }
 
-        int index = self.s.frame - move.firstframe;
+        var index = self.s.frame - move.firstframe;
         if (move.frame[index].ai != null)
             if (0 == (self.monsterinfo.aiflags & Defines.AI_HOLD_FRAME))
                 move.frame[index].ai.ai(self, move.frame[index].dist

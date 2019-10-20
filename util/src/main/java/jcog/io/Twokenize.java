@@ -100,9 +100,9 @@ public enum Twokenize {
     
 
     public static String OR(String... parts) {
-        String prefix = "(?:";
-        StringBuilder sb = new StringBuilder();
-        for (String s : parts) {
+        var prefix = "(?:";
+        var sb = new StringBuilder();
+        for (var s : parts) {
             sb.append(prefix);
             prefix = "|";
             sb.append(s);
@@ -225,7 +225,7 @@ public enum Twokenize {
     static Pattern EdgePunctRight = compile('(' + notEdgePunct + ")(" + edgePunct + "+)" + offEdge);
 
     public static String splitEdgePunct(String input) {
-        Matcher m1 = EdgePunctLeft.matcher(input);
+        var m1 = EdgePunctLeft.matcher(input);
         input = m1.replaceAll("$1$2 $3");
         m1 = EdgePunctRight.matcher(input);
         input = m1.replaceAll("$1 $2$3");
@@ -266,7 +266,7 @@ public enum Twokenize {
 
         @Override
         public boolean equals(Object obj) {
-            Span t = (Span)obj;
+            var t = (Span)obj;
             return start!=t.start && stop!=t.stop;
         }
 
@@ -288,8 +288,8 @@ public enum Twokenize {
     
     private static List<Span> simpleTokenize(String text) {
 
-        
-        String splitPunctText = splitEdgePunct(text);
+
+        var splitPunctText = splitEdgePunct(text);
 
         
 
@@ -301,8 +301,8 @@ public enum Twokenize {
         
         List<Span> spans = new ArrayList<>();    
 
-        for (Entry<String, Pattern> p : patterns.entrySet()) {
-            Matcher matches = p.getValue().matcher(splitPunctText);
+        for (var p : patterns.entrySet()) {
+            var matches = p.getValue().matcher(splitPunctText);
             while (matches.find()) {
 
                 
@@ -368,8 +368,8 @@ public enum Twokenize {
     }
 
     private static List<Pair<String, Object>> addAllnonempty(List<Pair<String, Object>> master, List<Pair<String, Object>> smaller) {
-        for (Pair<String, Object> s : smaller) {
-            String strim = s.first.trim();
+        for (var s : smaller) {
+            var strim = s.first.trim();
             if (!strim.isEmpty()) {
                 s.first = strim;
                 master.add(s);
@@ -388,7 +388,7 @@ public enum Twokenize {
     
     private static List<String> splitToken(String token) {
 
-        Matcher m = Contractions.matcher(token);
+        var m = Contractions.matcher(token);
         if (m.find()) {
             String[] contract = {m.group(1), m.group(2)};
             return asList(contract);
@@ -401,13 +401,13 @@ public enum Twokenize {
      * Assume 'text' has no HTML escaping. *
      */
     public static List<Span> tokenize(String text) {
-        List<Span> l = simpleTokenize(squeezeWhitespace(text));
+        var l = simpleTokenize(squeezeWhitespace(text));
 
         Set<Span> hidden = new HashSet(l.size());
 
-        for (Span a : l) {
+        for (var a : l) {
             if (hidden.contains(a)) continue;
-            for (Span b : l) {
+            for (var b : l) {
                 if (hidden.contains(b)) continue;
                 if (a.contains(b))
                     hidden.add(b);
@@ -442,7 +442,7 @@ public enum Twokenize {
      * original text.
      */
     public static List<Span> twokenize(String text) {
-        List<Span> sp = tokenize(normalizeTextForTagger(text));
+        var sp = tokenize(normalizeTextForTagger(text));
         sort(sp);
         return sp;
     }
@@ -452,12 +452,12 @@ public enum Twokenize {
      * output. Input and output UTF-8.
      */
     public static void main(String[] args) throws IOException {
-        BufferedReader input = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
-        PrintStream output = new PrintStream(out, true, StandardCharsets.UTF_8);
+        var input = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
+        var output = new PrintStream(out, true, StandardCharsets.UTF_8);
         String line;
         while ((line = input.readLine()) != null) {
-            List<Span> toks = twokenize(line);
-            for (int i = 0; i < toks.size(); i++) {
+            var toks = twokenize(line);
+            for (var i = 0; i < toks.size(); i++) {
                 output.print(toks.get(i));
                 if (i < toks.size() - 1) {
                     output.print(" ");

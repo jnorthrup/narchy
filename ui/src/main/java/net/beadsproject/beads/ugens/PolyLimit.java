@@ -60,7 +60,7 @@ public class PolyLimit extends UGen {
         } else {
             if (steal) {
                 if (existingInputs.size() >= maxInputs) {
-                    UGen deadUGen = existingInputs.poll();
+                    var deadUGen = existingInputs.poll();
                     removeAllConnections(deadUGen);
                 }
                 existingInputs.add(sourceUGen);
@@ -68,7 +68,7 @@ public class PolyLimit extends UGen {
             } else {
 
                 Collection<UGen> copy = new LinkedList<>(existingInputs);
-                for (UGen ug : copy) {
+                for (var ug : copy) {
                     if (ug.isDeleted()) existingInputs.remove(ug);
                 }
                 if (existingInputs.size() < maxInputs) {

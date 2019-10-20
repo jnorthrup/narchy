@@ -39,15 +39,15 @@ class DbvtTreeCollider extends Dbvt.ICollide {
 
 	@Override
 	public void process(Dbvt.Node na, Dbvt.Node nb) {
-		DbvtProxy pa = na.data;
-		DbvtProxy pb = nb.data;
+		var pa = na.data;
+		var pb = nb.data;
 		
 		if (DbvtAabbMm.intersect(pa.aabb, pb.aabb))
 		
 		{
 			
 			if (pa.hashCode() > pb.hashCode()) {
-				DbvtProxy tmp = pa;
+				var tmp = pa;
 				pa = pb;
 				pb = tmp;
 			}

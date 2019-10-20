@@ -119,17 +119,17 @@ public class AutoBuilder<X, Y> {
     }
 
     private void classBuilders(X x, FasterList<BiFunction</* X */Object, Object, Y>> ll) {
-        Class<?> xc = x.getClass();
+        var xc = x.getClass();
 //        Function<X, Y> exact = onClass.get(xc);
 //        if (exact!=null)
 //            return exact;
 
         //exhaustive search
         // TODO cache in a type graph
-        for (Map<Class, BiFunction<X, Object, Y>> onClass : this.onClass) {
-            for (Map.Entry<Class, BiFunction<X, Object, Y>> entry : onClass.entrySet()) {
-                Class k = entry.getKey();
-                BiFunction<X, Object, Y> v = entry.getValue();
+        for (var onClass : this.onClass) {
+            for (var entry : onClass.entrySet()) {
+                var k = entry.getKey();
+                var v = entry.getValue();
                 if (k.isAssignableFrom(xc)) {
                     if (v == null)
                         break; //an interrupt
@@ -152,17 +152,17 @@ public class AutoBuilder<X, Y> {
 
     private <C> void collectFields(C c, X x, Y parentRepr, Collection<Pair<X, Iterable<Y>>> target, int depth) {
 
-        for (Map.Entry<String, Reflect> entry : Reflect.on(x.getClass()).fields(true, false, false).entrySet()) {
-            String s = entry.getKey();
-            Reflect ff = entry.getValue();
+        for (var entry : Reflect.on(x.getClass()).fields(true, false, false).entrySet()) {
+            var s = entry.getKey();
+            var ff = entry.getValue();
             try {
                 Field f = ff.get();
-                Object fVal = f.get(x);
+                var fVal = f.get(x);
                 if (Modifier.isPublic(f.getModifiers())) {
-                    for (Map.Entry<Class, TriFunction> e : annotation.entrySet()) {
-                        Annotation fe = f.getAnnotation(e.getKey());
+                    for (var e : annotation.entrySet()) {
+                        var fe = f.getAnnotation(e.getKey());
                         if (fe != null) {
-                            Object v = e.getValue().apply(f, fVal, fe);
+                            var v = e.getValue().apply(f, fVal, fe);
                             if (v != null) {
                                 Object vv;
                                 try {
@@ -182,10 +182,10 @@ public class AutoBuilder<X, Y> {
                 }
 
                 if (fVal != null && fVal != x) {
-                    X z = (X) fVal;
-                    Y w = build(c, parentRepr, f, z, depth);
+                    var z = (X) fVal;
+                    var w = build(c, parentRepr, f, z, depth);
                     if (w != null) {
-                        List<Y> ww = List.of(w); //HACK
+                        var ww = List.of(w); //HACK
                         target.add(pair(z, ww.subList(0, Math.min(ww.size(), maxClassBuilders))));
                     }
                 }
@@ -293,10 +293,10 @@ public class AutoBuilder<X, Y> {
         @Override
         public X get() {
             clear();
-            X[] xx = how.get();
+            var xx = how.get();
             if (xx.length == 0)
                 return null;
-            for (X x : xx)
+            for (var x : xx)
                 add(x);
             return (X) top();
         }
@@ -325,7 +325,7 @@ public class AutoBuilder<X, Y> {
 
         @Override
         public X get() {
-            int c = this.which;
+            var c = this.which;
             return c >=0 ? way[c].get() : null;
         }
     }

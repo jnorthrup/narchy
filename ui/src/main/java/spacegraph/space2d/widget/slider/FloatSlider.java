@@ -95,7 +95,7 @@ public class FloatSlider extends Widget implements FloatSupplier {
 
         slider.update();
 
-        float nextValue = get();
+        var nextValue = get();
         if (lastValue != nextValue) {
             updateText();
             lastValue = nextValue;
@@ -117,7 +117,7 @@ public class FloatSlider extends Widget implements FloatSupplier {
 
     public final FloatSlider on(ObjectFloatProcedure<SliderModel> c) {
         if (input instanceof NumberX) {
-            ObjectFloatProcedure<SliderModel> c0 = c;
+            var c0 = c;
             c = (each,x) -> {
                 //chain
                 ((NumberX)input).set(x);
@@ -148,9 +148,9 @@ public class FloatSlider extends Widget implements FloatSupplier {
         }
 
         public void update() {
-            FloatSlider p = parentOrSelf(FloatSlider.class);
+            var p = parentOrSelf(FloatSlider.class);
             if (p!=null) {
-                FloatSupplier input = p.input; 
+                var input = p.input;
                 if (input != null) {
                     setValue(input.asFloat());
                 }
@@ -186,8 +186,8 @@ public class FloatSlider extends Widget implements FloatSupplier {
 
         @Override
         protected float v(float p) {
-            float min = min();
-            float max = max();
+            var min = min();
+            var max = max();
             return Util.unitize(p) * (max - min) + min;
         }
 

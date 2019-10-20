@@ -52,7 +52,7 @@ public class MyList<T> extends AbstractList<T> implements List<T> {
     @Override
     public boolean add(T o) {
         if (array.length == count) {
-            T[] newArray = (T[]) new Object[count * 2];
+            var newArray = (T[]) new Object[count * 2];
             addToArray(newArray);
             array = newArray;
         }
@@ -66,9 +66,9 @@ public class MyList<T> extends AbstractList<T> implements List<T> {
      * @param ar Pole vkladanych prvkov.
      */
     public void add(T[] ar) {
-        int ln = ar.length;
+        var ln = ar.length;
         if (count + ln > array.length) {
-            T[] newArray = (T[]) new Object[array.length + ln];
+            var newArray = (T[]) new Object[array.length + ln];
             System.arraycopy(array, 0, newArray, 0, count);
             array = newArray;
         }
@@ -102,7 +102,7 @@ public class MyList<T> extends AbstractList<T> implements List<T> {
      */
     @Override
     public boolean contains(Object v) {
-        int bound = count;
+        var bound = count;
         return IntStream.range(0, bound).anyMatch(i -> v == array[i]);
     }
 
@@ -155,7 +155,7 @@ public class MyList<T> extends AbstractList<T> implements List<T> {
      *                                   takze vyhadzovanie vynimky sa neda presne popisat.
      */
     public void swap(int i, int j) {
-        T item = array[i];
+        var item = array[i];
         array[i] = array[j];
         array[j] = item;
     }

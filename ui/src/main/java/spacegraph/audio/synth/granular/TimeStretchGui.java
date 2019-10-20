@@ -16,23 +16,15 @@ public class TimeStretchGui extends JPanel {
         setLayout(null);
 		setSize(200, 340);
 
-		
-		Button playButton = new Button("Play");
+
+		var playButton = new Button("Play");
 		playButton.addActionListener(e -> play());
-		
-		Button stopButton = new Button("Stop");
+
+		var stopButton = new Button("Stop");
 		stopButton.addActionListener(e -> stop());
-		
 
 
-
-
-
-
-
-
-		
-		JLabel sliderLabel = new JLabel("Tempo", SwingConstants.CENTER);
+		var sliderLabel = new JLabel("Tempo", SwingConstants.CENTER);
 		sliderLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
 		

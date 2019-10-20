@@ -36,7 +36,7 @@ public class MapNodeGraph<N, E> extends NodeGraph<N, E> {
     public MapNodeGraph(SuccessorsFunction<N> s, Iterable<N> start) {
         this();
         ArrayDeque<N> queue = new ArrayDeque();
-        for (N n : start) {
+        for (var n : start) {
             queue.add(n);
         }
 
@@ -44,8 +44,8 @@ public class MapNodeGraph<N, E> extends NodeGraph<N, E> {
         Collection<N> traversed = new HashSet();
         while ((x = queue.poll()) != null) {
 
-            MutableNode<N, E> xx = addNode(x);
-            Iterable<? extends N> xs = s.successors(x);
+            var xx = addNode(x);
+            var xs = s.successors(x);
             //System.out.println(x + " " + xs);
             for (N y : xs) {
                 if (traversed.add(y))
@@ -67,7 +67,7 @@ public class MapNodeGraph<N, E> extends NodeGraph<N, E> {
     }
 
     public boolean removeNode(N key) {
-        Node<N, E> removed = nodes.remove(key);
+        var removed = nodes.remove(key);
         if (removed != null) {
             removed.edgeIterator(true, false).forEachRemaining(this::edgeRemoveOut);
             removed.edgeIterator(false, true).forEachRemaining(this::edgeRemoveIn);
@@ -77,7 +77,7 @@ public class MapNodeGraph<N, E> extends NodeGraph<N, E> {
         return false;
     }
     public boolean removeNode(N key, Consumer<FromTo<Node<N, E>, E>> inEdges, Consumer<FromTo<Node<N, E>, E>> outEdges) {
-        Node<N, E> removed = nodes.remove(key);
+        var removed = nodes.remove(key);
         if (removed != null) {
             removed.edgeIterator(true, false).forEachRemaining(inEdges.andThen(this::edgeRemoveOut));
             removed.edgeIterator(false, true).forEachRemaining(outEdges.andThen(this::edgeRemoveIn));
@@ -102,7 +102,7 @@ public class MapNodeGraph<N, E> extends NodeGraph<N, E> {
 
     private MutableNode<N, E> addNode(N key, boolean returnNodeIfExisted) {
         boolean[] created = {false};
-        MutableNode<N, E> r = (MutableNode<N, E>) nodes.computeIfAbsent(key, (x) -> {
+        var r = (MutableNode<N, E>) nodes.computeIfAbsent(key, (x) -> {
             created[0] = true;
             return newNode(x);
         });
@@ -134,14 +134,14 @@ public class MapNodeGraph<N, E> extends NodeGraph<N, E> {
 
     /** creates the nodes if they do not exist yet */
     public boolean addEdge(N from, E data, N to) {
-        MutableNode<N,E> f = addNode(from);
-        MutableNode<N,E> t = addNode(to);
+        var f = addNode(from);
+        var t = addNode(to);
         return addEdgeByNode(f, data, t);
     }
 
     public boolean addEdgeIfNodesExist(N from, E data, N to) {
-        Node<N, E> f = node(from);
-        Node<N, E> t = node(to);
+        var f = node(from);
+        var t = node(to);
         return addEdgeByNode((MutableNode<N,E>) f, data, (MutableNode<N,E>) t);
     }
 
@@ -162,7 +162,7 @@ public class MapNodeGraph<N, E> extends NodeGraph<N, E> {
 
     static <N,E> boolean addEdge(MutableNode<N, E> from, MutableNode<N, E> to, FromTo<Node<N, E>, E> ee) {
         if (from.addOut(ee)) {
-            boolean a = to.addIn(ee);
+            var a = to.addIn(ee);
             assert (a);
             return true;
         }
@@ -188,14 +188,14 @@ public class MapNodeGraph<N, E> extends NodeGraph<N, E> {
 
     @Override
     public void forEachNode(Consumer<Node<N, E>> n) {
-        for (Node<N, E> neNode : nodes.values()) {
+        for (var neNode : nodes.values()) {
             n.accept(neNode);
         }
     }
 
     public boolean edgeRemove(FromTo<Node<N, E>, E> e) {
         if (edgeRemoveOut(e)) {
-            boolean removed = edgeRemoveIn(e);
+            var removed = edgeRemoveIn(e);
             assert (removed);
             return true;
         }
@@ -218,9 +218,9 @@ public class MapNodeGraph<N, E> extends NodeGraph<N, E> {
     @Override
     public String toString() {
 
-        StringBuilder s = new StringBuilder();
+        var s = new StringBuilder();
         s.append("Nodes: ");
-        for (Node<N, E> n : nodes()) {
+        for (var n : nodes()) {
             s.append(n).append('\n');
         }
 
@@ -240,27 +240,27 @@ public class MapNodeGraph<N, E> extends NodeGraph<N, E> {
      * relinks all edges in 'from' to 'to' before removing 'from'
      */
     public boolean mergeNodes(N from, N to) {
-        MutableNode<N, E> fromNode = (MutableNode<N, E>) nodes.get(from);
-        MutableNode<N, E> toNode = (MutableNode<N, E>) nodes.get(to);
+        var fromNode = (MutableNode<N, E>) nodes.get(from);
+        var toNode = (MutableNode<N, E>) nodes.get(to);
         if (fromNode != null && toNode != null) {
             if (fromNode != toNode) {
 
-                int e = fromNode.ins() + fromNode.outs();
+                var e = fromNode.ins() + fromNode.outs();
                 if (e > 0) {
                     List<FromTo> removed = new FasterList(e);
                     fromNode.edgeIterator(true, false).forEachRemaining(inEdge -> {
                         removed.add(inEdge);
-                        MutableNode x = (MutableNode) (inEdge.from());
+                        var x = (MutableNode) (inEdge.from());
                         if (x != fromNode)
                             addEdgeByNode(x, inEdge.id(), toNode);
                     });
                     fromNode.edgeIterator(false, true).forEachRemaining(outEdge -> {
                         removed.add(outEdge);
-                        MutableNode x = (MutableNode) (outEdge.to());
+                        var x = (MutableNode) (outEdge.to());
                         if (x != fromNode)
                             addEdgeByNode(toNode, outEdge.id(), x);
                     });
-                    for (FromTo fromTo : removed) {
+                    for (var fromTo : removed) {
                         edgeRemove(fromTo);
                     }
                     //assert (fromNode.ins() == 0 && fromNode.outs() == 0);

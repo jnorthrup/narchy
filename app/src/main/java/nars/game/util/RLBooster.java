@@ -84,15 +84,15 @@ public class RLBooster  {
         conf.set(Util.lerp(conf.get() /* HACK */, 2 * g.nar().confMin.floatValue(), g.nar().confDefault(GOAL)));
 
 
-        boolean includeActions = true;
-        Stream<GameLoop> inputs =
+        var includeActions = true;
+        var inputs =
                 Stream.concat(g.sensors.stream(), includeActions ? g.actions.stream() : Stream.empty());
 
-        List<Term> ii =
+        var ii =
             inputs.flatMap((GameLoop s) -> Streams.stream(s.components()) ).map(Termed::term).collect(toList());
         if (g.rewards.size() > 1) {//use individual rewards as sensors if > 1 reward
-            for (Reward s : g.rewards) {
-                for (Concept t : s) {
+            for (var s : g.rewards) {
+                for (var t : s) {
                     ii.add(t.term());
                 }
             }
@@ -129,12 +129,12 @@ public class RLBooster  {
 
     private float[] input(long start, long end) {
 
-        int i = 0;
-        NAR n = env.nar();
+        var i = 0;
+        var n = env.nar();
 
-        for (Term s : inputs) {
-            Concept c = n.concept(s);
-            Truth t = c!=null ? c.beliefs().truth(start, end, Tense.occToDT((end-start)), n) : null;
+        for (var s : inputs) {
+            var c = n.concept(s);
+            var t = c!=null ? c.beliefs().truth(start, end, Tense.occToDT((end-start)), n) : null;
             input[i++] = t!=null ? t.freq() : valueMissing();
         }
 
@@ -151,25 +151,25 @@ public class RLBooster  {
     }
 
     private float[] feedback(long prev, long now, float[] fb) {
-        int k = 0;
-        NAR n = env.nar();
+        var k = 0;
+        var n = env.nar();
 
-        float[] feedback = fb == null ? new float[actions()] : fb;
+        var feedback = fb == null ? new float[actions()] : fb;
 
-        for (ActionSignal s : actions) {
-            Truth t = n.beliefTruth(s, prev, now);
-            float tf = t!=null ? truthFeedback(t) : Float.NaN;
-            float y = tf != tf ? noise() : tf;
+        for (var s : actions) {
+            var t = n.beliefTruth(s, prev, now);
+            var tf = t!=null ? truthFeedback(t) : Float.NaN;
+            var y = tf != tf ? noise() : tf;
             //y = (y - 0.5f) * 2; //polarize
-            if (actionDiscretization > 2) for (int d = 0; d < actionDiscretization - 1; d++) {
+            if (actionDiscretization > 2) for (var d = 0; d < actionDiscretization - 1; d++) {
                 //float yd = ((((float)d)/(actionDiscretization-1)) - 0.5f)*2;
-                float yd = ((float) (d)) / (actionDiscretization - 1);
+                var yd = ((float) (d)) / (actionDiscretization - 1);
                 feedback[k++] = y * Util.sqr(1 - Math.abs(yd - y)); //window
             }
             else feedback[k++] = y;
         }
 
-        float feedbackSum = Util.sum(feedback);
+        var feedbackSum = Util.sum(feedback);
         Util.normalize(feedback, 0, feedbackSum);
         if (this.nothingAction) {
             feedback[feedback.length-1] = (1-Util.max(feedback))*1f/(1+Util.variance(feedback)); //HACK TODO estimate better
@@ -188,7 +188,7 @@ public class RLBooster  {
     final FloatNormalizer HAPPINESS = new FloatNormalizer();
 
     public void accept(Game g) {
-        NAR nar = env.nar();
+        var nar = env.nar();
 
         double reward = ((HAPPINESS.valueOf((float)env.happiness()) - 0.5f) * 2);
 
@@ -203,25 +203,25 @@ public class RLBooster  {
 //        long end = now + dur/2;
 
 
-        When<What> w = g.nowPercept;
-        long start = w.start;
-        long end = w.end;
-        float[] ii = input(start, end);
+        var w = g.nowPercept;
+        var start = w.start;
+        var end = w.end;
+        var ii = input(start, end);
         if (history instanceof TensorRing) ((TensorRing) history).setSpin(ii).snapshot(ii);
         else ((ArrayTensor) history).set(ii); //TODO just make ArrayTensor wrapping _in
 
-        int a = agent.act(actionFeedback(w), (float) reward, Util.toFloat(history.doubleArray()));
-        int buttons = (actionDiscretization - 1) * actions.length;
+        var a = agent.act(actionFeedback(w), (float) reward, Util.toFloat(history.doubleArray()));
+        var buttons = (actionDiscretization - 1) * actions.length;
 
         //nothing action, or otherwise beyond range of action buttons
         if (a < buttons) {
-            int A = a / (actionDiscretization - 1);
+            var A = a / (actionDiscretization - 1);
 
-            int level = a % (actionDiscretization - 1);//        float OFFfreq =
+            var level = a % (actionDiscretization - 1);//        float OFFfreq =
 //                //0f;
 //                Float.NaN;
 //        float ONfreq = 1f;
-            float conf = this.conf.floatValue();//        Truth off = OFFfreq == OFFfreq ? $.t(OFFfreq, conf) : null;
+            var conf = this.conf.floatValue();//        Truth off = OFFfreq == OFFfreq ? $.t(OFFfreq, conf) : null;
 //        long range = end-start;
 //        long nextStart = end;
 //        long nextEnd = nextStart + range;
@@ -229,9 +229,9 @@ public class RLBooster  {
 //TODO modify Agent API to provide a continuous output vector and use that to interpolate across the different states
 
 
-            What W = w.x;
-            for (int o= 0; o < actions.length; o++) {
-                float freq = (o == A) ?
+            var W = w.x;
+            for (var o = 0; o < actions.length; o++) {
+                var freq = (o == A) ?
                     ((actionDiscretization > 2) ? (((float) 1+level) / (actionDiscretization - 1)) : 1)
                     :
                     ((actionDiscretization > 2) ? Float.NaN : 0);
@@ -239,7 +239,7 @@ public class RLBooster  {
 //                System.out.println(actions[o].term() + " " + freq);
 
                 if (freq==freq) {
-                    PreciseTruth tt = $.t(freq, conf);
+                    var tt = $.t(freq, conf);
 
                     in.accept(
                         NALTask.the(

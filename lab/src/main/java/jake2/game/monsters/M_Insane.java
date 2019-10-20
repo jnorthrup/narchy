@@ -713,7 +713,7 @@ public class M_Insane {
 
             self.pain_debounce_time = GameBase.level.time + 3;
 
-            int r = 1 + (Lib.rand() & 1);
+            var r = 1 + (Lib.rand() & 1);
             int l;
             if (self.health < 25)
                 l = 25;

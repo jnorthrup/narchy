@@ -27,20 +27,20 @@ public class QuickMemoize<X, Y> {
     }
 
     public void resize(int _capacity) {
-        int capacity = nextPower2(_capacity, 4 /* was: 16 */);
+        var capacity = nextPower2(_capacity, 4 /* was: 16 */);
         if (data!=null && capacity == data.length)
             return; //same size
 
-        int nextShift = intLog2(capacity);
+        var nextShift = intLog2(capacity);
 
         if (this.data!=null) {
             throw new TODO("copy to the new instance and replace the fields here");
         }
 
         this.shift = nextShift;
-        int nextMask = capacity - 1;
+        var nextMask = capacity - 1;
         this.mask = nextMask;
-        Pair[] nextData = new Pair[capacity];
+        var nextData = new Pair[capacity];
         this.data = nextData;
     }
 
@@ -51,20 +51,20 @@ public class QuickMemoize<X, Y> {
     public @Nullable <P> Y apply(@Nullable X x, P p, BiFunction<X, P, Y> calc) {
         Pair<X, Y> s1;
 
-        Pair<X,Y>[] data = this.data;
+        var data = this.data;
 
-        int hash = this.hash(x);
-        int h = hash & mask;
+        var hash = this.hash(x);
+        var h = hash & mask;
         if ((s1 = data[h]) != null && x.equals(s1.getOne()))
             return s1.getTwo();
 
 
-        int h2 = (hash >> shift) & mask;
+        var h2 = (hash >> shift) & mask;
         Pair<X, Y> s2;
         if ((s2 = data[h2]) != null && x.equals(s2.getOne()))
             return s2.getTwo();
 
-        Y xy = calc.apply(x, p);
+        var xy = calc.apply(x, p);
         if (store(x,xy)) {
             Pair<X, Y> s3 = new HashCachedPair(x, xy);
             data[s1 == null || (s2 != null && toggle()) ? h : h2] = s3;
@@ -86,7 +86,7 @@ public class QuickMemoize<X, Y> {
     }
 
     public int valueCount() {
-        long count = Arrays.stream(data).filter(Objects::nonNull).count();
+        var count = Arrays.stream(data).filter(Objects::nonNull).count();
         return (int) count;
     }
 
@@ -114,7 +114,7 @@ public class QuickMemoize<X, Y> {
         if (n < min) return min;
         if (isPowerOf2(n))
             return n;
-        long i = min;
+        var i = min;
         while (i < n) {
             i *= 2;
             if (i <= 0) return 1L << 62;

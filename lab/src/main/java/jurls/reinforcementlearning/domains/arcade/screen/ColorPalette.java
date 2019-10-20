@@ -55,7 +55,7 @@ public abstract class ColorPalette {
      * @param i index
      */
     public Color set(Color c, int i) {
-        Color oldColor = map[i];
+        var oldColor = map[i];
 
         map[i] = c;
         if (oldColor == null) numEntries++;

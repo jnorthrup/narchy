@@ -41,7 +41,7 @@ public class Configuration {
     public String[] destinations = DESTINATIONS;
 
     private static String[] add(String d, String[] array) {
-        int i = 0;
+        var i = 0;
         while (i < array.length) {
             if (d.equals(array[i])) {
                 if (i != 0) {
@@ -52,7 +52,7 @@ public class Configuration {
             }
             i++;
         }
-        String[] foo = new String[array.length + 1];
+        var foo = new String[array.length + 1];
         if (array.length > 0) {
             System.arraycopy(array, 0, foo, 1, array.length);
         }

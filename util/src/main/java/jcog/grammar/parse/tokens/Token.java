@@ -134,7 +134,7 @@ public class Token {
 	public boolean equals(Object o) {
 		if (!(o instanceof Token))
 			return false;
-		Token t = (Token) o;
+		var t = (Token) o;
 
 		if (ttype != t.ttype) {
 			return false;
@@ -161,7 +161,7 @@ public class Token {
 	public boolean equalsIgnoreCase(Object o) {
 		if (!(o instanceof Token))
 			return false;
-		Token t = (Token) o;
+		var t = (Token) o;
 
 		if (ttype != t.ttype) {
 			return false;

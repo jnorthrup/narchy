@@ -43,20 +43,20 @@ class BvhTree {
 	private final BvhTreeNodeArray node_array = new BvhTreeNodeArray();
 	
 	private static int _calc_splitting_axis(BvhDataArray primitive_boxes, int startIndex, int endIndex) {
-		v3 means = new v3();
-		v3 variance = new v3();
+		var means = new v3();
+		var variance = new v3();
 
-		int numIndices = endIndex - startIndex;
+		var numIndices = endIndex - startIndex;
 
-		v3 center = new v3();
-		v3 diff2 = new v3();
+		var center = new v3();
+		var diff2 = new v3();
 
-		v3 tmp1 = new v3();
-		v3 tmp2 = new v3();
+		var tmp1 = new v3();
+		var tmp2 = new v3();
 
 		mean(primitive_boxes, startIndex, endIndex, means, numIndices, center, tmp1, tmp2);
 
-		for (int i=startIndex; i<endIndex; i++) {
+		for (var i = startIndex; i<endIndex; i++) {
 			primitive_boxes.getBoundMax(i, tmp1);
 			primitive_boxes.getBoundMin(i, tmp2);
 			center.add(tmp1, tmp2);
@@ -71,7 +71,7 @@ class BvhTree {
 	}
 
 	private static void mean(BvhDataArray primitive_boxes, int startIndex, int endIndex, v3 means, float numIndices, v3 center, v3 tmp1, v3 tmp2) {
-		for (int i = startIndex; i < endIndex; i++) {
+		for (var i = startIndex; i < endIndex; i++) {
 			primitive_boxes.getBoundMax(i, tmp1);
 			primitive_boxes.getBoundMin(i, tmp2);
 			center.add(tmp1, tmp2);
@@ -84,22 +84,22 @@ class BvhTree {
 	private static int _sort_and_calc_splitting_index(BvhDataArray primitive_boxes, int startIndex, int endIndex, int splitAxis) {
 
 
-        v3 means = new v3();
+		var means = new v3();
 		means.set(0f, 0f, 0f);
 
-		v3 center = new v3();
+		var center = new v3();
 
-		v3 tmp1 = new v3();
-		v3 tmp2 = new v3();
+		var tmp1 = new v3();
+		var tmp2 = new v3();
 
-        int numIndices = endIndex - startIndex;
+		var numIndices = endIndex - startIndex;
         mean(primitive_boxes, startIndex, endIndex, means, numIndices, center, tmp1, tmp2);
 
-        float splitValue = VectorUtil.coord(means, splitAxis);
+		var splitValue = VectorUtil.coord(means, splitAxis);
 
 
-        int splitIndex = startIndex;
-        for (int i = startIndex; i < endIndex; i++) {
+		var splitIndex = startIndex;
+        for (var i = startIndex; i < endIndex; i++) {
 			primitive_boxes.getBoundMax(i, tmp1);
 			primitive_boxes.getBoundMin(i, tmp2);
 			center.add(tmp1, tmp2);
@@ -113,23 +113,15 @@ class BvhTree {
 			}
 		}
 
-		
-		
-		
-		
 
-		
-		
-
-		
-		int rangeBalancedIndices = numIndices / 3;
-		boolean unbalanced = ((splitIndex <= (startIndex + rangeBalancedIndices)) || (splitIndex >= (endIndex - 1 - rangeBalancedIndices)));
+		var rangeBalancedIndices = numIndices / 3;
+		var unbalanced = ((splitIndex <= (startIndex + rangeBalancedIndices)) || (splitIndex >= (endIndex - 1 - rangeBalancedIndices)));
 
 		if (unbalanced) {
 			splitIndex = startIndex + (numIndices >> 1);
 		}
 
-		boolean unbal = (splitIndex == startIndex) || (splitIndex == (endIndex));
+		var unbal = (splitIndex == startIndex) || (splitIndex == (endIndex));
 		assert (!unbal);
 
 		return splitIndex;
@@ -139,7 +131,7 @@ class BvhTree {
 		Deque<_build_sub_treeFrame> stack = new ArrayDeque<>();
 		stack.push(new _build_sub_treeFrame(primitive_boxes, startIndex, endIndex));
 		while (!stack.isEmpty()) {
-			_build_sub_treeFrame frame = stack.peek();
+			var frame = stack.peek();
 			switch (frame.block) {
 				case 0: {
 					frame.curIndex = num_nodes;
@@ -159,7 +151,7 @@ class BvhTree {
 					frame.node_bound = new BoxCollision.AABB();
 					frame.tmpAABB = new BoxCollision.AABB();
 					frame.node_bound.invalidate();
-					for (int i = frame.startIndex; i < frame.endIndex; i++) {
+					for (var i = frame.startIndex; i < frame.endIndex; i++) {
 						frame.primitive_boxes.getBound(i, frame.tmpAABB);
 						frame.node_bound.merge(frame.tmpAABB);
 					}

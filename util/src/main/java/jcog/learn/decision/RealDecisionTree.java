@@ -56,7 +56,7 @@ public class RealDecisionTree extends DecisionTree<Integer, Float> {
 
         this.table = table;
 
-        int discretization = rangeLabels.length;
+        var discretization = rangeLabels.length;
         assert (table.cols.length > 1);
         maxDepth(maxDepth);
 
@@ -83,8 +83,8 @@ public class RealDecisionTree extends DecisionTree<Integer, Float> {
 
 
         update(table.rows.stream().peek(row -> {
-            int i = 0;
-            for (float x : row)
+            var i = 0;
+            for (var x : row)
                 cols[i++].learn(x);
         }), predictCol);
 

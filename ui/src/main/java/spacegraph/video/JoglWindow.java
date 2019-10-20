@@ -79,7 +79,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
     private static GLCapabilitiesImmutable config() {
 
 
-        GLCapabilities c = new GLCapabilities(
+        var c = new GLCapabilities(
 
 
                 //GLProfile.getGL2GL3()
@@ -111,7 +111,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
     }
 
     public void off() {
-        GLWindow w = this.window;
+        var w = this.window;
         if (w != null)
             w.destroy();
         //Exe.invokeLater(w::destroy);
@@ -190,7 +190,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
         /**
          * factor to decrease FPS of unfocused windows
          */
-        float renderFPSUnfocusedRate = 0.5f;
+        var renderFPSUnfocusedRate = 0.5f;
         renderer.loop.setFPS(renderFPSUnfocusedRate * renderFPS);
     }
 
@@ -212,8 +212,8 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
     @Override
     public final /*synchronized*/ void display(GLAutoDrawable drawable) {
 
-        long nowNS = System.nanoTime();
-        long renderDtNS = nowNS - lastRenderNS;
+        var nowNS = System.nanoTime();
+        var renderDtNS = nowNS - lastRenderNS;
         this.lastRenderNS = nowNS;
 
 
@@ -250,7 +250,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
                 setPosition(x, y);
             }
 
-            GLWindow W = this.window;
+            var W = this.window;
             W.setTitle(title); //needs lock
             W.setVisible(true); //needs lock
 
@@ -286,7 +286,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
     @Override
     public final void init(GLAutoDrawable drawable) {
 
-        GL2 gl = drawable.getGL().getGL2();
+        var gl = drawable.getGL().getGL2();
         this.gl = gl;
 
         if (gl.getGLProfile().isHardwareRasterizer()) {
@@ -456,7 +456,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
             @Override
             public boolean next() {
 
-                GLWindow w = window;
+                var w = window;
 
                 if (w == null)
                     return false;
@@ -464,7 +464,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
                 if (drawables.isEmpty())
                     return true;
 
-                GLAutoDrawable d = drawables.get(0);
+                var d = drawables.get(0);
                 if (d == null)
                     return true;
 
@@ -490,7 +490,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
                     d.display();
                     return true;
                 } catch (GLException e) {
-                    Throwable c = e.getCause();
+                    var c = e.getCause();
                     ((c!=null) ? c : e).printStackTrace();
                     stop();
                     return false;

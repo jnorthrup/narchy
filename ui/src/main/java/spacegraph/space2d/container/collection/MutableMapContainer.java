@@ -49,7 +49,7 @@ public class MutableMapContainer<K, V> extends AbstractMutableContainer<Surface>
     @Override
     public void forEach(Consumer<Surface> each) {
         cells.map.forEachValueWith((e, EACH) -> {
-            Surface s = ((SurfaceCacheCell) e).surface;
+            var s = ((SurfaceCacheCell) e).surface;
             if (s == null) {
                 if (e.value instanceof Surface)
                     s = (Surface) e.value; //HACK
@@ -99,16 +99,16 @@ public class MutableMapContainer<K, V> extends AbstractMutableContainer<Surface>
     }
 
     public CellMap.CacheCell<K, V> compute(K key, UnaryOperator<V> builder) {
-        CellMap.CacheCell<K, V> y = cells.compute(key, builder);
-        V v = y.value;
+        var y = cells.compute(key, builder);
+        var v = y.value;
         if(v instanceof Surface)
             ((SurfaceCacheCell)y).surface = (Surface) v;
         return y;
     }
 
     public CellMap.CacheCell<K, V> computeIfAbsent(K key, Function<K, V> builder) {
-        CellMap.CacheCell<K, V> y = cells.computeIfAbsent(key, builder);
-        V v = y.value;
+        var y = cells.computeIfAbsent(key, builder);
+        var v = y.value;
         if(v instanceof Surface)
             ((SurfaceCacheCell)y).surface = (Surface) v;
         return y;
@@ -116,7 +116,7 @@ public class MutableMapContainer<K, V> extends AbstractMutableContainer<Surface>
 
     protected CellMap.CacheCell<K, V> put(K key, V nextValue, BiFunction<K, V, Surface> renderer) {
 
-        CellMap.CacheCell<K, V> entry = cells.map.computeIfAbsent(key, k -> cells.cellPool.get());
+        var entry = cells.map.computeIfAbsent(key, k -> cells.cellPool.get());
 
         ((SurfaceCacheCell<K,V>) entry).update(key, nextValue, renderer, this::hide);
 
@@ -135,13 +135,13 @@ public class MutableMapContainer<K, V> extends AbstractMutableContainer<Surface>
     }
 
     public V remove(Object key) {
-        CellMap.CacheCell<K, V> c = cells.remove(key);
+        var c = cells.remove(key);
         return c!=null ? c.value : null;
     }
 
     @Override
     public boolean detachChild(Surface s) {
-        K k = cells.firstByIdentity((V)s);
+        var k = cells.firstByIdentity((V)s);
         return k!=null && remove(k)!=null;
     }
 
@@ -153,7 +153,7 @@ public class MutableMapContainer<K, V> extends AbstractMutableContainer<Surface>
     @Override
     public boolean whileEach(Predicate<Surface> o) {
         return cells.whileEach(e -> {
-            Surface s = ((SurfaceCacheCell) e).surface;
+            var s = ((SurfaceCacheCell) e).surface;
             return s == null || o.test(s);
         });
     }
@@ -161,7 +161,7 @@ public class MutableMapContainer<K, V> extends AbstractMutableContainer<Surface>
     @Override
     public boolean whileEachReverse(Predicate<Surface> o) {
         return cells.whileEachReverse(e -> {
-            Surface s = ((SurfaceCacheCell) e).surface;
+            var s = ((SurfaceCacheCell) e).surface;
             return s == null || o.test(s);
         });
     }
@@ -175,7 +175,7 @@ public class MutableMapContainer<K, V> extends AbstractMutableContainer<Surface>
         public void clear() {
             super.clear();
 
-            Surface s = surface;
+            var s = surface;
             surface = null;
 
             if (s != null) {
@@ -187,7 +187,7 @@ public class MutableMapContainer<K, V> extends AbstractMutableContainer<Surface>
         /** returns previous surface, or null if unchanged */
         private Surface setSurface(Surface next) {
             ///assert (surface == null);
-            Surface prev = this.surface;
+            var prev = this.surface;
             if (next != prev) {
                 this.surface = next;
                 return prev;
@@ -209,7 +209,7 @@ public class MutableMapContainer<K, V> extends AbstractMutableContainer<Surface>
             } else {
 
                 if (surface == null || !Objects.equals(this.value, nextValue)) {
-                    Surface nextSurface = renderer.apply(nextKey, nextValue);
+                    var nextSurface = renderer.apply(nextKey, nextValue);
                     set(nextValue);
                     removed = setSurface(nextSurface);
                 } else {

@@ -14,18 +14,18 @@ public class Crypto {
 
     public static void generatePubandPrivateKeyFiles(String path, String id)
             throws NoSuchAlgorithmException, NoSuchProviderException, IOException {
-        SecureRandom r = new SecureRandom();
-        KeyPairGenerator keyGen = KeyPairGenerator.getInstance("DSA", "SUN");
+        var r = new SecureRandom();
+        var keyGen = KeyPairGenerator.getInstance("DSA", "SUN");
         keyGen.initialize(1024, r);
-        KeyPair pair = keyGen.generateKeyPair();
-        PrivateKey priv = pair.getPrivate();
-        PublicKey pub = pair.getPublic();
+        var pair = keyGen.generateKeyPair();
+        var priv = pair.getPrivate();
+        var pub = pair.getPublic();
         {
-            FileOutputStream sigfos = new FileOutputStream(new File(path, id));
+            var sigfos = new FileOutputStream(new File(path, id));
             sigfos.write(priv.getEncoded());
             sigfos.close();
         }
-        FileOutputStream sigfos = new FileOutputStream(new File(path, id + ".pub"));
+        var sigfos = new FileOutputStream(new File(path, id + ".pub"));
         sigfos.write(pub.getEncoded());
         sigfos.close();
     }

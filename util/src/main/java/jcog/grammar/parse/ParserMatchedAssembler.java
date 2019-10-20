@@ -13,7 +13,7 @@ public class ParserMatchedAssembler implements IAssembler {
 	}
 
 	public void accept(Assembly a) {
-		List matches = a.popAllMatches();
+		var matches = a.popAllMatches();
 		matchedRule.accept(matches, a.getStack());
 	}
 

@@ -72,17 +72,17 @@ public class TokenizedPopulationBuilder implements InitialPopulationBuilder {
     
     @Override
     public void setup(Configuration configuration) {
-        DataSet trainingDataset = configuration.getDatasetContainer().getTrainingDataset();
+        var trainingDataset = configuration.getDatasetContainer().getTrainingDataset();
         this.population.addAll(this.setup(configuration, trainingDataset));
     }
         
     private List<Node> setup(Configuration configuration, DataSet usedTrainingDataset) {
 
-        DataSet dataSet = usedTrainingDataset;
-        
-        double TOKEN_THREASHOLD = 80.0;
-        boolean DISCARD_W_TOKENS = true; 
-        Map<String, String> parameters = configuration.getPopulationBuilderParameters();
+        var dataSet = usedTrainingDataset;
+
+        var TOKEN_THREASHOLD = 80.0;
+        var DISCARD_W_TOKENS = true;
+        var parameters = configuration.getPopulationBuilderParameters();
         if(parameters!=null){
             
             if(parameters.containsKey("tokenThreashold")){
@@ -95,17 +95,17 @@ public class TokenizedPopulationBuilder implements InitialPopulationBuilder {
 
         List<List<String>> matchTokens = new LinkedList<>();
         Map<String, Double> tokensCounter = new HashMap<>();
-        for (Example example : dataSet.getExamples()) {
-            for (String match : example.getMatchedStrings()) {
-                List<String> tokens = tokenizer.tokenize(match);
+        for (var example : dataSet.getExamples()) {
+            for (var match : example.getMatchedStrings()) {
+                var tokens = tokenizer.tokenize(match);
                 matchTokens.add(tokens);
                 Set<String> tokensSet = new HashSet<>(tokens);
-                for(String token : tokensSet){
+                for(var token : tokensSet){
                     if(matchW(token) && DISCARD_W_TOKENS){
                         continue;
                     }
                     if(tokensCounter.containsKey(token)){
-                        Double value = tokensCounter.get(token);
+                        var value = tokensCounter.get(token);
                         value++;
                         tokensCounter.put(token, value);
                     } else {
@@ -114,23 +114,23 @@ public class TokenizedPopulationBuilder implements InitialPopulationBuilder {
                 }
             }
         }
-        
-        int numberOfMatches = dataSet.getNumberMatches();
-        for (Map.Entry<String, Double> entry : tokensCounter.entrySet()) {
-            String key = entry.getKey();
-            Double double1 = entry.getValue();
+
+        var numberOfMatches = dataSet.getNumberMatches();
+        for (var entry : tokensCounter.entrySet()) {
+            var key = entry.getKey();
+            var double1 = entry.getValue();
             Double doublePercentange = (double1 * 100.0) / numberOfMatches;
             entry.setValue(doublePercentange); 
              if(doublePercentange >= TOKEN_THREASHOLD){
                 winnerTokens.put(key,doublePercentange);
             }
         }
-        
-        int popSize = configuration.getEvolutionParameters().getPopulationSize();
-   
-        int counter = 0;
+
+        var popSize = configuration.getEvolutionParameters().getPopulationSize();
+
+        var counter = 0;
         List<Node> newPopulation = new LinkedList<>();
-        for (List<String> tokenizedMatch : matchTokens){
+        for (var tokenizedMatch : matchTokens){
             newPopulation.add(createIndividualFromString(tokenizedMatch, true, winnerTokens));
             newPopulation.add(createIndividualFromString(tokenizedMatch, false, winnerTokens));
             counter+=2;
@@ -146,17 +146,17 @@ public class TokenizedPopulationBuilder implements InitialPopulationBuilder {
     private static Node createIndividualFromString(List<String> tokenizedString, boolean compact, Map<String, Double> winnerTokens) {
         Deque<Node> nodes = new LinkedList<>();
 
-        String w = "\\w";
-        String d = "\\d";
+        var w = "\\w";
+        var d = "\\d";
 
         
          
-        for(String token : tokenizedString){
+        for(var token : tokenizedString){
             if(winnerTokens.containsKey(token)){
                 nodes.add(new Constant(Utils.escape(token)));
             } else {
 
-                for (char c : token.toCharArray()) {
+                for (var c : token.toCharArray()) {
                     if (Character.isLetter(c)) {
                         nodes.add(new ListMatch(LETTERS_RANGE).cloneTree());
                     } else if (Character.isDigit(c)) {
@@ -176,13 +176,13 @@ public class TokenizedPopulationBuilder implements InitialPopulationBuilder {
             
             while (!nodes.isEmpty()) {
 
-                Node node = nodes.pollFirst();
-                String nodeValue = node.toString();
-                boolean isRepeat = false;
+                var node = nodes.pollFirst();
+                var nodeValue = node.toString();
+                var isRepeat = false;
 
                 while (!nodes.isEmpty()){
-                    Node next = nodes.peek();
-                    String nextValue = next.toString();
+                    var next = nodes.peek();
+                    var nextValue = next.toString();
 
                     if(nodeValue.equals(nextValue)){
                         isRepeat = true;
@@ -206,8 +206,8 @@ public class TokenizedPopulationBuilder implements InitialPopulationBuilder {
         while (nodes.size() > 1) {
 
             while (nodes.size() > 0) {
-                Node first = nodes.pollFirst();
-                Node second = nodes.pollFirst();
+                var first = nodes.pollFirst();
+                var second = nodes.pollFirst();
 
                 if (second != null) {
                     tmp.addLast(new Concatenator(first, second));

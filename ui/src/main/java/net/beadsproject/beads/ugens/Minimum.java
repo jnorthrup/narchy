@@ -53,11 +53,11 @@ public class Minimum extends UGen {
 
     @Override
     public void gen() {
-        float[] bi1 = bufIn[0];
-        float[] bi2 = bufIn[1];
-        float[] bo = bufOut[0];
+        var bi1 = bufIn[0];
+        var bi2 = bufIn[1];
+        var bo = bufOut[0];
 
-        for (int i = 0; i < bufferSize; i++) {
+        for (var i = 0; i < bufferSize; i++) {
             bo[i] = Math.min(bi1[i], bi2[i]);
         }
 

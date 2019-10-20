@@ -123,7 +123,7 @@ public class entity_state_t implements Cloneable
 
 	public entity_state_t getClone()
 	{
-		entity_state_t out = new entity_state_t(this.surrounding_ent);
+		var out = new entity_state_t(this.surrounding_ent);
 		out.set(this);
 		return out;
 	}

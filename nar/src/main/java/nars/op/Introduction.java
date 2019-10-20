@@ -29,13 +29,13 @@ public abstract class Introduction extends TaskTransformAction {
     @Override
     protected final Task transform(Task t, Derivation d) {
 
-        Term x = t.term();
+        var x = t.term();
         if (!filter(x))
             return null;
 
-        What w = d.x;
+        var w = d.x;
 
-        Term y = apply(x, w);
+        var y = apply(x, w);
 
         return (y != null && !(y instanceof Bool) && y.unneg().op().conceptualizable && !x.equals(y)) ?
             taskify(t, x, y, w) : null;
@@ -47,7 +47,7 @@ public abstract class Introduction extends TaskTransformAction {
                     if (c.equals(x)) //HACK normalization might cause this to become true although it is seemingly checked before Task.clone()
                         return null;
 
-                    long now = w.time();
+                    var now = w.time();
                     return tasksUnevaluated() ?
                             new TemporalTask.Unevaluated(c, xt, t, now) :
                             new TemporalTask(c, xt, t, now);

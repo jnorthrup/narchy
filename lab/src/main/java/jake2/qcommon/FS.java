@@ -143,10 +143,10 @@ public final class FS extends Globals {
      * Creates any directories needed to store the given filename.
      */
     public static void CreatePath(String path) {
-        int index = path.lastIndexOf('/');
+        var index = path.lastIndexOf('/');
         
         if (index > 0) {
-            File f = new File(path.substring(0, index));
+            var f = new File(path.substring(0, index));
             if (!f.mkdirs() && !f.isDirectory()) {
                 Com.Printf("can't create path \"" + path + '"' + '\n');
             }
@@ -174,11 +174,11 @@ public final class FS extends Globals {
 
         String netpath;
         for (Iterator it = fs_links.iterator(); it.hasNext();) {
-            filelink_t link = (filelink_t) it.next();
+            var link = (filelink_t) it.next();
 
             if (filename.regionMatches(0, link.from, 0, link.fromlength)) {
                 netpath = link.to + filename.substring(link.fromlength);
-                File file = new File(netpath);
+                var file = new File(netpath);
                 if (file.canRead()) {
                     Com.DPrintf("link file: " + netpath + '\n');
                     return (int) file.length();
@@ -189,21 +189,21 @@ public final class FS extends Globals {
 
         
 
-        for (searchpath_t search = fs_searchpaths; search != null; search = search.next) {
+        for (var search = fs_searchpaths; search != null; search = search.next) {
             
             if (search.pack != null) {
 
-                pack_t pak = search.pack;
+                var pak = search.pack;
                 filename = filename.toLowerCase();
-                packfile_t entry = (packfile_t) pak.files.get(filename);
+                var entry = (packfile_t) pak.files.get(filename);
 
                 if (entry != null) {
                     
                     file_from_pak = 1;
                     Com.DPrintf("PackFile: " + pak.filename + " : " + filename
                             + '\n');
-                    
-                    File file = new File(pak.filename);
+
+                    var file = new File(pak.filename);
                     if (!file.canRead()) {
                         Com.Error(Defines.ERR_FATAL, "Couldn't reopen "
                                 + pak.filename);
@@ -214,7 +214,7 @@ public final class FS extends Globals {
                 
                 netpath = search.filename + '/' + filename;
 
-                File file = new File(netpath);
+                var file = new File(netpath);
                 if (!file.canRead())
                     continue;
 
@@ -244,7 +244,7 @@ public final class FS extends Globals {
         File file = null;
         String netpath;
         for (Iterator it = fs_links.iterator(); it.hasNext();) {
-            filelink_t link = (filelink_t) it.next();
+            var link = (filelink_t) it.next();
 
 
             if (filename.regionMatches(0, link.from, 0, link.fromlength)) {
@@ -261,13 +261,13 @@ public final class FS extends Globals {
         
         
         
-        for (searchpath_t search = fs_searchpaths; search != null; search = search.next) {
+        for (var search = fs_searchpaths; search != null; search = search.next) {
             
             if (search.pack != null) {
 
-                pack_t pak = search.pack;
+                var pak = search.pack;
                 filename = filename.toLowerCase();
-                packfile_t entry = (packfile_t) pak.files.get(filename);
+                var entry = (packfile_t) pak.files.get(filename);
 
                 if (entry != null) {
                     
@@ -282,9 +282,9 @@ public final class FS extends Globals {
                         
                         pak.handle = new RandomAccessFile(pak.filename, "r");
                     }
-                    
 
-                    RandomAccessFile raf = new RandomAccessFile(file, "r");
+
+                    var raf = new RandomAccessFile(file, "r");
                     raf.seek(entry.filepos);
 
                     return raf;
@@ -318,13 +318,13 @@ public final class FS extends Globals {
      */
     public static void Read(byte[] buffer, int len, RandomAccessFile f) {
 
-        int offset = 0;
-        int read = 0;
-        
-        int remaining = len;
+        var offset = 0;
+        var read = 0;
+
+        var remaining = len;
 
         while (remaining != 0) {
-            int block = Math.min(remaining, MAX_READ);
+            var block = Math.min(remaining, MAX_READ);
             try {
                 read = f.read(buffer, offset, block);
             } catch (IOException e) {
@@ -356,12 +356,12 @@ public final class FS extends Globals {
     public static byte[] LoadFile(String path) {
 
 
-        int index = path.indexOf('\0');
+        var index = path.indexOf('\0');
         if (index != -1)
             path = path.substring(0, index);
 
 
-        int len = FileLength(path);
+        var len = FileLength(path);
 
         if (len < 1)
             return null;
@@ -369,7 +369,7 @@ public final class FS extends Globals {
         byte[] buf = null;
         try {
 
-            RandomAccessFile file = FOpenFile(path);
+            var file = FOpenFile(path);
 
             buf = new byte[len];
             file.readFully(buf);
@@ -396,11 +396,11 @@ public final class FS extends Globals {
 
 
             ByteBuffer buffer = null;
-            int fileLength = 0;
+            var fileLength = 0;
             File file = null;
             String netpath;
             for (Iterator it = fs_links.iterator(); it.hasNext();) {
-                filelink_t link = (filelink_t) it.next();
+                var link = (filelink_t) it.next();
 
                 if (filename.regionMatches(0, link.from, 0, link.fromlength)) {
                     netpath = link.to + filename.substring(link.fromlength);
@@ -421,13 +421,13 @@ public final class FS extends Globals {
             
             
             
-            for (searchpath_t search = fs_searchpaths; search != null; search = search.next) {
+            for (var search = fs_searchpaths; search != null; search = search.next) {
                 
                 if (search.pack != null) {
 
-                    pack_t pak = search.pack;
+                    var pak = search.pack;
                     filename = filename.toLowerCase();
-                    packfile_t entry = (packfile_t) pak.files.get(filename);
+                    var entry = (packfile_t) pak.files.get(filename);
 
                     if (entry != null) {
                         
@@ -519,12 +519,12 @@ public final class FS extends Globals {
 
         HashMap newfiles;
         RandomAccessFile file;
-        int numpackfiles = 0;
+        var numpackfiles = 0;
 
 
         try {
         	file = new RandomAccessFile(packfile, "r");
-        	FileChannel fc = file.getChannel();
+            var fc = file.getChannel();
             ByteBuffer packhandle = fc.map(FileChannel.MapMode.READ_ONLY, 0, file.length());
             packhandle.order(ByteOrder.LITTLE_ENDIAN);
  
@@ -533,7 +533,7 @@ public final class FS extends Globals {
             if (packhandle == null || packhandle.limit() < 1)
                 return null;
 
-            dpackheader_t header = new dpackheader_t();
+            var header = new dpackheader_t();
             header.ident = packhandle.getInt();
             header.dirofs = packhandle.getInt();
             header.dirlen = packhandle.getInt();
@@ -554,7 +554,7 @@ public final class FS extends Globals {
             
             packfile_t entry = null;
 
-            for (int i = 0; i < numpackfiles; i++) {
+            for (var i = 0; i < numpackfiles; i++) {
                 packhandle.get(tmpText);
 
                 entry = new packfile_t();
@@ -570,7 +570,7 @@ public final class FS extends Globals {
             return null;
         }
 
-        pack_t pack = new pack_t();
+        var pack = new pack_t();
         pack.filename = packfile;
         pack.handle = file;
         pack.numfiles = numpackfiles;
@@ -593,7 +593,7 @@ public final class FS extends Globals {
         fs_gamedir = dir;
 
 
-        searchpath_t search = new searchpath_t();
+        var search = new searchpath_t();
         search.filename = dir;
         if (fs_searchpaths != null) {
             search.next = fs_searchpaths.next;
@@ -605,12 +605,12 @@ public final class FS extends Globals {
         
         
         
-        for (int i = 0; i < 10; i++) {
-            String pakfile = dir + "/pak" + i + ".pak";
+        for (var i = 0; i < 10; i++) {
+            var pakfile = dir + "/pak" + i + ".pak";
             if (!(new File(pakfile).canRead()))
                 continue;
 
-            pack_t pak = LoadPackFile(pakfile);
+            var pak = LoadPackFile(pakfile);
             if (pak == null)
                 continue;
 
@@ -645,7 +645,7 @@ public final class FS extends Globals {
      * ExecAutoexec
      */
     public static void ExecAutoexec() {
-        String dir = fs_userdir;
+        var dir = fs_userdir;
 
         String name;
         if (dir != null && dir.length() > 0) {
@@ -655,7 +655,7 @@ public final class FS extends Globals {
                     + "/autoexec.cfg";
         }
 
-        int canthave = Defines.SFF_SUBDIR | Defines.SFF_HIDDEN
+        var canthave = Defines.SFF_SUBDIR | Defines.SFF_HIDDEN
                 | Defines.SFF_SYSTEM;
 
         if (Sys.FindAll(name, 0, canthave) != null) {
@@ -670,7 +670,7 @@ public final class FS extends Globals {
      */
     public static void SetGamedir(String dir) {
 
-        boolean b = Stream.of("..", "/", "\\", ":").anyMatch(dir::contains);
+        var b = Stream.of("..", "/", "\\", ":").anyMatch(dir::contains);
         if (b) {
             Com.Printf("Gamedir should be a single filename, not a path\n");
             return;
@@ -691,7 +691,7 @@ public final class FS extends Globals {
                 fs_searchpaths.pack.files = null;
                 fs_searchpaths.pack = null;
             }
-            searchpath_t next = fs_searchpaths.next;
+            var next = fs_searchpaths.next;
             fs_searchpaths = null;
             fs_searchpaths = next;
         }
@@ -760,11 +760,11 @@ public final class FS extends Globals {
     public static String[] ListFiles(String findname, int musthave, int canthave) {
         String[] list = null;
 
-        File[] files = Sys.FindAll(findname, musthave, canthave);
+        var files = Sys.FindAll(findname, musthave, canthave);
 
         if (files != null) {
             list = new String[files.length];
-            for (int i = 0; i < files.length; i++) {
+            for (var i = 0; i < files.length; i++) {
                 list[i] = files[i].getPath();
             }
         }
@@ -776,7 +776,7 @@ public final class FS extends Globals {
      * Dir_f
      */
     public static void Dir_f() {
-        String wildcard = "*.*";
+        var wildcard = "*.*";
 
         if (Cmd.Argc() != 1) {
             wildcard = Cmd.Argv(1);
@@ -785,7 +785,7 @@ public final class FS extends Globals {
         String findname = null;
         String path = null;
         while ((path = NextPath(path)) != null) {
-            String tmp = findname;
+            var tmp = findname;
 
             findname = path + '/' + wildcard;
 
@@ -795,11 +795,11 @@ public final class FS extends Globals {
             Com.Printf("Directory of " + findname + '\n');
             Com.Printf("----\n");
 
-            String[] dirnames = ListFiles(findname, 0, 0);
+            var dirnames = ListFiles(findname, 0, 0);
 
             if (dirnames != null) {
-                int index = 0;
-                for (int i = 0; i < dirnames.length; i++) {
+                var index = 0;
+                for (var i = 0; i < dirnames.length; i++) {
                     if ((index = dirnames[i].lastIndexOf('/')) > 0) {
                         Com.Printf(dirnames[i].substring(index + 1) + '\n');
                     } else {
@@ -818,7 +818,7 @@ public final class FS extends Globals {
     public static void Path_f() {
 
         Com.Printf("Current search path:\n");
-        for (searchpath_t s = fs_searchpaths; s != null; s = s.next) {
+        for (var s = fs_searchpaths; s != null; s = s.next) {
             if (s == fs_base_searchpaths)
                 Com.Printf("----------\n");
             if (s.pack != null)
@@ -830,7 +830,7 @@ public final class FS extends Globals {
 
         Com.Printf("\nLinks:\n");
         for (Iterator it = fs_links.iterator(); it.hasNext();) {
-            filelink_t link = (filelink_t) it.next();
+            var link = (filelink_t) it.next();
             Com.Printf(link.from + " : " + link.to + '\n');
         }
     }
@@ -845,8 +845,8 @@ public final class FS extends Globals {
         if (prevpath == null || prevpath.length() == 0)
             return fs_gamedir;
 
-        String prev = fs_gamedir;
-        for (searchpath_t s = fs_searchpaths; s != null; s = s.next) {
+        var prev = fs_gamedir;
+        for (var s = fs_searchpaths; s != null; s = s.next) {
             if (s.pack != null)
                 continue;
 
@@ -936,7 +936,7 @@ public final class FS extends Globals {
     public static int Developer_searchpath(int who) {
 
 
-        for (searchpath_t s = fs_searchpaths; s != null; s = s.next) {
+        for (var s = fs_searchpaths; s != null; s = s.next) {
             if (s.filename.contains("xatrix"))
                 return 1;
 

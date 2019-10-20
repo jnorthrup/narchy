@@ -21,8 +21,8 @@ public class NFA     {
         super();
 
         states = new FasterList();
-        NFAState initState = newState();
-        NFAState finalState = newState();
+        var initState = newState();
+        var finalState = newState();
         stateStack = new Stack<>();
         stateStack.push(finalState);
         stateStack.push(initState);
@@ -30,7 +30,7 @@ public class NFA     {
     }
 
     private NFAState newState() {
-        NFAState nfaState = create();
+        var nfaState = create();
         states.add(nfaState);
         return nfaState;
     }
@@ -44,9 +44,9 @@ public class NFA     {
     }
 
     public void visit(LChar lChar) {
-        Stack<NFAState> ss = this.stateStack;
-        NFAState i = ss.pop();
-        NFAState f = ss.pop();
+        var ss = this.stateStack;
+        var i = ss.pop();
+        var f = ss.pop();
         i.transitionRule(lChar.c, f);
     }
 
@@ -55,9 +55,9 @@ public class NFA     {
     }
 
     public void visit(BOr bOr) {
-        Stack<NFAState> ss = this.stateStack;
-        NFAState i = ss.pop();
-        NFAState f = ss.pop();
+        var ss = this.stateStack;
+        var i = ss.pop();
+        var f = ss.pop();
         ss.push(f);
         ss.push(i);
         ss.push(f);
@@ -65,10 +65,10 @@ public class NFA     {
     }
 
     public void visit(BConcat bConcat) {
-        Stack<NFAState> ss = this.stateStack;
-        NFAState i = ss.pop();
-        NFAState f = ss.pop();
-        NFAState n = newState();
+        var ss = this.stateStack;
+        var i = ss.pop();
+        var f = ss.pop();
+        var n = newState();
         ss.push(f);
         ss.push(n);
         ss.push(n);
@@ -76,10 +76,10 @@ public class NFA     {
     }
 
     public void visit(BMany bMany) {
-        Stack<NFAState> ss = this.stateStack;
-        NFAState i = ss.pop();
-        NFAState f = ss.pop();
-        NFAState n = newState();
+        var ss = this.stateStack;
+        var i = ss.pop();
+        var f = ss.pop();
+        var n = newState();
         i.directRule(n);
         n.directRule(f);
         ss.push(n);
@@ -87,9 +87,9 @@ public class NFA     {
     }
 
     public void visit(LClosure lClosure) {
-        Stack<NFAState> ss = this.stateStack;
-        NFAState i = ss.pop();
-        NFAState f = ss.pop();
+        var ss = this.stateStack;
+        var i = ss.pop();
+        var f = ss.pop();
         i.directRule(f);
     }
 }

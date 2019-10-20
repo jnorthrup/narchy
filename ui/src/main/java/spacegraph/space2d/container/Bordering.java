@@ -80,33 +80,33 @@ public class Bordering<S extends Surface> extends MutableArrayContainer<S> {
     @Override
     protected void doLayout(float dtS) {
 
-        float X = x();
-        float Y = y();
-        float W = w();
-        float H = h();
+        var X = x();
+        var Y = y();
+        var W = w();
+        var H = h();
 
 //        boolean aspectEqual = false;
 //        if (aspectEqual) {
 //            w2 = h2 = Math.min(W, H) / 2;
 //        } else {
-        float w2 = W / 2;
-        float h2 = H / 2;
+        var w2 = W / 2;
+        var h2 = H / 2;
 //        }
 
 
-        boolean se = get(Bordering.SE) != null;
-        boolean ne = get(Bordering.NE) != null;
-        boolean sw = get(Bordering.SW) != null;
-        boolean nw = get(Bordering.NW) != null;
-        boolean autocollapse = true;
-        float borderWest = autocollapse && !(sw || nw || get(Bordering.W) != null) ? 0 : this.borderWest;
-        float borderEast = autocollapse && !(se || ne || get(Bordering.E) != null) ? 0 : this.borderEast;
-        float borderNorth = autocollapse && !(ne || nw || get(Bordering.N) != null) ? 0 : this.borderNorth;
-        float borderSouth = autocollapse && !(se || sw || get(Bordering.S) != null) ? 0 : this.borderSouth;
+        var se = get(Bordering.SE) != null;
+        var ne = get(Bordering.NE) != null;
+        var sw = get(Bordering.SW) != null;
+        var nw = get(Bordering.NW) != null;
+        var autocollapse = true;
+        var borderWest = autocollapse && !(sw || nw || get(Bordering.W) != null) ? 0 : this.borderWest;
+        var borderEast = autocollapse && !(se || ne || get(Bordering.E) != null) ? 0 : this.borderEast;
+        var borderNorth = autocollapse && !(ne || nw || get(Bordering.N) != null) ? 0 : this.borderNorth;
+        var borderSouth = autocollapse && !(se || sw || get(Bordering.S) != null) ? 0 : this.borderSouth;
 
         for (int i = 0, childrenLength = 9; i < childrenLength; i++) {
 
-            S c = get(i);
+            var c = get(i);
 
             if (c == null || !c.visible())
                 continue;
@@ -175,7 +175,7 @@ public class Bordering<S extends Surface> extends MutableArrayContainer<S> {
 //            if (x2 - x1 < ScalarValue.EPSILON || y2-y1 < ScalarValue.EPSILON) {
 //                c.hide();
 //            } else {
-            RectFloat r = RectFloat.XYXY(X + x1, Y + y1, X + x2, Y + y2);
+            var r = RectFloat.XYXY(X + x1, Y + y1, X + x2, Y + y2);
             c.pos(r);
             //                c.show();
 

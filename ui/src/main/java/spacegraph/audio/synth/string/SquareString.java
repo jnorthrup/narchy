@@ -23,13 +23,13 @@ public class SquareString extends KarplusStrongString {
     public void pluck() {
         setDeltaVolume(pluckDelta);
         clear();
-        int capacity = buffer.capacity();
-        int half = capacity / 2;
-        for (int i = 0; i < half; i++) {
+        var capacity = buffer.capacity();
+        var half = capacity / 2;
+        for (var i = 0; i < half; i++) {
             buffer.enqueue(getMaxVolume() * -1);
         }
-        int otherHalf = capacity - half;
-        for (int i = 0; i < otherHalf; i++) {
+        var otherHalf = capacity - half;
+        for (var i = 0; i < otherHalf; i++) {
             buffer.enqueue(getMaxVolume());
         }
     }
@@ -37,7 +37,7 @@ public class SquareString extends KarplusStrongString {
     public void tic() {
         double first = buffer.dequeue();
         double second = buffer.peek();
-        double x = (first + second) / 2; // lowpass filter
+        var x = (first + second) / 2; // lowpass filter
 		filterOut = C * x + filterIn - C * filterOut; // allpass tuning filter
         filterIn = x;
         buffer.enqueue(filterOut * deltaVolume);

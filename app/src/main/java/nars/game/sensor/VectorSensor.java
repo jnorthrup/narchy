@@ -50,24 +50,24 @@ public abstract class VectorSensor extends AbstractSensor implements Iterable<Co
     public void accept(Game g) {
 
 
-        float res = Math.max(g.nar.freqResolution.floatValue(), this.res.floatValue());
+        var res = Math.max(g.nar.freqResolution.floatValue(), this.res.floatValue());
 
-        FloatToObjectFunction<Truth> truther = Signal.truther(res, g.confDefaultBelief, g);
+        var truther = Signal.truther(res, g.confDefaultBelief, g);
 
-        When<What> wLoop = g.nowLoop;
+        var wLoop = g.nowLoop;
 
         //pre-commit
-        int active = 0;
-        Term why = in.why.why;
-        for (ComponentSignal s : this) {
+        var active = 0;
+        var why = in.why.why;
+        for (var s : this) {
             //if (quality >= 1 || rng.nextFloat() < quality )
             if (s.input(truther.valueOf(s.value(g)), why, wLoop))
                 active++;
         }
         if (active > 0) {
             //post-commit phase
-            float aPri = pri.pri() / active;
-            for (ComponentSignal s : this)
+            var aPri = pri.pri() / active;
+            for (var s : this)
                 s.commit(aPri, wLoop);
         }
     }

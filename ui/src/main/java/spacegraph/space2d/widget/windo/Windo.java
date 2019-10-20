@@ -48,12 +48,12 @@ public class Windo extends MutableUnitContainer {
     public Surface finger(Finger finger) {
 
 
-        boolean canDrag = finger.pressed(DRAG_BUTTON);
+        var canDrag = finger.pressed(DRAG_BUTTON);
 
-        Dragging current = this.dragMode;
-        boolean unDrag = (current != null && !current.active());
+        var current = this.dragMode;
+        var unDrag = (current != null && !current.active());
 
-        Surface other = super.finger(finger);
+        var other = super.finger(finger);
 
         if ((other != null && other!=this.the() && other != this) || fixed()) {
             unDrag = true;
@@ -83,10 +83,10 @@ public class Windo extends MutableUnitContainer {
         _posGlobal = finger.posGlobal();
 
         Dragging actualDragMode = null;
-        DragEdit potentialDragMode = DragEdit.mode(finger.posRelative(this), resizeBorder);
+        var potentialDragMode = DragEdit.mode(finger.posRelative(this), resizeBorder);
 
         if (potentialDragMode != null) {
-            Dragging d = fingering(potentialDragMode);
+            var d = fingering(potentialDragMode);
             if (d!=null) {
                 if (d == resize) resize.mode(potentialDragMode);
                 if (finger.test(d)) {
@@ -117,15 +117,15 @@ public class Windo extends MutableUnitContainer {
 
     private void postpaint(GL2 gl) {
 
-        DragEdit p = potentialDragMode;
+        var p = potentialDragMode;
         if (p != null && _posGlobal != null) {
 
             float pmx = _posGlobal.x, pmy = _posGlobal.y;
             gl.glPushMatrix();
 
-            float H = 0.5f;
-            float W = 0.5f;
-            float resizeBorder = Math.max(W, H) * Windo.resizeBorder;
+            var H = 0.5f;
+            var W = 0.5f;
+            var resizeBorder = Math.max(W, H) * Windo.resizeBorder;
             switch (p) {
                 case RESIZE_N:
                     colorDragIndicator(gl);
@@ -206,7 +206,7 @@ public class Windo extends MutableUnitContainer {
     }
 
     public Windo posRel(float cx, float cy, float pctX, float pctY) {
-        GraphEdit2D p = parentOrSelf(GraphEdit2D.class);
+        var p = parentOrSelf(GraphEdit2D.class);
         return p != null ? posRel(p, cx, cy, pctX, pctY) : null;
     }
 

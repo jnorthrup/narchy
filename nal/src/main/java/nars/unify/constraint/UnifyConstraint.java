@@ -48,7 +48,7 @@ public abstract class UnifyConstraint<U extends Unify> extends AbstractPred<U> {
 	}
 
 	public static UnifyConstraint intern(UnifyConstraint x) {
-		UnifyConstraint y = constra.putIfAbsent(x.term(), x);
+		var y = constra.putIfAbsent(x.term(), x);
 		return y != null ? y : x;
 	}
 
@@ -87,16 +87,16 @@ public abstract class UnifyConstraint<U extends Unify> extends AbstractPred<U> {
 	public boolean remainAmong(UnifyConstraint[] constraintsCopy) {
 		UnifyConstraint x = this;
 
-		boolean xRel = x instanceof RelationConstraint;
+		var xRel = x instanceof RelationConstraint;
 
-		for (UnifyConstraint y : constraintsCopy) {
+		for (var y : constraintsCopy) {
 			if (y != null && x != y) {
 				if (x.x.equals(y.x)) { //same target
-					boolean yRel = y instanceof RelationConstraint;
+					var yRel = y instanceof RelationConstraint;
 					if (xRel && yRel) {
 						//binary constraint
-						RelationConstraint X = (RelationConstraint) x;
-						RelationConstraint Y = (RelationConstraint) y;
+						var X = (RelationConstraint) x;
+						var Y = (RelationConstraint) y;
 						if (X.y.equals(Y.y)) {
 							if (!X.remainAmong(Y)) {
 								return false;
@@ -142,7 +142,7 @@ public abstract class UnifyConstraint<U extends Unify> extends AbstractPred<U> {
 
 		public static <U extends Unify> UnifyConstraint<U> the(List<UnifyConstraint<U>> cc) {
 
-			int ccn = cc.size();
+			var ccn = cc.size();
 
             switch (ccn) {
                 case 0:
@@ -176,12 +176,12 @@ public abstract class UnifyConstraint<U extends Unify> extends AbstractPred<U> {
 //                    return cc.get(0);
 //            }
 
-			UnifyConstraint[] d = cc.toArray(new UnifyConstraint[ccn]);
+			var d = cc.toArray(new UnifyConstraint[ccn]);
 			Arrays.sort(d, PREDICATE.sortByCostIncreasing);
 
 			if (NAL.test.DEBUG_EXTRA) {
 				Term target = d[0].x;
-				for (int i = 1; i < d.length; i++)
+				for (var i = 1; i < d.length; i++)
 					assert (d[i].x.equals(target));
 			}
 

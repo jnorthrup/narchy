@@ -50,7 +50,7 @@ public class NARio extends GameX {
 		game = new MarioComponent(
 			640, 480
 		);
-		JFrame frame = new JFrame("Infinite NARio");
+		var frame = new JFrame("Infinite NARio");
 		frame.setIgnoreRepaint(true);
 
 		frame.setContentPane(game);
@@ -64,7 +64,7 @@ public class NARio extends GameX {
 		frame.setVisible(true);
 
 
-		PixelBag cc = new PixelBag(new MonoBufImgBitmap2D(() -> game.image), 32, 24) {
+		var cc = new PixelBag(new MonoBufImgBitmap2D(() -> game.image), 32, 24) {
 			{
 				panRate = 1;
 				zoomRate = 1;
@@ -79,7 +79,7 @@ public class NARio extends GameX {
 		cc.addActions(id, this, false, false, true);
 		//addCamera(new Bitmap2DSensor(id, cc, nar));
 
-		for (ActionSignal a : cc.actions) {
+		for (var a : cc.actions) {
 			a.resolution(0.5f);
 		}
 
@@ -98,8 +98,8 @@ public class NARio extends GameX {
 //        });
 
 
-		int nx = 4;
-		AutoclassifiedBitmap camAE = new AutoclassifiedBitmap($.p(id,"cam"), cc, nx, nx, (subX, subY) -> new float[]{/*cc.X, cc.Y, */cc.Z}, 12, this);
+		var nx = 4;
+		var camAE = new AutoclassifiedBitmap($.p(id,"cam"), cc, nx, nx, (subX, subY) -> new float[]{/*cc.X, cc.Y, */cc.Z}, 12, this);
 		camAE.confResolution.set(0.1f);
 		camAE.resolution(0.1f);
 		camAE.alpha(0.03f);
@@ -110,7 +110,7 @@ public class NARio extends GameX {
 //        Atomic RIGHT = $.the("right");
 //        Atomic UP = $.the("up");
 //        Atomic DOWN = $.the("down");
-		List<SelectorSensor> tileSensors = List.of(
+		var tileSensors = List.of(
 			tileSwitch(-1, 0),
 			tileSwitch(+1, 0),
 			tileSwitch(0, -1),
@@ -122,10 +122,10 @@ public class NARio extends GameX {
 		);
 
 		nar.runLater(() -> {//HACK
-			PriNode tileAttnGroup = new PriNode(tileSensors);
+			var tileAttnGroup = new PriNode(tileSensors);
 			nar.control.input(tileAttnGroup, sensorPri);
 
-			for (SelectorSensor s : tileSensors)
+			for (var s : tileSensors)
 				nar.control.input(s.pri, tileAttnGroup);
 		});
 
@@ -137,16 +137,16 @@ public class NARio extends GameX {
 
 		onFrame((z) -> {
 
-			Scene scene1 = game.scene;
+			var scene1 = game.scene;
 
 			if (scene1 instanceof LevelScene) {
-				LevelScene level = (LevelScene) game.scene;
+				var level = (LevelScene) game.scene;
 				theMario = level.mario;
-				float xCam = level.xCam;
-				float yCam = level.yCam;
-				Mario M = level.mario;
-				float x = (M.x - xCam) / 320f;
-				float y = (M.y - yCam) / 240f;
+				var xCam = level.xCam;
+				var yCam = level.yCam;
+				var M = level.mario;
+				var x = (M.x - xCam) / 320f;
+				var y = (M.y - yCam) / 240f;
 				cc.setXRelative(x);
 				cc.setYRelative(y);
 				cc.setMinZoom(1);
@@ -172,8 +172,8 @@ public class NARio extends GameX {
 		Reward right = reward("right", 1f, () -> {
 
 			float reward;
-			float curX = theMario != null && theMario.deathTime <= 0 ? theMario.x : Float.NaN;
-			int thresh = 1;
+			var curX = theMario != null && theMario.deathTime <= 0 ? theMario.x : Float.NaN;
+			var thresh = 1;
 			if ((curX == curX && lastX == lastX) && lastX < curX - thresh) {
 				reward = //unitize(Math.max(0, (curX - lastX)) / 16f * MoveRight.floatValue());
 					1;
@@ -189,19 +189,19 @@ public class NARio extends GameX {
 		});
 		//right.setDefault($.t(0, 0.75f));
 
-		Reward getCoins = rewardNormalized("money", 1f, 0, +1, () -> {
-			int coins = Mario.coins;
-			int deltaCoin = coins - lastCoins;
+		var getCoins = rewardNormalized("money", 1f, 0, +1, () -> {
+			var coins = Mario.coins;
+			var deltaCoin = coins - lastCoins;
 			if (deltaCoin <= 0)
 				return 0;
 
-			float reward = deltaCoin * EarnCoin.floatValue();
+			var reward = deltaCoin * EarnCoin.floatValue();
 			lastCoins = coins;
 			return reward;
 		});
 		//getCoins.setDefault($.t(0, 0.75f));
 
-		Reward alive = rewardNormalized("alive", 1f, -1, +1, () -> {
+		var alive = rewardNormalized("alive", 1f, -1, +1, () -> {
 //            if (dead)
 //                return -1;
 //
@@ -233,7 +233,7 @@ public class NARio extends GameX {
 		Companion.initFn(2 * fps, n -> {
 
 
-            NARio x = new NARio(n);
+			var x = new NARio(n);
 			n.add(x);
 //            n.freqResolution.setAt(0.02f);
 //            n.confResolution.setAt(0.01f);
@@ -269,16 +269,16 @@ public class NARio extends GameX {
 
 	int tile(int dx, int dy) {
 		if (this.game.scene instanceof LevelScene) {
-			LevelScene s = (LevelScene) game.scene;
-			Level ll = s.level;
+			var s = (LevelScene) game.scene;
+			var ll = s.level;
 			if (ll != null) {
 				//System.out.println(s.mario.x + " " + s.mario.y);
-				byte block = ll.getBlock(Math.round((s.mario.x - 8) / 16f) + dx, Math.round((s.mario.y - 8) / 16f) + dy);
-				byte t = Level.TILE_BEHAVIORS[block & 0xff];
-				boolean breakable = IntStream.of(BIT_BREAKABLE, BIT_PICKUPABLE, BIT_BUMPABLE).anyMatch(i -> ((t & i) != 0));
+				var block = ll.getBlock(Math.round((s.mario.x - 8) / 16f) + dx, Math.round((s.mario.y - 8) / 16f) + dy);
+				var t = Level.TILE_BEHAVIORS[block & 0xff];
+				var breakable = IntStream.of(BIT_BREAKABLE, BIT_PICKUPABLE, BIT_BUMPABLE).anyMatch(i -> ((t & i) != 0));
 				if (breakable)
 					return 2;
-				boolean blocking = ((t & BIT_BLOCK_ALL) != 0);
+				var blocking = ((t & BIT_BLOCK_ALL) != 0);
 				if (blocking)
 					return 1;
 			}
@@ -293,17 +293,17 @@ public class NARio extends GameX {
 			$.inh(id, $$("L")),
 			$.inh(id, $$("R")),
 				n -> {
-				Scene s = game.scene;
-				boolean was = s != null && Scene.key(Mario.KEY_LEFT, n);
+					var s = game.scene;
+					var was = s != null && Scene.key(Mario.KEY_LEFT, n);
 				return n;
 			},
 				n -> {
-				Scene s = game.scene;
-				boolean was = s != null && Scene.key(Mario.KEY_RIGHT, n);
+					var s = game.scene;
+					var was = s != null && Scene.key(Mario.KEY_RIGHT, n);
 				return n;
 			});
 
-		GoalActionConcept j = actionPushButton($.inh(id, $$("jump")),
+		var j = actionPushButton($.inh(id, $$("jump")),
 			n -> {
 
 //                    Scene s = game.scene;
@@ -331,7 +331,7 @@ public class NARio extends GameX {
 //                        else
 //                            press = false;
 //                    }
-				Scene s = game.scene;
+				var s = game.scene;
 				if (s != null)
 					Scene.key(Mario.KEY_JUMP, n);
 				return n;
@@ -345,7 +345,7 @@ public class NARio extends GameX {
 
 		AbstractGoalActionConcept ss = actionPushButton($.inh(id, $$("speed")),
 			n -> {
-				Scene s = game.scene;
+				var s = game.scene;
 				if (s != null)
 					Scene.key(Mario.KEY_SPEED, n);
 				return n;
@@ -408,13 +408,13 @@ public class NARio extends GameX {
 	}
 
 	public void initBipolar() {
-		float thresh = 0.25f;
+		var thresh = 0.25f;
 
 
-		BiPolarAction X = actionBipolarFrequencyDifferential($.p(id, $.the("x")), false, (x) -> {
+		var X = actionBipolarFrequencyDifferential($.p(id, $.the("x")), false, (x) -> {
 			if (game == null || game.scene == null) return Float.NaN; //HACK
 
-			float boostThresh = 0.75f;
+			var boostThresh = 0.75f;
 			if (x <= -thresh) {
 				Scene.key(Mario.KEY_LEFT, true);
 				Scene.key(Mario.KEY_RIGHT, false);
@@ -437,7 +437,7 @@ public class NARio extends GameX {
 
 			}
 		});
-		BiPolarAction Y = actionBipolarFrequencyDifferential($.p(id, $.the("y")), false, (y) -> {
+		var Y = actionBipolarFrequencyDifferential($.p(id, $.the("y")), false, (y) -> {
 			if (game == null || game.scene == null) return Float.NaN; //HACK
 
 			if (y <= -thresh) {

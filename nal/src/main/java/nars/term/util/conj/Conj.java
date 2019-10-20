@@ -113,14 +113,14 @@ public enum Conj {
         if (!Op.hasAll(conj.subStructure(), x.structure() & ~(CONJ.bit)))
             return false;
 
-        boolean xConj = x.op() == CONJ;
+        var xConj = x.op() == CONJ;
         boolean xSeq = xConj && Conj.isSeq(x), conjSeq = Conj.isSeq(conj);
 
         if (!xSeq && !conjSeq && xConj) {
-            int xdt = x.dt();
+            var xdt = x.dt();
             if (xdt == DTERNAL || xdt == XTERNAL) {
                 //parallel
-                for (Term xx : x.subterms())
+                for (var xx : x.subterms())
                     if (!__eventOf(conj, xx, when, Conj.isSeq(xx), false))
                         return false;
                 return true; //all x components present
@@ -319,7 +319,7 @@ public enum Conj {
 
     public static int conjEarlyLate(Term x, boolean earlyOrLate) {
         assert (x.op() == CONJ);
-        int dt = x.dt();
+        var dt = x.dt();
         switch (dt) {
             case XTERNAL:
                 throw new UnsupportedOperationException();
@@ -452,18 +452,18 @@ public enum Conj {
             if (include.equalsPosOrNeg(exclude)) return True;
         }
 
-        Subterms incSubs = include.subterms();
+        var incSubs = include.subterms();
         if (!Term.commonStructure(incSubs, exclude))
             return include;
 
         boolean iSeq = isSeq(include), eSeq = isSeq(exclude);
         if (eSeq && iSeq) {
 
-            ConjList cc = ConjList.events(include);
-            ConjList xx = ConjList.events(exclude);
-            int[] found = cc.contains(xx, 1, pn ? Term::equalsPosOrNeg : Term::equals);
+            var cc = ConjList.events(include);
+            var xx = ConjList.events(exclude);
+            var found = cc.contains(xx, 1, pn ? Term::equalsPosOrNeg : Term::equals);
             if (found.length > 0) {
-                for (int f : found)
+                for (var f : found)
                     cc.removeAllAt(f, xx);
                 return cc.term();
             } else {
@@ -472,7 +472,7 @@ public enum Conj {
 
         } else if (iSeq || eSeq) {
 
-            ConjList ii = ConjList.events(include);
+            var ii = ConjList.events(include);
             boolean[] removedSomething = {false};
             exclude.eventsAND(
                 !pn ?
@@ -522,7 +522,7 @@ public enum Conj {
             Predicate<Term> p;
             if (exclude.op() == CONJ && exclude.dt() != XTERNAL) {
                 assert (exclude.dt() == DTERNAL);
-                Subterms excludeSubs = exclude.subterms();
+                var excludeSubs = exclude.subterms();
                 p = pn ?
                     t -> !excludeSubs.containsPosOrNeg(t)
                     :
@@ -533,8 +533,8 @@ public enum Conj {
                     :
                     t -> !t.equals(exclude);
             }
-            MetalBitSet y = incSubs.indicesOfBits(p);
-            int yCardinality = y.cardinality();
+            var y = incSubs.indicesOfBits(p);
+            var yCardinality = y.cardinality();
             if (yCardinality == 0)
                 return True; //all removed
             else if (yCardinality == incSubs.subs())
@@ -1155,7 +1155,7 @@ public enum Conj {
     }
 
     private static void events(byte[] events, ByteProcedure each) {
-        for (byte e : events) {
+        for (var e : events) {
             if (e != 0) {
                 each.value(e);
             } else
@@ -1199,7 +1199,7 @@ public enum Conj {
     }
 
     private static boolean eventsAND(byte[] events, BytePredicate each) {
-        for (byte e : events) {
+        for (var e : events) {
             if (e != 0) {
                 if (!each.accept(e))
                     return false;
@@ -1217,7 +1217,7 @@ public enum Conj {
     }
 
     private static <X> boolean eventsANDwith(byte[] events, ByteObjectPredicate<X> each, X x) {
-        for (byte e : events) {
+        for (var e : events) {
             if (e != 0) {
                 if (!each.accept(e, x))
                     return false;
@@ -1228,7 +1228,7 @@ public enum Conj {
     }
 
     private static <X> boolean eventsORwith(byte[] events, ByteObjectPredicate<X> each, X x) {
-        for (byte e : events) {
+        for (var e : events) {
             if (e != 0) {
                 if (each.accept(e, x))
                     return true;
@@ -1239,7 +1239,7 @@ public enum Conj {
     }
 
     private static boolean eventsOR(byte[] events, BytePredicate each) {
-        for (byte e : events) {
+        for (var e : events) {
             if (e != 0) {
                 if (each.accept(e))
                     return true;
@@ -1261,7 +1261,7 @@ public enum Conj {
      */
     public static boolean isSeq(Term x) {
         if (x instanceof Compound && x.opID() == CONJ.id) {// || (x instanceof Sequence))
-            int dt = x.dt();
+            var dt = x.dt();
             return dt == DTERNAL ? ConjSeq._isSeq(x) : !dtSpecial(dt);
         }
         return false;
@@ -1276,14 +1276,14 @@ public enum Conj {
 
     public static Term diffPar(Term conj, Term y) {
         if (conj.dt()==XTERNAL) {
-            Term[] cc = conj.subterms().removing(y);
+            var cc = conj.subterms().removing(y);
             if (cc == null)
                 return conj;
             else {
                 return cc.length == 1 ? cc[0] : CONJ.the(XTERNAL, cc);
             }
         } else {
-            ConjList c = ConjList.events(conj);
+            var c = ConjList.events(conj);
             return c.removeAll(y) ? c.term() : conj;
         }
     }

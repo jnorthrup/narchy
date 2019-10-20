@@ -51,7 +51,7 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
 
     @Override
     public final void forEachTask(Consumer<? super Task> x) {
-        for (Task task : this) {
+        for (var task : this) {
             x.accept(task);
         }
     }
@@ -59,7 +59,7 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
     @Override
     public void forEach(Consumer<? super Task> x) {
         lock.read(()-> {
-            for (Task task : this) {
+            for (var task : this) {
                 x.accept(task);
             }
         });
@@ -110,12 +110,12 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
 
         List<Task> trash = null;
 
-        long r = lock.writeLock();
+        var r = lock.writeLock();
         try {
-            int wasCapacity = this.capacity();
+            var wasCapacity = this.capacity();
             if (wasCapacity != c) {
 
-                int s = size;
+                var s = size;
                 if (s > c) {
                     trash = new FasterList(s - c);
                     while (c < s--) {
@@ -130,7 +130,7 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
         }
 
         if (trash != null) {
-            for (Task task : trash) {
+            for (var task : trash) {
                 task.delete();
             }
         }
@@ -142,11 +142,11 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
 
         //long l = lock.readLock();
 //        try {
-        int s = this.size;
+        var s = this.size;
         if (s == 0)
             return Task.EmptyArray;
         else {
-            Task[] list = this.items;
+            var list = this.items;
             return Arrays.copyOf(list, Math.min(s, list.length));
         }
 //        } finally {
@@ -159,8 +159,8 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
     //    @Override
     public void clear() {
 
-        int sizeEstimate = size();
-        long l = sizeEstimate == 0 ? lock.readLock() /* may not need to acquire write lock */: lock.writeLock();
+        var sizeEstimate = size();
+        var l = sizeEstimate == 0 ? lock.readLock() /* may not need to acquire write lock */: lock.writeLock();
         try {
             if (size() > 0) {
 
@@ -191,7 +191,7 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
         Task displaced = null;
 
         if (size == capacity()) {
-            Task weakestPresent = last();
+            var weakestPresent = last();
             if (weakestPresent != null) {
                 if (eternalTaskValueWithOriginality(weakestPresent)
                         <=
@@ -207,14 +207,14 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
 //            incoming = ((ProxyTask) incoming).the();
 //        }
 
-        int r = add(incoming, this);
+        var r = add(incoming, this);
         assert (r != -1);
 
         return displaced;
     }
 
     public final Truth truth() {
-        Task s = first();
+        var s = first();
         return s != null ? s.truth() : null;
     }
 
@@ -228,15 +228,15 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
         Task removed = null;
 
         //TODO use optimistic read here
-        long r = lock.readLock();
+        var r = lock.readLock();
         try {
 
-            Task[] items = this.items;
+            var items = this.items;
 
-            int index = indexOf(x, this);
+            var index = indexOf(x, this);
 
             if (index != -1) {
-                Task xx = items[index];
+                var xx = items[index];
 
                 r = Util.readToWrite(r, lock);
 
@@ -245,7 +245,7 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
                 }
 
                 if (index != -1) {
-                    boolean wasRemoved = removeFast(xx, index);
+                    var wasRemoved = removeFast(xx, index);
                     assert (wasRemoved);
                     removed = xx;
                 }
@@ -268,18 +268,18 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
 
     @Override
     public final void remember(Remember r) {
-        Task input = r.input;
+        var input = r.input;
         if (!input.isEternal())
             return;
 
         Task existing = null;
 
-        long l = lock.readLock();
+        var l = lock.readLock();
         try {
             if (size > 0) {
                 //scan list for existing equal task
                 Object[] list = this.items;
-                for (Object x : list) {
+                for (var x : list) {
                     if (x == null)
                         break; //eol
 
@@ -308,26 +308,26 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
     private long reviseOrTryInsertion(Remember r, long lock) {
         Object[] list = this.items;
 
-        Task input = r.input;
+        var input = r.input;
 
         Task oldBelief = null;
         Truth conclusion = null;
 
         Term newTerm = null;
-        Term inputTerm = input.term();
-        float aProp = Float.NaN;
-        double ie = input.evi();
+        var inputTerm = input.term();
+        var aProp = Float.NaN;
+        var ie = input.evi();
 
-        NAR nar = r.nar();
-        long[] inputStamp = input.stamp();
+        var nar = r.nar();
+        var inputStamp = input.stamp();
 
-        for (Object _x : list) {
+        for (var _x : list) {
             if (_x == null) break; //HACK
-            Task x = (Task) _x;
+            var x = (Task) _x;
 
             Truth yt = null;
 
-            Truth xt = x.truth();
+            var xt = x.truth();
 
             if (Stamp.overlapsAny(inputStamp, x.stamp())) {
 
@@ -347,7 +347,7 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
 
             if (yt != null) {
 
-                float _aProp = (float) (ie / (ie + x.evi()));
+                var _aProp = (float) (ie / (ie + x.evi()));
                 Term nt;
                 if (inputTerm instanceof Compound) {
                     nt =
@@ -388,8 +388,8 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
         if (oldBelief != null) {
 
 
-            Task theOldBelief = oldBelief;
-            float finalAProp = aProp;
+            var theOldBelief = oldBelief;
+            var finalAProp = aProp;
             revised = Task.tryTask(newTerm, input.punc(), conclusion, (term, revisionTruth) ->
                 NALTask.the(term, input.punc(), revisionTruth, nar.time(), ETERNAL, ETERNAL, Stamp.merge(input.stamp(), theOldBelief.stamp(), finalAProp, nar.random())));
             if (revised != null) {
@@ -439,7 +439,7 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
      */
     private boolean tryPut(Task x, Remember r) {
 
-        Task displaced = insert(x);
+        var displaced = insert(x);
 
         if (displaced == x) {
             r.forget(x);

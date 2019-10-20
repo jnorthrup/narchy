@@ -120,12 +120,12 @@ public class Distance {
             
             m_count = cache.count;
 
-            for (int i = 0; i < m_count; ++i) {
-                SimplexVertex v = vertices[i];
+            for (var i = 0; i < m_count; ++i) {
+                var v = vertices[i];
                 v.indexA = cache.indexA[i];
                 v.indexB = cache.indexB[i];
-                v2 wALocal = proxyA.vertex(v.indexA);
-                v2 wBLocal = proxyB.vertex(v.indexB);
+                var wALocal = proxyA.vertex(v.indexA);
+                var wBLocal = proxyB.vertex(v.indexB);
                 Transform.mulToOutUnsafe(transformA, wALocal, v.wA);
                 Transform.mulToOutUnsafe(transformB, wBLocal, v.wB);
                 v.w.set(v.wB).subbed(v.wA);
@@ -135,8 +135,8 @@ public class Distance {
             
             
             if (m_count > 1) {
-                float metric1 = cache.metric;
-                float metric2 = getMetric();
+                var metric1 = cache.metric;
+                var metric2 = getMetric();
                 if (metric2 < 0.5f * metric1 || 2.0f * metric1 < metric2 || metric2 < Settings.EPSILON) {
                     
                     m_count = 0;
@@ -145,11 +145,11 @@ public class Distance {
 
             
             if (m_count == 0) {
-                SimplexVertex v = vertices[0];
+                var v = vertices[0];
                 v.indexA = 0;
                 v.indexB = 0;
-                v2 wALocal = proxyA.vertex(0);
-                v2 wBLocal = proxyB.vertex(0);
+                var wALocal = proxyA.vertex(0);
+                var wBLocal = proxyB.vertex(0);
                 Transform.mulToOutUnsafe(transformA, wALocal, v.wA);
                 Transform.mulToOutUnsafe(transformB, wBLocal, v.wB);
                 v.w.set(v.wB).subbed(v.wA);
@@ -161,8 +161,8 @@ public class Distance {
             cache.metric = getMetric();
             cache.count = m_count;
 
-            for (int i = 0; i < m_count; ++i) {
-                SimplexVertex vi = vertices[i];
+            for (var i = 0; i < m_count; ++i) {
+                var vi = vertices[i];
                 cache.indexA[i] = vi.indexA;
                 cache.indexB[i] = vi.indexB;
             }
@@ -179,7 +179,7 @@ public class Distance {
                     e12.set(m_v2.w).subbed(m_v1.w);
                     
                     out.set(m_v1.w).negated();
-                    float sgn = v2.cross(e12, out);
+                    var sgn = v2.cross(e12, out);
 
                     if (sgn > 0f) {
                         
@@ -295,35 +295,14 @@ public class Distance {
          * Solve a line segment using barycentric coordinates.
          */
         void solve2() {
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            v2 w1 = m_v1.w;
-            v2 w2 = m_v2.w;
+
+
+            var w1 = m_v1.w;
+            var w2 = m_v2.w;
             e12.set(w2).subbed(w1);
 
-            
-            float d12_2 = -v2.dot(w1, e12);
+
+            var d12_2 = -v2.dot(w1, e12);
             if (d12_2 <= 0.0f) {
                 
                 m_v1.a = 1.0f;
@@ -331,8 +310,8 @@ public class Distance {
                 return;
             }
 
-            
-            float d12_1 = v2.dot(w2, e12);
+
+            var d12_1 = v2.dot(w2, e12);
             if (d12_1 <= 0.0f) {
                 
                 m_v2.a = 1.0f;
@@ -341,8 +320,8 @@ public class Distance {
                 return;
             }
 
-            
-            float inv_d12 = 1.0f / (d12_1 + d12_2);
+
+            var inv_d12 = 1.0f / (d12_1 + d12_2);
             m_v1.a = d12_1 * inv_d12;
             m_v2.a = d12_2 * inv_d12;
             m_count = 2;
@@ -373,34 +352,34 @@ public class Distance {
             
             
             e12.set(w2).subbed(w1);
-            float w1e12 = v2.dot(w1, e12);
-            float w2e12 = v2.dot(w2, e12);
-            float d12_2 = -w1e12;
+            var w1e12 = v2.dot(w1, e12);
+            var w2e12 = v2.dot(w2, e12);
+            var d12_2 = -w1e12;
 
             
             
             
             
             e13.set(w3).subbed(w1);
-            float w1e13 = v2.dot(w1, e13);
-            float w3e13 = v2.dot(w3, e13);
-            float d13_2 = -w1e13;
+            var w1e13 = v2.dot(w1, e13);
+            var w3e13 = v2.dot(w3, e13);
+            var d13_2 = -w1e13;
 
             
             
             
             
             e23.set(w3).subbed(w2);
-            float w2e23 = v2.dot(w2, e23);
-            float w3e23 = v2.dot(w3, e23);
-            float d23_2 = -w2e23;
+            var w2e23 = v2.dot(w2, e23);
+            var w3e23 = v2.dot(w3, e23);
+            var d23_2 = -w2e23;
 
-            
-            float n123 = v2.cross(e12, e13);
 
-            float d123_1 = n123 * v2.cross(w2, w3);
-            float d123_2 = n123 * v2.cross(w3, w1);
-            float d123_3 = n123 * v2.cross(w1, w2);
+            var n123 = v2.cross(e12, e13);
+
+            var d123_1 = n123 * v2.cross(w2, w3);
+            var d123_2 = n123 * v2.cross(w3, w1);
+            var d123_3 = n123 * v2.cross(w1, w2);
 
             
             if (d12_2 <= 0.0f && d13_2 <= 0.0f) {
@@ -410,9 +389,9 @@ public class Distance {
             }
 
 
-            float d12_1 = w2e12;
+            var d12_1 = w2e12;
             if (d12_1 > 0.0f && d12_2 > 0.0f && d123_3 <= 0.0f) {
-                float inv_d12 = 1.0f / (d12_1 + d12_2);
+                var inv_d12 = 1.0f / (d12_1 + d12_2);
                 m_v1.a = d12_1 * inv_d12;
                 m_v2.a = d12_2 * inv_d12;
                 m_count = 2;
@@ -420,9 +399,9 @@ public class Distance {
             }
 
 
-            float d13_1 = w3e13;
+            var d13_1 = w3e13;
             if (d13_1 > 0.0f && d13_2 > 0.0f && d123_2 <= 0.0f) {
-                float inv_d13 = 1.0f / (d13_1 + d13_2);
+                var inv_d13 = 1.0f / (d13_1 + d13_2);
                 m_v1.a = d13_1 * inv_d13;
                 m_v3.a = d13_2 * inv_d13;
                 m_count = 2;
@@ -439,7 +418,7 @@ public class Distance {
             }
 
 
-            float d23_1 = w3e23;
+            var d23_1 = w3e23;
             if (d13_1 <= 0.0f && d23_1 <= 0.0f) {
                 m_v3.a = 1.0f;
                 m_count = 1;
@@ -449,7 +428,7 @@ public class Distance {
 
             
             if (d23_1 > 0.0f && d23_2 > 0.0f && d123_1 <= 0.0f) {
-                float inv_d23 = 1.0f / (d23_1 + d23_2);
+                var inv_d23 = 1.0f / (d23_1 + d23_2);
                 m_v2.a = d23_1 * inv_d23;
                 m_v3.a = d23_2 * inv_d23;
                 m_count = 2;
@@ -457,8 +436,8 @@ public class Distance {
                 return;
             }
 
-            
-            float inv_d123 = 1.0f / (d123_1 + d123_2 + d123_3);
+
+            var inv_d123 = 1.0f / (d123_1 + d123_2 + d123_3);
             m_v1.a = d123_1 * inv_d123;
             m_v2.a = d123_2 * inv_d123;
             m_v3.a = d123_3 * inv_d123;
@@ -480,7 +459,7 @@ public class Distance {
 
         public DistanceProxy() {
             m_vertices = new v2[Settings.maxPolygonVertices];
-            for (int i = 0; i < m_vertices.length; i++) {
+            for (var i = 0; i < m_vertices.length; i++) {
                 m_vertices[i] = new v2();
             }
             m_buffer = new v2[2];
@@ -495,22 +474,22 @@ public class Distance {
         public final void set(Shape shape, int index) {
             switch (shape.getType()) {
                 case CIRCLE:
-                    CircleShape circle = (CircleShape) shape;
+                    var circle = (CircleShape) shape;
                     m_vertices[0].set(circle.center);
                     m_count = 1;
                     m_radius = circle.skinRadius;
 
                     break;
                 case POLYGON:
-                    PolygonShape poly = (PolygonShape) shape;
+                    var poly = (PolygonShape) shape;
                     m_count = poly.vertices;
                     m_radius = poly.skinRadius;
-                    for (int i = 0; i < m_count; i++) {
+                    for (var i = 0; i < m_count; i++) {
                         m_vertices[i].set(poly.vertex[i]);
                     }
                     break;
                 case CHAIN:
-                    ChainShape chain = (ChainShape) shape;
+                    var chain = (ChainShape) shape;
                     assert (0 <= index && index < chain.m_count);
 
                     m_buffer[0] = chain.m_vertices[index];
@@ -526,7 +505,7 @@ public class Distance {
                     m_radius = chain.skinRadius;
                     break;
                 case EDGE:
-                    EdgeShape edge = (EdgeShape) shape;
+                    var edge = (EdgeShape) shape;
                     m_vertices[0].set(edge.m_vertex1);
                     m_vertices[1].set(edge.m_vertex2);
                     m_count = 2;
@@ -544,10 +523,10 @@ public class Distance {
          * @return
          */
         public final int getSupport(v2 d) {
-            int bestIndex = 0;
-            float bestValue = v2.dot(m_vertices[0], d);
-            for (int i = 1; i < m_count; i++) {
-                float value = v2.dot(m_vertices[i], d);
+            var bestIndex = 0;
+            var bestValue = v2.dot(m_vertices[0], d);
+            for (var i = 1; i < m_count; i++) {
+                var value = v2.dot(m_vertices[i], d);
                 if (value > bestValue) {
                     bestIndex = i;
                     bestValue = value;
@@ -564,10 +543,10 @@ public class Distance {
          * @return
          */
         public final v2 getSupportVertex(v2 d) {
-            int bestIndex = 0;
-            float bestValue = v2.dot(m_vertices[0], d);
-            for (int i = 1; i < m_count; i++) {
-                float value = v2.dot(m_vertices[i], d);
+            var bestIndex = 0;
+            var bestValue = v2.dot(m_vertices[0], d);
+            for (var i = 1; i < m_count; i++) {
+                var value = v2.dot(m_vertices[i], d);
                 if (value > bestValue) {
                     bestIndex = i;
                     bestValue = value;
@@ -623,31 +602,31 @@ public class Distance {
                                DistanceInput input) {
         GJK_CALLS++;
 
-        DistanceProxy proxyA = input.proxyA;
-        DistanceProxy proxyB = input.proxyB;
+        var proxyA = input.proxyA;
+        var proxyB = input.proxyB;
 
-        Transform transformA = input.transformA;
-        Transform transformB = input.transformB;
+        var transformA = input.transformA;
+        var transformB = input.transformB;
 
         
         simplex.readCache(cache, proxyA, transformA, proxyB, transformB);
 
-        
-        SimplexVertex[] vertices = simplex.vertices;
+
+        var vertices = simplex.vertices;
 
 
         simplex.getClosestPoint(closestPoint);
-        float distanceSqr1 = closestPoint.lengthSquared();
-        float distanceSqr2 = distanceSqr1;
+        var distanceSqr1 = closestPoint.lengthSquared();
+        var distanceSqr2 = distanceSqr1;
 
-        
-        int iter = 0;
-        int saveCount = 0;
+
+        var iter = 0;
+        var saveCount = 0;
         while (iter < MAX_ITERS) {
 
             
             saveCount = simplex.m_count;
-            for (int i = 0; i < saveCount; i++) {
+            for (var i = 0; i < saveCount; i++) {
                 saveA[i] = vertices[i].indexA;
                 saveB[i] = vertices[i].indexB;
             }
@@ -701,8 +680,8 @@ public class Distance {
              * proxyB.GetVertex(vertex.indexB)); vertex.w = vertex.wB - vertex.wA;
              */
 
-            
-            SimplexVertex vertex = vertices[simplex.m_count];
+
+            var vertex = vertices[simplex.m_count];
 
             Rot.mulTransUnsafe(transformA, d.negated(), temp);
             vertex.indexA = proxyA.getSupport(temp);
@@ -718,7 +697,7 @@ public class Distance {
             ++GJK_ITERS;
 
 
-            boolean duplicate = IntStream.range(0, saveCount).anyMatch(i -> vertex.indexA == saveA[i] && vertex.indexB == saveB[i]);
+            var duplicate = IntStream.range(0, saveCount).anyMatch(i -> vertex.indexA == saveA[i] && vertex.indexB == saveB[i]);
 
 
             if (duplicate) {
@@ -741,8 +720,8 @@ public class Distance {
 
         
         if (input.useRadii) {
-            float rA = proxyA.m_radius;
-            float rB = proxyB.m_radius;
+            var rA = proxyA.m_radius;
+            var rB = proxyB.m_radius;
 
             if (output.distance > rA + rB && output.distance > Settings.EPSILON) {
                 

@@ -25,8 +25,8 @@ public class StepController implements IntConsumer, IntObjectPair<StepController
 
     public static StepController harmonic(FloatProcedure update, float min, float max) {
 
-        FloatArrayList f = new FloatArrayList();
-        float x = min;
+        var f = new FloatArrayList();
+        var x = min;
         while (x <= max) {
             f.add(x);
             x *= 2;

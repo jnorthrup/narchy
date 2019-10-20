@@ -26,7 +26,7 @@ public class Q2DataTool {
 
     public void testQ2Data() {
         initMirrors();
-        for(int i=0; !isAvail() && i<mirrorNames.size(); i++) {
+        for(var i = 0; !isAvail() && i<mirrorNames.size(); i++) {
             try {
                 install(i);
             } catch (Exception e) {
@@ -50,12 +50,12 @@ public class Q2DataTool {
     }
 
     void initMirrors() {
-        InputStream in = Jake2.class.getResourceAsStream("mirrors");
-        BufferedReader r = new BufferedReader(new InputStreamReader(in));
+        var in = Jake2.class.getResourceAsStream("mirrors");
+        var r = new BufferedReader(new InputStreamReader(in));
         try {
             while (true) {
-                String name = r.readLine();
-                String value = r.readLine();
+                var name = r.readLine();
+                var value = r.readLine();
                 if (name == null || value == null) break;
                 mirrorNames.add(name);
                 mirrorLinks.add(value);
@@ -72,8 +72,8 @@ public class Q2DataTool {
     }
 
     void install(int mirrorIdx) {
-        String mirrorName = mirrorNames.get(mirrorIdx);
-        String mirror = mirrorLinks.get(mirrorIdx);
+        var mirrorName = mirrorNames.get(mirrorIdx);
+        var mirror = mirrorLinks.get(mirrorIdx);
 
         setStatus("downloading from "+mirrorName+": <"+mirror+ '>');
 
@@ -98,8 +98,8 @@ public class Q2DataTool {
         OutputStream out = null;
         InputStream in = null;
         try {
-            URL url = new URL(mirror);
-            URLConnection conn = url.openConnection();
+            var url = new URL(mirror);
+            var conn = url.openConnection();
             
 
             in = conn.getInputStream();
@@ -141,15 +141,15 @@ public class Q2DataTool {
         InputStream in = null;
         OutputStream out = null;
         try {
-            ZipFile f = new ZipFile(filename);
-            Enumeration<? extends ZipEntry> e = f.entries();
+            var f = new ZipFile(filename);
+            var e = f.entries();
             while (e.hasMoreElements()) {
-                ZipEntry entry = e.nextElement();
-                String name = entry.getName();
+                var entry = e.nextElement();
+                var name = entry.getName();
                 int i;
                 if ((i = name.indexOf("/baseq2")) > -1 && !name.contains(".dll")) {
                     name = dataDir + name.substring(i);
-                    File outFile = new File(name);
+                    var outFile = new File(name);
                     if (entry.isDirectory()) {
                         outFile.mkdirs();
                     } else {

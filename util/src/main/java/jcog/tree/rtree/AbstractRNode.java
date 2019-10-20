@@ -33,7 +33,7 @@ public abstract class AbstractRNode<V,D> implements RNode<V> {
     }
 
     protected final void grow(HyperRegion y) {
-        HyperRegion x = this.bounds;
+        var x = this.bounds;
         this.bounds = x != null ? Util.maybeEqual(x, x.mbr(y)) : y;
     }
 
@@ -49,13 +49,13 @@ public abstract class AbstractRNode<V,D> implements RNode<V> {
 
     public final void drainLayer(Consumer each) {
         int s = size;
-        D[] data = this.data;
-        for (int i = 0; i < s; i++) {
+        var data = this.data;
+        for (var i = 0; i < s; i++) {
             Object x = data[i];
 
             //"tail-leaf" optimization: inline 1-arity branches for optimization
             while (x instanceof RLeaf) {
-                RLeaf lx = (RLeaf) x;
+                var lx = (RLeaf) x;
                 if (lx.size != 1)
                     break;
                 x = lx.data[0];

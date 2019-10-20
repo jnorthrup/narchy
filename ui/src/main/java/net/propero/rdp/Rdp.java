@@ -244,7 +244,7 @@ public class Rdp {
 
         data.incrementPosition(10);
         /* rdp5 flags? */
-        int pad2octetsB = data.getLittleEndian16();
+        var pad2octetsB = data.getLittleEndian16();
 
         if (pad2octetsB != 0)
             Options.use_rdp5 = false;
@@ -257,11 +257,11 @@ public class Rdp {
      */
     private static void processBitmapCaps(RdpPacket_Localised data) {
 
-        int bpp = data.getLittleEndian16();
+        var bpp = data.getLittleEndian16();
         data.incrementPosition(6);
 
-        int width = data.getLittleEndian16();
-        int height = data.getLittleEndian16();
+        var width = data.getLittleEndian16();
+        var height = data.getLittleEndian16();
 
 
 
@@ -291,21 +291,21 @@ public class Rdp {
      */
     static void processServerCaps(RdpPacket_Localised data, int length) {
 
-        int start = data.getPosition();
+        var start = data.getPosition();
 
-        int ncapsets = data.getLittleEndian16();
+        var ncapsets = data.getLittleEndian16();
         data.incrementPosition(2); 
 
-        for (int n = 0; n < ncapsets; n++) {
+        for (var n = 0; n < ncapsets; n++) {
             if (data.getPosition() > start + length)
                 return;
 
-            int capset_type = data.getLittleEndian16();
+            var capset_type = data.getLittleEndian16();
 
-            int capset_length = data.getLittleEndian16();
+            var capset_length = data.getLittleEndian16();
 
 
-            int next = data.getPosition() + capset_length - 4;
+            var next = data.getPosition() + capset_length - 4;
 
             switch (capset_type) {
                 case RDP_CAPSET_GENERAL:
@@ -322,18 +322,18 @@ public class Rdp {
     }
 
     private static void processPduLogon(RdpPacket_Localised data) {
-        int infoType = data.getLittleEndian32();
+        var infoType = data.getLittleEndian32();
         if (infoType == INFOTYPE_LOGON_EXTENDED_INF) {
             data.getLittleEndian16();
-            int fieldsPresent = data.getLittleEndian32();
+            var fieldsPresent = data.getLittleEndian32();
             if ((fieldsPresent & LOGON_EX_AUTORECONNECTCOOKIE) != 0) {
                 data.getLittleEndian32();
-                int len = data.getLittleEndian32();
+                var len = data.getLittleEndian32();
                 if (len != 28) {
                     logger.warn("Invalid length in Auto-Reconnect packet\n");
                     return;
                 }
-                int version = data.getLittleEndian32();
+                var version = data.getLittleEndian32();
                 if (version != 1) {
                     logger.warn("Unsupported version of Auto-Reconnect packet\n");
                     return;
@@ -404,7 +404,7 @@ public class Rdp {
 
     private static void sendOrderCaps(RdpPacket_Localised data) {
 
-        byte[] order_caps = new byte[32];
+        var order_caps = new byte[32];
         order_caps[0] = 1;    /* dest blt */
         order_caps[1] = 1;  /* pat blt */
         order_caps[2] = 1;  /* screen blt */
@@ -574,7 +574,7 @@ public class Rdp {
      */
     private RdpPacket_Localised initData(int size) throws RdesktopException {
 
-        RdpPacket_Localised buffer = SecureLayer.init(
+        var buffer = SecureLayer.init(
                 Constants.encryption ? Secure.SEC_ENCRYPT : 0, size + 18);
         buffer.pushLayer(RdpPacket.RDP_HEADER, 18);
         
@@ -598,7 +598,7 @@ public class Rdp {
         CommunicationMonitor.lock(this);
 
         data.setPosition(data.getHeader(RdpPacket.RDP_HEADER));
-        int length = data.getEnd() - data.getPosition();
+        var length = data.getEnd() - data.getPosition();
 
         data.setLittleEndian16(length);
         data.setLittleEndian16(RDP_PDU_DATA | 0x10);
@@ -637,7 +637,7 @@ public class Rdp {
         } else {
             this.stream.setPosition(this.next_packet);
         }
-        int length = this.stream.getLittleEndian16();
+        var length = this.stream.getLittleEndian16();
 
         /* 32k packets are really 8, keepalive fix - rdesktop 1.2.0 */
         if (length == 0x8000) {
@@ -652,7 +652,7 @@ public class Rdp {
         }
 
         if (Options.debug_hexdump) {
-            byte[] packet = new byte[length];
+            var packet = new byte[length];
             stream.copyToByteArray(packet, 0, next_packet, length);
             System.out.println("\nreceive RDP packet");
             System.out.println(net.propero.rdp.tools.HexDump.dumpHexString(packet));
@@ -741,9 +741,9 @@ public class Rdp {
     public void mainLoop(boolean[] deactivated, int[] ext_disc_reason)
             throws IOException, RdesktopException, OrderException,
             CryptoException {
-        int[] type = new int[1];
-        boolean disc = false; /* True when a disconnect PDU was received */
-        boolean cont = true;
+        var type = new int[1];
+        var disc = false; /* True when a disconnect PDU was received */
+        var cont = true;
 
         RdpPacket_Localised data = null;
 
@@ -818,13 +818,13 @@ public class Rdp {
                                String password, String command, String directory)
             throws RdesktopException, IOException, CryptoException {
 
-        int sec_flags = Constants.encryption ? (Secure.SEC_LOGON_INFO | Secure.SEC_ENCRYPT)
+        var sec_flags = Constants.encryption ? (Secure.SEC_LOGON_INFO | Secure.SEC_ENCRYPT)
                 : Secure.SEC_LOGON_INFO;
-        int domainlen = 2 * domain.length();
-        int userlen = 2 * username.length();
-        int passlen = 2 * password.length();
-        int commandlen = 2 * command.length();
-        int dirlen = 2 * directory.length();
+        var domainlen = 2 * domain.length();
+        var userlen = 2 * username.length();
+        var passlen = 2 * password.length();
+        var commandlen = 2 * command.length();
+        var dirlen = 2 * directory.length();
 
         RdpPacket_Localised data;
 
@@ -852,9 +852,9 @@ public class Rdp {
             logger.debug("Sending RDP5-style Logon packet");
             /* size of TS_INFO_PACKET */
             /* autoReconnectCookie */
-            int len_dll = 2 * "C:\\WINNT\\System32\\mstscax.dll".length();
-            int len_ip = 2 * "127.0.0.1".length();
-            int packetlen = 4 + /* CodePage */
+            var len_dll = 2 * "C:\\WINNT\\System32\\mstscax.dll".length();
+            var len_ip = 2 * "127.0.0.1".length();
+            var packetlen = 4 + /* CodePage */
                     4 + /* flags */
                     2 + /* cbDomain */
                     2 + /* cbUserName */
@@ -972,7 +972,7 @@ public class Rdp {
         }
 
         data.markEnd();
-        byte[] buffer = new byte[data.getEnd()];
+        var buffer = new byte[data.getEnd()];
         data.copyToByteArray(buffer, 0, 0, data.getEnd());
         SecureLayer.send(data, sec_flags);
     }
@@ -999,7 +999,7 @@ public class Rdp {
         this.sendControl(RDP_CTL_COOPERATE);
         this.sendControl(RDP_CTL_REQUEST_CONTROL);
 
-        int[] type = new int[1];
+        var type = new int[1];
         this.receive(type);
         this.receive(type); 
         this.receive(type); 
@@ -1028,10 +1028,10 @@ public class Rdp {
         int roff, rlen;
 
         data.incrementPosition(6);
-        int len = data.getLittleEndian16();
-        int data_type = data.get8();
-        int ctype = data.get8();
-        int clen = data.getLittleEndian16();
+        var len = data.getLittleEndian16();
+        var data_type = data.get8();
+        var ctype = data.get8();
+        var clen = data.getLittleEndian16();
         clen -= 18;
 
         System.out.println("data_pdu_type=" + data_type);
@@ -1057,7 +1057,7 @@ public class Rdp {
                 break;
             case (Rdp.RDP_DATA_PDU_BELL):
                 logger.debug("Received bell PDU");
-                Toolkit tx = Toolkit.getDefaultToolkit();
+                var tx = Toolkit.getDefaultToolkit();
                 tx.beep();
                 break;
             case (Rdp.RDP_DATA_PDU_LOGON):
@@ -1084,13 +1084,13 @@ public class Rdp {
     private void processUpdate(RdpPacket_Localised data) throws OrderException,
             RdesktopException {
 
-        int update_type = data.getLittleEndian16();
+        var update_type = data.getLittleEndian16();
 
         switch (update_type) {
 
             case (Rdp.RDP_UPDATE_ORDERS):
-                data.incrementPosition(2); 
-                int n_orders = data.getLittleEndian16();
+                data.incrementPosition(2);
+                var n_orders = data.getLittleEndian16();
                 data.incrementPosition(2); 
                 this.orders.processOrders(data, next_packet, n_orders);
                 break;
@@ -1109,10 +1109,10 @@ public class Rdp {
 
     private void sendConfirmActive() throws RdesktopException, IOException,
             CryptoException {
-        int sec_flags = Options.encryption ? (RDP5_FLAG | Secure.SEC_ENCRYPT)
+        var sec_flags = Options.encryption ? (RDP5_FLAG | Secure.SEC_ENCRYPT)
                 : RDP5_FLAG;
 
-        int caplen = RDP_CAPLEN_GENERAL + RDP_CAPLEN_BITMAP + RDP_CAPLEN_ORDER
+        var caplen = RDP_CAPLEN_GENERAL + RDP_CAPLEN_BITMAP + RDP_CAPLEN_ORDER
                 + RDP_CAPLEN_COLCACHE
                 + RDP_CAPLEN_ACTIVATE + RDP_CAPLEN_CONTROL
                 + RDP_CAPLEN_SHARE
@@ -1130,7 +1130,7 @@ public class Rdp {
             caplen += RDP_CAPLEN_POINTER;
         }
 
-        RdpPacket_Localised data = SecureLayer.init(sec_flags, 6 + 14 + caplen
+        var data = SecureLayer.init(sec_flags, 6 + 14 + caplen
                 + RDP_SOURCE.length);
 
         
@@ -1194,7 +1194,7 @@ public class Rdp {
 
     private void sendSynchronize() throws RdesktopException, IOException,
             CryptoException {
-        RdpPacket_Localised data = this.initData(4);
+        var data = this.initData(4);
 
         data.setLittleEndian16(1); 
         data.setLittleEndian16(1002);
@@ -1207,7 +1207,7 @@ public class Rdp {
     private void sendControl(int action) throws RdesktopException, IOException,
             CryptoException {
 
-        RdpPacket_Localised data = this.initData(8);
+        var data = this.initData(8);
 
         data.setLittleEndian16(action);
         data.setLittleEndian16(0); 
@@ -1252,7 +1252,7 @@ public class Rdp {
     private void sendFonts(int seq) throws RdesktopException, IOException,
             CryptoException {
 
-        RdpPacket_Localised data = this.initData(8);
+        var data = this.initData(8);
 
         data.setLittleEndian16(0); /* number of fonts */
         data.setLittleEndian16(0); /* pad? */
@@ -1267,10 +1267,10 @@ public class Rdp {
     private void processPointer(RdpPacket_Localised data)
             throws RdesktopException {
 
-        int message_type = data.getLittleEndian16();
+        var message_type = data.getLittleEndian16();
         data.incrementPosition(2);
-        int y = 0;
-        int x = 0;
+        var y = 0;
+        var x = 0;
         switch (message_type) {
 
             case (Rdp.RDP_POINTER_MOVE):
@@ -1306,7 +1306,7 @@ public class Rdp {
     }
 
     private void process_system_pointer_pdu(RdpPacket_Localised data) {
-        int system_pointer_type = 0;
+        var system_pointer_type = 0;
 
         data.getLittleEndian16(system_pointer_type); 
         
@@ -1327,28 +1327,28 @@ public class Rdp {
 
         int maxY;
 
-        int maxX = maxY = 0;
-        int minX = surface.getWidth();
-        int minY = surface.getHeight();
+        var maxX = maxY = 0;
+        var minX = surface.getWidth();
+        var minY = surface.getHeight();
 
-        int n_updates = data.getLittleEndian16();
+        var n_updates = data.getLittleEndian16();
 
-        ByteBuffer bb = data.bb;
+        var bb = data.bb;
 
         byte[] pixel = null;
-        int size = 0;
-        int buffersize = 0;
-        int compression = 0;
-        int bitsperpixel = 0;
-        int cy = 0;
-        int cx = 0;
-        int height = 0;
-        int width = 0;
-        int bottom = 0;
-        int right = 0;
-        int top = 0;
-        int left = 0;
-        for (int i = 0; i < n_updates; i++) {
+        var size = 0;
+        var buffersize = 0;
+        var compression = 0;
+        var bitsperpixel = 0;
+        var cy = 0;
+        var cx = 0;
+        var height = 0;
+        var width = 0;
+        var bottom = 0;
+        var right = 0;
+        var top = 0;
+        var left = 0;
+        for (var i = 0; i < n_updates; i++) {
 
             bb.order(ByteOrder.LITTLE_ENDIAN);
             left = bb.getShort();
@@ -1358,7 +1358,7 @@ public class Rdp {
             width = bb.getShort();
             height = bb.getShort();
             bitsperpixel = bb.getShort();
-            int Bpp = (bitsperpixel + 7) / 8;
+            var Bpp = (bitsperpixel + 7) / 8;
             compression = bb.getShort();
             buffersize = bb.getShort();
 
@@ -1384,7 +1384,7 @@ public class Rdp {
                 
                 pixel = new byte[width * height * Bpp];
 
-                for (int y = 0; y < height; y++) {
+                for (var y = 0; y < height; y++) {
                     data.copyToByteArray(pixel, (height - y - 1)
                             * (width * Bpp), data.getPosition(), width * Bpp);
                     data.incrementPosition(width * Bpp);
@@ -1417,7 +1417,7 @@ public class Rdp {
 
                 switch (Options.bitmap_decompression_store) {
                     case Options.INTEGER_BITMAP_DECOMPRESSION:
-                        int[] pixeli = Bitmap.decompressInt(width, height, size,
+                        var pixeli = Bitmap.decompressInt(width, height, size,
                                 data, Bpp);
                         if (pixeli != null)
                             surface.displayImage(pixeli, width, height, left, top,
@@ -1426,7 +1426,7 @@ public class Rdp {
                             logger.warn("Could not decompress bitmap");
                         break;
                     case Options.BUFFEREDIMAGE_BITMAP_DECOMPRESSION:
-                        Image pix = Bitmap.decompressImg(width, height, size, data,
+                        var pix = Bitmap.decompressImg(width, height, size, data,
                                 Bpp, null);
                         if (pix != null)
                             surface.displayImage(pix, left, top);
@@ -1446,27 +1446,27 @@ public class Rdp {
     protected void processPalette(RdpPacket_Localised data) {
 
         data.incrementPosition(2);
-        int n_colors = data.getLittleEndian16();
+        var n_colors = data.getLittleEndian16();
         data.incrementPosition(2);
-        byte[] palette = new byte[n_colors * 3];
+        var palette = new byte[n_colors * 3];
         data.copyToByteArray(palette, 0, data.getPosition(), palette.length);
         data.incrementPosition(palette.length);
-        byte[] blue = new byte[n_colors];
-        byte[] green = new byte[n_colors];
-        byte[] red = new byte[n_colors];
-        int j = 0;
-        for (int i = 0; i < n_colors; i++) {
+        var blue = new byte[n_colors];
+        var green = new byte[n_colors];
+        var red = new byte[n_colors];
+        var j = 0;
+        for (var i = 0; i < n_colors; i++) {
             red[i] = palette[j++];
             green[i] = palette[j++];
             blue[i] = palette[j++];
         }
-        IndexColorModel cm = new IndexColorModel(8, n_colors, red, green, blue);
+        var cm = new IndexColorModel(8, n_colors, red, green, blue);
         surface.registerPalette(cm);
     }
 
     public void registerDrawingSurface(RdesktopFrame fr) {
         this.frame = fr;
-        RdesktopCanvas ds = fr.getCanvas();
+        var ds = fr.getCanvas();
         this.surface = ds;
         orders.registerDrawingSurface(ds);
     }
@@ -1482,20 +1482,20 @@ public class Rdp {
     private void process_colour_pointer_common(RdpPacket_Localised data, int bpp) throws RdesktopException {
         logger.debug("Rdp.RDP_POINTER_COLOR");
 
-        int cache_idx = data.getLittleEndian16();
-        int x = data.getLittleEndian16();
-        int y = data.getLittleEndian16();
-        int width = data.getLittleEndian16();
-        int height = data.getLittleEndian16();
-        int masklen = data.getLittleEndian16();
-        int datalen = data.getLittleEndian16();
-        byte[] pixel = new byte[datalen];
+        var cache_idx = data.getLittleEndian16();
+        var x = data.getLittleEndian16();
+        var y = data.getLittleEndian16();
+        var width = data.getLittleEndian16();
+        var height = data.getLittleEndian16();
+        var masklen = data.getLittleEndian16();
+        var datalen = data.getLittleEndian16();
+        var pixel = new byte[datalen];
         data.copyToByteArray(pixel, 0, data.getPosition(), datalen);
         data.incrementPosition(datalen);
-        byte[] mask = new byte[masklen];
+        var mask = new byte[masklen];
         data.copyToByteArray(mask, 0, data.getPosition(), masklen);
         data.incrementPosition(masklen);
-        Cursor cursor = surface.createCursor(cache_idx, x, y, width, height, mask, pixel, bpp);
+        var cursor = surface.createCursor(cache_idx, x, y, width, height, mask, pixel, bpp);
         
         surface.setCursor(cursor);
         cache.putCursor(cache_idx, cursor);
@@ -1509,13 +1509,13 @@ public class Rdp {
     protected void process_cached_pointer_pdu(RdpPacket_Localised data)
             throws RdesktopException {
         logger.debug("Rdp.RDP_POINTER_CACHED");
-        int cache_idx = data.getLittleEndian16();
+        var cache_idx = data.getLittleEndian16();
         
         surface.setCursor(cache.getCursor(cache_idx));
     }
 
     protected void process_new_pointer_pdu(RdpPacket_Localised data) throws RdesktopException {
-        int xor_bpp = data.getLittleEndian16();
+        var xor_bpp = data.getLittleEndian16();
         process_colour_pointer_common(data, xor_bpp);
     }
 }

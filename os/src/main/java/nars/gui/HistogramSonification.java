@@ -40,10 +40,10 @@ public class HistogramSonification extends Gridding {
     /** maps the bin to a musical note */
     static float freq(int bin) {
         //TODO scale select
-        int shift = 1;
+        var shift = 1;
         float note = bin*4; //
 
-        double exponent = (shift+note) / 12.0;
+        var exponent = (shift+note) / 12.0;
         return (float) (Math.pow(2, exponent) * 140.0f)/440f;
     }
 
@@ -53,10 +53,10 @@ public class HistogramSonification extends Gridding {
 
         SoundProducer[] g1 = this.g;
         for (int i = 0, g1Length = g1.length; i < g1Length; i++) {
-            SoundProducer s = g1[i];
-            float f = freq(i);
+            var s = g1[i];
+            var f = freq(i);
             if (s instanceof Granulize) {
-                Granulize g = (Granulize)s;
+                var g = (Granulize)s;
                 g.pitchFactor.set(1 * f);
                 g.stretchFactor.set(1 * f);
                 g.amp(0);
@@ -99,9 +99,9 @@ public class HistogramSonification extends Gridding {
     }
 
     public void update() {
-        SoundProducer.Amplifiable[] g1 = this.g;
+        var g1 = this.g;
         for (int i = 0, n = g1.length; i < n; i++) {
-            float d = this.d[i];
+            var d = this.d[i];
             if (!Float.isFinite(d)) d = 0;
             d = Util.unitize(d);
             d = (float) Math.log(1+8*d); //dB log scale, nearly maxes at 1

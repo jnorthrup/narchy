@@ -157,7 +157,7 @@ public abstract class SeparateSubtermsCompound implements Compound {
 
     @Override
     public final void forEach(/*@NotNull*/ Consumer<? super Term> c) {
-        for (Term term : subterms())
+        for (var term : subterms())
             c.accept(term);
     }
     @Override

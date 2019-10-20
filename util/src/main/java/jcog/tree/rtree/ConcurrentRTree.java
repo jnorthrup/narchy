@@ -80,7 +80,7 @@ public class ConcurrentRTree<X> extends LambdaStampedLock implements Space<X> {
      */
     @Override
     public RInsertion<X> insert(X x) {
-        long l = writeLock();
+        var l = writeLock();
         try {
             return tree.insert(x);
         } finally {
@@ -104,7 +104,7 @@ public class ConcurrentRTree<X> extends LambdaStampedLock implements Space<X> {
 
     /** TODO read -> write lock */
     @Override public boolean remove(X x) {
-        long l = writeLock();
+        var l = writeLock();
         try {
             return tree.remove(x);
         } finally {
@@ -126,7 +126,7 @@ public class ConcurrentRTree<X> extends LambdaStampedLock implements Space<X> {
     }
 
     public final void read(Consumer<RTree<X>> x) {
-        long l = readLock();
+        var l = readLock();
         try {
             x.accept(tree);
         } finally {
@@ -143,7 +143,7 @@ public class ConcurrentRTree<X> extends LambdaStampedLock implements Space<X> {
     }
 
     public final void write(Consumer<Space<X>> x) {
-        long l = writeLock();
+        var l = writeLock();
         try {
             x.accept(tree);
         } finally {
@@ -152,7 +152,7 @@ public class ConcurrentRTree<X> extends LambdaStampedLock implements Space<X> {
     }
 
     public final boolean write(Predicate<Space<X>> x) {
-        long l = writeLock();
+        var l = writeLock();
         try {
             return x.test(tree);
         } finally {
@@ -161,7 +161,7 @@ public class ConcurrentRTree<X> extends LambdaStampedLock implements Space<X> {
     }
 
     public final <Y> Y write(Function<Space<X>,Y> x) {
-        long l = writeLock();
+        var l = writeLock();
         try {
             return x.apply(tree);
         } finally {
@@ -170,7 +170,7 @@ public class ConcurrentRTree<X> extends LambdaStampedLock implements Space<X> {
     }
 
     public final <A,Y> Y writeWith(A a, BiFunction<Space<X>,A,Y> x) {
-        long l = writeLock();
+        var l = writeLock();
         try {
             return x.apply(tree, a);
         } finally {
@@ -196,7 +196,7 @@ public class ConcurrentRTree<X> extends LambdaStampedLock implements Space<X> {
      * TODO read -> write lock
      */
     @Override public final boolean replace(X told, X tnew) {
-        long l = writeLock();
+        var l = writeLock();
         try {
             return tree.replace(told, tnew);
         } finally {
@@ -216,7 +216,7 @@ public class ConcurrentRTree<X> extends LambdaStampedLock implements Space<X> {
 
     @Override
     public final void forEach(Consumer<? super X> consumer) {
-        long l = readLock();
+        var l = readLock();
         try {
             tree.forEach(consumer);
         } finally {
@@ -229,7 +229,7 @@ public class ConcurrentRTree<X> extends LambdaStampedLock implements Space<X> {
     }
 
     public <Y> void readWith(BiConsumer<RTree<X>,Y> readProcedure, Y x) {
-        long stamp = readLock();
+        var stamp = readLock();
         try {
             readProcedure.accept(tree, x);
         } finally {
@@ -239,7 +239,7 @@ public class ConcurrentRTree<X> extends LambdaStampedLock implements Space<X> {
 
 
     public boolean test(Predicate<RTree<X>> p) {
-        long stamp = readLock();
+        var stamp = readLock();
         try {
             return p.test(tree);
         } finally {
@@ -248,7 +248,7 @@ public class ConcurrentRTree<X> extends LambdaStampedLock implements Space<X> {
     }
 
     public <Y> boolean testWith(BiPredicate<RTree<X>,Y> p, Y y) {
-        long stamp = readLock();
+        var stamp = readLock();
         try {
             return p.test(tree, y);
         } finally {
@@ -304,7 +304,7 @@ public class ConcurrentRTree<X> extends LambdaStampedLock implements Space<X> {
 
     @Override
     public boolean contains(X x, HyperRegion b, Spatialization<X> model) {
-        long l = readLock();
+        var l = readLock();
         try {
             return tree.contains(x, b, model);
         } finally {

@@ -53,12 +53,12 @@ public class VolumeSurface extends PaintSurface {
 		gl.glPushMatrix();
 
 
-		float left = left();
-		float bottom = bottom();
-        float px1 = ((left - r.x1) * r.scaleX);
-        float py1 = ((bottom - r.y1) * r.scaleY);
-        float px2 = ((left - r.x1 + w()) * r.scaleX);
-        float py2 = ((bottom - r.y1 + h()) * r.scaleY);
+		var left = left();
+		var bottom = bottom();
+		var px1 = ((left - r.x1) * r.scaleX);
+		var py1 = ((bottom - r.y1) * r.scaleY);
+		var px2 = ((left - r.x1 + w()) * r.scaleX);
+		var py2 = ((bottom - r.y1 + h()) * r.scaleY);
 		gl.glViewport(Math.round(bounds.x),Math.round(bounds.y), Math.round(px2 - px1), Math.round(py2 - py1));
 
 		space.renderVolumeEmbedded(r.dtS(), gl, bounds);
@@ -78,33 +78,33 @@ public class VolumeSurface extends PaintSurface {
 	@Override
 	public Surface finger(Finger fingerFrom2D) {
 
-		float wheel = fingerFrom2D.rotationY(true);
+		var wheel = fingerFrom2D.rotationY(true);
 		if (wheel!=0) {
 			space.camPos.addScaled(space.camFwd, wheel);
 		}
 
 		if (!fpsDrag.active()) {
 
-			v2 p = fingerFrom2D.posRelative(this);
+			var p = fingerFrom2D.posRelative(this);
 
-			ClosestRay c = mouse.pickRay((p.x - 0.5f) * 2, (p.y - 0.5f) * 2);
+			var c = mouse.pickRay((p.x - 0.5f) * 2, (p.y - 0.5f) * 2);
 
 			if (c.hasHit()) {
-				Body3D co = mouse.pickedBody;
+				var co = mouse.pickedBody;
 				if (co != null) {
-					Object s = co.data();
+					var s = co.data();
 					if (s instanceof SurfacedCuboid) {
-						SurfacedCuboid ss = (SurfacedCuboid) s;
-						v3 local = ss.transform.untransform(mouse.hitPoint.clone());
+						var ss = (SurfacedCuboid) s;
+						var local = ss.transform.untransform(mouse.hitPoint.clone());
 
 						if (local.x >= -1 && local.x <= +1 && local.y >= -1 && local.y <= +1) {
 
-							SimpleBoxShape sss = (SimpleBoxShape) (ss.shape);
-							float zFront = sss.z() / 2;
-							float radiusTolerance = 0.25f * co.shape().getBoundingRadius();
+							var sss = (SimpleBoxShape) (ss.shape);
+							var zFront = sss.z() / 2;
+							var radiusTolerance = 0.25f * co.shape().getBoundingRadius();
 							if (Util.equals(local.z, zFront, radiusTolerance)) {
 								//System.out.println(local.x + " "  + local.y);
-								Surface front = ss.front;
+								var front = ss.front;
 								if (front != null) {
 									float localX = (local.x / sss.x()) + 0.5f, localY = (local.y / sss.y()) + 0.5f;
 
@@ -112,7 +112,7 @@ public class VolumeSurface extends PaintSurface {
 									fingerTo2D.posGlobal.set(localX, localY);
 									fingerTo2D.copyButtons(fingerFrom2D);
 									//Surface fingering = fingerTo2D.push(new v2(localX, localY), front::finger);
-									Surface fingering = fingerTo2D.finger(front::finger);//front.finger(fingerTo2D);
+									var fingering = fingerTo2D.finger(front::finger);//front.finger(fingerTo2D);
 									//fingerTo2D.exit();
 									if (fingering!=null) {
 										//absorb and shadow internal node
@@ -147,7 +147,7 @@ public class VolumeSurface extends PaintSurface {
 
 		@Override
 		protected boolean drag(Finger f) {
-			v2 delta = f.posPixel.subClone(start).scaled(speed);
+			var delta = f.posPixel.subClone(start).scaled(speed);
 			mouse.drag(delta.x, -delta.y);
 			return true;
 		}

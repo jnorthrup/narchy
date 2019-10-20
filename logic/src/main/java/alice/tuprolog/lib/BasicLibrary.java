@@ -52,7 +52,7 @@ public class BasicLibrary extends PrologLib {
                     th);
         }
         try {
-            Struct theory = (Struct) th;
+            var theory = (Struct) th;
             prolog.setTheory(new Theory(theory.name()));
             return true;
         } catch (InvalidTheoryException ex) {
@@ -77,7 +77,7 @@ public class BasicLibrary extends PrologLib {
                     th);
         }
         try {
-            Struct theory = (Struct) th.term();
+            var theory = (Struct) th.term();
             prolog.input(new Theory(theory.name()));
             return true;
         } catch (InvalidTheoryException ex) {
@@ -123,8 +123,8 @@ public class BasicLibrary extends PrologLib {
      * @return true if the library has been succesfully loaded.
      */
     public boolean load_library_from_theory_2(Term th, Term libName) {
-        Struct theory = (Struct) th.term();
-        Struct libN = (Struct) libName.term();
+        var theory = (Struct) th.term();
+        var libN = (Struct) libName.term();
         try {
             if (!theory.isAtomic()) {
                 return false;
@@ -132,8 +132,8 @@ public class BasicLibrary extends PrologLib {
             if (!libN.isAtomic()) {
                 return false;
             }
-            Theory t = new Theory(theory.name());
-            TheoryLibrary thlib = new TheoryLibrary(libN.name(), t);
+            var t = new Theory(theory.name());
+            var thlib = new TheoryLibrary(libN.name(), t);
             prolog.addLibrary(thlib);
             return true;
         } catch (Exception ex) {
@@ -142,9 +142,9 @@ public class BasicLibrary extends PrologLib {
     }
 
     public boolean get_operators_list_1(Term argument) {
-        Term arg = argument.term();
-        Struct list = Struct.emptyList();
-        for (PrologOp o : prolog.operators()) {
+        var arg = argument.term();
+        var list = Struct.emptyList();
+        for (var o : prolog.operators()) {
             list = new Struct(new Struct("op", new NumberTerm.Int(o.prio),
                     new Struct(o.type), new Struct(o.name)), list);
         }
@@ -191,8 +191,8 @@ public class BasicLibrary extends PrologLib {
         if (!(g instanceof Struct))
             throw PrologError.type_error(prolog, 2,
                     "struct", g);
-        Struct theory = (Struct) th;
-        Struct goal = (Struct) g;
+        var theory = (Struct) th;
+        var goal = (Struct) g;
         try {
             new PrologAgent(alice.util.Tools.removeApostrophes(theory.toString()), goal
                     .toString()
@@ -250,14 +250,14 @@ public class BasicLibrary extends PrologLib {
     public static boolean integer_1(Term t) {
         if (!(t.term()  instanceof NumberTerm))
             return false;
-        NumberTerm n = (NumberTerm) t.term();
+        var n = (NumberTerm) t.term();
         return (n.isInteger());
     }
 
     public static boolean float_1(Term t) {
         if (!(t instanceof NumberTerm))
             return false;
-        NumberTerm n = (NumberTerm) t.term();
+        var n = (NumberTerm) t.term();
         return (n.isReal());
     }
 
@@ -303,7 +303,7 @@ public class BasicLibrary extends PrologLib {
     private void handleError(Throwable t, int arg) throws PrologError {
 
         if (t instanceof ArithmeticException) {
-            ArithmeticException cause = (ArithmeticException) t;
+            var cause = (ArithmeticException) t;
 
             if ("/ by zero".equals(cause.getMessage()))
                 throw PrologError.evaluation_error(prolog,
@@ -333,15 +333,15 @@ public class BasicLibrary extends PrologLib {
         if (!(val1 instanceof NumberTerm))
             throw PrologError.type_error(prolog, 2,
                     "evaluable", arg1.term());
-        NumberTerm val0n = (NumberTerm) val0;
-        NumberTerm val1n = (NumberTerm) val1;
+        var val0n = (NumberTerm) val0;
+        var val1n = (NumberTerm) val1;
         return val0n.equals(val1n);
         //val0n.isInteger() && val1n.isInteger() ? val0n.longValue() == val1n.longValue() : val0n.doubleValue() == val1n.doubleValue();
     }
 
     public boolean expression_greater_than_2(Term arg0, Term arg1)
             throws PrologError {
-        int argNo = 1;
+        var argNo = 1;
         not_var(arg0, argNo);
         not_var(arg1, 2);
         Term val0 = null;
@@ -492,7 +492,7 @@ public class BasicLibrary extends PrologLib {
 
         }
         if (val0 instanceof NumberTerm) {
-            NumberTerm val0n = (NumberTerm) val0;
+            var val0n = (NumberTerm) val0;
             if (val0n instanceof NumberTerm.Int) {
                 return new NumberTerm.Int(val0n.intValue() * -1);
             } else if (val0n instanceof NumberTerm.Double) {
@@ -534,8 +534,8 @@ public class BasicLibrary extends PrologLib {
         }
         if (val0 instanceof NumberTerm
                 && (val1 instanceof NumberTerm)) {
-            NumberTerm val0n = (NumberTerm) val0;
-            NumberTerm val1n = (NumberTerm) val1;
+            var val0n = (NumberTerm) val0;
+            var val1n = (NumberTerm) val1;
             return val0n.isInteger() && (val1n.isInteger()) ? getIntegerNumber(val0n.longValue() + val1n.longValue()) : new NumberTerm.Double(val0n.doubleValue()
                     + val1n.doubleValue());
         } else
@@ -553,8 +553,8 @@ public class BasicLibrary extends PrologLib {
         }
         if (val0 instanceof NumberTerm
                 && (val1 instanceof NumberTerm)) {
-            NumberTerm val0n = (NumberTerm) val0;
-            NumberTerm val1n = (NumberTerm) val1;
+            var val0n = (NumberTerm) val0;
+            var val1n = (NumberTerm) val1;
             return val0n.isInteger() && (val1n.isInteger()) ? getIntegerNumber(val0n.longValue() - val1n.longValue()) : new NumberTerm.Double(val0n.doubleValue()
                     - val1n.doubleValue());
         } else
@@ -572,8 +572,8 @@ public class BasicLibrary extends PrologLib {
         }
         if (val0 instanceof NumberTerm
                 && (val1 instanceof NumberTerm)) {
-            NumberTerm val0n = (NumberTerm) val0;
-            NumberTerm val1n = (NumberTerm) val1;
+            var val0n = (NumberTerm) val0;
+            var val1n = (NumberTerm) val1;
             return val0n.isInteger() && (val1n.isInteger()) ? getIntegerNumber(val0n.longValue() * val1n.longValue()) : new NumberTerm.Double(val0n.doubleValue()
                     * val1n.doubleValue());
         } else
@@ -591,8 +591,8 @@ public class BasicLibrary extends PrologLib {
         }
         if (val0 instanceof NumberTerm
                 && val1 instanceof NumberTerm) {
-            NumberTerm val0n = (NumberTerm) val0;
-            NumberTerm val1n = (NumberTerm) val1;
+            var val0n = (NumberTerm) val0;
+            var val1n = (NumberTerm) val1;
             return val0n.isInteger() && val1n.isInteger() ? getIntegerNumber(val0n.longValue() / val1n.longValue()) : new NumberTerm.Double(val0n.doubleValue()
                     / val1n.doubleValue());
         } else
@@ -610,8 +610,8 @@ public class BasicLibrary extends PrologLib {
         }
         if (val0 instanceof NumberTerm
                 && (val1 instanceof NumberTerm)) {
-            NumberTerm val0n = (NumberTerm) val0;
-            NumberTerm val1n = (NumberTerm) val1;
+            var val0n = (NumberTerm) val0;
+            var val1n = (NumberTerm) val1;
             return getIntegerNumber(val0n.longValue() / val1n.longValue());
         } else {
             return null;
@@ -629,8 +629,8 @@ public class BasicLibrary extends PrologLib {
         }
         if (val0 instanceof NumberTerm
                 && (val1 instanceof NumberTerm)) {
-            NumberTerm val0n = (NumberTerm) val0;
-            NumberTerm val1n = (NumberTerm) val1;
+            var val0n = (NumberTerm) val0;
+            var val1n = (NumberTerm) val1;
             return new NumberTerm.Double(Math.pow(val0n.doubleValue(),
                     val1n.doubleValue()));
         } else {
@@ -649,8 +649,8 @@ public class BasicLibrary extends PrologLib {
         }
         if (val0 instanceof NumberTerm
                 && val1 instanceof NumberTerm) {
-            NumberTerm val0n = (NumberTerm) val0;
-            NumberTerm val1n = (NumberTerm) val1;
+            var val0n = (NumberTerm) val0;
+            var val1n = (NumberTerm) val1;
 
 
             return new NumberTerm.Long(val0n.longValue() >> val1n.longValue());
@@ -669,8 +669,8 @@ public class BasicLibrary extends PrologLib {
 
         }
         if (val0 instanceof NumberTerm                && val1 instanceof NumberTerm) {
-            NumberTerm val0n = (NumberTerm) val0;
-            NumberTerm val1n = (NumberTerm) val1;
+            var val0n = (NumberTerm) val0;
+            var val1n = (NumberTerm) val1;
 
 
             return new NumberTerm.Long(val0n.longValue() << val1n.longValue());
@@ -690,8 +690,8 @@ public class BasicLibrary extends PrologLib {
         }
         if (val0 instanceof NumberTerm
                 && val1 instanceof NumberTerm) {
-            NumberTerm val0n = (NumberTerm) val0;
-            NumberTerm val1n = (NumberTerm) val1;
+            var val0n = (NumberTerm) val0;
+            var val1n = (NumberTerm) val1;
 
 
             return new NumberTerm.Long(val0n.longValue() & val1n.longValue());
@@ -711,8 +711,8 @@ public class BasicLibrary extends PrologLib {
         }
         if (val0 instanceof NumberTerm
                 && val1 instanceof NumberTerm) {
-            NumberTerm val0n = (NumberTerm) val0;
-            NumberTerm val1n = (NumberTerm) val1;
+            var val0n = (NumberTerm) val0;
+            var val1n = (NumberTerm) val1;
 
 
             return new NumberTerm.Long(val0n.longValue() | val1n.longValue());
@@ -739,7 +739,7 @@ public class BasicLibrary extends PrologLib {
             return unify(arg0, new Struct(arg1.toString()));
         } else {
             try {
-                String text = alice.util.Tools.removeApostrophes(arg0.toString());
+                var text = alice.util.Tools.removeApostrophes(arg0.toString());
                 return unify(arg1, prolog.toTerm(text));
             } catch (Exception ex) {
                 return false;
@@ -774,41 +774,41 @@ public class BasicLibrary extends PrologLib {
                 throw PrologError.type_error(prolog, 1,
                         "number", arg0);
             }
-            NumberTerm n0 = (NumberTerm) arg0;
-            String st = n0.isInteger() ? Integer.valueOf(n0.intValue()).toString() : java.lang.Double.toString(n0.doubleValue());
+            var n0 = (NumberTerm) arg0;
+            var st = n0.isInteger() ? Integer.valueOf(n0.intValue()).toString() : java.lang.Double.toString(n0.doubleValue());
             return (unify(arg1, new Struct(st)));
         } else {
             if (!arg1.isAtomic()) {
                 throw PrologError.type_error(prolog, 2,
                         "atom", arg1);
             }
-            String st = ((Struct) arg1).name();
-            String st2="";
-            for(int i=0; i<st.length(); i++)
+            var st = ((Struct) arg1).name();
+            var st2="";
+            for(var i = 0; i<st.length(); i++)
             {
             	st2+=st.charAt(i);
 
             	if (st.charAt(0)=='0' && st.charAt(1)==39 && st.charAt(2)==39 && st.length()==4)
             	{
-            		String sti= String.valueOf(st.charAt(3));
-            		byte[] b= sti.getBytes();
+                    var sti= String.valueOf(st.charAt(3));
+                    var b= sti.getBytes();
             		st2= String.valueOf(b[0]);
             	}
             	if (st.charAt(0)=='0' && st.charAt(1)=='x' && st.charAt(2)>='a' && st.charAt(2)<='f' && st.length()==3)
             	{
-            		String sti= String.valueOf(st.charAt(2));
-            		int dec=java.lang.Integer.parseInt(sti, 16);
+                    var sti= String.valueOf(st.charAt(2));
+                    var dec=java.lang.Integer.parseInt(sti, 16);
             		st2= String.valueOf(dec);
             	}
             }
-            boolean before=true;
-            boolean after=false;
-            boolean between=false;
-            int numBefore=0;
-            int numAfter=0;
-            int numBetween=0;
-            String iBetween="";
-            for(int i=0; i<st2.length(); i++)
+            var before=true;
+            var after=false;
+            var between=false;
+            var numBefore=0;
+            var numAfter=0;
+            var numBetween=0;
+            var iBetween="";
+            for(var i = 0; i<st2.length(); i++)
             {
             	if((st2.charAt(i)<'0' || st2.charAt(i)>'9') && before)
             		numBefore++;
@@ -816,8 +816,8 @@ public class BasicLibrary extends PrologLib {
             	between=false;
             	if(st2.charAt(i)>='0' && st2.charAt(i)<='9')
             	{
-            		int k=0;
-            		for(int j=i+1; j<st2.length(); j++)
+                    var k=0;
+            		for(var j = i+1; j<st2.length(); j++)
             		{
             			if(st2.charAt(j)>='0' && st2.charAt(j)<='9' && j-i>1)
             			{
@@ -845,7 +845,7 @@ public class BasicLibrary extends PrologLib {
             		numAfter++;
             }
             String st3 = null;
-            for(int i = 0; i<numBefore; i++)
+            for(var i = 0; i<numBefore; i++)
             {
             	if (st2.charAt(i)==' ')
             		st3=st2.substring(i+1);
@@ -857,18 +857,18 @@ public class BasicLibrary extends PrologLib {
             	else if (st2.charAt(i)!='-' && st2.charAt(i)!='+')
             		st3="";
             }
-            for(int i=0; i<numBetween; i+=2)
+            for(var i = 0; i<numBetween; i+=2)
             {
-            	for(int j = java.lang.Integer.parseInt(String.valueOf(iBetween.charAt(i))); j<java.lang.Integer.parseInt(String.valueOf(iBetween.charAt(i + 1))); j++)
+            	for(var j = java.lang.Integer.parseInt(String.valueOf(iBetween.charAt(i))); j<java.lang.Integer.parseInt(String.valueOf(iBetween.charAt(i + 1))); j++)
             	{
-                    char st2i = st2.charAt(i);
+                    var st2i = st2.charAt(i);
                     if (st2.charAt(j)!='.' && (st2i !='E' || (st2i !='E' && (st2.charAt(i+1)!='+' || st2.charAt(i+1)!='-'))) && (st2i !='e' || (st2i !='e' && (st2.charAt(i+1)!='+' || st2.charAt(i+1)!='-'))))
             		{
             			st3="";
             		}
             	}
             }
-            for(int i=0; i<numAfter; i++)
+            for(var i = 0; i<numAfter; i++)
             {
                 if ((st2.charAt(i) != 'E' || (st2.charAt(i) != 'E' && (st2.charAt(i + 1) != '+' || st2.charAt(i + 1) != '-'))) && st2.charAt(i) != '.' && (st2.charAt(i) != 'e' || (st2.charAt(i) != 'e' && (st2.charAt(i + 1) != '+' || st2.charAt(i + 1) != '-')))) {
                     st3 = "";
@@ -1265,7 +1265,7 @@ public class BasicLibrary extends PrologLib {
         if (!arg1.isCompound())
             throw PrologError.type_error(prolog, 2,
                     "compound", arg1);
-        NumberTerm.Int arg0int = (NumberTerm.Int) arg0;
+        var arg0int = (NumberTerm.Int) arg0;
         if (arg0int.intValue() < 1)
             throw PrologError.domain_error(prolog, 1,
                     "greater_than_zero", arg0);
@@ -1354,12 +1354,12 @@ public class BasicLibrary extends PrologLib {
 
 
     public boolean $wt_unify_3(Term witness, Term wtList, Term tList) {
-        Struct list = (Struct) wtList.term();
-        Struct result = Struct.emptyList();
+        var list = (Struct) wtList.term();
+        var result = Struct.emptyList();
         for (java.util.Iterator<? extends Term> it = list.listIterator(); it.hasNext();) {
-            Struct element = (Struct) it.next();
-            Term w = element.sub(0);
-            Term t = element.sub(1);
+            var element = (Struct) it.next();
+            var w = element.sub(0);
+            var t = element.sub(1);
             if (unify(witness, w))
                 result.append(t);
         }
@@ -1374,7 +1374,7 @@ public class BasicLibrary extends PrologLib {
     	System.out.println("template "+temp);
     	*/
 
-    	Struct freeVarList = (Struct) varSet.term();
+        var freeVarList = (Struct) varSet.term();
     	java.util.Iterator<? extends Term> it1 = freeVarList.listIterator();
     	if (it1.hasNext()) {
             prolog.relinkVar(true);
@@ -1388,28 +1388,23 @@ public class BasicLibrary extends PrologLib {
     	}
 
 
+        var list = (Struct) wtList.term();
 
 
-        Struct list = (Struct) wtList.term();
-
-
-
-
-
-        Struct result = Struct.emptyList();
+        var result = Struct.emptyList();
         for (java.util.Iterator<? extends Term> it = list.listIterator(); it.hasNext();) {
-            Struct element = (Struct) it.next();
+            var element = (Struct) it.next();
 
-            Term w = element.sub(0);
-            Term t = element.sub(1);
+            var w = element.sub(0);
+            var t = element.sub(1);
 
 
             if (unify(witness, w)){
 
             	result.append(t);
 
-                List<Term> l = prolog.getBagOFres();
-                List<String> lString = prolog.getBagOFresString();
+                var l = prolog.getBagOFres();
+                var lString = prolog.getBagOFresString();
             	if(l==null){
             		l= new FasterList<>();
             		lString= new FasterList<>();
@@ -1430,11 +1425,11 @@ public class BasicLibrary extends PrologLib {
 
 
   public boolean $s_next0_3(Term witness, Term wtList, Term sNext) {
-        Struct list = (Struct) wtList.term();
-        Struct result = Struct.emptyList();
+      var list = (Struct) wtList.term();
+      var result = Struct.emptyList();
         for (java.util.Iterator<? extends Term> it = list.listIterator(); it.hasNext();) {
-            Struct element = (Struct) it.next();
-            Term w = element.sub(0);
+            var element = (Struct) it.next();
+            var w = element.sub(0);
             if (!unify(witness, w))
                 result.append(element);
         }
@@ -1442,8 +1437,8 @@ public class BasicLibrary extends PrologLib {
     }
 
     public boolean iterated_goal_term_2(Term term, Term goal) {
-        Term t = term.term();
-        Term igt = t.iteratedGoalTerm();
+        var t = term.term();
+        var igt = t.iteratedGoalTerm();
         return unify(igt, goal);
     }
 

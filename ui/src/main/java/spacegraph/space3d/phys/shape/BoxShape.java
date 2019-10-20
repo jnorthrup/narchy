@@ -49,9 +49,9 @@ public class BoxShape extends SimpleBoxShape {
 
 	@Override
 	public v3 localGetSupportingVertex(v3 vec, v3 out) {
-		v3 halfExtents = getHalfExtentsWithoutMargin(out);
-		
-		float margin = getMargin();
+		var halfExtents = getHalfExtentsWithoutMargin(out);
+
+		var margin = getMargin();
 		halfExtents.x += margin;
 		halfExtents.y += margin;
 		halfExtents.z += margin;
@@ -65,14 +65,14 @@ public class BoxShape extends SimpleBoxShape {
 
 	@Override
 	public void batchedUnitVectorGetSupportingVertexWithoutMargin(v3[] vectors, v3[] supportVerticesOut, int numVectors) {
-		
-		v3 halfExtents = this.implicitShapeDimensions;
-		float hx = halfExtents.x;
-		float hy = halfExtents.y;
-		float hz = halfExtents.z;
 
-		for (int i = 0; i < numVectors; i++) {
-			v3 vec = vectors[i];
+		var halfExtents = this.implicitShapeDimensions;
+		var hx = halfExtents.x;
+		var hy = halfExtents.y;
+		var hz = halfExtents.z;
+
+		for (var i = 0; i < numVectors; i++) {
+			var vec = vectors[i];
 			supportVerticesOut[i].set(ScalarUtil.fsel(vec.x, hx, -hx),
 					ScalarUtil.fsel(vec.y, hy, -hy),
 					ScalarUtil.fsel(vec.z, hz, -hz));
@@ -81,17 +81,17 @@ public class BoxShape extends SimpleBoxShape {
 
 	@Override
 	public SimpleBoxShape setMargin(float margin) {
-		
-		float m = getMargin();
-		v3 oldMargin = new v3(m, m,m);
 
-		v3 implicitShapeDimensionsWithMargin = new v3();
+		var m = getMargin();
+		var oldMargin = new v3(m, m,m);
+
+		var implicitShapeDimensionsWithMargin = new v3();
 		implicitShapeDimensionsWithMargin.add(implicitShapeDimensions, oldMargin);
 
 		super.setMargin(margin);
 
-		float n = getMargin();
-		v3 newMargin = new v3(n, n, n);
+		var n = getMargin();
+		var newMargin = new v3(n, n, n);
 		implicitShapeDimensions.sub(implicitShapeDimensionsWithMargin, newMargin);
 		return this;
 	}
@@ -99,12 +99,12 @@ public class BoxShape extends SimpleBoxShape {
 	@Override
 	public void setLocalScaling(v3 scaling) {
 
-		float m = getMargin();
-		v3 oldMargin = new v3(m, m, m);
+		var m = getMargin();
+		var oldMargin = new v3(m, m, m);
 
-		v3 implicitShapeDimensionsWithMargin = new v3();
+		var implicitShapeDimensionsWithMargin = new v3();
 		implicitShapeDimensionsWithMargin.add(implicitShapeDimensions, oldMargin);
-		v3 unScaledImplicitShapeDimensionsWithMargin = new v3();
+		var unScaledImplicitShapeDimensionsWithMargin = new v3();
 		VectorUtil.div(unScaledImplicitShapeDimensionsWithMargin, implicitShapeDimensionsWithMargin, localScaling);
 
 		super.setLocalScaling(scaling);
@@ -116,11 +116,11 @@ public class BoxShape extends SimpleBoxShape {
 	@Override
 	public void calculateLocalInertia(float mass, v3 inertia) {
 
-		v3 halfExtents = getHalfExtentsWithMargin(new v3());
+		var halfExtents = getHalfExtentsWithMargin(new v3());
 
-		float lx = 2f * halfExtents.x;
-		float ly = 2f * halfExtents.y;
-		float lz = 2f * halfExtents.z;
+		var lx = 2f * halfExtents.x;
+		var ly = 2f * halfExtents.y;
+		var lz = 2f * halfExtents.z;
 
 		inertia.set(
 				mass / 12f * (ly * ly + lz * lz),
@@ -130,9 +130,9 @@ public class BoxShape extends SimpleBoxShape {
 
 	@Override
 	public void getPlane(v3 planeNormal, v3 planeSupport, int i) {
-		
-		Vector4f plane = new Vector4f();
-		v3 tmp = new v3();
+
+		var plane = new Vector4f();
+		var tmp = new v3();
 		getPlaneEquation(plane, i, tmp);
 		planeNormal.set(plane.x, plane.y, plane.z);
 
@@ -142,7 +142,7 @@ public class BoxShape extends SimpleBoxShape {
 
 	@Override
 	public void getVertex(int i, v3 vtx) {
-		v3 halfExtents = getHalfExtentsWithoutMargin(new v3());
+		var halfExtents = getHalfExtentsWithoutMargin(new v3());
 
 		vtx.set(halfExtents.x * (1 - (i & 1)) - halfExtents.x * (i & 1),
 				halfExtents.y * (1 - ((i & 2) >> 1)) - halfExtents.y * ((i & 2) >> 1),
@@ -151,7 +151,7 @@ public class BoxShape extends SimpleBoxShape {
 	
 	@Override
     public void getPlaneEquation(Vector4f plane, int i, v3 tmp) {
-		v3 halfExtents = getHalfExtentsWithoutMargin(tmp);
+		var halfExtents = getHalfExtentsWithoutMargin(tmp);
 
 		switch (i) {
 			case 0:
@@ -179,8 +179,8 @@ public class BoxShape extends SimpleBoxShape {
 
 	@Override
 	public void getEdge(int i, v3 pa, v3 pb) {
-		int edgeVert0 = 0;
-		int edgeVert1 = 0;
+		var edgeVert0 = 0;
+		var edgeVert1 = 0;
 
 		switch (i) {
 			case 0:

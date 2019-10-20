@@ -23,16 +23,16 @@ public class SawtoothWave extends KarplusStrongString {
     public void pluck() {
         setDeltaVolume(pluckDelta);
         clear();
-        int capacity = buffer.capacity();
-        for (int i = 0; i < capacity; i++) {
-            double sample = (-0.5 + (i / (capacity - 1)) * 2 * getMaxVolume());
+        var capacity = buffer.capacity();
+        for (var i = 0; i < capacity; i++) {
+            var sample = (-0.5 + (i / (capacity - 1)) * 2 * getMaxVolume());
             buffer.enqueue(sample);
         }
     }
 
     public void tic() {
         double first = buffer.dequeue();
-        double x = first * deltaVolume;
+        var x = first * deltaVolume;
 		filterOut = C * x + filterIn - C * filterOut; // allpass tuning filter
         filterIn = x;
         buffer.enqueue(filterOut * deltaVolume);

@@ -35,7 +35,7 @@ public class MultiVersioned<X> extends FasterList<X> implements Versioned<X> {
      */
     @Override
     public @Nullable X get() {
-        int s = this.size;
+        var s = this.size;
         return s > 0 ? this.items[s - 1] : null;
     }
 
@@ -66,16 +66,16 @@ public class MultiVersioned<X> extends FasterList<X> implements Versioned<X> {
 
     @Override
     public final String toString() {
-        X v = get();
+        var v = get();
         if (v != null)
             return v.toString();
         return "null";
     }
 
     public final String toStackString() {
-        StringBuilder sb = new StringBuilder("(");
-        int s = size();
-        for (int i = 0; i < s; i++) {
+        var sb = new StringBuilder("(");
+        var s = size();
+        for (var i = 0; i < s; i++) {
 
             sb.append(get(i));
 

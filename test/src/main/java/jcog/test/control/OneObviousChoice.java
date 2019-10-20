@@ -15,17 +15,17 @@ public class OneObviousChoice extends AbstractAgentTest {
     @Override
     protected void test(IntIntToObjectFunction<Agent> agentBuilder) {
 
-        for (int cycles : new int[] { 100, 1000, 10000 }) { //TODO further parameterize test
-            Agent agent = agentBuilder.value(1, 2);
+        for (var cycles : new int[] { 100, 1000, 10000 }) { //TODO further parameterize test
+            var agent = agentBuilder.value(1, 2);
             assert (agent.inputs >= 1);
             assert (agent.actions == 2);
 
 
             Random r = new XoRoShiRo128PlusRandom(1);
             float nextReward = 0;
-            IntIntHashMap acts = new IntIntHashMap();
-            for (int i = 0; i < cycles; i++) {
-                int action = agent.act(nextReward, new float[]{r.nextFloat()});
+            var acts = new IntIntHashMap();
+            for (var i = 0; i < cycles; i++) {
+                var action = agent.act(nextReward, new float[]{r.nextFloat()});
 
                 acts.addToValue(action, 1);
                 switch (action) {
@@ -41,7 +41,7 @@ public class OneObviousChoice extends AbstractAgentTest {
             }
             System.out.println(this.getClass().getSimpleName() + '\t' + agent.getClass() + ' ' + agent.summary() + '\n' + acts);
             assertTrue(acts.get(1) > acts.get(0));
-            final float minRatio = 2f;
+            final var minRatio = 2f;
             assertTrue(acts.get(1) / minRatio > acts.get(0));
         }
     }

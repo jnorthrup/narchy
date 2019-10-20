@@ -48,7 +48,7 @@ public enum Terms {
 	 * sort and deduplicates the elements; returns new array if modifications to order or deduplication are necessary
 	 */
 	public static Term[] commute(Term... x) {
-		int len = x.length;
+		var len = x.length;
 		switch (len) {
 			case 0:
 				return Op.EmptyTermArray;
@@ -99,12 +99,12 @@ public enum Terms {
 	 * TODO use op if that is the 2nd comparison property
 	 * */
 	static Term[] commuteTerms(Term[] x, boolean modifyInputArray) {
-		short[] volumes = new short[x.length];
+		var volumes = new short[x.length];
 		int volMin = Integer.MAX_VALUE, volMax = Integer.MIN_VALUE;
-		boolean allDecreasing = true;
+		var allDecreasing = true;
 		for (int i = 0, xLength = x.length; i < xLength; i++) {
 
-			short v = (short) x[i].volume();
+			var v = (short) x[i].volume();
 
 			volumes[i] = v;
 
@@ -118,7 +118,7 @@ public enum Terms {
 			return x;
 		}
 
-		Term[] y = modifyInputArray ? x : x.clone();
+		var y = modifyInputArray ? x : x.clone();
 
 		int nulls;
 		if (volMax <= volMin) {
@@ -129,7 +129,7 @@ public enum Terms {
 		} else {
 			//sort within the spans where the terms have equal volumes (divide & conquer)
 
-			int n = y.length;
+			var n = y.length;
 			QuickSort.quickSort(0, n,
 				(a, b) -> Integer.compare(volumes[b], volumes[a]),
 				(a, b) -> ArrayUtil.swapObjShort(y, volumes, a, b));
@@ -137,8 +137,8 @@ public enum Terms {
 			int vs = volumes[0];
 			nulls = 0;
 			//span start
-			int s = 0;
-			for (int i = 1; i <= n; i++) {
+			var s = 0;
+			for (var i = 1; i <= n; i++) {
 				int vi = i < n ? volumes[i] : -1;
 				if (vi != vs) {
 					if (i - s > 1) {
@@ -159,10 +159,10 @@ public enum Terms {
 	}
 
 	private static int nullDups(Term[] y, int start, int end) {
-		Term prev = y[start];
-		int nulls = 0;
-		for (int i = start+1; i < end; i++) {
-			Term next = y[i];
+		var prev = y[start];
+		var nulls = 0;
+		for (var i = start+1; i < end; i++) {
+			var next = y[i];
 			if (prev.equals(next)) {
 				y[i] = null;
 				nulls++;
@@ -187,26 +187,26 @@ public enum Terms {
     }*/
 
 		Term a = t[0], b = t[1], c = t[2];
-		int ab = a.compareTo(b);
+		var ab = a.compareTo(b);
 		if (ab == 0) {
 			return commute(a, c); //a=b, so just combine a and c (recurse)
 		} else if (ab > 0) {
-			Term x = a;
+			var x = a;
 			a = b;
 			b = x;
 		}
-		int bc = b.compareTo(c);
+		var bc = b.compareTo(c);
 		if (bc == 0) {
 			return new Term[]{a, b}; //b=c so just combine a and b
 		} else if (bc > 0) {
-			Term x = b;
+			var x = b;
 			b = c;
 			c = x;
-			int ab2 = a.compareTo(b);
+			var ab2 = a.compareTo(b);
 			if (ab2 == 0) {
 				return new Term[]{a, c};
 			} else if (ab2 > 0) {
-				Term y = a;
+				var y = a;
 				a = b;
 				b = y;
 			}
@@ -218,7 +218,7 @@ public enum Terms {
 
 	private static Term[] commute2(Term[] t) {
 		Term a = t[0], b = t[1];
-		int ab = a.compareTo(b);
+		var ab = a.compareTo(b);
 		if (ab < 0) return t;
 		else if (ab > 0) return new Term[]{b, a};
 		else /*if (c == 0)*/ return new Term[]{a};
@@ -226,7 +226,7 @@ public enum Terms {
 
 	private static Term[] sort2(Term[] t) {
 		Term a = t[0], b = t[1];
-		int ab = a.compareTo(b);
+		var ab = a.compareTo(b);
 		if (ab < 0) return t;
 		else if (ab > 0) return new Term[]{b, a};
 		else /*if (c == 0)*/ return new Term[]{a, a};
@@ -238,7 +238,7 @@ public enum Terms {
 
 	static void printRecursive(PrintStream out, Term x, int level) {
 
-		for (int i = 0; i < level; i++)
+		for (var i = 0; i < level; i++)
 			out.print("  ");
 
 		out.print(x);
@@ -249,7 +249,7 @@ public enum Terms {
 		out.println();
 
 
-		for (Term z : x.subterms()) {
+		for (var z : x.subterms()) {
 			printRecursive(out, z, level + 1);
 		}
 
@@ -266,11 +266,11 @@ public enum Terms {
 	public static void printRecursive(Term x, int level, Consumer<String> c) {
 
 
-        for (Term z : x.subterms())
+        for (var z : x.subterms())
 			printRecursive(z, level + 1, c);
 
 
-        String line = "  ".repeat(Math.max(0, level)) +
+		var line = "  ".repeat(Math.max(0, level)) +
                 x;
         c.accept(line);
 	}
@@ -281,11 +281,11 @@ public enum Terms {
 		if (a.length == 0) return b;
 		if (b.length == 0) return a;
 
-		int L = a.length + b.length;
+		var L = a.length + b.length;
 
-		Term[] arr = new Term[L];
+		var arr = new Term[L];
 
-		int l = a.length;
+		var l = a.length;
 		System.arraycopy(a, 0, arr, 0, l);
 		System.arraycopy(b, 0, arr, l, b.length);
 
@@ -330,11 +330,11 @@ public enum Terms {
 	 * @param superterm filter applies to the immediate superterm of a potential subterm
 	 */
 	public static @Nullable Term[] nextRepeat(Subterms c, int minCount, ToIntFunction<Term> countIf) {
-		ObjectIntHashMap<Term> oi = Terms.subtermScore(c, minCount, countIf);
+		var oi = Terms.subtermScore(c, minCount, countIf);
 		if (oi == null)
 			return null;
 
-		LazyIterable<Term> ok = oi.keysView();
+		var ok = oi.keysView();
 		switch (oi.size()) {
 			case 0:
 				return null;
@@ -359,7 +359,7 @@ public enum Terms {
 
 			//c.forEach(cc ->
 			//cc.recurseTermsOrdered(z -> true, (subterm) -> {
-			int s = score.applyAsInt(subterm);
+			var s = score.applyAsInt(subterm);
 			if (s > 0)
 				uniques.addToValue(subterm, s);
 			return true;
@@ -367,10 +367,10 @@ public enum Terms {
 			//});
 		}, null);
 
-		int total = uniques.size();
+		var total = uniques.size();
 		if (total == 0) return null;
 
-		MutableIntIterator uu = uniques.intIterator();
+		var uu = uniques.intIterator();
 		while (uu.hasNext()) {
 			if (uu.next() < minTotalScore)
 				uu.remove();
@@ -384,7 +384,7 @@ public enum Terms {
 	 * a Set is already duplicate free, so just sort it
 	 */
 	public static Term[] commute(Collection<Term> s) {
-		Term[] x = s.toArray(Op.EmptyTermArray);
+		var x = s.toArray(Op.EmptyTermArray);
 		return (x.length >= 2) && (!(s instanceof SortedSet)) ? commute(x) : x;
 	}
 
@@ -433,8 +433,8 @@ public enum Terms {
 	}
 
 	public static boolean hasAllExcept(int requirer, int required, int maskedBits) {
-		int xStruct = requirer & ~(maskedBits);
-		int yStruct = required & ~(maskedBits);
+		var xStruct = requirer & ~(maskedBits);
+		var yStruct = required & ~(maskedBits);
 		return xStruct == 0 || yStruct == 0 ||
 			Op.hasAll(yStruct, xStruct);
 	}
@@ -448,7 +448,7 @@ public enum Terms {
 		if (!canExtractFixedPath(container))
 			return null;
 
-		byte[][] p = new byte[1][];
+		var p = new byte[1][];
 		container.pathsTo(subterm,
 
 			Terms::canExtractFixedPath,
@@ -497,7 +497,7 @@ public enum Terms {
 
 		Subterms xx = x.subterms(), yy = y.subterms(); //subtermsDirect not possible because possiblyUnifiable tests equality HACK
 
-		int n = xx.subs();
+		var n = xx.subs();
 		if (n != yy.subs() &&
 ////			(!Terms.hasEllipsis(x, xxs) && !Terms.hasEllipsis(y, yys)) &&
 			(xo != CONJ) || (Conj.isSeq(x) || Conj.isSeq(y))
@@ -522,13 +522,13 @@ public enum Terms {
 
 
 	public static Term withoutAll(Term container, Predicate<Term> filter) {
-		Subterms cs = container.subterms();
-		MetalBitSet match = cs.indicesOfBits(filter);
-		int n = match.cardinality();
+		var cs = container.subterms();
+		var match = cs.indicesOfBits(filter);
+		var n = match.cardinality();
 		if (n == 0) {
 			return container; //no matches
 		} else {
-			Term[] remain = cs.removing(match);
+			var remain = cs.removing(match);
 			return remain == null ? Null : container.op().the(container.dt(), remain);
 		}
 	}
@@ -558,7 +558,7 @@ public enum Terms {
 
 		//a > b |- a contains b?
 		if (xv < yv) {
-			Term c = x;
+			var c = x;
 			x = y;
 			y = c;
 		}
@@ -590,7 +590,7 @@ public enum Terms {
 
 
 		SortedSet<nars.term.Term> ab = a.collect(b.subs() > 3 ? b.toSet()::contains : b::contains, new MetalTreeSet());
-		int ssi = ab == null ? 0 : ab.size();
+		var ssi = ab == null ? 0 : ab.size();
 		switch (ssi) {
 			case 0:
 				return Null;
@@ -607,7 +607,7 @@ public enum Terms {
 		if (a == b)
 			return a instanceof Term && ((Term)a).op()==o ? (Term)a : o.the(a);
 
-		boolean bothTerms = a instanceof Term && b instanceof Term;
+		var bothTerms = a instanceof Term && b instanceof Term;
 		if (bothTerms && a.equals(b))
 			return (Term) a;
 
@@ -616,7 +616,7 @@ public enum Terms {
 		a.addAllTo(t);
 		b.addAllTo(t);
 		if (bothTerms) {
-			int maxSize = Math.max(as, bs);
+			var maxSize = Math.max(as, bs);
 			if (t.size() == maxSize) {
 				return (Term) (as > bs ? a : b);
 			}

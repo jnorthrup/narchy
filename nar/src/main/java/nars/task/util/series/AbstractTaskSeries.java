@@ -29,9 +29,9 @@ public abstract class AbstractTaskSeries<T extends Task> implements TaskSeries<T
     }
 
     public final void compress() {
-        int toRemove = (size()+1) - cap;
+        var toRemove = (size()+1) - cap;
         while (toRemove-- > 0) {
-            T x = pop();
+            var x = pop();
             if (x!=null)
                 x.delete();
         }

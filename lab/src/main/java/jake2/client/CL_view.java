@@ -56,7 +56,7 @@ public class CL_view {
         SCR.AddDirtyPoint(Globals.viddef.getWidth() - 1, Globals.viddef.getHeight() - 1);
 
 
-        String mapname = Globals.cl.configstrings[Defines.CS_MODELS + 1].substring(5,
+        var mapname = Globals.cl.configstrings[Defines.CS_MODELS + 1].substring(5,
                 i - 4); 
         
 
@@ -79,7 +79,7 @@ public class CL_view {
 
         for (i = 1; i < Defines.MAX_MODELS
                 && Globals.cl.configstrings[Defines.CS_MODELS + i].length() != 0; i++) {
-            String name = Globals.cl.configstrings[Defines.CS_MODELS + i];
+            var name = Globals.cl.configstrings[Defines.CS_MODELS + i];
             if (name.length() > 37)
                 name = name.substring(0, 36);
 
@@ -136,11 +136,11 @@ public class CL_view {
         
         Com.Printf("sky\r");
         SCR.UpdateScreen();
-        float rotate = Float
+        var rotate = Float
                 .parseFloat(Globals.cl.configstrings[Defines.CS_SKYROTATE]);
-        StringTokenizer st = new StringTokenizer(
+        var st = new StringTokenizer(
                 Globals.cl.configstrings[Defines.CS_SKYAXIS]);
-        float[] axis = new float[3];
+        var axis = new float[3];
         axis[0] = Float.parseFloat(st.nextToken());
         axis[1] = Float.parseFloat(st.nextToken());
         axis[2] = Float.parseFloat(st.nextToken());
@@ -173,9 +173,9 @@ public class CL_view {
             SCR.DebugGraph(30, 0xdf);
 
 
-        int in = Globals.cls.netchan.incoming_acknowledged
+        var in = Globals.cls.netchan.incoming_acknowledged
                 & (Defines.CMD_BACKUP - 1);
-        int ping = Globals.cls.realtime - Globals.cl.cmd_time[in];
+        var ping = Globals.cls.realtime - Globals.cl.cmd_time[in];
         ping /= 30;
         if (ping > 30)
             ping = 30;

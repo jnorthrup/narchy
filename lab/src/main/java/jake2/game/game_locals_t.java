@@ -64,7 +64,7 @@ public class game_locals_t {
 
     /** Reads the game locals from a file. */
     public void load(QuakeFile f) throws IOException {
-        String date = f.readString();
+        var date = f.readString();
 
         helpmessage1 = f.readString();
         helpmessage2 = f.readString();

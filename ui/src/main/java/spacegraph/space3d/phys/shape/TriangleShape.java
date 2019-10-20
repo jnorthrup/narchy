@@ -92,7 +92,7 @@ public class TriangleShape extends PolyhedralConvexShape {
 
 	@Override
 	public v3 localGetSupportingVertexWithoutMargin(v3 dir, v3 out) {
-		v3 dots = new v3();
+		var dots = new v3();
 		dots.set(dir.dot(vertices1[0]), dir.dot(vertices1[1]), dir.dot(vertices1[2]));
 		out.set(vertices1[VectorUtil.maxAxis(dots)]);
 		return out;
@@ -100,10 +100,10 @@ public class TriangleShape extends PolyhedralConvexShape {
 
 	@Override
 	public void batchedUnitVectorGetSupportingVertexWithoutMargin(v3[] vectors, v3[] supportVerticesOut, int numVectors) {
-		v3 dots = new v3();
+		var dots = new v3();
 
-		for (int i = 0; i < numVectors; i++) {
-			v3 dir = vectors[i];
+		for (var i = 0; i < numVectors; i++) {
+			var dir = vectors[i];
 			dots.set(dir.dot(vertices1[0]), dir.dot(vertices1[1]), dir.dot(vertices1[2]));
 			supportVerticesOut[i].set(vertices1[VectorUtil.maxAxis(dots)]);
 		}
@@ -120,8 +120,8 @@ public class TriangleShape extends PolyhedralConvexShape {
 	}
 
 	private void calcNormal(v3 normal) {
-		v3 tmp1 = new v3();
-		v3 tmp2 = new v3();
+		var tmp1 = new v3();
+		var tmp2 = new v3();
 
 		tmp1.sub(vertices1[1], vertices1[0]);
 		tmp2.sub(vertices1[2], vertices1[0]);
@@ -143,24 +143,24 @@ public class TriangleShape extends PolyhedralConvexShape {
 	
 	@Override
 	public boolean isInside(v3 pt, float tolerance) {
-		v3 normal = new v3();
+		var normal = new v3();
 		calcNormal(normal);
-		
-		float dist = pt.dot(normal);
-		float planeconst = vertices1[0].dot(normal);
+
+		var dist = pt.dot(normal);
+		var planeconst = vertices1[0].dot(normal);
 		dist -= planeconst;
 		if (dist >= -tolerance && dist <= tolerance) {
 
-            for (int i = 0; i < 3; i++) {
+            for (var i = 0; i < 3; i++) {
 				v3 pa = new v3(), pb = new v3();
 				getEdge(i, pa, pb);
-				v3 edge = new v3();
+				var edge = new v3();
 				edge.sub(pb, pa);
-				v3 edgeNormal = new v3();
+				var edgeNormal = new v3();
 				edgeNormal.cross(edge, normal);
 				edgeNormal.normalize();
 				/*float*/ dist = pt.dot(edgeNormal);
-				float edgeConst = pa.dot(edgeNormal);
+				var edgeConst = pa.dot(edgeNormal);
 				dist -= edgeConst;
 				if (dist < -tolerance) {
 					return false;

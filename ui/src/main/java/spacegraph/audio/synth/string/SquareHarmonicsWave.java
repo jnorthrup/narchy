@@ -29,15 +29,15 @@ public class SquareHarmonicsWave extends KarplusStrongString {
     public void pluck() {
         setDeltaVolume(pluckDelta);
         clear();
-        int capacity = buffer.capacity();
-        for (int i = 0; i < capacity; i++) {
+        var capacity = buffer.capacity();
+        for (var i = 0; i < capacity; i++) {
             buffer.enqueue(getSample(i));
         }
     }
 
     public void tic() {
         double first = buffer.dequeue();
-        double x = first * deltaVolume;
+        var x = first * deltaVolume;
 		filterOut = C * x + filterIn - C * filterOut; // allpass tuning filter
         filterIn = x;
         buffer.enqueue(filterOut * deltaVolume);
@@ -46,8 +46,8 @@ public class SquareHarmonicsWave extends KarplusStrongString {
     private double getSample(int index) {
         double position = index / buffer.capacity();
         double sample = 0;
-        for (Map.Entry<Integer, Double> integerDoubleEntry : harmonics.entrySet()) {
-            int lowHigh = lowHigh(integerDoubleEntry.getKey(), index);
+        for (var integerDoubleEntry : harmonics.entrySet()) {
+            var lowHigh = lowHigh(integerDoubleEntry.getKey(), index);
             double factor = integerDoubleEntry.getValue();
             if (lowHigh == 0) {
                 sample -= factor;
@@ -59,10 +59,10 @@ public class SquareHarmonicsWave extends KarplusStrongString {
     }
 
     private int lowHigh(int harmonic, int index) {
-        double position = (double) index / buffer.capacity();
-        double relPos = position * 2 * harmonic;
-        int floored = (int) Math.round(Math.floor(relPos));
-        int modded = floored % 2;
+        var position = (double) index / buffer.capacity();
+        var relPos = position * 2 * harmonic;
+        var floored = (int) Math.round(Math.floor(relPos));
+        var modded = floored % 2;
         return modded;
     }
 

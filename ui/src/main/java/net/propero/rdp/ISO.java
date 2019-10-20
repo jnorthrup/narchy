@@ -70,7 +70,7 @@ abstract class ISO {
      * @return Packet configured as ISO PDU, ready to write at higher level
      */
     public static RdpPacket_Localised init(int length) {
-        RdpPacket_Localised data = new RdpPacket_Localised(length + 7);
+        var data = new RdpPacket_Localised(length + 7);
         data.incrementPosition(7);
         data.setStart(data.getPosition());
         return data;
@@ -109,7 +109,7 @@ abstract class ISO {
                 .getOutputStream()));
         send_connection_request();
 
-        int[] code = new int[1];
+        var code = new int[1];
         receiveMessage(code);
         if (code[0] != CONNECTION_CONFIRM) {
             throw new RdesktopException("Expected CC got:"
@@ -133,7 +133,7 @@ abstract class ISO {
      * @throws IOException when an I/O Error occurs
      */
     private void sendMessage(int type) throws IOException {
-        RdpPacket_Localised buffer = new RdpPacket_Localised(11);
+        var buffer = new RdpPacket_Localised(11);
 
         buffer.set8(PROTOCOL_VERSION); 
         buffer.set8(0); 
@@ -146,7 +146,7 @@ abstract class ISO {
         buffer.setBigEndian16(0); 
         
         buffer.set8(0);
-        byte[] packet = new byte[11];
+        var packet = new byte[11];
         buffer.copyToByteArray(packet, 0, 0, packet.length);
         out.write(packet);
         out.flush();
@@ -166,7 +166,7 @@ abstract class ISO {
         if (buffer.getEnd() < 0) {
             throw new RdesktopException("No End Mark!");
         } else {
-            int length = buffer.getEnd();
+            var length = buffer.getEnd();
 
             buffer.setPosition(0);
             buffer.set8(PROTOCOL_VERSION); 
@@ -176,7 +176,7 @@ abstract class ISO {
             buffer.set8(2); 
             buffer.set8(DATA_TRANSFER);
             buffer.set8(EOT);
-            byte[] packet = new byte[length];
+            var packet = new byte[length];
             buffer.copyToByteArray(packet, 0, 0, buffer.getEnd());
 
             if (Options.debug_hexdump) {
@@ -200,8 +200,8 @@ abstract class ISO {
      */
     public RdpPacket_Localised receive() throws IOException, RdesktopException,
             OrderException, CryptoException {
-        int[] type = new int[1];
-        RdpPacket_Localised buffer = receiveMessage(type);
+        var type = new int[1];
+        var buffer = receiveMessage(type);
         if (buffer == null)
             return null;
         if (type[0] != DATA_TRANSFER) {
@@ -225,7 +225,7 @@ abstract class ISO {
     private RdpPacket_Localised tcp_recv(RdpPacket_Localised p, int length)
             throws IOException {
         logger.debug("ISO.tcp_recv");
-        byte[] packet = new byte[length];
+        var packet = new byte[length];
 
         in.readFully(packet, 0, length);
 
@@ -280,7 +280,7 @@ abstract class ISO {
             if (s == null)
                 return null;
 
-            int version = s.get8();
+            var version = s.get8();
             rdpver[0] = version;
 
             int length;
@@ -321,7 +321,7 @@ abstract class ISO {
 
     private RdpPacket_Localised receiveMessage(int[] type) throws IOException,
             RdesktopException, OrderException, CryptoException {
-        int[] rdpver = new int[1];
+        var rdpver = new int[1];
         return receiveMessageex(type, rdpver);
     }
 
@@ -357,13 +357,13 @@ abstract class ISO {
      */
     private void send_connection_request() throws IOException {
 
-        String uname = Options.username;
+        var uname = Options.username;
 
 
-        int length = 11 + (!Options.username.isEmpty() ? ("Cookie: mstshash="
+        var length = 11 + (!Options.username.isEmpty() ? ("Cookie: mstshash="
                 .length()
                 + uname.length() + 2) : 0)/* + 8*/;
-        RdpPacket_Localised buffer = new RdpPacket_Localised(length);
+        var buffer = new RdpPacket_Localised(length);
 
         buffer.set8(PROTOCOL_VERSION); 
         buffer.set8(0); 
@@ -393,7 +393,7 @@ abstract class ISO {
          */
 
 
-        byte[] packet = new byte[length];
+        var packet = new byte[length];
         buffer.copyToByteArray(packet, 0, 0, packet.length);
         out.write(packet);
         out.flush();

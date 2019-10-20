@@ -77,14 +77,14 @@ public abstract class Model extends Surf {
         if (model == null || model.nodes == null)
 			Com.Error (Defines.ERR_DROP, "Mod_PointInLeaf: bad model");
 
-        mnode_t node = model.nodes[0];
+		var node = model.nodes[0];
 		while (true)
 		{
 			if (node.contents != -1)
 				return (mleaf_t)node;
 
-            cplane_t plane = node.plane;
-            float d = Math3D.DotProduct(p, plane.normal) - plane.dist;
+			var plane = node.plane;
+			var d = Math3D.DotProduct(p, plane.normal) - plane.dist;
             if (d > 0)
 				node = node.children[0];
 			else
@@ -105,9 +105,9 @@ public abstract class Model extends Surf {
 	byte[] Mod_DecompressVis(byte[] in, int offset, model_t model)
 	{
 
-        int row = (model.vis.numclusters + 7) >> 3;
-        byte[] out = decompressed;
-        int outp = 0;
+		var row = (model.vis.numclusters + 7) >> 3;
+		var out = decompressed;
+		var outp = 0;
 
         if (in == null)
 		{	
@@ -119,7 +119,7 @@ public abstract class Model extends Surf {
 			return decompressed;		
 		}
 
-        int inp = offset;
+		var inp = offset;
         do
 		{
 			if (in[inp] != 0)
@@ -128,7 +128,7 @@ public abstract class Model extends Surf {
 				continue;
 			}
 
-            int c = in[inp + 1] & 0xFF;
+			var c = in[inp + 1] & 0xFF;
             inp += 2;
 			while (c != 0)
 			{
@@ -167,10 +167,10 @@ public abstract class Model extends Surf {
 	{
 
         VID.Printf(Defines.PRINT_ALL,"Loaded models:\n");
-        int total = 0;
-        for (int i = 0; i < mod_numknown ; i++)
+		var total = 0;
+        for (var i = 0; i < mod_numknown ; i++)
 		{
-            model_t mod = mod_known[i];
+			var mod = mod_known[i];
             if (mod.name.length() == 0)
 				continue;
 
@@ -189,7 +189,7 @@ public abstract class Model extends Surf {
     void Mod_Init()
 	{
 		
-		for (int i=0; i < MAX_MOD_KNOWN; i++) {
+		for (var i = 0; i < MAX_MOD_KNOWN; i++) {
 			mod_known[i] = new model_t();
 		}
 		Arrays.fill(mod_novis, (byte)0xff);
@@ -270,16 +270,14 @@ public abstract class Model extends Surf {
 	
 		loadmodel = mod;
 
-		
-		
-		
-		ByteBuffer bb = ByteBuffer.wrap(fileBuffer);
+
+		var bb = ByteBuffer.wrap(fileBuffer);
 		bb.order(ByteOrder.LITTLE_ENDIAN);
 
 		
 	
 		bb.mark();
-		int ident = bb.getInt();
+		var ident = bb.getInt();
 		
 		bb.reset();
 		
@@ -346,8 +344,8 @@ public abstract class Model extends Surf {
 		}
 		
 		System.arraycopy(mod_base, l.fileofs, model_visibility, 0, l.filelen);
-		
-		ByteBuffer bb = ByteBuffer.wrap(model_visibility, 0, l.filelen);
+
+		var bb = ByteBuffer.wrap(model_visibility, 0, l.filelen);
 		
 		loadmodel.vis = new qfiles.dvis_t(bb.order(ByteOrder.LITTLE_ENDIAN));
 		
@@ -375,17 +373,17 @@ public abstract class Model extends Surf {
         if ( (l.filelen % mvertex_t.DISK_SIZE) != 0)
 			Com.Error(Defines.ERR_DROP, "MOD_LoadBmodel: funny lump size in " + loadmodel.name);
 
-        int count = l.filelen / mvertex_t.DISK_SIZE;
+		var count = l.filelen / mvertex_t.DISK_SIZE;
 
-        mvertex_t[] vertexes = new mvertex_t[count];
+		var vertexes = new mvertex_t[count];
 
 		loadmodel.vertexes = vertexes;
 		loadmodel.numvertexes = count;
 
-		ByteBuffer bb = ByteBuffer.wrap(mod_base, l.fileofs, l.filelen);
+		var bb = ByteBuffer.wrap(mod_base, l.fileofs, l.filelen);
 		bb.order(ByteOrder.LITTLE_ENDIAN);
 
-		for (int i = 0; i<count ; i++)
+		for (var i = 0; i<count ; i++)
 		{
 			vertexes[i] = new mvertex_t(bb);
 		}
@@ -400,7 +398,7 @@ public abstract class Model extends Surf {
 	{
 		float[] corner = {0, 0, 0};
 
-		for (int i=0 ; i<3 ; i++)
+		for (var i = 0; i<3 ; i++)
 		{
 			corner[i] = Math.abs(mins[i]) > Math.abs(maxs[i]) ? Math.abs(mins[i]) : Math.abs(maxs[i]);
 		}
@@ -421,23 +419,23 @@ public abstract class Model extends Surf {
 	    
 	    int i;
 
-        int count = l.filelen / qfiles.dmodel_t.SIZE;
+		var count = l.filelen / qfiles.dmodel_t.SIZE;
 
-        mmodel_t[] outs = new mmodel_t[count];
+		var outs = new mmodel_t[count];
 	    for (i = 0; i < count; i++) {
 	        outs[i] = new mmodel_t();
 	    }
 	    
 	    loadmodel.submodels = outs;
 	    loadmodel.numsubmodels = count;
-	    
-	    ByteBuffer bb = ByteBuffer.wrap(mod_base, l.fileofs, l.filelen);
+
+		var bb = ByteBuffer.wrap(mod_base, l.fileofs, l.filelen);
 	    bb.order(ByteOrder.LITTLE_ENDIAN);
 
         for (i = 0; i < count; i++) {
-            qfiles.dmodel_t in = new qfiles.dmodel_t(bb);
-            mmodel_t out = outs[i];
-            for (int j = 0; j < 3; j++) {
+			var in = new qfiles.dmodel_t(bb);
+			var out = outs[i];
+            for (var j = 0; j < 3; j++) {
 	            
 	            out.mins[j] = in.mins[j] - 1;
 	            out.maxs[j] = in.maxs[j] + 1;
@@ -461,17 +459,17 @@ public abstract class Model extends Surf {
         if ( (l.filelen % medge_t.DISK_SIZE) != 0)
 			Com.Error(Defines.ERR_DROP, "MOD_LoadBmodel: funny lump size in " + loadmodel.name);
 
-        int count = l.filelen / medge_t.DISK_SIZE;
+		var count = l.filelen / medge_t.DISK_SIZE;
 
-        medge_t[] edges = new medge_t[count + 1];
+		var edges = new medge_t[count + 1];
 
 		loadmodel.edges = edges;
 		loadmodel.numedges = count;
-		
-		ByteBuffer bb = ByteBuffer.wrap(mod_base, l.fileofs, l.filelen);
+
+		var bb = ByteBuffer.wrap(mod_base, l.fileofs, l.filelen);
 		bb.order(ByteOrder.LITTLE_ENDIAN);
 
-		for (int i = 0; i<count ; i++)
+		for (var i = 0; i<count ; i++)
 		{
 			edges[i] = new medge_t(bb);
 		}
@@ -488,9 +486,9 @@ public abstract class Model extends Surf {
         if ((l.filelen % texinfo_t.SIZE) != 0)
 			Com.Error (Defines.ERR_DROP, "MOD_LoadBmodel: funny lump size in " + loadmodel.name);
 
-        int count = l.filelen / texinfo_t.SIZE;
+		var count = l.filelen / texinfo_t.SIZE;
 
-        mtexinfo_t[] out = new mtexinfo_t[count];
+		var out = new mtexinfo_t[count];
         int i;
         for (i=0 ; i<count ; i++) {
 			out[i] = new mtexinfo_t();
@@ -498,22 +496,22 @@ public abstract class Model extends Surf {
 
 		loadmodel.texinfo = out;
 		loadmodel.numtexinfo = count;
-		
-		ByteBuffer bb = ByteBuffer.wrap(mod_base, l.fileofs, l.filelen);
+
+		var bb = ByteBuffer.wrap(mod_base, l.fileofs, l.filelen);
 		bb.order(ByteOrder.LITTLE_ENDIAN);
 
 		for ( i=0 ; i<count ; i++) {
 
-            texinfo_t in = new texinfo_t(bb);
+			var in = new texinfo_t(bb);
             out[i].vecs = in.vecs;
 			out[i].flags = in.flags;
-            int next = in.nexttexinfo;
+			var next = in.nexttexinfo;
             if (next > 0)
 				out[i].next = loadmodel.texinfo[next];
 			else
 				out[i].next = null;
 
-            String name = "textures/" + in.texture + ".wal";
+			var name = "textures/" + in.texture + ".wal";
 
             out[i].image = GL_FindImage(name, it_wall);
 			if (out[i].image == null) {
@@ -525,7 +523,7 @@ public abstract class Model extends Surf {
 		
 		for (i=0 ; i<count ; i++) {
 			out[i].numframes = 1;
-			for (mtexinfo_t step = out[i].next; (step != null) && (step != out[i]) ; step=step.next)
+			for (var step = out[i].next; (step != null) && (step != out[i]) ; step=step.next)
 				out[i].numframes++;
 		}
 	}
@@ -545,20 +543,20 @@ public abstract class Model extends Surf {
         float[] maxs = {0, 0};
         maxs[0] = maxs[1] = -99999;
 
-		mtexinfo_t tex = s.texinfo;
+		var tex = s.texinfo;
 	
-		for (int i=0 ; i<s.numedges ; i++)
+		for (var i = 0; i<s.numedges ; i++)
 		{
-            int e = loadmodel.surfedges[s.firstedge + i];
+			var e = loadmodel.surfedges[s.firstedge + i];
             mvertex_t v;
             if (e >= 0)
 				v = loadmodel.vertexes[loadmodel.edges[e].v[0]];
 			else
 				v = loadmodel.vertexes[loadmodel.edges[-e].v[1]];
 		
-			for (int j = 0; j<2 ; j++)
+			for (var j = 0; j<2 ; j++)
 			{
-                float val = v.position[0] * tex.vecs[j][0] +
+				var val = v.position[0] * tex.vecs[j][0] +
                         v.position[1] * tex.vecs[j][1] +
                         v.position[2] * tex.vecs[j][2] +
                         tex.vecs[j][3];
@@ -571,7 +569,7 @@ public abstract class Model extends Surf {
 
         int[] bmaxs = {0, 0};
         int[] bmins = {0, 0};
-        for (int i = 0; i<2 ; i++)
+        for (var i = 0; i<2 ; i++)
 		{	
 			bmins[i] = (int)Math.floor(mins[i]/16);
 			bmaxs[i] = (int)Math.ceil(maxs[i]/16);
@@ -592,10 +590,10 @@ public abstract class Model extends Surf {
         if ((l.filelen % qfiles.dface_t.SIZE) != 0)
 	        Com.Error(Defines.ERR_DROP, "MOD_LoadBmodel: funny lump size in "
 	                + loadmodel.name);
-	    
-	    int count = l.filelen / qfiles.dface_t.SIZE;
-	    
-	    msurface_t[] outs = new msurface_t[count];
+
+		var count = l.filelen / qfiles.dface_t.SIZE;
+
+		var outs = new msurface_t[count];
         int i;
         for (i = 0; i < count; i++) {
 	        outs[i] = new msurface_t();
@@ -603,23 +601,23 @@ public abstract class Model extends Surf {
 	    
 	    loadmodel.surfaces = outs;
 	    loadmodel.numsurfaces = count;
-	    
-	    ByteBuffer bb = ByteBuffer.wrap(mod_base, l.fileofs, l.filelen);
+
+		var bb = ByteBuffer.wrap(mod_base, l.fileofs, l.filelen);
 	    bb.order(ByteOrder.LITTLE_ENDIAN);
 	    
 	    currentmodel = loadmodel;
 	    
 	    GL_BeginBuildingLightmaps(loadmodel);
 
-        for (int surfnum = 0; surfnum < count; surfnum++) {
-            qfiles.dface_t in = new qfiles.dface_t(bb);
-            msurface_t out = outs[surfnum];
+        for (var surfnum = 0; surfnum < count; surfnum++) {
+			var in = new qfiles.dface_t(bb);
+			var out = outs[surfnum];
             out.firstedge = in.firstedge;
 	        out.numedges = in.numedges;
 	        out.flags = 0;
 	        out.polys = null;
 
-            int planenum = in.planenum;
+			var planenum = in.planenum;
             int side = in.side;
             if (side != 0)
 	            out.flags |= Defines.SURF_PLANEBACK;
@@ -644,7 +642,7 @@ public abstract class Model extends Surf {
 	        if (i == -1)
 	            out.samples = null;
 	        else {
-	            ByteBuffer pointer = ByteBuffer.wrap(loadmodel.lightdata);
+				var pointer = ByteBuffer.wrap(loadmodel.lightdata);
 	            pointer.position(i);
 	            pointer = pointer.slice();
 	            pointer.mark();
@@ -699,14 +697,14 @@ public abstract class Model extends Surf {
         if ((l.filelen % qfiles.dnode_t.SIZE) != 0)
 			Com.Error(Defines.ERR_DROP, "MOD_LoadBmodel: funny lump size in " + loadmodel.name);
 
-        int count = l.filelen / qfiles.dnode_t.SIZE;
+		var count = l.filelen / qfiles.dnode_t.SIZE;
 
-        mnode_t[] out = new mnode_t[count];
+		var out = new mnode_t[count];
 
 		loadmodel.nodes = out;
 		loadmodel.numnodes = count;
-		
-		ByteBuffer bb = ByteBuffer.wrap(mod_base, l.fileofs, l.filelen);
+
+		var bb = ByteBuffer.wrap(mod_base, l.fileofs, l.filelen);
 		bb.order(ByteOrder.LITTLE_ENDIAN);
 
 
@@ -716,7 +714,7 @@ public abstract class Model extends Surf {
 		
 		for ( i=0 ; i<count ; i++)
 		{
-            qfiles.dnode_t in = new qfiles.dnode_t(bb);
+			var in = new qfiles.dnode_t(bb);
             int j;
             for (j=0 ; j<3 ; j++)
 			{
@@ -724,7 +722,7 @@ public abstract class Model extends Surf {
 				out[i].maxs[j] = in.maxs[j];
 			}
 
-            int p = in.planenum;
+			var p = in.planenum;
             out[i].plane = loadmodel.planes[p];
 
 			out[i].firstsurface = in.firstface;
@@ -755,21 +753,21 @@ public abstract class Model extends Surf {
         if ((l.filelen % qfiles.dleaf_t.SIZE) != 0)
 			Com.Error (Defines.ERR_DROP, "MOD_LoadBmodel: funny lump size in " + loadmodel.name);
 
-        int count = l.filelen / qfiles.dleaf_t.SIZE;
+		var count = l.filelen / qfiles.dleaf_t.SIZE;
 
-        mleaf_t[] out = new mleaf_t[count];
+		var out = new mleaf_t[count];
 
 		loadmodel.leafs = out;
 		loadmodel.numleafs = count;
-		
-		ByteBuffer bb = ByteBuffer.wrap(mod_base, l.fileofs, l.filelen);
+
+		var bb = ByteBuffer.wrap(mod_base, l.fileofs, l.filelen);
 		bb.order(ByteOrder.LITTLE_ENDIAN);
 
-		for (int i = 0; i<count ; i++)
+		for (var i = 0; i<count ; i++)
 		{
-            qfiles.dleaf_t in = new qfiles.dleaf_t(bb);
+			var in = new qfiles.dleaf_t(bb);
             out[i] = new mleaf_t();
-			for (int j = 0; j<3 ; j++)
+			for (var j = 0; j<3 ; j++)
 			{
 				out[i].mins[j] = in.mins[j];
 				out[i].maxs[j] = in.maxs[j];
@@ -796,17 +794,17 @@ public abstract class Model extends Surf {
 
         if ((l.filelen % Defines.SIZE_OF_SHORT) != 0)
 			Com.Error(Defines.ERR_DROP, "MOD_LoadBmodel: funny lump size in " + loadmodel.name);
-        int count = l.filelen / Defines.SIZE_OF_SHORT;
+		var count = l.filelen / Defines.SIZE_OF_SHORT;
 
-        msurface_t[] out = new msurface_t[count];
+		var out = new msurface_t[count];
 
 		loadmodel.marksurfaces = out;
 		loadmodel.nummarksurfaces = count;
 
-		ByteBuffer bb = ByteBuffer.wrap(mod_base, l.fileofs, l.filelen);
+		var bb = ByteBuffer.wrap(mod_base, l.fileofs, l.filelen);
 		bb.order(ByteOrder.LITTLE_ENDIAN);
 
-		for (int i = 0; i<count ; i++)
+		for (var i = 0; i<count ; i++)
 		{
             int j = bb.getShort();
             if (j < 0 ||  j >= loadmodel.numsurfaces)
@@ -828,19 +826,19 @@ public abstract class Model extends Surf {
         if ( (l.filelen % Defines.SIZE_OF_INT) != 0)
 			Com.Error (Defines.ERR_DROP, "MOD_LoadBmodel: funny lump size in " + loadmodel.name);
 
-        int count = l.filelen / Defines.SIZE_OF_INT;
+		var count = l.filelen / Defines.SIZE_OF_INT;
 		if (count < 1 || count >= Defines.MAX_MAP_SURFEDGES)
 			Com.Error (Defines.ERR_DROP, "MOD_LoadBmodel: bad surfedges count in " + loadmodel.name + ": " + count);
 
-        int[] offsets = new int[count];
+		var offsets = new int[count];
 
 		loadmodel.surfedges = offsets;
 		loadmodel.numsurfedges = count;
 
-		ByteBuffer bb = ByteBuffer.wrap(mod_base, l.fileofs, l.filelen);
+		var bb = ByteBuffer.wrap(mod_base, l.fileofs, l.filelen);
 		bb.order(ByteOrder.LITTLE_ENDIAN);
 
-		for (int i = 0; i<count ; i++) offsets[i] = bb.getInt();
+		for (var i = 0; i<count ; i++) offsets[i] = bb.getInt();
 	}
 
 
@@ -855,9 +853,9 @@ public abstract class Model extends Surf {
         if ((l.filelen % qfiles.dplane_t.SIZE) != 0)
 			Com.Error(Defines.ERR_DROP, "MOD_LoadBmodel: funny lump size in " + loadmodel.name);
 
-        int count = l.filelen / qfiles.dplane_t.SIZE;
+		var count = l.filelen / qfiles.dplane_t.SIZE;
 
-        cplane_t[] out = new cplane_t[count * 2];
+		var out = new cplane_t[count * 2];
         int i;
         for (i = 0; i < count; i++) {
 		    out[i] = new cplane_t();
@@ -865,15 +863,15 @@ public abstract class Model extends Surf {
 	
 		loadmodel.planes = out;
 		loadmodel.numplanes = count;
-		
-		ByteBuffer bb = ByteBuffer.wrap(mod_base, l.fileofs, l.filelen);
+
+		var bb = ByteBuffer.wrap(mod_base, l.fileofs, l.filelen);
 		bb.order(ByteOrder.LITTLE_ENDIAN);
 
 		for ( i=0 ; i<count ; i++)
 		{
-            int bits = 0;
-            qfiles.dplane_t in = new qfiles.dplane_t(bb);
-            for (int j = 0; j<3 ; j++)
+			var bits = 0;
+			var in = new qfiles.dplane_t(bb);
+            for (var j = 0; j<3 ; j++)
 			{
 				out[i].normal[j] = in.normal[j];
 				if (out[i].normal[j] < 0)
@@ -898,9 +896,9 @@ public abstract class Model extends Surf {
 		if (loadmodel != mod_known[0])
 			Com.Error(Defines.ERR_DROP, "Loaded a brush model after the world");
 
-        qfiles.dheader_t header = new qfiles.dheader_t(buffer);
+		var header = new qfiles.dheader_t(buffer);
 
-        int i = header.version;
+		var i = header.version;
 		if (i != Defines.BSPVERSION)
 			Com.Error (Defines.ERR_DROP, "Mod_LoadBrushModel: " + mod.name + " has wrong version number (" + i + " should be " + Defines.BSPVERSION + ')');
 
@@ -925,8 +923,8 @@ public abstract class Model extends Surf {
         for (i=0 ; i<mod.numsubmodels ; i++)
 		{
 
-            mmodel_t bm = mod.submodels[i];
-            model_t starmod = mod_inline[i] = loadmodel.copy();
+			var bm = mod.submodels[i];
+			var starmod = mod_inline[i] = loadmodel.copy();
 
             starmod.firstmodelsurface = bm.firstface;
 			starmod.nummodelsurfaces = bm.numfaces;
@@ -961,7 +959,7 @@ public abstract class Model extends Surf {
 	void Mod_LoadAliasModel (model_t mod, ByteBuffer buffer)
 	{
 
-        qfiles.dmdl_t pheader = new qfiles.dmdl_t(buffer);
+		var pheader = new qfiles.dmdl_t(buffer);
 
 		if (pheader.version != qfiles.ALIAS_VERSION)
 			Com.Error(Defines.ERR_DROP, "%s has wrong version number (%i should be %i)",
@@ -986,7 +984,7 @@ public abstract class Model extends Surf {
 			Com.Error(Defines.ERR_DROP, "model " + mod.name + " has no frames");
 
 
-        qfiles.dstvert_t[] poutst = new qfiles.dstvert_t[pheader.num_st];
+		var poutst = new qfiles.dstvert_t[pheader.num_st];
 		buffer.position(pheader.ofs_st);
         int i;
         for (i=0 ; i<pheader.num_st ; i++)
@@ -995,7 +993,7 @@ public abstract class Model extends Surf {
 		}
 
 
-        qfiles.dtriangle_t[] pouttri = new qfiles.dtriangle_t[pheader.num_tris];
+		var pouttri = new qfiles.dtriangle_t[pheader.num_tris];
 		buffer.position(pheader.ofs_tris);
 		for (i=0 ; i<pheader.num_tris ; i++)
 		{
@@ -1003,14 +1001,14 @@ public abstract class Model extends Surf {
 		}
 
 
-        qfiles.daliasframe_t[] poutframe = new qfiles.daliasframe_t[pheader.num_frames];
+		var poutframe = new qfiles.daliasframe_t[pheader.num_frames];
 		buffer.position(pheader.ofs_frames);
 		for (i=0 ; i<pheader.num_frames ; i++)
 		{
 			poutframe[i] = new qfiles.daliasframe_t(buffer);
 			
 			poutframe[i].verts = new int[pheader.num_xyz];
-			for (int k=0; k < pheader.num_xyz; k++) {
+			for (var k = 0; k < pheader.num_xyz; k++) {
 				poutframe[i].verts[k] = buffer.getInt();	
 			}
 		}
@@ -1018,20 +1016,20 @@ public abstract class Model extends Surf {
 		mod.type = mod_alias;
 
 
-        int[] poutcmd = new int[pheader.num_glcmds];
+		var poutcmd = new int[pheader.num_glcmds];
 		buffer.position(pheader.ofs_glcmds);
 		for (i=0 ; i<pheader.num_glcmds ; i++)
-			poutcmd[i] = buffer.getInt(); 
+			poutcmd[i] = buffer.getInt();
 
-		
-		String[] skinNames = new String[pheader.num_skins];
+
+		var skinNames = new String[pheader.num_skins];
         buffer.position(pheader.ofs_skins);
-        byte[] nameBuf = new byte[qfiles.MAX_SKINNAME];
+		var nameBuf = new byte[qfiles.MAX_SKINNAME];
         for (i=0 ; i<pheader.num_skins ; i++)
 		{
 			buffer.get(nameBuf);
 			skinNames[i] = new String(nameBuf);
-			int n = skinNames[i].indexOf('\0');
+			var n = skinNames[i].indexOf('\0');
 			if (n > -1) {
 				skinNames[i] = skinNames[i].substring(0, n);
 			}	
@@ -1072,7 +1070,7 @@ public abstract class Model extends Surf {
 	*/
 	void Mod_LoadSpriteModel(model_t mod, ByteBuffer buffer)
 	{
-		qfiles.dsprite_t sprout = new qfiles.dsprite_t(buffer);
+		var sprout = new qfiles.dsprite_t(buffer);
 		
 		if (sprout.version != qfiles.SPRITE_VERSION)
 			Com.Error(Defines.ERR_DROP, "%s has wrong version number (%i should be %i)",
@@ -1082,7 +1080,7 @@ public abstract class Model extends Surf {
 			Com.Error(Defines.ERR_DROP, "%s has too many frames (%i > %i)",
 				new Vargs(3).add(mod.name).add(sprout.numframes).add(qfiles.MAX_MD2SKINS));
 
-		for (int i=0 ; i<sprout.numframes ; i++)
+		for (var i = 0; i<sprout.numframes ; i++)
 		{
 			mod.skins[i] = GL_FindImage(sprout.frames[i].name,	it_sprite);
 		}
@@ -1107,12 +1105,12 @@ public abstract class Model extends Surf {
 		Polygon.reset();
 
         registration_sequence++;
-		r_oldviewcluster = -1;		
+		r_oldviewcluster = -1;
 
-		String fullname = "maps/" + model + ".bsp";
+		var fullname = "maps/" + model + ".bsp";
 
 
-        cvar_t flushmap = Cvar.Get("flushmap", "0", 0);
+		var flushmap = Cvar.Get("flushmap", "0", 0);
 		if ( !mod_known[0].name.equals(fullname) || flushmap.value != 0.0f)
 			Mod_Free(mod_known[0]);
 		r_worldmodel = Mod_ForName(fullname, true);
@@ -1131,7 +1129,7 @@ public abstract class Model extends Surf {
     public model_t R_RegisterModel(String name)
 	{
 
-        model_t mod = Mod_ForName(name, false);
+		var mod = Mod_ForName(name, false);
 		if (mod != null)
 		{
 			mod.registration_sequence = registration_sequence;
@@ -1140,12 +1138,12 @@ public abstract class Model extends Surf {
             int i;
             switch (mod.type) {
                 case mod_sprite:
-                    qfiles.dsprite_t sprout = (qfiles.dsprite_t) mod.extradata;
+					var sprout = (qfiles.dsprite_t) mod.extradata;
                     for (i = 0; i < sprout.numframes; i++)
                         mod.skins[i] = GL_FindImage(sprout.frames[i].name, it_sprite);
                     break;
                 case mod_alias:
-                    qfiles.dmdl_t pheader = (qfiles.dmdl_t) mod.extradata;
+					var pheader = (qfiles.dmdl_t) mod.extradata;
                     for (i = 0; i < pheader.num_skins; i++)
                         mod.skins[i] = GL_FindImage(pheader.skinNames[i], it_skin);
 
@@ -1172,9 +1170,9 @@ public abstract class Model extends Surf {
     public void R_EndRegistration()
 	{
 
-        for (int i=0; i<mod_numknown ; i++)
+        for (var i = 0; i<mod_numknown ; i++)
 		{
-            model_t mod = mod_known[i];
+			var mod = mod_known[i];
             if (mod.name.length() == 0)
 				continue;
 			if (mod.registration_sequence != registration_sequence)
@@ -1212,7 +1210,7 @@ public abstract class Model extends Surf {
     @Override
     void Mod_FreeAll()
 	{
-		for (int i=0 ; i<mod_numknown ; i++)
+		for (var i = 0; i<mod_numknown ; i++)
 		{
 			if (mod_known[i].extradata != null)
 				Mod_Free(mod_known[i]);
@@ -1229,11 +1227,11 @@ public abstract class Model extends Surf {
 	static void precompileGLCmds(qfiles.dmdl_t model) {
 		model.textureCoordBuf = globalModelTextureCoordBuf.slice();
 		model.vertexIndexBuf = globalModelVertexIndexBuf.slice();
-		Vector<Integer> tmp = new Vector<>();
-			
-		int count = 0;
-		int[] order = model.glCmds;
-		int orderIndex = 0;
+		var tmp = new Vector<Integer>();
+
+		var count = 0;
+		var order = model.glCmds;
+		var orderIndex = 0;
 		while (true)
 		{
 			
@@ -1262,16 +1260,16 @@ public abstract class Model extends Surf {
 				orderIndex += 3;
 			} while (--count != 0);
 		}
-			
-		int size = tmp.size();
+
+		var size = tmp.size();
 			
 		model.counts = new int[size];
 		model.indexElements = new ShortBuffer[size];
 			
 		count = 0;
-		int pos = 0;
-		ShortBuffer[] indexElements = model.indexElements;
-		for (int i = 0; i < model.counts.length; i++) {
+		var pos = 0;
+		var indexElements = model.indexElements;
+		for (var i = 0; i < model.counts.length; i++) {
 			count = tmp.get(i);
 			model.counts[i] = count;
 				

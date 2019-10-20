@@ -88,7 +88,7 @@ public class AWTSurface extends Widget implements KeyPressed {
         set(tex.view());
 
 
-        AtomicBoolean busy = new AtomicBoolean(false);
+        var busy = new AtomicBoolean(false);
         ons = root().onUpdate(w -> {
 
             if (!busy.compareAndSet(false, true))
@@ -116,7 +116,7 @@ public class AWTSurface extends Widget implements KeyPressed {
 
     @Override
     public boolean key(KeyEvent e, boolean pressedOrReleased) {
-        int code = Keyboard.newtKeyCode2AWTKeyCode(e.getKeyCode());
+        var code = Keyboard.newtKeyCode2AWTKeyCode(e.getKeyCode());
 
         /*
          * @param source    The {@code Component} that originated the event
@@ -142,9 +142,9 @@ public class AWTSurface extends Widget implements KeyPressed {
 
 
         if (myFocus != null) {
-            Component m = myFocus;
-            int modifers = 0;
-            Component src = component;
+            var m = myFocus;
+            var modifers = 0;
+            var src = component;
             if (pressedOrReleased && e.isPrintableKey()) {
 
                 try {
@@ -175,7 +175,7 @@ public class AWTSurface extends Widget implements KeyPressed {
 
     @Override
     public Surface finger(Finger f) {
-        Surface s = super.finger(f);
+        var s = super.finger(f);
         if (s == this) {
             awtFinger(f);
         }
@@ -187,10 +187,10 @@ public class AWTSurface extends Widget implements KeyPressed {
      * TODO re-test
      */
     public void awtFinger(Finger finger) {
-        boolean wasTouching = false; //isTouched();
+        var wasTouching = false; //isTouched();
 
 
-        long now = System.currentTimeMillis();
+        var now = System.currentTimeMillis();
         if (finger == null) {
             if (wasTouching) {
                 handle(new MouseEvent(component,
@@ -203,9 +203,9 @@ public class AWTSurface extends Widget implements KeyPressed {
             return;
         }
 
-        v2 rp = finger.posGlobal();
-        int px = Math.round(rp.x * component.getWidth());
-        int py = Math.round((1f - rp.y) * component.getHeight());
+        var rp = finger.posGlobal();
+        var px = Math.round(rp.x * component.getWidth());
+        var py = Math.round((1f - rp.y) * component.getHeight());
         if (lpx == -1) {
             lpx = px;
             lpy = py;
@@ -219,7 +219,7 @@ public class AWTSurface extends Widget implements KeyPressed {
         }
 
 
-        Component target = SwingUtilities.getDeepestComponentAt(this.component, px, py);
+        var target = SwingUtilities.getDeepestComponentAt(this.component, px, py);
         if (target == null)
             target = this.component;
         else {
@@ -248,7 +248,7 @@ public class AWTSurface extends Widget implements KeyPressed {
             ));
         }
 
-        boolean moved = lpx != px || lpy != py;
+        var moved = lpx != px || lpy != py;
 
 
         if (finger.pressed(0)) {

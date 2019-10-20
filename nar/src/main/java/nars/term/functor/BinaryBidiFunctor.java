@@ -24,7 +24,7 @@ public abstract class BinaryBidiFunctor extends Functor implements The {
 
     @Override
     public final @Nullable Term apply(Evaluation e, Subterms terms) {
-        int s = terms.subs();
+        var s = terms.subs();
         switch (s) {
             case 2:
                 return apply2(e, terms.sub(0), terms.sub(1));
@@ -42,14 +42,14 @@ public abstract class BinaryBidiFunctor extends Functor implements The {
     protected abstract Term compute(Evaluation e, Term x, Term y);
 
     protected Term apply3(Evaluation e, Term x, Term y, Term xy) {
-        boolean xVar = x.op().var;
-        boolean yVar = y.op().var;
+        var xVar = x.op().var;
+        var yVar = y.op().var;
         if (xy.op().var) {
 
             if (xVar || yVar) {
                 return null;
             } else {
-                Term XY = compute(e, x, y);
+                var XY = compute(e, x, y);
                 if (XY!=null) {
                     return e.is(xy, XY) ? null : Bool.Null;
                 } else {
@@ -63,7 +63,7 @@ public abstract class BinaryBidiFunctor extends Functor implements The {
                 return computeYfromXandXY(e, x, y, xy);
             } else if (!yVar /*&& !xVar*/) {
 
-                Term XY = compute(e, x, y);
+                var XY = compute(e, x, y);
                 if (XY == null)
                     return null;
                 //assert(XY!=null): "functor " + this + " " + x + "," + y + ", " + xy + " -> compute=null";

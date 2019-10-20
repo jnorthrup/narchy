@@ -96,24 +96,24 @@ public class Bitmap {
     }
 
     private static int convert15to24(int colour16) {
-        int r24 = (colour16 >> 7) & 0xF8;
+        var r24 = (colour16 >> 7) & 0xF8;
 
         r24 |= r24 >> 5;
-        int g24 = (colour16 >> 2) & 0xF8;
+        var g24 = (colour16 >> 2) & 0xF8;
         g24 |= g24 >> 5;
-        int b24 = (colour16 << 3) & 0xFF;
+        var b24 = (colour16 << 3) & 0xFF;
         b24 |= b24 >> 5;
 
         return (r24 << 16) | (g24 << 8) | b24;
     }
 
     private static int convert16to24(int colour16) {
-        int r24 = (colour16 >> 8) & 0xF8;
+        var r24 = (colour16 >> 8) & 0xF8;
 
         r24 |= r24 >> 5;
-        int g24 = (colour16 >> 3) & 0xFC;
+        var g24 = (colour16 >> 3) & 0xFC;
         g24 |= g24 >> 6;
-        int b24 = (colour16 << 3) & 0xFF;
+        var b24 = (colour16 << 3) & 0xFF;
         b24 |= b24 >> 5;
 
         return (r24 << 16) | (g24 << 8) | b24;
@@ -128,37 +128,37 @@ public class Bitmap {
      * @return
      */
     private static int cvalx(byte[] data, int offset, int Bpp) {
-        int rv = 0;
+        var rv = 0;
         switch (Options.server_bpp) {
             case 15: {
-                int lower = data[offset] & 0xFF;
-                int full = (data[offset + 1] & 0xFF) << 8 | lower;
+                var lower = data[offset] & 0xFF;
+                var full = (data[offset + 1] & 0xFF) << 8 | lower;
 
-                int r24 = (full >> 7) & 0xF8;
+                var r24 = (full >> 7) & 0xF8;
                 r24 |= r24 >> 5;
-                int g24 = (full >> 2) & 0xF8;
+                var g24 = (full >> 2) & 0xF8;
                 g24 |= g24 >> 5;
-                int b24 = (lower << 3) & 0xFF;
+                var b24 = (lower << 3) & 0xFF;
                 b24 |= b24 >> 5;
 
                 return (r24 << 16) | (g24 << 8) | b24;
 
             }
             case 16:
-                int lower = data[offset] & 0xFF;
-                int full = (data[offset + 1] & 0xFF) << 8 | lower;
+                var lower = data[offset] & 0xFF;
+                var full = (data[offset + 1] & 0xFF) << 8 | lower;
 
-                int r24 = (full >> 8) & 0xF8;
+                var r24 = (full >> 8) & 0xF8;
                 r24 |= r24 >> 5;
-                int g24 = (full >> 3) & 0xFC;
+                var g24 = (full >> 3) & 0xFC;
                 g24 |= g24 >> 6;
-                int b24 = (lower << 3) & 0xFF;
+                var b24 = (lower << 3) & 0xFF;
                 b24 |= b24 >> 5;
 
                 return (r24 << 16) | (g24 << 8) | b24;
 
             default:
-                for (int i = (Bpp - 1); i >= 0; i--) {
+                for (var i = (Bpp - 1); i >= 0; i--) {
                     rv <<= 8;
                     rv |= data[offset + i] & 0xFF;
                 }
@@ -176,10 +176,10 @@ public class Bitmap {
      * @return
      */
     private static int getli(byte[] input, int startOffset, int offset, int Bpp) {
-        int rv = 0;
+        var rv = 0;
 
-        int rOffset = startOffset + (offset * Bpp);
-        for (int i = 0; i < Bpp; i++) {
+        var rOffset = startOffset + (offset * Bpp);
+        for (var i = 0; i < Bpp; i++) {
             rv <<= 8;
             rv |= (input[rOffset + (Bpp - i - 1)]) & 0xFF;
         }
@@ -195,7 +195,7 @@ public class Bitmap {
      */
     private static void setli(byte[] input, int startlocation, int offset, int value,
                               int Bpp) {
-        int location = startlocation + offset * Bpp;
+        var location = startlocation + offset * Bpp;
 
         input[location] = (byte) (value & 0xFF);
         if (Bpp > 1)
@@ -212,9 +212,9 @@ public class Bitmap {
      * @return Integer array of pixel data representing input image data
      */
     static int[] convertImage(byte[] bitmap, int Bpp) {
-        int[] out = new int[bitmap.length / Bpp];
+        var out = new int[bitmap.length / Bpp];
 
-        for (int i = 0; i < out.length; i++) {
+        for (var i = 0; i < out.length; i++) {
             switch (Bpp) {
                 case 1:
                     out[i] = bitmap[i] & 0xFF;
@@ -255,9 +255,8 @@ public class Bitmap {
                                                    int size, RdpPacket_Localised data, int Bpp, IndexColorModel cm,
                                                    int left, int top, WrappedImage w) throws RdesktopException {
 
-        
 
-        byte[] compressed_pixel = new byte[size];
+        var compressed_pixel = new byte[size];
         data.copyToByteArray(compressed_pixel, 0, data.getPosition(), size);
         data.incrementPosition(size);
 
@@ -267,8 +266,8 @@ public class Bitmap {
         int lastopcode = -1, fom_mask = 0;
         int code = 0, color1 = 0, color2 = 0;
         byte mixmask = 0;
-        int mask = 0;
-        int mix = 0xffffffff;
+        var mask = 0;
+        var mix = 0xffffffff;
 
         boolean insertmix = false, bicolor = false, isfillormix = false;
 
@@ -393,7 +392,7 @@ public class Bitmap {
 
                         if (previous == -1) {
                             while (((count & ~0x7) != 0) && ((x + 8) < width)) {
-                                for (int i = 0; i < 8; i++) {
+                                for (var i = 0; i < 8; i++) {
                                     
                                     w.setRGB(left + x, top + height, 0);
                                     count--;
@@ -408,7 +407,7 @@ public class Bitmap {
                             }
                         } else {
                             while (((count & ~0x7) != 0) && ((x + 8) < width)) {
-                                for (int i = 0; i < 8; i++) {
+                                for (var i = 0; i < 8; i++) {
                                     
                                     w.setRGB(left + x, top + height, w.getRGB(left
                                             + x, top + prevY));
@@ -429,7 +428,7 @@ public class Bitmap {
                     case 1: /* Mix */
                         if (previous == -1) {
                             while (((count & ~0x7) != 0) && ((x + 8) < width)) {
-                                for (int i = 0; i < 8; i++) {
+                                for (var i = 0; i < 8; i++) {
                                     
                                     w.setRGB(left + x, top + height, mix);
                                     count--;
@@ -445,7 +444,7 @@ public class Bitmap {
                         } else {
 
                             while (((count & ~0x7) != 0) && ((x + 8) < width)) {
-                                for (int i = 0; i < 8; i++) {
+                                for (var i = 0; i < 8; i++) {
                                     
                                     w.setRGB(left + x, top + height, w.getRGB(left
                                             + x, top + prevY)
@@ -468,7 +467,7 @@ public class Bitmap {
                     case 2: /* Fill or Mix */
                         if (previous == -1) {
                             while (((count & ~0x7) != 0) && ((x + 8) < width)) {
-                                for (int i = 0; i < 8; i++) {
+                                for (var i = 0; i < 8; i++) {
                                     mixmask <<= 1;
                                     if (mixmask == 0) {
                                         mask = (fom_mask != 0) ? (byte) fom_mask
@@ -507,7 +506,7 @@ public class Bitmap {
                             }
                         } else {
                             while (((count & ~0x7) != 0) && ((x + 8) < width)) {
-                                for (int i = 0; i < 8; i++) {
+                                for (var i = 0; i < 8; i++) {
                                     mixmask <<= 1;
                                     if (mixmask == 0) {
                                         mask = (fom_mask != 0) ? (byte) fom_mask
@@ -556,7 +555,7 @@ public class Bitmap {
 
                     case 3: /* Color */
                         while (((count & ~0x7) != 0) && ((x + 8) < width)) {
-                            for (int i = 0; i < 8; i++) {
+                            for (var i = 0; i < 8; i++) {
                                 
                                 w.setRGB(left + x, top + height, color2);
                                 count--;
@@ -574,7 +573,7 @@ public class Bitmap {
 
                     case 4: /* Copy */
                         while (((count & ~0x7) != 0) && ((x + 8) < width)) {
-                            for (int i = 0; i < 8; i++) {
+                            for (var i = 0; i < 8; i++) {
                                 
                                 
                                 w.setRGB(left + x, top + height, cvalx(
@@ -597,7 +596,7 @@ public class Bitmap {
 
                     case 8: /* Bicolor */
                         while (((count & ~0x7) != 0) && ((x + 8) < width)) {
-                            for (int i = 0; i < 8; i++) {
+                            for (var i = 0; i < 8; i++) {
                                 if (bicolor) {
                                     
                                     w.setRGB(left + x, top + height, color2);
@@ -631,7 +630,7 @@ public class Bitmap {
 
                     case 0xd: /* White */
                         while (((count & ~0x7) != 0) && ((x + 8) < width)) {
-                            for (int i = 0; i < 8; i++) {
+                            for (var i = 0; i < 8; i++) {
                                 
                                 w.setRGB(left + x, top + height, 0xffffff);
                                 count--;
@@ -648,7 +647,7 @@ public class Bitmap {
 
                     case 0xe: /* Black */
                         while (((count & ~0x7) != 0) && ((x + 8) < width)) {
-                            for (int i = 0; i < 8; i++) {
+                            for (var i = 0; i < 8; i++) {
                                 
                                 w.setRGB(left + x, top + height, 0x00);
                                 count--;
@@ -694,7 +693,7 @@ public class Bitmap {
                                       RdpPacket_Localised data, int Bpp, IndexColorModel cm)
             throws RdesktopException {
 
-        byte[] compressed_pixel = new byte[size];
+        var compressed_pixel = new byte[size];
         data.copyToByteArray(compressed_pixel, 0, data.getPosition(), size);
         data.incrementPosition(size);
 
@@ -704,26 +703,26 @@ public class Bitmap {
         else
             w = new WrappedImage(width, height, BufferedImage.TYPE_INT_RGB, cm);
 
-        boolean isfillormix = false;
-        boolean bicolor = false;
-        boolean insertmix = false;
-        int mix = 0xffffffff;
-        int mask = 0;
+        var isfillormix = false;
+        var bicolor = false;
+        var insertmix = false;
+        var mix = 0xffffffff;
+        var mask = 0;
         byte mixmask = 0;
-        int color2 = 0;
-        int color1 = 0;
-        int code = 0;
-        int fom_mask = 0;
-        int lastopcode = -1;
-        int x = width;
-        int offset = 0;
-        int count = 0;
-        int opcode = 0;
-        int end = size;
-        int input = 0;
-        int prevY = 0;
-        int line = 0;
-        int previous = -1;
+        var color2 = 0;
+        var color1 = 0;
+        var code = 0;
+        var fom_mask = 0;
+        var lastopcode = -1;
+        var x = width;
+        var offset = 0;
+        var count = 0;
+        var opcode = 0;
+        var end = size;
+        var input = 0;
+        var prevY = 0;
+        var line = 0;
+        var previous = -1;
         while (input < end) {
             fom_mask = 0;
             code = (compressed_pixel[input++] & 0x000000ff);
@@ -843,7 +842,7 @@ public class Bitmap {
 
                         if (previous == -1) {
                             while (((count & ~0x7) != 0) && ((x + 8) < width)) {
-                                for (int i = 0; i < 8; i++) {
+                                for (var i = 0; i < 8; i++) {
                                     
                                     w.setRGB(x, height, 0);
                                     count--;
@@ -858,7 +857,7 @@ public class Bitmap {
                             }
                         } else {
                             while (((count & ~0x7) != 0) && ((x + 8) < width)) {
-                                for (int i = 0; i < 8; i++) {
+                                for (var i = 0; i < 8; i++) {
                                     
                                     w.setRGB(x, height, w.getRGB(x, prevY));
                                     count--;
@@ -877,7 +876,7 @@ public class Bitmap {
                     case 1: /* Mix */
                         if (previous == -1) {
                             while (((count & ~0x7) != 0) && ((x + 8) < width)) {
-                                for (int i = 0; i < 8; i++) {
+                                for (var i = 0; i < 8; i++) {
                                     
                                     w.setRGB(x, height, mix);
                                     count--;
@@ -893,7 +892,7 @@ public class Bitmap {
                         } else {
 
                             while (((count & ~0x7) != 0) && ((x + 8) < width)) {
-                                for (int i = 0; i < 8; i++) {
+                                for (var i = 0; i < 8; i++) {
                                     
                                     w.setRGB(x, height, w.getRGB(x, prevY) ^ mix);
                                     count--;
@@ -912,7 +911,7 @@ public class Bitmap {
                     case 2: /* Fill or Mix */
                         if (previous == -1) {
                             while (((count & ~0x7) != 0) && ((x + 8) < width)) {
-                                for (int i = 0; i < 8; i++) {
+                                for (var i = 0; i < 8; i++) {
                                     mixmask <<= 1;
                                     if (mixmask == 0) {
                                         mask = (fom_mask != 0) ? (byte) fom_mask
@@ -949,7 +948,7 @@ public class Bitmap {
                             }
                         } else {
                             while (((count & ~0x7) != 0) && ((x + 8) < width)) {
-                                for (int i = 0; i < 8; i++) {
+                                for (var i = 0; i < 8; i++) {
                                     mixmask <<= 1;
                                     if (mixmask == 0) {
                                         mask = (fom_mask != 0) ? (byte) fom_mask
@@ -993,7 +992,7 @@ public class Bitmap {
 
                     case 3: /* Color */
                         while (((count & ~0x7) != 0) && ((x + 8) < width)) {
-                            for (int i = 0; i < 8; i++) {
+                            for (var i = 0; i < 8; i++) {
                                 
                                 w.setRGB(x, height, color2);
                                 count--;
@@ -1011,7 +1010,7 @@ public class Bitmap {
 
                     case 4: /* Copy */
                         while (((count & ~0x7) != 0) && ((x + 8) < width)) {
-                            for (int i = 0; i < 8; i++) {
+                            for (var i = 0; i < 8; i++) {
                                 
                                 
                                 w.setRGB(x, height, cvalx(compressed_pixel, input,
@@ -1036,7 +1035,7 @@ public class Bitmap {
 
                     case 8: /* Bicolor */
                         while (((count & ~0x7) != 0) && ((x + 8) < width)) {
-                            for (int i = 0; i < 8; i++) {
+                            for (var i = 0; i < 8; i++) {
                                 if (bicolor) {
                                     
                                     w.setRGB(x, height, color2);
@@ -1070,7 +1069,7 @@ public class Bitmap {
 
                     case 0xd: /* White */
                         while (((count & ~0x7) != 0) && ((x + 8) < width)) {
-                            for (int i = 0; i < 8; i++) {
+                            for (var i = 0; i < 8; i++) {
                                 
                                 w.setRGB(x, height, 0xffffff);
                                 count--;
@@ -1087,7 +1086,7 @@ public class Bitmap {
 
                     case 0xe: /* Black */
                         while (((count & ~0x7) != 0) && ((x + 8) < width)) {
-                            for (int i = 0; i < 8; i++) {
+                            for (var i = 0; i < 8; i++) {
                                 
                                 w.setRGB(x, height, 0x00);
                                 count--;
@@ -1131,7 +1130,7 @@ public class Bitmap {
     public static int[] decompressInt(int width, int height, int size,
                                       RdpPacket_Localised data, int Bpp) throws RdesktopException {
 
-        byte[] compressed_pixel = new byte[size];
+        var compressed_pixel = new byte[size];
         data.copyToByteArray(compressed_pixel, 0, data.getPosition(), size);
         data.incrementPosition(size);
 
@@ -1141,12 +1140,12 @@ public class Bitmap {
         int lastopcode = -1, fom_mask = 0;
         int code = 0, color1 = 0, color2 = 0;
         byte mixmask = 0;
-        int mask = 0;
-        int mix = 0xffffffff;
+        var mask = 0;
+        var mix = 0xffffffff;
 
         boolean insertmix = false, bicolor = false, isfillormix = false;
 
-        int[] pixel = new int[width * height];
+        var pixel = new int[width * height];
         while (input < end) {
             fom_mask = 0;
             code = (compressed_pixel[input++] & 0x000000ff);
@@ -1264,7 +1263,7 @@ public class Bitmap {
 
                         if (previous == -1) {
                             while (((count & ~0x7) != 0) && ((x + 8) < width)) {
-                                for (int i = 0; i < 8; i++) {
+                                for (var i = 0; i < 8; i++) {
                                     
                                     pixel[line + x] = 0;
                                     count--;
@@ -1279,7 +1278,7 @@ public class Bitmap {
                             }
                         } else {
                             while (((count & ~0x7) != 0) && ((x + 8) < width)) {
-                                for (int i = 0; i < 8; i++) {
+                                for (var i = 0; i < 8; i++) {
                                     
                                     pixel[line + x] = pixel[previous + x];
                                     count--;
@@ -1298,7 +1297,7 @@ public class Bitmap {
                     case 1: /* Mix */
                         if (previous == -1) {
                             while (((count & ~0x7) != 0) && ((x + 8) < width)) {
-                                for (int i = 0; i < 8; i++) {
+                                for (var i = 0; i < 8; i++) {
                                     
                                     pixel[line + x] = mix;
                                     count--;
@@ -1314,7 +1313,7 @@ public class Bitmap {
                         } else {
 
                             while (((count & ~0x7) != 0) && ((x + 8) < width)) {
-                                for (int i = 0; i < 8; i++) {
+                                for (var i = 0; i < 8; i++) {
                                     
                                     
                                     pixel[line + x] = pixel[previous + x] ^ mix;
@@ -1336,7 +1335,7 @@ public class Bitmap {
                     case 2: /* Fill or Mix */
                         if (previous == -1) {
                             while (((count & ~0x7) != 0) && ((x + 8) < width)) {
-                                for (int i = 0; i < 8; i++) {
+                                for (var i = 0; i < 8; i++) {
                                     mixmask <<= 1;
                                     if (mixmask == 0) {
                                         mask = (fom_mask != 0) ? (byte) fom_mask
@@ -1371,7 +1370,7 @@ public class Bitmap {
                             }
                         } else {
                             while (((count & ~0x7) != 0) && ((x + 8) < width)) {
-                                for (int i = 0; i < 8; i++) {
+                                for (var i = 0; i < 8; i++) {
                                     mixmask <<= 1;
                                     if (mixmask == 0) {
                                         mask = (fom_mask != 0) ? (byte) fom_mask
@@ -1415,7 +1414,7 @@ public class Bitmap {
 
                     case 3: /* Color */
                         while (((count & ~0x7) != 0) && ((x + 8) < width)) {
-                            for (int i = 0; i < 8; i++) {
+                            for (var i = 0; i < 8; i++) {
                                 
                                 pixel[line + x] = color2;
                                 count--;
@@ -1433,7 +1432,7 @@ public class Bitmap {
 
                     case 4: /* Copy */
                         while (((count & ~0x7) != 0) && ((x + 8) < width)) {
-                            for (int i = 0; i < 8; i++) {
+                            for (var i = 0; i < 8; i++) {
                                 
                                 
                                 
@@ -1457,7 +1456,7 @@ public class Bitmap {
 
                     case 8: /* Bicolor */
                         while (((count & ~0x7) != 0) && ((x + 8) < width)) {
-                            for (int i = 0; i < 8; i++) {
+                            for (var i = 0; i < 8; i++) {
                                 if (bicolor) {
                                     
                                     pixel[line + x] = color2;
@@ -1491,7 +1490,7 @@ public class Bitmap {
 
                     case 0xd: /* White */
                         while (((count & ~0x7) != 0) && ((x + 8) < width)) {
-                            for (int i = 0; i < 8; i++) {
+                            for (var i = 0; i < 8; i++) {
                                 
                                 pixel[line + x] = 0xffffff;
                                 count--;
@@ -1508,7 +1507,7 @@ public class Bitmap {
 
                     case 0xe: /* Black */
                         while (((count & ~0x7) != 0) && ((x + 8) < width)) {
-                            for (int i = 0; i < 8; i++) {
+                            for (var i = 0; i < 8; i++) {
                                 
                                 pixel[line + x] = 0x00;
                                 count--;
@@ -1552,7 +1551,7 @@ public class Bitmap {
     public static byte[] decompress(int width, int height, int size,
                                     RdpPacket_Localised data, int Bpp) throws RdesktopException {
 
-        byte[] compressed_pixel = new byte[size];
+        var compressed_pixel = new byte[size];
         data.copyToByteArray(compressed_pixel, 0, data.getPosition(), size);
         data.incrementPosition(size);
 
@@ -1562,12 +1561,12 @@ public class Bitmap {
         int lastopcode = -1, fom_mask = 0;
         int code = 0, color1 = 0, color2 = 0;
         byte mixmask = 0;
-        int mask = 0;
-        int mix = 0xffffffff;
+        var mask = 0;
+        var mix = 0xffffffff;
 
         boolean insertmix = false, bicolor = false, isfillormix = false;
 
-        byte[] pixel = new byte[width * height];
+        var pixel = new byte[width * height];
         while (input < end) {
             fom_mask = 0;
             code = (compressed_pixel[input++] & 0x000000ff);
@@ -1688,7 +1687,7 @@ public class Bitmap {
 
                         if (previous == 0) {
                             while (((count & ~0x7) != 0) && ((x + 8) < width)) {
-                                for (int i = 0; i < 8; i++) {
+                                for (var i = 0; i < 8; i++) {
                                     
                                     pixel[line + x] = 0;
                                     count--;
@@ -1703,7 +1702,7 @@ public class Bitmap {
                             }
                         } else {
                             while (((count & ~0x7) != 0) && ((x + 8) < width)) {
-                                for (int i = 0; i < 8; i++) {
+                                for (var i = 0; i < 8; i++) {
                                     
                                     
                                     pixel[line + x] = pixel[previous + x];
@@ -1724,7 +1723,7 @@ public class Bitmap {
                     case 1: /* Mix */
                         if (previous == 0) {
                             while (((count & ~0x7) != 0) && ((x + 8) < width)) {
-                                for (int i = 0; i < 8; i++) {
+                                for (var i = 0; i < 8; i++) {
                                     
                                     pixel[line + x] = (byte) mix;
                                     count--;
@@ -1740,7 +1739,7 @@ public class Bitmap {
                         } else {
 
                             while (((count & ~0x7) != 0) && ((x + 8) < width)) {
-                                for (int i = 0; i < 8; i++) {
+                                for (var i = 0; i < 8; i++) {
                                     setli(pixel, line, x, getli(pixel, previous, x,
                                             1)
                                             ^ mix, 1);
@@ -1762,7 +1761,7 @@ public class Bitmap {
                     case 2: /* Fill or Mix */
                         if (previous == 0) {
                             while (((count & ~0x7) != 0) && ((x + 8) < width)) {
-                                for (int i = 0; i < 8; i++) {
+                                for (var i = 0; i < 8; i++) {
                                     mixmask <<= 1;
                                     if (mixmask == 0) {
                                         mask = (fom_mask != 0) ? (byte) fom_mask
@@ -1797,7 +1796,7 @@ public class Bitmap {
                             }
                         } else {
                             while (((count & ~0x7) != 0) && ((x + 8) < width)) {
-                                for (int i = 0; i < 8; i++) {
+                                for (var i = 0; i < 8; i++) {
                                     mixmask <<= 1;
                                     if (mixmask == 0) {
                                         mask = (fom_mask != 0) ? (byte) fom_mask
@@ -1845,7 +1844,7 @@ public class Bitmap {
 
                     case 3: /* Color */
                         while (((count & ~0x7) != 0) && ((x + 8) < width)) {
-                            for (int i = 0; i < 8; i++) {
+                            for (var i = 0; i < 8; i++) {
                                 
                                 pixel[line + x] = (byte) color2;
                                 count--;
@@ -1863,7 +1862,7 @@ public class Bitmap {
 
                     case 4: /* Copy */
                         while (((count & ~0x7) != 0) && ((x + 8) < width)) {
-                            for (int i = 0; i < 8; i++) {
+                            for (var i = 0; i < 8; i++) {
                                 
                                 
                                 pixel[line + x] = compressed_pixel[input++];
@@ -1884,7 +1883,7 @@ public class Bitmap {
 
                     case 8: /* Bicolor */
                         while (((count & ~0x7) != 0) && ((x + 8) < width)) {
-                            for (int i = 0; i < 8; i++) {
+                            for (var i = 0; i < 8; i++) {
                                 if (bicolor) {
                                     
                                     pixel[line + x] = (byte) color2;
@@ -1918,7 +1917,7 @@ public class Bitmap {
 
                     case 0xd: /* White */
                         while (((count & ~0x7) != 0) && ((x + 8) < width)) {
-                            for (int i = 0; i < 8; i++) {
+                            for (var i = 0; i < 8; i++) {
                                 
                                 pixel[line + x] = (byte) 0xff;
                                 count--;
@@ -1935,7 +1934,7 @@ public class Bitmap {
 
                     case 0xe: /* Black */
                         while (((count & ~0x7) != 0) && ((x + 8) < width)) {
-                            for (int i = 0; i < 8; i++) {
+                            for (var i = 0; i < 8; i++) {
                                 
                                 pixel[line + x] = 0x00;
                                 count--;

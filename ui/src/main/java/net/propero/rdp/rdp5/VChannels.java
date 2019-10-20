@@ -96,11 +96,11 @@ public class VChannels {
         Class cl = a.getClass();
         if (!cl.isArray())
             return null;
-        int length = Array.getLength(a);
-        int newLength = length + amount; 
+        var length = Array.getLength(a);
+        var newLength = length + amount;
 
         Class componentType = a.getClass().getComponentType();
-        Object newArray = Array.newInstance(componentType, newLength);
+        var newArray = Array.newInstance(componentType, newLength);
         System.arraycopy(a, 0, newArray, 0, length);
         return newArray;
     }
@@ -118,7 +118,7 @@ public class VChannels {
         else if (source == null || source.length <= 0)
             return target;
         else {
-            byte[] out = (byte[]) arrayExpand(target, source.length);
+            var out = (byte[]) arrayExpand(target, source.length);
             System.arraycopy(source, 0, out, target.length, source.length);
             return out;
         }
@@ -212,23 +212,23 @@ public class VChannels {
         if (i >= num_channels)
             return;
 
-        int length = data.getLittleEndian32();
-        int flags = data.getLittleEndian32();
+        var length = data.getLittleEndian32();
+        var flags = data.getLittleEndian32();
 
         if (((flags & CHANNEL_FLAG_FIRST) != 0)
                 && ((flags & CHANNEL_FLAG_LAST) != 0)) {
             
             channel.process(data);
         } else {
-            
-            byte[] content = new byte[data.getEnd() - data.getPosition()];
+
+            var content = new byte[data.getEnd() - data.getPosition()];
             data
                     .copyToByteArray(content, 0, data.getPosition(),
                             content.length);
             fragment_buffer = append(fragment_buffer, content);
 
             if ((flags & CHANNEL_FLAG_LAST) != 0) {
-                RdpPacket_Localised fullpacket = new RdpPacket_Localised(
+                var fullpacket = new RdpPacket_Localised(
                         fragment_buffer.length);
                 fullpacket.copyFromByteArray(fragment_buffer, 0, 0,
                         fragment_buffer.length);

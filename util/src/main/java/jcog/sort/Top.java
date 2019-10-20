@@ -47,7 +47,7 @@ public class Top<X> implements TopFilter<X> {
 
     @Override
     public boolean add(X x) {
-        float override = rank.rank(x, score);
+        var override = rank.rank(x, score);
         if (override==override && override > score) {
             the = x;
             score = override;
@@ -58,7 +58,7 @@ public class Top<X> implements TopFilter<X> {
 
     @Override
     public @Nullable X pop() {
-        X x = this.the;
+        var x = this.the;
         clear();
         return x;
     }
@@ -74,7 +74,7 @@ public class Top<X> implements TopFilter<X> {
 
     @Override
     public final Iterator<X> iterator() {
-        X x = the;
+        var x = the;
         return x == null ? Util.emptyIterator : Iterators.singletonIterator(x);
     }
 }

@@ -20,15 +20,15 @@ public class ImpulseTruthlet extends ProxyTruthlet {
 
     @Override
     public void truth(long when, float[] freqEvi) {
-        long s = start();
-        long e = end();
+        var s = start();
+        var e = end();
         if (when >= s && when <= e) {
             
             super.truth(when, freqEvi);
         } else {
             
             freqEvi[0] = freqInactive;
-            long dist = Math.min(Math.abs(s - when), Math.abs(e - when));
+            var dist = Math.min(Math.abs(s - when), Math.abs(e - when));
             freqEvi[1] = (float) NAL.evi(eviInactive, dist, Math.max(1, Tense.occToDT((e - s) / 2)));
         }
     }

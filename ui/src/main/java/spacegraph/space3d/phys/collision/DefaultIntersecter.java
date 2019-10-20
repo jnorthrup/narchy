@@ -62,11 +62,11 @@ public class DefaultIntersecter extends Intersecter {
 		
 		
 
-		for (int i = 0; i < MAX_BROADPHASE_COLLISION_TYPES; i++) {
-			BroadphaseNativeType ti = BroadphaseNativeType.forValue(i);
-			CollisionAlgorithmCreateFunc[] ddi = this.doubleDispatch[i];
+		for (var i = 0; i < MAX_BROADPHASE_COLLISION_TYPES; i++) {
+			var ti = BroadphaseNativeType.forValue(i);
+			var ddi = this.doubleDispatch[i];
 
-			for (int j = 0; j < MAX_BROADPHASE_COLLISION_TYPES; j++) {
+			for (var j = 0; j < MAX_BROADPHASE_COLLISION_TYPES; j++) {
 				ddi[j] = config.collider(
 					ti,
 					BroadphaseNativeType.forValue(j)
@@ -98,10 +98,10 @@ public class DefaultIntersecter extends Intersecter {
 
 	@Override
 	public CollisionAlgorithm findAlgorithm(Collidable body0, Collidable body1, PersistentManifold sharedManifold) {
-		CollisionAlgorithmConstructionInfo ci = tmpCI;
+		var ci = tmpCI;
 		ci.intersecter1 = this;
 		ci.manifold = sharedManifold;
-		CollisionAlgorithmCreateFunc createFunc =
+		var createFunc =
 				doubleDispatch[body0.shape().getShapeType().ordinal()][body1.shape().getShapeType().ordinal()];
 		return createFunc.createCollisionAlgorithm(ci, body0, body1);
 	}
@@ -110,12 +110,10 @@ public class DefaultIntersecter extends Intersecter {
 
 	@Override
 	public PersistentManifold getNewManifold(Object b0, Object b1) {
-		
 
-		
 
-		Collidable body0 = (Collidable)b0;
-		Collidable body1 = (Collidable)b1;
+		var body0 = (Collidable)b0;
+		var body1 = (Collidable)b1;
 
 		/*
 		void* mem = 0;
@@ -133,7 +131,7 @@ public class DefaultIntersecter extends Intersecter {
 		m_manifoldsPtr.push_back(manifold);
 		*/
 
-		PersistentManifold manifold = new PersistentManifold(BulletGlobals.the.get());
+		var manifold = new PersistentManifold(BulletGlobals.the.get());
 		manifold.init(body0,body1,0);
 
 		manifold.index1a = manifolds.size();
@@ -149,8 +147,8 @@ public class DefaultIntersecter extends Intersecter {
 		
 		clearManifold(manifold);
 
-		
-		int findIndex = manifold.index1a;
+
+		var findIndex = manifold.index1a;
 		assert (findIndex < manifolds.size());
 		Collections.swap(manifolds, findIndex, manifolds.size()-1);
         
@@ -180,7 +178,7 @@ public class DefaultIntersecter extends Intersecter {
 		}
 
 
-        boolean needsCollision = true;
+		var needsCollision = true;
         if ((!body0.isActive()) && (!body1.isActive()) || !body0.checkCollideWith(body1)) {
 			needsCollision = false;
 		}

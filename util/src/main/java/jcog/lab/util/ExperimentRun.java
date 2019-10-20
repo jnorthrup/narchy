@@ -53,7 +53,7 @@ public class ExperimentRun<E> implements Runnable {
      */
     public static <X> DataTable newData(Iterable<Sensor<X,?>> sensors) {
         DataTable data = new ARFF();
-        for (Sensor<X, ?> s : sensors) {
+        for (var s : sensors) {
             s.addToSchema(data);
         }
         return data;
@@ -61,7 +61,7 @@ public class ExperimentRun<E> implements Runnable {
 
     @Override
     public void run() {
-        long startTime = System.currentTimeMillis();
+        var startTime = System.currentTimeMillis();
 
         try {
             procedure.accept(experiment, this);
@@ -70,7 +70,7 @@ public class ExperimentRun<E> implements Runnable {
             t.printStackTrace();
         }
 
-        long endTime = System.currentTimeMillis();
+        var endTime = System.currentTimeMillis();
 
         if (data != null) {
             ((ARFF)data).setComment(experiment + ": " + procedure +

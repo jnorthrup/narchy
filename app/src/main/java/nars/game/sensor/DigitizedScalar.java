@@ -69,8 +69,8 @@ public class DigitizedScalar extends DemultiplexedScalarSensor {
     public static final ScalarEncoder Fluid = (v, i, indices) -> {
 
 
-        float vv = v * (indices);
-        int which = (int) Math.ceil(vv);
+        var vv = v * (indices);
+        var which = (int) Math.ceil(vv);
         float f;
         if (i < which) {
             f = 1f;
@@ -95,8 +95,8 @@ public class DigitizedScalar extends DemultiplexedScalarSensor {
      * hard
      */
     public static final ScalarEncoder Needle = (v, i, indices) -> {
-        float vv = v * indices;
-        int which = (int) Math.floor(vv);
+        var vv = v * indices;
+        var which = (int) Math.floor(vv);
         return i == which ? 1 : 0;
     };
 
@@ -110,7 +110,7 @@ public class DigitizedScalar extends DemultiplexedScalarSensor {
      */
     public static final ScalarEncoder FuzzyNeedle = (v, i, indices) -> {
 
-        float dr = 1f / (indices - 1);
+        var dr = 1f / (indices - 1);
 
         return Math.max(0, (1f - Math.abs((i * dr) - v) / dr));
     };
@@ -122,10 +122,9 @@ public class DigitizedScalar extends DemultiplexedScalarSensor {
     public static final ScalarEncoder FuzzyBinary = (v, i, indices) -> {
 
 
-
-        float b = v;
-        float dv = 1f;
-        for (int j = 0; j < i; j++) {
+        var b = v;
+        var dv = 1f;
+        for (var j = 0; j < i; j++) {
             dv /= 2f;
             b = Math.max(0, b - dv);
         }
@@ -144,8 +143,8 @@ public class DigitizedScalar extends DemultiplexedScalarSensor {
      * returns snapshot of the belief state of the concepts
      */
     public Truth[] belief(long when, NAR n) {
-        int s = size();
-        Truth[] f = IntStream.range(0, s).mapToObj(i -> n.beliefTruth(sensors.get(i), when)).toArray(Truth[]::new);
+        var s = size();
+        var f = IntStream.range(0, s).mapToObj(i -> n.beliefTruth(sensors.get(i), when)).toArray(Truth[]::new);
         return f;
     }
 
@@ -166,15 +165,15 @@ public class DigitizedScalar extends DemultiplexedScalarSensor {
         this.input = input;
 
 
-        float defaultFreq = freqer.defaultTruth();
+        var defaultFreq = freqer.defaultTruth();
 
         assert (states.length > 1);
         this.sensors = new FasterList(states.length);
-        int i = 0;
-        for (Term s : states) {
-            int ii = i++;
-            ComponentSignal sc = newComponent(s, () -> {
-                float x = freqer.truth(asFloat(), ii, states.length);
+        var i = 0;
+        for (var s : states) {
+            var ii = i++;
+            var sc = newComponent(s, () -> {
+                var x = freqer.truth(asFloat(), ii, states.length);
                 return Util.equals(x, defaultFreq) ? Float.NaN : x;
             });
 

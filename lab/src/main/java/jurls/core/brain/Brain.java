@@ -68,16 +68,16 @@ public class Brain extends LearnerAndActor {
             @Override
             public void run() {
                 while (running) {
-                    for (int i = 0; i < numStateElements; ++i) {
+                    for (var i = 0; i < numStateElements; ++i) {
                         previousState[i] = Math.random() * (stateMax[i] - stateMin[i]) + stateMin[i];
                     }
                     behaviourLearner.value(action, previousState);
-                    int previousAction = Utils.checkAction(numActions,action);
+                    var previousAction = Utils.checkAction(numActions,action);
                     Utils.join(stateAction, previousState, previousAction);
                     physicsLearner.value(nextState,stateAction);
                     rewardLearner.value(reward,nextState);
 
-                    int nextAction = soul.learnAndAction(
+                    var nextAction = soul.learnAndAction(
                             nextState,
                             reward[0],
                             previousState,
@@ -92,7 +92,7 @@ public class Brain extends LearnerAndActor {
 
     @Override
     public int learnAndAction(double[] nextState, double nextReward, double[] previousState, int previousAction) {
-        for (int i = 0; i < stateMin.length; ++i) {
+        for (var i = 0; i < stateMin.length; ++i) {
             if (nextState[i] < stateMin[i]) {
                 stateMin[i] = nextState[i];
             }
@@ -111,7 +111,7 @@ public class Brain extends LearnerAndActor {
     @Override
     public String getDebugString(int indent) {
         debugString.setLength(0);
-        String ind = Utils.makeIndent(indent);
+        var ind = Utils.makeIndent(indent);
 
         return debugString.
                 append(ind).append("Brain : \n").

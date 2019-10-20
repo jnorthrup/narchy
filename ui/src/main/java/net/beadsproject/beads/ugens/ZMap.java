@@ -57,14 +57,14 @@ public class ZMap extends UGen implements DataBeadReceiver {
 
     @Override
     public void gen() {
-        for (int j = 0; j < channels; j++) {
-            float[] bi = bufIn[j];
-            float[] bo = bufOut[j];
+        for (var j = 0; j < channels; j++) {
+            var bi = bufIn[j];
+            var bo = bufOut[j];
 
             if (clip) {
                 float y;
                 if (flipped) {
-                    for (int i = 0; i < bufferSize; i++) {
+                    for (var i = 0; i < bufferSize; i++) {
                         y = bi[i];
                         if (y < o2) {
                             y = o2;
@@ -74,7 +74,7 @@ public class ZMap extends UGen implements DataBeadReceiver {
                         bo[i] = a * y + b;
                     }
                 } else {
-                    for (int i = 0; i < bufferSize; i++) {
+                    for (var i = 0; i < bufferSize; i++) {
                         y = bi[i];
                         if (y > o2) {
                             y = o2;
@@ -86,7 +86,7 @@ public class ZMap extends UGen implements DataBeadReceiver {
 
                 }
             } else {
-                for (int i = 0; i < bufferSize; i++) {
+                for (var i = 0; i < bufferSize; i++) {
                     bo[i] = a * bi[i] + b;
                 }
             }
@@ -337,7 +337,7 @@ public class ZMap extends UGen implements DataBeadReceiver {
                     .getFloat("targetMaximum", n2));
             multiplyThenAdd(db.getFloat("multiplier", a), db.getFloat("shift",
                     b));
-            Object o = db.get("clipping");
+            var o = db.get("clipping");
             if (o instanceof Boolean) {
                 setClipping((Boolean) o);
             }
@@ -360,7 +360,7 @@ public class ZMap extends UGen implements DataBeadReceiver {
      * @return The new parameter DataBead.
      */
     private DataAuvent getStaticParams() {
-        DataAuvent db = new DataAuvent();
+        var db = new DataAuvent();
         db.put("sourceMinimum", o1);
         db.put("sourceMaximum", o2);
         db.put("targetMinimum", n1);

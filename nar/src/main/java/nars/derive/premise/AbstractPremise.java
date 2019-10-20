@@ -60,7 +60,7 @@ public class AbstractPremise implements Premise {
 
 	@Override
 	public final Term why() {
-		Termed w = this.why; return w!=null ? w.term() : null;
+		var w = this.why; return w!=null ? w.term() : null;
 	}
 
 
@@ -88,7 +88,7 @@ public class AbstractPremise implements Premise {
 	public boolean equals(Object obj) {
 		if (this == obj) return true;
 		if (!(obj instanceof AbstractPremise)) return false;
-		AbstractPremise p = (AbstractPremise) obj;
+		var p = (AbstractPremise) obj;
 		return p.task.equals(task) && p.belief.equals(belief);
 	}
 

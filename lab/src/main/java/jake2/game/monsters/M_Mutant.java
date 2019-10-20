@@ -366,7 +366,7 @@ public class M_Mutant {
         public String getID(){ return "mutant_step"; }
         @Override
         public boolean think(edict_t self) {
-            int n = (Lib.rand() + 1) % 3;
+            var n = (Lib.rand() + 1) % 3;
             switch (n) {
                 case 0:
                     game_import_t.sound(self, Defines.CHAN_VOICE, sound_step1, 1,
@@ -726,7 +726,7 @@ public class M_Mutant {
                     Math3D.VectorNormalize(normal);
                     float[] point = {0, 0, 0};
                     Math3D.VectorMA(self.s.origin, self.maxs[0], normal, point);
-                    int damage = (int) (40 + 10 * Lib.random());
+                    var damage = (int) (40 + 10 * Lib.random());
                     GameCombat.T_Damage(other, self, self, self.velocity, point,
                             normal, damage, damage, 0, Defines.MOD_UNKNOWN);
                 }
@@ -839,7 +839,7 @@ public class M_Mutant {
             v[0] = self.s.origin[0] - self.enemy.s.origin[0];
             v[1] = self.s.origin[1] - self.enemy.s.origin[1];
             v[2] = 0;
-            float distance = Math3D.VectorLength(v);
+            var distance = Math3D.VectorLength(v);
 
             if (distance < 100)
                 return false;
@@ -933,7 +933,7 @@ public class M_Mutant {
             if (GameBase.skill.value == 3)
                 return;
 
-            float r = Lib.random();
+            var r = Lib.random();
             if (r < 0.33) {
                 game_import_t.sound(self, Defines.CHAN_VOICE, sound_pain1, 1,
                         Defines.ATTN_NORM, 0);

@@ -55,7 +55,7 @@ public abstract class RealTime extends Time {
 
     @Override
     public void reset() {
-        long startMS = System.currentTimeMillis();
+        var startMS = System.currentTimeMillis();
         this.startNS = System.nanoTime();
         this.start = relativeToStart ? Math.round((startMS /1000.0) * unitsPerSecond) : 0L;
         this.dur = nextDur;
@@ -148,7 +148,7 @@ public abstract class RealTime extends Time {
 
     @Override
     public long toCycles(Quantity q) {
-        double s = TimeQuantities.toTimeUnitSeconds(q).doubleValue(null);
+        var s = TimeQuantities.toTimeUnitSeconds(q).doubleValue(null);
         return Math.round(s * unitsPerSecond);
     }
 

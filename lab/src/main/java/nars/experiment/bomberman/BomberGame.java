@@ -49,7 +49,7 @@ public class BomberGame extends JPanel
         /** if java runtime is Java 2 */
         if (Main.J2) {
             /** create the rendering hints for better graphics output */
-            RenderingHints h = new RenderingHints(null);
+            var h = new RenderingHints(null);
             h.put(RenderingHints.KEY_TEXT_ANTIALIASING,
                     RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
             h.put(RenderingHints.KEY_FRACTIONALMETRICS,
@@ -63,13 +63,13 @@ public class BomberGame extends JPanel
             hints = h;
         }
 
-        String path = BomberMain.RP + "Images/BomberEndGame/";
+        var path = BomberMain.RP + "Images/BomberEndGame/";
         /** create the images */
         images = new Image[6];
         /** open the image files */
         try {
             String str = null;
-            for (int i = 0; i < 4; i++) {
+            for (var i = 0; i < 4; i++) {
                 str = path + "Player " + (i + 1) + " Wins.jpg";
                 images[i] = Toolkit.getDefaultToolkit().getImage(
                         new File(str).getCanonicalPath());
@@ -98,8 +98,8 @@ public class BomberGame extends JPanel
 
         /** load the images */
         try {
-            MediaTracker tracker = new MediaTracker(this);
-            for (int i = 0; i < 6; i++) tracker.addImage(images[i], i);
+            var tracker = new MediaTracker(this);
+            for (var i = 0; i < 6; i++) tracker.addImage(images[i], i);
             tracker.waitForAll();
         } catch (Exception e) {
             new ErrorDialog(e);
@@ -108,7 +108,7 @@ public class BomberGame extends JPanel
         /** create the players array */
         players = new BomberPlayer[totalPlayers];
         /** create the players */
-        for (int i = 0; i < totalPlayers; i++)
+        for (var i = 0; i < totalPlayers; i++)
             players[i] = new BomberPlayer(this, map, i + 1);
 
         /** double buffer on */
@@ -126,7 +126,7 @@ public class BomberGame extends JPanel
      */
     public void keyPressed(KeyEvent evt) {
         if (!gameOver) {
-            for (int i = 0; i < totalPlayers; i++)
+            for (var i = 0; i < totalPlayers; i++)
                 players[i].keyPressed(evt);
         } else if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
             timer.stop();
@@ -142,7 +142,7 @@ public class BomberGame extends JPanel
      */
     public void keyReleased(KeyEvent evt) {
         if (!gameOver) {
-            for (int i = 0; i < totalPlayers; i++)
+            for (var i = 0; i < totalPlayers; i++)
                 players[i].keyReleased(evt);
         }
     }
@@ -153,10 +153,10 @@ public class BomberGame extends JPanel
      */
     @Override
     public void paint(Graphics graphics) {
-        Graphics g = graphics;
+        var g = graphics;
         /** if game is active */
         if (!gameOver) {
-            for (int i = 0; i < totalPlayers; i++)
+            for (var i = 0; i < totalPlayers; i++)
                 players[i].paint(graphics);
         }
         /** if java runtime is Java 2 */
@@ -194,7 +194,7 @@ public class BomberGame extends JPanel
             /** if 1 or less players left alive */
             if (playersLeft <= 1 && timer == null) {
                 /** deactiavte all the players */
-                for (int i = 0; i < totalPlayers; i++)
+                for (var i = 0; i < totalPlayers; i++)
                     players[i].deactivate();
                 timer = new Timer(1000, this);
                 timer.start();
@@ -218,7 +218,7 @@ public class BomberGame extends JPanel
      * @param graphics graphics handle
      */
     public void paint2D(Graphics graphics) {
-        Graphics2D g2 = (Graphics2D) graphics;
+        var g2 = (Graphics2D) graphics;
         /** set the rendering hints */
         g2.setRenderingHints((RenderingHints) hints);
         /** if game is over */
@@ -245,7 +245,7 @@ public class BomberGame extends JPanel
         /** if 1 or less players left alive */
         if (playersLeft <= 1 && timer == null) {
             /** deactiavte all the players */
-            for (int i = 0; i < totalPlayers; i++)
+            for (var i = 0; i < totalPlayers; i++)
                 players[i].deactivate();
             timer = new Timer(1000, this);
             timer.start();
@@ -265,8 +265,8 @@ public class BomberGame extends JPanel
             }
             /** set default game result = draw */
             /** find winner */
-            int bound = totalPlayers;
-            int found = IntStream.range(0, bound).filter(i -> !players[i].isDead()).findFirst().orElse(4);
+            var bound = totalPlayers;
+            var found = IntStream.range(0, bound).filter(i -> !players[i].isDead()).findFirst().orElse(4);
             winner = found;
             gameOver = true;
             map.setGameOver();

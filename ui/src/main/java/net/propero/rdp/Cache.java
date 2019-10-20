@@ -66,10 +66,10 @@ public class Cache {
      * @param cache_id Number of cache from which to remove bitmap
      */
     void removeLRUBitmap(int cache_id) {
-        int cache_idx = 0;
-        int m = 0xffffffff;
+        var cache_idx = 0;
+        var m = 0xffffffff;
 
-        for (int i = 0; i < bitmapcache[cache_id].length; i++) {
+        for (var i = 0; i < bitmapcache[cache_id].length; i++) {
             if ((bitmapcache[cache_id][i] != null)
                     && (bitmapcache[cache_id][i].getBitmapData() != null)
                     && (bitmapcache[cache_id][i].usage < m)) {
@@ -91,7 +91,7 @@ public class Cache {
      */
     public IndexColorModel get_colourmap(int cache_id) throws RdesktopException {
         if (cache_id < colourcache.length) {
-            IndexColorModel map = colourcache[cache_id];
+            var map = colourcache[cache_id];
             if (map != null)
                 return map;
         }
@@ -128,7 +128,7 @@ public class Cache {
 
         if ((cache_id < bitmapcache.length)
                 && (cache_idx < bitmapcache[0].length)) {
-            Bitmap bitmap = bitmapcache[cache_id][cache_idx];
+            var bitmap = bitmapcache[cache_id][cache_idx];
             /*
              * try { if (bitmap != null ||
              * PstCache.pstcache_load_bitmap(cache_id, cache_idx)){ if
@@ -182,7 +182,7 @@ public class Cache {
     public Cursor getCursor(int cache_idx) throws RdesktopException {
 
         if (cache_idx < cursorcache.length) {
-            Cursor cursor = cursorcache[cache_idx];
+            var cursor = cursorcache[cache_idx];
             if (cursor != null) {
                 return cursor;
             }
@@ -227,9 +227,9 @@ public class Cache {
      */
     public void saveState() {
 
-        for (int id = 0; id < bitmapcache.length; id++)
+        for (var id = 0; id < bitmapcache.length; id++)
             if (PstCache.IS_PERSISTENT(id))
-                for (int idx = 0; idx < bitmapcache[id].length; idx++)
+                for (var idx = 0; idx < bitmapcache[id].length; idx++)
                     PstCache.touchBitmap(id, idx, bitmapcache[id][idx].usage);
     }
 
@@ -244,7 +244,7 @@ public class Cache {
     public Glyph getFont(int font, int character) throws RdesktopException {
 
         if ((font < fontcache.length) && (character < fontcache[0].length)) {
-            Glyph glyph = fontcache[font][character];
+            var glyph = fontcache[font][character];
             if (glyph != null) {
                 return glyph;
             }
@@ -262,7 +262,7 @@ public class Cache {
      */
     public DataBlob getText(int cache_id) throws RdesktopException {
         if (cache_id < textcache.length) {
-            DataBlob entry = textcache[cache_id];
+            var entry = textcache[cache_id];
             if (entry != null) {
                 if (entry.getData() != null) {
                     return entry;
@@ -303,10 +303,10 @@ public class Cache {
         if (offset > highdeskcache.length)
             offset = 0;
 
-        int length = cx * cy;
+        var length = cx * cy;
         if (offset + length <= highdeskcache.length) {
-            int pdata = 0;
-            for (int i = 0; i < cy; i++) {
+            var pdata = 0;
+            for (var i = 0; i < cy; i++) {
                 System.arraycopy(data, pdata, highdeskcache, offset, cx);
                 offset += cx;
                 pdata += cx;
@@ -331,11 +331,11 @@ public class Cache {
         if (offset > highdeskcache.length)
             offset = 0;
 
-        int length = cx * cy;
+        var length = cx * cy;
         if (offset + length <= highdeskcache.length) {
-            int[] data = new int[length];
-            int pdata = 0;
-            for (int i = 0; i < cy; i++) {
+            var data = new int[length];
+            var pdata = 0;
+            for (var i = 0; i < cy; i++) {
                 System.arraycopy(highdeskcache, offset, data, pdata, cx);
                 offset += cx;
                 pdata += cx;

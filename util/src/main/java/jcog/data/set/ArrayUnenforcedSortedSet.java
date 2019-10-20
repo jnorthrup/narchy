@@ -55,7 +55,7 @@ public abstract class ArrayUnenforcedSortedSet<X> extends ArrayUnenforcedSet<X> 
     }
 
     public static <X extends Comparable> SortedSet<X> the(X x, X y) {
-        int c = x.compareTo(y);
+        var c = x.compareTo(y);
         switch (c) {
             case 0:
                 return new One(x);

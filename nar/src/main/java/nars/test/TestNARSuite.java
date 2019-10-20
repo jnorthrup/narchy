@@ -32,8 +32,8 @@ import java.util.stream.Stream;
     @SafeVarargs
     public static Stream<Method> tests(Class<? extends NALTest>... c) {
         List<Method> list = new ArrayList<>();
-        for (Class<? extends NALTest> cc : c) {
-            for (Method x : cc.getDeclaredMethods()) {
+        for (var cc : c) {
+            for (var x : cc.getDeclaredMethods()) {
                 if (x.getAnnotation(Test.class) != null) {
                     x.trySetAccessible();
                     list.add(x);
@@ -50,15 +50,14 @@ import java.util.stream.Stream;
     public TestNARSuite run(boolean parallel, int iterations) {
 
 
+        var mm = testMethods.collect(Collectors.toList());
 
-        List<Method> mm = testMethods.collect(Collectors.toList());
-
-        for (int i = 0; i < iterations; i++) {
+        for (var i = 0; i < iterations; i++) {
 
 
             (parallel ? mm.stream().parallel() : mm.stream()).forEach(m -> {
-                String testName = m.getDeclaringClass().getName() + ' ' + m.getName();
-                MyTestNAR t = new MyTestNAR(narBuilder.get(), testName);
+                var testName = m.getDeclaringClass().getName() + ' ' + m.getName();
+                var t = new MyTestNAR(narBuilder.get(), testName);
                 synchronized (TestNARSuite.this) {
                     add(t); //allow repeats
                 }
@@ -108,7 +107,7 @@ import java.util.stream.Stream;
     }
 
     public double score(/* scoring mode */) {
-        double sum = this.stream().mapToDouble(x -> x.score).sum();
+        var sum = this.stream().mapToDouble(x -> x.score).sum();
         return sum;
     }
 }

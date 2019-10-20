@@ -32,14 +32,14 @@ public class TaskList extends FasterList<Task> implements TaskRegion {
 
     public TaskList(Collection<Task> t) {
         super(0, new Task[t.size()]);
-        for (Task task : t) {
+        for (var task : t) {
             addFast(task);
         }
     }
 
     public TaskList(Iterable<Task> t, int sizeEstimate) {
         super(0, new Task[sizeEstimate]);
-        for (Task task : t) {
+        for (var task : t) {
             add(task);
         }
     }
@@ -49,7 +49,7 @@ public class TaskList extends FasterList<Task> implements TaskRegion {
     }
 
     public final Task[] arrayCommit() {
-        int s = size;
+        var s = size;
         if (s == 0)
             return Task.EmptyArray;
         else if (s == items.length)
@@ -61,8 +61,8 @@ public class TaskList extends FasterList<Task> implements TaskRegion {
     @Override
     public long start() {
 
-        long start = longify((m, t) ->{
-            long s = t.start();
+        var start = longify((m, t) ->{
+            var s = t.start();
             return s != ETERNAL && s < m ? s : m;
         }, TIMELESS);
 
@@ -115,7 +115,7 @@ public class TaskList extends FasterList<Task> implements TaskRegion {
     }
 
     public Supplier<long[]> stamp(int capacity, Random rng) {
-        int ss = size();
+        var ss = size();
         switch (ss) {
             case 1:
                 return () -> stamp(0);
@@ -130,7 +130,7 @@ public class TaskList extends FasterList<Task> implements TaskRegion {
             default:
 
                 return () -> {
-                    @Nullable MetalLongSet stampSet = Stamp.toMutableSet(
+                    @Nullable var stampSet = Stamp.toMutableSet(
                         capacity,
                         this::stamp,
                         ss); //calculate stamp after filtering and after intermpolation filtering
@@ -141,7 +141,7 @@ public class TaskList extends FasterList<Task> implements TaskRegion {
     }
 
     public final @Nullable long[] stamp(int component) {
-        Task t = items[component];
+        var t = items[component];
         return t!=null ? t.stamp() : null;
     }
 

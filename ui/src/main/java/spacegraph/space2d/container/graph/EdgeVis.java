@@ -46,7 +46,7 @@ public class EdgeVis<X> {
                 float x = from.cx(), y = from.cy();
                 gl.glLineWidth(1f + e.weight * 4f);
                 e.color(gl);
-                NodeVis to = e.to;
+                var to = e.to;
                 Draw.line(x, y, to.cx(), to.cy(), gl);
             }
         },
@@ -54,13 +54,13 @@ public class EdgeVis<X> {
             @Override
             public void render(EdgeVis e, NodeVis from, GL2 gl) {
 
-                NodeVis to = e.to;
+                var to = e.to;
                 if (to == null)
                     return;
 
 
-                float scale = Math.min(from.w(), from.h());
-                float base = Util.lerpSafe(e.weight, scale / 2, scale);
+                var scale = Math.min(from.w(), from.h());
+                var base = Util.lerpSafe(e.weight, scale / 2, scale);
 
                 e.color(gl);
                 float fx = from.cx(), fy = from.cy();
@@ -114,7 +114,7 @@ public class EdgeVis<X> {
 
     final void draw(NodeVis<X> from, GL2 gl) {
 
-        NodeVis<X> t = this.to;
+        var t = this.to;
         if (t == null || !t.visible())
             return;
 

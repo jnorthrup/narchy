@@ -119,9 +119,9 @@ public class a extends GamePanel {
 	public void start() {
 
 		setIgnoreRepaint(true);
-		Canvas canvas = new Canvas();
+		var canvas = new Canvas();
 		add(canvas);
-		JFrame f = new JFrame();
+		var f = new JFrame();
 		f.setSize(800,600);
 		f.setContentPane(this);
 		f.setVisible(true);
@@ -136,12 +136,12 @@ public class a extends GamePanel {
 
 	@Override
 	public void run() {
-		int lvl = 1;
+		var lvl = 1;
 		game: while(true) {
-			Random r = new Random();
+			var r = new Random();
 
 
-			int[][] t_type = new int[T_H][T_W]; /*{
+			var t_type = new int[T_H][T_W]; /*{
 			
 				{G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G}, 
 				{G, W, I, W, I, W, W, W, W, W, W, W, G, G, G, G, G, G, G}, 
@@ -159,47 +159,47 @@ public class a extends GamePanel {
 				{G, G, G, G, G, G, G, G, W, I, W, W, W, W, W, W, G, G, G}, 
 				{G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G}, 
 			};*/
-			byte[][] t_hp = new byte[T_H][T_W];
-			
-			String map = "11111111111111111111bababbbbbbb11111111b000020006b11bbbb1120406bbbbbbb1b00b11b000020b000b1b60b11bbcbbb0b000a1b00b11b0000b02080b1b2bb11a0500b0b040a1111911b0406b0b000b1111111b053020bbcbb1111111a0000b0200bbbab1111b0600b3b40c000b9111bbbabb2b00b060211111111111babbbbbb1111111111111111111111";
+			var t_hp = new byte[T_H][T_W];
+
+			var map = "11111111111111111111bababbbbbbb11111111b000020006b11bbbb1120406bbbbbbb1b00b11b000020b000b1b60b11bbcbbb0b000a1b00b11b0000b02080b1b2bb11a0500b0b040a1111911b0406b0b000b1111111b053020bbcbb1111111a0000b0200bbbab1111b0600b3b40c000b9111bbbabb2b00b060211111111111babbbbbb1111111111111111111111";
 
 			
-			for (int y = 0; y < T_H; y++) { for (int x = 0; x < T_W; x++) {
+			for (var y = 0; y < T_H; y++) { for (var x = 0; x < T_W; x++) {
 				t_type[y][x] = Integer.parseInt(map.substring(y * T_W + x, y * T_W + x + 1), 16);
 				t_hp[y][x] = T_TO_HP[t_type[y][x]];
 			}}
-			
-			
-			int off = r.nextInt(8) + 1;
-            double b_y = Y_VANTAGES[off] + 0.5;
-            double b_x = X_VANTAGES[off] + 0.5;
-            double v_b_y = b_y;
-            double v_b_x = b_x;
+
+
+			var off = r.nextInt(8) + 1;
+			var b_y = Y_VANTAGES[off] + 0.5;
+			var b_x = X_VANTAGES[off] + 0.5;
+			var v_b_y = b_y;
+			var v_b_x = b_x;
 			off += r.nextBoolean() ? -1 : 1;
             double v_y = Y_VANTAGES[off];
             double v_x = X_VANTAGES[off];
 
-			boolean dawn = false;
-			boolean game_over = false;
-			double[] particles = new double[600];
-			int sprk = 0;
-			boolean v_seen = false;
-			int vantage_index = 0;
-			int[][] v_map = new int[T_H][T_W];
-			int v_dmg = 0;
-			int v_cooldown = 0;
-			int jacket_hp = 5;
-			int bullets = 6;
-			boolean[] inventory = new boolean[3];
-			int b_push = 0;
-			int b_exhaustion = 0;
-			int b_fatigue = 0;
-			int b_cooldown = 0;
-			boolean playing = false;
-			String msg2 = "Press space to start.";
-			String msg = "";
-			int tick = -1;
-			int msgWait = -1;
+			var dawn = false;
+			var game_over = false;
+			var particles = new double[600];
+			var sprk = 0;
+			var v_seen = false;
+			var vantage_index = 0;
+			var v_map = new int[T_H][T_W];
+			var v_dmg = 0;
+			var v_cooldown = 0;
+			var jacket_hp = 5;
+			var bullets = 6;
+			var inventory = new boolean[3];
+			var b_push = 0;
+			var b_exhaustion = 0;
+			var b_fatigue = 0;
+			var b_cooldown = 0;
+			var playing = false;
+			var msg2 = "Press space to start.";
+			var msg = "";
+			var tick = -1;
+			var msgWait = -1;
 			while (true) {
 				if (!playing) {
 					if (key[KeyEvent.VK_SPACE]) { playing = true; }
@@ -212,10 +212,10 @@ public class a extends GamePanel {
 							v_dmg--;
 						}
 						msg = "";
-						
-						double sp = b_fatigue > WINDED_FATIGUE ? B_WALK_SPEED : B_RUN_SPEED;
-						boolean mv = false;
-						for (int i = 0; i < 4; i++) {
+
+						var sp = b_fatigue > WINDED_FATIGUE ? B_WALK_SPEED : B_RUN_SPEED;
+						var mv = false;
+						for (var i = 0; i < 4; i++) {
 							if (key[DIR_KEYS[i]] || key[KeyEvent.VK_LEFT + i]) {
 								b_y += Y_DIRS[i] * sp;
 								b_x += X_DIRS[i] * sp;
@@ -227,10 +227,10 @@ public class a extends GamePanel {
 								
 								if (t_type[(int) b_y][(int) b_x] >= SOLIDS && t_type[(int) b_y][(int) b_x] < TRANSPARENTS) {
 									if (b_push > 12) {
-										int ny = ((int) b_y) + Y_DIRS[i];
-										int nx = ((int) b_x) + X_DIRS[i];
+										var ny = ((int) b_y) + Y_DIRS[i];
+										var nx = ((int) b_x) + X_DIRS[i];
 										if (nx >= 0 && ny >= 0 && nx < T_W && ny < T_H && t_type[ny][nx] <= G && !(ny == (int) v_y && nx == (int) v_x)) {
-											int t = t_type[ny][nx];
+											var t = t_type[ny][nx];
 											t_type[ny][nx] = t_type[(int) b_y][(int) b_x];
 											t_hp[ny][nx] = t_hp[(int) b_y][(int) b_x];
 											t_type[(int) b_y][(int) b_x] = t;
@@ -259,9 +259,9 @@ public class a extends GamePanel {
 						}
 
 						
-						for (int i = 0; i < 4; i++) {
-							int ny = ((int) b_y) + Y_DIRS[i];
-							int nx = ((int) b_x) + X_DIRS[i];
+						for (var i = 0; i < 4; i++) {
+							var ny = ((int) b_y) + Y_DIRS[i];
+							var nx = ((int) b_x) + X_DIRS[i];
 							if (nx < 0 || ny < 0 || nx >= T_W || ny >= T_H) { continue; }
 							switch (t_type[ny][nx]) {
 								case B:
@@ -270,7 +270,7 @@ public class a extends GamePanel {
 										if (b_push >= 60) {
 											b_push = 0;
 											t_type[ny][nx] = X;
-											int found = r.nextInt(3);
+											var found = r.nextInt(3);
 											if (r.nextInt(lvl + 4) > 3 || inventory[found]) {
 												msg2 = "You found nothing.";
 											} else {
@@ -306,24 +306,24 @@ public class a extends GamePanel {
 						}
 
 						
-						for (int y = 0; y < T_H; y++) { for (int x = 0; x < T_W; x++) {
+						for (var y = 0; y < T_H; y++) { for (var x = 0; x < T_W; x++) {
 							v_map[y][x] = 100000;
 						}}
 						v_map[(int) v_b_y][(int) v_b_x] = 0;
-						LinkedList<Point> queue = new LinkedList<>();
+						var queue = new LinkedList<Point>();
 						queue.add(new Point((int) v_b_x, (int) v_b_y));
 						while (!queue.isEmpty()) {
-							Point p = queue.pop();
-							for (int i = 0; i < 4; i++) {
-								int py2 = p.y + Y_DIRS[i];
-								int px2 = p.x + X_DIRS[i];
+							var p = queue.pop();
+							for (var i = 0; i < 4; i++) {
+								var py2 = p.y + Y_DIRS[i];
+								var px2 = p.x + X_DIRS[i];
 								if (
 									py2 >= 0 &&
 									px2 >= 0 &&
 									py2 < T_H &&
 									px2 < T_W)
 								{
-									int newV = v_map[p.y][p.x] + 1 + (t_type[py2][px2] >= SOLIDS ? t_hp[py2][px2] : 0);
+									var newV = v_map[p.y][p.x] + 1 + (t_type[py2][px2] >= SOLIDS ? t_hp[py2][px2] : 0);
 									if (newV < v_map[py2][px2]) {
 										v_map[py2][px2] = newV;
 										queue.add(new Point(px2, py2));
@@ -333,21 +333,21 @@ public class a extends GamePanel {
 						}
 
 
-						int least = v_map[((int) v_y)][((int) v_x)];
+						var least = v_map[((int) v_y)][((int) v_x)];
 						sp = V_SPEED - v_dmg * v_dmg * 0.00000020;
-						int dir = -1;
-						for (int i = 0; i < 8; i++) {
-							int ny = ((int) v_y) + Y_DIRS[i];
-							int nx = ((int) v_x) + X_DIRS[i];
-							int ny2 = (int) (v_y + Y_DIRS[i] * sp);
-							int nx2 = (int) (v_x + X_DIRS[i] * sp);
+						var dir = -1;
+						for (var i = 0; i < 8; i++) {
+							var ny = ((int) v_y) + Y_DIRS[i];
+							var nx = ((int) v_x) + X_DIRS[i];
+							var ny2 = (int) (v_y + Y_DIRS[i] * sp);
+							var nx2 = (int) (v_x + X_DIRS[i] * sp);
 							if (nx < 0 || ny < 0 || nx >= T_W || ny >= T_H) { continue; }
 							
 							if (t_type[ny][nx] < SOLIDS && t_type[ny][(int) v_x] >= SOLIDS && t_type[(int) v_y][nx] >= SOLIDS) {
 								continue;
 							}
 
-							int value = v_map[ny][nx];
+							var value = v_map[ny][nx];
 							if (ny2 != (int) v_y || nx2 != (int) v_x) {
 								value = Math.max(value, v_map[ny2][nx2]);
 							}
@@ -358,7 +358,7 @@ public class a extends GamePanel {
 						}
 						double dy = 0;
 						double dx = 0;
-						double dist = (b_y - v_y) * (b_y - v_y) + (b_x - v_x) * (b_x - v_x);
+						var dist = (b_y - v_y) * (b_y - v_y) + (b_x - v_x) * (b_x - v_x);
 						if (dir == -1) {
 							if (dist > P_R * P_R) {
 								dy = (b_y - v_y) / dist * sp;
@@ -383,7 +383,7 @@ public class a extends GamePanel {
 						if (t_type[(int) v_y][(int) v_x] >= SOLIDS) {
 							if (v_cooldown <= 0) {
 								t_hp[(int) v_y][(int) v_x] -= v_dmg > 0 ? 1 : 2;
-								for (int i = 20; i < 40; i++) {
+								for (var i = 20; i < 40; i++) {
 									particles[i * 5] = r.nextDouble() * 5;
 									particles[i * 5 + 1] = ((int) v_x) * TILE_SIZE + TILE_SIZE / 2;
 									particles[i * 5 + 2] = ((int) v_y) * TILE_SIZE + TILE_SIZE / 2;
@@ -409,7 +409,7 @@ public class a extends GamePanel {
 								b_fatigue += v_dmg > 0 ? 50 : 100;
 								b_exhaustion += v_dmg > 0 ? 50 : 100;
 							}
-							for (int i = off; i < off + 40; i++) {
+							for (var i = off; i < off + 40; i++) {
 								particles[i * 5] = r.nextDouble() * 4;
 								particles[i * 5 + 1] = b_x * TILE_SIZE + 1;
 								particles[i * 5 + 2] = b_y * TILE_SIZE - 5;
@@ -434,7 +434,7 @@ public class a extends GamePanel {
 							dawn = true;
 							msgWait = 150;
 							lvl *= 2;
-							for (int i = 0; i < 80; i++) {
+							for (var i = 0; i < 80; i++) {
 								particles[i * 5] = r.nextDouble() * 10;
 								particles[i * 5 + 1] = v_x * TILE_SIZE;
 								particles[i * 5 + 2] = v_y * TILE_SIZE;
@@ -444,21 +444,21 @@ public class a extends GamePanel {
 						}
 					}
 				}
-				
-				double ptr = Math.atan2(b_y * TILE_SIZE - my, b_x * TILE_SIZE - mx) + Math.PI;
 
-				
-				Graphics2D g = (Graphics2D) strategy.getDrawGraphics();
+				var ptr = Math.atan2(b_y * TILE_SIZE - my, b_x * TILE_SIZE - mx) + Math.PI;
+
+
+				var g = (Graphics2D) strategy.getDrawGraphics();
 				g.setColor(new Color(0, 0, 30));
 				g.fillRect(0, 0, 800, 600);
-				Polygon p = new Polygon();
+				var p = new Polygon();
 				v_seen = false;
-				for (double d = 0.001; d < Math.PI * 2; d += Math.PI / 2000) {
-					double y = b_y;
-					double x = b_x;
-					double d_y = Math.sin(d);
-					double d_x = Math.cos(d);
-					boolean blocked = false;
+				for (var d = 0.001; d < Math.PI * 2; d += Math.PI / 2000) {
+					var y = b_y;
+					var x = b_x;
+					var d_y = Math.sin(d);
+					var d_x = Math.cos(d);
+					var blocked = false;
 					while (true) {
 						
 						if ((int) v_x == (int) x && (int) v_y == (int) y) {
@@ -467,8 +467,8 @@ public class a extends GamePanel {
 							v_seen = true;
 							vantage_index = tick;
 						}
-						double yDist = (d_y < 0 ? Math.ceil(y - 1) : Math.floor(y + 1)) - y;
-						double xDist = (d_x < 0 ? Math.ceil(x - 1) : Math.floor(x + 1)) - x;
+						var yDist = (d_y < 0 ? Math.ceil(y - 1) : Math.floor(y + 1)) - y;
+						var xDist = (d_x < 0 ? Math.ceil(x - 1) : Math.floor(x + 1)) - x;
 						if (Math.abs(yDist / d_y) < Math.abs(xDist / d_x)) {
 							x += (yDist / d_y * d_x) * 1.001;
 							y += yDist * 1.001;
@@ -481,7 +481,7 @@ public class a extends GamePanel {
 						
 						if ((bullets > 0 && inventory[GUN]) && Math.abs(ptr - d) < Math.PI / 1000 && !blocked) {
 							if (r.nextInt(16) == 0) {
-								double offset = r.nextDouble() * 40;
+								var offset = r.nextDouble() * 40;
 								particles[sprk * 5] = 1;
 								particles[sprk * 5 + 1] = x * TILE_SIZE + offset * d_x;
 								particles[sprk * 5 + 2] = y * TILE_SIZE + offset * d_y;
@@ -500,12 +500,12 @@ public class a extends GamePanel {
 												t_type[(int) y][(int) x] = z;
 											}
 										}
-										int p_start = 40;
+										var p_start = 40;
 										if ((int) y == (int) v_y && (int) x == (int) v_x) {
 											v_dmg = GUN_V_DMG;
 											p_start = 80;
 										}
-										for (int i = p_start; i < p_start + 40; i++) {
+										for (var i = p_start; i < p_start + 40; i++) {
 											particles[i * 5] = r.nextDouble() * 5;
 											particles[i * 5 + 1] = x * TILE_SIZE + d_x;
 											particles[i * 5 + 2] = y * TILE_SIZE + d_y;
@@ -526,12 +526,12 @@ public class a extends GamePanel {
 				g.setColor(new Color(37, 59, 29));
 				g.fillRect(0, 0, 800, 600);
 				g.setColor(new Color(44, 70, 34));
-				for (int y = 0; y < T_H; y++) { for (int x = 0; x < T_W; x++) {
+				for (var y = 0; y < T_H; y++) { for (var x = 0; x < T_W; x++) {
 					if (t_type[y][x] == I) {
 						g.fillOval(x * TILE_SIZE - 100, y * TILE_SIZE - 100, 240, 240);
 					}
 				}}
-				for (int y = 0; y < T_H; y++) { lp: for (int x = 0; x < T_W; x++) {
+				for (var y = 0; y < T_H; y++) { lp: for (var x = 0; x < T_W; x++) {
 					Color c = null;
 					switch (t_type[y][x]) {
 						case O:
@@ -549,8 +549,8 @@ public class a extends GamePanel {
 						case W: c = new Color(101, 81, 72); break;
 					}
 					g.setColor(c);
-					int yTile = y * TILE_SIZE;
-					int xTile = x * TILE_SIZE;
+					var yTile = y * TILE_SIZE;
+					var xTile = x * TILE_SIZE;
 					if (t_type[y][x] != F) { g.fillRect(xTile, yTile, TILE_SIZE, TILE_SIZE); }
 					switch (t_type[y][x]) {
 						case F:
@@ -645,7 +645,7 @@ public class a extends GamePanel {
 				}
 				g.setClip(0, 0, 800, 600);
 				g.setColor(Color.YELLOW);
-				for (int i = 0; i < 120; i++) {
+				for (var i = 0; i < 120; i++) {
 					if (i == 80) { g.setColor(Color.RED); }
 					if (particles[i * 5] > 0) {
 						g.fillOval((int) particles[i * 5 + 1], (int) particles[i * 5 + 2], (int) particles[i * 5] + 2, (int) particles[i * 5] + 2);

@@ -69,8 +69,8 @@ public class LevelPanel extends JComponent implements MouseListener
 		currentDirectory = new File(System.getProperty("user.dir"));
 		
 		openLevel(new File(System.getProperty("user.dir") + "/a"));
-		
-		Dimension preferredSize = new Dimension(Level.getSize());
+
+		var preferredSize = new Dimension(Level.getSize());
 		preferredSize.height += 32;
 		setPreferredSize(preferredSize);
 		revalidate();
@@ -106,8 +106,8 @@ public class LevelPanel extends JComponent implements MouseListener
 		saveAsBtn.addActionListener(this);
 		backgroundBtn.addActionListener(this);
 		runBtn.addActionListener(this);
-		
-		ButtonGroup buttonGroup = new ButtonGroup();
+
+		var buttonGroup = new ButtonGroup();
 		buttonGroup.add(selectBtn);
 		buttonGroup.add(lineBtn);
 		buttonGroup.add(sircleBtn);
@@ -152,7 +152,7 @@ public class LevelPanel extends JComponent implements MouseListener
     	try {
             g.setColor(Color.BLACK);
             g.fillRect(0, 0, getWidth(), getHeight());
-            Graphics2D g2d = (Graphics2D)g.create();
+			var g2d = (Graphics2D)g.create();
 
             if (backgroundImage != null) {
             	
@@ -161,12 +161,12 @@ public class LevelPanel extends JComponent implements MouseListener
             }
             
             g.setColor(new Color(32, 32, 32));
-            for (int y=0; y<100; y++) {
+            for (var y = 0; y<100; y++) {
             	g.drawLine(0, y*24, 10000, y*24);
             	g.drawLine(y*16, 0, y*16, 10000);
             }
             g.setColor(new Color(64, 64, 64));
-            for (int y=0; y<20; y++) {
+            for (var y = 0; y<20; y++) {
             	g.drawLine(0, y*24*8, 10000, y*24*8);
             	g.drawLine(y*16*8, 0, y*16*8, 10000);
             }
@@ -179,11 +179,11 @@ public class LevelPanel extends JComponent implements MouseListener
             if (pressedPoint != null && draggedPoint != null) {
             	switch (currentState) {
             	case SIRCLE:
-            		Sircle sircle = new Sircle(pressedPoint, draggedPoint);
+					var sircle = new Sircle(pressedPoint, draggedPoint);
             		sircle.draw(g2d, this);
             		break;
             	case FLIPPER:
-            		Flipper flipper = new Flipper(pressedPoint, draggedPoint);
+					var flipper = new Flipper(pressedPoint, draggedPoint);
             		flipper.draw(g2d, this);
             		break;
             	}
@@ -192,22 +192,22 @@ public class LevelPanel extends JComponent implements MouseListener
         	switch (currentState) {
         	case LINE:
                 if (clickedPoints.size() > 0 && movedPoint != null) {
-                	Line line = new Line(clickedPoints.get(0), movedPoint);
+					var line = new Line(clickedPoints.get(0), movedPoint);
                 	line.draw(g2d, this);
                 }
         		break;
         	case ARROW:
                 if (clickedPoints.size() > 0 && movedPoint != null) {
-                	Arrow arrow = new Arrow(clickedPoints.get(0), movedPoint);
+					var arrow = new Arrow(clickedPoints.get(0), movedPoint);
                 	arrow.draw(g2d, this);
                 }
         		break;
         	case BEZIER:
         		if (clickedPoints.size() > 1 && movedPoint != null) {
-            		Bezier bezier = new Bezier(clickedPoints.get(0), clickedPoints.get(1), movedPoint);
+					var bezier = new Bezier(clickedPoints.get(0), clickedPoints.get(1), movedPoint);
             		bezier.draw(g2d, this);
         		} else if (clickedPoints.size() > 0 && movedPoint != null) {
-            		Bezier bezier = new Bezier(clickedPoints.get(0), movedPoint, movedPoint);
+					var bezier = new Bezier(clickedPoints.get(0), movedPoint, movedPoint);
             		bezier.draw(g2d, this);
         		}
         		break;
@@ -215,22 +215,22 @@ public class LevelPanel extends JComponent implements MouseListener
             
             
             if (movedPoint != null) {
-            	Point p = snapToGrid(movedPoint);
+				var p = snapToGrid(movedPoint);
             	g2d.setColor(new Color(0xffffff00));
-            	int crossSize = 5;
+				var crossSize = 5;
             	g2d.drawLine(p.x - crossSize, p.y, p.x + crossSize, p.y);
             	g2d.drawLine(p.x, p.y - crossSize, p.x, p.y + crossSize);
 
-            	String text = "(" + p.x + ", " + p.y + ")";
-            	Font font = new Font("SansSerif", Font.PLAIN, 12);
+				var text = "(" + p.x + ", " + p.y + ")";
+				var font = new Font("SansSerif", Font.PLAIN, 12);
         		g2d.setFont(font);
-        		Rectangle2D bounds = font.getStringBounds(text, g2d.getFontRenderContext());
+				var bounds = font.getStringBounds(text, g2d.getFontRenderContext());
         		g2d.drawString(text, p.x - (int) bounds.getWidth() / 2, p.y - 5);
             }
             
             if (dragSelection) {
             	g2d.setColor(new Color(0xffffffff));
-            	Rectangle r = toRect(pressedPoint, draggedPoint);
+				var r = toRect(pressedPoint, draggedPoint);
             	g2d.drawRect(r.x, r.y, r.width, r.height);
             }
             
@@ -270,9 +270,9 @@ public class LevelPanel extends JComponent implements MouseListener
 		} else if (e.getSource() == bezierBtn) {
 			setState(State.BEZIER);
 		} else if (e.getSource() == groupBtn) {
-			ArrayList<LevelObject> group = new ArrayList<>();
-			for (Handle handle : selection) {
-				LevelObject obj = handle.getLevelObject();
+			var group = new ArrayList<LevelObject>();
+			for (var handle : selection) {
+				var obj = handle.getLevelObject();
 				if (obj != null && !group.contains(obj)) {
 					group.add(obj);
 				}
@@ -286,15 +286,15 @@ public class LevelPanel extends JComponent implements MouseListener
 			level = new Level();
 			groupUI.levelChanged();
 		} else if (e.getSource() == backgroundBtn) {
-			JFileChooser chooser = new JFileChooser(currentDirectory);
-		    int returnVal = chooser.showOpenDialog(editor);
+			var chooser = new JFileChooser(currentDirectory);
+			var returnVal = chooser.showOpenDialog(editor);
 		    if (returnVal == JFileChooser.APPROVE_OPTION) {
 		    	currentDirectory = chooser.getCurrentDirectory();
 		    	openBackground(chooser.getSelectedFile());
 		    }	
 		} else if (e.getSource() == openBtn) {
-			JFileChooser chooser = new JFileChooser(currentDirectory);
-		    int returnVal = chooser.showOpenDialog(editor);
+			var chooser = new JFileChooser(currentDirectory);
+			var returnVal = chooser.showOpenDialog(editor);
 		    if (returnVal == JFileChooser.APPROVE_OPTION) {
 		    	currentDirectory = chooser.getCurrentDirectory();
 		    	openLevel(chooser.getSelectedFile());
@@ -302,8 +302,8 @@ public class LevelPanel extends JComponent implements MouseListener
 		} else if (e.getSource() == saveBtn) {
 			saveLevel();
 		} else if (e.getSource() == saveAsBtn) {
-			JFileChooser chooser = new JFileChooser(currentDirectory);
-		    int returnVal = chooser.showSaveDialog(editor);
+			var chooser = new JFileChooser(currentDirectory);
+			var returnVal = chooser.showSaveDialog(editor);
 		    if (returnVal == JFileChooser.APPROVE_OPTION) {
 		    	currentDirectory = chooser.getCurrentDirectory();
 		    	currentFile = chooser.getSelectedFile();
@@ -313,9 +313,9 @@ public class LevelPanel extends JComponent implements MouseListener
 		} else if (e.getSource() == runBtn) {
 			try {
 				System.out.println("run");
-				ProcessBuilder processBuilder = new ProcessBuilder("java", "-classpath", "bin;.", "a");
+				var processBuilder = new ProcessBuilder("java", "-classpath", "bin;.", "a");
 				processBuilder.redirectErrorStream(true);
-				Process p = processBuilder.start();
+				var p = processBuilder.start();
 				new ProcessStreamReader(p.getInputStream());
 				System.out.println(processBuilder.directory());
 			} catch (IOException ex) {
@@ -355,7 +355,7 @@ public class LevelPanel extends JComponent implements MouseListener
 					selection.clear();
 				}
 				
-				for (Handle handle : newSelection) {
+				for (var handle : newSelection) {
 					if (selection.contains(handle) == false) {
 						selection.add(handle);
 					} else {
@@ -385,7 +385,7 @@ public class LevelPanel extends JComponent implements MouseListener
 				dragSelection = false;
 			}
 			if (e.getButton() == MouseEvent.BUTTON1) {
-				Point releasePoint = snapToGrid(e.getPoint());
+				var releasePoint = snapToGrid(e.getPoint());
 				handleDrag(pressedPoint, releasePoint);
 				if ((e.getModifiersEx() & InputEvent.CTRL_DOWN_MASK) != 0) {
 					pressedPoint = releasePoint;
@@ -404,7 +404,7 @@ public class LevelPanel extends JComponent implements MouseListener
 	@Override
     public void mouseDragged(MouseEvent e) {
 		try {
-			Point lastDraggedPoint = draggedPoint;
+			var lastDraggedPoint = draggedPoint;
 			movedPoint = snapToGrid(e.getPoint());
 			draggedPoint = (currentState == State.SIRCLE ? e.getPoint() : snapToGrid(e.getPoint()));
 			
@@ -414,7 +414,7 @@ public class LevelPanel extends JComponent implements MouseListener
 					selection.clear();
 					selection = level.select(selectRect);
 				} else {
-					for (Handle handle : selection) {
+					for (var handle : selection) {
 						handle.dragged(draggedPoint.x-lastDraggedPoint.x, draggedPoint.y-lastDraggedPoint.y);
 					}
 				}
@@ -435,7 +435,7 @@ public class LevelPanel extends JComponent implements MouseListener
 	@Override
     public void keyPressed(KeyEvent e) {
 		try {
-			boolean ctrlDown = ((e.getModifiersEx() & InputEvent.CTRL_DOWN_MASK) != 0);
+			var ctrlDown = ((e.getModifiersEx() & InputEvent.CTRL_DOWN_MASK) != 0);
 			if (ctrlDown) {
 				if (e.getKeyCode() == KeyEvent.VK_S) {
 					saveBtn.doClick();
@@ -466,7 +466,7 @@ public class LevelPanel extends JComponent implements MouseListener
 					break;
 				case KeyEvent.VK_W:
 					if (currentState == State.SELECT) {
-						for (Handle handle : selection) {
+						for (var handle : selection) {
 							handle.dragged(0, -6);
 						}
 						repaint();
@@ -474,7 +474,7 @@ public class LevelPanel extends JComponent implements MouseListener
 					break;
 				case KeyEvent.VK_S:
 					if (currentState == State.SELECT) {
-						for (Handle handle : selection) {
+						for (var handle : selection) {
 							handle.dragged(0, 6);
 						}
 						repaint();
@@ -482,7 +482,7 @@ public class LevelPanel extends JComponent implements MouseListener
 					break;
 				case KeyEvent.VK_A:
 					if (currentState == State.SELECT) {
-						for (Handle handle : selection) {
+						for (var handle : selection) {
 							handle.dragged(-4, 0);
 						}
 						repaint();
@@ -490,7 +490,7 @@ public class LevelPanel extends JComponent implements MouseListener
 					break;
 				case KeyEvent.VK_D:
 					if (currentState == State.SELECT) {
-						for (Handle handle : selection) {
+						for (var handle : selection) {
 							handle.dragged(4, 0);
 						}
 						repaint();
@@ -521,12 +521,12 @@ public class LevelPanel extends JComponent implements MouseListener
 			if (releasedPos.equals(pressedPos) == false) {
 				switch (currentState) {
 				case SIRCLE:
-					Sircle sircle = new Sircle(pressedPos, releasedPos);
+					var sircle = new Sircle(pressedPos, releasedPos);
 					level.add(sircle);
 					break;
 
 				case FLIPPER:
-					Flipper flipper = new Flipper(pressedPos, releasedPos);
+					var flipper = new Flipper(pressedPos, releasedPos);
 					level.add(flipper);
 					break;
 				}
@@ -543,21 +543,21 @@ public class LevelPanel extends JComponent implements MouseListener
 		switch (currentState) {
 		case LINE:
 			if (list.size() >= 2 && !list.get(0).equals(list.get(1))) {
-				Line line = new Line(list.get(0), list.get(1));
+				var line = new Line(list.get(0), list.get(1));
 				level.add(line);
 				list.clear();
 			}
 			break;
 		case ARROW:
 			if (list.size() >= 2 && !list.get(0).equals(list.get(1))) {
-				Arrow arrow = new Arrow(list.get(0), list.get(1));
+				var arrow = new Arrow(list.get(0), list.get(1));
 				level.add(arrow);
 				list.clear();
 			}
 			break;
 		case BEZIER:
 			if (list.size() >= 3 && !list.get(0).equals(list.get(1))) {
-				Bezier line = new Bezier(list.get(0), list.get(1), list.get(2));
+				var line = new Bezier(list.get(0), list.get(1), list.get(2));
 				level.add(line);
 				list.clear();
 			}
@@ -630,7 +630,7 @@ public class LevelPanel extends JComponent implements MouseListener
 	public void openLevel(File file) {
 		try {
 			currentFile = file;
-			FileInputStream fileIn = new FileInputStream(currentFile);
+			var fileIn = new FileInputStream(currentFile);
 			level = new Level(fileIn);
 			saveBtn.setEnabled(true);
 		} catch (Exception e) {
@@ -649,7 +649,7 @@ public class LevelPanel extends JComponent implements MouseListener
 	 */
 	public void saveLevel() {
 		try {
-			FileOutputStream file2Out = new FileOutputStream(currentFile);
+			var file2Out = new FileOutputStream(currentFile);
 			level.write(file2Out, bezierChk.isSelected());
 			file2Out.close();
 		} catch (IOException ioException) {
@@ -676,7 +676,7 @@ public class LevelPanel extends JComponent implements MouseListener
 		
 		public ProcessStreamReader(InputStream in) {
 			this.in = new BufferedInputStream(in);
-			Thread thread = new Thread(this);
+			var thread = new Thread(this);
 			thread.setDaemon(true);
 			thread.start();
 		}
@@ -684,8 +684,8 @@ public class LevelPanel extends JComponent implements MouseListener
 		@Override
         public void run() {
 			try {
-				int bytesRead = 0;
-				byte[] data = new byte[1024];
+				var bytesRead = 0;
+				var data = new byte[1024];
 				while ((bytesRead = in.read(data)) != -1) {
 					System.out.write(data, 0, bytesRead);
 				}

@@ -41,8 +41,8 @@ public class DDListIterator<E> implements Iterator<E> {
     @Override
     public E next() {
         if (!hasNext()) throw new NoSuchElementException();
-        
-        E item = current.item;
+
+        var item = current.item;
         current = current.next;
         index++;
         return item;

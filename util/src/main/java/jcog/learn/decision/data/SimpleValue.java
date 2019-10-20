@@ -18,7 +18,7 @@ public final class SimpleValue<L> implements Function<String,L> {
     @SafeVarargs
     private SimpleValue(String[] header, L... dataValues) {
         super();
-        for (int i = 0; i < header.length; i++) {
+        for (var i = 0; i < header.length; i++) {
             this.values.put(header[i], dataValues[i]);
         }
     }

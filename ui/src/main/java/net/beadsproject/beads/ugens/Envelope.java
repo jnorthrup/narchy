@@ -228,7 +228,7 @@ public class Envelope extends UGen {
      */
     public Envelope addSegments(Collection<Segment> segments) {
         if (!lock) {
-            for (Segment s : segments) {
+            for (var s : segments) {
                 if (!Float.isNaN(s.endValue) && !Float.isInfinite(s.endValue)) {
                     segments.add(s);
                     unchanged = false;
@@ -297,8 +297,8 @@ public class Envelope extends UGen {
     @Override
     public synchronized void gen() {
         if (!unchanged) {
-            boolean iChanged = false;
-            for (int i = 0; i < bufferSize; ++i) {
+            var iChanged = false;
+            for (var i = 0; i < bufferSize; ++i) {
                 if (currentSegment == null) {
                     getNextSegment();
                 } else if (currentSegment.duration == 0) {
@@ -308,7 +308,7 @@ public class Envelope extends UGen {
                     iChanged = true;
 
 
-                    float ratio = currentSegment.curvature != 1.0f ? (float) Math.pow((double) currentTime / currentSegment.duration, currentSegment.curvature) : (float) currentTime / currentSegment.duration;
+                    var ratio = currentSegment.curvature != 1.0f ? (float) Math.pow((double) currentTime / currentSegment.duration, currentSegment.curvature) : (float) currentTime / currentSegment.duration;
                     currentValue = (1f - ratio) * currentStartValue + ratio * currentSegment.endValue;
                     currentTime++;
                     if (currentTime > currentSegment.duration) getNextSegment();
@@ -328,7 +328,7 @@ public class Envelope extends UGen {
     }
 
     public LinkedList<Segment> getSegments() {
-        LinkedList<Segment> segmentsCopy = segments.stream().map(Segment::new).collect(Collectors.toCollection(LinkedList::new));
+        var segmentsCopy = segments.stream().map(Segment::new).collect(Collectors.toCollection(LinkedList::new));
         return segmentsCopy;
     }
 

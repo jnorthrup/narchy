@@ -68,7 +68,7 @@ public final class DequeCleaningPool<X> {
      * @return the value or null if none exists
      */
     public <Y> Y with(Function<X,Y> borrower) {
-        X x = pool.get();
+        var x = pool.get();
         try {
             return borrower.apply(x);
         } finally {
@@ -78,7 +78,7 @@ public final class DequeCleaningPool<X> {
 
 
     public static <X> ThreadLocal<DequeCleaningPool<X>> threadLocal(Supplier<X> builder, Consumer<X> cleaner) {
-        ThreadLocal<DequeCleaningPool<X>> t = ThreadLocal.withInitial(() -> new DequeCleaningPool<>(builder, cleaner));
+        var t = ThreadLocal.withInitial(() -> new DequeCleaningPool<>(builder, cleaner));
         return t;
     }
 

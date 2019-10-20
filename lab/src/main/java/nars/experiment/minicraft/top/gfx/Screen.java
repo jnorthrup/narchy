@@ -51,30 +51,30 @@ public class Screen {
      */
 
     public void render(int _xp, int _yp, int tile, int colors, int bits) {
-        int xp = _xp - xOffset;
-        int yp = _yp - yOffset;
-        boolean mirrorX = (bits & BIT_MIRROR_X) > 0;
-        boolean mirrorY = (bits & BIT_MIRROR_Y) > 0;
+        var xp = _xp - xOffset;
+        var yp = _yp - yOffset;
+        var mirrorX = (bits & BIT_MIRROR_X) > 0;
+        var mirrorY = (bits & BIT_MIRROR_Y) > 0;
 
-        int xTile = tile % 32;
-        int yTile = tile / 32;
-        int sw = sheet.width;
-        int toffs = xTile * 8 + yTile * 8 * sw;
-        int[] sp = sheet.pixels;
-        int[] pp = this.pixels;
+        var xTile = tile % 32;
+        var yTile = tile / 32;
+        var sw = sheet.width;
+        var toffs = xTile * 8 + yTile * 8 * sw;
+        var sp = sheet.pixels;
+        var pp = this.pixels;
 
-        for (int y = 0; y < 8; y++) {
-            int ys = y;
+        for (var y = 0; y < 8; y++) {
+            var ys = y;
             if (mirrorY) ys = 7 - y;
-            int yyp = y + yp;
+            var yyp = y + yp;
             if (yyp < 0 || yyp >= h) continue;
-            for (int x = 0; x < 8; x++) {
-                int xxp = x + xp;
+            for (var x = 0; x < 8; x++) {
+                var xxp = x + xp;
                 if (xxp < 0 || xxp >= w) continue;
 
-                int xs = x;
+                var xs = x;
                 if (mirrorX) xs = 7 - x;
-                int col = (colors >> (sp[xs + ys * sw + toffs] * 8)) & 255;
+                var col = (colors >> (sp[xs + ys * sw + toffs] * 8)) & 255;
                 if (col < 255) {
                     pp[xxp + (yyp) * w] = col;
                 }
@@ -90,11 +90,11 @@ public class Screen {
     private static final int[] dither = {0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5};
 
     public void overlay(Screen screen2, int xa, int ya) {
-        int[] oPixels = screen2.pixels;
-        int i = 0;
-        for (int y = 0; y < h; y++) {
-            int yy = ((y + ya) & 3) * 4;
-            for (int x = 0; x < w; x++) {
+        var oPixels = screen2.pixels;
+        var i = 0;
+        for (var y = 0; y < h; y++) {
+            var yy = ((y + ya) & 3) * 4;
+            for (var x = 0; x < w; x++) {
                 if (oPixels[i] / 10 <= dither[((x + xa) & 3) + yy]) pixels[i] = 0;
                 i++;
             }
@@ -105,27 +105,27 @@ public class Screen {
     public void renderLight(int x, int y, int r) {
         x -= xOffset;
         y -= yOffset;
-        int x0 = x - r;
-        int x1 = x + r;
-        int y0 = y - r;
-        int y1 = y + r;
+        var x0 = x - r;
+        var x1 = x + r;
+        var y0 = y - r;
+        var y1 = y + r;
         if (x0 < 0) x0 = 0;
         if (y0 < 0) y0 = 0;
         if (x1 > w) x1 = w;
         if (y1 > h) y1 = h;
 
-        int rr = r * r;
-        for (int yy = y0; yy < y1; yy++) {
-            int yd = yy - y;
+        var rr = r * r;
+        for (var yy = y0; yy < y1; yy++) {
+            var yd = yy - y;
             yd *= yd;
-            for (int xx = x0; xx < x1; xx++) {
-                int xd = xx - x;
-                int dist = xd * xd + yd;
+            for (var xx = x0; xx < x1; xx++) {
+                var xd = xx - x;
+                var dist = xd * xd + yd;
 
 
                 if (dist <= rr) {
-                    float br = 255 - dist * 255f / (rr);
-                    int pi = xx + yy * w;
+                    var br = 255 - dist * 255f / (rr);
+                    var pi = xx + yy * w;
                     if (pixels[pi] < br)
                         pixels[pi] = Math.round(br);
                 }

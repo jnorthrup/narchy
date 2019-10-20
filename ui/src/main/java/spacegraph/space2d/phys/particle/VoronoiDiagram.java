@@ -55,7 +55,7 @@ public class VoronoiDiagram {
 
     public VoronoiDiagram(int generatorCapacity) {
         m_generatorBuffer = new Generator[generatorCapacity];
-        for (int i = 0; i < generatorCapacity; i++) {
+        for (var i = 0; i < generatorCapacity; i++) {
             m_generatorBuffer[i] = new Generator();
         }
         m_generatorCount = 0;
@@ -65,13 +65,13 @@ public class VoronoiDiagram {
     }
 
     public void getNodes(VoronoiDiagramCallback callback) {
-        for (int y = 0; y < m_countY - 1; y++) {
-            for (int x = 0; x < m_countX - 1; x++) {
-                int i = x + y * m_countX;
-                Generator a = m_diagram[i];
-                Generator b = m_diagram[i + 1];
-                Generator c = m_diagram[i + m_countX];
-                Generator d = m_diagram[i + 1 + m_countX];
+        for (var y = 0; y < m_countY - 1; y++) {
+            for (var x = 0; x < m_countX - 1; x++) {
+                var i = x + y * m_countX;
+                var a = m_diagram[i];
+                var b = m_diagram[i + 1];
+                var c = m_diagram[i + m_countX];
+                var d = m_diagram[i + 1 + m_countX];
                 if (b != c) {
                     if (a != b && a != c) {
                         callback.callback(a.tag, b.tag, c.tag);
@@ -85,7 +85,7 @@ public class VoronoiDiagram {
     }
 
     public void addGenerator(v2 center, int tag) {
-        Generator g = m_generatorBuffer[m_generatorCount++];
+        var g = m_generatorBuffer[m_generatorCount++];
         g.x = center.x;
         g.y = center.y;
         g.tag = tag;
@@ -115,30 +115,30 @@ public class VoronoiDiagram {
         lower.y = Float.MAX_VALUE;
         upper.x = -Float.MAX_VALUE;
         upper.y = -Float.MAX_VALUE;
-        for (int k = 0; k < m_generatorCount; k++) {
+        for (var k = 0; k < m_generatorCount; k++) {
             v2 g = m_generatorBuffer[k];
             v2.minToOut(lower, g, lower);
             v2.maxToOut(upper, g, upper);
         }
-        float inverseRadius = 1 / radius;
+        var inverseRadius = 1 / radius;
         m_countX = 1 + (int) (inverseRadius * (upper.x - lower.x));
         m_countY = 1 + (int) (inverseRadius * (upper.y - lower.y));
         m_diagram = new Generator[m_countX * m_countY];
         queue.reset(new VoronoiDiagramTask[4 * m_countX * m_countX]);
-        for (int k = 0; k < m_generatorCount; k++) {
-            Generator g = m_generatorBuffer[k];
+        for (var k = 0; k < m_generatorCount; k++) {
+            var g = m_generatorBuffer[k];
             g.x = inverseRadius * (g.x - lower.x);
             g.y = inverseRadius * (g.y - lower.y);
-            int x = MathUtils.max(0, MathUtils.min((int)g.x, m_countX - 1));
-            int y = MathUtils.max(0, MathUtils.min((int)g.y, m_countY - 1));
+            var x = MathUtils.max(0, MathUtils.min((int)g.x, m_countX - 1));
+            var y = MathUtils.max(0, MathUtils.min((int)g.y, m_countY - 1));
             queue.push(taskPool.pop().set(x, y, x + y * m_countX, g));
         }
         while (!queue.empty()) {
-            VoronoiDiagramTask front = queue.pop();
-            float x = front.m_x;
-            float y = front.m_y;
-            int i = front.m_i;
-            Generator g = front.m_generator;
+            var front = queue.pop();
+            var x = front.m_x;
+            var y = front.m_y;
+            var i = front.m_i;
+            var g = front.m_generator;
             if (m_diagram[i] == null) {
                 m_diagram[i] = g;
                 if (x > 0) {
@@ -156,46 +156,46 @@ public class VoronoiDiagram {
             }
             taskPool.push(front);
         }
-        int maxIteration = m_countX + m_countY;
-        for (int iteration = 0; iteration < maxIteration; iteration++) {
-            for (int y = 0; y < m_countY; y++) {
-                for (int x = 0; x < m_countX - 1; x++) {
-                    int i = x + y * m_countX;
-                    Generator a = m_diagram[i];
-                    Generator b = m_diagram[i + 1];
+        var maxIteration = m_countX + m_countY;
+        for (var iteration = 0; iteration < maxIteration; iteration++) {
+            for (var y = 0; y < m_countY; y++) {
+                for (var x = 0; x < m_countX - 1; x++) {
+                    var i = x + y * m_countX;
+                    var a = m_diagram[i];
+                    var b = m_diagram[i + 1];
                     if (a != b) {
                         queue.push(taskPool.pop().set(x, y, i, b));
                         queue.push(taskPool.pop().set(x + 1, y, i + 1, a));
                     }
                 }
             }
-            for (int y = 0; y < m_countY - 1; y++) {
-                for (int x = 0; x < m_countX; x++) {
-                    int i = x + y * m_countX;
-                    Generator a = m_diagram[i];
-                    Generator b = m_diagram[i + m_countX];
+            for (var y = 0; y < m_countY - 1; y++) {
+                for (var x = 0; x < m_countX; x++) {
+                    var i = x + y * m_countX;
+                    var a = m_diagram[i];
+                    var b = m_diagram[i + m_countX];
                     if (a != b) {
                         queue.push(taskPool.pop().set(x, y, i, b));
                         queue.push(taskPool.pop().set(x, y + 1, i + m_countX, a));
                     }
                 }
             }
-            boolean updated = false;
+            var updated = false;
             while (!queue.empty()) {
-                VoronoiDiagramTask front = queue.pop();
-                float x = front.m_x;
-                float y = front.m_y;
-                int i = front.m_i;
-                Generator k = front.m_generator;
+                var front = queue.pop();
+                var x = front.m_x;
+                var y = front.m_y;
+                var i = front.m_i;
+                var k = front.m_generator;
                 v2 a = m_diagram[i];
-                Generator b = k;
+                var b = k;
                 if (a != b) {
-                    float ax = a.x - x;
-                    float ay = a.y - y;
-                    float bx = b.x - x;
-                    float by = b.y - y;
-                    float a2 = ax * ax + ay * ay;
-                    float b2 = bx * bx + by * by;
+                    var ax = a.x - x;
+                    var ay = a.y - y;
+                    var bx = b.x - x;
+                    var by = b.y - y;
+                    var a2 = ax * ax + ay * ay;
+                    var b2 = bx * bx + by * by;
                     if (a2 > b2) {
                         m_diagram[i] = b;
                         if (x > 0) {

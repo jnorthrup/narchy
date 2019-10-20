@@ -93,14 +93,14 @@ public enum SetFunc {
 
             @Override
             protected Term compute(Term x, Term param) {
-                int n = x.subs();
+                var n = x.subs();
                 if (n < 2)
                     return Null; 
 
                 if (x.hasAny(Op.Variable))
-                    return null; 
+                    return null;
 
-                FasterList<Term> l = new FasterList<>(n);
+                var l = new FasterList<Term>(n);
                 l.addingAll(x.subterms().arrayShared());
                 Comparator<Term> cmp;
                 if (param instanceof Atomic && !param.hasVars()) {
@@ -123,16 +123,16 @@ public enum SetFunc {
 
                 
                 if (!y.hasVars() && x.vars() == 1) {
-                    Subterms xx = x.subterms();
-                    Subterms yy = y.subterms();
+                    var xx = x.subterms();
+                    var yy = y.subterms();
                     List<Term> missing = new FasterList(1);
-                    for (Term sy : yy) {
+                    for (var sy : yy) {
                         if (!xx.contains(sy)) {
                             missing.add(sy);
                         }
                     }
                     if (missing.size() == 1) {
-                        Term[] xxx = xx.terms((n, xs) -> xs.op().var);
+                        var xxx = xx.terms((n, xs) -> xs.op().var);
                         if (xxx.length == 1) {
                             return e.is(xxx[0], missing.get(0)) ? null : Null;
                         }
@@ -166,13 +166,13 @@ public enum SetFunc {
         @Override
         public @Nullable Term applyInline(Subterms x) {
 
-            Term a = x.sub(0);
+            var a = x.sub(0);
 //            if (a instanceof Variable)
 //                return null;
             if (!validOp(a.op()))
                 return Null;
 
-            Term b = x.sub(1);
+            var b = x.sub(1);
 //            if (b instanceof Variable)
 //                return null;
             if (!validOp(b.op()))

@@ -40,74 +40,74 @@ public class a extends Applet implements Runnable {
   @Override
   public void run() {
 
-      final int SPRITE_RUN_2 = 1;
-      final int SPRITE_LEAVES_2 = 8;
-    final int SPRITE_LEAVES_3 = 9;
-    final int SPRITE_LEAVES_4 = 10;
-      final int SPRITE_LEAVES_7 = 13;
-    final int SPRITE_LEAVES_8 = 14;
-    final int SPRITE_LEAVES_9 = 15;
-      final int SPRITE_LEAVES_12 = 18;
-    final int SPRITE_LEAVES_13 = 19;
-    final int SPRITE_LEAVES_14 = 20;
-      final int SPRITE_CROC_HEAD_2 = 32;
-    final int SPRITE_CROC_HEAD_3 = 33;
-      final int SPRITE_CROC_TAIL_2 = 35;
-      final int SPRITE_WATER_2 = 38;
-      final int SPRITE_SWIM_BODY_2 = 43;
-    final int SPRITE_SWIM_BODY_3 = 44;
-    final int SPRITE_SWIM_BODY_4 = 45;
-      final int SPRITE_SWIM_LEGS_2 = 50;
-    final int SPRITE_SWIM_LEGS_3 = 51;
-    final int SPRITE_SWIM_LEGS_4 = 52;
-      final int SPRITE_DIGIT_1 = 57;
-    final int SPRITE_DIGIT_2 = 58;
-    final int SPRITE_DIGIT_3 = 59;
-    final int SPRITE_DIGIT_4 = 60;
-    final int SPRITE_DIGIT_5 = 61;
-    final int SPRITE_DIGIT_6 = 62;
-    final int SPRITE_DIGIT_7 = 63;
-    final int SPRITE_DIGIT_8 = 64;
-      final int SPRITE_SMALL_DIGIT_1 = 67;
-    final int SPRITE_SMALL_DIGIT_2 = 68;
-    final int SPRITE_SMALL_DIGIT_3 = 69;
-    final int SPRITE_SMALL_DIGIT_4 = 70;
-    final int SPRITE_SMALL_DIGIT_5 = 71;
-    final int SPRITE_SMALL_DIGIT_6 = 72;
-    final int SPRITE_SMALL_DIGIT_7 = 73;
-    final int SPRITE_SMALL_DIGIT_8 = 74;
-    final int SPRITE_SMALL_DIGIT_9 = 75;
+      final var SPRITE_RUN_2 = 1;
+      final var SPRITE_LEAVES_2 = 8;
+    final var SPRITE_LEAVES_3 = 9;
+    final var SPRITE_LEAVES_4 = 10;
+      final var SPRITE_LEAVES_7 = 13;
+    final var SPRITE_LEAVES_8 = 14;
+    final var SPRITE_LEAVES_9 = 15;
+      final var SPRITE_LEAVES_12 = 18;
+    final var SPRITE_LEAVES_13 = 19;
+    final var SPRITE_LEAVES_14 = 20;
+      final var SPRITE_CROC_HEAD_2 = 32;
+    final var SPRITE_CROC_HEAD_3 = 33;
+      final var SPRITE_CROC_TAIL_2 = 35;
+      final var SPRITE_WATER_2 = 38;
+      final var SPRITE_SWIM_BODY_2 = 43;
+    final var SPRITE_SWIM_BODY_3 = 44;
+    final var SPRITE_SWIM_BODY_4 = 45;
+      final var SPRITE_SWIM_LEGS_2 = 50;
+    final var SPRITE_SWIM_LEGS_3 = 51;
+    final var SPRITE_SWIM_LEGS_4 = 52;
+      final var SPRITE_DIGIT_1 = 57;
+    final var SPRITE_DIGIT_2 = 58;
+    final var SPRITE_DIGIT_3 = 59;
+    final var SPRITE_DIGIT_4 = 60;
+    final var SPRITE_DIGIT_5 = 61;
+    final var SPRITE_DIGIT_6 = 62;
+    final var SPRITE_DIGIT_7 = 63;
+    final var SPRITE_DIGIT_8 = 64;
+      final var SPRITE_SMALL_DIGIT_1 = 67;
+    final var SPRITE_SMALL_DIGIT_2 = 68;
+    final var SPRITE_SMALL_DIGIT_3 = 69;
+    final var SPRITE_SMALL_DIGIT_4 = 70;
+    final var SPRITE_SMALL_DIGIT_5 = 71;
+    final var SPRITE_SMALL_DIGIT_6 = 72;
+    final var SPRITE_SMALL_DIGIT_7 = 73;
+    final var SPRITE_SMALL_DIGIT_8 = 74;
+    final var SPRITE_SMALL_DIGIT_9 = 75;
 
-      final int SPRITE_COUNT = 84;
+      final var SPRITE_COUNT = 84;
 
-      final int VK_W = 0x57;
-    final int VK_S = 0x53;
-    final int VK_A = 0x41;
-    final int VK_D = 0x44;
+      final var VK_W = 0x57;
+    final var VK_S = 0x53;
+    final var VK_A = 0x41;
+    final var VK_D = 0x44;
 
-      final int SCREEN_WIDTH = 152;
-    final int SCREEN_HEIGHT = 191;
+      final var SCREEN_WIDTH = 152;
+    final var SCREEN_HEIGHT = 191;
 
-      final int VINE_RADIUS = 0;
-    final int VINE_INCREMENTING = 1;
-    final int VINE_DIRECTION = 2;
-    final int VINE_SPEED = 3;
+      final var VINE_RADIUS = 0;
+    final var VINE_INCREMENTING = 1;
+    final var VINE_DIRECTION = 2;
+    final var VINE_SPEED = 3;
 
-      final int CAMERAX0 = 65457;
+      final var CAMERAX0 = 65457;
 
       int i;
 
-      int cameraX = CAMERAX0;
-    int targetCameraX = cameraX;
+      var cameraX = CAMERAX0;
+      var targetCameraX = cameraX;
 
-    int playerX = cameraX + 144;
+      var playerX = cameraX + 144;
 
-      int[][] vines = new int[1024][4];
+      var vines = new int[1024][4];
 
-      Random random = new Random();
+      var random = new Random();
 
-      BufferedImage image = new BufferedImage(SCREEN_WIDTH, SCREEN_HEIGHT, 1);
-    Graphics2D g = (Graphics2D)image.getGraphics();
+      var image = new BufferedImage(SCREEN_WIDTH, SCREEN_HEIGHT, 1);
+      var g = (Graphics2D)image.getGraphics();
 
 
       for(i = 0; i < 1024; i++) {
@@ -118,61 +118,61 @@ public class a extends Applet implements Runnable {
     }
 
 
-      final int SPRITE_DOUBLE_COUNT = SPRITE_COUNT * 2;
-      BufferedImage[] sprites = new BufferedImage[SPRITE_DOUBLE_COUNT];
+      final var SPRITE_DOUBLE_COUNT = SPRITE_COUNT * 2;
+      var sprites = new BufferedImage[SPRITE_DOUBLE_COUNT];
       int u;
       int z;
       int y;
       int x;
       int k;
       int j;
-      final int HEX_TIME = 0xD2B656;
-      final int HEX_CORAL = 0xB83232;
-      final int HEX_LEAVES_2 = 0x694D14;
-      final int HEX_WOMAN_FLESH = 0xE46F6F;
-      final int HEX_DRESS = 0x545CD6;
-      final int HEX_SHIRT = 0x87B754;
-      final int HEX_HAIR = 0xD2D240;
-      final int HEX_PANTS = 0xC84848;
-      final int HEX_ROCK = 0xBB9F47;
-      final int HEX_FLESH = 0xD65C5C;
-      final int HEX_GRAY = 0xC0C0C0;
-      final int HEX_WHITE = 0xECECEC;
-      final String S = "\u3800\u307c\u1838\u7230\ubefa\u00b4\u3830\u243c\u6424\u80c6\u3800\u307c\u1838\u7030\u7e72\u0078\u3830\u141c\u301c\u1850\u7c38\u3a30\uf21a\ubefe\ub0b0\u3e00\u223e\u2222\uc063\uc080\u0000\u7c38\u3830\u3218\ufc76\ub0b8\u3800\u263c\ue2e2\u0382\u3800\u307c\u1a3a\u7e72\u707c\u0070\u3e3c\u6222\u83c2\u0080\u2020\u7020\u5070\ud050\u8c98\u169c\u3415\u2326\u2021\u2020\u181c\u5010\u3c30\u4e6c\u89cb\u2889\u3c18\uc764\u098d\u1018\uf0bc\u00a0\udb7e\u058f\u6de7\u1038\ub019\u40e0\u77de\"\u5708\ufffd\ub3c1\uff1a\u774c\uffad\u9bc9\uff55\u459c\uff32\u6b42\uffee\ub513\uffff\u7450\uffdd\u8502\uffaf\u3903\ufffe\u1f0e\u1e0c\u787e\uf00e\u2c78\uc266\uc382\u1800\u3c3c\u7e7e\u7e7e\u3c7e\u183c\u1800\u3c3c\u3c3c\u183c\u0800\u4002\u3c18\u1818\u81ff\u663c\u1c00\u1d3e\u1819\u5abc\u1a1a\u3c18\u7e7e\u2424\u0664\u0702\uaa72\ufaaa\u7e52\u5672\u726a\u7072\ufc78\u4146\u3467\u3014\u7c38\u3a32\u121a\u3c3e\u3838\u3800\u1838\u9818\uf8d8\u00b0\ufa70\u7262\u6632\u787c\u7070\u7000\u3e78\u020e\u0202\u0302\uf870\u7160\u6633\u787c\u7070\u7000\u7170\u073f\u0800\uff17\u02ff\u0000\uc800\u1f37\ue21f\u0000\u4880\u1f37\u120f\u4020\u0000\uf8e0\u16fc\u0001\u0000\ufef7\u10f8\u0000\u0201\ufcfe\u10f0\u0000\u7830\ufffc\u0000\uc700\u0000\u3f07\u1410\ubf3e\ufbf1\ueeff\u0000\u6c40\ubdae\uffbe\u101c\ufe10\uf0fe\u0810\u0006\u0700\ufe08\uf6fe\u4020\u2040\u0200\ufe05\uf6fe\uc020\u0000\u0000\u4630\udebe\u00f0\u0000\u1e00\ufce0\uecfc\u4020\u0060\u0000\u0e00\uf610\ufefe\u0708\u0800\u2010\uec20\ufcfc\u3c20\u0000\u0100\u4f97\u8000\u0000\u2060\u1930\u0f03\u301c\u4060\u0000\u0000\u8f01\u002f\u0000\u2060\u1d30\u030f\u301c\u4060\u4000\u3fe0\u031f\u7623\u081c\u0800\u361c\u0f03\u711f\u0020\u0f06\u060f\u1c00\u6336\u6363\u1c36\u1800\u181c\u1818\u7e18\u3e00\u6063\u073c\u7f03\u3f00\u6060\u603e\u3f60\u3300\u3333\u307f\u3030\u3f00\u0303\u603f\u3f60\u3e00\u0303\u633f\u3e63\u7f00\u3060\u1818\u0c0c\u3e00\u6363\u633e\u3e63\u3e00\u6363\u607e\u3e60\u0700\u0505\u0705\u0200\u0203\u0702\u0700\u0604\u0701\u0700\u0604\u0704\u0500\u0705\u0404\u0700\u0301\u0704\u0700\u0701\u0705\u0700\u0604\u0103\u0700\u0705\u0705\u0700\u0705\u0704\u1504\u040e\u0a04\u8a71\u8a8a\u8a8a\u0071\u26c4\u2424\u2424\u00ce\u29c6\u2c28\u2122\u00cf\u29c6\u2428\u2928\u00c6\u5553\u9355\ub595\u94d5\u020e\u0e0a";
-      final int SPRITE_DIVING_3 = 83;
-      final int SPRITE_DIVING_1 = 81;
-      final int SPRITE_30 = 80;
-      final int SPRITE_LIVES = 76;
-      final int SPRITE_SMALL_DIGIT_0 = 66;
-      final int SPRITE_DIGIT_9 = 65;
-      final int SPRITE_OXYGEN = 55;
-      final int SPRITE_DEAD_LEGS = 54;
-      final int SPRITE_DEAD_BODY_2 = 48;
-      final int SPRITE_SWIM_BODY_1 = 42;
-      final int SPRITE_CORAL_2 = 41;
-      final int SPRITE_WATER_3 = 39;
-      final int SPRITE_WATER_1 = 37;
-      final int SPRITE_CROC_TAIL_3 = 36;
-      final int SPRITE_CLING_3 = 30;
-      final int SPRITE_CLING_2 = 29;
-      final int SPRITE_CLING_1 = 28;
-      final int SPRITE_CANNIBAL = 27;
-      final int SPRITE_WOMAN = 26;
-      final int SPRITE_CRUSHED = 25;
-      final int SPRITE_ROCK_2 = 24;
-      final int SPRITE_ROCK_1 = 23;
-      final int SPRITE_DUCK = 22;
-      final int SPRITE_LEAVES_15 = 21;
-      final int SPRITE_LEAVES_10 = 16;
-      final int SPRITE_LEAVES_5 = 11;
-      final int SPRITE_VINE_2 = 6;
-      final int SPRITE_JUMP_2 = 4;
-      final int SPRITE_JUMP_1 = 3;
-      final int SPRITE_RUN_3 = 2;
-      final int HEX_WATER = 0x003064;
-      final int HEX_LEAVES_1 = 0x328432;
-      final int HEX_LEAVES_3 = 0x6D762B;
-      final int HEX_VINE = 0xC3903D;
+      final var HEX_TIME = 0xD2B656;
+      final var HEX_CORAL = 0xB83232;
+      final var HEX_LEAVES_2 = 0x694D14;
+      final var HEX_WOMAN_FLESH = 0xE46F6F;
+      final var HEX_DRESS = 0x545CD6;
+      final var HEX_SHIRT = 0x87B754;
+      final var HEX_HAIR = 0xD2D240;
+      final var HEX_PANTS = 0xC84848;
+      final var HEX_ROCK = 0xBB9F47;
+      final var HEX_FLESH = 0xD65C5C;
+      final var HEX_GRAY = 0xC0C0C0;
+      final var HEX_WHITE = 0xECECEC;
+      final var S = "\u3800\u307c\u1838\u7230\ubefa\u00b4\u3830\u243c\u6424\u80c6\u3800\u307c\u1838\u7030\u7e72\u0078\u3830\u141c\u301c\u1850\u7c38\u3a30\uf21a\ubefe\ub0b0\u3e00\u223e\u2222\uc063\uc080\u0000\u7c38\u3830\u3218\ufc76\ub0b8\u3800\u263c\ue2e2\u0382\u3800\u307c\u1a3a\u7e72\u707c\u0070\u3e3c\u6222\u83c2\u0080\u2020\u7020\u5070\ud050\u8c98\u169c\u3415\u2326\u2021\u2020\u181c\u5010\u3c30\u4e6c\u89cb\u2889\u3c18\uc764\u098d\u1018\uf0bc\u00a0\udb7e\u058f\u6de7\u1038\ub019\u40e0\u77de\"\u5708\ufffd\ub3c1\uff1a\u774c\uffad\u9bc9\uff55\u459c\uff32\u6b42\uffee\ub513\uffff\u7450\uffdd\u8502\uffaf\u3903\ufffe\u1f0e\u1e0c\u787e\uf00e\u2c78\uc266\uc382\u1800\u3c3c\u7e7e\u7e7e\u3c7e\u183c\u1800\u3c3c\u3c3c\u183c\u0800\u4002\u3c18\u1818\u81ff\u663c\u1c00\u1d3e\u1819\u5abc\u1a1a\u3c18\u7e7e\u2424\u0664\u0702\uaa72\ufaaa\u7e52\u5672\u726a\u7072\ufc78\u4146\u3467\u3014\u7c38\u3a32\u121a\u3c3e\u3838\u3800\u1838\u9818\uf8d8\u00b0\ufa70\u7262\u6632\u787c\u7070\u7000\u3e78\u020e\u0202\u0302\uf870\u7160\u6633\u787c\u7070\u7000\u7170\u073f\u0800\uff17\u02ff\u0000\uc800\u1f37\ue21f\u0000\u4880\u1f37\u120f\u4020\u0000\uf8e0\u16fc\u0001\u0000\ufef7\u10f8\u0000\u0201\ufcfe\u10f0\u0000\u7830\ufffc\u0000\uc700\u0000\u3f07\u1410\ubf3e\ufbf1\ueeff\u0000\u6c40\ubdae\uffbe\u101c\ufe10\uf0fe\u0810\u0006\u0700\ufe08\uf6fe\u4020\u2040\u0200\ufe05\uf6fe\uc020\u0000\u0000\u4630\udebe\u00f0\u0000\u1e00\ufce0\uecfc\u4020\u0060\u0000\u0e00\uf610\ufefe\u0708\u0800\u2010\uec20\ufcfc\u3c20\u0000\u0100\u4f97\u8000\u0000\u2060\u1930\u0f03\u301c\u4060\u0000\u0000\u8f01\u002f\u0000\u2060\u1d30\u030f\u301c\u4060\u4000\u3fe0\u031f\u7623\u081c\u0800\u361c\u0f03\u711f\u0020\u0f06\u060f\u1c00\u6336\u6363\u1c36\u1800\u181c\u1818\u7e18\u3e00\u6063\u073c\u7f03\u3f00\u6060\u603e\u3f60\u3300\u3333\u307f\u3030\u3f00\u0303\u603f\u3f60\u3e00\u0303\u633f\u3e63\u7f00\u3060\u1818\u0c0c\u3e00\u6363\u633e\u3e63\u3e00\u6363\u607e\u3e60\u0700\u0505\u0705\u0200\u0203\u0702\u0700\u0604\u0701\u0700\u0604\u0704\u0500\u0705\u0404\u0700\u0301\u0704\u0700\u0701\u0705\u0700\u0604\u0103\u0700\u0705\u0705\u0700\u0705\u0704\u1504\u040e\u0a04\u8a71\u8a8a\u8a8a\u0071\u26c4\u2424\u2424\u00ce\u29c6\u2c28\u2122\u00cf\u29c6\u2428\u2928\u00c6\u5553\u9355\ub595\u94d5\u020e\u0e0a";
+      final var SPRITE_DIVING_3 = 83;
+      final var SPRITE_DIVING_1 = 81;
+      final var SPRITE_30 = 80;
+      final var SPRITE_LIVES = 76;
+      final var SPRITE_SMALL_DIGIT_0 = 66;
+      final var SPRITE_DIGIT_9 = 65;
+      final var SPRITE_OXYGEN = 55;
+      final var SPRITE_DEAD_LEGS = 54;
+      final var SPRITE_DEAD_BODY_2 = 48;
+      final var SPRITE_SWIM_BODY_1 = 42;
+      final var SPRITE_CORAL_2 = 41;
+      final var SPRITE_WATER_3 = 39;
+      final var SPRITE_WATER_1 = 37;
+      final var SPRITE_CROC_TAIL_3 = 36;
+      final var SPRITE_CLING_3 = 30;
+      final var SPRITE_CLING_2 = 29;
+      final var SPRITE_CLING_1 = 28;
+      final var SPRITE_CANNIBAL = 27;
+      final var SPRITE_WOMAN = 26;
+      final var SPRITE_CRUSHED = 25;
+      final var SPRITE_ROCK_2 = 24;
+      final var SPRITE_ROCK_1 = 23;
+      final var SPRITE_DUCK = 22;
+      final var SPRITE_LEAVES_15 = 21;
+      final var SPRITE_LEAVES_10 = 16;
+      final var SPRITE_LEAVES_5 = 11;
+      final var SPRITE_VINE_2 = 6;
+      final var SPRITE_JUMP_2 = 4;
+      final var SPRITE_JUMP_1 = 3;
+      final var SPRITE_RUN_3 = 2;
+      final var HEX_WATER = 0x003064;
+      final var HEX_LEAVES_1 = 0x328432;
+      final var HEX_LEAVES_3 = 0x6D762B;
+      final var HEX_VINE = 0xC3903D;
       for(k = i = 0; i < SPRITE_COUNT; i++, k += z >> 1) {
 
       
@@ -233,99 +233,99 @@ public class a extends Applet implements Runnable {
       }
     }
 
-    long nextFrameStartTime = System.nanoTime();
+      var nextFrameStartTime = System.nanoTime();
       Graphics2D g2 = null;
       float rockVy = 0;
       float rockY = 0;
       float playerVy = 0;
       float playerY = 0;
-      boolean levelAdvanceRequest = false;
-      boolean rockBonusAwarded = false;
-      boolean bonusLifeAwarded = false;
-      boolean firstMove = true;
-      boolean panning = false;
-      boolean jumpReleased = true;
-      boolean playerDucking = false;
+      var levelAdvanceRequest = false;
+      var rockBonusAwarded = false;
+      var bonusLifeAwarded = false;
+      var firstMove = true;
+      var panning = false;
+      var jumpReleased = true;
+      var playerDucking = false;
       int[][] crocs = null;
-      int[] vinePoints = new int[384];
-      int level = 0;
-      int crocSpawnX = 0;
-      int remaining = 10;
-      int cannibalDirection = 0;
-      int rockMaxY = 0;
-      int rockSprite = 0;
-      int rockX = 0;
-      int playerOxygen = 0;
-      int playerStabbing = 0;
-      int playerVineOffset = 64;
-      int playerVine = 819;
-      int playerDirection = -1;
-      int playerDead = 0;
-      int playerSprite2 = 0;
-      int playerSprite = 0;
-      final int MODE_VINES = 0;
-      int mode = MODE_VINES;
-      int lives = 4;
-      int time = 5000;
-      int score = 0;
-      int counter = 0;
-      Color COLOR_BLACK = new Color(0);
-      Color COLOR_WATER = new Color(HEX_WATER);
-      Color COLOR_LEAVES = new Color(HEX_LEAVES_1);
-      Color COLOR_DIRT = new Color(HEX_LEAVES_3);
-      Color COLOR_VINE = new Color(HEX_VINE);
-      Color COLOR_SKY = new Color(0x185080);
-      final int CANNIBAL_JUMP_SPEED = -1;
-      final float JUMP_SPEED_2 = -3.04f;
-      final float JUMP_SPEED = -1.1f;
-      final float GRAVITY_3 = 0.065f;
-      final float GRAVITY_2 = 0.12f;
-      final float GRAVITY = 0.04f;
-      final int POINTS_ROCK_WALK = 50;
-      final int POINTS_ROCK_DUCK = 100;
-      final int POINTS_ROCK_JUMP = 200;
-      final int POINTS_ADVANCED_LEVEL = 500;
-      final int POINTS_VINE_CATCH = 100;
-      final int CROC_DELAY = 8;
-      final int CROC_SPRITE_2 = 7;
-      final int CROC_SPRITE_1 = 6;
-      final int CROC_ANGLE_INC = 5;
-      final int CROC_ANGLE = 4;
-      final int CROC_RADIUS = 3;
-      final int CROC_CENTER_Y = 2;
-      final int CROC_Y = 1;
-      final int CROC_X = 0;
-      final int ROCK_Y_LARGE = 100;
-      final int ROCK_Y_SMALL = 123;
-      final int ROCK_MAX_Y_LARGE = 123;
-      final int ROCK_MAX_Y_SMALL = 127;
-      final int MODE_WON = 5;
-      final int MODE_WOMAN = 4;
-      final int MODE_CANNIBALS = 3;
-      final int MODE_ROCKS = 2;
-      final int MODE_SWIMMING = 1;
-      final int VK_JUMP = 0x42;
-      final int VK_DOWN = 0x28;
-      final int VK_UP = 0x26;
-      final int VK_RIGHT = 0x27;
-      final int VK_LEFT = 0x25;
-      final int SPRITE_DIVING_2 = 82;
-      final int SPRITE_20 = 79;
-      final int SPRITE_10 = 78;
-      final int SPRITE_00 = 77;
-      final int SPRITE_DIGIT_0 = 56;
-      final int SPRITE_STAB_LEGS = 53;
-      final int SPRITE_SWIM_LEGS_1 = 49;
-      final int SPRITE_DEAD_BODY_1 = 47;
-      final int SPRITE_STAB_BODY = 46;
-      final int SPRITE_CORAL_1 = 40;
-      final int SPRITE_CROC_TAIL_1 = 34;
-      final int SPRITE_CROC_HEAD_1 = 31;
-      final int SPRITE_LEAVES_11 = 17;
-      final int SPRITE_LEAVES_6 = 12;
-      final int SPRITE_LEAVES_1 = 7;
-      final int SPRITE_VINE_1 = 5;
-      final int SPRITE_RUN_1 = 0;
+      var vinePoints = new int[384];
+      var level = 0;
+      var crocSpawnX = 0;
+      var remaining = 10;
+      var cannibalDirection = 0;
+      var rockMaxY = 0;
+      var rockSprite = 0;
+      var rockX = 0;
+      var playerOxygen = 0;
+      var playerStabbing = 0;
+      var playerVineOffset = 64;
+      var playerVine = 819;
+      var playerDirection = -1;
+      var playerDead = 0;
+      var playerSprite2 = 0;
+      var playerSprite = 0;
+      final var MODE_VINES = 0;
+      var mode = MODE_VINES;
+      var lives = 4;
+      var time = 5000;
+      var score = 0;
+      var counter = 0;
+      var COLOR_BLACK = new Color(0);
+      var COLOR_WATER = new Color(HEX_WATER);
+      var COLOR_LEAVES = new Color(HEX_LEAVES_1);
+      var COLOR_DIRT = new Color(HEX_LEAVES_3);
+      var COLOR_VINE = new Color(HEX_VINE);
+      var COLOR_SKY = new Color(0x185080);
+      final var CANNIBAL_JUMP_SPEED = -1;
+      final var JUMP_SPEED_2 = -3.04f;
+      final var JUMP_SPEED = -1.1f;
+      final var GRAVITY_3 = 0.065f;
+      final var GRAVITY_2 = 0.12f;
+      final var GRAVITY = 0.04f;
+      final var POINTS_ROCK_WALK = 50;
+      final var POINTS_ROCK_DUCK = 100;
+      final var POINTS_ROCK_JUMP = 200;
+      final var POINTS_ADVANCED_LEVEL = 500;
+      final var POINTS_VINE_CATCH = 100;
+      final var CROC_DELAY = 8;
+      final var CROC_SPRITE_2 = 7;
+      final var CROC_SPRITE_1 = 6;
+      final var CROC_ANGLE_INC = 5;
+      final var CROC_ANGLE = 4;
+      final var CROC_RADIUS = 3;
+      final var CROC_CENTER_Y = 2;
+      final var CROC_Y = 1;
+      final var CROC_X = 0;
+      final var ROCK_Y_LARGE = 100;
+      final var ROCK_Y_SMALL = 123;
+      final var ROCK_MAX_Y_LARGE = 123;
+      final var ROCK_MAX_Y_SMALL = 127;
+      final var MODE_WON = 5;
+      final var MODE_WOMAN = 4;
+      final var MODE_CANNIBALS = 3;
+      final var MODE_ROCKS = 2;
+      final var MODE_SWIMMING = 1;
+      final var VK_JUMP = 0x42;
+      final var VK_DOWN = 0x28;
+      final var VK_UP = 0x26;
+      final var VK_RIGHT = 0x27;
+      final var VK_LEFT = 0x25;
+      final var SPRITE_DIVING_2 = 82;
+      final var SPRITE_20 = 79;
+      final var SPRITE_10 = 78;
+      final var SPRITE_00 = 77;
+      final var SPRITE_DIGIT_0 = 56;
+      final var SPRITE_STAB_LEGS = 53;
+      final var SPRITE_SWIM_LEGS_1 = 49;
+      final var SPRITE_DEAD_BODY_1 = 47;
+      final var SPRITE_STAB_BODY = 46;
+      final var SPRITE_CORAL_1 = 40;
+      final var SPRITE_CROC_TAIL_1 = 34;
+      final var SPRITE_CROC_HEAD_1 = 31;
+      final var SPRITE_LEAVES_11 = 17;
+      final var SPRITE_LEAVES_6 = 12;
+      final var SPRITE_LEAVES_1 = 7;
+      final var SPRITE_VINE_1 = 5;
+      final var SPRITE_RUN_1 = 0;
       while(true) {
 
       do {
@@ -356,10 +356,10 @@ public class a extends Applet implements Runnable {
 
                   j = cameraX / 80;
                   k = cameraX % 80;
-                  int w = 0;
-                  int vineIndex = -1;
+                  var w = 0;
+                  var vineIndex = -1;
                   for (i = 0; i < 3; i++) {
-                      int[] vine = vines[i + j];
+                      var vine = vines[i + j];
                       if (i + j == playerVine) {
                           vineIndex = i << 7;
                           playerSprite = vine[VINE_RADIUS] > 1200 ? SPRITE_CLING_2
@@ -387,13 +387,13 @@ public class a extends Applet implements Runnable {
                       }
 
 
-                      int radius = vine[VINE_RADIUS];
+                      var radius = vine[VINE_RADIUS];
                       u = 1;
                       z = x = 0;
                       y = radius;
 
-                      int v = -2 * radius;
-                      int t = 1 - radius;
+                      var v = -2 * radius;
+                      var t = 1 - radius;
                       while (true) {
 
                           if (t >= 0) {
@@ -571,7 +571,7 @@ public class a extends Applet implements Runnable {
 
 
                   for (i = 0; i < 3; i++) {
-                      int[] croc = crocs[i];
+                      var croc = crocs[i];
                       if (croc[CROC_DELAY] > 0) {
                           if (--croc[CROC_DELAY] == 0) {
                               croc[CROC_X] = cameraX + SCREEN_WIDTH;
@@ -1037,7 +1037,7 @@ public class a extends Applet implements Runnable {
 
 
                   for (i = 0; i < 3; i++) {
-                      int[] croc = crocs[i];
+                      var croc = crocs[i];
                       g.drawImage(sprites[croc[CROC_SPRITE_1]],
                               croc[CROC_X] - cameraX, croc[CROC_Y], null);
                       g.drawImage(sprites[croc[CROC_SPRITE_2]],
@@ -1120,19 +1120,19 @@ public class a extends Applet implements Runnable {
   @Override
   public void processKeyEvent(KeyEvent keyEvent) {
 
-      int k = keyEvent.getKeyCode();
+      var k = keyEvent.getKeyCode();
     if (k > 0) {
-        final int VK_D = 0x44;
-        final int VK_A = 0x41;
-        final int VK_S = 0x53;
-        final int VK_W = 0x57;
-        final int VK_DOWN = 0x28;
-        final int VK_UP = 0x26;
-        final int VK_RIGHT = 0x27;
-        final int VK_LEFT = 0x25;
+        final var VK_D = 0x44;
+        final var VK_A = 0x41;
+        final var VK_S = 0x53;
+        final var VK_W = 0x57;
+        final var VK_DOWN = 0x28;
+        final var VK_UP = 0x26;
+        final var VK_RIGHT = 0x27;
+        final var VK_LEFT = 0x25;
         k = k == VK_W ? VK_UP : k == VK_D ? VK_RIGHT : k == VK_A ? VK_LEFT
           : k == VK_S ? VK_DOWN : k;
-        final int VK_JUMP = 0x42;
+        final var VK_JUMP = 0x42;
         a[(k >= VK_LEFT && k <= VK_DOWN) ? k : VK_JUMP]
           = keyEvent.getID() != 402;
     }

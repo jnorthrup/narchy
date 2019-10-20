@@ -18,8 +18,8 @@ public abstract class Truthlet implements Truth {
 
     long mid() { return (start() + end())/2L; }
     public long range() {
-        long e = end();
-        long s = start();
+        var e = end();
+        var s = start();
         return e - s;
     }
 
@@ -29,9 +29,9 @@ public abstract class Truthlet implements Truth {
 
     @Deprecated @Override public final float freq() {
 
-        float fs = freq(start());
+        var fs = freq(start());
         if (fs == fs) {
-            float fe = freq(end());
+            var fe = freq(end());
             if (fe == fe) {
                 return Util.mean(fs, fe);
             }
@@ -42,9 +42,9 @@ public abstract class Truthlet implements Truth {
     }
 
     @Deprecated @Override public final double evi() {
-        float es = evi(start());
+        var es = evi(start());
         if (es > 0) {
-            float ee = evi(end());
+            var ee = evi(end());
             if (ee > 0) {
                 return Util.mean(es, ee);
             }
@@ -56,22 +56,22 @@ public abstract class Truthlet implements Truth {
 
     /** computes the average frequency over the interval */
     public float freq(long start, long end) {
-        float fStart = freq(start);
+        var fStart = freq(start);
         if (fStart!=fStart)
             return Float.NaN;
         if (start == end) {
             return fStart;
         } else {
-            
 
-            float fEnd = freq(end);
+
+            var fEnd = freq(end);
             if (fEnd != fEnd)
                 return Float.NaN;
 
 
             if (end - start > 1) {
-                
-                float fMid = freq((start+end)/2L);
+
+                var fMid = freq((start+end)/2L);
                 if (fMid==fMid) {
                     return Util.mean(fStart, fMid, fEnd);
                 }
@@ -101,14 +101,14 @@ public abstract class Truthlet implements Truth {
     final boolean during(long when) {
         if (when == ETERNAL)
             return true;
-        long s = start();
+        var s = start();
         if (when == s) return true;
-        long e = end();
+        var e = end();
         return (when > s && when <= e);
     }
 
     public final float[] truth(long when) {
-        float[] fe = new float[2];
+        var fe = new float[2];
         truth(when, fe);
         return fe;
     }

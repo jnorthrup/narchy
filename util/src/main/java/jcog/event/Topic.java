@@ -41,7 +41,7 @@ public interface Topic<X> extends Iterable<Consumer<X>> {
         /** TODO cache the fields because reflection may be slow */
 
 
-        for (Field field : fieldCache.computeIfAbsent(c, (cc) ->
+        for (var field : fieldCache.computeIfAbsent(c, (cc) ->
             Arrays.stream(cc.getFields()).filter(x -> x.getType() == Topic.class).toArray(Field[]::new)
         )) {
             f.accept(field);
@@ -56,15 +56,15 @@ public interface Topic<X> extends Iterable<Consumer<X>> {
      */
     static <X> RunThese all(X obj, BiConsumer<String, X> f, Predicate<String> includeKey) {
 
-        RunThese s = new RunThese();
+        var s = new RunThese();
 
         each(obj.getClass(), (field) -> {
-            String fieldName = field.getName();
+            var fieldName = field.getName();
             if (includeKey != null && !includeKey.test(fieldName))
                 return;
 
             try {
-                Topic<X> t = ((Topic<X>) field.get(obj));
+                var t = ((Topic<X>) field.get(obj));
 
 
                 s.add(
@@ -90,7 +90,7 @@ public interface Topic<X> extends Iterable<Consumer<X>> {
     /** emits the supplier procedure's result IF there is any listener to receive it */
     default /* final */ void emit(Supplier<X> t) {
         if (!isEmpty()) {
-            X x = t.get();
+            var x = t.get();
             if (x!=null)
                 emit(x);
         }
@@ -102,9 +102,9 @@ public interface Topic<X> extends Iterable<Consumer<X>> {
     }
 
     default Off on(LongSupplier time, LongSupplier minUpdatePeriod, Consumer<X> o) {
-        AtomicLong lastUpdate = new AtomicLong(time.getAsLong() - minUpdatePeriod.getAsLong());
+        var lastUpdate = new AtomicLong(time.getAsLong() - minUpdatePeriod.getAsLong());
         return on((x) -> {
-            long now = time.getAsLong();
+            var now = time.getAsLong();
             if (now - lastUpdate.get() >= minUpdatePeriod.getAsLong()) {
                 lastUpdate.set(now);
                 o.accept(x);

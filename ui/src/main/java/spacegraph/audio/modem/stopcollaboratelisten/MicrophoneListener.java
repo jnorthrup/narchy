@@ -25,7 +25,7 @@ public class MicrophoneListener implements Runnable {
      */
     public MicrophoneListener(AudioUtils.AudioBuffer _buffer) {
         buffer = _buffer;
-        Thread myThread = new Thread(this, kThreadName);
+        var myThread = new Thread(this, kThreadName);
         myThread.start();
     }
 
@@ -43,15 +43,15 @@ public class MicrophoneListener implements Runnable {
              * So there's a fine balance going on here between the two threads, and
              * if it's not tuned, samples will be lost.
              */
-            int buffSize = 32000;
-            TargetDataLine line = AudioUtils.getTargetDataLine(AudioUtils.kDefaultFormat);
+            var buffSize = 32000;
+            var line = AudioUtils.getTargetDataLine(AudioUtils.kDefaultFormat);
             line.open(AudioUtils.kDefaultFormat, buffSize);
 
             //System.out.println(Thread.currentThread().getName() + "> bufferSize = " + line.getBufferSize());
 
 
-            int buffSizeFraction = 8;
-            byte[] data = new byte[line.getBufferSize() / buffSizeFraction];
+            var buffSizeFraction = 8;
+            var data = new byte[line.getBufferSize() / buffSizeFraction];
 
             listen(line, data);
 
@@ -64,7 +64,7 @@ public class MicrophoneListener implements Runnable {
     private void listen(TargetDataLine line, byte[] data) {
         line.start();
         while(running){
-            int numBytesRead = line.read(data, 0, data.length);
+            var numBytesRead = line.read(data, 0, data.length);
             //		    System.out.println(Thread.currentThread().getName() + "> bytesRead = " + numBytesRead);
             buffer.write(data, 0, numBytesRead);
         }

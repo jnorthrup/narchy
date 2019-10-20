@@ -19,7 +19,7 @@ class Metronome {
             {
                 kickEnv = new Envelope(ac, 0.0f);
 
-                UGen kickGain = new Gain(ac, 1, kickEnv).in(
+                var kickGain = new Gain(ac, 1, kickEnv).in(
                         new BiquadFilter(ac, BiquadFilter.BESSEL_LP, 500.0f, 1.0f).in(
                                 new WavePlayer(ac, 100.0f, WaveFactory.SINE)));
 
@@ -30,14 +30,14 @@ class Metronome {
             {
                 snareEnv = new Envelope(ac, 0.0f);
 
-                WavePlayer snareNoise = new WavePlayer(ac, 1.0f, WaveFactory.NOISE);
-                WavePlayer snareTone = new WavePlayer(ac, 200.0f, WaveFactory.SINE);
+                var snareNoise = new WavePlayer(ac, 1.0f, WaveFactory.NOISE);
+                var snareTone = new WavePlayer(ac, 200.0f, WaveFactory.SINE);
 
                 IIRFilter snareFilter = new BiquadFilter(ac, BiquadFilter.BP_SKIRT, 2500.0f, 1.0f);
                 snareFilter.in(snareNoise);
                 snareFilter.in(snareTone);
 
-                Gain snareGain = new Gain(ac, 1, snareEnv);
+                var snareGain = new Gain(ac, 1, snareEnv);
                 snareGain.in(snareFilter);
 
 

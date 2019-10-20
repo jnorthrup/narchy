@@ -38,7 +38,7 @@ public class AtomicMetalBitSet extends MetalBitSet {
     }
 
     public boolean compareAndSet(int i, boolean expect, boolean set) {
-        int mask = 1 << i;
+        var mask = 1 << i;
         boolean[] got = {false};
         X.accumulateAndGet(this, mask, (v,m)->{
             if (((v & m) != 0)==expect) {
@@ -56,14 +56,14 @@ public class AtomicMetalBitSet extends MetalBitSet {
     @Override
     public void set(int i) {
         assert(i < 32);
-        int mask = 1<<i;
+        var mask = 1<<i;
         X.accumulateAndGet(this, mask, (v,m)-> v|m);
         //X.getAndUpdate(this, v-> v|(mask) );
     }
 
     public boolean getAndSet(int i) {
         assert(i < 32);
-        int mask = 1<<i;
+        var mask = 1<<i;
         return ((X.getAndAccumulate(this, mask, (v,m) -> v|m)) & mask) != 0;
         //return (X.getAndUpdate(this, v-> v|(mask) ) & mask) != 0;
     }
@@ -71,14 +71,14 @@ public class AtomicMetalBitSet extends MetalBitSet {
     @Override
     public void clear(int i) {
         assert(i < 32);
-        int antimask = ~(1<<i);
+        var antimask = ~(1<<i);
         X.accumulateAndGet(this, antimask, (v,am)-> v&(am) );
     }
 
     public boolean getAndClear(int i) {
         assert(i < 32);
-        int mask = (1<<i);
-        int antimask = ~mask;
+        var mask = (1<<i);
+        var antimask = ~mask;
         return (X.accumulateAndGet(this, antimask, (v,am)-> v&(am) ) & mask) != 0;
     }
 

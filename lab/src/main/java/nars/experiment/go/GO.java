@@ -22,7 +22,7 @@ public class GO extends JPanel implements MouseListener {
     static int whiteP;
 
     {
-        for (int i = 0; i < DIM; i++) {
+        for (var i = 0; i < DIM; i++) {
             board[i][0] = 3;
             board[0][i] = 3;
             board[DIM - 1][i] = 3;
@@ -45,7 +45,7 @@ public class GO extends JPanel implements MouseListener {
 
         g.setColor(Color.BLACK);
         g.drawRect(20, 20, 508, 508);
-        for (int i = 40; i <= 510; i += 26) {
+        for (var i = 40; i <= 510; i += 26) {
             g.drawLine(40, i, 508, i);
             g.drawLine(i, 40, i, 508);
         }
@@ -60,8 +60,8 @@ public class GO extends JPanel implements MouseListener {
         g.fillOval(426, 426, 8, 8);
         g.fillOval(270, 426, 8, 8);
 
-        for (int i = 1; i < DIM - 1; i++) {
-            for (int k = 1; k < DIM - 1; k++) {
+        for (var i = 1; i < DIM - 1; i++) {
+            for (var k = 1; k < DIM - 1; k++) {
                 switch (boardHist.get(turn)[i][k]) {
                     case 1:
                         g.setColor(Color.BLACK);
@@ -109,7 +109,7 @@ public class GO extends JPanel implements MouseListener {
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
 
-        GO panel = new GO();
+        var panel = new GO();
         frame.add(panel);
 
 
@@ -123,7 +123,7 @@ public class GO extends JPanel implements MouseListener {
     public void reset() {
         turn = 0;
         board = new int[DIM][DIM];
-        for (int i = 0; i < DIM; i++) {
+        for (var i = 0; i < DIM; i++) {
             board[i][0] = 3;
             board[0][i] = 3;
             board[DIM - 1][i] = 3;
@@ -142,8 +142,8 @@ public class GO extends JPanel implements MouseListener {
     @Override
     public void mouseReleased(MouseEvent e) {
 
-        int x = e.getX();
-        int y = e.getY();
+        var x = e.getX();
+        var y = e.getY();
         if (y >= 580 && y <= 610) {
             if (x > 40 && x < 120) {
                 reset();
@@ -179,7 +179,7 @@ public class GO extends JPanel implements MouseListener {
             System.out.print(turn % 2 == 1 ? "W " : "B ");
             System.out.println(x + "," + y);
             board = new int[DIM][DIM];
-            for (int r = 0; r < boardHist.get(turn).length; r++) {
+            for (var r = 0; r < boardHist.get(turn).length; r++) {
                 System.arraycopy(boardHist.get(turn)[r], 0, board[r], 0, boardHist.get(turn).length);
             }
 
@@ -226,8 +226,8 @@ public class GO extends JPanel implements MouseListener {
                     kamikaze = true;
                 }
 
-                boolean matches = true;
-                for (int i = 0; i < DIM; i++) {
+                var matches = true;
+                for (var i = 0; i < DIM; i++) {
                     if (turn >= 3) {
                         if (!Arrays.toString(boardHist.get(turn - 1)[i]).equals(Arrays.toString(board[i]))) {
                             matches = false;
@@ -253,7 +253,7 @@ public class GO extends JPanel implements MouseListener {
     }
 
     public static boolean checkSurround(int x, int y, int c) {
-        boolean[][] checked = new boolean[DIM][DIM];
+        var checked = new boolean[DIM][DIM];
         checked[x][y] = true;
         if (board[x][y] == c) {
             return (checkSurround(x + 1, y, c, checked) &&

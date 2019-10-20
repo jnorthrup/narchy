@@ -20,12 +20,12 @@ public class OpenFileAction implements Action {
 
   @Override
   public void execute(TextEditModel editor, String... args) {
-    JFileChooser fileChooser = new JFileChooser();
-    int selected = fileChooser.showOpenDialog(null);
+    var fileChooser = new JFileChooser();
+    var selected = fileChooser.showOpenDialog(null);
 
     if (selected == JFileChooser.APPROVE_OPTION) {
       try {
-        String textString = Files.toString(fileChooser.getSelectedFile(), Charsets.UTF_8);
+        var textString = Files.toString(fileChooser.getSelectedFile(), Charsets.UTF_8);
         editor.createNewBuffer();
         editor.buffer().insert(textString);
       } catch (IOException e) {

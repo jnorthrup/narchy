@@ -51,10 +51,10 @@ public class Centroid extends ArrayRealVector {
                 
         );
 
-        double[] a = maxErrorNode.getDataRef();
-        double[] b = maxErrorNeighbour.getDataRef();
-        double[] ab = getDataRef();
-        for (int i = 0; i < ab.length; i++) {
+        var a = maxErrorNode.getDataRef();
+        var b = maxErrorNeighbour.getDataRef();
+        var ab = getDataRef();
+        for (var i = 0; i < ab.length; i++) {
             ab[i] = (a[i] + b[i]) / 2;
         }
     }
@@ -65,8 +65,8 @@ public class Centroid extends ArrayRealVector {
     }
 
     public Centroid randomizeUniform(double min, double max) {
-        int dim = getDimension();
-        for (int i = 0; i < dim; i++) {
+        var dim = getDimension();
+        for (var i = 0; i < dim; i++) {
             setEntry(i, Math.random() * (max - min) + min);
         }
         return this;
@@ -95,14 +95,14 @@ public class Centroid extends ArrayRealVector {
     }
 
     public double distanceSq(double[] x, DistanceFunction distanceSq) {
-        double d = distanceSq.distance(getDataRef(), x);
+        var d = distanceSq.distance(getDataRef(), x);
         assert (Double.isFinite(d));
         return d;
     }
 
 
     public static double distanceCartesianSq(double[] x, double[] y) {
-        int l = y.length;
+        var l = y.length;
         return IntStream.range(0, l).mapToDouble(i -> y[i] - x[i]).map(d -> d * d).sum();
     }
 
@@ -111,16 +111,16 @@ public class Centroid extends ArrayRealVector {
      * 0 < rate < 1.0
      */
     public void lerp(double[] x, double rate) {
-        double[] d = getDataRef();
-        double ir = (1.0 - rate);
-        for (int i = 0; i < d.length; i++) {
+        var d = getDataRef();
+        var ir = (1.0 - rate);
+        for (var i = 0; i < d.length; i++) {
             d[i] = (ir * d[i]) + (rate * x[i]);
         }
     }
 
     public void add(double[] x) {
-        double[] d = getDataRef();
-        for (int i = 0; i < d.length; i++)
+        var d = getDataRef();
+        for (var i = 0; i < d.length; i++)
             d[i] += x[i];
     }
 
@@ -131,7 +131,7 @@ public class Centroid extends ArrayRealVector {
 
     /** tests the first dimension value if not NaN */
     public boolean active() {
-        double v = getEntry(0);
+        var v = getEntry(0);
         return v == v;
     }
 
@@ -145,18 +145,18 @@ public class Centroid extends ArrayRealVector {
          * avoid needing to calculate sqrt() this can be used in a comparison
          */
         static double distanceCartesianSq(double[] x, double[] y) {
-            int l = y.length;
+            var l = y.length;
             return IntStream.range(0, l).mapToDouble(i -> (y[i] - x[i])).map(d -> d * d).sum();
         }
         static double distanceCartesianManhattan(double[] x, double[] y) {
-            int l = y.length;
+            var l = y.length;
             return IntStream.range(0, l).mapToDouble(i -> Math.abs(y[i] - x[i])).sum();
         }
 
     }
 
     public double learn(double[] x, DistanceFunction dist) {
-        double[] d = getDataRef();
+        var d = getDataRef();
         if (d[0]!=d[0]) {
             //inactive, assign the value as-is
             System.arraycopy(x, 0, d, 0, x.length);

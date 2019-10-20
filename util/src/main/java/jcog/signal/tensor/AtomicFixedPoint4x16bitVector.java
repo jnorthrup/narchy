@@ -56,14 +56,14 @@ public class AtomicFixedPoint4x16bitVector implements WritableTensor {
     @Override
     public float sumValues() {
         long x = X.get(this), s = 0;
-        for (int i = 0; i < 4; i++)
+        for (var i = 0; i < 4; i++)
             s += shortAt(x, i);
         return toFloat(s);
     }
 
     @Override
     public String toString() {
-        StringJoiner joiner = new StringJoiner(",");
+        var joiner = new StringJoiner(",");
         IntStream.range(0,4).forEach(i-> joiner.add(toString(i)));
         return joiner.toString();
     }
@@ -73,20 +73,20 @@ public class AtomicFixedPoint4x16bitVector implements WritableTensor {
     }
 
     @Override public final float merge(int c, float arg, FloatFloatToFloatFunction F, @Nullable PriReturn returning) {
-        int shift = c * 16;
-        long mask = ~((((long)('\uffff'))) << shift);
+        var shift = c * 16;
+        var mask = ~((((long)('\uffff'))) << shift);
         long _x, _y;
         float x, y;
 
         do {
             _x = X.get(this);
 
-            int xi = (int) (_x >> shift) & '\uffff'; //shortAt(_x, c)
+            var xi = (int) (_x >> shift) & '\uffff'; //shortAt(_x, c)
             x = toFloat(xi);
 
             y = F.apply(x, arg);
 
-            int yi = toShort(y);
+            var yi = toShort(y);
             if (xi == yi) {
                 y = x; //no change
                 break;
@@ -101,9 +101,9 @@ public class AtomicFixedPoint4x16bitVector implements WritableTensor {
 
     @Override
     public final void setAt(int linearCell, float newValue) {
-        int shift = linearCell * 16;
-        long mask = ~((((long)('\uffff'))) << shift);
-        long b = ((long)toShort(newValue))<<shift;
+        var shift = linearCell * 16;
+        var mask = ~((((long)('\uffff'))) << shift);
+        var b = ((long)toShort(newValue))<<shift;
         long x, y;
         do {
             y = ((x = X.get(this)) & mask) | b;

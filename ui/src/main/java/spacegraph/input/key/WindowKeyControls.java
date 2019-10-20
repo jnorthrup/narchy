@@ -21,26 +21,26 @@ public class WindowKeyControls extends HotKeyMap {
         add(KeyEvent.VK_F2, "Window Decoration Toggle", ()-> window.video.window.setUndecorated(!window.video.window.isUndecorated()));
 
         add(KeyEvent.VK_F3, "Window Full-Screen Toggle", ()->{
-            GLWindow w = window.video.window;
-            boolean fullscreen = w.isFullscreen();
+            var w = window.video.window;
+            var fullscreen = w.isFullscreen();
             w.setAlwaysOnBottom(!fullscreen);
             w.setFullscreen(!fullscreen);
         });
 
         add(KeyEvent.VK_F4, "Window Always-On-Top Toggle", ()-> {
-            GLWindow w = window.video.window;
+            var w = window.video.window;
             w.setAlwaysOnTop(w.isAlwaysOnTop());
         });
 
         final float MAX_FPS = 100;
 
         add(KeyEvent.VK_F4, "Window FPS Faster", ()-> {
-            float nextFPS = Math.min(MAX_FPS, window.video.renderFPS * 1.25f);
+            var nextFPS = Math.min(MAX_FPS, window.video.renderFPS * 1.25f);
             window.video.setFPS(nextFPS);
         });
         final float MIN_FPS = 1;
         add(KeyEvent.VK_F5, "Window FPS Slower", ()-> {
-            float nextFPS = Math.max(MIN_FPS, window.video.renderFPS * 0.8f);
+            var nextFPS = Math.max(MIN_FPS, window.video.renderFPS * 0.8f);
             window.video.setFPS(nextFPS);
         });
 

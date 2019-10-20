@@ -48,8 +48,8 @@ public class WaveletBag implements Bitmap2D {
 
     @Override
     public void updateBitmap() {
-        
-        BufferedImage src = source.get();
+
+        var src = source.get();
         if (image == null || image.getWidth()!=src.getWidth() || image.getHeight()!=src.getHeight())
             image = new GrayF32(src.getWidth(), src.getHeight());
         bufferedToGray(src, image.data, image.startIndex, image.stride);
@@ -63,14 +63,14 @@ public class WaveletBag implements Bitmap2D {
     }
 
     public static void bufferedToGray(BufferedImage src, float[] data, int dstStartIndex, int dstStride) {
-        int width = src.getWidth();
-        int height = src.getHeight();
+        var width = src.getWidth();
+        var height = src.getHeight();
         int x;
         int argb;
         int r;
         if(src.getType() == 10) {
-            WritableRaster y = src.getRaster();
-            float[] index = new float[1];
+            var y = src.getRaster();
+            var index = new float[1];
 
             for(x = 0; x < height; ++x) {
                 argb = dstStartIndex + x * dstStride;
@@ -81,15 +81,15 @@ public class WaveletBag implements Bitmap2D {
                 }
             }
         } else {
-            for(int var14 = 0; var14 < height; ++var14) {
-                int var15 = dstStartIndex + var14 * dstStride;
+            for(var var14 = 0; var14 < height; ++var14) {
+                var var15 = dstStartIndex + var14 * dstStride;
 
                 for(x = 0; x < width; ++x) {
                     argb = src.getRGB(x, var14);
                     r = argb >>> 16 & 255;
-                    int g = argb >>> 8 & 255;
-                    int b = argb & 255;
-                    float ave = (float)(r + g + b) / 3.0F;
+                    var g = argb >>> 8 & 255;
+                    var b = argb & 255;
+                    var ave = (float)(r + g + b) / 3.0F;
                     data[var15++] = ave;
                 }
             }

@@ -50,11 +50,11 @@ public final class Distributor {
         order = new short[capacity];
         
         Arrays.fill(order, (short)-1);
-        int index = capacity;
+        var index = capacity;
         
-        for (int rank = range; rank > 0; rank--) {
-            int capDivRank = capacity / rank;
-            for (int time = 0; time < rank; time++) {
+        for (var rank = range; rank > 0; rank--) {
+            var capDivRank = capacity / rank;
+            for (var time = 0; time < rank; time++) {
                 index = (capDivRank + index) % capacity;
                 while (order[index] >= 0) {
                     index = (index + 1) % capacity;

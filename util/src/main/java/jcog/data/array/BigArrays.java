@@ -221,12 +221,12 @@ public enum BigArrays {
 			firstCut = upperBound( from, mid, secondCut, comp );
 		}
 
-		long first2 = firstCut;
-		long middle2 = mid;
-		long last2 = secondCut;
+		var first2 = firstCut;
+		var middle2 = mid;
+		var last2 = secondCut;
 		if ( middle2 != first2 && middle2 != last2 ) {
-			long first1 = first2;
-			long last1 = middle2;
+			var first1 = first2;
+			var last1 = middle2;
 			while ( first1 < --last1 )
 				swapper.swap( first1++, last1 );
 			first1 = middle2;
@@ -257,10 +257,10 @@ public enum BigArrays {
 	 * <code>comp.apply(array[j], x)</code> is <code>true</code>.
 	 */
 	private static long lowerBound( long mid, long to, long firstCut, LongComparator comp ) {
-		long len = to - mid;
+		var len = to - mid;
 		while ( len > 0 ) {
-			long half = len / 2;
-			long middle = mid + half;
+			var half = len / 2;
+			var middle = mid + half;
 			if ( comp.compare( middle, firstCut ) < 0 ) {
 				mid = middle + 1;
 				len -= half + 1;
@@ -274,9 +274,9 @@ public enum BigArrays {
 
 	/** Returns the index of the median of three elements. */
 	private static long med3( long a, long b, long c, LongComparator comp ) {
-		int ab = comp.compare( a, b );
-		int ac = comp.compare( a, c );
-		int bc = comp.compare( b, c );
+		var ab = comp.compare( a, b );
+		var ac = comp.compare( a, c );
+		var bc = comp.compare( b, c );
 		return ( ab < 0 ?
 				( bc < 0 ? b : ac < 0 ? c : a ) :
 				( bc > 0 ? b : ac > 0 ? c : a ) );
@@ -295,20 +295,20 @@ public enum BigArrays {
 	 * @param swapper an object that knows how to swap the elements at any two positions.
 	 */
 	public static void mergeSort( long from, long to, LongComparator comp, BigSwapper swapper ) {
-		long length = to - from;
+		var length = to - from;
 
 		
 		if ( length < SMALL ) {
-			for ( long i = from; i < to; i++ ) {
-				for ( long j = i; j > from && ( comp.compare( j - 1, j ) > 0 ); j-- ) {
+			for (var i = from; i < to; i++ ) {
+				for (var j = i; j > from && ( comp.compare( j - 1, j ) > 0 ); j-- ) {
 					swapper.swap( j, j - 1 );
 				}
 			}
 			return;
 		}
 
-		
-		long mid = ( from + to ) >>> 1;
+
+		var mid = ( from + to ) >>> 1;
 		mergeSort( from, mid, comp, swapper );
 		mergeSort( mid, to, comp, swapper );
 
@@ -334,22 +334,22 @@ public enum BigArrays {
 	 * 
 	 */
 	public static void quickSort( long from, long to, LongComparator comp, BigSwapper swapper ) {
-		long len = to - from;
+		var len = to - from;
 		
 		if ( len < SMALL ) {
-			for ( long i = from; i < to; i++ )
-				for ( long j = i; j > from && ( comp.compare( j - 1, j ) > 0 ); j-- ) {
+			for (var i = from; i < to; i++ )
+				for (var j = i; j > from && ( comp.compare( j - 1, j ) > 0 ); j-- ) {
 					swapper.swap( j, j - 1 );
 				}
 			return;
 		}
 
-		
-		long m = from + len / 2; 
+
+		var m = from + len / 2;
 		if ( len > SMALL ) {
 			long l = from, n = to - 1;
-			if ( len > MEDIUM ) { 
-				long s = len / 8;
+			if ( len > MEDIUM ) {
+				var s = len / 8;
 				l = med3( l, l + s, l + 2 * s, comp );
 				m = med3( m - s, m, m + s, comp );
 				n = med3( n - 2 * s, n - s, n, comp );
@@ -358,8 +358,8 @@ public enum BigArrays {
 		}
 
 
-        long c = to - 1;
-        long a = from;
+		var c = to - 1;
+		var a = from;
         long b = a, d = c;
 		
 		while ( true ) {
@@ -387,9 +387,9 @@ public enum BigArrays {
 		}
 
 
-        long s = Math.min(a - from, b - a);
+		var s = Math.min(a - from, b - a);
 		vecSwap( swapper, from, b - s, s );
-        long n = from + len;
+		var n = from + len;
         s = Math.min( d - c, n - d - 1 );
 		vecSwap( swapper, b, n - s, s );
 
@@ -411,10 +411,10 @@ public enum BigArrays {
 	 * <code>comp.apply(x, array[j])</code> is <code>false</code>.
 	 */
 	private static long upperBound( long from, long mid, long secondCut, LongComparator comp ) {
-		long len = mid - from;
+		var len = mid - from;
 		while ( len > 0 ) {
-			long half = len / 2;
-			long middle = from + half;
+			var half = len / 2;
+			var middle = from + half;
 			if ( comp.compare( secondCut, middle ) < 0 ) {
 				len = half;
 			}
@@ -430,6 +430,6 @@ public enum BigArrays {
 	 * Swaps x[a .. (a+n-1)] with x[b .. (b+n-1)].
 	 */
 	private static void vecSwap( BigSwapper swapper, long from, long l, long s ) {
-		for ( int i = 0; i < s; i++, from++, l++ ) swapper.swap( from, l );
+		for (var i = 0; i < s; i++, from++, l++ ) swapper.swap( from, l );
 	}
 }

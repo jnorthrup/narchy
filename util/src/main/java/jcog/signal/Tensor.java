@@ -39,10 +39,10 @@ public interface Tensor  {
 
     static Tensor vectorFromToBy(int start, int end, int steps) {
 
-        int elements = (end - start + steps) / steps;
-        float[] values = new float[elements];
+        var elements = (end - start + steps) / steps;
+        var values = new float[elements];
 
-        for (int i = 0; i < elements; i++)
+        for (var i = 0; i < elements; i++)
             values[i] = start + i * steps;
 
         return new ArrayTensor(values);
@@ -53,7 +53,7 @@ public interface Tensor  {
     }
 
     static Tensor vectorOf(float value, int dimension) {
-        float[] values = new float[dimension];
+        var values = new float[dimension];
         Arrays.fill(values, value);
         return new ArrayTensor(values);
     }
@@ -104,7 +104,7 @@ public interface Tensor  {
 
 
     default Tensor viewLinear(int linearStart, int linearEnd) {
-        Tensor parent = this;
+        var parent = this;
         return new LinearSubTensor(linearEnd, linearStart, parent);
     }
 
@@ -117,7 +117,7 @@ public interface Tensor  {
     }
 
     static Tensor randomVector(int dimension, float min, float max) {
-        Random random = new Random();
+        var random = new Random();
         return forEach(new ArrayTensor(new float[dimension]),
                         d -> (float)random.nextDouble() * (max - min) + min);
     }
@@ -135,9 +135,9 @@ public interface Tensor  {
     float getAt(int linearCell);
 
     default int index(int... coord) {
-        int f = coord[0];
+        var f = coord[0];
 
-        int[] r = stride();
+        var r = stride();
         for (int s = 1, iLength = r.length+1; s < iLength; s++) {
             f += r[s-1] * coord[s];
         }
@@ -147,9 +147,9 @@ public interface Tensor  {
 
 
     default float[] snapshot() {
-        int v = volume();
-        float[] x = new float[v];
-        for (int i = 0; i < v; i++)
+        var v = volume();
+        var x = new float[v];
+        for (var i = 0; i < v; i++)
             x[i] = getAt(i);
         return x;
     }
@@ -164,8 +164,8 @@ public interface Tensor  {
 
 
     static int[] stride(int[] shape) {
-        int[] stride = new int[shape.length - 1];
-        int striding = shape[0];
+        var stride = new int[shape.length - 1];
+        var striding = shape[0];
         for (int i = 1, dimsLength = shape.length; i < dimsLength; i++) {
             stride[i-1] = striding;
             striding *= shape[i];
@@ -179,10 +179,10 @@ public interface Tensor  {
      * hypervolume, ie total # cells
      */
     default int volume() {
-        int[] s = shape();
-        int v = s[0];
-        int bound = s.length;
-        int acc = Arrays.stream(s, 1, bound).reduce(1, (a, b) -> a * b);
+        var s = shape();
+        var v = s[0];
+        var bound = s.length;
+        var acc = Arrays.stream(s, 1, bound).reduce(1, (a, b) -> a * b);
         v *= acc;
         return v;
     }
@@ -206,12 +206,12 @@ public interface Tensor  {
      * receives the pair: linearIndex,value (in increasing order within provided subrange, end <= volume())
      */
     default void forEach(IntFloatProcedure sequential, int start, int end) {
-        for (int i = start; i < end; i++ ) {
+        for (var i = start; i < end; i++ ) {
             sequential.value(i, getAt(i));
         }
     }
     default void forEachReverse(IntFloatProcedure sequential, int start, int end) {
-        for (int i = end-1; i >= start; i-- ) {
+        for (var i = end-1; i >= start; i-- ) {
             sequential.value(i, getAt(i));
         }
     }
@@ -323,16 +323,15 @@ public interface Tensor  {
      * @return the value at that point.
      */
     default float getFractInterp(float fraction) {
-        int v = volume()-1;
-        float posInBuf = fraction * v;
-        int lowerIndex = Math.max(0, Math.round(posInBuf - 0.5f));
-        int upperIndex = Math.min(v, Math.round(posInBuf + 0.5f));
-        float offset = posInBuf - lowerIndex;
-        float l = getAt(lowerIndex);
+        var v = volume()-1;
+        var posInBuf = fraction * v;
+        var lowerIndex = Math.max(0, Math.round(posInBuf - 0.5f));
+        var upperIndex = Math.min(v, Math.round(posInBuf + 0.5f));
+        var offset = posInBuf - lowerIndex;
+        var l = getAt(lowerIndex);
 
 
-
-        float u = getAt(upperIndex);
+        var u = getAt(upperIndex);
         return (1 - offset) * l + offset * u;
     }
 
@@ -350,8 +349,8 @@ public interface Tensor  {
 
     /** linearized, shape is lost; forces creation of new instance */
     default double[] doubleArray() {
-        int v = volume();
-        double[] xx = new double[v];
+        var v = volume();
+        var xx = new double[v];
         forEach((i,x)-> xx[i] = x);
         return xx;
     }
@@ -364,8 +363,8 @@ public interface Tensor  {
 
     /** linearized, shape is lost */
     default float[] floatArray() {
-        int v = volume();
-        float[] xx = new float[v];
+        var v = volume();
+        var xx = new float[v];
         forEach((i,x)-> xx[i] = x);
         return xx;
     }

@@ -47,7 +47,7 @@ public class OrbSpaceMouse extends SpaceMouse implements KeyListener {
 
         switch (button) {
             case MouseEvent.BUTTON3:
-                Collidable co = pickCollidable(x, y);
+                var co = pickCollidable(x, y);
                 if (co!=null)
                     space.camera(co.transform, co.shape().getBoundingRadius() * 2.5f);
                 break;
@@ -57,7 +57,7 @@ public class OrbSpaceMouse extends SpaceMouse implements KeyListener {
     @Override
     public void mouseWheelMoved(MouseEvent e) {
 
-        float y = e.getRotation()[1];
+        var y = e.getRotation()[1];
         if (y != 0) {
 
         }
@@ -102,23 +102,23 @@ public class OrbSpaceMouse extends SpaceMouse implements KeyListener {
         if (pickConstraint == null && pickedBody != null) {
             pickedBody.setActivationState(Collidable.DISABLE_DEACTIVATION);
 
-            Body3D body = pickedBody;
-            v3 pickPos = new v3(rayCallback.hitPointWorld);
+            var body = pickedBody;
+            var pickPos = new v3(rayCallback.hitPointWorld);
 
-            Transform tmpTrans = body.transform;
+            var tmpTrans = body.transform;
             tmpTrans.invert();
-            v3 localPivot = new v3(pickPos);
+            var localPivot = new v3(pickPos);
             tmpTrans.transform(localPivot);
 
-            Point2PointConstraint p2p = new Point2PointConstraint(body, localPivot);
+            var p2p = new Point2PointConstraint(body, localPivot);
             p2p.impulseClamp = 3f;
 
 
             gOldPickingPos.set(rayCallback.rayToWorld);
-            v3 eyePos = new v3(space.camPos);
-            v3 tmp = new v3();
+            var eyePos = new v3(space.camPos);
+            var tmp = new v3();
             tmp.sub(pickPos, eyePos);
-            float gOldPickingDist = tmp.length();
+            var gOldPickingDist = tmp.length();
 
             p2p.tau = 0.1f;
 
@@ -136,19 +136,19 @@ public class OrbSpaceMouse extends SpaceMouse implements KeyListener {
     @Deprecated /* TODO probably rewrite */ private boolean mouseMotionFunc(int px, int py, short[] buttons) {
 
 
-        ClosestRay cray = pickRay(px, py);
+        var cray = pickRay(px, py);
 
 
         /*System.out.println(mouseTouch.collisionObject + " touched with " +
             Arrays.toString(buttons) + " at " + mouseTouch.hitPointWorld
         );*/
 
-        Spatial prevPick = pickedSpatial;
+        var prevPick = pickedSpatial;
 
         picked = cray.collidable;
         Spatial pickedSpatial = null;
         if (picked != null) {
-            Object t = picked.data();
+            var t = picked.data();
             if (t instanceof Spatial) {
                 pickedSpatial = ((Spatial) t);
                 if (Spatial.onTouch(finger, picked, cray, buttons, space) != null) {
@@ -211,8 +211,8 @@ public class OrbSpaceMouse extends SpaceMouse implements KeyListener {
 
         mouseDragDX = mouseDragDY = 0;
 
-        int x = e.getX();
-        int y = e.getY();
+        var x = e.getX();
+        var y = e.getY();
         if (!mouseMotionFunc(x, y, e.getButtonsDown())) {
             pickConstrain(e.getButton(), 1, x, y);
 
@@ -226,14 +226,14 @@ public class OrbSpaceMouse extends SpaceMouse implements KeyListener {
         if (e.isConsumed())
             return;
 
-        int dragThresh = 1;
-        boolean dragging = Math.abs(mouseDragDX) < dragThresh;
+        var dragThresh = 1;
+        var dragging = Math.abs(mouseDragDX) < dragThresh;
         if (dragging && mouseClick(e.getButton(), e.getX(), e.getY())) {
 
         } else {
 
-            int x = e.getX();
-            int y = e.getY();
+            var x = e.getX();
+            var y = e.getY();
             if (!mouseMotionFunc(x, y, e.getButtonsDown())) {
                 pickConstrain(e.getButton(), 0, x, y);
             }
@@ -251,8 +251,8 @@ public class OrbSpaceMouse extends SpaceMouse implements KeyListener {
         if (e.isConsumed())
             return;
 
-        int x = e.getX();
-        int y = e.getY();
+        var x = e.getX();
+        var y = e.getY();
 
         if (mouseDragPrevX >= 0) {
             mouseDragDX = (x) - mouseDragPrevX;

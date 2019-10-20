@@ -19,11 +19,11 @@ public class Sum implements DiffableFunctionSource {
 
     @Override
     public String valueToSource(SourceEnvironment se) {
-        String sum = se.allocateVariable();
+        var sum = se.allocateVariable();
 
         se.assign(sum).append("0;").nl();
-        for (DiffableFunctionSource x : xs) {
-            String v = x.valueToSource(se);
+        for (var x : xs) {
+            var v = x.valueToSource(se);
             se.additiveAssign(sum).append(v).append(";").nl();
         }
 
@@ -32,11 +32,11 @@ public class Sum implements DiffableFunctionSource {
 
     @Override
     public String partialDeriveToSource(SourceEnvironment se) {
-        String sum = se.allocateVariable();
+        var sum = se.allocateVariable();
 
         se.assign(sum).append("0;").nl();
-        for (DiffableFunctionSource x : xs) {
-            String v = x.partialDeriveToSource(se);
+        for (var x : xs) {
+            var v = x.partialDeriveToSource(se);
             se.additiveAssign(sum).append(v).append(";").nl();
         }
 

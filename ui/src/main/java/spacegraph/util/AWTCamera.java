@@ -65,11 +65,11 @@ public class AWTCamera {
      *  @return	image the image for the given region
      */
     public static BufferedImage get(Component component, @Nullable BufferedImage image, @Nullable Rectangle region) {
-        Pair<AtomicBoolean, Graphics2D> pair = graphicsDrawers.get(component);
+        var pair = graphicsDrawers.get(component);
         if (!((pair == null || pair.getOne().compareAndSet(false, true))))
             return image; 
         try {
-            Dimension d = component.getSize();
+            var d = component.getSize();
 
             if (d.width == 0 || d.height == 0) {
                 d = component.getPreferredSize();
@@ -83,7 +83,7 @@ public class AWTCamera {
             
 
             if (!component.isDisplayable()) {
-                Dimension d1 = component.getSize();
+                var d1 = component.getSize();
 
                 if (d1.width == 0 || d1.height == 0) {
                     d1 = component.getPreferredSize();
@@ -97,11 +97,11 @@ public class AWTCamera {
                 return null;
 
 
-            Graphics2D g2d = pair != null ? pair.getTwo() : null;
+            var g2d = pair != null ? pair.getTwo() : null;
             if (g2d == null || image == null || image.getWidth() != region.width || image.getHeight() != region.height) {
                 if (g2d != null)
                     g2d.dispose();
-                GraphicsConfiguration gc = component.getGraphicsConfiguration();
+                var gc = component.getGraphicsConfiguration();
                 if (gc != null) {
                     image = gc.createCompatibleImage(region.width, region.height);
                 } else {
@@ -136,8 +136,8 @@ public class AWTCamera {
      */
     public static BufferedImage createDesktopImage()
             throws AWTException {
-        Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
-        Rectangle region = new Rectangle(0, 0, d.width, d.height);
+        var d = Toolkit.getDefaultToolkit().getScreenSize();
+        var region = new Rectangle(0, 0, d.width, d.height);
         return AWTCamera.get(region);
     }
 
@@ -149,9 +149,9 @@ public class AWTCamera {
      *  @exception AWTException see Robot class constructors
      */
     public static BufferedImage get(Component component) throws AWTException {
-        Point p = new Point(0, 0);
+        var p = new Point(0, 0);
         SwingUtilities.convertPointToScreen(p, component);
-        Rectangle region = component.getBounds();
+        var region = component.getBounds();
         region.x = p.x;
         region.y = p.y;
         return AWTCamera.get(region);
@@ -208,7 +208,7 @@ public class AWTCamera {
         component.doLayout();
 
         if (component instanceof Container) {
-            for (Component child : ((Container) component).getComponents()) {
+            for (var child : ((Container) component).getComponents()) {
                 layoutComponent(child);
             }
         }

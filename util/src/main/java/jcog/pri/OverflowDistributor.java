@@ -46,9 +46,9 @@ public class OverflowDistributor<X> extends MutableFloat {
     public void redistribute(ObjectFloatProcedure<X> how) {
 
 
-        int s = needs.size();
+        var s = needs.size();
         if (s > 0) {
-            float pTotal = floatValue();
+            var pTotal = floatValue();
             if (pTotal >= EPSILON * s) {
 
                 if (s == 1) {
@@ -56,15 +56,15 @@ public class OverflowDistributor<X> extends MutableFloat {
                 } else {
 
 
-                    int remain = s;
+                    var remain = s;
 
-                    for (int i = 0; i < s; i++) {
+                    for (var i = 0; i < s; i++) {
 
-                        float p = floatValue();
-                        float maxAlloc = p / remain--;
-                        ObjectFloatPair<X> n = needs.get(i);
+                        var p = floatValue();
+                        var maxAlloc = p / remain--;
+                        var n = needs.get(i);
 
-                        float given = Math.min(maxAlloc, n.getTwo());
+                        var given = Math.min(maxAlloc, n.getTwo());
                         if (given >= EPSILON) {
                             how.value(n.getOne(), given);
 

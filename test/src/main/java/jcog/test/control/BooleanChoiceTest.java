@@ -19,7 +19,7 @@ public class BooleanChoiceTest extends MiniTest {
         super(n);
 
         actionPushButton(action, (next) -> {
-           boolean c = goal.accept(prev, next);
+            var c = goal.accept(prev, next);
            prev = next;
            reward = c ? 1f : 0f;
            return next;
@@ -29,7 +29,7 @@ public class BooleanChoiceTest extends MiniTest {
 
     @Override
     protected float myReward() {
-        float r = reward;
+        var r = reward;
         reward = Float.NaN;
         return r;
     }

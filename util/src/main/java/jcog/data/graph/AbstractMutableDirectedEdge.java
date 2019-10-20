@@ -61,7 +61,7 @@ public abstract class AbstractMutableDirectedEdge<N, E> implements FromTo<Node<N
         if (this == obj) return true;
         if (!(obj instanceof FromTo) || (!hashDynamic() && (hashCode() != obj.hashCode())))
             return false;
-        FromTo ee = (FromTo) obj;
+        var ee = (FromTo) obj;
         return from.equals(ee.from()) && to.equals(ee.to()) && Objects.equals(id, ee.id());
     }
 

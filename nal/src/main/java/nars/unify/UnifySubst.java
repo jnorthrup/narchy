@@ -50,7 +50,7 @@ public abstract class UnifySubst extends Unify {
 
     @Override
     public final boolean match() {
-        Term aa = apply(input);
+        var aa = apply(input);
 		//try again
 		return aa instanceof Bool ? true : each(aa);
     }

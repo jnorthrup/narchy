@@ -48,19 +48,19 @@ public class ScreenMatrix implements Cloneable {
      * @param filename
      */
     public ScreenMatrix(String filename) throws IOException {
-        
-        BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(filename)));
 
-        
-        String line = in.readLine();
-        String[] tokens = line.split(",");
+        var in = new BufferedReader(new InputStreamReader(new FileInputStream(filename)));
+
+
+        var line = in.readLine();
+        var tokens = line.split(",");
 
         width = Integer.parseInt(tokens[0]);
         height = Integer.parseInt(tokens[1]);
 
         this.matrix = new int[width][height];
 
-        int rowIndex = 0;
+        var rowIndex = 0;
 
         
         while ((line = in.readLine()) != null) {
@@ -68,7 +68,7 @@ public class ScreenMatrix implements Cloneable {
             tokens = line.split(",");
             assert (tokens.length == width);
 
-            for (int x = 0; x < tokens.length; x++) {
+            for (var x = 0; x < tokens.length; x++) {
                 this.matrix[x][rowIndex] = Integer.parseInt(tokens[x]);
             }
 
@@ -83,15 +83,15 @@ public class ScreenMatrix implements Cloneable {
      * @throws IOException
      */
     public void saveData(String filename) throws IOException {
-        PrintStream out = new PrintStream(new FileOutputStream(filename));
+        var out = new PrintStream(new FileOutputStream(filename));
 
         
         out.println(width+","+height);
 
         
-        for (int y = 0; y < height; y++) {
+        for (var y = 0; y < height; y++) {
             
-            for (int x = 0; x < width; x++) {
+            for (var x = 0; x < width; x++) {
                 out.print(matrix[x][y]);
                 if (x < width - 1) out.print(",");
             }
@@ -107,12 +107,12 @@ public class ScreenMatrix implements Cloneable {
     @Override
     public Object clone() {
         try {
-            ScreenMatrix img = (ScreenMatrix)super.clone();
+            var img = (ScreenMatrix)super.clone();
 
             
             img.matrix = new int[this.width][this.height];
         
-            for (int x = 0; x < this.width; x++) {
+            for (var x = 0; x < this.width; x++) {
                 System.arraycopy(this.matrix[x], 0, img.matrix[x], 0, this.height);
             }
             return img;

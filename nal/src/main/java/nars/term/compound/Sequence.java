@@ -82,17 +82,17 @@ public class Sequence extends CachedCompound.TemporalCachedCompound {
         if (this.equals(y)) return true;
 
         Subterms a = subterms(), b = y.subterms();
-        int s = a.subs();
+        var s = a.subs();
         if (s !=b.subs())
             return false;
-        Interval st = ((Sequence)y).times;
+        var st = ((Sequence)y).times;
         if (!st.equals(times))
             return false; //TODO
         return Subterms.unifyCommute(events(), ((Sequence)y).events(), u);
     }
 
     public Subterms events() {
-        Subterms ss = subterms();
+        var ss = subterms();
         return new TermList(ss, 0, ss.subs()-1);
     }
 
@@ -107,8 +107,8 @@ public class Sequence extends CachedCompound.TemporalCachedCompound {
 
     @Override
     public boolean subTimesWhile(Term match, IntPredicate each) {
-        int n = times.size();
-        Subterms ss = subterms();
+        var n = times.size();
+        var ss = subterms();
         return IntStream.range(0, n).filter(i -> times.key(i, ss).equals(match)).allMatch(i -> each.test(occToDT(times.value(i))));
     }
 
@@ -159,15 +159,15 @@ public class Sequence extends CachedCompound.TemporalCachedCompound {
 
     @Override
     public boolean eventsAND(LongObjectPredicate<Term> each, long offset, boolean decomposeConjDTernal, boolean decomposeXternal) {
-        int n = times.size();
-        Subterms ss = subterms();
-        for (int i = 0; i < n; i++) {
-            long o = offset != ETERNAL ? times.value(i) + offset : ETERNAL;
-            Term x = times.key(i, ss);
+        var n = times.size();
+        var ss = subterms();
+        for (var i = 0; i < n; i++) {
+            var o = offset != ETERNAL ? times.value(i) + offset : ETERNAL;
+            var x = times.key(i, ss);
             if (x instanceof Compound && (decomposeConjDTernal || decomposeXternal) && x.op()==CONJ) {
-                int xdt = x.dt();
+                var xdt = x.dt();
                 if ((decomposeConjDTernal && xdt ==DTERNAL) || (decomposeXternal && xdt == XTERNAL)) {
-                    for (Term xx : x.subterms()) {
+                    for (var xx : x.subterms()) {
                         if (!each.accept(o, xx))
                             return false;
                     }

@@ -21,7 +21,7 @@ public class Clicking extends Fingering {
         if (becameIdle != null)
             becameIdle.run();
 
-        AtomicBoolean idle = new AtomicBoolean(false);
+        var idle = new AtomicBoolean(false);
 
         return f -> {
 

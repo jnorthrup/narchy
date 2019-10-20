@@ -102,7 +102,7 @@ public class OptimizedBvh implements Serializable {
 
 	private v3 getAabbMin(int nodeIndex) {
 		if (useQuantization) {
-			v3 tmp = new v3();
+			var tmp = new v3();
 			unQuantize(tmp, quantizedLeafNodes.getQuantizedAabbMin(nodeIndex));
 			return tmp;
 		}
@@ -114,7 +114,7 @@ public class OptimizedBvh implements Serializable {
 
 	private v3 getAabbMax(int nodeIndex) {
 		if (useQuantization) {
-			v3 tmp = new v3();
+			var tmp = new v3();
 			unQuantize(tmp, quantizedLeafNodes.getQuantizedAabbMax(nodeIndex));
 			return tmp;
 		}
@@ -129,12 +129,12 @@ public class OptimizedBvh implements Serializable {
 	}
 
 	private void setQuantizationValues(v3 aabbMin, v3 aabbMax, float quantizationMargin) {
-		
-		v3 clampValue = new v3();
+
+		var clampValue = new v3();
 		clampValue.set(quantizationMargin,quantizationMargin,quantizationMargin);
 		bvhAabbMin.sub(aabbMin, clampValue);
 		bvhAabbMax.add(aabbMax, clampValue);
-		v3 aabbSize = new v3();
+		var aabbSize = new v3();
 		aabbSize.sub(bvhAabbMax, bvhAabbMin);
 		bvhQuantization.set(65535f, 65535f, 65535f);
 		VectorUtil.div(bvhQuantization, bvhQuantization, aabbSize);
@@ -153,24 +153,24 @@ public class OptimizedBvh implements Serializable {
 	private void mergeInternalNodeAabb(int nodeIndex, v3 newAabbMin, v3 newAabbMax) {
 		if (useQuantization) {
 
-			long quantizedAabbMin = quantizeWithClamp(newAabbMin);
-			long quantizedAabbMax = quantizeWithClamp(newAabbMax);
-			for (int i = 0; i < 3; i++) {
-				int n = QuantizedBvhNodes.getCoord(quantizedAabbMin, i);
+			var quantizedAabbMin = quantizeWithClamp(newAabbMin);
+			var quantizedAabbMax = quantizeWithClamp(newAabbMax);
+			for (var i = 0; i < 3; i++) {
+				var n = QuantizedBvhNodes.getCoord(quantizedAabbMin, i);
 				if (quantizedContiguousNodes.getQuantizedAabbMin(nodeIndex, i) > n) {
 					quantizedContiguousNodes.setQuantizedAabbMin(nodeIndex, i, n);
 				}
 
-				int m = QuantizedBvhNodes.getCoord(quantizedAabbMax, i);
+				var m = QuantizedBvhNodes.getCoord(quantizedAabbMax, i);
 				if (quantizedContiguousNodes.getQuantizedAabbMax(nodeIndex, i) < m) {
 					quantizedContiguousNodes.setQuantizedAabbMax(nodeIndex, i, m);
 				}
 			}
 		}
 		else {
-			
-			
-			OptimizedBvhNode cn = contiguousNodes.get(nodeIndex);
+
+
+			var cn = contiguousNodes.get(nodeIndex);
 			VectorUtil.setMin(cn.aabbMinOrg, newAabbMin);
 			
 			VectorUtil.setMax(cn.aabbMaxOrg, newAabbMax);
@@ -182,9 +182,9 @@ public class OptimizedBvh implements Serializable {
 			quantizedLeafNodes.swap(i, splitIndex);
 		}
 		else {
-			
-			
-			OptimizedBvhNode tmp = leafNodes.get(i);
+
+
+			var tmp = leafNodes.get(i);
 			
 			leafNodes.setFast(i, leafNodes.get(splitIndex));
 			leafNodes.setFast(splitIndex, tmp);
@@ -214,7 +214,7 @@ public class OptimizedBvh implements Serializable {
 
 		@Override
         public void internalProcessTriangleIndex(v3[] triangle, int partId, int triangleIndex) {
-			OptimizedBvhNode node = new OptimizedBvhNode();
+			var node = new OptimizedBvhNode();
 			aabbMin.set(1e30f, 1e30f, 1e30f);
 			aabbMax.set(-1e30f, -1e30f, -1e30f);
 			VectorUtil.setMin(aabbMin, triangle[0]);
@@ -256,7 +256,7 @@ public class OptimizedBvh implements Serializable {
 			
 			assert (triangleIndex >= 0);
 
-			int nodeId = triangleNodes.add();
+			var nodeId = triangleNodes.add();
 			v3 aabbMin = new v3(), aabbMax = new v3();
 			aabbMin.set(1e30f, 1e30f, 1e30f);
 			aabbMax.set(-1e30f, -1e30f, -1e30f);
@@ -268,8 +268,8 @@ public class OptimizedBvh implements Serializable {
 			VectorUtil.setMax(aabbMax, triangle[2]);
 
 			
-			final float MIN_AABB_DIMENSION = 0.002f;
-			final float MIN_AABB_HALF_DIMENSION = 0.001f;
+			final var MIN_AABB_DIMENSION = 0.002f;
+			final var MIN_AABB_HALF_DIMENSION = 0.001f;
 			if (aabbMax.x - aabbMin.x < MIN_AABB_DIMENSION) {
                 aabbMax.x += MIN_AABB_HALF_DIMENSION;
                 aabbMin.x -= MIN_AABB_HALF_DIMENSION;
@@ -293,15 +293,14 @@ public class OptimizedBvh implements Serializable {
 	public void build(StridingMeshInterface triangles, boolean useQuantizedAabbCompression, v3 _aabbMin, v3 _aabbMax) {
 		this.useQuantization = useQuantizedAabbCompression;
 
-		
 
-		int numLeafNodes = 0;
+		var numLeafNodes = 0;
 
 		if (useQuantization) {
 			
 			setQuantizationValues(_aabbMin, _aabbMax);
 
-			QuantizedNodeTriangleCallback callback = new QuantizedNodeTriangleCallback(quantizedLeafNodes, this);
+			var callback = new QuantizedNodeTriangleCallback(quantizedLeafNodes, this);
 
 			triangles.internalProcessAllTriangles(callback, bvhAabbMin, bvhAabbMax);
 
@@ -311,11 +310,11 @@ public class OptimizedBvh implements Serializable {
 			quantizedContiguousNodes.resize(2 * numLeafNodes);
 		}
 		else {
-			NodeTriangleCallback callback = new NodeTriangleCallback(leafNodes);
+			var callback = new NodeTriangleCallback(leafNodes);
 
-			v3 aabbMin = new v3();
+			var aabbMin = new v3();
 			aabbMin.set(-1e30f, -1e30f, -1e30f);
-			v3 aabbMax = new v3();
+			var aabbMax = new v3();
 			aabbMax.set(1e30f, 1e30f, 1e30f);
 
 			triangles.internalProcessAllTriangles(callback, aabbMin, aabbMax);
@@ -334,7 +333,7 @@ public class OptimizedBvh implements Serializable {
 
 		
 		if (useQuantization && SubtreeHeaders.isEmpty()) {
-			BvhSubtreeInfo subtree = new BvhSubtreeInfo();
+			var subtree = new BvhSubtreeInfo();
 			SubtreeHeaders.add(subtree);
 
 			subtree.setAabbFromQuantizeNode(quantizedContiguousNodes, 0);
@@ -361,9 +360,9 @@ public class OptimizedBvh implements Serializable {
 			updateBvhNodes(meshInterface, 0, curNodeIndex, 0);
 
 
-			for (int i = 0; i < SubtreeHeaders.size(); i++) {
-				
-				BvhSubtreeInfo subtree = SubtreeHeaders.get(i);
+			for (var i = 0; i < SubtreeHeaders.size(); i++) {
+
+				var subtree = SubtreeHeaders.get(i);
 				subtree.setAabbFromQuantizeNode(quantizedContiguousNodes, subtree.rootNodeIndex);
 			}
 
@@ -415,22 +414,22 @@ public class OptimizedBvh implements Serializable {
 	private void updateBvhNodes(StridingMeshInterface meshInterface, int firstNode, int endNode, int index) {
 		assert (useQuantization);
 
-		int curNodeSubPart = -1;
+		var curNodeSubPart = -1;
 
 		v3[] triangleVerts/*[3]*/ = { new v3(), new v3(), new v3() };
 		v3 aabbMin = new v3(), aabbMax = new v3();
-		v3 meshScaling = meshInterface.getScaling(new v3());
+		var meshScaling = meshInterface.getScaling(new v3());
 
 		VertexData data = null;
 
-		for (int i = endNode - 1; i >= firstNode; i--) {
-			QuantizedBvhNodes curNodes = quantizedContiguousNodes;
-			int curNodeId = i;
+		for (var i = endNode - 1; i >= firstNode; i--) {
+			var curNodes = quantizedContiguousNodes;
+			var curNodeId = i;
 
 			if (curNodes.isLeafNode(curNodeId)) {
-				
-				int nodeSubPart = curNodes.getPartId(curNodeId);
-				int nodeTriangleIndex = curNodes.getTriangleIndex(curNodeId);
+
+				var nodeSubPart = curNodes.getPartId(curNodeId);
+				var nodeTriangleIndex = curNodes.getTriangleIndex(curNodeId);
 				if (nodeSubPart != curNodeSubPart) {
 					if (curNodeSubPart >= 0) {
 						meshInterface.unLockReadOnlyVertexBase(curNodeSubPart);
@@ -454,14 +453,13 @@ public class OptimizedBvh implements Serializable {
 				curNodes.setQuantizedAabbMax(curNodeId, quantizeWithClamp(aabbMax));
 			}
 			else {
-				
 
-				
-				int leftChildNodeId = i + 1;
 
-				int rightChildNodeId = quantizedContiguousNodes.isLeafNode(leftChildNodeId) ? i + 2 : i + 1 + quantizedContiguousNodes.getEscapeIndex(leftChildNodeId);
+				var leftChildNodeId = i + 1;
 
-				for (int i2 = 0; i2 < 3; i2++) {
+				var rightChildNodeId = quantizedContiguousNodes.isLeafNode(leftChildNodeId) ? i + 2 : i + 1 + quantizedContiguousNodes.getEscapeIndex(leftChildNodeId);
+
+				for (var i2 = 0; i2 < 3; i2++) {
 					curNodes.setQuantizedAabbMin(curNodeId, i2, quantizedContiguousNodes.getQuantizedAabbMin(leftChildNodeId, i2));
 					if (curNodes.getQuantizedAabbMin(curNodeId, i2) > quantizedContiguousNodes.getQuantizedAabbMin(rightChildNodeId, i2)) {
 						curNodes.setQuantizedAabbMin(curNodeId, i2, quantizedContiguousNodes.getQuantizedAabbMin(rightChildNodeId, i2));
@@ -490,8 +488,8 @@ public class OptimizedBvh implements Serializable {
 		}
 
 
-		int numIndices = endIndex - startIndex;
-		int curIndex = curNodeIndex;
+		var numIndices = endIndex - startIndex;
+		var curIndex = curNodeIndex;
 
 		assert (numIndices > 0);
 
@@ -509,33 +507,32 @@ public class OptimizedBvh implements Serializable {
 		}
 
 
-        int splitAxis = calcSplittingAxis(startIndex, endIndex);
+		var splitAxis = calcSplittingAxis(startIndex, endIndex);
 
-        int splitIndex = sortAndCalcSplittingIndex(startIndex, endIndex, splitAxis);
+		var splitIndex = sortAndCalcSplittingIndex(startIndex, endIndex, splitAxis);
 
-		int internalNodeIndex = curNodeIndex;
+		var internalNodeIndex = curNodeIndex;
 
-		v3 tmp1 = new v3();
+		var tmp1 = new v3();
 		tmp1.set(-1e30f, -1e30f, -1e30f);
 		setInternalNodeAabbMax(curNodeIndex, tmp1);
-		v3 tmp2 = new v3();
+		var tmp2 = new v3();
 		tmp2.set(1e30f, 1e30f, 1e30f);
 		setInternalNodeAabbMin(curNodeIndex, tmp2);
 
-		for (int i = startIndex; i < endIndex; i++) {
+		for (var i = startIndex; i < endIndex; i++) {
 			mergeInternalNodeAabb(curNodeIndex, getAabbMin(i), getAabbMax(i));
 		}
 
 		curNodeIndex++;
 
-		
 
-		int leftChildNodexIndex = curNodeIndex;
+		var leftChildNodexIndex = curNodeIndex;
 
 		
 		buildTree(startIndex, splitIndex);
 
-		int rightChildNodexIndex = curNodeIndex;
+		var rightChildNodexIndex = curNodeIndex;
 		
 		buildTree(splitIndex, endIndex);
 
@@ -543,14 +540,14 @@ public class OptimizedBvh implements Serializable {
 		if (DEBUG_TREE_BUILDING) {
 			gStackDepth--;
 		}
-		
 
-		int escapeIndex = curNodeIndex - curIndex;
+
+		var escapeIndex = curNodeIndex - curIndex;
 
 		if (useQuantization) {
-			
-			int sizeQuantizedNode = QuantizedBvhNodes.getNodeSize();
-			int treeSizeInBytes = escapeIndex * sizeQuantizedNode;
+
+			var sizeQuantizedNode = QuantizedBvhNodes.getNodeSize();
+			var treeSizeInBytes = escapeIndex * sizeQuantizedNode;
 			if (treeSizeInBytes > MAX_SUBTREE_SIZE_IN_BYTES) {
 				updateSubtreeHeaders(leftChildNodexIndex, rightChildNodexIndex);
 			}
@@ -560,23 +557,23 @@ public class OptimizedBvh implements Serializable {
 	}
 
 	private static boolean testQuantizedAabbAgainstQuantizedAabb(long aabbMin1, long aabbMax1, long aabbMin2, long aabbMax2) {
-		int aabbMin1_0 = QuantizedBvhNodes.getCoord(aabbMin1, 0);
-		int aabbMin1_1 = QuantizedBvhNodes.getCoord(aabbMin1, 1);
-		int aabbMin1_2 = QuantizedBvhNodes.getCoord(aabbMin1, 2);
+		var aabbMin1_0 = QuantizedBvhNodes.getCoord(aabbMin1, 0);
+		var aabbMin1_1 = QuantizedBvhNodes.getCoord(aabbMin1, 1);
+		var aabbMin1_2 = QuantizedBvhNodes.getCoord(aabbMin1, 2);
 
-		int aabbMax1_0 = QuantizedBvhNodes.getCoord(aabbMax1, 0);
-		int aabbMax1_1 = QuantizedBvhNodes.getCoord(aabbMax1, 1);
-		int aabbMax1_2 = QuantizedBvhNodes.getCoord(aabbMax1, 2);
+		var aabbMax1_0 = QuantizedBvhNodes.getCoord(aabbMax1, 0);
+		var aabbMax1_1 = QuantizedBvhNodes.getCoord(aabbMax1, 1);
+		var aabbMax1_2 = QuantizedBvhNodes.getCoord(aabbMax1, 2);
 
-		int aabbMin2_0 = QuantizedBvhNodes.getCoord(aabbMin2, 0);
-		int aabbMin2_1 = QuantizedBvhNodes.getCoord(aabbMin2, 1);
-		int aabbMin2_2 = QuantizedBvhNodes.getCoord(aabbMin2, 2);
+		var aabbMin2_0 = QuantizedBvhNodes.getCoord(aabbMin2, 0);
+		var aabbMin2_1 = QuantizedBvhNodes.getCoord(aabbMin2, 1);
+		var aabbMin2_2 = QuantizedBvhNodes.getCoord(aabbMin2, 2);
 
-		int aabbMax2_0 = QuantizedBvhNodes.getCoord(aabbMax2, 0);
-		int aabbMax2_1 = QuantizedBvhNodes.getCoord(aabbMax2, 1);
-		int aabbMax2_2 = QuantizedBvhNodes.getCoord(aabbMax2, 2);
+		var aabbMax2_0 = QuantizedBvhNodes.getCoord(aabbMax2, 0);
+		var aabbMax2_1 = QuantizedBvhNodes.getCoord(aabbMax2, 1);
+		var aabbMax2_2 = QuantizedBvhNodes.getCoord(aabbMax2, 2);
 
-		boolean overlap = true;
+		var overlap = true;
 		overlap = !(aabbMin1_0 > aabbMax2_0 || aabbMax1_0 < aabbMin2_0) && overlap;
 		overlap = !(aabbMin1_2 > aabbMax2_2 || aabbMax1_2 < aabbMin2_2) && overlap;
 		overlap = !(aabbMin1_1 > aabbMax2_1 || aabbMax1_1 < aabbMin2_1) && overlap;
@@ -586,16 +583,16 @@ public class OptimizedBvh implements Serializable {
 	private void updateSubtreeHeaders(int leftChildNodexIndex, int rightChildNodexIndex) {
 		assert (useQuantization);
 
-		
-		int leftSubTreeSize = quantizedContiguousNodes.isLeafNode(leftChildNodexIndex) ? 1 : quantizedContiguousNodes.getEscapeIndex(leftChildNodexIndex);
-		int leftSubTreeSizeInBytes = leftSubTreeSize * QuantizedBvhNodes.getNodeSize();
 
-		
-		int rightSubTreeSize = quantizedContiguousNodes.isLeafNode(rightChildNodexIndex) ? 1 : quantizedContiguousNodes.getEscapeIndex(rightChildNodexIndex);
-		int rightSubTreeSizeInBytes = rightSubTreeSize * QuantizedBvhNodes.getNodeSize();
+		var leftSubTreeSize = quantizedContiguousNodes.isLeafNode(leftChildNodexIndex) ? 1 : quantizedContiguousNodes.getEscapeIndex(leftChildNodexIndex);
+		var leftSubTreeSizeInBytes = leftSubTreeSize * QuantizedBvhNodes.getNodeSize();
+
+
+		var rightSubTreeSize = quantizedContiguousNodes.isLeafNode(rightChildNodexIndex) ? 1 : quantizedContiguousNodes.getEscapeIndex(rightChildNodexIndex);
+		var rightSubTreeSizeInBytes = rightSubTreeSize * QuantizedBvhNodes.getNodeSize();
 
 		if (leftSubTreeSizeInBytes <= MAX_SUBTREE_SIZE_IN_BYTES) {
-			BvhSubtreeInfo subtree = new BvhSubtreeInfo();
+			var subtree = new BvhSubtreeInfo();
 			SubtreeHeaders.add(subtree);
 
 			subtree.setAabbFromQuantizeNode(quantizedContiguousNodes, leftChildNodexIndex);
@@ -604,7 +601,7 @@ public class OptimizedBvh implements Serializable {
 		}
 
 		if (rightSubTreeSizeInBytes <= MAX_SUBTREE_SIZE_IN_BYTES) {
-			BvhSubtreeInfo subtree = new BvhSubtreeInfo();
+			var subtree = new BvhSubtreeInfo();
 			SubtreeHeaders.add(subtree);
 
 			subtree.setAabbFromQuantizeNode(quantizedContiguousNodes, rightChildNodexIndex);
@@ -618,22 +615,22 @@ public class OptimizedBvh implements Serializable {
 
 	private int sortAndCalcSplittingIndex(int startIndex, int endIndex, int splitAxis) {
 
-		v3 means = new v3();
+		var means = new v3();
 		means.set(0f, 0f, 0f);
-		v3 center = new v3();
+		var center = new v3();
 		int i;
 		for (i = startIndex; i < endIndex; i++) {
 			center.add(getAabbMax(i), getAabbMin(i));
 			center.scaled(0.5f);
 			means.add(center);
 		}
-		int numIndices = endIndex - startIndex;
+		var numIndices = endIndex - startIndex;
 		means.scaled(1f / numIndices);
 
-        float splitValue = VectorUtil.coord(means, splitAxis);
+		var splitValue = VectorUtil.coord(means, splitAxis);
 
 
-		int splitIndex = startIndex;
+		var splitIndex = startIndex;
 		for (i = startIndex; i < endIndex; i++) {
 			
 			center.add(getAabbMax(i), getAabbMin(i));
@@ -646,23 +643,15 @@ public class OptimizedBvh implements Serializable {
 			}
 		}
 
-		
-		
-		
-		
 
-		
-		
-
-		
-		int rangeBalancedIndices = numIndices / 3;
-		boolean unbalanced = ((splitIndex <= (startIndex + rangeBalancedIndices)) || (splitIndex >= (endIndex - 1 - rangeBalancedIndices)));
+		var rangeBalancedIndices = numIndices / 3;
+		var unbalanced = ((splitIndex <= (startIndex + rangeBalancedIndices)) || (splitIndex >= (endIndex - 1 - rangeBalancedIndices)));
 
 		if (unbalanced) {
 			splitIndex = startIndex + (numIndices >> 1);
 		}
 
-		boolean unbal = (splitIndex == startIndex) || (splitIndex == (endIndex));
+		var unbal = (splitIndex == startIndex) || (splitIndex == (endIndex));
 		assert (!unbal);
 
 		return splitIndex;
@@ -670,22 +659,22 @@ public class OptimizedBvh implements Serializable {
 
 	private int calcSplittingAxis(int startIndex, int endIndex) {
 
-		v3 means = new v3();
+		var means = new v3();
 		means.set(0f, 0f, 0f);
-		v3 variance = new v3();
+		var variance = new v3();
 		variance.set(0f, 0f, 0f);
 
-		v3 center = new v3();
+		var center = new v3();
 		int i;
 		for (i = startIndex; i < endIndex; i++) {
 			center.add(getAabbMax(i), getAabbMin(i));
 			center.scaled(0.5f);
 			means.add(center);
 		}
-		int numIndices = endIndex - startIndex;
+		var numIndices = endIndex - startIndex;
 		means.scaled(1f / numIndices);
 
-		v3 diff2 = new v3();
+		var diff2 = new v3();
 		for (i = startIndex; i < endIndex; i++) {
 			center.add(getAabbMax(i), getAabbMin(i));
 			center.scaled(0.5f);
@@ -704,8 +693,8 @@ public class OptimizedBvh implements Serializable {
 
 		if (useQuantization) {
 
-            long quantizedQueryAabbMin = quantizeWithClamp(aabbMin);
-            long quantizedQueryAabbMax = quantizeWithClamp(aabbMax);
+			var quantizedQueryAabbMin = quantizeWithClamp(aabbMin);
+			var quantizedQueryAabbMax = quantizeWithClamp(aabbMax);
 
 			
 			switch (traversalMode) {
@@ -735,10 +724,10 @@ public class OptimizedBvh implements Serializable {
 
 		
 		OptimizedBvhNode rootNode = null;
-		int rootNode_index = 0;
+		var rootNode_index = 0;
 
-		int curIndex = 0;
-		int walkIterations = 0;
+		var curIndex = 0;
+		var walkIterations = 0;
 
 
 		while (curIndex < curNodeIndex) {
@@ -750,8 +739,8 @@ public class OptimizedBvh implements Serializable {
 			
 			rootNode = contiguousNodes.get(rootNode_index);
 
-			boolean aabbOverlap = AabbUtil2.testAabbAgainstAabb2(aabbMin, aabbMax, rootNode.aabbMinOrg, rootNode.aabbMaxOrg);
-			boolean isLeafNode = (rootNode.escapeIndex == -1);
+			var aabbOverlap = AabbUtil2.testAabbAgainstAabb2(aabbMin, aabbMax, rootNode.aabbMinOrg, rootNode.aabbMaxOrg);
+			var isLeafNode = (rootNode.escapeIndex == -1);
 
 
 			if (isLeafNode && (aabbOverlap/* != 0*/)) {
@@ -768,7 +757,7 @@ public class OptimizedBvh implements Serializable {
 			else {
 
 				/*rootNode*/
-				int escapeIndex = contiguousNodes.get(rootNode_index).escapeIndex;
+				var escapeIndex = contiguousNodes.get(rootNode_index).escapeIndex;
 				rootNode_index += escapeIndex;
 				curIndex += escapeIndex;
 			}
@@ -781,19 +770,19 @@ public class OptimizedBvh implements Serializable {
 	private void walkRecursiveQuantizedTreeAgainstQueryAabb(QuantizedBvhNodes currentNodes, int currentNodeId, NodeOverlapCallback nodeCallback, long quantizedQueryAabbMin, long quantizedQueryAabbMax) {
 		assert (useQuantization);
 
-        boolean aabbOverlap = testQuantizedAabbAgainstQuantizedAabb(quantizedQueryAabbMin, quantizedQueryAabbMax, currentNodes.getQuantizedAabbMin(currentNodeId), currentNodes.getQuantizedAabbMax(currentNodeId));
-        boolean isLeafNode = currentNodes.isLeafNode(currentNodeId);
+		var aabbOverlap = testQuantizedAabbAgainstQuantizedAabb(quantizedQueryAabbMin, quantizedQueryAabbMax, currentNodes.getQuantizedAabbMin(currentNodeId), currentNodes.getQuantizedAabbMax(currentNodeId));
+		var isLeafNode = currentNodes.isLeafNode(currentNodeId);
 
 		if (aabbOverlap) {
 			if (isLeafNode) {
 				nodeCallback.processNode(currentNodes.getPartId(currentNodeId), currentNodes.getTriangleIndex(currentNodeId));
 			}
 			else {
-				
-				int leftChildNodeId = currentNodeId + 1;
+
+				var leftChildNodeId = currentNodeId + 1;
 				walkRecursiveQuantizedTreeAgainstQueryAabb(currentNodes, leftChildNodeId, nodeCallback, quantizedQueryAabbMin, quantizedQueryAabbMax);
 
-				int rightChildNodeId = leftChildNodeId + (currentNodes.isLeafNode(leftChildNodeId) ? 1 : currentNodes.getEscapeIndex(leftChildNodeId));
+				var rightChildNodeId = leftChildNodeId + (currentNodes.isLeafNode(leftChildNodeId) ? 1 : currentNodes.getEscapeIndex(leftChildNodeId));
 				walkRecursiveQuantizedTreeAgainstQueryAabb(currentNodes, rightChildNodeId, nodeCallback, quantizedQueryAabbMin, quantizedQueryAabbMax);
 			}
 		}
@@ -802,16 +791,16 @@ public class OptimizedBvh implements Serializable {
 	private void walkStacklessQuantizedTreeAgainstRay(NodeOverlapCallback nodeCallback, v3 raySource, v3 rayTarget, v3 aabbMin, v3 aabbMax, int startNodeIndex, int endNodeIndex) {
 		assert (useQuantization);
 
-		v3 tmp = new v3();
+		var tmp = new v3();
 
-		QuantizedBvhNodes rootNode = quantizedContiguousNodes;
+		var rootNode = quantizedContiguousNodes;
 
 
-		v3 rayFrom = new v3(raySource);
-		v3 rayDirection = new v3();
+		var rayFrom = new v3(raySource);
+		var rayDirection = new v3();
 		tmp.sub(rayTarget, raySource);
 		rayDirection.normalize(tmp);
-        float lambda_max = rayDirection.dot(tmp);
+		var lambda_max = rayDirection.dot(tmp);
 		rayDirection.x = 1f / rayDirection.x;
 		rayDirection.y = 1f / rayDirection.y;
 		rayDirection.z = 1f / rayDirection.z;
@@ -821,8 +810,8 @@ public class OptimizedBvh implements Serializable {
 		
 
 		/* Quick pruning by quantized box */
-		v3 rayAabbMin = new v3(raySource);
-		v3 rayAabbMax = new v3(raySource);
+		var rayAabbMin = new v3(raySource);
+		var rayAabbMax = new v3(raySource);
 		VectorUtil.setMin(rayAabbMin, rayTarget);
 		VectorUtil.setMax(rayAabbMax, rayTarget);
 
@@ -830,20 +819,20 @@ public class OptimizedBvh implements Serializable {
 		rayAabbMin.add(aabbMin);
 		rayAabbMax.add(aabbMax);
 
-        long quantizedQueryAabbMin = quantizeWithClamp(rayAabbMin);
-        long quantizedQueryAabbMax = quantizeWithClamp(rayAabbMax);
+		var quantizedQueryAabbMin = quantizeWithClamp(rayAabbMin);
+		var quantizedQueryAabbMax = quantizeWithClamp(rayAabbMax);
 
-		v3 bounds_0 = new v3();
-		v3 bounds_1 = new v3();
-		v3 normal = new v3();
-		float[] param = new float[1];
+		var bounds_0 = new v3();
+		var bounds_1 = new v3();
+		var normal = new v3();
+		var param = new float[1];
 
-		boolean rayBoxOverlap = false;
-		boolean boxBoxOverlap = false;
-		int rootNode_idx = startNodeIndex;
-		int subTreeSize = endNodeIndex - startNodeIndex;
-		int walkIterations = 0;
-		int curIndex = startNodeIndex;
+		var rayBoxOverlap = false;
+		var boxBoxOverlap = false;
+		var rootNode_idx = startNodeIndex;
+		var subTreeSize = endNodeIndex - startNodeIndex;
+		var walkIterations = 0;
+		var curIndex = startNodeIndex;
 		while (curIndex < endNodeIndex) {
 
 			
@@ -870,7 +859,7 @@ public class OptimizedBvh implements Serializable {
 			param[0] = 1f;
 			rayBoxOverlap = false;
 			boxBoxOverlap = testQuantizedAabbAgainstQuantizedAabb(quantizedQueryAabbMin, quantizedQueryAabbMax, rootNode.getQuantizedAabbMin(rootNode_idx), rootNode.getQuantizedAabbMax(rootNode_idx));
-			boolean isLeafNode = rootNode.isLeafNode(rootNode_idx);
+			var isLeafNode = rootNode.isLeafNode(rootNode_idx);
 			if (boxBoxOverlap) {
 				unQuantize(bounds_0, rootNode.getQuantizedAabbMin(rootNode_idx));
 				unQuantize(bounds_1, rootNode.getQuantizedAabbMax(rootNode_idx));
@@ -901,7 +890,7 @@ public class OptimizedBvh implements Serializable {
 				curIndex++;
 			}
 			else {
-				int escapeIndex = rootNode.getEscapeIndex(rootNode_idx);
+				var escapeIndex = rootNode.getEscapeIndex(rootNode_idx);
 				rootNode_idx += escapeIndex;
 				curIndex += escapeIndex;
 			}
@@ -915,12 +904,12 @@ public class OptimizedBvh implements Serializable {
 	private void walkStacklessQuantizedTree(NodeOverlapCallback nodeCallback, long quantizedQueryAabbMin, long quantizedQueryAabbMax, int startNodeIndex, int endNodeIndex) {
 		assert (useQuantization);
 
-		int curIndex = startNodeIndex;
-		int walkIterations = 0;
-		int subTreeSize = endNodeIndex - startNodeIndex;
+		var curIndex = startNodeIndex;
+		var walkIterations = 0;
+		var subTreeSize = endNodeIndex - startNodeIndex;
 
-		QuantizedBvhNodes rootNode = quantizedContiguousNodes;
-		int rootNode_idx = startNodeIndex;
+		var rootNode = quantizedContiguousNodes;
+		var rootNode_idx = startNodeIndex;
 
 		while (curIndex < endNodeIndex) {
 			
@@ -943,8 +932,8 @@ public class OptimizedBvh implements Serializable {
 			assert (walkIterations < subTreeSize);
 
 			walkIterations++;
-			boolean aabbOverlap = testQuantizedAabbAgainstQuantizedAabb(quantizedQueryAabbMin, quantizedQueryAabbMax, rootNode.getQuantizedAabbMin(rootNode_idx), rootNode.getQuantizedAabbMax(rootNode_idx));
-			boolean isLeafNode = rootNode.isLeafNode(rootNode_idx);
+			var aabbOverlap = testQuantizedAabbAgainstQuantizedAabb(quantizedQueryAabbMin, quantizedQueryAabbMax, rootNode.getQuantizedAabbMin(rootNode_idx), rootNode.getQuantizedAabbMax(rootNode_idx));
+			var isLeafNode = rootNode.isLeafNode(rootNode_idx);
 
 			if (isLeafNode && aabbOverlap) {
 				nodeCallback.processNode(rootNode.getPartId(rootNode_idx), rootNode.getTriangleIndex(rootNode_idx));
@@ -955,7 +944,7 @@ public class OptimizedBvh implements Serializable {
 				curIndex++;
 			}
 			else {
-				int escapeIndex = rootNode.getEscapeIndex(rootNode_idx);
+				var escapeIndex = rootNode.getEscapeIndex(rootNode_idx);
 				rootNode_idx += escapeIndex;
 				curIndex += escapeIndex;
 			}
@@ -967,16 +956,16 @@ public class OptimizedBvh implements Serializable {
 	}
 
 	public void reportRayOverlappingNodex(NodeOverlapCallback nodeCallback, v3 raySource, v3 rayTarget) {
-		boolean fast_path = useQuantization && traversalMode == TraversalMode.STACKLESS;
+		var fast_path = useQuantization && traversalMode == TraversalMode.STACKLESS;
 		if (fast_path) {
-			v3 tmp = new v3();
+			var tmp = new v3();
 			tmp.set(0f, 0f, 0f);
 			walkStacklessQuantizedTreeAgainstRay(nodeCallback, raySource, rayTarget, tmp, tmp, 0, curNodeIndex);
 		}
 		else {
 			/* Otherwise fallback to AABB overlap test */
-			v3 aabbMin = new v3(raySource);
-			v3 aabbMax = new v3(raySource);
+			var aabbMin = new v3(raySource);
+			var aabbMax = new v3(raySource);
 			VectorUtil.setMin(aabbMin, rayTarget);
 			VectorUtil.setMax(aabbMax, rayTarget);
 			reportAabbOverlappingNodex(nodeCallback, aabbMin, aabbMax);
@@ -984,15 +973,15 @@ public class OptimizedBvh implements Serializable {
 	}
 
 	public void reportBoxCastOverlappingNodex(NodeOverlapCallback nodeCallback, v3 raySource, v3 rayTarget, v3 aabbMin, v3 aabbMax) {
-		boolean fast_path = useQuantization && traversalMode == TraversalMode.STACKLESS;
+		var fast_path = useQuantization && traversalMode == TraversalMode.STACKLESS;
 		if (fast_path) {
 			walkStacklessQuantizedTreeAgainstRay(nodeCallback, raySource, rayTarget, aabbMin, aabbMax, 0, curNodeIndex);
 		}
 		else {
 			/* Slow path:
 			Construct the bounding box for the entire box cast and send that down the tree */
-			v3 qaabbMin = new v3(raySource);
-			v3 qaabbMax = new v3(raySource);
+			var qaabbMin = new v3(raySource);
+			var qaabbMax = new v3(raySource);
 			VectorUtil.setMin(qaabbMin, rayTarget);
 			VectorUtil.setMax(qaabbMax, rayTarget);
 			qaabbMin.add(aabbMin);
@@ -1004,25 +993,25 @@ public class OptimizedBvh implements Serializable {
 	private long quantizeWithClamp(v3 point) {
 		assert (useQuantization);
 
-		v3 clampedPoint = new v3(point);
+		var clampedPoint = new v3(point);
 		VectorUtil.setMax(clampedPoint, bvhAabbMin);
 		VectorUtil.setMin(clampedPoint, bvhAabbMax);
 
-		v3 v = new v3();
+		var v = new v3();
 		v.sub(clampedPoint, bvhAabbMin);
 		VectorUtil.mul(v, v, bvhQuantization);
 
-		int out0 = (int)(v.x + 0.5f) & 0xFFFF;
-		int out1 = (int)(v.y + 0.5f) & 0xFFFF;
-		int out2 = (int)(v.z + 0.5f) & 0xFFFF;
+		var out0 = (int)(v.x + 0.5f) & 0xFFFF;
+		var out1 = (int)(v.y + 0.5f) & 0xFFFF;
+		var out2 = (int)(v.z + 0.5f) & 0xFFFF;
 
 		return out0 | (((long)out1) << 16) | (((long)out2) << 32);
 	}
 	
 	private void unQuantize(v3 vecOut, long vecIn) {
-		int vecIn0 = (int)((vecIn & 0x00000000FFFFL));
-		int vecIn1 = (int)((vecIn & 0x0000FFFF0000L) >>> 16);
-		int vecIn2 = (int)((vecIn & 0xFFFF00000000L) >>> 32);
+		var vecIn0 = (int)((vecIn & 0x00000000FFFFL));
+		var vecIn1 = (int)((vecIn & 0x0000FFFF0000L) >>> 16);
+		var vecIn2 = (int)((vecIn & 0xFFFF00000000L) >>> 32);
 
 		vecOut.x = vecIn0 / (bvhQuantization.x);
 		vecOut.y = vecIn1 / (bvhQuantization.y);

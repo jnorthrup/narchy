@@ -87,7 +87,7 @@ public class SideScrollMinicraft {
         }
 
         if (load) {
-            for (Entity entity : entities) {
+            for (var entity : entities) {
                 if (entity instanceof Player) {
                     player = (Player) entity;
                     player.widthPX = 7 * (tileSize / 8);
@@ -109,7 +109,7 @@ public class SideScrollMinicraft {
         }
 
 
-        SpriteStore ss = SpriteStore.get();
+        var ss = SpriteStore.get();
         builderIcon = ss.getSprite("sprites/other/builder.png");
         minerIcon = ss.getSprite("sprites/other/miner.png");
         fullHeart = ss.getSprite("sprites/other/full_heart.png");
@@ -120,7 +120,7 @@ public class SideScrollMinicraft {
         emptyBubble = ss.getSprite("sprites/other/bubble_pop2.png");
 
         breakingSprites = new Sprite[8];
-        for (int i = 0; i < 8; i++) {
+        for (var i = 0; i < 8; i++) {
             breakingSprites[i] = ss.getSprite("sprites/tiles/break" + i + ".png");
         }
 
@@ -133,14 +133,14 @@ public class SideScrollMinicraft {
     }
 
     public void start(boolean delay) {
-        long lastLoopTime = System.currentTimeMillis();
+        var lastLoopTime = System.currentTimeMillis();
 
         if (Constants.DEBUG) {
             startGame(false, 512);
         }
 
 
-        boolean gameRunning = true;
+        var gameRunning = true;
         while (gameRunning) {
             long delta = 0;
             if (delay) {
@@ -158,7 +158,7 @@ public class SideScrollMinicraft {
     }
 
     public float frame() {
-        GraphicsHandler g = GraphicsHandler.get();
+        var g = GraphicsHandler.get();
         g.startDrawing();
 
         if (inMenu) {
@@ -169,17 +169,17 @@ public class SideScrollMinicraft {
             return 0;
         }
 
-        int screenWidth = GraphicsHandler.getScreenWidth();
-        int screenHeight = GraphicsHandler.getScreenHeight();
-        float cameraX = player.x - screenWidth / tileSize / 2;
-        float cameraY = player.y - screenHeight / tileSize / 2;
-        float worldMouseX = (cameraX * tileSize + screenMousePos.x) / tileSize;
-        float worldMouseY = (cameraY * tileSize + screenMousePos.y) / tileSize - .5f;
+        var screenWidth = GraphicsHandler.getScreenWidth();
+        var screenHeight = GraphicsHandler.getScreenHeight();
+        var cameraX = player.x - screenWidth / tileSize / 2;
+        var cameraY = player.y - screenHeight / tileSize / 2;
+        var worldMouseX = (cameraX * tileSize + screenMousePos.x) / tileSize;
+        var worldMouseY = (cameraY * tileSize + screenMousePos.y) / tileSize - .5f;
 
         world.chunkUpdate();
         world.draw(g, 0, 0, screenWidth, screenHeight, cameraX, cameraY, tileSize);
 
-        boolean inventoryFocus = player.inventory.updateInventory(screenWidth, screenHeight,
+        var inventoryFocus = player.inventory.updateInventory(screenWidth, screenHeight,
                 screenMousePos, leftClick, rightClick);
         if (inventoryFocus) {
             leftClick = false;
@@ -194,18 +194,18 @@ public class SideScrollMinicraft {
             }
             breakingPos = player.handBreakPos;
 
-            InventoryItem inventoryItem = player.inventory.selectedItem();
-            Item item = inventoryItem.getItem();
-            int ticksNeeded = world.breakTicks(breakingPos.x, breakingPos.y, item);
+            var inventoryItem = player.inventory.selectedItem();
+            var item = inventoryItem.getItem();
+            var ticksNeeded = world.breakTicks(breakingPos.x, breakingPos.y, item);
 
-            Int2 pos = StockMethods.computeDrawLocationInPlace(cameraX, cameraY, tileSize,
+            var pos = StockMethods.computeDrawLocationInPlace(cameraX, cameraY, tileSize,
                     tileSize, tileSize, breakingPos.x, breakingPos.y);
-            int sprite_index = (int) (Math.min(1, (double) breakingTicks / ticksNeeded) * (breakingSprites.length - 1));
+            var sprite_index = (int) (Math.min(1, (double) breakingTicks / ticksNeeded) * (breakingSprites.length - 1));
             breakingSprites[sprite_index].draw(g, pos.x, pos.y, tileSize, tileSize);
 
             if (breakingTicks >= ticksNeeded) {
                 if (item != null && item.getClass() == Tool.class) {
-                    Tool tool = (Tool) item;
+                    var tool = (Tool) item;
                     tool.uses++;
                     if (tool.uses >= tool.totalUses) {
                         inventoryItem.setEmpty();
@@ -213,7 +213,7 @@ public class SideScrollMinicraft {
                 }
 
                 breakingTicks = 0;
-                TileID name = world.removeTile(player.handBreakPos.x, player.handBreakPos.y);
+                var name = world.removeTile(player.handBreakPos.x, player.handBreakPos.y);
                 if (name == TileID.GRASS) {
                     name = TileID.DIRT;
                 }
@@ -223,7 +223,7 @@ public class SideScrollMinicraft {
                 if (name == TileID.LEAVES && random.nextDouble() < .1) {
                     name = TileID.SAPLING;
                 }
-                Item newItem = Constants.itemTypes.get((char) name.breaksInto);
+                var newItem = Constants.itemTypes.get((char) name.breaksInto);
                 if (newItem != null) {
                     newItem = newItem.clone();
                     newItem.x = player.handBreakPos.x + random.nextFloat()
@@ -247,11 +247,11 @@ public class SideScrollMinicraft {
             } else {
 
                 rightClick = false;
-                InventoryItem current = player.inventory.selectedItem();
+                var current = player.inventory.selectedItem();
                 if (!current.isEmpty()) {
-                    TileID itemID = Constants.tileIDs.get(current.getItem().item_id);
+                    var itemID = Constants.tileIDs.get(current.getItem().item_id);
                     if (itemID != null) {
-                        boolean isPassable = Constants.tileTypes.get(itemID).type.passable;
+                        var isPassable = Constants.tileTypes.get(itemID).type.passable;
 
                         if (isPassable || !player.inBoundingBox(player.handBuildPos, tileSize)) {
                             if (world.addTile(player.handBuildPos, itemID)) {
@@ -266,9 +266,9 @@ public class SideScrollMinicraft {
 
         player.updateHand(g, cameraX, cameraY, worldMouseX, worldMouseY, world, tileSize);
 
-        java.util.Iterator<Entity> it = entities.iterator();
+        var it = entities.iterator();
         while (it.hasNext()) {
-            Entity entity = it.next();
+            var entity = it.next();
             if (entity != player && player.collidesWith(entity, tileSize)) {
                 if (entity instanceof Item || entity instanceof Tool) {
                     player.giveItem((Item) entity, 1);
@@ -282,7 +282,7 @@ public class SideScrollMinicraft {
 
 
         if (player.handBreakPos.x != -1) {
-            Int2 pos = StockMethods.computeDrawLocationInPlace(cameraX, cameraY, tileSize,
+            var pos = StockMethods.computeDrawLocationInPlace(cameraX, cameraY, tileSize,
                     tileSize, tileSize, player.handBuildPos.x, player.handBuildPos.y);
             builderIcon.draw(g, pos.x, pos.y, tileSize, tileSize);
 
@@ -295,15 +295,15 @@ public class SideScrollMinicraft {
         player.inventory.draw(g, screenWidth, screenHeight);
 
 
-        Int2 mouseTest = StockMethods.computeDrawLocationInPlace(cameraX, cameraY, tileSize,
+        var mouseTest = StockMethods.computeDrawLocationInPlace(cameraX, cameraY, tileSize,
                 tileSize, tileSize, worldMouseX, worldMouseY);
         drawMouse(g, mouseTest);
 
 
-        int heartX = (screenWidth - 250) / 2;
-        int heartY = screenHeight - 50;
-        for (int heartIdx = 1; heartIdx <= 10; ++heartIdx) {
-            int hpDiff = player.hitPoints - heartIdx * 10;
+        var heartX = (screenWidth - 250) / 2;
+        var heartY = screenHeight - 50;
+        for (var heartIdx = 1; heartIdx <= 10; ++heartIdx) {
+            var hpDiff = player.hitPoints - heartIdx * 10;
             if (hpDiff >= 0) {
                 fullHeart.draw(g, heartX, heartY, 10, 10);
             } else if (hpDiff >= -5) {
@@ -316,9 +316,9 @@ public class SideScrollMinicraft {
 
         if (player.isHeadUnderWater(world, tileSize)) {
 
-            int bubbleX = (screenWidth + 50) / 2;
-            int numBubbles = player.airRemaining();
-            for (int bubbleIdx = 1; bubbleIdx <= 10; ++bubbleIdx) {
+            var bubbleX = (screenWidth + 50) / 2;
+            var numBubbles = player.airRemaining();
+            for (var bubbleIdx = 1; bubbleIdx <= 10; ++bubbleIdx) {
                 if (bubbleIdx <= numBubbles) {
                     bubble.draw(g, bubbleX, heartY, 10, 10);
                 } else {
@@ -334,17 +334,17 @@ public class SideScrollMinicraft {
 
     public static void drawMouse(GraphicsHandler g, Int2 pos) {
         g.setColor(Color.gray);
-        int w1 = 2 * 8;
+        var w1 = 2 * 8;
         g.fillOval(pos.x - w1 / 2, pos.y - w1 / 2, w1, w1);
 
 
     }
 
     public static void drawTileBackground(GraphicsHandler g, Sprite sprite, int tileSize) {
-        int screenHeight = GraphicsHandler.getScreenHeight();
-        int screenWidth = GraphicsHandler.getScreenWidth();
-        for (int i = 0; i <= screenWidth / tileSize; i++) {
-            for (int j = 0; j <= screenHeight / tileSize; j++) {
+        var screenHeight = GraphicsHandler.getScreenHeight();
+        var screenWidth = GraphicsHandler.getScreenWidth();
+        for (var i = 0; i <= screenWidth / tileSize; i++) {
+            for (var j = 0; j <= screenHeight / tileSize; j++) {
                 sprite.draw(g, i * tileSize, j * tileSize, tileSize, tileSize);
             }
         }
@@ -365,11 +365,11 @@ public class SideScrollMinicraft {
             case 1:
                 if (tileSize < 128) {
                     tileSize *= 2;
-                    for (Entity entity : entities) {
+                    for (var entity : entities) {
                         entity.widthPX *= 2;
                         entity.heightPX *= 2;
                     }
-                    for (Item item : Constants.itemTypes.values()) {
+                    for (var item : Constants.itemTypes.values()) {
                         item.widthPX *= 2;
                         item.heightPX *= 2;
                     }
@@ -378,11 +378,11 @@ public class SideScrollMinicraft {
             case -1:
                 if (tileSize > 8) {
                     tileSize /= 2;
-                    for (Entity entity : entities) {
+                    for (var entity : entities) {
                         entity.widthPX /= 2;
                         entity.heightPX /= 2;
                     }
-                    for (Item item : Constants.itemTypes.values()) {
+                    for (var item : Constants.itemTypes.values()) {
                         item.widthPX /= 2;
                         item.heightPX /= 2;
                     }
@@ -393,9 +393,9 @@ public class SideScrollMinicraft {
 
     public void tossItem() {
 
-        InventoryItem inventoryItem = player.inventory.selectedItem();
+        var inventoryItem = player.inventory.selectedItem();
         if (!inventoryItem.isEmpty()) {
-            Item newItem = inventoryItem.getItem();
+            var newItem = inventoryItem.getItem();
             if (!(newItem instanceof Tool)) {
                 newItem = newItem.clone();
             }
@@ -433,7 +433,7 @@ public class SideScrollMinicraft {
     public static void main(String[] argv) {
 
         Constants.DEBUG = true;
-        for (String arg : argv) {
+        for (var arg : argv) {
             if ("-d".equals(arg) || "--debug".equals(arg)) {
                 Constants.DEBUG = true;
             } else {
@@ -441,7 +441,7 @@ public class SideScrollMinicraft {
             }
         }
 
-        SideScrollMinicraft g = new SideScrollMinicraft();
+        var g = new SideScrollMinicraft();
 
 
         g.start(true);

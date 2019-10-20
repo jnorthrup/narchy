@@ -108,7 +108,7 @@ public class XYSlider extends PaintSurface  {
     };
 
     private void touch(Finger f) {
-        v2 hitPoint = f.posRelative(XYSlider.this);
+        var hitPoint = f.posRelative(XYSlider.this);
 
         pressing = true; set(hitPoint.x, hitPoint.y);
 //        if (knob.setIfChanged(unitize(hitPoint.x), unitize(hitPoint.y), Spatialization.EPSILONf))
@@ -122,7 +122,7 @@ public class XYSlider extends PaintSurface  {
 
 
     private void updated() {
-        FloatFloatProcedure c = change;
+        var c = change;
         if (c != null) {
             //Exe.invokeLater(() ->
                 c.value(knob.x, knob.y);
@@ -136,18 +136,18 @@ public class XYSlider extends PaintSurface  {
 
         Draw.rectRGBA(bounds, 0f, 0f, 0f, 0.8f, gl);
 
-        float px = knob.x;
-        float py = knob.y;
+        var px = knob.x;
+        var py = knob.y;
 
-        float knobThick = pressing ? 0.08f : 0.04f;
+        var knobThick = pressing ? 0.08f : 0.04f;
 
 
-        float bw = bounds.w;
-        float bh = bounds.h;
-        float KT = Math.min(bw, bh) * knobThick;
-        float kw = bounds.x + (px * bw);
-        float kh = bounds.y + (py * bh);
-        float KTH = KT / 2;
+        var bw = bounds.w;
+        var bh = bounds.h;
+        var KT = Math.min(bw, bh) * knobThick;
+        var kw = bounds.x + (px * bw);
+        var kh = bounds.y + (py * bh);
+        var KTH = KT / 2;
         Draw.rectAlphaCorners(bounds.x, kh - KTH, kw - KTH, kh + KTH, knobColor, lefAlphaCorners, gl
         );
         Draw.rectAlphaCorners(kw + KTH, kh - KTH, bounds.x + bw, kh + KTH, knobColor, rihAlphaCorners, gl
@@ -172,7 +172,7 @@ public class XYSlider extends PaintSurface  {
 //        FloatPort py = new FloatPort();
 //        b.set(S, px, 0.1f);
 //        b.set(E, py, 0.1f);
-        TypedPort<v2> b = new TypedPort<>(v2.class);
+        var b = new TypedPort<v2>(v2.class);
         on((x, y) -> b.outLazy(() -> knob));
         b.set(this);
 

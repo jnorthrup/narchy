@@ -55,7 +55,7 @@ public final class NET {
     public static class loopback_t {
         public loopback_t() {
             msgs = new loopmsg_t[MAX_LOOPBACK];
-            for (int n = 0; n < MAX_LOOPBACK; n++) {
+            for (var n = 0; n < MAX_LOOPBACK; n++) {
                 msgs[n] = new loopmsg_t();
             }
         }
@@ -105,7 +105,7 @@ public final class NET {
      * Returns a string holding ip address and port like "ip0.ip1.ip2.ip3:port".
      */
     public static String AdrToString(netadr_t a) {
-        String sb = String.valueOf(a.ip[0] & 0xFF) + '.' + (a.ip[1] & 0xFF) +
+        var sb = String.valueOf(a.ip[0] & 0xFF) + '.' + (a.ip[1] & 0xFF) +
                 '.' +
                 (a.ip[2] & 0xFF) + '.' + (a.ip[3] & 0xFF) +
                 ':' + a.port;
@@ -116,7 +116,7 @@ public final class NET {
      * Returns IP address without the port as string.
      */
     public static String BaseAdrToString(netadr_t a) {
-        String sb = String.valueOf(a.ip[0] & 0xFF) + '.' + (a.ip[1] & 0xFF) +
+        var sb = String.valueOf(a.ip[0] & 0xFF) + '.' + (a.ip[1] & 0xFF) +
                 '.' +
                 (a.ip[2] & 0xFF) + '.' + (a.ip[3] & 0xFF);
         return sb;
@@ -131,8 +131,8 @@ public final class NET {
             return true;
         }
         try {
-            String[] address = s.split(":");
-            InetAddress ia = InetAddress.getByName(address[0]);
+            var address = s.split(":");
+            var ia = InetAddress.getByName(address[0]);
             a.ip = ia.getAddress();
             a.type = Defines.NA_IP;
             if (address.length == 2)
@@ -164,8 +164,8 @@ public final class NET {
      */
     public static boolean GetLoopPacket(int sock, netadr_t net_from,
             sizebuf_t net_message) {
-	
-        loopback_t loop = loopbacks[sock];
+
+        var loop = loopbacks[sock];
 
         if (loop.send - loop.get > MAX_LOOPBACK)
             loop.get = loop.send - MAX_LOOPBACK;
@@ -173,7 +173,7 @@ public final class NET {
         if (loop.get >= loop.send)
             return false;
 
-        int i = loop.get & (MAX_LOOPBACK - 1);
+        var i = loop.get & (MAX_LOOPBACK - 1);
         loop.get++;
 
         System.arraycopy(loop.msgs[i].data, 0, net_message.data, 0,
@@ -190,10 +190,10 @@ public final class NET {
     public static void SendLoopPacket(int sock, int length, byte[] data,
             netadr_t to) {
 
-        loopback_t loop = loopbacks[sock ^ 1];
+        var loop = loopbacks[sock ^ 1];
 
 
-        int i = loop.send & (MAX_LOOPBACK - 1);
+        var i = loop.send & (MAX_LOOPBACK - 1);
         loop.send++;
 
         System.arraycopy(data, 0, loop.msgs[i].data, 0, length);
@@ -214,9 +214,9 @@ public final class NET {
             return false;
 
         try {
-            ByteBuffer receiveBuffer = ByteBuffer.wrap(net_message.data);
+            var receiveBuffer = ByteBuffer.wrap(net_message.data);
 
-            InetSocketAddress srcSocket = (InetSocketAddress) ip_channels[sock]
+            var srcSocket = (InetSocketAddress) ip_channels[sock]
                     .receive(receiveBuffer);
             if (srcSocket == null)
                 return false;
@@ -225,7 +225,7 @@ public final class NET {
             net_from.port = srcSocket.getPort();
             net_from.type = Defines.NA_IP;
 
-            int packetLength = receiveBuffer.position();
+            var packetLength = receiveBuffer.position();
 
             if (packetLength > net_message.maxsize) {
                 Com.Println("Oversize packet from " + AdrToString(net_from));
@@ -275,9 +275,9 @@ public final class NET {
      */
     public static void OpenIP() {
 
-        cvar_t port = Cvar.Get("port", "" + Defines.PORT_SERVER, Defines.CVAR_NOSET);
-        cvar_t ip = Cvar.Get("ip", "localhost", Defines.CVAR_NOSET);
-        cvar_t clientport = Cvar.Get("clientport", "" + Defines.PORT_CLIENT, Defines.CVAR_NOSET);
+        var port = Cvar.Get("port", "" + Defines.PORT_SERVER, Defines.CVAR_NOSET);
+        var ip = Cvar.Get("ip", "localhost", Defines.CVAR_NOSET);
+        var clientport = Cvar.Get("clientport", "" + Defines.PORT_CLIENT, Defines.CVAR_NOSET);
         
         if (ip_sockets[Defines.NS_SERVER] == null)
             ip_sockets[Defines.NS_SERVER] = Socket(Defines.NS_SERVER,
@@ -297,7 +297,7 @@ public final class NET {
     public static void Config(boolean multiplayer) {
         if (!multiplayer) {
             
-            for (int i = 0; i < 2; i++) {
+            for (var i = 0; i < 2; i++) {
                 if (ip_sockets[i] != null) {
                     ip_sockets[i].close();
                     ip_sockets[i] = null;
@@ -335,7 +335,7 @@ public final class NET {
                     newsocket.bind(new InetSocketAddress(port));
                 }
             } else {
-                InetAddress ia = InetAddress.getByName(ip);
+                var ia = InetAddress.getByName(ip);
                 newsocket = ip_channels[sock].socket();
                 newsocket.bind(new InetSocketAddress(ia, port));
             }

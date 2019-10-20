@@ -111,17 +111,17 @@ public class Pair implements IPair {
         } else if (x instanceof IPair) {
             stringifyPair(((IPair) x), quoted, buf);
         } else if (x instanceof char[]) {
-            char[] chars = (char[]) x;
+            var chars = (char[]) x;
             if (quoted) buf.append('"');
-            for (char aChar : chars) {
+            for (var aChar : chars) {
                 if (quoted && aChar == '"') buf.append('\\');
                 buf.append(aChar);
             }
             if (quoted) buf.append('"');
         } else if (x instanceof Object[]) {
-            Object[] v = (Object[]) x;
+            var v = (Object[]) x;
             buf.append("#(");
-            for (int i = 0; i < v.length; i++) {
+            for (var i = 0; i < v.length; i++) {
                 stringify(v[i], quoted, buf);
                 if (i != v.length - 1) buf.append(' ');
             }
@@ -158,11 +158,11 @@ public class Pair implements IPair {
         } else {
             buf.append('(');
             Pair.stringify(p._car(), quoted, buf);
-            Object tail = p._cdr();
+            var tail = p._cdr();
             while (tail instanceof IPair) {
                 buf.append(' ');
 
-                IPair tp = (IPair) tail;
+                var tp = (IPair) tail;
                 Pair.stringify(tp._car(), quoted, buf);
                 tail = tp._cdr();
             }
@@ -187,17 +187,17 @@ public class Pair implements IPair {
      * Strings and characters are quoted iff <tt>quoted</tt> is true.. *
      */
     public static String stringify(Object x, boolean quoted) {
-        StringBuffer buf = new StringBuffer();
+        var buf = new StringBuffer();
         Pair.stringify(x, quoted, buf);
         return buf.toString();
     }
 
     public List toList() {
         List l = new ArrayList();
-        Pair c = this;
+        var c = this;
         do {
             l.add(c._car());
-            Object next = c._cdr();
+            var next = c._cdr();
 
             if (next instanceof Pair)
                 c = (Pair)next;

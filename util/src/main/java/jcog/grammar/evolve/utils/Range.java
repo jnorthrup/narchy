@@ -68,9 +68,9 @@ public final class Range implements Comparable<Range>{
         }
         
         Collections.sort(ranges);
-        Range prevRange = new Range(ranges.get(0).startIndex, ranges.get(0).endIndex);
-        for (int i = 1; i < ranges.size(); i++) {
-            Range currentRange = ranges.get(i);
+        var prevRange = new Range(ranges.get(0).startIndex, ranges.get(0).endIndex);
+        for (var i = 1; i < ranges.size(); i++) {
+            var currentRange = ranges.get(i);
             if(currentRange.startIndex == prevRange.endIndex+1){
                 
                 prevRange.endIndex = currentRange.endIndex;
@@ -93,7 +93,7 @@ public final class Range implements Comparable<Range>{
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        Range range = (Range) o;
+        var range = (Range) o;
 
         if (startIndex != range.startIndex) return false;
         return endIndex == range.endIndex;
@@ -102,7 +102,7 @@ public final class Range implements Comparable<Range>{
 
     @Override
     public int hashCode() {
-        int result = startIndex;
+        var result = startIndex;
         result = 31 * result + endIndex;
         return result;
     }

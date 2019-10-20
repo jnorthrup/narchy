@@ -21,7 +21,7 @@ public class AtomBytes extends AbstractAtomic implements The {
 	}
 
 	public static AtomBytes atomBytes(DataInput i) throws IOException {
-		byte[] bb = new byte[i.readUnsignedShort()];
+		var bb = new byte[i.readUnsignedShort()];
 		i.readFully(bb);
 		return AtomBytes.atomBytes(bb);
 	}
@@ -57,7 +57,7 @@ public class AtomBytes extends AbstractAtomic implements The {
 
 	@Override
 	public String toString() {
-		byte[] b = bytes;
+		var b = bytes;
 		//byte[] b = QuickLZ.decompress(bytes, 3)
 		return "\"" + new String(b, 3, b.length-3) + "\"";
 	}

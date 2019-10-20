@@ -33,7 +33,7 @@ public enum Why { ;
 		if (why.length == 1)
 			return why(why[0]);
 
-		int excess = why.length - (capacity-1);
+		var excess = why.length - (capacity-1);
 		if (excess > 0) {
 			//TODO if (excess == 1) simple case
 
@@ -53,7 +53,7 @@ public enum Why { ;
 
 
 	@Nullable public static Term why(RoaringBitmap why, int capacity) {
-		int ss = why.getCardinality();
+		var ss = why.getCardinality();
 		if (ss == 0)
 			return null;
 
@@ -62,9 +62,9 @@ public enum Why { ;
 
 		//convert to array for sampling
 
-		short[] i = new short[ss];
-		int in = 0;
-		PeekableIntIterator ii = why.getIntIterator();
+		var i = new short[ss];
+		var in = 0;
+		var ii = why.getIntIterator();
 		while (ii.hasNext())
 			i[in++] = (short) ii.next();
 
@@ -111,13 +111,13 @@ public enum Why { ;
 			case 1: return c[0].why(); //TODO check capacity
 			case 2: return why(c[0].why(), c[1].why(), capacity);
 			default: {
-				Term[] ct = new Term[c.length];
-				int vt = 0;
-				boolean nulls = false;
+				var ct = new Term[c.length];
+				var vt = 0;
+				var nulls = false;
 				for (int i = 0, cLength = c.length; i < cLength; i++) {
-					Caused ci = c[i];
+					var ci = c[i];
 					if (ci!=null) {
-						Term cti = ct[i] = ci.why();
+						var cti = ct[i] = ci.why();
 						if (cti!=null)
 							vt += cti.volume();
 						else
@@ -136,9 +136,9 @@ public enum Why { ;
 				} else {
 					//flatten and sample
 					//ShortHashSet s = new ShortHashSet(ct.length * capacity);
-					RoaringBitmap s = new RoaringBitmap();
+					var s = new RoaringBitmap();
 					IntConsumer addToS = s::add;
-					for (Term cc : ct)
+					for (var cc : ct)
 						toSet(cc, addToS);
 
 					return why(s, capacity);
@@ -160,16 +160,16 @@ public enum Why { ;
 		if (whyB == null)
 			return whyA; //TODO check cap
 
-		int wa = whyA.volume();
+		var wa = whyA.volume();
 		if (whyA.equals(whyB) && wa <= capacity)
 			return whyA; //same
 
-		int wb = whyB.volume();
+		var wb = whyB.volume();
 		if (wa + wb + 1 <= capacity) {
 			return SETe.the(whyA, whyB);
 		} else {
 			//must reduce or sample
-			RoaringBitmap s = new RoaringBitmap();
+			var s = new RoaringBitmap();
 			IntConsumer addToS = s::add;
 			toSet(whyA, addToS);
 			toSet(whyB, addToS);
@@ -188,13 +188,13 @@ public enum Why { ;
 			each.value(causes, s(why), pri);
 		} else {
 			//split
-			Subterms s = why.subterms();
-			int n = s.subs();
+			var s = why.subterms();
+			var n = s.subs();
 
 			assert (why.opID() == SETe.id  && n > 1);
 
-			float priEach = pri/n;
-			for (int i = 0; i < n; i++)
+			var priEach = pri/n;
+			for (var i = 0; i < n; i++)
 				eval(s.sub(i), priEach, causes, each);
 		}
 	}
@@ -206,13 +206,13 @@ public enum Why { ;
 			s.value(s(why));
 		} else {
 			//TODO optimized case of simple set with no recursive inner-sets
-			ShortHashSet seen = Why.toSet(why); //TODO RoaringBitmap
+			var seen = Why.toSet(why); //TODO RoaringBitmap
 			seen.forEach(s);
 		}
 	}
 
 	@Deprecated public static ShortHashSet toSet(Term why) {
-		ShortHashSet s = new ShortHashSet(why.volume() /* estimate */);
+		var s = new ShortHashSet(why.volume() /* estimate */);
 		toSet(why, s);
 		return s;
 	}
@@ -230,10 +230,10 @@ public enum Why { ;
 		if (w instanceof Int) {
 			each.accept(s(w));
 		} else {
-			Subterms ww = w.subterms();
-			int wn = ww.subs();
+			var ww = w.subterms();
+			var wn = ww.subs();
 			assert (w.opID() == SETe.id  && wn > 1);
-			for (int i = 0; i < wn; i++)
+			for (var i = 0; i < wn; i++)
 				toSet(ww.sub(i), each);
 		}
 	}

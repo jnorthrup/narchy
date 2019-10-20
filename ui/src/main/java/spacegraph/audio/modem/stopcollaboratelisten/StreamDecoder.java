@@ -40,14 +40,14 @@ public abstract class StreamDecoder implements Runnable {
      */
     public StreamDecoder(ByteArrayOutputStream _out) {
         out = _out;
-        Thread myThread = new Thread(this, kThreadName);
+        var myThread = new Thread(this, kThreadName);
         myThread.start();
     }
 
     public String status() {
-        String s = "";
+        var s = "";
 
-        int backlog = (int) ((1000 * buffer.size()) / Constants.kSamplingFrequency);
+        var backlog = (int) ((1000 * buffer.size()) / Constants.kSamplingFrequency);
 
         if (backlog > 0)
             s += "Backlog: " + backlog + " mS ";
@@ -79,14 +79,14 @@ public abstract class StreamDecoder implements Runnable {
         hasKey = false;
 
         byte[] samples = null;
-        double[] startSignals = new double[Constants.kBitsPerByte * Constants.kBytesPerDuration];
-        int skipped = 0;
-        int durationsToRead = Constants.kDurationsPerHail;
+        var startSignals = new double[Constants.kBitsPerByte * Constants.kBytesPerDuration];
+        var skipped = 0;
+        var durationsToRead = Constants.kDurationsPerHail;
         while (running) {
 
             //System.out.println(status());
 
-            boolean notEnoughSamples = true;
+            var notEnoughSamples = true;
             while (notEnoughSamples) {
                 samples = buffer.read(Constants.kSamplesPerDuration * durationsToRead, 0.9f);
                 if (samples != null)
@@ -97,7 +97,7 @@ public abstract class StreamDecoder implements Runnable {
 
             if (hasKey) {
                 //we found the key, so decode this duration
-                byte[] decoded = Decoder.decode(startSignals, samples);
+                var decoded = Decoder.decode(startSignals, samples);
                 try {
                     buffer.delete(samples.length);
                     skipped += samples.length;
@@ -107,7 +107,7 @@ public abstract class StreamDecoder implements Runnable {
 
                     //if (decoded[0] == 0) { //we are receiving no signal, so go back to key detection mode
                     {
-                        byte[] signal = out.toByteArray();
+                        var signal = out.toByteArray();
 
                         if (Decoder.crcCheckOk(signal)) {
                             // signal received correctly
@@ -148,9 +148,9 @@ public abstract class StreamDecoder implements Runnable {
             //		       + ((float)(deletedSamples + samples.length) / Constants.kSamplingFrequency));
 
             // detect SOS key
-            int sosIndex = Decoder.findKeySequence(samples, startSignals, Constants.initialGranularity, Constants.kSOSFrequency);
+            var sosIndex = Decoder.findKeySequence(samples, startSignals, Constants.initialGranularity, Constants.kSOSFrequency);
             // detect Hail key
-            int hailIndex = Decoder.findKeySequence(samples, startSignals, Constants.initialGranularity, Constants.kHailFrequency);
+            var hailIndex = Decoder.findKeySequence(samples, startSignals, Constants.initialGranularity, Constants.kHailFrequency);
 
             if (sosIndex > -1
                     && ((hailIndex > -1 && sosIndex < hailIndex) || hailIndex == -1)) {
@@ -175,7 +175,7 @@ public abstract class StreamDecoder implements Runnable {
                 //System.out.println("Rough Start Time: "
                 //	   + (deletedSamples + startIndex) / (float)Constants.kSamplingFrequency);
 
-                int shiftAmount = hailIndex /* - (Constants.kSamplesPerDuration)*/;
+                var shiftAmount = hailIndex /* - (Constants.kSamplesPerDuration)*/;
                 if (shiftAmount < 0) {
                     shiftAmount = 0;
                 }

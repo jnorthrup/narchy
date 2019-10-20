@@ -181,7 +181,7 @@ public class IntervalTree<K extends Comparable<? super K>, V> {
 	}
 
 	public void putAll(Map<Between<K>, V> m) {
-		for(Entry<Between<K>, V> intervalVEntry : m.entrySet()){
+		for(var intervalVEntry : m.entrySet()){
 			put(intervalVEntry.getKey(), intervalVEntry.getValue());
 		}
 	}
@@ -227,8 +227,8 @@ public class IntervalTree<K extends Comparable<? super K>, V> {
 		
 		Collection<Integer> c = new LinkedList<>();
 		root.averageHeight(c, 0);
-		int count = 0;
-		int total = 0;
+		var count = 0;
+		var total = 0;
 		for(int i : c){
 			total += i;
 			count ++;

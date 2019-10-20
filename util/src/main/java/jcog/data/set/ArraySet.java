@@ -63,7 +63,7 @@ public interface ArraySet<X> extends Set<X> {
 	}
 
 	default X get(Random random) {
-		int s = size();
+		var s = size();
 		switch (s) {
 			case 0:
 				return null;

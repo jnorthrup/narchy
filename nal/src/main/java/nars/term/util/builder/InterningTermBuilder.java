@@ -89,8 +89,8 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
         Function statements = newOpCache("statement", cacheSizePerOp * 3, this::_statement);
 
-        for (int i = 0; i < ops.length; i++) {
-            Op o = ops[i];
+        for (var i = 0; i < ops.length; i++) {
+            var o = ops[i];
             if (o.atomic || (/*!internNegs && */o == NEG) || (o == FRAG)) continue;
 
             //TODO use multiple PROD slices to decrease contention
@@ -130,7 +130,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
 
     @Override public final Term compound(Op o, int dt, Subterms u) {
-        boolean internable = internable(o, dt, u);
+        var internable = internable(o, dt, u);
         return internable ?
                 compoundInterned(o, dt, o.sortedIfNecessary(dt, u).arrayShared()) :
                 super.compound(o, dt, u);
@@ -138,8 +138,8 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
     @Override
     public final Term compound(Op o, int dt, Term[] _u) {
-        Term[] u = o.sortedIfNecessary(dt, _u);
-        boolean internable = internable(o, dt, u);
+        var u = o.sortedIfNecessary(dt, _u);
+        var internable = internable(o, dt, u);
         return internable ?
                 compoundInterned(o, dt, u) :
                 newCompound(o, dt, u);
@@ -195,10 +195,10 @@ public class InterningTermBuilder extends HeapTermBuilder {
         if (!deep)
             return t;
         Term px = null;
-        Term[] u = t;
+        var u = t;
         for (int i = 0, tLength = t.length; i < tLength; i++) {
-            Term x = t[i];
-            Term y = (i == 0 || x!=px) ?
+            var x = t[i];
+            var y = (i == 0 || x!=px) ?
                     resolve(x) :
                     t[i-1] /* re-use previous if identical */;
             if (y != x) { // && y.equals(x))
@@ -215,7 +215,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
         if (_x instanceof Atomic)
             return _x;
 
-        boolean negate = _x instanceof Neg;
+        var negate = _x instanceof Neg;
         Term xi;
         int xo;
         if (negate) {
@@ -229,7 +229,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
         }
 
         if (internable(xo/*, x.dt()*/) && xi.volume() <= volInternedMax && xi.the()) {
-            Term yi = terms[xo].apply(
+            var yi = terms[xo].apply(
                 new Intermed.InternedCompoundByComponentsSubs((Compound)xi));
             if(negate) {
 				//use original
@@ -262,8 +262,8 @@ public class InterningTermBuilder extends HeapTermBuilder {
     }
 
     private boolean internable(Term[] subterms) {
-        int volRemain = volInternedMax - subterms.length;
-        for (Term x : subterms) {
+        var volRemain = volInternedMax - subterms.length;
+        for (var x : subterms) {
             if (x == Null)
                 return false;
             if (!internableSub(x))
@@ -293,7 +293,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
                 (subject.volume() + predicate.volume() < volInternedMax) &&
                 ((op==IMPL && dt!=0) || !subject.equals(predicate))) {
 
-            boolean negate = false;
+            var negate = false;
 
             //quick preparations to reduce # of unique entries
 
@@ -307,7 +307,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
             if (op == SIM) {
                 //commutive order: pre-sort by swapping to avoid saving redundant mappings
                 if (subject.compareTo(predicate) > 0) {
-                    Term x = predicate;
+                    var x = predicate;
                     predicate = subject;
                     subject = x;
                 }
@@ -329,7 +329,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
     }
 
     private Term _statement(Intermed.InternedCompoundByComponents c) {
-        Term[] s = c.subs();
+        var s = c.subs();
         return super.statement(Op.the(c.op), c.dt, s[0], s[1]);
     }
 
@@ -341,7 +341,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
     @Override
     public Atomic atom(String id) {
-        int l = id.length();
+        var l = id.length();
         return (l > 1 && l < ATOM_INTERNING_LENGTH_MAX) ? atoms.apply(id) : super.atom(id);
     }
 

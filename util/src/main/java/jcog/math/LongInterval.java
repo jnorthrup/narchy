@@ -25,8 +25,8 @@ public interface LongInterval {
 	static long intersectLength(long x1, long y1, long x2, long y2) {
 		if (x1 == ETERNAL || x1 == TIMELESS || x2 == ETERNAL || x2 == TIMELESS)
 			throw new WTF();
-		long a = max(x1, x2);
-		long b = min(y1, y2);
+		var a = max(x1, x2);
+		var b = min(y1, y2);
 		return a <= b ? b - a : -1;
 	}
 
@@ -61,8 +61,8 @@ public interface LongInterval {
 	 * returns -1 if no intersection; 0 = adjacent, > 0 = non-zero interval in common
 	 */
 	static int intersectLength(int x1, int x2, int y1, int y2) {
-		int a = max(x1, x2);
-		int b = min(y1, y2);
+		var a = max(x1, x2);
+		var b = min(y1, y2);
 		return a <= b ? b - a : -1;
 	}
 
@@ -71,7 +71,7 @@ public interface LongInterval {
 	long end();
 
 	default long mid() {
-		long s = start();
+		var s = start();
 		return s == ETERNAL ? ETERNAL : (s + end()) / 2L;
 	}
 
@@ -80,14 +80,14 @@ public interface LongInterval {
 	 * if b &lt; a, then length is 0.  9..10 has length 2.
 	 */
 	default long range() {
-		long s = start();
+		var s = start();
 		if (s == ETERNAL)
 			throw new ArithmeticException("ETERNAL range calculated");
 		return 1 + (end() - s);
 	}
 
 	default long rangeIfNotEternalElse(long what) {
-		long s = start();
+		var s = start();
 		if (s == ETERNAL)
 			return what;
 		return 1 + (end() - s);
@@ -101,13 +101,13 @@ public interface LongInterval {
 		if (a == b || a == ETERNAL)
 			return a;
 
-		long s = start();
+		var s = start();
 		if (s == ETERNAL)
 			return (a + b) / 2L;
-		long e = end();
+		var e = end();
 
 
-		long mid = (s + e) / 2;
+		var mid = (s + e) / 2;
 		if (s >= a && s <= b) {
 			return mid;
 		}
@@ -133,7 +133,7 @@ public interface LongInterval {
 	default boolean isDuring(long when) {
 		if (when == ETERNAL)
 			return true;
-		long start = start();
+		var start = start();
 		return (start == ETERNAL) || (start == when) || ((when >= start) && (when <= end()));
 	}
 
@@ -150,11 +150,11 @@ public interface LongInterval {
 		if (a == ETERNAL)
 			return mid();
 
-		long s = this.start();
+		var s = this.start();
 		if (s == ETERNAL)
 			return ETERNAL;
 
-		long e = this.end();
+		var e = this.end();
 		if (s == e)
 			return s;
 
@@ -163,8 +163,8 @@ public interface LongInterval {
 		} else if (a < s && b > e) {
 			return (s + e) / 2L;
 		} else {
-			long se = (s + e) / 2L;
-			long ab = (a + b) / 2L;
+			var se = (s + e) / 2L;
+			var ab = (a + b) / 2L;
 			if (se <= ab) {
 				return e;
 			} else {
@@ -200,21 +200,21 @@ public interface LongInterval {
 		if (a == TIMELESS)
 			throw new WTF(); //return TIMELESS;
 
-		long s = start(); //assert(s!=TIMELESS);
+		var s = start(); //assert(s!=TIMELESS);
 
 		if (s == ETERNAL || s == a)
 			return 0;
 
-		long e = end();
+		var e = end();
 
 		if (/*e != s && */intersectsRaw(a, b, s, e))
 			return 0;
 
-		long sa = Math.abs(s - a);
+		var sa = Math.abs(s - a);
 		if (a == b) {
 			return s == e ? sa : Math.min(sa, Math.abs(e - b));
 		} else {
-			long sab = Math.min(sa, Math.abs(s - b));
+			var sab = Math.min(sa, Math.abs(s - b));
 			return s == e ? sab : Math.min(sab, Math.min(Math.abs(e - a), Math.abs(e - b)));
 		}
 		//} else {
@@ -224,10 +224,10 @@ public interface LongInterval {
 
 	default long maxTimeTo(long a, long b) {
 		if (a == ETERNAL) return 0;
-		long s = start();
+		var s = start();
 		if (s == ETERNAL) return 0;
-		long e = end();
-		long ul = LongInterval.unionLength(s, e, a, b);
+		var e = end();
+		var ul = LongInterval.unionLength(s, e, a, b);
 
 //		long sasbeaeb = Math.max(
 //			max(Math.abs(s - a), Math.abs(s - b)),
@@ -239,24 +239,24 @@ public interface LongInterval {
 
 
 	default long meanTimeTo(long s, long e) {
-		long ds = meanTimeTo(s);
+		var ds = meanTimeTo(s);
 		return s==e ? ds : (ds + meanTimeTo(e))/2;
 	}
 
 	default long meanTimeTo(long x) {
 		if (x == ETERNAL)
 			return 0;
-		long start = start();
+		var start = start();
 		if (start == ETERNAL || start == x) return 0;
-		long end = end();
+		var end = end();
 		if (x <= end && x >= start)
 			return 0; //contained
 
-		long distToStart = Math.abs(start - x);
+		var distToStart = Math.abs(start - x);
 		if (end == start) {
 			return distToStart;
 		} else {
-			long distToEnd = Math.abs(end - x);
+			var distToEnd = Math.abs(end - x);
 			return (distToStart + distToEnd) / 2L;
 		}
 	}
@@ -264,14 +264,14 @@ public interface LongInterval {
 
 	default long maxTimeTo(long x) {
 
-		long start = start();
+		var start = start();
 		if (start == ETERNAL) return 0;
-		long end = end();
-		long distToStart = Math.abs(start - x);
+		var end = end();
+		var distToStart = Math.abs(start - x);
 		if (end == start) {
 			return distToStart;
 		} else {
-			long distToEnd = Math.abs(end - x);
+			var distToEnd = Math.abs(end - x);
 			return Math.max(distToStart, distToEnd);
 		}
 	}
@@ -284,7 +284,7 @@ public interface LongInterval {
 		assert (s != TIMELESS);
 		if (s == ETERNAL)
 			return true;
-		long start = start();
+		var start = start();
 		return (start == ETERNAL) || (e >= start && s <= end());
 	}
 
@@ -302,7 +302,7 @@ public interface LongInterval {
 	}
 
 	default boolean containsSafe(long s, long e) {
-		long start = start();
+		var start = start();
 		if (start == ETERNAL)
 			return true;
 		else
@@ -312,7 +312,7 @@ public interface LongInterval {
 		if (s == ETERNAL)
 			return true;
 		else {
-			long start = start();
+			var start = start();
 			return start != ETERNAL && start >= s && end() <= e;
 		}
 	}
@@ -322,11 +322,11 @@ public interface LongInterval {
 	 */
 	default boolean contains(LongInterval b) {
 		if (this == b) return true;
-		long as = start();
+		var as = start();
 		if (as == ETERNAL)
 			return true;
 		else {
-			long bs = b.start();
+			var bs = b.start();
 			return /*bs != ETERNAL &&*/ bs >= as && b.end() <= end();
 		}
 	}

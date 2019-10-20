@@ -41,7 +41,7 @@ public class MultithreadStrategy extends AbstractExecutionStrategy {
     private volatile boolean terminated = false;
 
     private static int countThreads(Map<String, String> parameters) {
-        String paramValue = parameters.get(THREADS_KEY);
+        var paramValue = parameters.get(THREADS_KEY);
         int threads;
         try {
             threads = Integer.parseInt(paramValue);
@@ -56,25 +56,25 @@ public class MultithreadStrategy extends AbstractExecutionStrategy {
     public void execute(Configuration configuration, ExecutionListenerFactory listenerFactory) throws Exception {
         workingThread = Thread.currentThread();
         listenerFactory.register(this);
-        Map<String, String> parameters = configuration.getStrategyParameters();
-        int threads = countThreads(parameters);
-        Class<? extends RunStrategy> strategyClass = getStrategy(parameters);
+        var parameters = configuration.getStrategyParameters();
+        var threads = countThreads(parameters);
+        var strategyClass = getStrategy(parameters);
         executor = Executors.newFixedThreadPool(threads);
-        ExecutorCompletionService<Void> completionService = new ExecutorCompletionService<>(executor);
-        long initialSeed = configuration.getInitialSeed();
-        int jobs = configuration.getJobs();
-        for (int i = 0; i < jobs; i++) {
-            RunStrategy job = strategyClass.newInstance();
-            Configuration jobConf = new Configuration(configuration);
+        var completionService = new ExecutorCompletionService<Void>(executor);
+        var initialSeed = configuration.getInitialSeed();
+        var jobs = configuration.getJobs();
+        for (var i = 0; i < jobs; i++) {
+            var job = strategyClass.newInstance();
+            var jobConf = new Configuration(configuration);
             jobConf.setJobId(i);
             jobConf.setInitialSeed(initialSeed + i);
             job.setup(jobConf, listenerFactory.getNewListener());
             completionService.submit(job);
         }
         executor.shutdown();
-        
-        ExecutionListener listener = listenerFactory.getNewListener();               
-        for (int i = 0; i < jobs; i++) {
+
+        var listener = listenerFactory.getNewListener();
+        for (var i = 0; i < jobs; i++) {
             Future<Void> result = null;
             try {
                 if(terminated) {
@@ -95,8 +95,8 @@ public class MultithreadStrategy extends AbstractExecutionStrategy {
                 result.get();
             } catch (ExecutionException x) {
                 if (x.getCause() instanceof TreeEvaluationException) {
-                    TreeEvaluationException ex = (TreeEvaluationException) x.getCause();
-                    RunStrategy strategy = ex.getAssociatedStrategy();
+                    var ex = (TreeEvaluationException) x.getCause();
+                    var strategy = ex.getAssociatedStrategy();
                     LOG.log(Level.SEVERE, "Job " + strategy.getConfiguration().getJobId() + " failed with exception", ex.getCause());
                     
                     if (listener != null) {

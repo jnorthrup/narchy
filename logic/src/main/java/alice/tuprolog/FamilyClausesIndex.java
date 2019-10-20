@@ -66,7 +66,7 @@ class FamilyClausesIndex<K extends Comparable<? super K>> extends RBTree<K, Dequ
     }
 
     private Node<K,Deque<ClauseInfo>> createNewNode(K key, ClauseInfo clause, boolean first){
-        int vs = shared.size();
+        var vs = shared.size();
         Deque<ClauseInfo> list =
                 new ArrayDeque<>(vs + 1);
 
@@ -111,7 +111,7 @@ class FamilyClausesIndex<K extends Comparable<? super K>> extends RBTree<K, Dequ
                 buf.add(root);
 
                 while (!buf.isEmpty()) {
-                    Node<K, Deque<ClauseInfo>> n = buf.removeFirst();
+                    var n = buf.removeFirst();
 
                     setValue(clause, first, n);
 
@@ -150,9 +150,9 @@ class FamilyClausesIndex<K extends Comparable<? super K>> extends RBTree<K, Dequ
         if (root == null) {
             insertedNode = root = createNewNode(key, clause, first);
         } else {
-            Node<K,Deque<ClauseInfo>> n = root;
+            var n = root;
             while (true) {
-                int compResult = key.compareTo(n.key);
+                var compResult = key.compareTo(n.key);
                 if (compResult == 0) {
                     setValue(clause, first, n);
                     return;
@@ -193,7 +193,7 @@ class FamilyClausesIndex<K extends Comparable<? super K>> extends RBTree<K, Dequ
                     buf.add(root);
 
                     while (!buf.isEmpty()) {
-                        Node<K, Deque<ClauseInfo>> n = buf.remove();
+                        var n = buf.remove();
 
                         n.value.remove(clause);
 
@@ -219,7 +219,7 @@ class FamilyClausesIndex<K extends Comparable<? super K>> extends RBTree<K, Dequ
      * @return      The related clauses
      */
     public Deque<ClauseInfo> get(K key){
-        Deque<ClauseInfo> res = lookup(key);
+        var res = lookup(key);
         return res != null ? res : shared;
     }
 }
