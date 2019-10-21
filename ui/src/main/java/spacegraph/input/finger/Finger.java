@@ -50,7 +50,7 @@ public abstract class Finger extends Part<SpaceGraph> implements Predicate<Finge
     /**
      * widget above which this finger currently hovers
      */
-    protected final AtomicReference<Surface> touching = new AtomicReference<>();
+    public final AtomicReference<Surface> touching = new AtomicReference<>();
     /**
      * a exclusive locking/latching state which may be requested by a surface
      */

@@ -1,9 +1,13 @@
 package spacegraph.space2d;
 
 import jcog.Texts;
+import jcog.grammar.evolve.selections.Rank;
 import jcog.math.v2;
+import jcog.sort.FloatRank;
+import jcog.sort.RankedN;
 import jcog.tree.rtree.Spatialization;
 import jcog.tree.rtree.rect.RectFloat;
+import org.jetbrains.annotations.Nullable;
 import spacegraph.input.finger.Finger;
 import spacegraph.space2d.container.ContainerSurface;
 import spacegraph.space2d.container.collection.AbstractMutableContainer;
@@ -378,5 +382,10 @@ public abstract class Surface implements Surfacelike {
 
     public void showing(boolean s) {
         showing = s;
+    }
+
+    @Nullable
+    public RankedN<Surface> rank(FloatRank<Surface> o, int n) {
+        return null;
     }
 }

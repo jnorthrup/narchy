@@ -1,6 +1,7 @@
 package spacegraph.space2d;
 
 import jcog.event.Off;
+import jcog.sort.RankedN;
 import spacegraph.util.SpaceLogger;
 import spacegraph.util.animate.Animated;
 import spacegraph.video.JoglWindow;
@@ -48,5 +49,6 @@ public interface SurfaceGraph extends Surfacelike, SpaceLogger {
     default boolean keyFocus(Surface textEdit) {
         return false;
     }
+
 
 }

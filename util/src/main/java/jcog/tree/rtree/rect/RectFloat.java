@@ -379,4 +379,63 @@ public class RectFloat implements HyperRegion, Comparable<RectFloat> {
     public final RectFloat orThisIfEqual(RectFloat r) {
         return r.equals(this) ? this : r;
     }
+
+    public float distanceTo(float x, float y) {
+        //  Calculate a distance between a point and a rectangle.
+        //  The area around/in the rectangle is defined in terms of
+        //  several regions:
+        //
+        //  O--x
+        //  |
+        //  y
+        //
+        //
+        //        I   |    II    |  III
+        //      ======+==========+======   --yMin
+        //       VIII |  IX (in) |  IV
+        //      ======+==========+======   --yMax
+        //       VII  |    VI    |   V
+        //
+        //
+        //  Note that the +y direction is down because of Unity's GUI coordinates.
+
+        if (x < left()) { // Region I, VIII, or VII
+            if (y < bottom()) { // I
+                //Vector2 diff = point - new Vector2(rect.xMin, rect.yMin);return diff.magnitude;
+                return (float)Math.sqrt(Util.sqr(x - left())+Util.sqr(y - bottom()));
+            }
+            else if (y > top()) { // VII
+                //Vector2 diff = point - new Vector2(rect.xMin, rect.yMax); diff.magnitude;
+                return (float)Math.sqrt(Util.sqr(x - left())+Util.sqr(y - top()));
+            }
+            else { // VIII
+                return left() - x;
+            }
+        }
+        else if (x > right()) { // Region III, IV, or V
+            if (y < bottom()) { // III
+                //Vector2 diff = point - new Vector2(rect.xMax, rect.yMin);return diff.magnitude;
+                return (float)Math.sqrt(Util.sqr(x - right())+Util.sqr(y - bottom()));
+            }
+            else if (y > top()) { // V
+                //Vector2 diff = point - new Vector2(rect.xMax, rect.yMax);return diff.magnitude;
+                return (float)Math.sqrt(Util.sqr(x - right())+Util.sqr(y - top()));
+            }
+            else { // IV
+                return x - right();
+            }
+        }
+        else { // Region II, IX, or VI
+            if (y < bottom()) { // II
+                return bottom() - y;
+            }
+            else if (y > top()) { // VI
+                return y - top();
+            }
+            else { // IX
+                return 0f;
+            }
+        }
+
+    }
 }

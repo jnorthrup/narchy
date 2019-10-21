@@ -4,7 +4,10 @@ import com.jogamp.opengl.GL2;
 import jcog.Texts;
 import jcog.data.atomic.MetalAtomicIntegerFieldUpdater;
 import jcog.math.v2;
+import jcog.sort.FloatRank;
+import jcog.sort.RankedN;
 import jcog.tree.rtree.rect.RectFloat;
+import org.jetbrains.annotations.Nullable;
 import spacegraph.input.finger.Finger;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
@@ -35,6 +38,12 @@ public abstract class ContainerSurface extends Surface {
         return false;
     }
 
+    @Override
+    public @Nullable RankedN<Surface> rank(FloatRank<Surface> o, int n) {
+        RankedN<Surface> r = new RankedN<>(new Surface[n], o);
+        forEachRecursively(r);
+        return r.isEmpty() ? null : r;
+    }
 
     /** TODO just accept the ReRender instance, not this dtS which it can get as needed */
     @Deprecated

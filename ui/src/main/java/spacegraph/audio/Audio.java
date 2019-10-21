@@ -215,29 +215,23 @@ public class Audio implements Runnable {
     private static final int min16 = -Short.MAX_VALUE;
 
     void tick() {
-        
 
-        
-        
         mixer.read(leftBuf, rightBuf, rate);
-        
-
 
         soundBuffer.clear();
         //soundBufferShort.clear();
 
-        float gain = max16;
 
         byte[] ba = soundBuffer.array();
 
 
         int b = 0;
         for (int i = 0; i < bufferSize; i++) {
-            short l = ((short)Util.clampSafe(leftBuf[i] * gain, min16, max16));
+            short l = ((short)Util.clampSafe(leftBuf[i] * max16, min16, max16));
             //soundBufferShort.put(l);
             ba[b++] = (byte) (l & 0x00ff);
             ba[b++] = (byte) (l >> 8);
-            short r = ((short)Util.clampSafe(rightBuf[i] * gain, min16, max16));
+            short r = ((short)Util.clampSafe(rightBuf[i] * max16, min16, max16));
             //soundBufferShort.put(r);
             ba[b++] = (byte) (r & 0x00ff);
             ba[b++] = (byte) (r >> 8);

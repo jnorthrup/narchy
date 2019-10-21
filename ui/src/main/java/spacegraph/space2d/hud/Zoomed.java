@@ -1,11 +1,15 @@
 package spacegraph.space2d.hud;
 
+import com.jogamp.newt.event.KeyEvent;
+import com.jogamp.newt.event.KeyListener;
 import com.jogamp.opengl.GL2;
 import jcog.Util;
+import jcog.WTF;
 import jcog.event.Off;
 import jcog.math.v2;
 import jcog.math.v3;
 import jcog.pri.ScalarValue;
+import jcog.sort.RankedN;
 import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.input.finger.Finger;
 import spacegraph.input.finger.Fingering;
@@ -20,6 +24,8 @@ import spacegraph.util.SurfaceTransform;
 import spacegraph.util.animate.Animated;
 import spacegraph.util.animate.v3Anim;
 import spacegraph.video.JoglDisplay;
+import spacegraph.video.JoglWindow;
+import spacegraph.video.OrthoSurfaceGraph;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -126,6 +132,8 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
         this.keyboard = keyboard;
 
         this.cam = new Camera();
+
+
     }
 
     @Override
@@ -251,13 +259,94 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
     @Override
     protected void starting() {
 
-        JoglDisplay s = (JoglDisplay) root();
-
-        s.video.addKeyListener(keyboard);
-
         animate(cam);
 
+        JoglWindow v = ((JoglDisplay) root()).video;
+        v.addKeyListener(keyboard);
+        v.addKeyListener(new KeyListener() {
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+                switch (e.getKeyCode()) {
+                    case KeyEvent.VK_PAGE_UP: zoomParent(); break;
+                    case KeyEvent.VK_DOWN: zoomNear(0, +1);break;
+                    case KeyEvent.VK_UP:zoomNear(0, -1);break;
+                    case KeyEvent.VK_LEFT:zoomNear(-1, 0);break;
+                    case KeyEvent.VK_RIGHT:zoomNear(+1, 0);break;
+                }
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+
+            }
+        });
+
         super.starting();
+    }
+
+    private void zoomParent() {
+        Surface at = touching();
+        if (at!=null) {
+            boolean kontinue = false;
+            RectFloat a = at.bounds;
+            do { //go up one level at least..
+                spacegraph.space2d.Surfacelike atp = at.parent;
+                if (atp instanceof Surface) {
+                    Surface nextAT = (Surface) atp;
+                    kontinue = nextAT.bounds.equals(a);
+                    at = nextAT;
+                } else
+                    kontinue = false;
+            } while (kontinue);
+            zoom(at.bounds);
+        }
+    }
+    private void zoomNear(float dx, float dy) {
+
+        Surface at = touching();
+        if (at!=null) {
+            boolean kontinue = false;
+            RectFloat a = at.bounds;
+            do { //go up one level at least..
+                spacegraph.space2d.Surfacelike atp = at.parent;
+                if (atp instanceof Surface) {
+                    Surface nextAT = (Surface) atp;
+                    kontinue = nextAT.bounds.equals(a);
+                    at = nextAT;
+                } else
+                    kontinue = false;
+            } while (kontinue);
+            zoomNear(at, cam.x + (dx * a.w/2), cam.y + (dy * a.h/2));
+        }
+    }
+
+    private Surface touching() {
+        //zoomStack.peek();
+        //((OrthoSurfaceGraph)this.space).fingers.stream().map(x -> x.touching.getOpaque()).findFirst().ifPresentOrElse(null);
+
+        return ((OrthoSurfaceGraph)this.space).fingers.get(0).touching.getOpaque();
+    }
+
+    private void zoomNear(Surface at, float cx, float cy) {
+        RectFloat a = at.bounds;
+        RankedN<Surface> y = at.rank((Surface r, float min)->{
+            if (r == at) return Float.NaN;
+            RectFloat b = r.bounds;
+            if (a.equals(b) /*|| a.contains(b) || b.contains(a)*/) return Float.NaN;
+            float dist = b.distanceTo(cx, cy);
+            if (dist < 0) { //TEMPORARY
+                throw new WTF();
+            }
+            return -( dist);
+            //return -dist;
+        }, 1);
+        if (y!=null) {
+            Surface s = y.first();
+            if (s != null) {
+                zoom(s.bounds);
+            }
+        }
     }
 
     @Override

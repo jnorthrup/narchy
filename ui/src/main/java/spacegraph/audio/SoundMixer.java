@@ -53,8 +53,6 @@ public class SoundMixer extends FastCoWList<Sound> implements StereoSoundProduce
 			sort();
 		}
 
-		Arrays.fill(leftBuf, 0);
-		Arrays.fill(rightBuf, 0);
 
 		int l = leftBuf.length;
 
@@ -88,6 +86,9 @@ public class SoundMixer extends FastCoWList<Sound> implements StereoSoundProduce
 
 		}
 
+
+		Arrays.fill(leftBuf, 0);
+		Arrays.fill(rightBuf, 0);
 	}
 
 

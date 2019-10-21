@@ -1,6 +1,8 @@
-package jake2;
+package nars.experiment;
 
 import com.jogamp.opengl.GL;
+import jake2.Defines;
+import jake2.Jake2;
 import jake2.client.CL_input;
 import jake2.client.Key;
 import jake2.game.EntHurtAdapter;
@@ -16,8 +18,6 @@ import jcog.signal.wave2d.ImageFlip;
 import jcog.signal.wave2d.ScaledBitmap2D;
 import nars.$;
 import nars.GameX;
-import nars.NAR;
-import nars.Narsese;
 import nars.game.sensor.FreqVectorSensor;
 import nars.gui.sensor.VectorSensorChart;
 import nars.sensor.Bitmap2DSensor;
@@ -35,13 +35,13 @@ import java.util.function.Consumer;
 
 import static jake2.Globals.STAT_FRAGS;
 import static jake2.Globals.cl;
-import static nars.$.$;
+import static nars.$.$$;
 import static spacegraph.space2d.container.grid.Gridding.grid;
 
 /**
  * Created by me on 9/22/16.
  */
-public class Jake2Agent extends GameX implements Runnable {
+public class Jake extends GameX implements Runnable {
 
     static final int FPS = 24;
     static float timeScale = 2.5f;
@@ -53,7 +53,7 @@ public class Jake2Agent extends GameX implements Runnable {
 
     private final GLScreenShot rgb;
     private final GLScreenShot depth;
-    private final FreqVectorSensor hear;
+    private FreqVectorSensor hear;
 
 
 
@@ -129,9 +129,11 @@ public class Jake2Agent extends GameX implements Runnable {
 
     final PlayerData player = new PlayerData();
 
-    public Jake2Agent(NAR nar) throws Narsese.NarseseException {
+    public Jake() {
         super("q");
 
+        rgb = new GLScreenShot(true);
+        depth = new GLScreenShot(false);
 
 //        Bitmap2DSensor<PixelBag> vision = senseCameraRetina(
 //                "q", screenshotter, 32, 24);
@@ -139,20 +141,23 @@ public class Jake2Agent extends GameX implements Runnable {
 
         //int px = 64, py = 48, nx = 4, aeStates = 8;
 
-        rgb = new GLScreenShot(true);
-        depth = new GLScreenShot(false);
+    }
+
+    @Override
+    protected void init() {
+        super.init();
 
         int py = 48;
         int px = 64;
         PixelBag rgbVision = new PixelBag(
-                new BrightnessNormalize(
-                        new ImageFlip(false, true, new ScaledBitmap2D(rgb, px, py))
-                ), px, py);
+            new BrightnessNormalize(
+                new ImageFlip(false, true, new ScaledBitmap2D(rgb, px, py))
+            ), px, py);
         rgbVision.setZoom(0);
 
         Bitmap2DSensor depthVision = senseCamera("depth", new BrightnessNormalize(
             new ImageFlip(false, true, new ScaledBitmap2D(depth, px / 4, py / 4)
-        )));
+            )));
 
 
         int aeStates = 16;
@@ -175,19 +180,19 @@ public class Jake2Agent extends GameX implements Runnable {
         SpaceGraph.window(grid(rgbView, rgbAE.newChart(), depthView ), 500, 500);
 
         hear = new FreqVectorSensor(nar, new CircularFloatBuffer(8*1024),
-                512, 16, f->$.inh($.the(f), "hear"));
+            512, 16, f->$.inh($.the(f), "hear"));
         addSensor(hear);
         WaveBitmap hearView = new WaveBitmap(hear.buf, 300, 64);
         onFrame(hearView::update);
         SpaceGraph.window(grid(new VectorSensorChart(hear, this).withControls(),
-                //spectrogram(hear.buf, 0.1f,512, 16),
-                new ObjectSurface(hear), hearView), 400, 400);
+            //spectrogram(hear.buf, 0.1f,512, 16),
+            new ObjectSurface(hear), hearView), 400, 400);
 
 
         actionPushButtonMutex(
-                $.the("fore"), $.the("back"),
-                (BooleanProcedure) x -> CL_input.in_forward.state = x ? 1 : 0,
-                (BooleanProcedure) x -> CL_input.in_back.state = x ? 1 : 0
+            $.the("fore"), $.the("back"),
+            (BooleanProcedure) x -> CL_input.in_forward.state = x ? 1 : 0,
+            (BooleanProcedure) x -> CL_input.in_back.state = x ? 1 : 0
         );
 
 //        actionPushButtonMutex(
@@ -197,22 +202,22 @@ public class Jake2Agent extends GameX implements Runnable {
 //        );
 
         actionPushButtonMutex(
-                $.the("left"), $.the("right"),
-                ()->cl.viewangles[Defines.YAW] += yawSpeed,
-                ()->cl.viewangles[Defines.YAW] -= yawSpeed
+            $.the("left"), $.the("right"),
+            ()->cl.viewangles[Defines.YAW] += yawSpeed,
+            ()->cl.viewangles[Defines.YAW] -= yawSpeed
         );
 
 
-        actionPushButton($("jump"), (BooleanProcedure) x1 -> CL_input.in_up.state = x1 ? 1 : 0);
+        actionPushButton($$("jump"), (BooleanProcedure) x1 -> CL_input.in_up.state = x1 ? 1 : 0);
 
 
-        actionPushButton($("fire"), (BooleanProcedure) x -> CL_input.in_attack.state = x ? 1 : 0);
+        actionPushButton($$("fire"), (BooleanProcedure) x -> CL_input.in_attack.state = x ? 1 : 0);
 
         if (lookPitch) {
             actionPushButtonMutex(
-                    $.the("lookUp"), $.the("lookDown"),
-                    () -> cl.viewangles[Defines.PITCH] = Math.min(+30, cl.viewangles[Defines.PITCH] + pitchSpeed),
-                    () -> cl.viewangles[Defines.PITCH] = Math.max(-30, cl.viewangles[Defines.PITCH] - pitchSpeed)
+                $.the("lookUp"), $.the("lookDown"),
+                () -> cl.viewangles[Defines.PITCH] = Math.min(+30, cl.viewangles[Defines.PITCH] + pitchSpeed),
+                () -> cl.viewangles[Defines.PITCH] = Math.max(-30, cl.viewangles[Defines.PITCH] - pitchSpeed)
             );
         }
 
@@ -226,7 +231,7 @@ public class Jake2Agent extends GameX implements Runnable {
 
         rewardNormalized("speed", 0, +1, new FloatNormalized(() -> player.speed));
         rewardNormalized("frags", 0, +1,
-                new FloatFirstOrderDifference(nar::time, player.damageInflicted::getOpaque).nanIfZero());
+            new FloatFirstOrderDifference(nar::time, player.damageInflicted::getOpaque).nanIfZero());
 
 
 //        ()->{
@@ -243,8 +248,8 @@ public class Jake2Agent extends GameX implements Runnable {
 
 
         new Thread(this).start();
-    }
 
+    }
 
     @Override
     public void run() {
@@ -361,14 +366,7 @@ public class Jake2Agent extends GameX implements Runnable {
 
     public static void main(String[] args) {
 
-        runRT(FPS, nar1 -> {
-            try {
-                return new Jake2Agent(nar1);
-            } catch (Narsese.NarseseException e) {
-                e.printStackTrace();
-                return null;
-            }
-        });
+        runRT(FPS, n -> {  n.add( new Jake() ); });
     }
 
 }
