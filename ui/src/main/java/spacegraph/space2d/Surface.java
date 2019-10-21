@@ -25,7 +25,12 @@ public abstract class Surface implements Surfacelike {
 
 
     public static final Surface[] EmptySurfaceArray = new Surface[0];
-    public static final Supplier<Surface> TODO = () -> new VectorLabel("TODO");
+    public static final Supplier<Surface> TODO = new Supplier<Surface>() {
+        @Override
+        public Surface get() {
+            return new VectorLabel("TODO");
+        }
+    };
     private static final AtomicReferenceFieldUpdater<Surface, RectFloat> BOUNDS = AtomicReferenceFieldUpdater.newUpdater(Surface.class, RectFloat.class, "bounds");
     private static final AtomicReferenceFieldUpdater<Surface, Surfacelike> PARENT = AtomicReferenceFieldUpdater.newUpdater(Surface.class, Surfacelike.class, "parent");
     private static final AtomicInteger serial = new AtomicInteger();

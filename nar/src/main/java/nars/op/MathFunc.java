@@ -12,6 +12,8 @@ import nars.term.functor.CommutiveBinaryBidiFunctor;
 import nars.term.functor.InlineCommutiveBinaryBidiFunctor;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.function.Predicate;
+
 import static nars.Op.INT;
 import static nars.term.atom.IdempotentBool.*;
 
@@ -164,7 +166,12 @@ public enum MathFunc {
 
         @Override
         public Term applyInline(Subterms args) {
-            return args.subs() == 2 && args.AND(x -> x.op() == INT) ? super.applyInline(args) : null;
+            return args.subs() == 2 && args.AND(new Predicate<Term>() {
+                @Override
+                public boolean test(Term x) {
+                    return x.op() == INT;
+                }
+            }) ? super.applyInline(args) : null;
         }
 
         protected abstract Term compute(int xx, int yy);

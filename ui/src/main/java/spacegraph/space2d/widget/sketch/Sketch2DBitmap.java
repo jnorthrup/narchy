@@ -5,6 +5,8 @@ import jcog.Util;
 import jcog.math.v2;
 import jcog.signal.wave2d.Bitmap2D;
 import org.apache.commons.math3.random.MersenneTwister;
+import org.eclipse.collections.api.block.procedure.primitive.FloatFloatProcedure;
+import org.eclipse.collections.api.block.procedure.primitive.ObjectBooleanProcedure;
 import spacegraph.SpaceGraph;
 import spacegraph.input.finger.Finger;
 import spacegraph.space2d.MenuSupplier;
@@ -139,16 +141,22 @@ public class Sketch2DBitmap extends PaintSurface implements MenuSupplier {
                 new ColorToggle(0.5f, 0.5f, 0.5f),
                 new ColorToggle(1f, 1.0F, 1.0F)
         );
-        colorMenu.on((cc, e) -> {
-            if (e) {
-                color(cc.r, cc.g, cc.b);
+        colorMenu.on(new ObjectBooleanProcedure<ColorToggle>() {
+            @Override
+            public void value(ColorToggle cc, boolean e) {
+                if (e) {
+                    Sketch2DBitmap.this.color(cc.r, cc.g, cc.b);
+                }
             }
         });
 
         Surface toolMenu = grid(
-                new XYSlider().on((_width, _alpha) -> {
-                    brushWidth = Util.lerp(_width, 0.1f, 4f);
-                    brushAlpha = Util.lerp(_alpha, 0.1f, 4f);
+                new XYSlider().on(new FloatFloatProcedure() {
+                    @Override
+                    public void value(float _width, float _alpha) {
+                        brushWidth = Util.lerp(_width, 0.1f, 4f);
+                        brushAlpha = Util.lerp(_alpha, 0.1f, 4f);
+                    }
                 }).set(0.5f, 0.75f)
         );
 

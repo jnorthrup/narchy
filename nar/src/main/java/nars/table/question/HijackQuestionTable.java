@@ -14,6 +14,7 @@ import nars.truth.Stamp;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static nars.time.Tense.ETERNAL;
@@ -41,7 +42,12 @@ public class HijackQuestionTable extends PriHijackBag<Task, Task> implements Que
         switch (size()) {
             case 0: return null;
             case 1:
-                return next(0,t->false);
+                return next(0, new Predicate<Task>() {
+                    @Override
+                    public boolean test(Task t) {
+                        return false;
+                    }
+                });
             default:
                 return QuestionTable.super.match(start, end, template, dur, nar);
         }

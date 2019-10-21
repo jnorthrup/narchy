@@ -1,5 +1,7 @@
 package jcog.signal.anomaly.adwin;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Iterator;
 
 /**
@@ -143,46 +145,58 @@ class AdwinHisto {
     }
 
     public Iterable<Bucket> reverseBucketIterable() {
-        return () -> new Iterator<>() {
-
-            BucketContainer currentBucketContainer = tail;
-            int currentBucketIndex = tail.size();
-
+        return new Iterable<Bucket>() {
+            @NotNull
             @Override
-            public boolean hasNext() {
-                return (currentBucketIndex > 0) || (currentBucketContainer.prev() != null);
-            }
+            public Iterator<Bucket> iterator() {
+                return new Iterator<>() {
 
-            @Override
-            public Bucket next() {
-                if (--currentBucketIndex < 0) {
-                    currentBucketContainer = currentBucketContainer.prev();
-                    currentBucketIndex = currentBucketContainer.size() - 1;
-                }
-                return currentBucketContainer.bucket(currentBucketIndex);
+                    BucketContainer currentBucketContainer = tail;
+                    int currentBucketIndex = tail.size();
+
+                    @Override
+                    public boolean hasNext() {
+                        return (currentBucketIndex > 0) || (currentBucketContainer.prev() != null);
+                    }
+
+                    @Override
+                    public Bucket next() {
+                        if (--currentBucketIndex < 0) {
+                            currentBucketContainer = currentBucketContainer.prev();
+                            currentBucketIndex = currentBucketContainer.size() - 1;
+                        }
+                        return currentBucketContainer.bucket(currentBucketIndex);
+                    }
+                };
             }
         };
     }
 
     public Iterable<Bucket> forwardBucketIterable() {
-        return () -> new Iterator<>() {
-
-            BucketContainer currentBucketContainer = head;
-            int currentBucketIndex = -1;
-
+        return new Iterable<Bucket>() {
+            @NotNull
             @Override
-            public boolean hasNext() {
-                return (currentBucketIndex < currentBucketContainer.size() - 1) || (currentBucketContainer.next() != null);
-            }
+            public Iterator<Bucket> iterator() {
+                return new Iterator<>() {
 
-            @Override
-            public Bucket next() {
-                currentBucketIndex++;
-                if (currentBucketIndex > currentBucketContainer.size() - 1) {
-                    currentBucketContainer = currentBucketContainer.next();
-                    currentBucketIndex = 0;
-                }
-                return currentBucketContainer.bucket(currentBucketIndex);
+                    BucketContainer currentBucketContainer = head;
+                    int currentBucketIndex = -1;
+
+                    @Override
+                    public boolean hasNext() {
+                        return (currentBucketIndex < currentBucketContainer.size() - 1) || (currentBucketContainer.next() != null);
+                    }
+
+                    @Override
+                    public Bucket next() {
+                        currentBucketIndex++;
+                        if (currentBucketIndex > currentBucketContainer.size() - 1) {
+                            currentBucketContainer = currentBucketContainer.next();
+                            currentBucketIndex = 0;
+                        }
+                        return currentBucketContainer.bucket(currentBucketIndex);
+                    }
+                };
             }
         };
     }

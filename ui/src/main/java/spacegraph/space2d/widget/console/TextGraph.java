@@ -2,6 +2,7 @@ package spacegraph.space2d.widget.console;
 
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.container.graph.Graph2D;
+import spacegraph.space2d.container.graph.NodeVis;
 import spacegraph.space2d.widget.meta.ClassReloadingSurface;
 import spacegraph.space2d.widget.meta.MetaFrame;
 import spacegraph.space2d.widget.text.VectorLabel;
@@ -15,9 +16,17 @@ public class TextGraph extends Graph2D { //extends Graph2D {
 
     public TextGraph() {
         super();
-        render((node, graph) -> node.set(new VectorLabel("x")));
-        update((g,dt)->{
-           //System.out.println(g.nodes());
+        render(new Graph2DRenderer() {
+            @Override
+            public void node(NodeVis node, GraphEditing graph) {
+                node.set(new VectorLabel("x"));
+            }
+        });
+        update(new Graph2DUpdater() {
+            @Override
+            public void update(Graph2D g, float dt) {
+                //System.out.println(g.nodes());
+            }
         });
         add(List.of("x"));
     }

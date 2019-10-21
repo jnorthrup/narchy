@@ -10,6 +10,8 @@ import org.apache.commons.math3.util.Precision;
 import org.eclipse.collections.api.block.function.primitive.DoubleToDoubleFunction;
 import org.junit.jupiter.api.Test;
 
+import java.util.function.Supplier;
+
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class NAL7ImplTruthProjectionTest {
@@ -36,17 +38,25 @@ class NAL7ImplTruthProjectionTest {
                 int end = Math.max(eventTime + implDT, implTime);
                 n.run(end + 1);
 
-                double[] max = new MyBrentOptimizer(0.001f, 0.01, 0, end, (t) -> {
-                    Truth u = n.beliefTruth($.the("y"), Math.round(t));
-                    if (u == null)
-                        return -1f;
-                    return u.conf();
+                double[] max = new MyBrentOptimizer(0.001f, 0.01, 0, end, new DoubleToDoubleFunction() {
+                    @Override
+                    public double valueOf(double t) {
+                        Truth u = n.beliefTruth($.the("y"), Math.round(t));
+                        if (u == null)
+                            return -1f;
+                        return u.conf();
+                    }
                 }).max(0, end, end / 2.0);
 
 
                 long yTimeEstimate = Math.round(max[0]);
                 long yTimeActual = eventTime + implDT;
-                assertTrue(Math.abs(yTimeEstimate - yTimeActual) <= ts, ()->yTimeEstimate + " estimated, " + yTimeActual + " actual");
+                assertTrue(Math.abs(yTimeEstimate - yTimeActual) <= ts, new Supplier<String>() {
+                    @Override
+                    public String get() {
+                        return yTimeEstimate + " estimated, " + yTimeActual + " actual";
+                    }
+                });
 
                 double yConfMax = max[1];
                 long eventBeliefDelta = Math.abs(eventTime - implTime);

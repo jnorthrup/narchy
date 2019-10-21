@@ -15,7 +15,10 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.io.Serializable;
+import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 
@@ -47,7 +50,12 @@ class AgentTests implements AfterAllCallback {
 
     private static Stream<Arguments> args() {
         return Sets.cartesianProduct( Set.of(ENVS),  Set.of(AGENTS) ).stream()
-                .map(x -> Arguments.of(x.toArray()) );
+                .map(new Function<List<Serializable>, Arguments>() {
+                    @Override
+                    public Arguments apply(List<Serializable> x) {
+                        return Arguments.of(x.toArray());
+                    }
+                });
     }
 
     @AfterEach

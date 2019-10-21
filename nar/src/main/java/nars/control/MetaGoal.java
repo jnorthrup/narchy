@@ -7,7 +7,11 @@ import jcog.data.list.FasterList;
 import nars.NAR;
 import nars.Task;
 import nars.term.Term;
+import org.eclipse.collections.api.block.function.Function;
+import org.eclipse.collections.api.block.procedure.Procedure;
+import org.eclipse.collections.api.block.procedure.primitive.ObjectDoubleProcedure;
 import org.eclipse.collections.api.tuple.primitive.ObjectBytePair;
+import org.eclipse.collections.api.tuple.primitive.ObjectDoublePair;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectDoubleHashMap;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -73,7 +77,12 @@ public enum MetaGoal {
         Why.eval(why, pri, whies.array(), learner);
     }
 
-    private final Why.Evaluator<Cause> learner = (CC, w, p)-> learn(CC[(int) w], p);
+    private final Why.Evaluator<Cause> learner = new Why.Evaluator<Cause>() {
+        @Override
+        public void value(Cause[] CC, short w, float p) {
+            MetaGoal.this.learn(CC[(int) w], p);
+        }
+    };
     private final int g = ordinal(); //just in case this isnt JIT'd
 
     private void learn(Cause cause, float pri) {
@@ -204,10 +213,13 @@ public enum MetaGoal {
             TreeBasedTable<Cause, MetaGoal, Double> tt = TreeBasedTable.create();
             MetaGoal[] mv = MetaGoal.values();
             synchronized (this) {
-                forEachKeyValue((k, v) -> {
-                    Cause c = k.getOne();
-                    MetaGoal m = mv[(int) k.getTwo()];
-                    tt.put(c, m, v);
+                forEachKeyValue(new ObjectDoubleProcedure<ObjectBytePair<Cause>>() {
+                    @Override
+                    public void value(ObjectBytePair<Cause> k, double v) {
+                        Cause c = k.getOne();
+                        MetaGoal m = mv[(int) k.getTwo()];
+                        tt.put(c, m, v);
+                    }
                 });
             }
             return tt;
@@ -243,10 +255,19 @@ public enum MetaGoal {
         }
 
         public synchronized void print(PrintStream out) {
-            keyValuesView().toSortedListBy(x -> -x.getTwo()).forEach(x ->
-                    out.println(
-                            n4(x.getTwo()) + '\t' + MetaGoal.values()[(int) x.getOne().getTwo()] + '\t' + x.getOne().getOne()
-                    )
+            keyValuesView().toSortedListBy(new Function<ObjectDoublePair<ObjectBytePair<Cause>>, Double>() {
+                @Override
+                public Double valueOf(ObjectDoublePair<ObjectBytePair<Cause>> x) {
+                    return -x.getTwo();
+                }
+            }).forEach(new Procedure<ObjectDoublePair<ObjectBytePair<Cause>>>() {
+                                                                         @Override
+                                                                         public void value(ObjectDoublePair<ObjectBytePair<Cause>> x) {
+                                                                             out.println(
+                                                                                     n4(x.getTwo()) + '\t' + MetaGoal.values()[(int) x.getOne().getTwo()] + '\t' + x.getOne().getOne()
+                                                                             );
+                                                                         }
+                                                                     }
             );
         }
     }

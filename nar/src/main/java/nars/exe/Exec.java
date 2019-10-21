@@ -8,6 +8,7 @@ import nars.control.Cause;
 import nars.control.NARPart;
 import nars.derive.Deriver;
 import nars.time.ScheduledTask;
+import org.jctools.queues.MessagePassingQueue;
 import org.jctools.queues.MpscArrayQueue;
 import org.slf4j.Logger;
 
@@ -185,17 +186,20 @@ public abstract class Exec extends NARPart implements Executor {
         try {
 
             long now0 = nar.time();
-            toSchedule.drain(x -> {
-                if (x.scheduled)
-                    return; //ignore
+            toSchedule.drain(new MessagePassingQueue.Consumer<ScheduledTask>() {
+                @Override
+                public void accept(ScheduledTask x) {
+                    if (x.scheduled)
+                        return; //ignore
 
-                if (x.start() <= now0)
-                    each.accept(x);
-                else {
-                    x.scheduled = true;
-                    if (!scheduled.offer(x)) {
-                        x.scheduled = false;
-                        throw new RuntimeException("scheduled priority queue overflow");
+                    if (x.start() <= now0)
+                        each.accept(x);
+                    else {
+                        x.scheduled = true;
+                        if (!scheduled.offer(x)) {
+                            x.scheduled = false;
+                            throw new RuntimeException("scheduled priority queue overflow");
+                        }
                     }
                 }
             });

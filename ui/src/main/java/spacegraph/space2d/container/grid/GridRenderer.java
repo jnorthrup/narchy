@@ -12,7 +12,12 @@ public interface GridRenderer<X> {
 
     /** adapter for value-only usage */
     static <X> GridRenderer<X> value(Function<X, Surface> builder) {
-        return (x, y, v) -> builder.apply(v);
+        return new GridRenderer<X>() {
+            @Override
+            public Surface apply(int x, int y, X v) {
+                return builder.apply(v);
+            }
+        };
     }
 
     static <X> GridRenderer<X> valueCached(Function<X, Surface> builder, int capacity) {

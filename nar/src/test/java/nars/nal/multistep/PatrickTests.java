@@ -9,6 +9,8 @@ import nars.test.TestNAR;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import java.util.function.LongPredicate;
+
 import static nars.$.$;
 import static nars.Op.GOAL;
 
@@ -122,7 +124,12 @@ public class PatrickTests extends NALTest {
         n.mustGoal(cycles, "lighter(I, toothbrush)", 1f,
                 0.2f,
 
-                t -> t >= 0
+                new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return t >= 0;
+                    }
+                }
         );
 
 
@@ -157,14 +164,39 @@ public class PatrickTests extends NALTest {
         );
 
         int cycles = 3000;
-        tt.mustGoal(cycles, "hot:toothbrush", 1f, 0.5f, (t) -> t >= 0);
+        tt.mustGoal(cycles, "hot:toothbrush", 1f, 0.5f, new LongPredicate() {
+            @Override
+            public boolean test(long t) {
+                return t >= 0;
+            }
+        });
 
-        tt.mustGoal(cycles, "hard:toothbrush", 1f, 0.5f, (t) -> t >= 0);
-        tt.mustGoal(cycles, "pliable:toothbrush", 1f, 0.5f, (t) -> t >= 0);
-        tt.mustGoal(cycles, "molten:toothbrush", 1f, 0.5f, (t) -> t >= 0);
+        tt.mustGoal(cycles, "hard:toothbrush", 1f, 0.5f, new LongPredicate() {
+            @Override
+            public boolean test(long t) {
+                return t >= 0;
+            }
+        });
+        tt.mustGoal(cycles, "pliable:toothbrush", 1f, 0.5f, new LongPredicate() {
+            @Override
+            public boolean test(long t) {
+                return t >= 0;
+            }
+        });
+        tt.mustGoal(cycles, "molten:toothbrush", 1f, 0.5f, new LongPredicate() {
+            @Override
+            public boolean test(long t) {
+                return t >= 0;
+            }
+        });
         tt.mustGoal(cycles, "lighter(toothbrush)", 1f,
                 0.3f,
-                t -> t >= 0);
+                new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return t >= 0;
+                    }
+                });
 
     }
 
@@ -340,7 +372,12 @@ public class PatrickTests extends NALTest {
             .input("x:b. |")
             .inputAt(3, "c! |")
             .mustOutput(500, "pick(x)", GOAL, 1f, 1f, 0.05f, 0.81f,
-                    (t)->t>=1)
+                    new LongPredicate() {
+                        @Override
+                        public boolean test(long t) {
+                            return t >= 1;
+                        }
+                    })
             ;
     }
 }

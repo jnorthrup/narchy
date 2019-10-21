@@ -8,6 +8,7 @@ import alice.tuprolog.*;
 
 import java.io.*;
 import java.util.*;
+import java.util.function.Function;
 
 /**
  * This class provides basic ISO I/O predicates.
@@ -2092,7 +2093,12 @@ public class ISOIOLibrary extends PrologLib {
                 break;
             }
         }
-        Term file_name = found.map(properties -> properties.get("file_name")).orElse(null);
+        Term file_name = found.map(new Function<Hashtable<String, Term>, Term>() {
+            @Override
+            public Term apply(Hashtable<String, Term> properties) {
+                return properties.get("file_name");
+            }
+        }).orElse(null);
 
 
         Struct returnElement = (Struct)file_name;

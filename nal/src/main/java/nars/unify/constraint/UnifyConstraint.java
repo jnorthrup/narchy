@@ -19,6 +19,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+import java.util.function.IntFunction;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -57,11 +59,21 @@ public abstract class UnifyConstraint<U extends Unify> extends AbstractPred<U> {
 	 */
 	public static <U extends Unify> UnifyConstraint<U>[] the(Stream<UnifyConstraint<U>> c) {
 		return c
-			.collect(Collectors.groupingBy(x -> x.x, Collectors.toCollection(FasterList::new))).values().stream()
+			.collect(Collectors.groupingBy(new Function<UnifyConstraint<U>, Variable>() {
+                @Override
+                public Variable apply(UnifyConstraint<U> x) {
+                    return x.x;
+                }
+            }, Collectors.toCollection(FasterList::new))).values().stream()
 			.map(CompoundConstraint::the)
 			.sorted(PREDICATE.sortByCostIncreasing)
 			.map(UnifyConstraint::intern)
-			.toArray(x -> x == 0 ? UnifyConstraint.None : new UnifyConstraint[x]);
+			.toArray(new IntFunction<UnifyConstraint[]>() {
+                @Override
+                public UnifyConstraint[] apply(int x) {
+                    return x == 0 ? UnifyConstraint.None : new UnifyConstraint[x];
+                }
+            });
 	}
 
 	@Override
@@ -131,10 +143,15 @@ public abstract class UnifyConstraint<U extends Unify> extends AbstractPred<U> {
 		private CompoundConstraint(UnifyConstraint[] c) {
 			super(c[0].x, AND, Op.SETe.the(Util.map(
 				//extract the unique UnifyIf parameter
-				cc -> $.pOrOnly(
-					cc.sub(1)
-					//cc.sub(0).subterms().subRangeArray(1, Integer.MAX_VALUE)
-				), new Term[c.length], c)
+                    new Function<UnifyConstraint, Term>() {
+                        @Override
+                        public Term apply(UnifyConstraint cc) {
+                            return $.pOrOnly(
+                                    cc.sub(1)
+                                    //cc.sub(0).subterms().subRangeArray(1, Integer.MAX_VALUE)
+                            );
+                        }
+                    }, new Term[c.length], c)
 			));
 			this.subConstraint = c;
 			this.cost = Util.sum((FloatFunction<AbstractPred<U>>) PREDICATE::cost, subConstraint);

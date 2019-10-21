@@ -6,8 +6,10 @@ import nars.term.Compound;
 import nars.term.Neg;
 import nars.term.Term;
 import nars.term.atom.Atomic;
+import org.eclipse.collections.api.block.procedure.primitive.ObjectIntProcedure;
 
 import java.io.IOException;
+import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 
 import static nars.Op.*;
@@ -186,7 +188,12 @@ public enum TermAppender {
             int dt;
             if ((((dt = sub.dt()) == DTERNAL) || (dt == XTERNAL))) {
                 Subterms cxx = sub.subterms();
-                if ((cxx.hasAny(NEG) ? cxx.count(x -> x instanceof Neg && !x.hasAny(CONJ)) : 0) >= cxx.subs() / 2) {
+                if ((cxx.hasAny(NEG) ? cxx.count(new Predicate<Term>() {
+                    @Override
+                    public boolean test(Term x) {
+                        return x instanceof Neg && !x.hasAny(CONJ);
+                    }
+                }) : 0) >= cxx.subs() / 2) {
                     disjAppend(cxx, dt, p);
                     return;
                 }
@@ -286,14 +293,17 @@ public enum TermAppender {
         w.append(Op.COMPOUND_TERM_OPENER);
 
 
-        argsProduct.forEachI((t, n) -> {
-            try {
-                if (n != 0)
-                    w.append(Op.ARGUMENT_SEPARATOR);
+        argsProduct.forEachI(new ObjectIntProcedure<Term>() {
+            @Override
+            public void value(Term t, int n) {
+                try {
+                    if (n != 0)
+                        w.append(Op.ARGUMENT_SEPARATOR);
 
-                t.appendTo(w);
-            } catch (IOException e) {
-                e.printStackTrace();
+                    t.appendTo(w);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         });
 

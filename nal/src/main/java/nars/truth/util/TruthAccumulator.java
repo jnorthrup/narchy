@@ -5,6 +5,7 @@ import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.UnaryOperator;
 
 /** thread-safe truth accumulator/integrator
  *  TODO implement Truth interface, rename to ConcurrentTruth, extend AtomicDoubleArray
@@ -59,11 +60,14 @@ public class TruthAccumulator extends AtomicReference<double[]> {
     private void add(double f, double e) {
         double fe = f * e;
 
-        getAndUpdate(fc->{
-            fc[0] += fe;
-            fc[1] += e;
-            fc[2] += 1.0;
-            return fc;
+        getAndUpdate(new UnaryOperator<double[]>() {
+            @Override
+            public double[] apply(double[] fc) {
+                fc[0] += fe;
+                fc[1] += e;
+                fc[2] += 1.0;
+                return fc;
+            }
         });
     }
 

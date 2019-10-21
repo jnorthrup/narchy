@@ -156,59 +156,62 @@ public class ApproximatorMenu extends RLMenu {
     public ParameterizedFunctionGenerator getFunctionGenerator(
             ApproxParameters approxParameters
     ) {
-        return numInputVectorElements -> {
-            int numFeatures = (int) featuresMenu.getObject();
+        return new ParameterizedFunctionGenerator() {
+            @Override
+            public ParameterizedFunction generate(int numInputVectorElements) {
+                int numFeatures = (int) featuresMenu.getObject();
 
-            ParameterizedFunction f = null;
+                ParameterizedFunction f = null;
 
-            if (wavelet.isSelected()) {
-                f = new GradientFitter(
-                        approxParameters,
-                        new DiffableFunctionMarshaller(
-                                Generator.generateWavelets(numFeatures),
-                                numInputVectorElements
-                        )
-                );
-            }
-            if (fourier.isSelected()) {
-                f = new GradientFitter(
-                        approxParameters,
-                        new DiffableFunctionMarshaller(
-                                Generator.generateFourierBasis(numFeatures),
-                                numInputVectorElements
-                        )
-                );
-            }
-            if (neuralNet.isSelected()) {
-                f = new GradientFitter(
-                        approxParameters,
-                        new DiffableFunctionMarshaller(
-                                Generator.generateFFNN(
-                                        hidden.getFactory(),
-                                        output.getFactory(),
-                                        numFeatures
-                                ),
-                                numInputVectorElements
-                        )
-                );
-            }
-            if (cnf.isSelected()) {
-                f = new CNFBooleanFunction(
-                        numberOfInputBitsMenu.getNumberOfBits(),
-                        numberOfOutputBitsMenu.getNumberOfBits(),
-                        numInputVectorElements
-                );
-            }
+                if (wavelet.isSelected()) {
+                    f = new GradientFitter(
+                            approxParameters,
+                            new DiffableFunctionMarshaller(
+                                    Generator.generateWavelets(numFeatures),
+                                    numInputVectorElements
+                            )
+                    );
+                }
+                if (fourier.isSelected()) {
+                    f = new GradientFitter(
+                            approxParameters,
+                            new DiffableFunctionMarshaller(
+                                    Generator.generateFourierBasis(numFeatures),
+                                    numInputVectorElements
+                            )
+                    );
+                }
+                if (neuralNet.isSelected()) {
+                    f = new GradientFitter(
+                            approxParameters,
+                            new DiffableFunctionMarshaller(
+                                    Generator.generateFFNN(
+                                            hidden.getFactory(),
+                                            output.getFactory(),
+                                            numFeatures
+                                    ),
+                                    numInputVectorElements
+                            )
+                    );
+                }
+                if (cnf.isSelected()) {
+                    f = new CNFBooleanFunction(
+                            numberOfInputBitsMenu.getNumberOfBits(),
+                            numberOfOutputBitsMenu.getNumberOfBits(),
+                            numInputVectorElements
+                    );
+                }
 
-            if (normalizeInput.isSelected()) {
-                f = new InputNormalizer(f);
-            }
+                if (normalizeInput.isSelected()) {
+                    f = new InputNormalizer(f);
+                }
 
-            if (normalizeOutput.isSelected()) {
-                f = new OutputNormalizer(f);
-            }
+                if (normalizeOutput.isSelected()) {
+                    f = new OutputNormalizer(f);
+                }
 
-            return f;
+                return f;
+            }
         };
     }
 

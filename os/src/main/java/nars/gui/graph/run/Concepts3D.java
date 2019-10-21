@@ -8,7 +8,10 @@ import nars.concept.Concept;
 import nars.derive.Deriver;
 import nars.derive.Derivers;
 import nars.gui.graph.DynamicConceptSpace;
+import org.jetbrains.annotations.NotNull;
 import spacegraph.space3d.SpaceGraph3D;
+
+import java.util.Iterator;
 
 /** TODO get working again */
 public class Concepts3D extends DynamicConceptSpace {
@@ -17,7 +20,13 @@ public class Concepts3D extends DynamicConceptSpace {
 //    private final TextEdit inputbox;
 
     private Concepts3D(NAR nar, int visibleNodes, int maxEdgesPerNodeMax) {
-        this(nar, () -> nar.what().concepts().iterator(),
+        this(nar, new Iterable<Concept>() {
+                    @NotNull
+                    @Override
+                    public Iterator<Concept> iterator() {
+                        return nar.what().concepts().iterator();
+                    }
+                },
                 visibleNodes, maxEdgesPerNodeMax);
 
     }

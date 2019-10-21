@@ -19,6 +19,8 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.jar.*;
 import java.util.stream.Stream;
 
@@ -41,28 +43,31 @@ public class Classpath {
     public static List<Classpath.ClasspathEntry> getClasspath(ClassLoader classloader) {
 
 
-        return CLASSPATH_CACHE.computeIfAbsent(classloader, cl -> {
+        return CLASSPATH_CACHE.computeIfAbsent(classloader, new Function<ClassLoader, List<ClasspathEntry>>() {
+            @Override
+            public List<ClasspathEntry> apply(ClassLoader cl) {
 
-            List<Classpath.ClasspathEntry> classpath = new FasterList(512);
+                List<Classpath.ClasspathEntry> classpath = new FasterList(512);
 
-            if (classloader instanceof URLClassLoader) {
-                fillClasspath(classpath, listCurrentClasspath((URLClassLoader) classloader));
-            } else if (classloader == Thread.currentThread().getContextClassLoader()) {
-                //HACK
-                String[] jars = System.getProperty("java.class.path").split(":");
-                URL[] urls = new URL[jars.length];
-                int i = 0;
-                for (String x : jars) {
-                    try {
-                        urls[i++] = new URL("file://" + x);//classloader.getResource(x);
-                    } catch (MalformedURLException e) {
-                        e.printStackTrace();
+                if (classloader instanceof URLClassLoader) {
+                    fillClasspath(classpath, listCurrentClasspath((URLClassLoader) classloader));
+                } else if (classloader == Thread.currentThread().getContextClassLoader()) {
+                    //HACK
+                    String[] jars = System.getProperty("java.class.path").split(":");
+                    URL[] urls = new URL[jars.length];
+                    int i = 0;
+                    for (String x : jars) {
+                        try {
+                            urls[i++] = new URL("file://" + x);//classloader.getResource(x);
+                        } catch (MalformedURLException e) {
+                            e.printStackTrace();
+                        }
                     }
+                    fillClasspath(classpath, listCurrentClasspath(urls));
                 }
-                fillClasspath(classpath, listCurrentClasspath(urls));
-            }
 
-            return /*Collections.unmodifiableList*/(classpath);
+                return /*Collections.unmodifiableList*/(classpath);
+            }
         });
 
     }
@@ -74,7 +79,12 @@ public class Classpath {
     public static Collection<URL> listCurrentClasspath(URL[] uu) {
         Set<URL> result = new ConcurrentFastIteratingHashSet<>(ArrayUtil.EMPTY_URL_ARRAY);
 
-        Stream.of(uu).parallel().forEach(u -> addEntriesFromManifest(result, u));
+        Stream.of(uu).parallel().forEach(new Consumer<URL>() {
+            @Override
+            public void accept(URL u) {
+                addEntriesFromManifest(result, u);
+            }
+        });
 
 //        for (int i = 0; i < uu.length; ++i)
 //

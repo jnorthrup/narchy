@@ -13,6 +13,8 @@ import spacegraph.space2d.widget.textedit.keybind.TextEditKeys;
 import spacegraph.space2d.widget.textedit.view.TextEditView;
 import spacegraph.video.Draw;
 
+import java.util.function.Consumer;
+
 public class TextEditModel extends Widget /* TODO Surface */ implements ScrollXY.ScrolledXY {
 
     public final Topic<KeyEvent> keyPress = new ListTopic<>();
@@ -99,10 +101,19 @@ public class TextEditModel extends Widget /* TODO Surface */ implements ScrollXY
 
         TextEditView v = view;
         if (v!=null) {
-            Draw.bounds(bounds, gl, gg ->
-                Draw.stencilMask(gg, true, Draw::rectUnit,
-                    g -> v.paint(cursorVisible, viewed, g)
-                )
+            Draw.bounds(bounds, gl, new Consumer<GL2>() {
+                        @Override
+                        public void accept(GL2 gg) {
+                            Draw.stencilMask(gg, true, Draw::rectUnit,
+                                    new Consumer<GL2>() {
+                                        @Override
+                                        public void accept(GL2 g) {
+                                            v.paint(cursorVisible, viewed, g);
+                                        }
+                                    }
+                            );
+                        }
+                    }
             );
         }
 

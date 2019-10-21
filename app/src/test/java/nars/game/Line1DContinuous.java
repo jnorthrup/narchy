@@ -1,10 +1,12 @@
 package nars.game;
 
+import jcog.math.FloatSupplier;
 import nars.$;
 import nars.NAR;
 import nars.NARS;
 import nars.game.action.ActionSignal;
 import nars.term.atom.Atomic;
+import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 
 import java.util.Arrays;
 
@@ -46,83 +48,109 @@ public class Line1DContinuous extends Game {
 
         for (int i = 0; i < size; i++) {
             int ii = i;
-            sense($.func("h", atom("x"), $.the(i)), () -> ins[ii]);
-            sense($.func("e", atom("x"), $.the(i)), () -> ins[size + ii]);
+            sense($.func("h", atom("x"), $.the(i)), new FloatSupplier() {
+                @Override
+                public float asFloat() {
+                    return ins[ii];
+                }
+            });
+            sense($.func("e", atom("x"), $.the(i)), new FloatSupplier() {
+                @Override
+                public float asFloat() {
+                    return ins[size + ii];
+                }
+            });
         }
 
         ActionSignal a;
 
-        actionBipolar($.inh(Atomic.the("move"), Atomic.the("x")), (v) -> {
+        actionBipolar($.inh(Atomic.the("move"), Atomic.the("x")), new FloatToFloatFunction() {
+            @Override
+            public float valueOf(float v) {
 
-            yEst += (v) * speed;
+                yEst += (v) * speed;
 
-            return yEst;
+                return yEst;
+            }
         });
 
-        reward(() -> {
-            yHidden = Math.round(targetFunc.valueOf((int) nar.time()) * (size - 1));
+        reward(new FloatSupplier() {
+            @Override
+            public float asFloat() {
+                yHidden = Math.round(targetFunc.valueOf((int) nar.time()) * (size - 1));
 
-            yHidden = Math.min(size - 1, Math.max(0, yHidden));
-            yEst = Math.min(size - 1, Math.max(0, yEst));
-
-
-            Arrays.fill(ins, 0f);
-            float smoothing = 1 / 2f;
-            for (int i = 0; i < size; i++) {
-                ins[i] = Math.abs(yHidden - i) / (size * smoothing);
-                ins[i + this.size] = Math.abs(yEst - i) / (size * smoothing);
-            }
+                yHidden = Math.min(size - 1, Math.max(0, yHidden));
+                yEst = Math.min(size - 1, Math.max(0, yEst));
 
 
-            float dist = Math.abs(yHidden - yEst) / this.size;
-
-
-            float reward =
-                    -dist * 2f + 1f;
-
-
-            if (yEst > this.size - 1) yEst = this.size - 1;
-            if (yEst < 0) yEst = 0;
-
-
-            if (print) {
-
-
-                int colActual = Math.round(yHidden);
-                int colEst = Math.round(yEst);
-                for (int i = 0; i < this.size; i++) {
-
-                    char c;
-                    if (i == colActual && i == colEst) {
-                        c = '@';
-                    } else if (i == colActual)
-                        c = 'X';
-                    else if (i == colEst)
-                        c = '+';
-                    else
-                        c = '.';
-
-                    out.print(c);
+                Arrays.fill(ins, 0f);
+                float smoothing = 1 / 2f;
+                for (int i = 0; i < size; i++) {
+                    ins[i] = Math.abs(yHidden - i) / (size * smoothing);
+                    ins[i + Line1DContinuous.this.size] = Math.abs(yEst - i) / (size * smoothing);
                 }
 
 
-                out.print(' ');
-                out.print(summary());
-                out.println();
+                float dist = Math.abs(yHidden - yEst) / Line1DContinuous.this.size;
+
+
+                float reward =
+                        -dist * 2f + 1f;
+
+
+                if (yEst > Line1DContinuous.this.size - 1) yEst = Line1DContinuous.this.size - 1;
+                if (yEst < 0) yEst = 0;
+
+
+                if (print) {
+
+
+                    int colActual = Math.round(yHidden);
+                    int colEst = Math.round(yEst);
+                    for (int i = 0; i < Line1DContinuous.this.size; i++) {
+
+                        char c;
+                        if (i == colActual && i == colEst) {
+                            c = '@';
+                        } else if (i == colActual)
+                            c = 'X';
+                        else if (i == colEst)
+                            c = '+';
+                        else
+                            c = '.';
+
+                        out.print(c);
+                    }
+
+
+                    out.print(' ');
+                    out.print(Line1DContinuous.this.summary());
+                    out.println();
+                }
+
+                return reward;
+
             }
-
-            return reward;
-
         });
     }
 
 
     public static IntToFloatFunction sine(float targetPeriod) {
-        return (t) -> 0.5f + 0.5f * (float) Math.sin(t / (targetPeriod));
+        return new IntToFloatFunction() {
+            @Override
+            public float valueOf(int t) {
+                return 0.5f + 0.5f * (float) Math.sin(t / (targetPeriod));
+            }
+        };
     }
 
     public static IntToFloatFunction random(float targetPeriod) {
-        return (t) -> (((((int) (t / targetPeriod)) * 31) ^ 37) % 256) / 256.0f;
+        return new IntToFloatFunction() {
+            @Override
+            public float valueOf(int t) {
+                return (((((int) (t / targetPeriod)) * 31) ^ 37) % 256) / 256.0f;
+            }
+        };
     }
 
     public static void main(String[] args) {

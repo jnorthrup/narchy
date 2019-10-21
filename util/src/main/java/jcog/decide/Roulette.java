@@ -16,7 +16,12 @@ public enum Roulette {
 
 
     public static int selectRoulette(float[] x, FloatSupplier rng) {
-        return selectRoulette(x.length, (n) -> x[n], rng);
+        return selectRoulette(x.length, new IntToFloatFunction() {
+            @Override
+            public float valueOf(int n) {
+                return x[n];
+            }
+        }, rng);
     }
 
 
@@ -97,7 +102,12 @@ public enum Roulette {
 //
 //                throw new WTF(); //return -1; //WTF
                 } else {
-                    return selectRoulette(weightCount, i -> w[i], rng);
+                    return selectRoulette(weightCount, new IntToFloatFunction() {
+                        @Override
+                        public float valueOf(int i) {
+                            return w[i];
+                        }
+                    }, rng);
                 }
             }
         }

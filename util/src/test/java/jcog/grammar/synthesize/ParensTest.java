@@ -36,35 +36,38 @@ class ParensTest {
 		
 
 		
-		Predicate<String> oracle = query -> {
-			Stack<Character> stack = new Stack<>();
-			for (int i = 0; i < query.length(); i++) {
-				char c = query.charAt(i);
-                switch (c) {
-                    case '(':
-                    case '[':
-                    case '{':
+		Predicate<String> oracle = new Predicate<String>() {
+            @Override
+            public boolean test(String query) {
+                Stack<Character> stack = new Stack<>();
+                for (int i = 0; i < query.length(); i++) {
+                    char c = query.charAt(i);
+                    switch (c) {
+                        case '(':
+                        case '[':
+                        case '{':
 
-                        stack.push(c);
-                        break;
-                    case ')':
-                    case ']':
-                    case '}':
+                            stack.push(c);
+                            break;
+                        case ')':
+                        case ']':
+                        case '}':
 
-                        if (stack.isEmpty()) {
+                            if (stack.isEmpty()) {
+                                return false;
+                            }
+                            char d = stack.pop();
+                            if ((d == '(' && c != ')') || (d == '[' && c != ']') || (d == '{' && c != '}')) {
+                                return false;
+                            }
+                            break;
+                        default:
                             return false;
-                        }
-                        char d = stack.pop();
-                        if ((d == '(' && c != ')') || (d == '[' && c != ']') || (d == '{' && c != '}')) {
-                            return false;
-                        }
-                        break;
-                    default:
-                        return false;
+                    }
                 }
-			}
-			return stack.isEmpty();
-		};
+                return stack.isEmpty();
+            }
+        };
 
 		
 		List<String> examples = Arrays.asList("{([][])([][])}{[()()][()()]}");

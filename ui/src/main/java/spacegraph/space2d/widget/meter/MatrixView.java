@@ -22,33 +22,45 @@ import java.util.function.Supplier;
 
 
     private static ViewFunction2D arrayRenderer(float[][] ww) {
-        return (x, y, gl) -> {
-            float v = ww[x][y];
-            Draw.colorBipolar(gl, v);
-            return (float) 0;
+        return new ViewFunction2D() {
+            @Override
+            public float update(int x, int y, GL2 gl) {
+                float v = ww[x][y];
+                Draw.colorBipolar(gl, v);
+                return (float) 0;
+            }
         };
     }
     private static ViewFunction2D arrayRenderer(double[][] ww) {
-        return (x, y, gl) -> {
-            float v = (float) ww[x][y];
-            Draw.colorBipolar(gl, v);
-            return (float) 0;
+        return new ViewFunction2D() {
+            @Override
+            public float update(int x, int y, GL2 gl) {
+                float v = (float) ww[x][y];
+                Draw.colorBipolar(gl, v);
+                return (float) 0;
+            }
         };
     }
 
     public static ViewFunction2D arrayRenderer(float[] w) {
-        return (x, y, gl) -> {
-            float v = w[y];
-            Draw.colorBipolar(gl, v);
-            return (float) 0;
+        return new ViewFunction2D() {
+            @Override
+            public float update(int x, int y, GL2 gl) {
+                float v = w[y];
+                Draw.colorBipolar(gl, v);
+                return (float) 0;
+            }
         };
     }
 
     public static ViewFunction2D arrayRenderer(double[] w) {
-        return (x, y, gl) -> {
-            float v = (float) w[y];
-            Draw.colorBipolar(gl, v);
-            return (float) 0;
+        return new ViewFunction2D() {
+            @Override
+            public float update(int x, int y, GL2 gl) {
+                float v = (float) w[y];
+                Draw.colorBipolar(gl, v);
+                return (float) 0;
+            }
         };
     }
 
@@ -93,13 +105,19 @@ import java.util.function.Supplier;
         this.view = view != null ? view : ((ViewFunction2D) this);
     }
 
-    private static final ViewFunction1D bipolar1 = (x, gl) -> {
-        Draw.colorBipolar(gl, x);
-        return (float) 0;
+    private static final ViewFunction1D bipolar1 = new ViewFunction1D() {
+        @Override
+        public float update(float x, GL2 gl) {
+            Draw.colorBipolar(gl, x);
+            return (float) 0;
+        }
     };
-    private static final ViewFunction1D unipolar1 = (x, gl) -> {
-        Draw.colorGrays(gl, x);
-        return (float) 0;
+    private static final ViewFunction1D unipolar1 = new ViewFunction1D() {
+        @Override
+        public float update(float x, GL2 gl) {
+            Draw.colorGrays(gl, x);
+            return (float) 0;
+        }
     };
 
     public MatrixView(float[] d, boolean bipolar) {
@@ -107,30 +125,42 @@ import java.util.function.Supplier;
     }
 
     public MatrixView(float[] d, int stride, ViewFunction1D view) {
-        this(stride, (int) Math.ceil((double) (((float) d.length) / (float) stride)), (x, y, gl) -> {
-            int i = y * stride + x;
-            return i < d.length ? view.update(d[i], gl) : Float.NaN;
+        this(stride, (int) Math.ceil((double) (((float) d.length) / (float) stride)), new ViewFunction2D() {
+            @Override
+            public float update(int x, int y, GL2 gl) {
+                int i = y * stride + x;
+                return i < d.length ? view.update(d[i], gl) : Float.NaN;
+            }
         });
     }
 
     public MatrixView(IntToFloatFunction d, int len, int stride, ViewFunction1D view) {
-        this(stride, (int) Math.ceil((double) (((float) len) / (float) stride)), (x, y, gl) -> {
-            int i = y * stride + x;
-            return i < len ? view.update(d.valueOf(i), gl) : Float.NaN;
+        this(stride, (int) Math.ceil((double) (((float) len) / (float) stride)), new ViewFunction2D() {
+            @Override
+            public float update(int x, int y, GL2 gl) {
+                int i = y * stride + x;
+                return i < len ? view.update(d.valueOf(i), gl) : Float.NaN;
+            }
         });
     }
 
     public MatrixView(double[] d, int stride, ViewFunction1D view) {
-        this(stride, (int) Math.ceil((double) (((float) d.length) / (float) stride)), (x, y, gl) -> {
-            int i = y * stride + x;
-            return i < d.length ? view.update((float) d[i], gl) : Float.NaN;
+        this(stride, (int) Math.ceil((double) (((float) d.length) / (float) stride)), new ViewFunction2D() {
+            @Override
+            public float update(int x, int y, GL2 gl) {
+                int i = y * stride + x;
+                return i < d.length ? view.update((float) d[i], gl) : Float.NaN;
+            }
         });
     }
 
     public <P extends FloatSupplier> MatrixView(P[] d, int stride, ViewFunction1D view) {
-        this(stride, (int) Math.ceil((double) (((float) d.length) / (float) stride)), (x, y, gl) -> {
-            int i = y * stride + x;
-            return i < d.length ? view.update(d[i].asFloat(), gl) : Float.NaN;
+        this(stride, (int) Math.ceil((double) (((float) d.length) / (float) stride)), new ViewFunction2D() {
+            @Override
+            public float update(int x, int y, GL2 gl) {
+                int i = y * stride + x;
+                return i < d.length ? view.update(d[i].asFloat(), gl) : Float.NaN;
+            }
         });
     }
 
@@ -141,22 +171,28 @@ import java.util.function.Supplier;
 
     public static MatrixView get(ArrayTensor t, int stride, ViewFunction1D view) {
         float[] d = t.data;
-        return new MatrixView(stride, (int) Math.ceil((double) (((float) t.volume()) / (float) stride)), (x, y, gl) -> {
-            float v = d[x * stride + y];
-            return view.update(v, gl);
+        return new MatrixView(stride, (int) Math.ceil((double) (((float) t.volume()) / (float) stride)), new ViewFunction2D() {
+            @Override
+            public float update(int x, int y, GL2 gl) {
+                float v = d[x * stride + y];
+                return view.update(v, gl);
+            }
         });
     }
 
     public MatrixView(Supplier<double[]> e, int length, int stride, ViewFunction1D view) {
-        this(stride, (int) Math.ceil((double) (((float) length) / (float) stride)), (x, y, gl) -> {
-            double[] d = e.get();
-            if (d != null) {
+        this(stride, (int) Math.ceil((double) (((float) length) / (float) stride)), new ViewFunction2D() {
+            @Override
+            public float update(int x, int y, GL2 gl) {
+                double[] d = e.get();
+                if (d != null) {
 
-                int i = y * stride + x;
-                if (i < d.length)
-                    return view.update((float) d[i], gl);
+                    int i = y * stride + x;
+                    if (i < d.length)
+                        return view.update((float) d[i], gl);
+                }
+                return Float.NaN;
             }
-            return Float.NaN;
         });
     }
 

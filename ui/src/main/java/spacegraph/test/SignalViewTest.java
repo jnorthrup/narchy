@@ -14,9 +14,11 @@ import jcog.net.http.HttpConnection;
 import jcog.net.http.HttpModel;
 import jcog.net.http.HttpServer;
 import jcog.random.XoRoShiRo128PlusRandom;
+import jcog.signal.tensor.ArrayTensor;
 import jcog.signal.wave1d.DigitizedSignal;
 import jcog.signal.wave1d.FreqDomain;
 import jcog.signal.wave1d.SignalInput;
+import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
 import spacegraph.audio.AudioSource;
@@ -24,6 +26,7 @@ import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.Bordering;
 import spacegraph.space2d.container.graph.Graph2D;
 import spacegraph.space2d.container.graph.GraphEdit2D;
+import spacegraph.space2d.container.graph.NodeVis;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.container.time.Timeline2D;
 import spacegraph.space2d.container.time.Timeline2DEvents;
@@ -49,6 +52,7 @@ import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import static spacegraph.SpaceGraph.window;
@@ -95,30 +99,39 @@ public class SignalViewTest {
         public GraphPanel(SensorNode n) {
 
             @Deprecated float fps = n.udp.getFPS();
-            east(new Gridding(new CheckBox("ON").on((t) -> {
-                if (!t)
-                    n.udp.stop();
-                else
-                    n.udp.setFPS(fps);
+            east(new Gridding(new CheckBox("ON").on(new BooleanProcedure() {
+                @Override
+                public void value(boolean t) {
+                    if (!t)
+                        n.udp.stop();
+                    else
+                        n.udp.setFPS(fps);
+                }
             }), new PushButton("?")));
 
-            Exe.runLater(() -> {
-                GraphEdit2D g = new GraphEdit2D();
-                center(g);
+            Exe.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    GraphEdit2D g = new GraphEdit2D();
+                    GraphPanel.this.center(g);
 
-                Util.sleepMS(2000L);
+                    Util.sleepMS(2000L);
 
-                Exe.runLater(() -> {
-                    Surface local = new RealTimeLine(n);
-                    Windo ll = g.add(local).sizeRel(0.25f, 0.25f);
+                    Exe.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            Surface local = new RealTimeLine(n);
+                            Windo ll = g.add(local).sizeRel(0.25f, 0.25f);
 
 
-                    for (Sensor s : n.sensors.values()) {
-                        PushButton ss = new PushButton(s.id);
-                        Windo w = g.add(ss).sizeRel(0.1f, 0.1f);
-                        g.addWire(new Wire(local, ss));
-                    }
-                });
+                            for (Sensor s : n.sensors.values()) {
+                                PushButton ss = new PushButton(s.id);
+                                Windo w = g.add(ss).sizeRel(0.1f, 0.1f);
+                                g.addWire(new Wire(local, ss));
+                            }
+                        }
+                    });
+                }
             });
 
 //            Graph2D<UDPeer.UDProfile> themChart = new Graph2D<UDPeer.UDProfile>(
@@ -237,9 +250,12 @@ public class SignalViewTest {
                 @Override
                 protected void starting() {
                     super.starting();
-                    resharing = new Every(() -> {
-                        if (reshare.compareAndSet(true, false)) {
-                            reshare();
+                    resharing = new Every(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (reshare.compareAndSet(true, false)) {
+                                reshare();
+                            }
                         }
                     }, SHARE_PERIOD_MS);
                 }
@@ -364,18 +380,26 @@ public class SignalViewTest {
         public void connectAll() {
 
             for (AudioSource in : AudioSource.all()) {
-                Exe.runLater(() -> {
-                    try {
-                        in.start();
-                        add(in);
-                    } catch (LineUnavailableException e) {
-                        e.printStackTrace();
+                Exe.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            in.start();
+                            SensorNode.this.add(in);
+                        } catch (LineUnavailableException e) {
+                            e.printStackTrace();
+                        }
                     }
                 });
             }
 
             for (Webcam ww : Webcam.getWebcams()) {
-                Exe.runLater(() -> add(ww));
+                Exe.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        SensorNode.this.add(ww);
+                    }
+                });
             }
         }
     }
@@ -398,16 +422,24 @@ public class SignalViewTest {
         }
 
         public Timeline2D newTrack(String label, Supplier<Surface> control) {
-            return newTrack(new PushButton(label).clicked(() -> window(control.get(), 500, 500)));
+            return newTrack(new PushButton(label).clicked(new Runnable() {
+                @Override
+                public void run() {
+                    window(control.get(), 500, 500);
+                }
+            }));
         }
 
         public Timeline2D newTrack(Surface label) {
             Timeline2D g = new Timeline2D();
 
-            add(new LabeledPane(label, new Clipped(new Animating(g, () -> {
+            add(new LabeledPane(label, new Clipped(new Animating(g, new Runnable() {
+                @Override
+                public void run() {
 
-                long e = System.currentTimeMillis();
-                g.setTime(e - (long) Math.round(viewWindowSeconds * 1000.0F), e); //slide window
+                    long e = System.currentTimeMillis();
+                    g.setTime(e - (long) Math.round(viewWindowSeconds * 1000.0F), e); //slide window
+                }
             }, 0.04f))));
 
             return g;
@@ -421,21 +453,34 @@ public class SignalViewTest {
         public void add(VideoSensor ww, Timeline2D.FixedSizeEventBuffer<Timeline2D.SimpleEvent> ge) {
             WebCam w = ((WebCam) ww.video); //HACK
 
-            Timeline2D g = newTrack(ww.id, () -> new VideoSurface(w));
+            Timeline2D g = newTrack(ww.id, new Supplier<Surface>() {
+                @Override
+                public Surface get() {
+                    return new VideoSurface(w);
+                }
+            });
 
             float camFPS = 0.5f;
-            Loop.of(() -> {
-                try {
-                    BufferedImage ii = w.webcam.getImage();
-                    if (ii != null)
-                        ge.add(capture(ii, (long) Math.round(1000.0F / camFPS)));
+            Loop.of(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        BufferedImage ii = w.webcam.getImage();
+                        if (ii != null)
+                            ge.add(capture(ii, (long) Math.round(1000.0F / camFPS)));
 
-                } catch (Exception e) {
-                    //ignore
+                    } catch (Exception e) {
+                        //ignore
+                    }
                 }
             }).setFPS(camFPS);
 
-            g.addEvents(ge, v -> v.set(((Surface) (v.id.name))), new Timeline2DEvents.LinearTimelineUpdater<>());
+            g.addEvents(ge, new Consumer<NodeVis<Timeline2D.SimpleEvent>>() {
+                @Override
+                public void accept(NodeVis<Timeline2D.SimpleEvent> v) {
+                    v.set(((Surface) (v.id.name)));
+                }
+            }, new Timeline2DEvents.LinearTimelineUpdater<>());
 
         }
 
@@ -446,17 +491,24 @@ public class SignalViewTest {
 //                FloatSlider preAmp = new FloatSlider("preAmp", 1, 0, 16f);
 
             //new Gridding(new VectorLabel(in.name()), preAmp)
-            Timeline2D g = newTrack(in.toString(), () -> new PushButton(in.toString()));
+            Timeline2D g = newTrack(in.toString(), new Supplier<Surface>() {
+                @Override
+                public Surface get() {
+                    return new PushButton(in.toString());
+                }
+            });
 
 
             FreqDomain dft = new FreqDomain(freqs, 1);
-            in.in.wave.on(a -> {
+            in.in.wave.on(new Consumer<ArrayTensor>() {
+                @Override
+                public void accept(ArrayTensor a) {
 //                    long e = System.currentTimeMillis();
 
-                //System.out.println(bufferTimeMs + "ms " + Math.round(n-bufferTimeMs)/2 + ".." + n);
+                    //System.out.println(bufferTimeMs + "ms " + Math.round(n-bufferTimeMs)/2 + ".." + n);
 
-                //WaveBitmap p = new WaveBitmap(new ArrayTensor(a.data.clone()), i.sampleRate, 200, 200);
-                //p.setTime(s, e);
+                    //WaveBitmap p = new WaveBitmap(new ArrayTensor(a.data.clone()), i.sampleRate, 200, 200);
+                    //p.setTime(s, e);
 
 //                    Plot2D p = new Plot2D(a.data.length, Plot2D.Line);
 //                    p.add(src, a.data);
@@ -464,60 +516,69 @@ public class SignalViewTest {
 
 //                    Util.mul(preAmp.asFloat(), a.data);
 
-                double rms = (double) 0;
-                for (float x : a.data) {
-                    rms = rms + (double) x * x;
-                }
-                rms = rms / (double) a.data.length;
-                rms = Math.sqrt(rms);
+                    double rms = (double) 0;
+                    for (float x : a.data) {
+                        rms = rms + (double) x * x;
+                    }
+                    rms = rms / (double) a.data.length;
+                    rms = Math.sqrt(rms);
 
 
-                //Gridding p = new Gridding();
-                //p.color.set(rms*4, 0, 0, 1);
+                    //Gridding p = new Gridding();
+                    //p.color.set(rms*4, 0, 0, 1);
 
-                float[] f = dft.apply(a).floatArray();
+                    float[] f = dft.apply(a).floatArray();
 
-                float fRMS = (float) rms;
-                BitmapMatrixView pp = new BitmapMatrixView(1, freqs,
-                        //arrayRendererY(dft.apply(a).floatArray())
-                        (xIgnored, y) -> {
-                            float fy = f[y];
-                            if (fy == fy) {
+                    float fRMS = (float) rms;
+                    BitmapMatrixView pp = new BitmapMatrixView(1, freqs,
+                            //arrayRendererY(dft.apply(a).floatArray())
+                            new BitmapMatrixView.ViewFunction2D() {
+                                @Override
+                                public int color(int xIgnored, int y) {
+                                    float fy = f[y];
+                                    if (fy == fy) {
 
 
-                                fy = (float) (fy < (float) 0 ? -Math.sqrt((double) -fy) : Math.sqrt((double) fy));
+                                        fy = (float) (fy < (float) 0 ? -Math.sqrt((double) -fy) : Math.sqrt((double) fy));
 
-                                float fs = 0.5f + 0.5f * (fy * Util.unitize(fRMS));
-                                float fb = 0.05f + 0.95f * fy;
-                                return
-                                        Draw.colorHSB(fRMS * 2.0F, fs, fb);
-                                //Draw.colorBipolar(f[y])
-                            } else {
-                                //"static" noise
-                                //return Draw.colorBipolar((ThreadLocalRandom.current().nextFloat()*2)-1);
-                                return 0;
+                                        float fs = 0.5f + 0.5f * (fy * Util.unitize(fRMS));
+                                        float fb = 0.05f + 0.95f * fy;
+                                        return
+                                                Draw.colorHSB(fRMS * 2.0F, fs, fb);
+                                        //Draw.colorBipolar(f[y])
+                                    } else {
+                                        //"static" noise
+                                        //return Draw.colorBipolar((ThreadLocalRandom.current().nextFloat()*2)-1);
+                                        return 0;
+                                    }
+                                }
                             }
-                        }
-                );
-                //pp.tex.mipmap(true);
-                pp.cellTouch = false;
-                //pp.update();
-                //p.add(ff);
+                    );
+                    //pp.tex.mipmap(true);
+                    pp.cellTouch = false;
+                    //pp.update();
+                    //p.add(ff);
 
-                Surface p = pp; //new ScaleXY(pp, 1, Util.lerp((float)Math.sqrt(rms), 0.8f, 1f));
+                    Surface p = pp; //new ScaleXY(pp, 1, Util.lerp((float)Math.sqrt(rms), 0.8f, 1f));
 
 
-                //p.add(new FreqSpectrogram( 8, 1).set(a));
+                    //p.add(new FreqSpectrogram( 8, 1).set(a));
 
 //                    long s = e - Math.round( a.volume()/(float)i.sampleRate);
 
-                SignalInput.RealTimeTensor ra = (SignalInput.RealTimeTensor) a;
+                    SignalInput.RealTimeTensor ra = (SignalInput.RealTimeTensor) a;
 
-                ge.add(new Timeline2D.AnalyzedEvent(p, ra.start, ra.end));
+                    ge.add(new Timeline2D.AnalyzedEvent(p, ra.start, ra.end));
+                }
             });
 
 
-            g.addEvents(ge, v -> v.set(((Surface) (v.id.name))), new Timeline2DEvents.LinearTimelineUpdater<>());
+            g.addEvents(ge, new Consumer<NodeVis<Timeline2D.SimpleEvent>>() {
+                @Override
+                public void accept(NodeVis<Timeline2D.SimpleEvent> v) {
+                    v.set(((Surface) (v.id.name)));
+                }
+            }, new Timeline2DEvents.LinearTimelineUpdater<>());
 
 //                WaveBitmap w = new WaveBitmap(new ArrayTensor(i.data), i.sampleRate, i.data.length, 250);
 //                w.setTime(before, now);

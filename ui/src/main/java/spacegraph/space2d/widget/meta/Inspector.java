@@ -10,6 +10,8 @@ import spacegraph.space2d.container.graph.Graph2D;
 import spacegraph.space2d.container.graph.NodeGraphRenderer;
 import spacegraph.space2d.container.layout.ForceDirected2D;
 
+import java.util.function.Consumer;
+
 /** debugging/meta-view */
 public class Inspector extends Bordering {
 
@@ -49,9 +51,12 @@ public class Inspector extends Bordering {
         }
 
         if (s instanceof ContainerSurface) {
-            ((ContainerSurface)s).forEach(x -> {
-                include(x, depth-1);
-                graph.addEdgeIfNodesExist(s, "->", x);
+            ((ContainerSurface)s).forEach(new Consumer<Surface>() {
+                @Override
+                public void accept(Surface x) {
+                    Inspector.this.include(x, depth - 1);
+                    graph.addEdgeIfNodesExist(s, "->", x);
+                }
             });
         }
     }

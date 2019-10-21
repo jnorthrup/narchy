@@ -13,8 +13,10 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 //import java.util.concurrent.ConcurrentHashMap;
 
 /** accumulates/buffers/collates a stream of Y activations and termlinkages
@@ -107,7 +109,12 @@ public class PriMap<Y> {
             if (y == null) y = px;
         } else {
             //TODO accelerated version, especially if items.compute invokes the default Map or ConcurrentMap impl which is likely suboptimal
-            y = items.compute(x, (xx, px) -> px != null ? px : new UnitPri(Float.NaN));
+            y = items.compute(x, new BiFunction<Y, Prioritizable, Prioritizable>() {
+                @Override
+                public Prioritizable apply(Y xx, Prioritizable px) {
+                    return px != null ? px : new UnitPri(Float.NaN);
+                }
+            });
         }
 
         if (y != x) {
@@ -179,9 +186,12 @@ public class PriMap<Y> {
 
 
     public void clear() {
-        items.values().removeIf(i -> {
-            i.delete();
-            return true;
+        items.values().removeIf(new Predicate<Prioritizable>() {
+            @Override
+            public boolean test(Prioritizable i) {
+                i.delete();
+                return true;
+            }
         });
     }
 

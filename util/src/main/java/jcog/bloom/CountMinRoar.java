@@ -42,9 +42,12 @@ public class CountMinRoar extends CountMinSketch {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder(uniques() * 6 /* estimate */);
-        whileEachInt((i, c) -> {
-            sb.append(i).append('x').append(c).append(',');
-            return true;
+        whileEachInt(new IntIntPredicate() {
+            @Override
+            public boolean accept(int i, int c) {
+                sb.append(i).append('x').append(c).append(',');
+                return true;
+            }
         });
         return sb.substring(0, sb.length()-1);
     }

@@ -2,9 +2,12 @@ package nars.game;
 
 import jcog.Util;
 import jcog.math.FloatRange;
+import jcog.math.FloatSupplier;
 import nars.$;
 import nars.NAR;
 import nars.game.sensor.Signal;
+import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
+import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;
 
 import static nars.game.GameTime.durs;
 
@@ -48,16 +51,19 @@ public class Line1DSimplest extends Game {
 
         initBipolar();
 
-        reward(()->{
-            float dist = Math.abs(
-                    i.floatValue() -
-                            o.floatValue()
-            );
+        reward(new FloatSupplier() {
+            @Override
+            public float asFloat() {
+                float dist = Math.abs(
+                        i.floatValue() -
+                                o.floatValue()
+                );
 
 
-            float h = ((1f - dist) - 0.5f) * 2f;
+                float h = ((1f - dist) - 0.5f) * 2f;
 
-            return h;
+                return h;
+            }
         });
 
     }
@@ -65,18 +71,24 @@ public class Line1DSimplest extends Game {
     private void initDualToggle() {
 
 
-        actionPushButton($.$$("y:up"), (b1) -> {
-            if (b1) {
-                o.set(Util.unitize(o.floatValue() + speed.floatValue()));
-                System.out.println(o);
+        actionPushButton($.$$("y:up"), new BooleanProcedure() {
+            @Override
+            public void value(boolean b1) {
+                if (b1) {
+                    o.set(Util.unitize(o.floatValue() + speed.floatValue()));
+                    System.out.println(o);
+                }
             }
         });
 
 
-        actionPushButton($.$$("y:down"), (b) -> {
-            if (b) {
-                o.set(Util.unitize(o.floatValue() - speed.floatValue()));
-                System.out.println(o);
+        actionPushButton($.$$("y:down"), new BooleanProcedure() {
+            @Override
+            public void value(boolean b) {
+                if (b) {
+                    o.set(Util.unitize(o.floatValue() - speed.floatValue()));
+                    System.out.println(o);
+                }
             }
         });
 
@@ -85,29 +97,38 @@ public class Line1DSimplest extends Game {
 
     private void initDualUnipolar() {
         float[] x = new float[2];
-        onFrame(() -> {
-            float d = x[0] - x[1];
-            this.o.set(Util.unitize(o.floatValue() + d * speed.floatValue()));
+        onFrame(new Runnable() {
+            @Override
+            public void run() {
+                float d = x[0] - x[1];
+                Line1DSimplest.this.o.set(Util.unitize(o.floatValue() + d * speed.floatValue()));
+            }
         });
-        actionUnipolar($.p("up"), d -> {
+        actionUnipolar($.p("up"), new FloatToFloatFunction() {
+            @Override
+            public float valueOf(float d) {
 
-            synchronized (o) {
+                synchronized (o) {
 
 
-                return x[0] = d;
+                    return x[0] = d;
 
 
+                }
             }
         });
 
-        actionUnipolar($.p("down"), d -> {
+        actionUnipolar($.p("down"), new FloatToFloatFunction() {
+            @Override
+            public float valueOf(float d) {
 
-            synchronized (o) {
+                synchronized (o) {
 
 
-                return x[1] = d;
+                    return x[1] = d;
 
 
+                }
             }
         });
 
@@ -115,18 +136,21 @@ public class Line1DSimplest extends Game {
     }
 
     public void initBipolar() {
-        actionBipolar($.the("y"), v -> {
-            if (v == v) {
-                o.set(
-                        Util.unitize(o.floatValue() + v * speed.floatValue())
-                );
+        actionBipolar($.the("y"), new FloatToFloatFunction() {
+            @Override
+            public float valueOf(float v) {
+                if (v == v) {
+                    o.set(
+                            Util.unitize(o.floatValue() + v * speed.floatValue())
+                    );
+
+
+                }
+
+                return v;
 
 
             }
-
-            return v;
-
-
         });
     }
 

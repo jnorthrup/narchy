@@ -19,6 +19,7 @@ package alice.tuprolog;
 
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 
 /**
  * Customized HashMap for storing clauses in the TheoryManager
@@ -32,7 +33,12 @@ public class ConcurrentHashClauseIndex extends ConcurrentHashMap<String, FamilyC
 
     @Override
     public void add(String key, ClauseInfo d, boolean first) {
-        computeIfAbsent(key, k -> new FamilyClausesList()).add(d, first);
+        computeIfAbsent(key, new Function<String, FamilyClausesList>() {
+            @Override
+            public FamilyClausesList apply(String k) {
+                return new FamilyClausesList();
+            }
+        }).add(d, first);
     }
 
     @Override

@@ -115,7 +115,12 @@ public class DefaultStrategy implements RunStrategy {
             
             
             
-            eachRankings(population, objective, (n, f) -> rankings.add(new Ranking(n, f)));
+            eachRankings(population, objective, new BiConsumer<Node, double[]>() {
+                @Override
+                public void accept(Node n, double[] f) {
+                    rankings.add(new Ranking(n, f));
+                }
+            });
 
 
 
@@ -272,7 +277,12 @@ public class DefaultStrategy implements RunStrategy {
         eachRankings(population, objective, each::put);
     }
     protected static void sortRankings(List<Node> population, Objective objective, TreeSet<Ranking> each) {
-        eachRankings(population, objective, (n, f) -> each.add(new Ranking(n, f)));
+        eachRankings(population, objective, new BiConsumer<Node, double[]>() {
+            @Override
+            public void accept(Node n, double[] f) {
+                each.add(new Ranking(n, f));
+            }
+        });
     }
 
     @Override
@@ -294,35 +304,32 @@ public class DefaultStrategy implements RunStrategy {
         return this.context;
     }
 
-    static final Comparator<Ranking> RankingComparator = (o1, o2) -> {
-        if (o1 == o2) return 0;
+    static final Comparator<Ranking> RankingComparator = new Comparator<Ranking>() {
+        @Override
+        public int compare(Ranking o1, Ranking o2) {
+            if (o1 == o2) return 0;
 
-        double[] f1 = o1.getFitness();
-        double[] f2 = o2.getFitness();
-        int n = f1.length;
+            double[] f1 = o1.getFitness();
+            double[] f2 = o2.getFitness();
+            int n = f1.length;
 
-        double balance = (double) 0;
+            double balance = (double) 0;
 
-        for (int i = 0; i < n; i++) {
-            double v1 = f1[i];
-            double v2 = f2[i];
-            if (v1==v2) continue;
+            for (int i = 0; i < n; i++) {
+                double v1 = f1[i];
+                double v2 = f2[i];
+                if (v1 == v2) continue;
 
 
-            balance += (v1/(v1+v2) - 0.5);
+                balance += (v1 / (v1 + v2) - 0.5);
+            }
+
+
+            if (balance > (double) 0) return 1;
+            if (balance < (double) 0) return -1;
+
+
+            return Integer.compare(o1.hashCode(), o2.hashCode());
         }
-
-
-
-        if (balance > (double) 0) return 1;
-        if (balance < (double) 0) return -1;
-
-
-
-
-
-
-
-        return Integer.compare(o1.hashCode(), o2.hashCode());
     };
 }

@@ -1,5 +1,6 @@
 package jcog.data.atomic;
 
+import java.util.function.IntBinaryOperator;
 import java.util.function.IntUnaryOperator;
 
 public abstract class AtomicCycle implements IntUnaryOperator {
@@ -97,11 +98,14 @@ public abstract class AtomicCycle implements IntUnaryOperator {
         if (x == 0)
             return get();
         assert(x >= 0 && x < (high()-low())): "TODO";
-        return I.accumulateAndGet(this, x, (p,a)->{
-            int n = p + a;
-            int h = high();
-            if (n >= h) n = low() + (n - h);
-            return n;
+        return I.accumulateAndGet(this, x, new IntBinaryOperator() {
+            @Override
+            public int applyAsInt(int p, int a) {
+                int n = p + a;
+                int h = AtomicCycle.this.high();
+                if (n >= h) n = AtomicCycle.this.low() + (n - h);
+                return n;
+            }
         });
     }
 

@@ -63,10 +63,20 @@ public class ConjClustering extends TaskAction {
 
     /** default that configures with belief/goal -> question/quest output mode */
     public ConjClustering(NAR nar, byte punc, int centroids, int capacity) {
-        this(nar, punc, centroids, capacity, t -> true);
+        this(nar, punc, centroids, capacity, new Predicate<Task>() {
+            @Override
+            public boolean test(Task t) {
+                return true;
+            }
+        });
     }
     public ConjClustering(NAR nar, byte puncIn, byte puncOut, int centroids, int capacity) {
-        this(nar, puncIn, puncOut, centroids, capacity, t -> true);
+        this(nar, puncIn, puncOut, centroids, capacity, new Predicate<Task>() {
+            @Override
+            public boolean test(Task t) {
+                return true;
+            }
+        });
     }
 
     /** default that configures with belief/goal -> question/quest output mode */

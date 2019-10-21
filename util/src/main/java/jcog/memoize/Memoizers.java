@@ -43,7 +43,12 @@ public class Memoizers {
 
     public <X,B extends ByteKeyExternal,Y> Function<X,Y> memoizeByte(String id, Function<X,B> byter, Function<B,Y> computation, int capacity) {
         Function<B, Y> c = memoizeByte(id, capacity, computation);
-        return x -> c.apply(byter.apply(x));
+        return new Function<X, Y>() {
+            @Override
+            public Y apply(X x) {
+                return c.apply(byter.apply(x));
+            }
+        };
     }
 
     /** registers a new memoizer with a default memoization implementation */

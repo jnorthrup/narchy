@@ -8,12 +8,15 @@ import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.Termlike;
 import org.eclipse.collections.api.PrimitiveIterable;
+import org.eclipse.collections.api.block.function.Function0;
+import org.eclipse.collections.api.block.predicate.Predicate;
 import org.eclipse.collections.api.list.primitive.ByteList;
 import org.eclipse.collections.api.list.primitive.ImmutableByteList;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.eclipse.collections.impl.map.mutable.primitive.ByteByteHashMap;
 
 import java.util.List;
+import java.util.function.BiPredicate;
 
 import static nars.Op.VAR_INDEP;
 
@@ -41,7 +44,12 @@ public final class VarIndep extends NormalizedVariable {
                 if (x.op().statement && xx.AND(Termlike::hasVarIndep)) {
                     return validIndepBalance(x, safe); //indep appearing in both, test for balance
                 } else {
-					return !xx.hasAny(Op.StatementBits) ? Task.fail(xx, "InDep variables must be subterms of statements", safe) : xx.AND(s -> validIndep(s, safe));
+					return !xx.hasAny(Op.StatementBits) ? Task.fail(xx, "InDep variables must be subterms of statements", safe) : xx.AND(new java.util.function.Predicate<Term>() {
+                        @Override
+                        public boolean test(Term s) {
+                            return validIndep(s, safe);
+                        }
+                    });
                 }
 
         }
@@ -56,28 +64,49 @@ public final class VarIndep extends NormalizedVariable {
         UnifiedMap<Term,List<ByteList>> indepVarPaths = new UnifiedMap(0, 0.5f);
 
         t.pathsTo(
-                (Term x) -> {
-                    Op xo = x.op();
-                    return (xo == VAR_INDEP) || (xo.statement && x.varIndep() > 0);
-                },
-                x -> x.hasAny(Op.StatementBits | Op.VAR_INDEP.bit),
-                (path, indepVarOrStatement) -> {
-                    if (!path.isEmpty()) {
-                        ImmutableByteList p = path.toImmutable();
-                        List<ByteList> s = (indepVarOrStatement.op() == VAR_INDEP) ?
-                            indepVarPaths.getIfAbsentPut(
-                                    //((VarIndep) indepVarOrStatement).id(),
-                                    indepVarOrStatement,
-                                    () -> new FasterList<>(2))
-                            :
-                            statements;
-
-                        s.add(p);
+                new java.util.function.Predicate<Term>() {
+                    @Override
+                    public boolean test(Term x) {
+                        Op xo = x.op();
+                        return (xo == VAR_INDEP) || (xo.statement && x.varIndep() > 0);
                     }
-                    return true;
+                },
+                new java.util.function.Predicate<Term>() {
+                    @Override
+                    public boolean test(Term x) {
+                        return x.hasAny(Op.StatementBits | Op.VAR_INDEP.bit);
+                    }
+                },
+                new BiPredicate<ByteList, Term>() {
+                    @Override
+                    public boolean test(ByteList path, Term indepVarOrStatement) {
+                        if (!path.isEmpty()) {
+                            ImmutableByteList p = path.toImmutable();
+                            List<ByteList> s = (indepVarOrStatement.op() == VAR_INDEP) ?
+                                    indepVarPaths.getIfAbsentPut(
+                                            //((VarIndep) indepVarOrStatement).id(),
+                                            indepVarOrStatement,
+                                            new Function0<List<ByteList>>() {
+                                                @Override
+                                                public List<ByteList> value() {
+                                                    return new FasterList<>(2);
+                                                }
+                                            })
+                                    :
+                                    statements;
+
+                            s.add(p);
+                        }
+                        return true;
+                    }
                 });
 
-        if (indepVarPaths.anySatisfy(p -> p.size() < 2))
+        if (indepVarPaths.anySatisfy(new Predicate<List<ByteList>>() {
+            @Override
+            public boolean accept(List<ByteList> p) {
+                return p.size() < 2;
+            }
+        }))
             return false;
 
         if (statements.size() > 1)

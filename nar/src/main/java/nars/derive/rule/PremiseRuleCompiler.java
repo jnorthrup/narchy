@@ -19,8 +19,7 @@ import org.jetbrains.annotations.Nullable;
 import org.roaringbitmap.RoaringBitmap;
 
 import java.util.*;
-import java.util.function.Function;
-import java.util.function.UnaryOperator;
+import java.util.function.*;
 
 /**
  * high-level interface for compiling premise deriver rules
@@ -80,18 +79,21 @@ public enum PremiseRuleCompiler {
         UnifiedSet<PREDICATE<PreDerivation>> bb = new UnifiedSet();
 
 
-        node.forEach(n -> {
+        node.forEach(new Consumer<TrieNode<List<PREDICATE<PreDerivation>>, How>>() {
+            @Override
+            public void accept(TrieNode<List<PREDICATE<PreDerivation>>, How> n) {
 
-            List<PREDICATE<PreDerivation>> branches = compile(n);
+                List<PREDICATE<PreDerivation>> branches = compile(n);
 
-            PREDICATE<PreDerivation> branch = PREDICATE.andFlat(
-                    n.seq().subList(n.start(), n.end()),
-                    //n.seq().stream().skip(nStart).limit(nEnd - nStart).collect(Collectors.toList()),
-                    branches != null ? factorFork(branches, FORK::new) : null
-            );
+                PREDICATE<PreDerivation> branch = PREDICATE.andFlat(
+                        n.seq().subList(n.start(), n.end()),
+                        //n.seq().stream().skip(nStart).limit(nEnd - nStart).collect(Collectors.toList()),
+                        branches != null ? factorFork(branches, FORK::new) : null
+                );
 
-            if (branch != null)
-                bb.add(branch);
+                if (branch != null)
+                    bb.add(branch);
+            }
         });
 
         //return compileSwitch(bb, 2);
@@ -116,7 +118,12 @@ public enum PremiseRuleCompiler {
             PREDICATE  p = X.get(b);
             if (p instanceof AND) {
                 int bb = b;
-                ((AND) p).subStream().forEach((xx)-> SubCond.bumpCond(conds, (PREDICATE)xx, bb));
+                ((AND) p).subStream().forEach(new Consumer<Term>() {
+                    @Override
+                    public void accept(Term xx) {
+                        SubCond.bumpCond(conds, (PREDICATE) xx, bb);
+                    }
+                });
             } else if (p instanceof FORK) {
 
             } else {
@@ -176,13 +183,16 @@ public enum PremiseRuleCompiler {
 
         if (x.size() > 1) {
             RoaringBitmap r = new RoaringBitmap();
-            x.removeIf(zz -> {
-                if (zz instanceof Forkable) {
-                    for (short cc : ((Forkable) zz).can)
-                        r.add((int) cc);
-                    return true;
+            x.removeIf(new Predicate<PREDICATE<PreDerivation>>() {
+                @Override
+                public boolean test(PREDICATE<PreDerivation> zz) {
+                    if (zz instanceof Forkable) {
+                        for (short cc : ((Forkable) zz).can)
+                            r.add((int) cc);
+                        return true;
+                    }
+                    return false;
                 }
-                return false;
             });
             if (!r.isEmpty()) {
                 Forkable bb = new Forkable(r);
@@ -274,14 +284,17 @@ public enum PremiseRuleCompiler {
             if (!Float.isFinite(pc))
                 return;
 
-            conds.compute(p, (xx, e) -> {
-                SubCond e1 = e;
-                if (e1 == null) {
-                    e1 = new SubCond(xx, branch);
-                } else {
-                    e1.bump(branch);
+            conds.compute(p, new BiFunction<PREDICATE, SubCond, SubCond>() {
+                @Override
+                public SubCond apply(PREDICATE xx, SubCond e) {
+                    SubCond e1 = e;
+                    if (e1 == null) {
+                        e1 = new SubCond(xx, branch);
+                    } else {
+                        e1.bump(branch);
+                    }
+                    return e1;
                 }
-                return e1;
             });
         }
 

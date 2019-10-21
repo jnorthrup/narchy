@@ -19,6 +19,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 import static jcog.Texts.n4;
 
@@ -42,7 +43,12 @@ public class Emotion implements Meter, Consumer<NAR> {
 
     static {
         List<Field> list = new ArrayList<>();
-        for (Field field : ReflectionUtils.findFields(Emotion.class, (f) -> true, ReflectionUtils.HierarchyTraversalMode.TOP_DOWN)) {
+        for (Field field : ReflectionUtils.findFields(Emotion.class, new Predicate<Field>() {
+            @Override
+            public boolean test(Field f) {
+                return true;
+            }
+        }, ReflectionUtils.HierarchyTraversalMode.TOP_DOWN)) {
             if (!Modifier.isPrivate(field.getModifiers())) {
                 list.add(field);
             }

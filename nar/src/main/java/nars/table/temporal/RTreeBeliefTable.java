@@ -22,11 +22,14 @@ import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.truth.proj.TruthIntegration;
 import nars.truth.proj.TruthProjection;
+import org.eclipse.collections.api.block.function.primitive.DoubleFunction;
+import org.eclipse.collections.api.block.procedure.Procedure;
 import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -137,7 +140,12 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 	private static boolean mergeOrEvict(Task weakest, Task merged, TruthProjection merging, Remember r) {
         long now = r.time();
         double weakEvictionValue = -eviFast(weakest, now);
-        double mergeValue = eviFast(merged, now) - merging.sumOfDouble(t -> eviFast(t, now));
+        double mergeValue = eviFast(merged, now) - merging.sumOfDouble(new DoubleFunction<Task>() {
+            @Override
+            public double doubleValueOf(Task t) {
+                return eviFast(t, now);
+            }
+        });
 
 		return mergeValue >= weakEvictionValue;
 	}
@@ -185,34 +193,41 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
 
 		//tree.readOptimistic(
-		readIfNonEmpty(t -> {
-            int n = t.size();
-			if (n == 0)
-				return;
+		readIfNonEmpty(new Consumer<RTree<TaskRegion>>() {
+            @Override
+            public void accept(RTree<TaskRegion> t) {
+                int n = t.size();
+                if (n == 0)
+                    return;
 
-            int ac = a.ttl;
-			if (n <= ac) {
-				t.forEach(((Predicate) a)::test);
-			} else {
+                int ac = a.ttl;
+                if (n <= ac) {
+                    t.forEach(((Predicate) a)::test);
+                } else {
 
-				long s = a.start, e = a.end;
-                RNode<TaskRegion> tRoot = t.root();
+                    long s = a.start, e = a.end;
+                    RNode<TaskRegion> tRoot = t.root();
 //				float confMax = Math.max(NAL.truth.TRUTH_EPSILON, ((TaskRegion) tRoot.bounds()).confMax());
 //				float confPerTime =
 //					//(float) ((1 + ((e - s) / 2.0 + a.dur)) / confMax);
 //					//(a.dur / confMax);
 //					(Math.max(1, a.dur) / confMax);
-				//float dur = (float) (tRoot.bounds().range(0) / (1+n));
+                    //float dur = (float) (tRoot.bounds().range(0) / (1+n));
 
-                HyperIterator.HyperIteratorRanker<TaskRegion, TaskRegion> timeRank =
-					new HyperIterator.HyperIteratorRanker<TaskRegion, TaskRegion>(z -> z, Answer.regionNearness(s, e));
+                    HyperIterator.HyperIteratorRanker<TaskRegion, TaskRegion> timeRank =
+                            new HyperIterator.HyperIteratorRanker<TaskRegion, TaskRegion>(new Function<TaskRegion, TaskRegion>() {
+                                @Override
+                                public TaskRegion apply(TaskRegion z) {
+                                    return z;
+                                }
+                            }, Answer.regionNearness(s, e));
 
-                int cursorCapacity = Math.min(n,
-					//ac
-					Math.max(1, (int)Math.ceil((double) (ac / Math.max(1.0F, ((float) RTreeBeliefTable.MAX_TASKS_PER_LEAF / 2f)))))
-				);
+                    int cursorCapacity = Math.min(n,
+                            //ac
+                            Math.max(1, (int) Math.ceil((double) (ac / Math.max(1.0F, ((float) RTreeBeliefTable.MAX_TASKS_PER_LEAF / 2f)))))
+                    );
 
-                HyperIterator<TaskRegion> h = new HyperIterator<TaskRegion>(new Object[cursorCapacity], timeRank);
+                    HyperIterator<TaskRegion> h = new HyperIterator<TaskRegion>(new Object[cursorCapacity], timeRank);
 //				{
 //					@Override
 //					protected void scan() {
@@ -224,10 +239,11 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 //						}
 //					}
 //				};
-				//h.dfs(t.root(), whle);
-				h.bfs(tRoot, a, a.random());
-			}
-		});
+                    //h.dfs(t.root(), whle);
+                    h.bfs(tRoot, a, a.random());
+                }
+            }
+        });
 	}
 
 	@Override
@@ -393,16 +409,24 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 		if (minT == Long.MIN_VALUE && maxT == Long.MAX_VALUE) {
 			forEach(TaskRegion.asTask(x));
 		} else {
-			whileEach(minT, maxT, (t) -> {
-				x.accept(t);
-				return true;
-			});
+			whileEach(minT, maxT, new Predicate<Task>() {
+                @Override
+                public boolean test(Task t) {
+                    x.accept(t);
+                    return true;
+                }
+            });
 		}
 	}
 
 	@Override
 	public void forEachTask(Consumer<? super Task> each) {
-		forEach(t -> each.accept((Task) t));
+		forEach(new Consumer<TaskRegion>() {
+            @Override
+            public void accept(TaskRegion t) {
+                each.accept((Task) t);
+            }
+        });
 	}
 
 	@Override
@@ -412,19 +436,25 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 		try {
 
             FasterList<Task> deleteAfter = new FasterList<Task>();
-			tree.intersectsWhile(new TimeRange(s, e), (_t) -> {
-                Task t = (Task) _t;
-				if (remove.test(t)) {
-					deleteAfter.add(t); //buffer the deletions because it will interfere with the iteration
-				}
-				return true;
-			});
+			tree.intersectsWhile(new TimeRange(s, e), new Predicate<TaskRegion>() {
+                @Override
+                public boolean test(TaskRegion _t) {
+                    Task t = (Task) _t;
+                    if (remove.test(t)) {
+                        deleteAfter.add(t); //buffer the deletions because it will interfere with the iteration
+                    }
+                    return true;
+                }
+            });
 			if (!deleteAfter.isEmpty()) {
 				l = Util.readToWrite(l, this);
-				deleteAfter.forEach(t -> {
-					tree.remove(t);
-					t.delete();
-				});
+				deleteAfter.forEach(new Procedure<Task>() {
+                    @Override
+                    public void value(Task t) {
+                        tree.remove(t);
+                        t.delete();
+                    }
+                });
 			}
 		} finally {
 			unlock(l);
@@ -444,7 +474,12 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 	}
 
 	public void print(PrintStream out) {
-		forEachTask(t -> out.println(t.toString(true)));
+		forEachTask(new Consumer<Task>() {
+            @Override
+            public void accept(Task t) {
+                out.println(t.toString(true));
+            }
+        });
 		stats().print(out);
 	}
 
@@ -497,7 +532,12 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
 
 		private RTreeBeliefModel() {
-			super((t -> t), SPLIT,
+			super((new Function<TaskRegion, HyperRegion>() {
+                        @Override
+                        public HyperRegion apply(TaskRegion t) {
+                            return t;
+                        }
+                    }), SPLIT,
 				RTreeBeliefTable.MAX_TASKS_PER_LEAF);
 		}
 
@@ -595,12 +635,15 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
 	}
 
-	private static final FloatRank<RLeaf<TaskRegion>> MergeableLeaf = (l, min) -> {
-		//TODO use min parameter to early exit
-        HyperRegion bounds = l.bounds;
-        double conf = bounds.coord(2, true);
-		return -(float) (conf * bounds.range(0));
-	};
+	private static final FloatRank<RLeaf<TaskRegion>> MergeableLeaf = new FloatRank<RLeaf<TaskRegion>>() {
+        @Override
+        public float rank(RLeaf<TaskRegion> l, float min) {
+            //TODO use min parameter to early exit
+            HyperRegion bounds = l.bounds;
+            double conf = bounds.coord(2, true);
+            return -(float) (conf * bounds.range(0));
+        }
+    };
 
 
 //    /** TODO */

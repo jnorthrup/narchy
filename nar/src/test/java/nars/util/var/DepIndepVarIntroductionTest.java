@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.function.Supplier;
+import java.util.function.ToIntFunction;
 
 import static nars.$.$$;
 import static nars.term.util.TermTest.assertEq;
@@ -66,13 +67,23 @@ class DepIndepVarIntroductionTest {
     @Test
     void testSubtermScore() {
         assertEquals("{y=3, x=4}",
-                Terms.subtermScore($$("((x,x,x,x),(y,y,y))"), 2, (t1) -> 1).toString());
+                Terms.subtermScore($$("((x,x,x,x),(y,y,y))"), 2, new ToIntFunction<Term>() {
+                    @Override
+                    public int applyAsInt(Term t1) {
+                        return 1;
+                    }
+                }).toString());
     }
 
     @Test
     void testSubtermScore_Intrinsic() {
         assertEquals("{%1=4, %2=3}",
-            Terms.subtermScore($$("((%1,%1,%1,%1),(%2,%2,%2))"), 2, t -> 1).toString());
+            Terms.subtermScore($$("((%1,%1,%1,%1),(%2,%2,%2))"), 2, new ToIntFunction<Term>() {
+                @Override
+                public int applyAsInt(Term t) {
+                    return 1;
+                }
+            }).toString());
     }
 
     @Test

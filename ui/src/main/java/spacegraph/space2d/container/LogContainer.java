@@ -4,6 +4,8 @@ import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.space2d.widget.text.AbstractLabel;
 import spacegraph.space2d.widget.text.VectorLabel;
 
+import java.util.function.Consumer;
+
 public class LogContainer extends RingContainer<AbstractLabel> {
 
     public LogContainer(int len) {
@@ -21,7 +23,12 @@ public class LogContainer extends RingContainer<AbstractLabel> {
     }
 
     public void append(String s) {
-        next(v->v.text(s));
+        next(new Consumer<AbstractLabel>() {
+            @Override
+            public void accept(AbstractLabel v) {
+                v.text(s);
+            }
+        });
     }
 
 }

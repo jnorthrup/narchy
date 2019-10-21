@@ -1,12 +1,14 @@
 package spacegraph.space2d.widget.port;
 
 import jcog.exe.Exe;
+import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.widget.button.CheckBox;
 
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
+import java.util.function.UnaryOperator;
 
 public class Surplier<T> extends ConstantPort<T> {
 
@@ -17,42 +19,51 @@ public class Surplier<T> extends ConstantPort<T> {
         CheckBox toggle;
         set(toggle = new CheckBox(label));
         toggle.set(false);
-        toggle.on(tb ->{
-            if (tb) {
-                toggle.enabled(false);
-                Exe.run(()->{
-                    if (!toggle.on())
-                        return; //toggled off while waiting to execute
+        toggle.on(new BooleanProcedure() {
+            @Override
+            public void value(boolean tb) {
+                if (tb) {
+                    toggle.enabled(false);
+                    Exe.run(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (!toggle.on())
+                                return; //toggled off while waiting to execute
 
-                    built.updateAndGet(x -> {
-                        if (x == null)
-                            return builder.get();
-                        else
-                            return x;
-                    });
+                            built.updateAndGet(new UnaryOperator<T>() {
+                                @Override
+                                public T apply(T x) {
+                                    if (x == null)
+                                        return builder.get();
+                                    else
+                                        return x;
+                                }
+                            });
 //                    if (!toggle.on()) {
 //                        built.set(null);
 //                        return; //toggled off while building
 //                    }
 
-                    T b = built.getOpaque();
-                    set(b);
-                    if (b instanceof Surface) {
-                        toggle.stop();
-                        set(new Splitting(toggle, 0.95f, true, (Surface)b));
-                    }
-                    toggle.set(true);
-                    toggle.enabled(true);
-                });
-            } else {
-                if (built.getAndSet(null)!=null) {
-                    toggle.enabled(false);
+                            T b = built.getOpaque();
+                            Surplier.this.set(b);
+                            if (b instanceof Surface) {
+                                toggle.stop();
+                                Surplier.this.set(new Splitting(toggle, 0.95f, true, (Surface) b));
+                            }
+                            toggle.set(true);
+                            toggle.enabled(true);
+                        }
+                    });
+                } else {
+                    if (built.getAndSet(null) != null) {
+                        toggle.enabled(false);
 
 //                    toggle.stop();
-                    set((T) null);
+                        Surplier.this.set((T) null);
 //                    set(new Scale(toggle, 1));
-                    set(toggle);
-                    toggle.enabled(true);
+                        Surplier.this.set(toggle);
+                        toggle.enabled(true);
+                    }
                 }
             }
         });

@@ -13,16 +13,24 @@ import static java.util.stream.StreamSupport.stream;
 public class StreamReplay {
 
     public static <T> Supplier<Stream<T>> replay(Stream<T> data) {
-        return replay(() -> data);
+        return replay(new Supplier<Stream<T>>() {
+            @Override
+            public Stream<T> get() {
+                return data;
+            }
+        });
     }
 
     public static <T> Supplier<Stream<T>> replay(Supplier<Stream<T>> dataSrc) {
         Recorder<T> rec = new Recorder<T>(dataSrc);
-        return () -> {
-            // MemoizeIter starts on index 0 and reads data from srcIter or
-            // from an internal mem replay Recorder.
-            Spliterator<T> iter = rec.memIterator();
-            return stream(iter, false);
+        return new Supplier<Stream<T>>() {
+            @Override
+            public Stream<T> get() {
+                // MemoizeIter starts on index 0 and reads data from srcIter or
+                // from an internal mem replay Recorder.
+                Spliterator<T> iter = rec.memIterator();
+                return stream(iter, false);
+            }
         };
     }
 
@@ -61,9 +69,12 @@ public class StreamReplay {
                 return true;
             } else if (hasNext)
                 // If not in mem then advance the srcIter iterator
-                hasNext = getSrcIter().tryAdvance(item -> {
-                    mem.add(item);
-                    cons.accept(item);
+                hasNext = getSrcIter().tryAdvance(new Consumer<T>() {
+                    @Override
+                    public void accept(T item) {
+                        mem.add(item);
+                        cons.accept(item);
+                    }
                 });
             return hasNext;
         }

@@ -5,6 +5,7 @@ import jcog.data.list.FastCoWList;
 import jcog.util.ArrayUtil;
 
 import java.util.Arrays;
+import java.util.function.Predicate;
 
 
 public class SoundMixer extends FastCoWList<Sound> implements StereoSoundProducer {
@@ -32,7 +33,12 @@ public class SoundMixer extends FastCoWList<Sound> implements StereoSoundProduce
 	public void update(float receiverBalance) {
         boolean updating = (soundSource != null);
 
-		this.removeIf(sound -> !updating || !sound.update(soundSource, receiverBalance));
+		this.removeIf(new Predicate<Sound>() {
+            @Override
+            public boolean test(Sound sound) {
+                return !updating || !sound.update(soundSource, receiverBalance);
+            }
+        });
 	}
 
 	@Override

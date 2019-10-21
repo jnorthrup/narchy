@@ -4,6 +4,9 @@ import jcog.WTF;
 import nars.$;
 import nars.term.Term;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
+
+import java.util.function.Supplier;
 
 import static nars.time.Tense.ETERNAL;
 import static nars.time.Tense.TIMELESS;
@@ -55,7 +58,17 @@ class ConjBuilderTest {
     @Test
     void testConjBuilder_DontAccept_TIMELESS() {
         for (ConjBuilder c : new ConjBuilder[]{new ConjTree(), new ConjList()}) {
-            assertThrows(WTF.class, ()->c.add(TIMELESS, x), ()->c.getClass().getSimpleName());
+            assertThrows(WTF.class, new Executable() {
+                @Override
+                public void execute() throws Throwable {
+                    c.add(TIMELESS, x);
+                }
+            }, new Supplier<String>() {
+                @Override
+                public String get() {
+                    return c.getClass().getSimpleName();
+                }
+            });
         }
     }
 }

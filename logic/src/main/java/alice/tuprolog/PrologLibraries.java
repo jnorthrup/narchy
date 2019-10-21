@@ -15,6 +15,7 @@ import java.net.URLClassLoader;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Predicate;
 
 /**
  * @author Alex Benini
@@ -235,13 +236,16 @@ public class PrologLibraries {
      * @throws InvalidLibraryException if name is not a valid loaded library
      */
     public synchronized void unload(String name) throws InvalidLibraryException {
-        boolean found = currentLibraries.removeIf(lib -> {
-            if (lib.getName().equals(name)) {
-                lib.dismiss();
-                prims.stop(lib);
-                return true;
+        boolean found = currentLibraries.removeIf(new Predicate<PrologLib>() {
+            @Override
+            public boolean test(PrologLib lib) {
+                if (lib.getName().equals(name)) {
+                    lib.dismiss();
+                    prims.stop(lib);
+                    return true;
+                }
+                return false;
             }
-            return false;
         });
 
         if (!found)

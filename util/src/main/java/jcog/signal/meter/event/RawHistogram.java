@@ -88,7 +88,12 @@ public class RawHistogram {
     }
 
     public String toMicrosFormat() {
-        return toMicrosFormat(t -> t / 1e3);
+        return toMicrosFormat(new DoubleFunction<Double>() {
+            @Override
+            public Double apply(double t) {
+                return t / 1e3;
+            }
+        });
     }
 
     public String toMicrosFormat(DoubleFunction<Double> toMicros) {

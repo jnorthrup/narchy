@@ -20,7 +20,10 @@ import nars.term.atom.Atom;
 import nars.term.atom.IdempotentBool;
 import nars.term.atom.IdempotInt;
 import nars.term.util.transform.MapSubst;
+import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
+import org.eclipse.collections.api.block.procedure.Procedure;
 import org.eclipse.collections.api.tuple.Pair;
+import org.eclipse.collections.api.tuple.primitive.IntObjectPair;
 import org.eclipse.collections.impl.map.mutable.primitive.IntObjectHashMap;
 import org.eclipse.collections.impl.set.mutable.primitive.IntHashSet;
 import org.jetbrains.annotations.Nullable;
@@ -30,6 +33,8 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
 import static nars.Op.CONJ;
@@ -119,8 +124,12 @@ public enum Arithmeticize {
         return apply(x, null, NAL.term.COMPOUND_VOLUME_MAX, true, random);
     }
 
-    private static final ThreadLocal<Evaluator> evaluator = ThreadLocal.withInitial(() ->
-        new Evaluator(ArithFunctors)
+    private static final ThreadLocal<Evaluator> evaluator = ThreadLocal.withInitial(new Supplier<Evaluator>() {
+                                                                                        @Override
+                                                                                        public Evaluator get() {
+                                                                                            return new Evaluator(ArithFunctors);
+                                                                                        }
+                                                                                    }
     );
 
     public static Term apply(Term x, @Nullable Anon anon, int volMax, boolean preEval, Random random) {
@@ -132,7 +141,12 @@ public enum Arithmeticize {
         if (preEval) {
             Set<Term> xx = Evaluation.eval(x, true, false, evaluator.get());
             if (!xx.isEmpty()) {
-                xx.removeIf(z -> !z.hasAny(INT));
+                xx.removeIf(new Predicate<Term>() {
+                    @Override
+                    public boolean test(Term z) {
+                        return !z.hasAny(INT);
+                    }
+                });
 
                 int xxs = xx.size();
                 if (xxs == 1) {
@@ -150,10 +164,18 @@ public enum Arithmeticize {
         }
 
         IntHashSet ints = new IntHashSet(4);
-        x.recurseTerms(t -> t.hasAny(Op.INT), t -> {
-            if (t instanceof IdempotInt)
-                ints.add(((IdempotInt) t).i);
-            return true;
+        x.recurseTerms(new Predicate<Term>() {
+            @Override
+            public boolean test(Term t) {
+                return t.hasAny(Op.INT);
+            }
+        }, new Predicate<Term>() {
+            @Override
+            public boolean test(Term t) {
+                if (t instanceof IdempotInt)
+                    ints.add(((IdempotInt) t).i);
+                return true;
+            }
         }, null);
 
         int ui = ints.size();
@@ -162,7 +184,12 @@ public enum Arithmeticize {
 
         ArithmeticOp[] mm = mods(ints);
         Term y = mm[
-                    Roulette.selectRoulette(mm.length, c -> mm[c].score, random)
+                    Roulette.selectRoulette(mm.length, new IntToFloatFunction() {
+                        @Override
+                        public float valueOf(int c) {
+                            return mm[c].score;
+                        }
+                    }, random)
                 ].apply(x, anon);
 
         if (y == null || y instanceof IdempotentBool || y.volume() > volMax) return null;
@@ -222,7 +249,12 @@ public enum Arithmeticize {
                 if (a == -b) {
 
                     maybe(eqMods, a).add(pair(
-                            IdempotInt.the(b), v -> $.func(MathFunc.mul, v, IdempotInt.NEG_ONE)
+                            IdempotInt.the(b), new UnaryOperator<Term>() {
+                                @Override
+                                public Term apply(Term v) {
+                                    return $.func(MathFunc.mul, v, IdempotInt.NEG_ONE);
+                                }
+                            }
                     ));
 
 
@@ -231,7 +263,12 @@ public enum Arithmeticize {
 
 
                         maybe(eqMods, a).add(pair(
-                                IdempotInt.the(b), v -> $.func(MathFunc.mul, v, $.the(b / a))
+                                IdempotInt.the(b), new UnaryOperator<Term>() {
+                                    @Override
+                                    public Term apply(Term v) {
+                                        return $.func(MathFunc.mul, v, $.the(b / a));
+                                    }
+                                }
                         ));
                     }
 
@@ -241,7 +278,12 @@ public enum Arithmeticize {
 //                    ));
                     int AMinB = a - b;
                     maybe(eqMods, b).add(pair(
-                            IdempotInt.the(a), v -> $.func(MathFunc.add, v, $.the(AMinB))
+                            IdempotInt.the(a), new UnaryOperator<Term>() {
+                                @Override
+                                public Term apply(Term v) {
+                                    return $.func(MathFunc.add, v, $.the(AMinB));
+                                }
+                            }
                     ));
 
                 }
@@ -258,9 +300,12 @@ public enum Arithmeticize {
             }
         }
 
-        eqMods.keyValuesView().forEach((kv) -> {
-            assert (!kv.getTwo().isEmpty());
-            ops.add(new BaseEqualExpressionArithmeticOp(kv.getOne(), kv.getTwo().toArrayRecycled(Pair[]::new)));
+        eqMods.keyValuesView().forEach(new Procedure<IntObjectPair<FasterList<Pair<Term, UnaryOperator<Term>>>>>() {
+            @Override
+            public void value(IntObjectPair<FasterList<Pair<Term, UnaryOperator<Term>>>> kv) {
+                assert (!kv.getTwo().isEmpty());
+                ops.add(new BaseEqualExpressionArithmeticOp(kv.getOne(), kv.getTwo().toArrayRecycled(Pair[]::new)));
+            }
         });
 
         return ops.isEmpty() ? ArithmeticOp.EmptyArray : ops.toArray(ArithmeticOp.EmptyArray);

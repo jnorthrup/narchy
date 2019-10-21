@@ -11,6 +11,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import java.util.function.LongPredicate;
+
 import static nars.$.$$;
 import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
@@ -78,7 +80,12 @@ public class NAL4Test extends NALTest {
         test
                 .mustBelieve(cycles, "(1 --> (bitmap,0,/,0))", 1.0f, 0.9f, 0)
                 .mustBelieve(cycles, "(0 --> (bitmap,/,1,/))", 1.0f, 0.9f, 0)
-                .mustNotOutput(cycles, "(bitmap --> (0,1,0))", BELIEF, 1f, 1f, 0.9f, 0.9f, t->true)
+                .mustNotOutput(cycles, "(bitmap --> (0,1,0))", BELIEF, 1f, 1f, 0.9f, 0.9f, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return true;
+                    }
+                })
                 .input("((0,1,0) --> bitmap). |")
         ;
     }
@@ -162,7 +169,12 @@ public class NAL4Test extends NALTest {
     @Test
     void structural_transformation6_temporal() {
         test
-                .mustNotOutput(cycles, "((acid,base) --> neutralization)", BELIEF, 1f, 1.0f, 0.9f, 0.9f, t->true)
+                .mustNotOutput(cycles, "((acid,base) --> neutralization)", BELIEF, 1f, 1.0f, 0.9f, 0.9f, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return true;
+                    }
+                })
                 .mustBelieve(cycles, "(neutralization --> (acid,base))", 1.0f, 0.9f, 0) //en("Something that can be neutralized by an acid is a base.");
                 .input("((neutralization,acid,\\) --> base). |") //en("Something that can neutralize a base is an acid.");
         ;

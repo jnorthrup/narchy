@@ -1,6 +1,7 @@
 package nars.concept.dynamic;
 
 import jcog.data.list.FasterList;
+import jcog.util.ObjectLongLongPredicate;
 import nars.*;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
@@ -14,6 +15,7 @@ import nars.truth.dynamic.AbstractDynamicTruth;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 import static nars.$.$;
 import static nars.$.$$;
@@ -94,7 +96,12 @@ class DynamicConjTest extends AbstractDynamicTaskTest {
                     $.t(0.32f, 0.93f /*0.87f*/)
                     //$.t(0.00f, 0.90f)
                     //$.t(0.32f, 0.90f /*0.87f*/)
-                            .equalTruth(tNow, n), ()->"was " + tNow + " at " + now);
+                            .equalTruth(tNow, n), new Supplier<String>() {
+                        @Override
+                        public String get() {
+                            return "was " + tNow + " at " + now;
+                        }
+                    });
 
         }
         {
@@ -182,7 +189,12 @@ class DynamicConjTest extends AbstractDynamicTaskTest {
         TaskConcept cc = (TaskConcept) n.conceptualize($("(&&, a:x, a:y, a:z)"));
         Truth now = n.beliefTruth(cc, n.time());
         assertNotNull(now);
-        assertTrue($.t(1f, 0.73f).equalTruth(now, 0.1f), () -> now + " truth at " + n.time());
+        assertTrue($.t(1f, 0.73f).equalTruth(now, 0.1f), new Supplier<String>() {
+            @Override
+            public String get() {
+                return now + " truth at " + n.time();
+            }
+        });
 
 
         {
@@ -265,7 +277,12 @@ class DynamicConjTest extends AbstractDynamicTaskTest {
                 Op.CONJ.the(XTERNAL, $.$("(--,($1 ==>+- (((joy-->fz)&&fwd) &&+- $1)))"), $.$("(joy-->fz)"), $.$("fwd")).normalize();
 
         assertTrue(c instanceof Compound, c::toString);
-        assertTrue(Task.validTaskTerm(c), () -> c + " should be a valid task target");
+        assertTrue(Task.validTaskTerm(c), new Supplier<String>() {
+            @Override
+            public String get() {
+                return c + " should be a valid task target";
+            }
+        });
     }
 
     @Test
@@ -275,7 +292,12 @@ class DynamicConjTest extends AbstractDynamicTaskTest {
                 Op.CONJ.the(XTERNAL, $.$("(--,((--,#1)&&#2))"), $.$("(--,#2)"), $.varDep(1)).normalize();
 
         assertTrue(c instanceof Compound, c::toString);
-        assertTrue(Task.validTaskTerm(c), () -> c + " should be a valid task target");
+        assertTrue(Task.validTaskTerm(c), new Supplier<String>() {
+            @Override
+            public String get() {
+                return c + " should be a valid task target";
+            }
+        });
     }
 
     @Test
@@ -445,7 +467,12 @@ class DynamicConjTest extends AbstractDynamicTaskTest {
         for (String s : new String[] { "(x &&+1 x)", "(x &&+- x)"}){
             Term xyz = $(s);
             Task t = n.answerBelief(xyz, 0, 2);
-            assertNotNull(t, ()->s + " -> null");
+            assertNotNull(t, new Supplier<String>() {
+                @Override
+                public String get() {
+                    return s + " -> null";
+                }
+            });
             assertEq("x", t.term());
             assertEquals(0.75f, t.freq(), 0.05f);
             assertEquals(0.94f, t.conf(), 0.1f);
@@ -455,8 +482,12 @@ class DynamicConjTest extends AbstractDynamicTaskTest {
     static List<String> components(AbstractDynamicTruth model, Compound xyz, long s, long e) {
         List<String> components = new FasterList();
         model.evalComponents(xyz,s, e,
-                (what,whenStart,whenEnd)->{
-                    components.add(what + " @ " + whenStart + ".." + whenEnd); return true;
+                new ObjectLongLongPredicate<Term>() {
+                    @Override
+                    public boolean accept(Term what, long whenStart, long whenEnd) {
+                        components.add(what + " @ " + whenStart + ".." + whenEnd);
+                        return true;
+                    }
                 });
         return components;
     }

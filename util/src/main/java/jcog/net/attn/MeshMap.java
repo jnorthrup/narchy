@@ -14,6 +14,7 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 /** UDPeer-backed lossy hashmap with event notification */
 public class MeshMap<K,V> extends UDPeer /* implements Map<K,V>*/ {
@@ -99,15 +100,18 @@ public class MeshMap<K,V> extends UDPeer /* implements Map<K,V>*/ {
     }
 
     public static <K,V> MeshMap<K,V> get(String id, BiConsumer<K,V> x) {
-        return the.computeIfAbsent(id, i -> {
-            try {
-                MeshMap<K, V> y = new MeshMap<K, V>(id, x);
-                y.setFPS(mapFPS);
-                return y;
-            } catch (IOException e) {
-                
-                e.printStackTrace();
-                return null;
+        return the.computeIfAbsent(id, new Function<String, MeshMap>() {
+            @Override
+            public MeshMap apply(String i) {
+                try {
+                    MeshMap<K, V> y = new MeshMap<K, V>(id, x);
+                    y.setFPS(mapFPS);
+                    return y;
+                } catch (IOException e) {
+
+                    e.printStackTrace();
+                    return null;
+                }
             }
         });
     }

@@ -34,6 +34,7 @@ import spacegraph.space2d.widget.windo.DependentWindow;
 import spacegraph.space2d.widget.windo.Windo;
 import spacegraph.space2d.widget.windo.util.Box2DGraphEditPhysics;
 import spacegraph.space2d.widget.windo.util.GraphEditPhysics;
+import spacegraph.util.animate.Animated;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -93,10 +94,13 @@ public class GraphEdit2D extends MutableMapContainer<Surface, ContainerSurface> 
 
         physics.start(this);
 
-        loop = root().animate((dt -> {
-            //constraints.update();
-            this.physics.update(GraphEdit2D.this, dt);
-            return true;
+        loop = root().animate((new Animated() {
+            @Override
+            public boolean animate(float dt) {
+                //constraints.update();
+                GraphEdit2D.this.physics.update(GraphEdit2D.this, dt);
+                return true;
+            }
         }));
 
         super.starting();
@@ -127,12 +131,22 @@ public class GraphEdit2D extends MutableMapContainer<Surface, ContainerSurface> 
     }
 
     public Windo addUndecorated(Surface x) {
-        Windo w = add(x, xx -> new DependentWindow(x));
+        Windo w = add(x, new Function<Surface, ContainerSurface>() {
+            @Override
+            public ContainerSurface apply(Surface xx) {
+                return new DependentWindow(x);
+            }
+        });
         return w;
     }
 
     public Windo addWeak(Surface x) {
-        return add(x, xx -> new DependentWindow(new MyWeakSurface(xx)));
+        return add(x, new Function<Surface, ContainerSurface>() {
+            @Override
+            public ContainerSurface apply(Surface xx) {
+                return new DependentWindow(new MyWeakSurface(xx));
+            }
+        });
     }
 
     public void removeComponent(Surface s) {
@@ -174,15 +188,18 @@ public class GraphEdit2D extends MutableMapContainer<Surface, ContainerSurface> 
      * uses put() semantics
      */
     public final Windo add(Surface x, Function<Surface, ContainerSurface> windowize) {
-        Windo w = (Windo) computeIfAbsent(x, (xx) -> {
-            ContainerSurface ww = windowize.apply(xx);
-            if (ww != null) {
-                if (parent != null) {
-                    ww.start(this);
+        Windo w = (Windo) computeIfAbsent(x, new Function<Surface, ContainerSurface>() {
+            @Override
+            public ContainerSurface apply(Surface xx) {
+                ContainerSurface ww = windowize.apply(xx);
+                if (ww != null) {
+                    if (parent != null) {
+                        ww.start(GraphEdit2D.this);
+                    }
+                    physics.add(ww);
                 }
-                physics.add(ww);
+                return ww;
             }
-            return ww;
         }).value;
         return w;
     }
@@ -245,9 +262,12 @@ public class GraphEdit2D extends MutableMapContainer<Surface, ContainerSurface> 
 
     @Override
     public final void forEach(Consumer<Surface> each) {
-        whileEach((x)->{
-            each.accept(x);
-            return true;
+        whileEach(new Predicate<Surface>() {
+            @Override
+            public boolean test(Surface x) {
+                each.accept(x);
+                return true;
+            }
         });
     }
 
@@ -323,7 +343,12 @@ public class GraphEdit2D extends MutableMapContainer<Surface, ContainerSurface> 
 
         wire.connected();
 
-        physics.invokeLater(() -> physics.link(wire));
+        physics.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                physics.link(wire);
+            }
+        });
 
         return wire;
     }

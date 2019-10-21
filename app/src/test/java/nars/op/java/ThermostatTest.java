@@ -74,8 +74,18 @@ public class ThermostatTest {
                 coldToCold = Thermostat.change(false, false),
                 coldToHot = Thermostat.change(false, true),
                 hotToHot = Thermostat.change(true, true);
-        Predicate<Thermostat> isCold = x -> x.is() == Thermostat.cold;
-        Predicate<Thermostat> isHot = x -> x.is() == Thermostat.hot;
+        Predicate<Thermostat> isCold = new Predicate<Thermostat>() {
+            @Override
+            public boolean test(Thermostat x) {
+                return x.is() == Thermostat.cold;
+            }
+        };
+        Predicate<Thermostat> isHot = new Predicate<Thermostat>() {
+            @Override
+            public boolean test(Thermostat x) {
+                return x.is() == Thermostat.hot;
+            }
+        };
         n.log(System.out);
 
         boolean stupid = true;
@@ -93,18 +103,21 @@ public class ThermostatTest {
                     System.out.println("EPISODE START");
                     n.clear();
 
-                    env.teach("down", condition, x -> {
+                    env.teach("down", condition, new Consumer<Thermostat>() {
+                        @Override
+                        public void accept(Thermostat x) {
 
 
-                        n.run(1);
-                        while (x.is() > Thermostat.cold) {
-                            x.down();
                             n.run(1);
+                            while (x.is() > Thermostat.cold) {
+                                x.down();
+                                n.run(1);
+                            }
+                            x.report();
+                            n.run(1);
+
+
                         }
-                        x.report();
-                        n.run(1);
-
-
                     }, isCold);
                     System.out.println("EPISODE END");
                     n.run((int) Math.ceil(thinkDurs * n.dur()));
@@ -117,18 +130,21 @@ public class ThermostatTest {
                     System.out.println("EPISODE START");
                     n.clear();
 
-                    env.teach("up", condition, x -> {
+                    env.teach("up", condition, new Consumer<Thermostat>() {
+                        @Override
+                        public void accept(Thermostat x) {
 
 
-                        n.run(1);
-                        while (!isHot.test(x)) {
-                            x.up();
                             n.run(1);
+                            while (!isHot.test(x)) {
+                                x.up();
+                                n.run(1);
+                            }
+                            x.report();
+                            n.run(1);
+
+
                         }
-                        x.report();
-                        n.run(1);
-
-
                     }, isHot);
 
                     System.out.println("EPISODE END");
@@ -202,7 +218,12 @@ public class ThermostatTest {
         }
 
 
-        n.tasks().filter(t -> !t.isInput()).forEach(System.out::println);
+        n.tasks().filter(new Predicate<Task>() {
+            @Override
+            public boolean test(Task t) {
+                return !t.isInput();
+            }
+        }).forEach(System.out::println);
 
     }
 

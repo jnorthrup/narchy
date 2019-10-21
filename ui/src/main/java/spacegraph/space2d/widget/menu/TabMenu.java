@@ -100,16 +100,22 @@ public class TabMenu extends Menu {
 
     public Surface toggle(Function<String, ToggleButton> buttonBuilder, String label, Supplier<Surface> creator) {
         Surface[] created = {null};
-        ObjectBooleanProcedure<ToggleButton> toggleInside = (button, onOrOff) -> {
+        ObjectBooleanProcedure<ToggleButton> toggleInside = new ObjectBooleanProcedure<ToggleButton>() {
+            @Override
+            public void value(ToggleButton button, boolean onOrOff) {
 //            Exe.invoke(()->{
-                toggle(button, creator, onOrOff, created, true);
+                TabMenu.this.toggle(button, creator, onOrOff, created, true);
 //            });
+            }
         };
 
-        Runnable spawnOutside = () -> {
+        Runnable spawnOutside = new Runnable() {
+            @Override
+            public void run() {
 //            Exe.invoke(()->{
-                toggle(null, creator, true, created, false);
+                TabMenu.this.toggle(null, creator, true, created, false);
 //            });
+            }
         };
 
         ToggleButton bb = buttonBuilder.apply(label).on(toggleInside);
@@ -119,7 +125,12 @@ public class TabMenu extends Menu {
         //return Splitting.row(bb, 0.75f, new AspectAlign(cc, AspectAlign.Align.RightTop,1, 0.75f));
 
         AspectAlign ccc = new AspectAlign(cc, 1.0F, AspectAlign.Align.TopRight, 0.25f, 0.25f);
-        return new MetaHover(bb, ()->ccc);
+        return new MetaHover(bb, new Supplier<Surface>() {
+            @Override
+            public Surface get() {
+                return ccc;
+            }
+        });
         //return new Stacking(cc, ccc);
 
     }

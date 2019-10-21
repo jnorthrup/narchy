@@ -22,6 +22,7 @@
  */
 package jcog.data.graph;
 
+import org.eclipse.collections.api.block.procedure.primitive.IntProcedure;
 import org.eclipse.collections.impl.list.mutable.primitive.IntArrayList;
 
 import java.util.BitSet;
@@ -61,14 +62,17 @@ public class FastUndirGraph extends ConstUndirGraph {
 
         for (int i = 0; i < max; ++i) {
             int ii = i;
-            g.neighborsOut(i).forEach(out -> {
-                if (!g.isEdge(out, ii))
-                    in[out].add(ii);
-                
-                if (ii > out) 
-                    triangle[ii].set(out);
-                else
-                    triangle[out].set(ii);
+            g.neighborsOut(i).forEach(new IntProcedure() {
+                @Override
+                public void value(int out) {
+                    if (!g.isEdge(out, ii))
+                        in[out].add(ii);
+
+                    if (ii > out)
+                        triangle[ii].set(out);
+                    else
+                        triangle[out].set(ii);
+                }
             });
         }
     }

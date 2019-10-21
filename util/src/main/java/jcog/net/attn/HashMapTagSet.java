@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.BiFunction;
 
 import static jcog.pri.ScalarValue.EPSILON;
 
@@ -94,10 +95,13 @@ public class HashMapTagSet implements TagSet, Serializable {
             return false;
 
         boolean[] mod = {true};
-        data.merge(tag, pri, (existing, added) -> {
-            float next = Util.unitize(existing + added );
-            mod[0] = !Util.equals(existing,next, EPSILON);
-            return next;
+        data.merge(tag, pri, new BiFunction<Float, Float, Float>() {
+            @Override
+            public Float apply(Float existing, Float added) {
+                float next = Util.unitize(existing + added);
+                mod[0] = !Util.equals(existing, next, EPSILON);
+                return next;
+            }
         });
 
         return mod[0];

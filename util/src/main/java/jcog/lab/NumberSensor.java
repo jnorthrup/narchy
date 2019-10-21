@@ -38,7 +38,12 @@ public abstract class NumberSensor<X> extends Sensor<X,Number> {
         return ofNumber(id, f::applyAsInt);
     }
     public static <X> NumberSensor<X> of(String id, Predicate<X> f) {
-        return ofNumber(id, (x -> f.test(x) ? 1 : 0));
+        return ofNumber(id, (new Function<X, Number>() {
+            @Override
+            public Number apply(X x) {
+                return f.test(x) ? 1 : 0;
+            }
+        }));
     }
 
 

@@ -45,43 +45,58 @@ public class WidgetTest {
 
     static {
         Map<String, Supplier<Surface>> m = Map.of(
-                "Container", () -> grid(
-                        LabeledPane.the("grid",
-                                grid(iconButton(), iconButton(), iconButton(), iconButton(), iconButton(), iconButton(), iconButton(), iconButton())
-                        ),
-                        LabeledPane.the("grid wide",
-                                new Gridding(Util.PHI_min_1f, iconButton(), iconButton(), iconButton(), iconButton(), iconButton(), iconButton(), iconButton(), iconButton())
-                        ),
-                        LabeledPane.the("grid tall",
-                                new Gridding(Util.PHIf, iconButton(), iconButton(), iconButton(), iconButton(), iconButton(), iconButton(), iconButton(), iconButton())
-                        ),
-                        LabeledPane.the("column",
-                                column(iconButton(), iconButton(), iconButton(), iconButton(), iconButton(), iconButton(), iconButton(), iconButton())
-                        ),
-                        LabeledPane.the("row",
-                                row(iconButton(), iconButton(), iconButton(), iconButton(), iconButton(), iconButton(), iconButton(), iconButton())
-                        ),
-                        LabeledPane.the("vsplit",
-                                Splitting.column(iconButton(), 0.618f, iconButton())
-                        ),
-                        LabeledPane.the("hsplit",
-                                Splitting.row(iconButton(), 0.618f, iconButton())
-                        )
-                ),
-                "Button", () -> grid(
-                        new PushButton("PushButton"),
-                        new CheckBox("CheckBox"),
-                        new HexButton("gears", "HexButton")
-                ),
-                "Slider", () -> grid(
-                        Splitting.row(
-                                grid(new FloatSlider("solid slider", .25f, (float) 0, 1.0F    /* pause */),
-                                        new FloatSlider("knob slider", 0.75f, (float) 0, 1.0F).type(SliderModel.KnobHoriz)),
-                                0.9f,
-                                new FloatSlider(0.33f, (float) 0, 1.0F).type(SliderModel.KnobVert)
-                        ),
-                        new XYSlider()
-                ),
+                "Container", new Supplier<Surface>() {
+                    @Override
+                    public Surface get() {
+                        return grid(
+                                LabeledPane.the("grid",
+                                        grid(iconButton(), iconButton(), iconButton(), iconButton(), iconButton(), iconButton(), iconButton(), iconButton())
+                                ),
+                                LabeledPane.the("grid wide",
+                                        new Gridding(Util.PHI_min_1f, iconButton(), iconButton(), iconButton(), iconButton(), iconButton(), iconButton(), iconButton(), iconButton())
+                                ),
+                                LabeledPane.the("grid tall",
+                                        new Gridding(Util.PHIf, iconButton(), iconButton(), iconButton(), iconButton(), iconButton(), iconButton(), iconButton(), iconButton())
+                                ),
+                                LabeledPane.the("column",
+                                        column(iconButton(), iconButton(), iconButton(), iconButton(), iconButton(), iconButton(), iconButton(), iconButton())
+                                ),
+                                LabeledPane.the("row",
+                                        row(iconButton(), iconButton(), iconButton(), iconButton(), iconButton(), iconButton(), iconButton(), iconButton())
+                                ),
+                                LabeledPane.the("vsplit",
+                                        Splitting.column(iconButton(), 0.618f, iconButton())
+                                ),
+                                LabeledPane.the("hsplit",
+                                        Splitting.row(iconButton(), 0.618f, iconButton())
+                                )
+                        );
+                    }
+                },
+                "Button", new Supplier<Surface>() {
+                    @Override
+                    public Surface get() {
+                        return grid(
+                                new PushButton("PushButton"),
+                                new CheckBox("CheckBox"),
+                                new HexButton("gears", "HexButton")
+                        );
+                    }
+                },
+                "Slider", new Supplier<Surface>() {
+                    @Override
+                    public Surface get() {
+                        return grid(
+                                Splitting.row(
+                                        grid(new FloatSlider("solid slider", .25f, (float) 0, 1.0F    /* pause */),
+                                                new FloatSlider("knob slider", 0.75f, (float) 0, 1.0F).type(SliderModel.KnobHoriz)),
+                                        0.9f,
+                                        new FloatSlider(0.33f, (float) 0, 1.0F).type(SliderModel.KnobVert)
+                                ),
+                                new XYSlider()
+                        );
+                    }
+                },
 //                "Dialog", () -> grid(
 //                        new TextEdit0("xyz").show(),
 //                        new FloatSlider(0.33f, 0.25f, 1, "Level"),
@@ -92,31 +107,60 @@ public class WidgetTest {
 //                ),
 
                 "Wizard", ProtoWidget::new,
-                "Label", () -> grid(
-                        new VectorLabel("vector"),
-                        new BitmapLabel("bitmap")
-                ),
-                "TextEdit", () ->
-                        new TextEdit("Edit this\n...").focus(), //new TextEdit0(new DummyConsole())
-                "Graph2D", () -> new TabMenu(Map.of(
-                        "Simple", Graph2DTest::newSimpleGraph,
-                        "UJMP", Graph2DTest::newUjmpGraph,
-                        "Types", Graph2DTest::newTypeGraph
-                )),
+                "Label", new Supplier<Surface>() {
+                    @Override
+                    public Surface get() {
+                        return grid(
+                                new VectorLabel("vector"),
+                                new BitmapLabel("bitmap")
+                        );
+                    }
+                },
+                "TextEdit", new Supplier<Surface>() {
+                    @Override
+                    public Surface get() {
+                        return new TextEdit("Edit this\n...").focus();
+                    }
+                }, //new TextEdit0(new DummyConsole())
+                "Graph2D", new Supplier<Surface>() {
+                    @Override
+                    public Surface get() {
+                        return new TabMenu(Map.of(
+                                "Simple", Graph2DTest::newSimpleGraph,
+                                "UJMP", Graph2DTest::newUjmpGraph,
+                                "Types", Graph2DTest::newTypeGraph
+                        ));
+                    }
+                },
 
-                "Wiring", () -> new TabMenu(wiringDemos()),
+                "Wiring", new Supplier<Surface>() {
+                    @Override
+                    public Surface get() {
+                        return new TabMenu(wiringDemos());
+                    }
+                },
 
                 "Geo", OSMTest::osmTest
         );
 
         m = new HashMap<>(m); //escape arg limitation of Map.of()
-        m.put("Sketch", () -> new MetaFrame(new Sketch2DBitmap(256, 256)));
+        m.put("Sketch", new Supplier<Surface>() {
+            @Override
+            public Surface get() {
+                return new MetaFrame(new Sketch2DBitmap(256, 256));
+            }
+        });
         m.put("Speak", SpeakChip::new);
-        m.put("Resplit", () -> new Splitting(
-                        new Splitting<>(iconButton(), Util.PHI_min_1f, true, iconButton()).resizeable(),
-                        Util.PHI_min_1f,
-                        new Splitting<>(iconButton(), Util.PHI_min_1f, false, iconButton()).resizeable()
-                ).resizeable()
+        m.put("Resplit", new Supplier<Surface>() {
+                    @Override
+                    public Surface get() {
+                        return new Splitting(
+                                new Splitting<>(iconButton(), Util.PHI_min_1f, true, iconButton()).resizeable(),
+                                Util.PHI_min_1f,
+                                new Splitting<>(iconButton(), Util.PHI_min_1f, false, iconButton()).resizeable()
+                        ).resizeable();
+                    }
+                }
         );
         m.put("Timeline", Timeline2DTest::timeline2dTest);
         m.put("Tsne", TsneTest::testTsneModel);
@@ -136,31 +180,55 @@ public class WidgetTest {
 
     private static Map<String, Supplier<Surface>> wiringDemos() {
         return Map.of(
-                "Empty", () -> wiringDemo((g) -> {
-                }),
-                "Intro", () -> wiringDemo(g -> {
-                    g.add(WidgetTest.widgetDemo()).posRel(1.0F, 1.0F, 0.5f, 0.25f);
-                    for (int i = 1; i < 3; i++)
-                        g.add(new WizardFrame(new ProtoWidget())).posRel(0.5f, 0.5f, 0.45f / (float) i, 0.35f / (float) i);
-                }),
+                "Empty", new Supplier<Surface>() {
+                    @Override
+                    public Surface get() {
+                        return wiringDemo(new Consumer<GraphEdit2D>() {
+                            @Override
+                            public void accept(GraphEdit2D g) {
+                            }
+                        });
+                    }
+                },
+                "Intro", new Supplier<Surface>() {
+                    @Override
+                    public Surface get() {
+                        return wiringDemo(new Consumer<GraphEdit2D>() {
+                            @Override
+                            public void accept(GraphEdit2D g) {
+                                g.add(WidgetTest.widgetDemo()).posRel(1.0F, 1.0F, 0.5f, 0.25f);
+                                for (int i = 1; i < 3; i++)
+                                    g.add(new WizardFrame(new ProtoWidget())).posRel(0.5f, 0.5f, 0.45f / (float) i, 0.35f / (float) i);
+                            }
+                        });
+                    }
+                },
                 //"", ()-> wiringDemo((g)->{})
-                "Basic", () -> wiringDemo((g) -> {
-                    /** switched signal */
+                "Basic", new Supplier<Surface>() {
+                    @Override
+                    public Surface get() {
+                        return wiringDemo(new Consumer<GraphEdit2D>() {
+                            @Override
+                            public void accept(GraphEdit2D g) {
+                                /** switched signal */
 
-                    NoiseVectorChip A = new NoiseVectorChip();
-                    ContainerSurface a = g.add(A).sizeRel(0.25f, 0.25f);
+                                NoiseVectorChip A = new NoiseVectorChip();
+                                ContainerSurface a = g.add(A).sizeRel(0.25f, 0.25f);
 
 
-                    Port B = LabeledPort.generic();
-                    ContainerSurface b = g.add(B).sizeRel(0.25f, 0.25f);
+                                Port B = LabeledPort.generic();
+                                ContainerSurface b = g.add(B).sizeRel(0.25f, 0.25f);
 
-                    TogglePort AB = new TogglePort();
-                    g.add(AB).sizeRel(0.25f, 0.25f);
+                                TogglePort AB = new TogglePort();
+                                g.add(AB).sizeRel(0.25f, 0.25f);
 
 //                    Loop.of(() -> {
 //                        A.out(Texts.n4(Math.random()));
 //                    }).setFPS(0.3f);
-                })
+                            }
+                        });
+                    }
+                }
         );
     }
 

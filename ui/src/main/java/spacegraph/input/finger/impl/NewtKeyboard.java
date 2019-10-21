@@ -5,6 +5,7 @@ import com.jogamp.newt.event.KeyListener;
 import jcog.TODO;
 import jcog.math.v2;
 import jcog.sort.TopN;
+import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import spacegraph.SpaceGraph;
 import spacegraph.input.finger.Finger;
 import spacegraph.input.key.KeyPressed;
@@ -13,6 +14,7 @@ import spacegraph.space2d.container.ContainerSurface;
 import toxi.math.MathUtils;
 
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Predicate;
 
 import static com.jogamp.newt.event.KeyEvent.*;
 
@@ -97,24 +99,30 @@ public class NewtKeyboard extends Finger implements KeyListener {
 
         //search neighborhood for what can be focused in the provided direction
         //TODO abstract to multi-level bfs/dfs graph search with early termination and heuristics etc
-        TopN<Surface> next = new TopN<Surface>(new Surface[1], s -> {
-            v2 c = s.bounds.center();
-            double dAngle = Math.abs((double) angleInRadians - Math.atan2((double) (c.y - xc.y), (double) (c.x - xc.x)));
-            if (dAngle < Math.PI / 4.0 /* +-45deg */){
-                float d = 1f / (1.0F + c.distanceSq(xc));
-                return d;
-            } else {
-                return Float.NaN;
+        TopN<Surface> next = new TopN<Surface>(new Surface[1], new FloatFunction<Surface>() {
+            @Override
+            public float floatValueOf(Surface s) {
+                v2 c = s.bounds.center();
+                double dAngle = Math.abs((double) angleInRadians - Math.atan2((double) (c.y - xc.y), (double) (c.x - xc.x)));
+                if (dAngle < Math.PI / 4.0 /* +-45deg */) {
+                    float d = 1f / (1.0F + c.distanceSq(xc));
+                    return d;
+                } else {
+                    return Float.NaN;
+                }
             }
         });
         ContainerSurface parent = ((Surface)x.parent).parentOrSelf(ContainerSurface.class);
-        parent.whileEach(c -> {
-            if (c == x)
+        parent.whileEach(new Predicate<Surface>() {
+            @Override
+            public boolean test(Surface c) {
+                if (c == x)
+                    return true;
+                if (!(c instanceof KeyPressed))
+                    return true;
+                next.accept(c);
                 return true;
-            if (!(c instanceof KeyPressed))
-                return true;
-            next.accept(c);
-            return true;
+            }
         });
         Surface n = next.get(0);
         if (n!=null) {

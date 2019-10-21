@@ -5,6 +5,9 @@ import jcog.TODO;
 import java.lang.reflect.Array;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 
 /**
@@ -121,7 +124,27 @@ public class HashTabulka<T> extends AbstractSet<T> implements Set<T> {
      */
     public T get(Object o) {
         int oh = o.hashCode();
-        return Stream.iterate(hashtable[oh & n], Objects::nonNull, chain -> chain.next).filter(chain -> chain.hash == oh).map(chain -> chain.value).filter(v -> v.equals(o)).findFirst().orElse(null);
+        return Stream.iterate(hashtable[oh & n], Objects::nonNull, new UnaryOperator<Node<T>>() {
+            @Override
+            public Node<T> apply(Node<T> chain) {
+                return chain.next;
+            }
+        }).filter(new Predicate<Node<T>>() {
+            @Override
+            public boolean test(Node<T> chain) {
+                return chain.hash == oh;
+            }
+        }).map(new Function<Node<T>, T>() {
+            @Override
+            public T apply(Node<T> chain) {
+                return chain.value;
+            }
+        }).filter(new Predicate<T>() {
+            @Override
+            public boolean test(T v) {
+                return v.equals(o);
+            }
+        }).findFirst().orElse(null);
     }
 
     /**

@@ -2,6 +2,7 @@ package nars.op.rdfowl;
 
 import nars.NAR;
 import nars.NARS;
+import nars.Task;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -9,6 +10,7 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
+import java.util.function.Consumer;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -39,7 +41,12 @@ public class NQuadsRDFTest {
                 NQuadsRDF.stream(n, new File(
                         
                         "/home/me/Downloads/nquad"
-                )).peek(t -> pout.println(t.term().toString() + t.punc()))
+                )).peek(new Consumer<Task>() {
+                    @Override
+                    public void accept(Task t) {
+                        pout.println(t.term().toString() + t.punc());
+                    }
+                })
         );
 
         pout.close();
@@ -78,12 +85,18 @@ public class NQuadsRDFTest {
 
             NQuadsRDF.stream(n, new File(
                     input
-            )).peek(t -> {
-                t.pri(n.priDefault(t.punc()) / 10f);
-                pout.println(t + ".");
-            }).forEach(x -> {
-                n.input(x);
-                n.run(1); 
+            )).peek(new Consumer<Task>() {
+                @Override
+                public void accept(Task t) {
+                    t.pri(n.priDefault(t.punc()) / 10f);
+                    pout.println(t + ".");
+                }
+            }).forEach(new Consumer<Task>() {
+                @Override
+                public void accept(Task x) {
+                    n.input(x);
+                    n.run(1);
+                }
             });
 
             pout.close();

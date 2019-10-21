@@ -21,9 +21,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReferenceArray;
 import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
+import java.util.function.*;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -107,7 +105,12 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
     private static void updateEach(AtomicReferenceArray map, Function update) {
         for (int c = map.length(), j = 0; j < c; j++) {
             //map.updateAndGet(j, (vv) -> vv != null ? update.apply(vv) : null);
-            map.accumulateAndGet(j, update, (vv, u) -> vv!=null ? ((Function)u).apply(vv) : null);
+            map.accumulateAndGet(j, update, new BinaryOperator() {
+                @Override
+                public Object apply(Object vv, Object u) {
+                    return vv != null ? ((Function) u).apply(vv) : null;
+                }
+            });
         }
     }
 
@@ -137,17 +140,23 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
         MetalAtomicReferenceArray<V>[] prev = new MetalAtomicReferenceArray[1];
 
         MetalAtomicReferenceArray<V> next = newSpace != 0 ? new MetalAtomicReferenceArray<>(newSpace) : EMPTY_ARRAY;
-        if (next == MAP.updateAndGet(this, (x) -> {
-            if (x.length() != newSpace) {
-                prev[0] = x;
-                return next;
-            } else return x;
+        if (next == MAP.updateAndGet(this, new UnaryOperator<MetalAtomicReferenceArray>() {
+            @Override
+            public MetalAtomicReferenceArray apply(MetalAtomicReferenceArray x) {
+                if (x.length() != newSpace) {
+                    prev[0] = x;
+                    return next;
+                } else return x;
+            }
         })) {
 
 
-            forEachActive(this, prev[0], (b) -> {
-                if (put(b) == null)
-                    onRemove(b);
+            forEachActive(this, prev[0], new Consumer<V>() {
+                @Override
+                public void accept(V b) {
+                    if (HijackBag.this.put(b) == null)
+                        HijackBag.this.onRemove(b);
+                }
             });
 
             commit(null);
@@ -621,7 +630,12 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
             /** emergency null counter, in case map becomes totally null avoids infinite loop*/
             int mapNullSeen = 0;
 
-            IntToFloatFunction weight = (k) -> wPri[k];
+            IntToFloatFunction weight = new IntToFloatFunction() {
+                @Override
+                public float valueOf(int k) {
+                    return wPri[k];
+                }
+            };
             //MutableRoulette roulette = new MutableRoulette(windowCap, weight, random);
 
             int windowSize = 0;

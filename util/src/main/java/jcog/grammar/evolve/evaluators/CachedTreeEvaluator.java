@@ -26,6 +26,8 @@ import jcog.grammar.evolve.utils.Triplet;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.BiFunction;
+import java.util.function.ToLongFunction;
 
 /**
  *
@@ -49,21 +51,24 @@ public class CachedTreeEvaluator extends DefaultTreeEvaluator implements CachedE
         Triplet<EvaluationPhases, Boolean, String> key = new Triplet<EvaluationPhases, Boolean, String>(context.getPhase(), context.isStripedPhase(), sb.toString());
         /*synchronized (cache)*/ {
             TreeEvaluationException[] error = new TreeEvaluationException[1];
-            List<Bounds[]> result = cache.compute(key, (k, res) -> {
-                if (res != null) {
-                    hit++;
-                    return res;
-                } else {
-                    miss++;
+            List<Bounds[]> result = cache.compute(key, new BiFunction<Triplet<EvaluationPhases, Boolean, String>, List<Bounds[]>, List<Bounds[]>>() {
+                @Override
+                public List<Bounds[]> apply(Triplet<EvaluationPhases, Boolean, String> k, List<Bounds[]> res) {
+                    if (res != null) {
+                        hit++;
+                        return res;
+                    } else {
+                        miss++;
 
-                    try {
-                        return CachedTreeEvaluator.super.evaluate(root, context);
-                    } catch (TreeEvaluationException e) {
-                        error[0] = e;
+                        try {
+                            return CachedTreeEvaluator.super.evaluate(root, context);
+                        } catch (TreeEvaluationException e) {
+                            error[0] = e;
+                        }
+
                     }
-
+                    return null;
                 }
-                return null;
             });
             if (result == null && error[0]!=null)
                 throw error[0];
@@ -81,13 +86,16 @@ public class CachedTreeEvaluator extends DefaultTreeEvaluator implements CachedE
     @Override
     public long getCacheSizeBytes(){
         synchronized (cache) {
-            long cacheSize = cache.values().stream().mapToLong(list -> {
-                long sum = 0L;
-                for (Bounds[] exampleResult : list) {
-                    long length = (long) exampleResult.length;
-                    sum += length;
+            long cacheSize = cache.values().stream().mapToLong(new ToLongFunction<List<Bounds[]>>() {
+                @Override
+                public long applyAsLong(List<Bounds[]> list) {
+                    long sum = 0L;
+                    for (Bounds[] exampleResult : list) {
+                        long length = (long) exampleResult.length;
+                        sum += length;
+                    }
+                    return sum;
                 }
-                return sum;
             }).sum();
             cacheSize = cacheSize * (long) (Integer.SIZE / 4);
             return cacheSize;

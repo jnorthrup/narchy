@@ -4,6 +4,7 @@ import nars.NAR;
 import nars.NARS;
 import nars.term.Term;
 import nars.test.NALTest;
+import org.eclipse.collections.api.block.predicate.primitive.LongLongPredicate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -520,7 +521,12 @@ public class NAL5Test extends NALTest {
         test
                 .believe("(x ==> y)")
                 .believe("((z && x) ==> --y)")
-                .mustNotBelieve(cycles, "z", 1.00f, 0.45f, (s,e)->true);
+                .mustNotBelieve(cycles, "z", 1.00f, 0.45f, new LongLongPredicate() {
+                    @Override
+                    public boolean accept(long s, long e) {
+                        return true;
+                    }
+                });
     }
     @Test
     void conditional_abduction_viaMultiConditionalSyllogismSimple_NegSubCondition_The() {

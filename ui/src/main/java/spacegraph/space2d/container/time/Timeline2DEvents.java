@@ -7,6 +7,7 @@ import org.roaringbitmap.RoaringBitmap;
 import spacegraph.space2d.container.graph.Graph2D;
 import spacegraph.space2d.container.graph.NodeVis;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -57,7 +58,12 @@ public class Timeline2DEvents<E> extends Graph2D<E> implements Timeline2D.TimeRa
             Timeline2D.EventBuffer model = gg.model;
             float yl = g.bottom(), yh = g.top();
 
-            g.forEachValue(t -> layout(t, gg, model, minVisibleWidth, yl, yh));
+            g.forEachValue(new Consumer<NodeVis<E>>() {
+                @Override
+                public void accept(NodeVis<E> t) {
+                    LinearTimelineUpdater.this.layout(t, gg, model, minVisibleWidth, yl, yh);
+                }
+            });
         }
 
         protected void layout(NodeVis<E> jj, Timeline2DEvents gg, Timeline2D.EventBuffer model, float minVisibleWidth, float yl, float yh) {
@@ -92,9 +98,12 @@ public class Timeline2DEvents<E> extends Graph2D<E> implements Timeline2D.TimeRa
         public void update(Graph2D<E> g, float dtS) {
             next.clear();
 
-            g.forEachValue(t -> {
-                if (t.id != null) {
-                    next.add(t);
+            g.forEachValue(new Consumer<NodeVis<E>>() {
+                @Override
+                public void accept(NodeVis<E> t) {
+                    if (t.id != null) {
+                        next.add(t);
+                    }
                 }
             });
             if (next.isEmpty())
@@ -104,7 +113,12 @@ public class Timeline2DEvents<E> extends Graph2D<E> implements Timeline2D.TimeRa
             Timeline2DEvents gg = (Timeline2DEvents) g;
             Timeline2D.EventBuffer model = gg.model;
 
-            next.sortThis((x, y) -> model.compareDurThenStart(x.id, y.id));
+            next.sortThis(new Comparator<NodeVis<E>>() {
+                @Override
+                public int compare(NodeVis<E> x, NodeVis<E> y) {
+                    return model.compareDurThenStart(x.id, y.id);
+                }
+            });
 
 
             RoaringBitmap l0 = new RoaringBitmap();

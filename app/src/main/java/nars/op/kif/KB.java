@@ -66,6 +66,7 @@ import com.google.common.collect.Sets;
 
 import java.io.*;
 import java.util.*;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -2239,8 +2240,18 @@ public class KB implements Serializable {
             formatMap = new HashMap<>();
         if (termFormatMap == null)
             termFormatMap = new HashMap<>();
-        formatMap.computeIfAbsent(lang, k -> new HashMap<>());
-        termFormatMap.computeIfAbsent(lang, k -> new HashMap<>());
+        formatMap.computeIfAbsent(lang, new Function<String, HashMap<String, String>>() {
+            @Override
+            public HashMap<String, String> apply(String k) {
+                return new HashMap<>();
+            }
+        });
+        termFormatMap.computeIfAbsent(lang, new Function<String, HashMap<String, String>>() {
+            @Override
+            public HashMap<String, String> apply(String k) {
+                return new HashMap<>();
+            }
+        });
 
         if (!loadFormatMapsAttempted.contains(lang)) {
             ArrayList<Formula> col = askWithRestriction(0, "format", 1, lang);

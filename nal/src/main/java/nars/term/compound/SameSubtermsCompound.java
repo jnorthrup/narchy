@@ -23,27 +23,47 @@ public interface SameSubtermsCompound extends Compound {
         //copied from Subterms.java
         return !inSuperCompound.test(this) ||
                 whileTrue.test(this) &&
-                AND(s -> s.recurseTerms(inSuperCompound, whileTrue, this));
+                AND(new Predicate<Term>() {
+                    @Override
+                    public boolean test(Term s) {
+                        return s.recurseTerms(inSuperCompound, whileTrue, SameSubtermsCompound.this);
+                    }
+                });
     }
 
     @Override
     default boolean recurseTerms(Predicate<Compound> aSuperCompoundMust, BiPredicate<Term, Compound> whileTrue, @Nullable Compound superterm) {
         return !aSuperCompoundMust.test(this) ||
                 whileTrue.test(this, superterm) &&
-                AND(s -> s.recurseTerms(aSuperCompoundMust, whileTrue, this));
+                AND(new Predicate<Term>() {
+                    @Override
+                    public boolean test(Term s) {
+                        return s.recurseTerms(aSuperCompoundMust, whileTrue, SameSubtermsCompound.this);
+                    }
+                });
     }
 
     @Override
     default boolean recurseTermsOrdered(Predicate<Term> inSuperCompound, Predicate<Term> whileTrue, Compound parent) {
         //copied from Subterms.java
-        return inSuperCompound.test(this) && whileTrue.test(this) && AND(i -> i.recurseTermsOrdered(inSuperCompound, whileTrue, parent));
+        return inSuperCompound.test(this) && whileTrue.test(this) && AND(new Predicate<Term>() {
+            @Override
+            public boolean test(Term i) {
+                return i.recurseTermsOrdered(inSuperCompound, whileTrue, parent);
+            }
+        });
     }
 
     @Override
     default boolean subtermsContainsRecursively(Term x, boolean root, Predicate<Term> subTermOf) {
         //copied from Subterms.java
         return (subs() == 1 || !impossibleSubTerm(x)) &&
-            AND(ii -> ii == x || (root ? ii.equalsRoot(x) : ii.equals(x)) || ii.containsRecursively(x, root, subTermOf));
+            AND(new Predicate<Term>() {
+                @Override
+                public boolean test(Term ii) {
+                    return ii == x || (root ? ii.equalsRoot(x) : ii.equals(x)) || ii.containsRecursively(x, root, subTermOf);
+                }
+            });
     }
 
     @Override

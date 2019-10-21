@@ -2,6 +2,8 @@ package jcog.data.byt;
 
 import jcog.data.pool.MetalPool;
 
+import java.util.function.Supplier;
+
 public class RecycledDynBytes extends DynBytes {
 
     private RecycledDynBytes(int bufferSize) {
@@ -12,10 +14,14 @@ public class RecycledDynBytes extends DynBytes {
 
     static final int MAX_KEY_CAPACITY = 8192;
     //final static ThreadLocal<DequePool<byte[]>> bytesPool = DequePool.threadLocal(()->new byte[MAX_KEY_CAPACITY]);
-    static final ThreadLocal<MetalPool<RecycledDynBytes>> bytesPool = MetalPool.threadLocal(()->
-            new UnsafeRecycledDynBytes(
-            //new RecycledDynBytes(
-                    MAX_KEY_CAPACITY));
+    static final ThreadLocal<MetalPool<RecycledDynBytes>> bytesPool = MetalPool.threadLocal(new Supplier<RecycledDynBytes>() {
+        @Override
+        public RecycledDynBytes get() {
+            return new UnsafeRecycledDynBytes(
+                    //new RecycledDynBytes(
+                    MAX_KEY_CAPACITY);
+        }
+    });
 
     public static RecycledDynBytes get() {
         MetalPool<RecycledDynBytes> pool = bytesPool.get();

@@ -2,6 +2,8 @@ package alice.tuprolog;
 
 import jcog.Util;
 
+import java.util.function.Function;
+
 /**
  * @author Matteo Iuliani
  */
@@ -28,7 +30,12 @@ public class JavaException extends Throwable {
         StackTraceElement[] elements = e.getStackTrace();
         
         return new Struct(java_exception, causeTerm, messageTerm,
-                new Struct(Util.map(e -> new Struct(e.toString()), new Term[elements.length], e.getStackTrace())));
+                new Struct(Util.map(new Function<StackTraceElement, Term>() {
+                    @Override
+                    public Term apply(StackTraceElement e) {
+                        return new Struct(e.toString());
+                    }
+                }, new Term[elements.length], e.getStackTrace())));
     }
 
 }

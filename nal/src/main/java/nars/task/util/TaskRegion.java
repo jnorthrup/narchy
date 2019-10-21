@@ -35,16 +35,22 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
     float CONF_COST = 1f;
 
     static Consumer<TaskRegion> asTask(Consumer<? super Task> each) {
-        return r -> {
-            Task x = _task(r);
-            if (x != null) each.accept(x);
+        return new Consumer<TaskRegion>() {
+            @Override
+            public void accept(TaskRegion r) {
+                Task x = _task(r);
+                if (x != null) each.accept(x);
+            }
         };
     }
 
     static Predicate<TaskRegion> asTask(Predicate<? super Task> each) {
-        return r -> {
-            Task x = _task(r);
-            return x == null || each.test(x);
+        return new Predicate<TaskRegion>() {
+            @Override
+            public boolean test(TaskRegion r) {
+                Task x = _task(r);
+                return x == null || each.test(x);
+            }
         };
     }
 

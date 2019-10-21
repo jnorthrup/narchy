@@ -1,6 +1,8 @@
 package spacegraph.space2d.widget.port;
 
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.BinaryOperator;
+import java.util.function.Consumer;
 
 public class TextPort extends EditablePort<String> {
 
@@ -9,17 +11,23 @@ public class TextPort extends EditablePort<String> {
     public TextPort() {
 
         super("", String.class);
-        on(s ->{
-            boolean[] changed = {false};
-            val.accumulateAndGet(s, (p, n) -> {
-                if (p != null && n.equals(p)) {
-                    changed[0] = true;
-                    return p;
-                } else
-                    return s;
-            });
-            if (changed[0]) {
+        on(new Consumer<String>() {
+            @Override
+            public void accept(String s) {
+                boolean[] changed = {false};
+                val.accumulateAndGet(s, new BinaryOperator<String>() {
+                    @Override
+                    public String apply(String p, String n) {
+                        if (p != null && n.equals(p)) {
+                            changed[0] = true;
+                            return p;
+                        } else
+                            return s;
+                    }
+                });
+                if (changed[0]) {
 
+                }
             }
         });
     }

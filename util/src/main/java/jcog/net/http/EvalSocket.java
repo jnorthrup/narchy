@@ -8,6 +8,7 @@ import org.codehaus.janino.ExpressionEvaluator;
 import org.java_websocket.WebSocket;
 import org.java_websocket.framing.CloseFrame;
 import org.java_websocket.handshake.ClientHandshake;
+import org.jctools.queues.MessagePassingQueue;
 import org.jctools.queues.MpscArrayQueue;
 
 import java.lang.reflect.Method;
@@ -113,7 +114,12 @@ public class EvalSocket<X> implements HttpModel {
 
     @Override
     public void wssOpen(WebSocket ws, ClientHandshake handshake) {
-        onOpened(session.computeIfAbsent(ws, (Function<WebSocket, JsSession<X>>) (ss) -> new JsSession<>(ss, target.get())));
+        onOpened(session.computeIfAbsent(ws, new Function<WebSocket, JsSession<X>>() {
+            @Override
+            public JsSession<X> apply(WebSocket ss) {
+                return new JsSession<>(ss, target.get());
+            }
+        }));
     }
 
     @Override
@@ -177,30 +183,33 @@ public class EvalSocket<X> implements HttpModel {
 
             pending.set(false);
 
-            q.drain(message -> {
-                try {
+            q.drain(new MessagePassingQueue.Consumer<String>() {
+                @Override
+                public void accept(String message) {
+                    try {
 
-                    Object x = eval(/*"i." +*/ message, context);
-                    if (x == null || socket.isClosed())
-                        return;
+                        Object x = eval(/*"i." +*/ message, context);
+                        if (x == null || socket.isClosed())
+                            return;
 
 //                    if (x instanceof ScriptException)
 //                        x = ((Throwable) x).getMessage();
 
-                    if (x instanceof String)
-                        socket.send((String) x);
-                    else {
-                        try {
-                            socket.send(Util.jsonMapper.writeValueAsString(x));
-                        } catch (Exception serialization) {
-                            socket.send(x.toString());
+                        if (x instanceof String)
+                            socket.send((String) x);
+                        else {
+                            try {
+                                socket.send(Util.jsonMapper.writeValueAsString(x));
+                            } catch (Exception serialization) {
+                                socket.send(x.toString());
+                            }
                         }
+
+                    } catch (Exception e) {
+                        socket.send(e.getMessage());
                     }
 
-                } catch (Exception e) {
-                    socket.send(e.getMessage());
                 }
-
             });
 
         }

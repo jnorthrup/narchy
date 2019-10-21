@@ -7,6 +7,8 @@ import nars.concept.Concept;
 import nars.term.Term;
 import org.junit.jupiter.api.Test;
 
+import java.util.function.ToIntFunction;
+
 class CaffeineMemoryTest {
 
     @Test
@@ -14,16 +16,15 @@ class CaffeineMemoryTest {
         StringBuilder log = new StringBuilder();
         CaffeineMemory index;
         NAR n = new NARS().index(
-            index = new CaffeineMemory(4000, (w) -> {
-                int newWeight = Math.round(1000 * (w.beliefs().taskCount()));
-                log.append("weigh ").append(w).append(' ').append(newWeight).append('\n');
+            index = new CaffeineMemory(4000, new ToIntFunction<Concept>() {
+                @Override
+                public int applyAsInt(Concept w) {
+                    int newWeight = Math.round(1000 * (w.beliefs().taskCount()));
+                    log.append("weigh ").append(w).append(' ').append(newWeight).append('\n');
 
 
-
-
-
-
-                return newWeight;
+                    return newWeight;
+                }
             }) {
                 @Override
                 public Concept get(Term x, boolean createIfMissing) {

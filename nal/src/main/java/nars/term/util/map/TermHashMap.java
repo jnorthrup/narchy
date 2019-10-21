@@ -5,6 +5,9 @@ import jcog.TODO;
 import jcog.data.set.UnenforcedConcatSet;
 import nars.term.Term;
 import nars.term.anon.Intrin;
+import org.eclipse.collections.api.block.function.Function0;
+import org.eclipse.collections.api.block.function.Function2;
+import org.eclipse.collections.api.block.procedure.primitive.ShortObjectProcedure;
 import org.eclipse.collections.api.tuple.primitive.ShortObjectPair;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.eclipse.collections.impl.map.mutable.primitive.ShortObjectHashMap;
@@ -75,7 +78,17 @@ public class TermHashMap<X> extends AbstractMap<Term, X> {
     public X compute(Term key, BiFunction<? super Term, ? super X, ? extends X> f) {
         short aid = Intrin.id(key);
         return (int) aid != 0 ?
-            id.updateValueWith(aid, () -> f.apply(key, null), (p, k) -> f.apply(k, p), key) :
+            id.updateValueWith(aid, new Function0<X>() {
+                @Override
+                public X value() {
+                    return f.apply(key, null);
+                }
+            }, new Function2<X, Term, X>() {
+                @Override
+                public X value(X p, Term k) {
+                    return f.apply(k, p);
+                }
+            }, key) :
             other.compute(key, f);
 
     }
@@ -116,7 +129,12 @@ public class TermHashMap<X> extends AbstractMap<Term, X> {
     @Override
     public void forEach(BiConsumer<? super Term, ? super X> action) {
         if (!id.isEmpty())
-            id.forEachKeyValue((x, y) -> action.accept(Intrin.term(x), y));
+            id.forEachKeyValue(new ShortObjectProcedure<X>() {
+                @Override
+                public void value(short x, X y) {
+                    action.accept(Intrin.term(x), y);
+                }
+            });
         if (!other.isEmpty()) {
             for (Entry<Term, X> entry : other.entrySet()) {
                 Term key = entry.getKey();

@@ -14,6 +14,7 @@ import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.container.grid.Gridding;
 
 import java.util.Random;
+import java.util.function.IntFunction;
 
 /** TODO use SonificationPanel */
 public class HistogramSonification extends Gridding {
@@ -31,8 +32,12 @@ public class HistogramSonification extends Gridding {
 
         Random rng = new XoRoShiRo128PlusRandom(1L);
 
-        this.g = Util.map(d.length, Granulize[]::new, i ->
-            new Granulize(SampleLoader.load("/tmp/guitar.wav"), 0.25f, 1f, rng)
+        this.g = Util.map(d.length, Granulize[]::new, new IntFunction<Granulize>() {
+                    @Override
+                    public Granulize apply(int i) {
+                        return new Granulize(SampleLoader.load("/tmp/guitar.wav"), 0.25f, 1f, rng);
+                    }
+                }
         );
 
     }

@@ -29,7 +29,12 @@ public class NewtMouseFinger extends MouseFinger implements MouseListener, Windo
         if (win.window.hasFocus())
             focused.set(true);
 
-        win.onUpdate(()-> finger(root));
+        win.onUpdate(new Runnable() {
+            @Override
+            public void run() {
+                NewtMouseFinger.this.finger(root);
+            }
+        });
     }
 
 

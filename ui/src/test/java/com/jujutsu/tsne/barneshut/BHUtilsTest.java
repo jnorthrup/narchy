@@ -24,7 +24,12 @@ public class BHUtilsTest {
 		
 		
 		int k = 10;
-		PriorityQueue<HeapItem> heap = new PriorityQueue<>(k, (o1, o2) -> -1 * o1.compareTo(o2));
+		PriorityQueue<HeapItem> heap = new PriorityQueue<>(k, new Comparator<HeapItem>() {
+            @Override
+            public int compare(HeapItem o1, HeapItem o2) {
+                return -1 * o1.compareTo(o2);
+            }
+        });
 		heap.add(new HeapItem(0, 7.2));
 		heap.add(new HeapItem(1, 4.1));
 		heap.add(new HeapItem(2, 5.1));

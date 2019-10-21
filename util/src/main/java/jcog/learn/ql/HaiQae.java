@@ -34,7 +34,12 @@ public class HaiQae extends HaiQ {
 
     public HaiQae(int inputs, int outputs) {
         this(inputs,
-                (i,o)->(int) Math.ceil(/*Math.sqrt*/(double) (1 + i * 2)), outputs);
+                new BiFunction<Integer, Integer, Integer>() {
+                    @Override
+                    public Integer apply(Integer i, Integer o) {
+                        return (int) Math.ceil(/*Math.sqrt*/(double) (1 + i * 2));
+                    }
+                }, outputs);
     }
 
     public HaiQae(int inputs, BiFunction<Integer,Integer,Integer> states, int outputs) {

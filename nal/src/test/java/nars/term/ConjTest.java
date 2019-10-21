@@ -15,13 +15,18 @@ import nars.term.util.conj.ConjTree;
 import nars.term.util.transform.Retemporalize;
 import nars.term.var.ellipsis.Ellipsis;
 import nars.unify.SubUnify;
+import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.Random;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
+import java.util.function.UnaryOperator;
 
 import static nars.$.*;
 import static nars.Op.CONJ;
@@ -342,7 +347,12 @@ class ConjTest {
     @Test
     void testConjOR() {
         Term c = $$("(((_1,_2)&|(_1,_3)) &&+2 ((_1,_2)&|(_1,_3)))");
-        assertFalse(((Compound)c).OR(x -> x instanceof Ellipsis));
+        assertFalse(((Compound)c).OR(new Predicate<Term>() {
+            @Override
+            public boolean test(Term x) {
+                return x instanceof Ellipsis;
+            }
+        }));
     }
     @Test
     void testBalancing() {
@@ -542,7 +552,12 @@ class ConjTest {
             }
 
             long finalEarliest = earliest;
-            e.replaceAll((x) -> pair(x.getOne() - finalEarliest, x.getTwo()));
+            e.replaceAll(new UnaryOperator<LongObjectPair<Term>>() {
+                @Override
+                public LongObjectPair<Term> apply(LongObjectPair<Term> x) {
+                    return pair(x.getOne() - finalEarliest, x.getTwo());
+                }
+            });
             e.sortThisByLong(LongObjectPair::getOne);
             return e;
         }
@@ -911,7 +926,12 @@ class ConjTest {
         for (int i : new int[]{XTERNAL, 0, DTERNAL}) {
             assertEquals("x", CONJ.the(i, $.the("x"), IdempotentBool.True).toString());
             assertEquals(False, CONJ.the(i, $.the("x"), False));
-            assertThrows(Throwable.class, ()-> CONJ.the(i, $.the("x"), Null));
+            assertThrows(Throwable.class, new Executable() {
+                @Override
+                public void execute() throws Throwable {
+                    CONJ.the(i, $.the("x"), Null);
+                }
+            });
         }
     }
 
@@ -1237,12 +1257,22 @@ class ConjTest {
         assertEquals(3, c.size());
 
         assertFalse(
-                c.removeIf((when, what) -> when == 1 && "c".equals(what.toString()))
+                c.removeIf(new LongObjectPredicate<Term>() {
+                    @Override
+                    public boolean accept(long when, Term what) {
+                        return when == 1 && "c".equals(what.toString());
+                    }
+                })
         );
         assertEquals(3, c.size());
 
         assertTrue(
-                c.removeIf((when, what) -> when == 0 && "c".equals(what.toString()))
+                c.removeIf(new LongObjectPredicate<Term>() {
+                    @Override
+                    public boolean accept(long when, Term what) {
+                        return when == 0 && "c".equals(what.toString());
+                    }
+                })
         );
         assertEquals(2, c.size());
         assertEquals(0, c.when(0));
@@ -1613,7 +1643,12 @@ class ConjTest {
         String x = "(x &&+1 (z &&+1 y))";
         Term t = $(x);
         assertEq("((x &&+1 z) &&+1 y)", t.toString());
-        assertEquals(2, t.eventRange(), () -> t + " incorrect dtRange");
+        assertEquals(2, t.eventRange(), new Supplier<String>() {
+            @Override
+            public String get() {
+                return t + " incorrect dtRange";
+            }
+        });
     }
 
     @Test
@@ -1642,8 +1677,18 @@ class ConjTest {
 
         Compound x = $("(&&,(#1-->I),(#1-->{i141}),(#2-->{i141}))");
         assertNotNull(x);
-        assertThrows(TermException.class, () -> x.dt(-1));
-        assertThrows(TermException.class, () -> x.dt(+1));
+        assertThrows(TermException.class, new Executable() {
+            @Override
+            public void execute() throws Throwable {
+                x.dt(-1);
+            }
+        });
+        assertThrows(TermException.class, new Executable() {
+            @Override
+            public void execute() throws Throwable {
+                x.dt(+1);
+            }
+        });
         assertNotEquals(Null, x.dt(0));
         assertNotEquals(Null, x.dt(DTERNAL));
         assertNotEquals(Null, x.dt(XTERNAL));

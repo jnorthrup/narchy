@@ -7,9 +7,11 @@ import spacegraph.audio.modem.chirp.transceive.reedsolomon.ReedSolomonDecoder;
 import spacegraph.audio.modem.chirp.transceive.reedsolomon.ReedSolomonEncoder;
 import spacegraph.audio.modem.chirp.transceive.util.AudioEvent;
 import spacegraph.audio.modem.chirp.transceive.util.AudioFormat;
+import spacegraph.audio.modem.chirp.transceive.util.PitchDetectionResult;
 import spacegraph.audio.modem.chirp.transceive.util.PitchProcessor;
 
 import java.util.*;
+import java.util.function.Supplier;
 
 /**
  * adapted from
@@ -52,20 +54,23 @@ public class AudioTransceiver {
             (float) WRITE_AUDIO_RATE_SAMPLE_HZ,
             (READ_NUMBER_OF_SAMPLES / READ_SUBSAMPLING_FACTOR),
 
-            (pPitchDetectionResult, pAudioEvent) -> {
+            new PitchProcessor.PitchDetectionHandler() {
+                @Override
+                public void handlePitch(PitchDetectionResult pPitchDetectionResult, AudioEvent pAudioEvent) {
 
-                if (isActive()) {
-                    // Are we not allowed to sample ourself?
-                    if (!isSampleSelf()) {
-                        // Don't log the transactions.
-                        return;
+                    if (isActive()) {
+                        // Are we not allowed to sample ourself?
+                        if (!AudioTransceiver.this.isSampleSelf()) {
+                            // Don't log the transactions.
+                            return;
+                        }
                     }
+                    // Buffer the Pitch and the corresponding Confidence.
+                    pitchBuffer.add(pPitchDetectionResult.getPitch());
+                    confBuffer.add(pPitchDetectionResult.getProbability());
+                    // Process the signal.
+                    receive(mReedSolomonDecoder, pitchBuffer, confBuffer, READ_SUBSAMPLING_FACTOR, AudioTransceiver.this::_onMessage);
                 }
-                // Buffer the Pitch and the corresponding Confidence.
-                pitchBuffer.add(pPitchDetectionResult.getPitch());
-                confBuffer.add(pPitchDetectionResult.getProbability());
-                // Process the signal.
-                receive(mReedSolomonDecoder, pitchBuffer, confBuffer, READ_SUBSAMPLING_FACTOR, this::_onMessage);
             });
 
 
@@ -419,37 +424,40 @@ public class AudioTransceiver {
         /**
          * A default detector, which uses an average to interpret symbols.
          */
-        static final IDetector DETECTOR_MEAN = (pSynth, pSamples, pConfidences, pOffset, pLength) -> {
-            // Ignore the First/Last 18% of the Samples. (Protected against slew rate.)
-            int lIgnore = (int) Math.ceil((double) pLength * 0.3);
-            // Declare buffers to accumulate the sampled frequencies.
-            double lFacc = 0.0;
-            int lCount = 0;
-            // Iterate the Samples.
-            for (int i = pOffset + lIgnore; i < pOffset + pLength - lIgnore; i++) { /** TODO: fn */
-                // Are we confident in this sample?
-                if ((double) pConfidences.get(i) > 0.75) {
-                    // Fetch the Sample.
-                    double lSample = (double) pSamples.get(i);
-                    // Is the Sample valid?
+        static final IDetector DETECTOR_MEAN = new IDetector() {
+            @Override
+            public Result getSymbol(Synth pSynth, FloatArrayList pSamples, FloatArrayList pConfidences, int pOffset, int pLength) {
+                // Ignore the First/Last 18% of the Samples. (Protected against slew rate.)
+                int lIgnore = (int) Math.ceil((double) pLength * 0.3);
+                // Declare buffers to accumulate the sampled frequencies.
+                double lFacc = 0.0;
+                int lCount = 0;
+                // Iterate the Samples.
+                for (int i = pOffset + lIgnore; i < pOffset + pLength - lIgnore; i++) { /** TODO: fn */
+                    // Are we confident in this sample?
+                    if ((double) pConfidences.get(i) > 0.75) {
+                        // Fetch the Sample.
+                        double lSample = (double) pSamples.get(i);
+                        // Is the Sample valid?
 //                    if (lSample != -1) {
                         // Accumulate the Sample.
                         lFacc += lSample;
                         // Update the accumulated count.
                         lCount++;
 //                    }
+                    }
                 }
-            }
-            // Result valid?
-            if (lCount != 0) {
-                // Calculate the Mean.
-                double lMean = lFacc / (double) lCount;
-                /** TODO: Frequency tolerance? */
-                // Return the Result.
-                return new Result(pSynth.character(lMean), true);
-            } else {
-                // Return the invalid result.
-                return Synth.RESULT_UNKNOWN;
+                // Result valid?
+                if (lCount != 0) {
+                    // Calculate the Mean.
+                    double lMean = lFacc / (double) lCount;
+                    /** TODO: Frequency tolerance? */
+                    // Return the Result.
+                    return new Result(pSynth.character(lMean), true);
+                } else {
+                    // Return the invalid result.
+                    return Synth.RESULT_UNKNOWN;
+                }
             }
         };
         /* Static Declarations. */
@@ -526,7 +534,12 @@ public class AudioTransceiver {
             // Fetch the corresponding character.
             Character lCharacter = mapFreqChar.get(freqs[lIndex]);
             // Return the Character.
-            return Optional.ofNullable(lCharacter).orElseGet(() -> (char) 0);
+            return Optional.ofNullable(lCharacter).orElseGet(new Supplier<Character>() {
+                @Override
+                public Character get() {
+                    return (char) 0;
+                }
+            });
         }
 
         /**

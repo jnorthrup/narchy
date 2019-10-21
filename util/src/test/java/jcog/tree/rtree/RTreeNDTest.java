@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.IntFunction;
+import java.util.function.*;
 import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -67,13 +67,23 @@ class RTreeNDTest {
 
             rTree.intersectsWhile(searchRect, results::add);
             int bound = results.size();
-            long count = IntStream.range(0, bound).filter(i1 -> results.get(i1) != null).count();
+            long count = IntStream.range(0, bound).filter(new IntPredicate() {
+                @Override
+                public boolean test(int i1) {
+                    return results.get(i1) != null;
+                }
+            }).count();
             int resultCount = (int) count;
 
             final int expectedCount = 9;
             
 
-            assertEquals(expectedCount, resultCount, () -> "[" + type + "] Search returned incorrect number of rectangles - expected: " + expectedCount + " actual: " + resultCount);
+            assertEquals(expectedCount, resultCount, new Supplier<String>() {
+                @Override
+                public String get() {
+                    return "[" + type + "] Search returned incorrect number of rectangles - expected: " + expectedCount + " actual: " + resultCount;
+                }
+            });
 
             
             Collections.sort(results);
@@ -90,7 +100,12 @@ class RTreeNDTest {
         System.out.println("\n\nINfinites");
         final int entryCount = 400;
         searchAll(2, 4,
-                (dim) -> RTree2DTest.generateRandomRectsWithOneDimensionRandomlyInfinite(dim, entryCount));
+                new IntFunction<HyperRectFloat[]>() {
+                    @Override
+                    public HyperRectFloat[] apply(int dim) {
+                        return RTree2DTest.generateRandomRectsWithOneDimensionRandomlyInfinite(dim, entryCount);
+                    }
+                });
     }
 
     /**
@@ -101,7 +116,12 @@ class RTreeNDTest {
     void RectNDSearchAllTest() {
         System.out.println("\n\nfinites");
         final int entryCount = 400;
-        searchAll(1, 6, (dim) -> RTree2DTest.generateRandomRects(dim, entryCount));
+        searchAll(1, 6, new IntFunction<HyperRectFloat[]>() {
+            @Override
+            public HyperRectFloat[] apply(int dim) {
+                return RTree2DTest.generateRandomRects(dim, entryCount);
+            }
+        });
     }
 
     private static void searchAll(int minDim, int maxDim, IntFunction<HyperRectFloat[]> generator) {
@@ -127,16 +147,31 @@ class RTreeNDTest {
                 HyperRectFloat[] results = new HyperRectFloat[rects.length];
 
                 int foundCount = rTree.containedToArray(searchRect, results);
-                long count = IntStream.range(0, results.length).filter(i -> results[i] != null).count();
+                long count = IntStream.range(0, results.length).filter(new IntPredicate() {
+                    @Override
+                    public boolean test(int i) {
+                        return results[i] != null;
+                    }
+                }).count();
                 int resultCount = (int) count;
 
                 int expectedCount = rects.length;
                 
                 assertTrue(Math.abs(expectedCount - foundCount) < 10,
-                        () -> "[" + type + "] Search returned incorrect search result count - expected: " + expectedCount + " actual: " + foundCount /* in case of duplicates */);
+                        new Supplier<String>() {
+                            @Override
+                            public String get() {
+                                return "[" + type + "] Search returned incorrect search result count - expected: " + expectedCount + " actual: " + foundCount;
+                            }
+                        } /* in case of duplicates */);
 
                 assertTrue(Math.abs(expectedCount - resultCount) < 10,
-                        () -> "[" + type + "] Search returned incorrect number of rectangles - expected: " + expectedCount + " actual: " + resultCount /* in case of duplicates */);
+                        new Supplier<String>() {
+                            @Override
+                            public String get() {
+                                return "[" + type + "] Search returned incorrect number of rectangles - expected: " + expectedCount + " actual: " + resultCount;
+                            }
+                        } /* in case of duplicates */);
 
                 Set<HyperRectFloat> output = new HashSet();
                 Collections.addAll(output, results);
@@ -173,12 +208,27 @@ class RTreeNDTest {
             RectDouble[] results = new RectDouble[3];
 
             int foundCount = rTree.containedToArray(searchRect, results);
-            long count = IntStream.range(0, results.length).filter(i1 -> results[i1] != null).count();
+            long count = IntStream.range(0, results.length).filter(new IntPredicate() {
+                @Override
+                public boolean test(int i1) {
+                    return results[i1] != null;
+                }
+            }).count();
             int resultCount = (int) count;
 
             final int expectedCount = 3;
-            assertEquals(expectedCount, foundCount, () -> "[" + type + "] Search returned incorrect search result count - expected: " + expectedCount + " actual: " + foundCount);
-            assertEquals(expectedCount, resultCount, () -> "[" + type + "] Search returned incorrect number of rectangles - expected: " + expectedCount + " actual: " + resultCount);
+            assertEquals(expectedCount, foundCount, new Supplier<String>() {
+                @Override
+                public String get() {
+                    return "[" + type + "] Search returned incorrect search result count - expected: " + expectedCount + " actual: " + foundCount;
+                }
+            });
+            assertEquals(expectedCount, resultCount, new Supplier<String>() {
+                @Override
+                public String get() {
+                    return "[" + type + "] Search returned incorrect number of rectangles - expected: " + expectedCount + " actual: " + resultCount;
+                }
+            });
 
             Arrays.sort(results);
             
@@ -216,9 +266,19 @@ class RTreeNDTest {
             int resultCount = results.size();
 
 
-            assertEquals(expectedCount, resultCount, () -> "[" + type + "] Search returned incorrect search result count - expected: " + expectedCount + " actual: " + resultCount);
+            assertEquals(expectedCount, resultCount, new Supplier<String>() {
+                @Override
+                public String get() {
+                    return "[" + type + "] Search returned incorrect search result count - expected: " + expectedCount + " actual: " + resultCount;
+                }
+            });
             assertEquals(
-                    expectedCount, resultCount, () -> "[" + type + "] Search returned incorrect number of rectangles - expected: " + expectedCount + " actual: " + resultCount);
+                    expectedCount, resultCount, new Supplier<String>() {
+                        @Override
+                        public String get() {
+                            return "[" + type + "] Search returned incorrect number of rectangles - expected: " + expectedCount + " actual: " + resultCount;
+                        }
+                    });
 
             Collections.sort(results);
 
@@ -277,19 +337,37 @@ class RTreeNDTest {
             RectDouble[] results = new RectDouble[entryCount];
 
             int foundCount = rTree.containedToArray(searchRect, results);
-            long count = IntStream.range(0, results.length).filter(i -> results[i] != null).count();
+            long count = IntStream.range(0, results.length).filter(new IntPredicate() {
+                @Override
+                public boolean test(int i) {
+                    return results[i] != null;
+                }
+            }).count();
             int resultCount = (int) count;
 
             AtomicInteger visitCount = new AtomicInteger();
-            rTree.containsWhile(searchRect, (n) -> {
-                visitCount.incrementAndGet();
-                return true;
+            rTree.containsWhile(searchRect, new Predicate<RectDouble>() {
+                @Override
+                public boolean test(RectDouble n) {
+                    visitCount.incrementAndGet();
+                    return true;
+                }
             });
             assertEquals(entryCount, visitCount.get());
 
             final int expectedCount = entryCount;
-            assertEquals(expectedCount, foundCount, () -> "[" + type + "] Search returned incorrect search result count - expected: " + expectedCount + " actual: " + foundCount);
-            assertEquals(expectedCount, resultCount, () -> "[" + type + "] Search returned incorrect number of rectangles - expected: " + expectedCount + " actual: " + resultCount);
+            assertEquals(expectedCount, foundCount, new Supplier<String>() {
+                @Override
+                public String get() {
+                    return "[" + type + "] Search returned incorrect search result count - expected: " + expectedCount + " actual: " + foundCount;
+                }
+            });
+            assertEquals(expectedCount, resultCount, new Supplier<String>() {
+                @Override
+                public String get() {
+                    return "[" + type + "] Search returned incorrect number of rectangles - expected: " + expectedCount + " actual: " + resultCount;
+                }
+            });
         }
     }
 
@@ -388,7 +466,12 @@ class RTreeNDTest {
 
         assertEquals(1, rTree.size());
 
-        assertFalse(rTree.containedToSet(rects[0]).isEmpty(), () -> "Missing hyperRect that should  be found " + rects[0]);
+        assertFalse(rTree.containedToSet(rects[0]).isEmpty(), new Supplier<String>() {
+            @Override
+            public String get() {
+                return "Missing hyperRect that should  be found " + rects[0];
+            }
+        });
 
         for (int i = 1; i < rects.length; i++) {
             assertTrue(rTree.containedToSet(rects[i]).isEmpty(), "Found hyperRect that should have been removed on search " + rects[i]);
@@ -557,7 +640,12 @@ class RTreeNDTest {
     }
 
     private static RTree<RectDouble> createRectDouble2DTree(int maxM, Spatialization.DefaultSplits splitType) {
-        return new RTree<>((x -> x), maxM, splitType.get());
+        return new RTree<>((new Function<RectDouble, HyperRegion>() {
+            @Override
+            public HyperRegion apply(RectDouble x) {
+                return x;
+            }
+        }), maxM, splitType.get());
     }
 
     @Test
@@ -580,9 +668,12 @@ class RTreeNDTest {
 
         AtomicInteger hitCount = new AtomicInteger();
         
-        rTree.containsWhile(search, (closure) -> {
-            hitCount.incrementAndGet();
-            return true;
+        rTree.containsWhile(search, new Predicate<RectDouble>() {
+            @Override
+            public boolean test(RectDouble closure) {
+                hitCount.incrementAndGet();
+                return true;
+            }
         });
 
         assertEquals(1, hitCount.get());

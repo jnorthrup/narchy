@@ -8,12 +8,14 @@ import jcog.table.DataTable;
 import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
+import nars.Task;
 import nars.truth.Stamp;
 import org.junit.jupiter.api.Test;
 import tech.tablesaw.api.Row;
 
 import java.io.IOException;
 import java.util.Random;
+import java.util.function.Consumer;
 
 import static nars.Op.*;
 
@@ -95,15 +97,21 @@ public class NALDataTableTest {
 
 
         MetalLongSet questions = new MetalLongSet(4);
-        n.onTask(t->{
-            if (t.isInput())
-                questions.add(t.stamp()[0]);
+        n.onTask(new Consumer<Task>() {
+            @Override
+            public void accept(Task t) {
+                if (t.isInput())
+                    questions.add(t.stamp()[0]);
+            }
         }, QUESTION, QUEST);
 
-        n.onTask(t->{
-            if (Stamp.overlapsAny(questions, t.stamp())) {
-                //if (t.isInput())
+        n.onTask(new Consumer<Task>() {
+            @Override
+            public void accept(Task t) {
+                if (Stamp.overlapsAny(questions, t.stamp())) {
+                    //if (t.isInput())
                     System.out.println("ANSWER: " + t);
+                }
             }
         }, BELIEF, GOAL);
 

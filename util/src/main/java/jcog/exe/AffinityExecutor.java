@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 /**
@@ -103,11 +104,14 @@ public class AffinityExecutor implements Executor {
     static final AtomicInteger serial = new AtomicInteger(0);
 
     public void stop() {
-        threads.removeIf(t -> {
+        threads.removeIf(new Predicate<Thread>() {
+            @Override
+            public boolean test(Thread t) {
 
-            kill(t);
+                AffinityExecutor.this.kill(t);
 
-            return true;
+                return true;
+            }
         });
     }
 
@@ -128,7 +132,12 @@ public class AffinityExecutor implements Executor {
 
 
     public final <R extends Runnable> void execute(R worker, int count) {
-        execute((Supplier<R>)()->worker, count);
+        execute(new Supplier<R>() {
+            @Override
+            public R get() {
+                return worker;
+            }
+        }, count);
     }
 
     public final <R extends Runnable>  void execute(Supplier<R> worker, int count) {

@@ -32,6 +32,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.Future;
+import java.util.function.Supplier;
 
 import static nars.Op.*;
 import static nars.term.Term.nullIfNull;
@@ -58,13 +59,16 @@ public final class Narsese {
             throw new RuntimeException(e);
         }
 
-        parsers = ThreadLocal.withInitial(() -> {
-                    try {
-                        return new Narsese(parserClass.getConstructor().newInstance());
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-                }
+        parsers = ThreadLocal.withInitial(new Supplier<Narsese>() {
+                                              @Override
+                                              public Narsese get() {
+                                                  try {
+                                                      return new Narsese(parserClass.getConstructor().newInstance());
+                                                  } catch (Exception e) {
+                                                      throw new RuntimeException(e);
+                                                  }
+                                              }
+                                          }
         );
     }
 

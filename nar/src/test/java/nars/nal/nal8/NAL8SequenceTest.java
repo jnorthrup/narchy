@@ -18,6 +18,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.function.LongPredicate;
 
 import static nars.$.$$;
 import static nars.Op.BELIEF;
@@ -276,23 +278,26 @@ public class NAL8SequenceTest extends NALTest {
 
         List<Term> log = new FasterList();
         String goal = "done";
-        n.addOp1("f", (x, nar)->{
-            System.err.println(x);
+        n.addOp1("f", new BiConsumer<Term, NAR>() {
+            @Override
+            public void accept(Term x, NAR nar) {
+                System.err.println(x);
 
-            nar.want($.func("f", x).neg(), Tense.Present, 1f); //quench
+                nar.want($.func("f", x).neg(), Tense.Present, 1f); //quench
 
-            if (!log.isEmpty()) {
-                Term prev = ((FasterList<Term>) log).getLast();
-                if (prev.equals(x))
-                    return; //same
-                nar.believe($.func("f", prev).neg(), nar.time()); //TODO truthlet quench?
+                if (!log.isEmpty()) {
+                    Term prev = ((FasterList<Term>) log).getLast();
+                    if (prev.equals(x))
+                        return; //same
+                    nar.believe($.func("f", prev).neg(), nar.time()); //TODO truthlet quench?
+                }
+
+                log.add(x);
+
+                nar.believe($.func("f", x), nar.time());
+
+                n.want($$(goal), Tense.Present, 1f); //reinforce
             }
-
-            log.add(x);
-
-            nar.believe($.func("f", x), nar.time());
-
-            n.want($$(goal), Tense.Present, 1f); //reinforce
         });
 
         String sequence = "(((f(a) &&+2 f(b)) &&+2 f(c)) &&+2 done)";
@@ -311,14 +316,24 @@ public class NAL8SequenceTest extends NALTest {
         test
             .input("x!")//eternal
             .input("(y &&+10 x). |") //temporal
-            .mustGoal(cycles, "y", 1, 0.81f, t->t>=0 /*-10*/);
+            .mustGoal(cycles, "y", 1, 0.81f, new LongPredicate() {
+                @Override
+                public boolean test(long t) {
+                    return t >= 0;
+                }
+            } /*-10*/);
     }
     @Test void taskEventConjBeforeCorrectTime2() {
 
         test
             .input("(--x&&z)!")//eternal
             .input("(y &&+10 (--x&&z)). |") //temporal
-            .mustGoal(cycles, "y", 1, 0.81f, t->t>=0 /*-10*/);
+            .mustGoal(cycles, "y", 1, 0.81f, new LongPredicate() {
+                @Override
+                public boolean test(long t) {
+                    return t >= 0;
+                }
+            } /*-10*/);
     }
     @Test void testGoalUnionDeduction() {
         test

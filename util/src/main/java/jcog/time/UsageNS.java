@@ -4,10 +4,13 @@ import jcog.Texts;
 import jcog.data.list.FasterList;
 import jcog.util.HashCachedPair;
 import org.HdrHistogram.AtomicHistogram;
+import org.eclipse.collections.api.block.procedure.Procedure;
 
 import java.io.PrintStream;
+import java.util.Comparator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 
 public class UsageNS<X> {
 
@@ -31,23 +34,28 @@ public class UsageNS<X> {
                 fl.add(new HashCachedPair(x, h.copy()));
             }
         }
-        fl.sortThis((a,b) -> {
-            if (a ==b) return 0;
-            AtomicHistogram aa = a.getTwo();
-            double am = (double) aa.getTotalCount() * aa.getMean();
-            AtomicHistogram bb = b.getTwo();
-            double bm = (double) bb.getTotalCount() * bb.getMean();
-            int abm = Double.compare(bm, am); //descending
-            if (abm != 0) {
-                return abm;
-            } else {
-                return Integer.compare(System.identityHashCode(a), System.identityHashCode(b));
+        fl.sortThis(new Comparator<HashCachedPair<X, AtomicHistogram>>() {
+            @Override
+            public int compare(HashCachedPair<X, AtomicHistogram> a, HashCachedPair<X, AtomicHistogram> b) {
+                if (a == b) return 0;
+                AtomicHistogram aa = a.getTwo();
+                double am = (double) aa.getTotalCount() * aa.getMean();
+                AtomicHistogram bb = b.getTwo();
+                double bm = (double) bb.getTotalCount() * bb.getMean();
+                int abm = Double.compare(bm, am); //descending
+                if (abm != 0) {
+                    return abm;
+                } else {
+                    return Integer.compare(System.identityHashCode(a), System.identityHashCode(b));
+                }
             }
         });
-        fl.forEach((xh) -> {
+        fl.forEach(new Procedure<HashCachedPair<X, AtomicHistogram>>() {
+            @Override
+            public void value(HashCachedPair<X, AtomicHistogram> xh) {
 
-            //out.println(xh.getOne());
-            out.println(xh.getTwo().getTotalCount() + "\t*" + Texts.n4(xh.getTwo().getMean()) + "\t" + xh.getOne() );
+                //out.println(xh.getOne());
+                out.println(xh.getTwo().getTotalCount() + "\t*" + Texts.n4(xh.getTwo().getMean()) + "\t" + xh.getOne());
 //            AtomicHistogram h = xh.getTwo();
 //            if (h.getTotalCount() > 0) {
 //                Texts.histogramPrint(h.copy(), out);
@@ -56,11 +64,16 @@ public class UsageNS<X> {
 //            }
 //           out.println();
 
+            }
         });
     }
 
     public AtomicHistogram the(X x) {
-        return usage.computeIfAbsent(x, a ->
-                new AtomicHistogram(1L,1_000_000_000L, 2));
+        return usage.computeIfAbsent(x, new Function<X, AtomicHistogram>() {
+            @Override
+            public AtomicHistogram apply(X a) {
+                return new AtomicHistogram(1L, 1_000_000_000L, 2);
+            }
+        });
     }
 }

@@ -9,6 +9,7 @@ import spacegraph.input.key.impl.Keyboard;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.widget.Widget;
 import spacegraph.util.AWTCamera;
+import spacegraph.video.JoglWindow;
 import spacegraph.video.Tex;
 
 import javax.swing.*;
@@ -19,6 +20,7 @@ import java.awt.image.BufferedImage;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 
 import static java.awt.event.KeyEvent.VK_UNDEFINED;
 import static java.awt.event.MouseEvent.NOBUTTON;
@@ -89,21 +91,27 @@ public class AWTSurface extends Widget implements KeyPressed {
 
 
         AtomicBoolean busy = new AtomicBoolean(false);
-        ons = root().onUpdate(w -> {
+        ons = root().onUpdate(new Consumer<JoglWindow>() {
+            @Override
+            public void accept(JoglWindow w) {
 
-            if (!busy.compareAndSet(false, true))
-                return;
+                if (!busy.compareAndSet(false, true))
+                    return;
 
 
-            SwingUtilities.invokeLater(() -> {
-                try {
-                    buffer = AWTCamera.get(component, buffer);
-                    tex.set(buffer);
-                } finally {
-                    busy.set(false);
-                }
-            });
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            buffer = AWTCamera.get(component, buffer);
+                            tex.set(buffer);
+                        } finally {
+                            busy.set(false);
+                        }
+                    }
+                });
 
+            }
         });
     }
 

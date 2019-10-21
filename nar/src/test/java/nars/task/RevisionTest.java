@@ -21,6 +21,8 @@ import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import static nars.$.$;
 import static nars.Op.BELIEF;
@@ -431,7 +433,12 @@ public class RevisionTest {
 
 
         StringBuilder out = new StringBuilder();
-        n.onTask(t -> out.append(t).append('\n'));
+        n.onTask(new Consumer<Task>() {
+            @Override
+            public void accept(Task t) {
+                out.append(t).append('\n');
+            }
+        });
 
         Task at = n.believe(a, Tense.Present, 1f);
         n.believe(b, Tense.Present);
@@ -727,7 +734,12 @@ public class RevisionTest {
 //        if (Param.REVISION_ALLOW_DILUTE_UNION) {
         Task ac = merge(a, c, n);
         p(ac);
-        assertTrue(ac.conf() < ab.conf(), () -> ac + " must have less conf than " + ab);
+        assertTrue(ac.conf() < ab.conf(), new Supplier<String>() {
+            @Override
+            public String get() {
+                return ac + " must have less conf than " + ab;
+            }
+        });
 //        }
 //        Task ad = Revision.merge(a, d, n);
 //        p(ad);

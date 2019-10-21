@@ -53,7 +53,12 @@ public class MutableRoulette {
      * with no weight modification
      */
     public MutableRoulette(int count, IntToFloatFunction initialWeights, Random rng) {
-        this(count, initialWeights, (x -> x), rng);
+        this(count, initialWeights, (new FloatToFloatFunction() {
+            @Override
+            public float valueOf(float x) {
+                return x;
+            }
+        }), rng);
     }
 
     public MutableRoulette(int count, IntToFloatFunction initialWeights, FloatToFloatFunction weightUpdate, Random rng) {

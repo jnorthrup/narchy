@@ -9,6 +9,7 @@ import net.beadsproject.beads.data.buffers.*;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 
 /**
  * Abstract base class for factories that generate {@link Buffer}s. Create subclasses of BufferFactory to generate different types of {@link Buffer}.
@@ -54,7 +55,12 @@ public abstract class WaveFactory {
      * @return the default Buffer.
      */
     public final ArrayTensor the() {
-        return staticBufs.computeIfAbsent(getName(), (n)->get(DEFAULT_BUFFER_SIZE));
+        return staticBufs.computeIfAbsent(getName(), new Function<String, ArrayTensor>() {
+            @Override
+            public ArrayTensor apply(String n) {
+                return WaveFactory.this.get(DEFAULT_BUFFER_SIZE);
+            }
+        });
     }
 
 }

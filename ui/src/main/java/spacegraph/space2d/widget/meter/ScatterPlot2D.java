@@ -10,6 +10,8 @@ import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.util.MutableRectFloat;
 import spacegraph.util.RectAnimator;
 
+import java.util.function.Consumer;
+
 /** 2d scatter ("bubble") plot */
 public class ScatterPlot2D<X> extends Graph2D<X> {
 
@@ -97,10 +99,12 @@ public class ScatterPlot2D<X> extends Graph2D<X> {
 
     public ScatterPlot2D(ScatterPlotModel<X> model) {
         this.model = model;
-        build(x ->
-                x.set(
-                        //TODO extract PolygonButton class
-                        new PushButton(new VectorLabel(model.label(x.id)))
+        build(new Consumer<NodeVis<X>>() {
+                  @Override
+                  public void accept(NodeVis<X> x) {
+                      x.set(
+                              //TODO extract PolygonButton class
+                              new PushButton(new VectorLabel(model.label(x.id)))
 //                            @Override
 //                            protected void paintWidget(RectFloat bounds, GL2 gl) {
 //                                NodeVis p = parent(NodeVis.class);
@@ -112,43 +116,51 @@ public class ScatterPlot2D<X> extends Graph2D<X> {
 //                                }
 //                            }
 //                        }
-                )
+                      );
+                  }
+              }
         );
 
 
-        update((g, dtS)->{
-            float minVis = minVisPct;
-            int n = g.nodes();
-            float w = w(), h = h();
-            MutableRectFloat e = extent.animated();
-            g.forEachValue(node->{
-                float[][] cc = coordOut;
-                int c = node.i;
-                if (c < 0 || c >= cc.length) {
-                    node.hide();
-                } else {
+        update(new Graph2DUpdater<X>() {
+            @Override
+            public void update(Graph2D<X> g, float dtS) {
+                float minVis = minVisPct;
+                int n = g.nodes();
+                float w = ScatterPlot2D.this.w(), h = ScatterPlot2D.this.h();
+                MutableRectFloat e = extent.animated();
+                g.forEachValue(new Consumer<NodeVis<X>>() {
+                    @Override
+                    public void accept(NodeVis<X> node) {
+                        float[][] cc = coordOut;
+                        int c = node.i;
+                        if (c < 0 || c >= cc.length) {
+                            node.hide();
+                        } else {
 
-                    float[] xy = cc[c];
+                            float[] xy = cc[c];
 
-                    X id = node.id;
+                            X id = node.id;
 
-                    node.pos(e.normalizeScale(
-                            xy[0], xy[1],
-                            model.width(id, n), model.height(id, n),
-                            minVis,
-                            w,h
-                    ));
+                            node.pos(e.normalizeScale(
+                                    xy[0], xy[1],
+                                    model.width(id, n), model.height(id, n),
+                                    minVis,
+                                    w, h
+                            ));
 
-                    //node.move(w/2, h/2); //HACK wtf why is this necessary
+                            //node.move(w/2, h/2); //HACK wtf why is this necessary
 
-                    node.pri = model.pri(id);
+                            node.pri = model.pri(id);
 
-                    model.colorize(id, node);
+                            model.colorize(id, node);
 
-                    node.show();
-                }
+                            node.show();
+                        }
 
-            });
+                    }
+                });
+            }
         });
         render(
                 new Graph2DRenderer<>() {

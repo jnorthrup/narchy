@@ -2,6 +2,8 @@ package spacegraph.util.state;
 
 import jcog.User;
 
+import java.util.function.Predicate;
+
 /** root of a semantic spacegraph
  *      -provides matched state values for path keys
  *      -saves state by leaf requests
@@ -52,9 +54,12 @@ public abstract class Root implements Contexter {
 
 
         root.user.put("x", "abc");
-        root.user.get("x", 3, (d)->{
-            System.out.println(d);
-            return true;
+        root.user.get("x", 3, new Predicate<User.DocObj>() {
+            @Override
+            public boolean test(User.DocObj d) {
+                System.out.println(d);
+                return true;
+            }
         });
 
     }

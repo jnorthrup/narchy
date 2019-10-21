@@ -79,9 +79,12 @@ public class SelfTest {
             .build();
 
     public void unitTestsByPackage(String... packages) {
-        experiments.add(unitTests((b)->{
-            for (String pkg : packages)
-                b.selectors(selectPackage(pkg));
+        experiments.add(unitTests(new Consumer<LauncherDiscoveryRequestBuilder>() {
+            @Override
+            public void accept(LauncherDiscoveryRequestBuilder b) {
+                for (String pkg : packages)
+                    b.selectors(selectPackage(pkg));
+            }
         }));
     }
 
@@ -96,16 +99,19 @@ public class SelfTest {
         TestPlan tp = lf.discover(bb);
 
 
-        return ()->{
+        return new Supplier<DataTable>() {
+            @Override
+            public DataTable get() {
 
 
-            DataTable results = newTable();
+                DataTable results = newTable();
 
-            //lf.registerTestExecutionListeners(new MyTestExecutionListener(results));
-            //lf.execute(tp);
-            lf.execute(tp,new MyTestExecutionListener(results));
+                //lf.registerTestExecutionListeners(new MyTestExecutionListener(results));
+                //lf.execute(tp);
+                lf.execute(tp, new MyTestExecutionListener(results));
 
-            return results;
+                return results;
+            }
         };
     }
 
@@ -255,14 +261,17 @@ public class SelfTest {
 
         DataTable all = newTable();
 
-        Runtime.getRuntime().addShutdownHook(new Thread(()->{
-            try {
-                synchronized (all) {
-                    report(all);
-                    save(all, "/home/me/d/tests1.csv");
+        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    synchronized (all) {
+                        SelfTest.this.report(all);
+                        save(all, "/home/me/d/tests1.csv");
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
             }
         }));
 
@@ -277,19 +286,22 @@ public class SelfTest {
             ArrayUtil.shuffle(experiments, ThreadLocalRandom.current());
 
             for (Supplier<DataTable> experiment : experiments) {
-                exe.execute(() -> {
-                    DataTable d = experiment.get();
+                exe.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        DataTable d = experiment.get();
 
-                    List<Column<?>> cols = d.columns();
+                        List<Column<?>> cols = d.columns();
 
-                    //System.out.println(Thread.currentThread());
-                    synchronized (all) {
-                        for (int c = 0, colsSize = cols.size(); c < colsSize; c++) {
-                            all.column(c).append((Column) cols.get(c));
+                        //System.out.println(Thread.currentThread());
+                        synchronized (all) {
+                            for (int c = 0, colsSize = cols.size(); c < colsSize; c++) {
+                                all.column(c).append((Column) cols.get(c));
+                            }
+                            //d.doWithRows((Consumer<Row>) all::addRow);
                         }
-                        //d.doWithRows((Consumer<Row>) all::addRow);
+                        //d.clear();
                     }
-                    //d.clear();
                 });
             }
         }
@@ -391,10 +403,13 @@ public class SelfTest {
             rn.setProp("debug", "true");
 
 
-            DataTable s = cloud.node(/*"**"*/ "eus").exec(() -> {
+            DataTable s = cloud.node(/*"**"*/ "eus").exec(new Callable<DataTable>() {
+                @Override
+                public DataTable call() throws Exception {
 
-                //return new TestServer("nars.nal.nal1").unitTestsByPackage();
-                throw new TODO();
+                    //return new TestServer("nars.nal.nal1").unitTestsByPackage();
+                    throw new TODO();
+                }
             });
 
             s.write().csv(System.out);

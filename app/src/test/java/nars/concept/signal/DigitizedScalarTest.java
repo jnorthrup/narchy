@@ -29,9 +29,12 @@ class DigitizedScalarTest {
                 $.p("low"), $.p("mid"), $.p("hih"));
 
 
-        testSteadyFreqCondition(m, f, (freqSum) -> {
-            System.out.println(freqSum + " " + tolerance);
-            return Util.equals(freqSum, 1f, tolerance);
+        testSteadyFreqCondition(m, f, new FloatPredicate() {
+            @Override
+            public boolean accept(float freqSum) {
+                System.out.println(freqSum + " " + tolerance);
+                return Util.equals(freqSum, 1f, tolerance);
+            }
         }, n);
     }
 
@@ -67,7 +70,12 @@ class DigitizedScalarTest {
                 new DigitizedScalar(
                         new FloatNormalized(x::floatValue).updateRange(-1).updateRange(1),
                         DigitizedScalar.FuzzyBinary, n, $.p("x0"), $.p("x1"), $.p("x2")),
-                (f) -> true /*Util.equals(f, 0.5f + 0.5f * m.floatValue(), tolerance)*/
+                new FloatPredicate() {
+                    @Override
+                    public boolean accept(float f) {
+                        return true;
+                    }
+                } /*Util.equals(f, 0.5f + 0.5f * m.floatValue(), tolerance)*/
                 , n);
     }
 

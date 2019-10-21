@@ -9,15 +9,17 @@ import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.ContainerSurface;
 
 import java.util.Collection;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-import java.util.function.IntFunction;
-import java.util.function.Predicate;
+import java.util.function.*;
 
 public abstract class MutableListContainer extends AbstractMutableContainer<Surface> {
 
 
-    private static final IntFunction<Surface[]> NEW_SURFACE_ARRAY = (i) -> i == 0 ? Surface.EmptySurfaceArray : new Surface[i];
+    private static final IntFunction<Surface[]> NEW_SURFACE_ARRAY = new IntFunction<Surface[]>() {
+        @Override
+        public Surface[] apply(int i) {
+            return i == 0 ? Surface.EmptySurfaceArray : new Surface[i];
+        }
+    };
     private final FastCoWList<Surface> children;
 
     public MutableListContainer(Surface... children) {
@@ -147,8 +149,18 @@ public abstract class MutableListContainer extends AbstractMutableContainer<Surf
 
                         Surface[] ee = children.array();
                         if (!ArrayUtil.equalsIdentity(ee, next)) {
-                            IntSet pi = Util.intSet(x -> x.id, ee);
-                            IntSet ni = Util.intSet(x -> x.id, next);
+                            IntSet pi = Util.intSet(new ToIntFunction<Surface>() {
+                                @Override
+                                public int applyAsInt(Surface x) {
+                                    return x.id;
+                                }
+                            }, ee);
+                            IntSet ni = Util.intSet(new ToIntFunction<Surface>() {
+                                @Override
+                                public int applyAsInt(Surface x) {
+                                    return x.id;
+                                }
+                            }, next);
                             IntHashSet unchanged = new IntHashSet(ee.length + next.length).withAll(pi.select(ni::contains));
 
 //                    Sets.SetView unchanged = Sets.intersection(

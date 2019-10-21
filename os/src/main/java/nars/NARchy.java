@@ -52,22 +52,25 @@ public class NARchy extends NARS {
         NAR nar = core();
         nar.exe.throttle(0.1f);
         
-        nar.runLater(()->{
+        nar.runLater(new Runnable() {
+            @Override
+            public void run() {
 
-            //User u = User.the();
+                //User u = User.the();
 
-            NARHear.readURL(nar);
+                NARHear.readURL(nar);
 
-            {
-                NARSpeak s = new NARSpeak(nar);
-                s.spoken.on(  NativeSpeechDispatcher ::speak);
-                
+                {
+                    NARSpeak s = new NARSpeak(nar);
+                    s.spoken.on(NativeSpeechDispatcher::speak);
+
+                }
+
+                InterNAR i = new InterNAR(nar);
+                i.fps(2.0F);
+
+
             }
-
-            InterNAR i = new InterNAR(nar);
-            i.fps(2.0F);
-
-
         });
 
         return nar;

@@ -33,6 +33,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Arrays;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static nars.Op.*;
@@ -144,7 +145,12 @@ public abstract class CondHow/*Builder*/ extends HowBuilder {
 
 
 	public void taskPunc(boolean belief, boolean goal, boolean question, boolean quest, boolean command) {
-		pre.removeIf(x -> x instanceof PuncMap); //remove any existing
+		pre.removeIf(new org.eclipse.collections.api.block.predicate.Predicate<PREDICATE<PreDerivation>>() {
+            @Override
+            public boolean accept(PREDICATE<PreDerivation> x) {
+                return x instanceof PuncMap;
+            }
+        }); //remove any existing
         byte accepts = PuncMap.TRUE;
 		pre.add(new PuncMap(belief ? accepts : (byte) 0, goal ? accepts : (byte) 0, question ? accepts : (byte) 0, quest ? accepts : (byte) 0, command ? accepts : (byte) 0));
 	}
@@ -603,15 +609,20 @@ public abstract class CondHow/*Builder*/ extends HowBuilder {
 	}
 
 	public void match(Term x, TermMatcher m, boolean trueOrFalse) {
-		match(x, (pathInTask, pathInBelief) -> {
+		match(x, new BiConsumer<byte[], byte[]>() {
+                    @Override
+                    public void accept(byte[] pathInTask, byte[] pathInBelief) {
 
 
-				if (pathInTask != null)
-					match(true, pathInTask, m, trueOrFalse);
-				if (pathInBelief != null)
-					match(false, pathInBelief, m, trueOrFalse);
+                        if (pathInTask != null)
+                            CondHow.this.match(true, pathInTask, m, trueOrFalse);
+                        if (pathInBelief != null)
+                            CondHow.this.match(false, pathInBelief, m, trueOrFalse);
 
-			}, (inTask, inBelief) -> {
+                    }
+                }, new BiConsumer<Boolean, Boolean>() {
+                    @Override
+                    public void accept(Boolean inTask, Boolean inBelief) {
 
 //                    if (trueOrFalse /*|| m instanceof TermMatch.TermMatchEliminatesFalseSuper*/) { //positive only (absence of evidence / evidence of absence)
 //                        if (inTask)
@@ -620,8 +631,9 @@ public abstract class CondHow/*Builder*/ extends HowBuilder {
 //                            matchSuper(false, m, trueOrFalse);
 //                    }
 
-				constraints.add(m.constraint((Variable) x, trueOrFalse));
-			}
+                        constraints.add(m.constraint((Variable) x, trueOrFalse));
+                    }
+                }
 		);
 	}
 
@@ -632,49 +644,58 @@ public abstract class CondHow/*Builder*/ extends HowBuilder {
 	/** cost-sorted array of constraint enable procedures, bundled by common term via CompoundConstraint */
 	private UnifyConstraint<Derivation.PremiseUnify>[] constraints(MutableSet<UnifyConstraint<Derivation.PremiseUnify>> constraints) {
         UnifyConstraint[] preCopy = constraints.toArray(UnifyConstraint.None);
-        Stream<UnifyConstraint<Derivation.PremiseUnify>> all = constraints.stream().filter(c -> {
-			if (!c.remainAmong(preCopy)) {
-                int cc = ArrayUtil.indexOfInstance(preCopy, c);
-				preCopy[cc] = null;
-				return false;
-			}
-			return true;
-		}).flatMap(c -> {
-            PREDICATE<PreDerivation> cc = preFilter(c, taskPattern, beliefPattern);
-			if (cc != null) {
-				pre.add(cc);
-				return Stream.empty();
-			}
-			if (c instanceof RelationConstraint) {
-                RelationConstraint<Derivation.PremiseUnify> m = ((RelationConstraint<Derivation.PremiseUnify>) c).mirror();
-				if (m != null) {
-					//isnt possible:
+        Stream<UnifyConstraint<Derivation.PremiseUnify>> all = constraints.stream().filter(new Predicate<UnifyConstraint<Derivation.PremiseUnify>>() {
+            @Override
+            public boolean test(UnifyConstraint<Derivation.PremiseUnify> c) {
+                if (!c.remainAmong(preCopy)) {
+                    int cc = ArrayUtil.indexOfInstance(preCopy, c);
+                    preCopy[cc] = null;
+                    return false;
+                }
+                return true;
+            }
+        }).flatMap(new Function<UnifyConstraint<Derivation.PremiseUnify>, Stream<? extends UnifyConstraint<Derivation.PremiseUnify>>>() {
+            @Override
+            public Stream<? extends UnifyConstraint<Derivation.PremiseUnify>> apply(UnifyConstraint<Derivation.PremiseUnify> c) {
+                PREDICATE<PreDerivation> cc = preFilter(c, taskPattern, beliefPattern);
+                if (cc != null) {
+                    pre.add(cc);
+                    return Stream.empty();
+                }
+                if (c instanceof RelationConstraint) {
+                    RelationConstraint<Derivation.PremiseUnify> m = ((RelationConstraint<Derivation.PremiseUnify>) c).mirror();
+                    if (m != null) {
+                        //isnt possible:
 //                    PREDICATE<Unify> mm = preFilter(m, taskPattern, beliefPattern);
 //                    if (mm != null) {
 //                        pre.add(mm);
 //                        return Stream.empty();
 //                    }
 
-					return Stream.of(c, m);
-				}
-			}
+                        return Stream.of(c, m);
+                    }
+                }
 
-			return Stream.of(c);
-		}).distinct();
+                return Stream.of(c);
+            }
+        }).distinct();
 
         UnifyConstraint[] alls = all.toArray(UnifyConstraint[]::new);
 		all = Stream.of(alls);
 
 		if (alls.length > 1) {
             UnifyConstraint[] allsCopy = alls.clone();
-			all = all.filter(c -> {
-				if (!c.remainAmong(allsCopy)) {
-                    int cc = ArrayUtil.indexOfInstance(allsCopy, c);
-					allsCopy[cc] = null;
-					return false;
-				}
-				return true;
-			});
+			all = all.filter(new Predicate<UnifyConstraint<Derivation.PremiseUnify>>() {
+                @Override
+                public boolean test(UnifyConstraint<Derivation.PremiseUnify> c) {
+                    if (!c.remainAmong(allsCopy)) {
+                        int cc = ArrayUtil.indexOfInstance(allsCopy, c);
+                        allsCopy[cc] = null;
+                        return false;
+                    }
+                    return true;
+                }
+            });
 		}
 		return UnifyConstraint.the(all);
 

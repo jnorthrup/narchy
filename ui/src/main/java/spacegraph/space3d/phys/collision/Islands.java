@@ -323,7 +323,11 @@ public class Islands {
         public abstract void processIsland(Collection<Collidable> bodies, FasterList<PersistentManifold> manifolds, int manifolds_offset, int numManifolds, int islandId);
     }
 
-    private static final Comparator<PersistentManifold> persistentManifoldComparator = (lhs, rhs) ->
-            lhs == rhs ? 0 : Integer.compare(getIslandId(lhs), getIslandId(rhs));
+    private static final Comparator<PersistentManifold> persistentManifoldComparator = new Comparator<PersistentManifold>() {
+        @Override
+        public int compare(PersistentManifold lhs, PersistentManifold rhs) {
+            return lhs == rhs ? 0 : Integer.compare(getIslandId(lhs), getIslandId(rhs));
+        }
+    };
 
 }

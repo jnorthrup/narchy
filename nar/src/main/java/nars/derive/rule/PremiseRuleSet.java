@@ -13,6 +13,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -37,7 +39,12 @@ public class PremiseRuleSet {
 
     public PremiseRuleSet(NAR nar, Stream<PremiseRule> r) {
         this(nar);
-        r.collect(Collectors.toCollection(()->rules));
+        r.collect(Collectors.toCollection(new Supplier<ArrayHashSet<PremiseRule>>() {
+            @Override
+            public ArrayHashSet<PremiseRule> get() {
+                return rules;
+            }
+        }));
     }
 
     public PremiseRuleSet(NAR nar, ArrayHashSet<PremiseRule> r) {
@@ -50,17 +57,20 @@ public class PremiseRuleSet {
     }
 
 
-    private static final Function<String, Collection<PremiseRule>> ruleFileCache = CaffeineMemoize.build((String n) -> {
+    private static final Function<String, Collection<PremiseRule>> ruleFileCache = CaffeineMemoize.build(new Function<String, Collection<PremiseRule>>() {
+        @Override
+        public Collection<PremiseRule> apply(String n) {
 
-        byte[] bb;
-        try (InputStream nn = NAR.class.getClassLoader().getResourceAsStream(n)) {
-            bb = nn.readAllBytes();
-        } catch (IOException e) {
-            e.printStackTrace();
-            bb = ArrayUtil.EMPTY_BYTE_ARRAY;
+            byte[] bb;
+            try (InputStream nn = NAR.class.getClassLoader().getResourceAsStream(n)) {
+                bb = nn.readAllBytes();
+            } catch (IOException e) {
+                e.printStackTrace();
+                bb = ArrayUtil.EMPTY_BYTE_ARRAY;
+            }
+            return PatternHow.parse(load(bb), NALTruth.the).collect(Collectors.toList());
+
         }
-        return PatternHow.parse(load(bb), NALTruth.the).collect(Collectors.toList());
-
     }, 64, false);
 
 
@@ -75,19 +85,27 @@ public class PremiseRuleSet {
 
     private static Stream<String> preprocess(Stream<String> lines) {
 
-        return lines.map(String::trim).filter(s -> !s.isEmpty() && !s.startsWith("//")).map(s -> {
-
-            String s1 = s;
-            if (s1.contains("..")) {
-                s1 = s1.replace("A..", "%A.."); //add var pattern manually to ellipsis
-                //s = s.replace("%A..B=_", "%A..%B=_"); //add var pattern manually to ellipsis
-                s1 = s1.replace("B..", "%B.."); //add var pattern manually to ellipsis
-                //s = s.replace("%A.._=B", "%A.._=%B"); //add var pattern manually to ellipsis
+        return lines.map(String::trim).filter(new Predicate<String>() {
+            @Override
+            public boolean test(String s) {
+                return !s.isEmpty() && !s.startsWith("//");
             }
+        }).map(new Function<String, String>() {
+            @Override
+            public String apply(String s) {
+
+                String s1 = s;
+                if (s1.contains("..")) {
+                    s1 = s1.replace("A..", "%A.."); //add var pattern manually to ellipsis
+                    //s = s.replace("%A..B=_", "%A..%B=_"); //add var pattern manually to ellipsis
+                    s1 = s1.replace("B..", "%B.."); //add var pattern manually to ellipsis
+                    //s = s.replace("%A.._=B", "%A.._=%B"); //add var pattern manually to ellipsis
+                }
 
 
-            return s1;
+                return s1;
 
+            }
         });
 
     }
@@ -98,7 +116,12 @@ public class PremiseRuleSet {
     }
 
     public final DeriverProgram compile() {
-        return compile(a -> a);
+        return compile(new UnaryOperator<How>() {
+            @Override
+            public How apply(How a) {
+                return a;
+            }
+        });
     }
 
     public final DeriverProgram compile(UnaryOperator<How> actionTransform) {
@@ -120,7 +143,12 @@ public class PremiseRuleSet {
     }
 
     public final PremiseRuleSet add(Stream<PremiseRule> r) {
-        r.collect(Collectors.toCollection(()->this.rules));
+        r.collect(Collectors.toCollection(new Supplier<ArrayHashSet<PremiseRule>>() {
+            @Override
+            public ArrayHashSet<PremiseRule> get() {
+                return PremiseRuleSet.this.rules;
+            }
+        }));
         return this;
     }
 

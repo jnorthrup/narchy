@@ -55,6 +55,7 @@ import org.HdrHistogram.Histogram;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.eclipse.collections.api.block.function.primitive.ObjectBooleanToObjectFunction;
 import org.eclipse.collections.api.block.function.primitive.ShortToObjectFunction;
+import org.eclipse.collections.api.block.procedure.primitive.ShortProcedure;
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.api.tuple.Twin;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
@@ -193,13 +194,16 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
 
         Term tc = t.why();
 		if (tc!=null) {
-		    Why.forEachUnique(t.why(), s-> {
-                Cause c = control.why.get((int) s);
-                try {
-                    out.append(c.toString());
-                    out.append('\n');
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
+		    Why.forEachUnique(t.why(), new ShortProcedure() {
+                @Override
+                public void value(short s) {
+                    Cause c = control.why.get((int) s);
+                    try {
+                        out.append(c.toString());
+                        out.append('\n');
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
             });
 		}
@@ -233,8 +237,12 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
         return x instanceof Functor ? (Functor) x : null;
     }
 
-    public final ThreadLocal<Evaluator> evaluator = ThreadLocal.withInitial(() ->
-            new Evaluator(this::axioms)
+    public final ThreadLocal<Evaluator> evaluator = ThreadLocal.withInitial(new Supplier<Evaluator>() {
+                                                                                @Override
+                                                                                public Evaluator get() {
+                                                                                    return new Evaluator(NAR.this::axioms);
+                                                                                }
+                                                                            }
     );
 
 
@@ -259,17 +267,25 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
             Histogram volume = new Histogram(1L, (long) term.COMPOUND_VOLUME_MAX, 3);
 
             {
-                concepts().filter(xx -> !(xx instanceof Functor)).forEach(c -> {
+                concepts().filter(new Predicate<Concept>() {
+                    @Override
+                    public boolean test(Concept xx) {
+                        return !(xx instanceof Functor);
+                    }
+                }).forEach(new Consumer<Concept>() {
+                    @Override
+                    public void accept(Concept c) {
 
-                    Term ct = c.term();
-                    volume.recordValue((long) ct.volume());
-                    rootOp.add(ct.op());
-                    clazz.add(ct.getClass().toString());
+                        Term ct = c.term();
+                        volume.recordValue((long) ct.volume());
+                        rootOp.add(ct.op());
+                        clazz.add(ct.getClass().toString());
 
-                    beliefs.accept(c.beliefs().taskCount());
-                    goals.accept(c.goals().taskCount());
-                    questions.accept(c.questions().taskCount());
-                    quests.accept(c.quests().taskCount());
+                        beliefs.accept(c.beliefs().taskCount());
+                        goals.accept(c.goals().taskCount());
+                        questions.accept(c.questions().taskCount());
+                        quests.accept(c.quests().taskCount());
+                    }
                 });
 
 
@@ -628,16 +644,19 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
      * logs tasks and other budgeted items with a summary exceeding a threshold
      */
     public Off logPriMin(Appendable out, float priThresh) {
-        return log(out, v -> {
-            Prioritized b = null;
-            if (v instanceof Prioritized) {
-                b = ((Prioritized) v);
-            } else if (v instanceof Twin) {
-                if (((Pair) v).getOne() instanceof Prioritized) {
-                    b = (Prioritized) ((Pair) v).getOne();
+        return log(out, new Predicate() {
+            @Override
+            public boolean test(Object v) {
+                Prioritized b = null;
+                if (v instanceof Prioritized) {
+                    b = ((Prioritized) v);
+                } else if (v instanceof Twin) {
+                    if (((Pair) v).getOne() instanceof Prioritized) {
+                        b = (Prioritized) ((Pair) v).getOne();
+                    }
                 }
+                return b != null && b.priElseZero() >= priThresh;
             }
-            return b != null && b.priElseZero() >= priThresh;
         });
     }
 
@@ -721,29 +740,38 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
      * simplified wrapper for use cases where only the arguments of an operation task, and not the task itself matter
      */
     public final void addOpN(String atom, BiConsumer<Subterms, NAR> exe) {
-        setOp(Atomic.atom(atom), (task, nar) -> {
-            exe.accept(task.term().sub(0).subterms(), nar);
-            return null;
+        setOp(Atomic.atom(atom), new BiFunction<Task, NAR, Task>() {
+            @Override
+            public Task apply(Task task, NAR nar) {
+                exe.accept(task.term().sub(0).subterms(), nar);
+                return null;
+            }
         });
     }
 
     public final Operator addOp1(String atom, BiConsumer<Term, NAR> exe) {
-        return setOp(Atomic.atom(atom), (task, nar) -> {
+        return setOp(Atomic.atom(atom), new BiFunction<Task, NAR, Task>() {
+            @Override
+            public Task apply(Task task, NAR nar) {
 
-            Subterms ss = task.term().sub(0).subterms();
-            if (ss.subs() == 1)
-                exe.accept(ss.sub(0), nar);
-            return null;
+                Subterms ss = task.term().sub(0).subterms();
+                if (ss.subs() == 1)
+                    exe.accept(ss.sub(0), nar);
+                return null;
+            }
         });
     }
 
     public final void addOp2(String atom, TriConsumer<Term, Term, NAR> exe) {
-        setOp(Atomic.atom(atom), (task, nar) -> {
+        setOp(Atomic.atom(atom), new BiFunction<Task, NAR, Task>() {
+            @Override
+            public Task apply(Task task, NAR nar) {
 
-            Subterms ss = task.term().sub(0).subterms();
-            if (ss.subs() == 2)
-                exe.accept(ss.sub(0), ss.sub(1), nar);
-            return null;
+                Subterms ss = task.term().sub(0).subterms();
+                if (ss.subs() == 2)
+                    exe.accept(ss.sub(0), ss.sub(1), nar);
+                return null;
+            }
         });
     }
 
@@ -884,7 +912,12 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
     }
 
     public Off trace(Appendable out) {
-        return trace(out, k -> true);
+        return trace(out, new Predicate<String>() {
+            @Override
+            public boolean test(String k) {
+                return true;
+            }
+        });
     }
 
     public Off log() {
@@ -896,7 +929,12 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
     }
 
     public Off log(Appendable out, Predicate includeValue) {
-        return trace(out, (x)->true, includeValue);
+        return trace(out, new Predicate<String>() {
+            @Override
+            public boolean test(String x) {
+                return true;
+            }
+        }, includeValue);
     }
 
     /**
@@ -951,12 +989,15 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
 //                return t;
 //        });
 
-        runAt(time, (nn) -> {
-            //nn.input(yy.toArray(new Task[size]))
-            try {
-                nn.input(tt);
-            } catch (NarseseException e) {
-                e.printStackTrace();
+        runAt(time, new Consumer<NAR>() {
+            @Override
+            public void accept(NAR nn) {
+                //nn.input(yy.toArray(new Task[size]))
+                try {
+                    nn.input(tt);
+                } catch (NarseseException e) {
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -967,7 +1008,12 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
      * TODO use a scheduling using r-tree
      */
     public void inputAt(long when, Task... x) {
-        runAt(when, (nn) -> nn.input(x));
+        runAt(when, new Consumer<NAR>() {
+            @Override
+            public void accept(NAR nn) {
+                nn.input(x);
+            }
+        });
     }
 
     public final void runAt(long whenOrAfter, Consumer<NAR> t) {
@@ -1009,18 +1055,30 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
 
     public Stream<Task> tasks(boolean includeConceptBeliefs, boolean includeConceptQuestions,
                               boolean includeConceptGoals, boolean includeConceptQuests) {
-        return concepts().flatMap(c ->
-                c.tasks(includeConceptBeliefs, includeConceptQuestions, includeConceptGoals, includeConceptQuests));
+        return concepts().flatMap(new Function<Concept, Stream<? extends Task>>() {
+            @Override
+            public Stream<? extends Task> apply(Concept c) {
+                return c.tasks(includeConceptBeliefs, includeConceptQuestions, includeConceptGoals, includeConceptQuests);
+            }
+        });
     }
 
     public void tasks(boolean includeConceptBeliefs, boolean includeConceptQuestions, boolean includeConceptGoals,
                       boolean includeConceptQuests, BiConsumer<Concept, Task> each) {
-        concepts().forEach(c ->
-
-                c.tasks(includeConceptBeliefs,
-                        includeConceptQuestions,
-                        includeConceptGoals,
-                        includeConceptQuests).forEach(t -> each.accept(c, t))
+        concepts().forEach(new Consumer<Concept>() {
+                               @Override
+                               public void accept(Concept c) {
+                                   c.tasks(includeConceptBeliefs,
+                                           includeConceptQuestions,
+                                           includeConceptGoals,
+                                           includeConceptQuests).forEach(new Consumer<Task>() {
+                                       @Override
+                                       public void accept(Task t) {
+                                           each.accept(c, t);
+                                       }
+                                   });
+                               }
+                           }
         );
     }
 
@@ -1088,9 +1146,12 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
      * warning: the condition will be tested each cycle so it may affect performance
      */
     public NAR stopIf(BooleanSupplier stopCondition) {
-        onCycle(n -> {
-            if (stopCondition.getAsBoolean())
-                stop();
+        onCycle(new Consumer<NAR>() {
+            @Override
+            public void accept(NAR n) {
+                if (stopCondition.getAsBoolean())
+                    NAR.this.stop();
+            }
         });
         return this;
     }
@@ -1111,7 +1172,12 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
 //    }
 
     public final Off onCycle(Runnable each) {
-        return onCycle((ignored) -> each.run());
+        return onCycle(new Consumer<NAR>() {
+            @Override
+            public void accept(NAR ignored) {
+                each.run();
+            }
+        });
     }
 
     public final DurLoop onDur(Runnable on) {
@@ -1220,7 +1286,12 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
     }
 
     public final NAR outputBinary(File f, boolean append, Predicate<Task> each) throws IOException {
-        return outputBinary(f, append, (Task t) -> each.test(t) ? t : null);
+        return outputBinary(f, append, new UnaryOperator<Task>() {
+            @Override
+            public Task apply(Task t) {
+                return each.test(t) ? t : null;
+            }
+        });
     }
 
     public NAR outputBinary(File f, boolean append, UnaryOperator<Task> each) throws IOException {
@@ -1231,11 +1302,21 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
     }
 
     public final NAR outputBinary(OutputStream o) {
-        return outputBinary(o, (Task x) -> x);
+        return outputBinary(o, new UnaryOperator<Task>() {
+            @Override
+            public Task apply(Task x) {
+                return x;
+            }
+        });
     }
 
     public final NAR outputBinary(OutputStream o, Predicate<Task> filter) {
-        return outputBinary(o, (Task x) -> filter.test(x) ? x : null);
+        return outputBinary(o, new UnaryOperator<Task>() {
+            @Override
+            public Task apply(Task x) {
+                return filter.test(x) ? x : null;
+            }
+        });
     }
 
     /**
@@ -1246,38 +1327,44 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
      */
     public NAR outputBinary(OutputStream o, UnaryOperator<Task> each) {
 
-        Util.time(logger, "outputBinary", () -> {
+        Util.time(logger, "outputBinary", new Runnable() {
+            @Override
+            public void run() {
 
-            DataOutputStream oo = new DataOutputStream(o);
+                DataOutputStream oo = new DataOutputStream(o);
 
-            MutableInteger total = new MutableInteger(0), wrote = new MutableInteger(0);
+                MutableInteger total = new MutableInteger(0), wrote = new MutableInteger(0);
 
-            DynBytes d = new DynBytes(128);
+                DynBytes d = new DynBytes(128);
 
-            tasks().map(each).filter(Objects::nonNull).distinct().forEach(x -> {
+                NAR.this.tasks().map(each).filter(Objects::nonNull).distinct().forEach(new Consumer<Task>() {
+                    @Override
+                    public void accept(Task x) {
 
-                total.increment();
+                        total.increment();
+
+                        try {
+                            @Nullable byte[] b = IO.taskToBytes(x, d);
+                            oo.write(b);
+                            wrote.increment();
+                        } catch (IOException e) {
+                            if (NAL.DEBUG)
+                                throw new RuntimeException(e);
+                            else
+                                logger.warn("output binary: {}", e);
+                        }
+
+                    }
+                });
+
+                logger.info("{} output {}/{} tasks ({} bytes uncompressed)", o, wrote, total, oo.size());
+
 
                 try {
-                    @Nullable byte[] b = IO.taskToBytes(x, d);
-                    oo.write(b);
-                    wrote.increment();
+                    oo.close();
                 } catch (IOException e) {
-                    if (NAL.DEBUG)
-                        throw new RuntimeException(e);
-                    else
-                        logger.warn("output binary: {}", e);
+                    throw new RuntimeException(e);
                 }
-
-            });
-
-            logger.info("{} output {}/{} tasks ({} bytes uncompressed)", o, wrote, total, oo.size());
-
-
-            try {
-                oo.close();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
             }
         });
 
@@ -1292,15 +1379,18 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
         MutableInteger total = new MutableInteger(0);
 
         StringBuilder sb = new StringBuilder();
-        tasks().map(each).filter(Objects::nonNull).forEach(x -> {
+        tasks().map(each).filter(Objects::nonNull).forEach(new Consumer<Task>() {
+            @Override
+            public void accept(Task x) {
 
-            total.increment();
+                total.increment();
 
-            if (x.truth() != null && x.conf() < confMin.floatValue())
-                return;
+                if (x.truth() != null && x.conf() < confMin.floatValue())
+                    return;
 
-            sb.setLength(0);
-            ps.println(x.appendTo(sb, true));
+                sb.setLength(0);
+                ps.println(x.appendTo(sb, true));
+            }
         });
 
         try {
@@ -1321,7 +1411,17 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
     }
 
     public NAR output(OutputStream o, boolean binary) {
-        return binary ? outputBinary(o, (Task x) -> x.isDeleted() ? null : x) : outputText(o, x -> x.isDeleted() ? null : x);
+        return binary ? outputBinary(o, new UnaryOperator<Task>() {
+            @Override
+            public Task apply(Task x) {
+                return x.isDeleted() ? null : x;
+            }
+        }) : outputText(o, new UnaryOperator<Task>() {
+            @Override
+            public Task apply(Task x) {
+                return x.isDeleted() ? null : x;
+            }
+        });
     }
 
     /**
@@ -1412,7 +1512,12 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
      * deletes any task with a stamp containing the component
      */
     public void retract(long stampComponent) {
-        tasks().filter(x -> Longs.contains(x.stamp(), stampComponent)).forEach(Task::delete);
+        tasks().filter(new Predicate<Task>() {
+            @Override
+            public boolean test(Task x) {
+                return Longs.contains(x.stamp(), stampComponent);
+            }
+        }).forEach(Task::delete);
     }
 
 //    /**
@@ -1498,9 +1603,19 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
                 Streams.stream(eventCycle).map(WhenCycle::new),
                 Streams.stream(eventClear).map(WhenClear::new),
                 this.partStream()
-                        .map((s) -> ((NARPart) s).event()).filter(Objects::nonNull),
+                        .map(new Function<Part<NAR>, WhenInternal>() {
+                            @Override
+                            public WhenInternal apply(Part<NAR> s) {
+                                return ((NARPart) s).event();
+                            }
+                        }).filter(Objects::nonNull),
                 exe.events()
-                        .filter(t -> !(t instanceof DurLoop.WhenDur)) //HACK (these should already be included in service's events)
+                        .filter(new Predicate<ScheduledTask>() {
+                            @Override
+                            public boolean test(ScheduledTask t) {
+                                return !(t instanceof DurLoop.WhenDur);
+                            }
+                        }) //HACK (these should already be included in service's events)
 //            causes.stream(),
         );
     }
@@ -1516,7 +1631,17 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
      * stream of all registered services
      */
     public final <X> Stream<X> parts(Class<? extends X> nAgentClass) {
-        return this.partStream().filter(x -> nAgentClass.isAssignableFrom(x.getClass())).map(x -> (X) x);
+        return this.partStream().filter(new Predicate<Part<NAR>>() {
+            @Override
+            public boolean test(Part<NAR> x) {
+                return nAgentClass.isAssignableFrom(x.getClass());
+            }
+        }).map(new Function<Part<NAR>, X>() {
+            @Override
+            public X apply(Part<NAR> x) {
+                return (X) x;
+            }
+        });
     }
 
 

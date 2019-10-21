@@ -1,6 +1,8 @@
 package jcog.data.set;
 
 import java.util.*;
+import java.util.function.Predicate;
+import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 
 /**
@@ -199,7 +201,17 @@ public class SimpleHashSet<T> extends AbstractSet<T> implements Cloneable {
         }
         int hash = secondaryHash(key);
         SimpleHashSetEntry<T>[] tab = mTable;
-        return Stream.iterate(tab[hash & (tab.length - 1)], Objects::nonNull, e -> e.mNext).anyMatch(e -> e.mKey == key || (e.mHash == hash && e.mKey.equals(key)));
+        return Stream.iterate(tab[hash & (tab.length - 1)], Objects::nonNull, new UnaryOperator<SimpleHashSetEntry<T>>() {
+            @Override
+            public SimpleHashSetEntry<T> apply(SimpleHashSetEntry<T> e) {
+                return e.mNext;
+            }
+        }).anyMatch(new Predicate<SimpleHashSetEntry<T>>() {
+            @Override
+            public boolean test(SimpleHashSetEntry<T> e) {
+                return e.mKey == key || (e.mHash == hash && e.mKey.equals(key));
+            }
+        });
     }
 
     @Override

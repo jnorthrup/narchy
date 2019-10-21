@@ -5,6 +5,7 @@ import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GL2ES3;
 import jcog.Util;
 import jcog.math.FloatRange;
+import jcog.tree.rtree.RNode;
 import jcog.util.FloatFloatToFloatFunction;
 import nars.NAR;
 import nars.Task;
@@ -15,6 +16,7 @@ import nars.task.util.TaskRegion;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.truth.TruthWave;
+import org.eclipse.collections.api.block.procedure.Procedure;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.Labeled;
 import spacegraph.space2d.MenuSupplier;
@@ -30,6 +32,9 @@ import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.video.Draw;
 
 import java.util.Objects;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 
 public class BeliefTableChart extends DurSurface<Stacking> implements Labeled, MenuSupplier {
@@ -66,26 +71,29 @@ public class BeliefTableChart extends DurSurface<Stacking> implements Labeled, M
         gl.glLineWidth(4.0F);
         gl.glBegin(GL.GL_LINE_STRIP);
 
-        wave.forEach((freq, conf, start, end) -> {
+        wave.forEach(new TruthWave.TruthWaveVisitor() {
+            @Override
+            public void onTruth(float freq, float conf, long start, long end) {
 
-            colorize.colorize(gl, freq, conf);
+                colorize.colorize(gl, freq, conf);
 
-            float Y = y(freq);
+                float Y = y(freq);
 
 
-            gl.glVertex2f(
-                    end - start > 1L ? (xTime(start) + xTime(end)) / 2.0F : xTime(start),
-                    Y);
+                gl.glVertex2f(
+                        end - start > 1L ? (BeliefTableChart.this.xTime(start) + BeliefTableChart.this.xTime(end)) / 2.0F : BeliefTableChart.this.xTime(start),
+                        Y);
 
-            //int dMargin = 0; //(int)(end-start)/3;
-            //gl.glVertex2f(xTime(start+dMargin), Y);
+                //int dMargin = 0; //(int)(end-start)/3;
+                //gl.glVertex2f(xTime(start+dMargin), Y);
 
-            //if (start != end) {
-            //if ((end >= minT) && (end <= maxT)) {
-            //gl.glVertex2f(xTime(end - dMargin), Y);
-            //}
-            //}
+                //if (start != end) {
+                //if ((end >= minT) && (end <= maxT)) {
+                //gl.glVertex2f(xTime(end - dMargin), Y);
+                //}
+                //}
 
+            }
         });
 
         gl.glEnd();
@@ -100,27 +108,30 @@ public class BeliefTableChart extends DurSurface<Stacking> implements Labeled, M
 //        gl.glVertex2f(xTime(minT, minT, maxT), midY);
 //        gl.glVertex2f(xTime(minT, minT, maxT), midY);
 
-        wave.forEach((freq, conf, start, end) -> {
+        wave.forEach(new TruthWave.TruthWaveVisitor() {
+            @Override
+            public void onTruth(float freq, float conf, long start, long end) {
 
-            long end1 = end;
-            if (start > maxT || end1 < minT)
-                return;
+                long end1 = end;
+                if (start > maxT || end1 < minT)
+                    return;
 
-            colorize.colorize(gl, freq, conf);
+                colorize.colorize(gl, freq, conf);
 
-            float Y = y.apply(freq, conf);
+                float Y = y.apply(freq, conf);
 
-            float x1 = xTime(start);
-            gl.glVertex2f(x1, midY);
-            gl.glVertex2f(x1, Y);
+                float x1 = BeliefTableChart.this.xTime(start);
+                gl.glVertex2f(x1, midY);
+                gl.glVertex2f(x1, Y);
 
-            if (start == end1)
-                end1 = start + 1L;
+                if (start == end1)
+                    end1 = start + 1L;
 
-            float x2 = xTime(end1);
-            gl.glVertex2f(x2, Y);
-            gl.glVertex2f(x2, midY);
+                float x2 = BeliefTableChart.this.xTime(end1);
+                gl.glVertex2f(x2, Y);
+                gl.glVertex2f(x2, midY);
 
+            }
         });
 
 //        gl.glVertex2f(xTime(maxT, minT, maxT), midY);
@@ -150,32 +161,44 @@ public class BeliefTableChart extends DurSurface<Stacking> implements Labeled, M
             projected = new TruthWave(projections);
             tasks = new TruthWave(1024);
             this.colorizeLine = beliefOrGoal ?
-                    (gl, f, c) -> {
-                        float a = 0.6f + 0.1f * c;
-                        float i = 0.1f + 0.9f * c;  //intensity
-                        float j = 0.05f * (1.0F - c);
-                        gl.glColor4f(i, j, j, a);
+                    new Colorize() {
+                        @Override
+                        public void colorize(GL2 gl, float f, float c) {
+                            float a = 0.6f + 0.1f * c;
+                            float i = 0.1f + 0.9f * c;  //intensity
+                            float j = 0.05f * (1.0F - c);
+                            gl.glColor4f(i, j, j, a);
+                        }
                     }
                     :
-                    (gl, f, c) -> {
-                        float a = 0.6f + 0.1f * c;
-                        float i = 0.1f + 0.9f * c;  //intensity
-                        float j = 0.05f * (1.0F - c);
-                        gl.glColor4f(j, i, j, a);
+                    new Colorize() {
+                        @Override
+                        public void colorize(GL2 gl, float f, float c) {
+                            float a = 0.6f + 0.1f * c;
+                            float i = 0.1f + 0.9f * c;  //intensity
+                            float j = 0.05f * (1.0F - c);
+                            gl.glColor4f(j, i, j, a);
+                        }
                     };
             this.colorizeFill = beliefOrGoal ?
-                    (gl, f, c) -> {
-                        float a =
-                            0.25f + 0.5f * (c*c);
+                    new Colorize() {
+                        @Override
+                        public void colorize(GL2 gl, float f, float c) {
+                            float a =
+                                    0.25f + 0.5f * (c * c);
                             //c;
-                        gl.glColor4f(1.0F, (float) 0, (float) 0, a);
+                            gl.glColor4f(1.0F, (float) 0, (float) 0, a);
+                        }
                     }
                     :
-                    (gl, f, c) -> {
-                        float a =
-                            0.25f + 0.5f * (c*c);
+                    new Colorize() {
+                        @Override
+                        public void colorize(GL2 gl, float f, float c) {
+                            float a =
+                                    0.25f + 0.5f * (c * c);
                             //c;
-                        gl.glColor4f((float) 0, 1.0F, (float) 0, a);
+                            gl.glColor4f((float) 0, 1.0F, (float) 0, a);
+                        }
                     };
 
         }
@@ -223,7 +246,12 @@ public class BeliefTableChart extends DurSurface<Stacking> implements Labeled, M
         private void renderNodes(GL2 gl, TruthWave tasks) {
             BeliefTable table = tasks.table;
             if (table instanceof BeliefTables)
-                ((BeliefTables)table).forEach(b -> renderBeliefTable(gl, b));
+                ((BeliefTables)table).forEach(new Procedure<BeliefTable>() {
+                    @Override
+                    public void value(BeliefTable b) {
+                        TruthGrid.this.renderBeliefTable(gl, b);
+                    }
+                });
             else
                 renderBeliefTable(gl, table);
         }
@@ -243,12 +271,25 @@ public class BeliefTableChart extends DurSurface<Stacking> implements Labeled, M
 
             float fEps = nar.freqResolution.floatValue()/ 2.0F;
 
-            t.streamNodes().filter(Objects::nonNull).map(n -> (TaskRegion) n.bounds()).filter(b -> b != null && !(b instanceof Task) && b.intersects(start, end)).forEach(b -> {
-                float x1 = xTime(b.start());
-                float x2 = xTime(b.end());
-                float y1 = b.freqMin() - fEps;
-                float y2 = b.freqMax() + fEps;
-                Draw.rectStroke(x1, y1, x2 - x1, y2 - y1, gl);
+            t.streamNodes().filter(Objects::nonNull).map(new Function<RNode<TaskRegion>, TaskRegion>() {
+                @Override
+                public TaskRegion apply(RNode<TaskRegion> n) {
+                    return (TaskRegion) n.bounds();
+                }
+            }).filter(new Predicate<TaskRegion>() {
+                @Override
+                public boolean test(TaskRegion b) {
+                    return b != null && !(b instanceof Task) && b.intersects(start, end);
+                }
+            }).forEach(new Consumer<TaskRegion>() {
+                @Override
+                public void accept(TaskRegion b) {
+                    float x1 = TruthGrid.this.xTime(b.start());
+                    float x2 = TruthGrid.this.xTime(b.end());
+                    float y1 = b.freqMin() - fEps;
+                    float y2 = b.freqMax() + fEps;
+                    Draw.rectStroke(x1, y1, x2 - x1, y2 - y1, gl);
+                }
             });
         }
 
@@ -257,33 +298,36 @@ public class BeliefTableChart extends DurSurface<Stacking> implements Labeled, M
 
             float ph = Math.max(taskHeightMin, nar.freqResolution.floatValue());
 
-            wave.forEach((freq, conf, s, e) -> {
+            wave.forEach(new TruthWave.TruthWaveVisitor() {
+                @Override
+                public void onTruth(float freq, float conf, long s, long e) {
 
-                float start = xTime(s);
-                if (start > 1.0F)
-                    return;
+                    float start = TruthGrid.this.xTime(s);
+                    if (start > 1.0F)
+                        return;
 
-                float end = xTime(e + 1L);
-                if (end < (float) 0)
-                    return;
+                    float end = TruthGrid.this.xTime(e + 1L);
+                    if (end < (float) 0)
+                        return;
 
-                colorize.colorize(gl, freq, conf);
+                    colorize.colorize(gl, freq, conf);
 
-                float yBottom = BeliefTableChart.y(freq) - ph / 2.0F;
-                float width = end - start;
-                if (width < taskWidthMin) {
-                    //point-like
-                    float w = taskWidthMin; //visible width
-                    float center = (end + start) / 2.0F;
+                    float yBottom = BeliefTableChart.y(freq) - ph / 2.0F;
+                    float width = end - start;
+                    if (width < taskWidthMin) {
+                        //point-like
+                        float w = taskWidthMin; //visible width
+                        float center = (end + start) / 2.0F;
 //                    float yMid = freq;
-                    float thick = taskWidthMin/ 2.0F;
-                    //Draw.rectFrame(center, yMid, w, thick, ph, gl);
-                    Draw.rectCross(center - w / 2.0F, yBottom, w, ph, thick, gl);
-                } else {
-                    //solid
-                    Draw.rect(start, yBottom, width, ph, gl);
-                }
+                        float thick = taskWidthMin / 2.0F;
+                        //Draw.rectFrame(center, yMid, w, thick, ph, gl);
+                        Draw.rectCross(center - w / 2.0F, yBottom, w, ph, thick, gl);
+                    } else {
+                        //solid
+                        Draw.rect(start, yBottom, width, ph, gl);
+                    }
 
+                }
             });
         }
 
@@ -353,7 +397,12 @@ public class BeliefTableChart extends DurSurface<Stacking> implements Labeled, M
         return Splitting.row(
             ObjectSurface.the(this),
             0.9f,
-            PushButton.awesome("search-plus").clicked(() -> NARui.conceptWindow(term, nar))
+            PushButton.awesome("search-plus").clicked(new Runnable() {
+                @Override
+                public void run() {
+                    NARui.conceptWindow(term, nar);
+                }
+            })
         );
     }
 

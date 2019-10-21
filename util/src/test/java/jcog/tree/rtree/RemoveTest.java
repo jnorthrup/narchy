@@ -3,6 +3,9 @@ package jcog.tree.rtree;
 import jcog.tree.rtree.rect.RectDouble;
 import org.junit.jupiter.api.Test;
 
+import java.util.function.Consumer;
+import java.util.function.Predicate;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class RemoveTest {
@@ -18,9 +21,24 @@ public class RemoveTest {
             r.add(x);
 
         assertEquals(rects.length, r.size());
-        assertEquals(1, r.streamNodes().filter(x ->x instanceof RBranch).count());
-        assertEquals(2, r.streamNodes().filter(x ->x instanceof RLeaf).count());
-        r.streamNodesRecursively().forEach(x1 -> System.out.println(x1.getClass() + " " + x1.size()));
+        assertEquals(1, r.streamNodes().filter(new Predicate<RNode<RectDouble>>() {
+            @Override
+            public boolean test(RNode<RectDouble> x) {
+                return x instanceof RBranch;
+            }
+        }).count());
+        assertEquals(2, r.streamNodes().filter(new Predicate<RNode<RectDouble>>() {
+            @Override
+            public boolean test(RNode<RectDouble> x) {
+                return x instanceof RLeaf;
+            }
+        }).count());
+        r.streamNodesRecursively().forEach(new Consumer<RNode<RectDouble>>() {
+            @Override
+            public void accept(RNode<RectDouble> x1) {
+                System.out.println(x1.getClass() + " " + x1.size());
+            }
+        });
         assertEquals(6, r.streamNodesRecursively().count());
 
         {
@@ -37,8 +55,18 @@ public class RemoveTest {
         assertEquals(LEAF_CAP, r.size());
         r.stats().print();
 
-        assertEquals(0, r.streamNodesRecursively().filter(x ->x instanceof RBranch).count());
-        assertEquals(1, r.streamNodesRecursively().filter(x ->x instanceof RLeaf).count());
+        assertEquals(0, r.streamNodesRecursively().filter(new Predicate<RNode<RectDouble>>() {
+            @Override
+            public boolean test(RNode<RectDouble> x) {
+                return x instanceof RBranch;
+            }
+        }).count());
+        assertEquals(1, r.streamNodesRecursively().filter(new Predicate<RNode<RectDouble>>() {
+            @Override
+            public boolean test(RNode<RectDouble> x) {
+                return x instanceof RLeaf;
+            }
+        }).count());
 
     }
 }

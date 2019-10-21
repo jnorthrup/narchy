@@ -23,7 +23,12 @@ public class Every {
     long last = System.currentTimeMillis();
 
     public Every(Runnable r, int initialPeriodMS) {
-        this((x)->r.run(), initialPeriodMS);
+        this(new LongConsumer() {
+            @Override
+            public void accept(long x) {
+                r.run();
+            }
+        }, initialPeriodMS);
     }
 
     public Every(LongConsumer r, int initialPeriodMS) {

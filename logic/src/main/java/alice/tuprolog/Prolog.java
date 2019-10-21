@@ -177,9 +177,12 @@ public class Prolog {
         Consumer<Theory> ifSuccessful;
         if (!onTheory.isEmpty()) {
             Theory oldTh = getTheory();
-            ifSuccessful = (newTheory) -> {
-                for (TheoryListener tl : onTheory) {
-                    tl.theoryChanged(new TheoryEvent(this, oldTh, newTheory));
+            ifSuccessful = new Consumer<Theory>() {
+                @Override
+                public void accept(Theory newTheory) {
+                    for (TheoryListener tl : onTheory) {
+                        tl.theoryChanged(new TheoryEvent(Prolog.this, oldTh, newTheory));
+                    }
                 }
             };
         } else {
@@ -340,9 +343,12 @@ public class Prolog {
     }
 
     public Prolog solve(Term g, Consumer<Solution> eachSolution) {
-        return solveWhile(g, (x) -> {
-            eachSolution.accept(x);
-            return true;
+        return solveWhile(g, new Predicate<Solution>() {
+            @Override
+            public boolean test(Solution x) {
+                eachSolution.accept(x);
+                return true;
+            }
         });
     }
 

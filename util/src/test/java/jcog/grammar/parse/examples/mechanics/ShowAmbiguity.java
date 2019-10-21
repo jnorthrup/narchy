@@ -38,10 +38,13 @@ public class ShowAmbiguity {
 
 		
 
-		volume.put((IAssembler) a -> {
-			Object o = a.pop();
-			a.push("VOL(" + o + ')');
-		});
+		volume.put(new IAssembler() {
+            @Override
+            public void accept(Assembly a) {
+                Object o = a.pop();
+                a.push("VOL(" + o + ')');
+            }
+        });
 
 		
 

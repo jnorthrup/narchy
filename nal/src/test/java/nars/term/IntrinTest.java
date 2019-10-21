@@ -22,6 +22,7 @@ import org.junit.jupiter.api.Test;
 import org.roaringbitmap.RoaringBitmap;
 
 import java.util.Random;
+import java.util.function.Supplier;
 
 import static nars.$.$;
 import static nars.$.$$;
@@ -209,7 +210,12 @@ public class IntrinTest {
         Term twoNeg = x[2];
         assertTrue(av.contains(twoNeg));
         assertTrue(av.containsRecursively(twoNeg, false, null));
-        assertTrue(av.containsRecursively(twoNeg.neg(), false, null), () -> av + " containsRecursively " + twoNeg.neg());
+        assertTrue(av.containsRecursively(twoNeg.neg(), false, null), new Supplier<String>() {
+            @Override
+            public String get() {
+                return av + " containsRecursively " + twoNeg.neg();
+            }
+        });
 
 
     }
@@ -271,7 +277,12 @@ public class IntrinTest {
             assertTrue(
                     UniSubterm.class == t.subterms().getClass() ||
                             IntrinSubterms.class == t.subterms().getClass());
-            assertTrue(t.isNormalized(), () -> t + " not auto-normalized but it could be");
+            assertTrue(t.isNormalized(), new Supplier<String>() {
+                @Override
+                public String get() {
+                    return t + " not auto-normalized but it could be";
+                }
+            });
         }
         for (String s: new String[]{"($2)", "($2,$1)", "($1,#3)", "(%1,%3,%2)"}) {
             Term t = Narsese.term(s, false);
@@ -279,8 +290,18 @@ public class IntrinTest {
             assertTrue(
                     UniSubterm.class == t.subterms().getClass() ||
                             IntrinSubterms.class == t.subterms().getClass(),
-                    () -> t.getClass().toString() + ' ' + t.subterms().getClass());
-            assertFalse(t.isNormalized(), () -> t + " auto-normalized but should not be");
+                    new Supplier<String>() {
+                        @Override
+                        public String get() {
+                            return t.getClass().toString() + ' ' + t.subterms().getClass();
+                        }
+                    });
+            assertFalse(t.isNormalized(), new Supplier<String>() {
+                @Override
+                public String get() {
+                    return t + " auto-normalized but should not be";
+                }
+            });
         }
     }
 
@@ -376,7 +397,12 @@ public class IntrinTest {
         String t = "((((--,x)&&#_f) &&+690 ((--,x)&&(--,y))) &&+800 (z &&+3520 w))";
         Term T = $$(t);
         //assertEq(t, T);
-        assertEquals(T.volume(), T.anon().volume(), ()->"difference:\n" + T + "\n" + T.anon());
+        assertEquals(T.volume(), T.anon().volume(), new Supplier<String>() {
+            @Override
+            public String get() {
+                return "difference:\n" + T + "\n" + T.anon();
+            }
+        });
     }
 
     @Test void testPosInts_gt127() {

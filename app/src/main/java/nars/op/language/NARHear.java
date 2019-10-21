@@ -22,6 +22,7 @@ import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import static nars.Op.BELIEF;
@@ -54,7 +55,12 @@ public class NARHear extends Loop {
      * set wordDelayMS to 0 to disable twenglish function
      */
     public static Loop hear(NAR nar, String msg, String src, int wordDelayMS, float pri) {
-        return hearIfNotNarsese(nar, msg, src, (m) -> hearText(nar, msg, src, wordDelayMS, pri));
+        return hearIfNotNarsese(nar, msg, src, new Function<String, Loop>() {
+            @Override
+            public Loop apply(String m) {
+                return hearText(nar, msg, src, wordDelayMS, pri);
+            }
+        });
     }
 
     public static Loop hearText(NAR nar, String msg, String src, int wordDelayMS, float pri) {
@@ -162,17 +168,20 @@ public class NARHear extends Loop {
     }
 
     public static void readURL(NAR nar) {
-        nar.setOp(Atomic.atom("readURL"), (t, n) -> {
+        nar.setOp(Atomic.atom("readURL"), new BiFunction<Task, NAR, Task>() {
+            @Override
+            public Task apply(Task t, NAR n) {
 
-            Term[] args = Functor.args(t.term()).arrayClone();
-            try {
+                Term[] args = Functor.args(t.term()).arrayClone();
+                try {
 
 
-                return readURL(n, $.unquote(args[0]));
+                    return readURL(n, $.unquote(args[0]));
 
-            } catch (Exception e) {
-                e.printStackTrace();
-                return null;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return null;
+                }
             }
         });
     }

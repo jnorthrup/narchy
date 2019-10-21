@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
 import static jcog.learn.decision.data.SimpleValue.data;
@@ -48,7 +50,12 @@ class DecisionTreeFindBestSplitTest {
         assertEquals(FALSE_LABEL, split.get(1).get(1).apply(labelColumnName));
 
         
-        Predicate<Function<String,Object>> newBestSplit = tree.bestSplit(labelColumnName,()->split.get(0).stream(), features.stream());
+        Predicate<Function<String,Object>> newBestSplit = tree.bestSplit(labelColumnName, new Supplier<Stream<Function<String, Object>>>() {
+            @Override
+            public Stream<Function<String, Object>> get() {
+                return split.get(0).stream();
+            }
+        }, features.stream());
         assertEquals("x2 = true", newBestSplit.toString());
 
         List<List<Function<String,Object>>> newSplit = DecisionTree.split(newBestSplit, split.get(0)).collect(toList());

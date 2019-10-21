@@ -8,6 +8,8 @@ import nars.term.util.TermTest;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import java.util.function.Supplier;
+
 import static nars.Op.PROD;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -35,7 +37,12 @@ class TermListTest {
             immutable = Narsese.term(s, false).subterms();
         } catch (Narsese.NarseseException e) {
             e.printStackTrace();
-            fail(() -> s + " -> " + e);
+            fail(new Supplier<String>() {
+                @Override
+                public String get() {
+                    return s + " -> " + e;
+                }
+            });
         }
         TermList mutable = new TermList(immutable);
 

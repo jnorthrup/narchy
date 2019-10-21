@@ -4,6 +4,7 @@ import jcog.signal.wave2d.ArrayBitmap2D;
 import nars.$;
 import nars.NAR;
 import nars.NARS;
+import nars.Task;
 import nars.concept.TaskConcept;
 import nars.game.sensor.AbstractSensor;
 import nars.sensor.Bitmap2DSensor;
@@ -11,6 +12,9 @@ import nars.term.Term;
 import nars.truth.Truth;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import static nars.$.$$;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -39,13 +43,16 @@ public class CameraSensorTest {
         tmp = new MyGame();
         n.add(tmp);
         int[] causesDetected = {0};
-        tmp.what().onTask(t -> {
-           if (t.term().equals(aPixel)) {
+        tmp.what().onTask(new Consumer<Task>() {
+            @Override
+            public void accept(Task t) {
+                if (t.term().equals(aPixel)) {
 //               if (t.why() == null || t.why() instanceof Int) //ignore revisions
 //                    assertEquals(why, t.why());
-               if (t.stamp().length <= 1)
-                    causesDetected[0]++;
-           }
+                    if (t.stamp().length <= 1)
+                        causesDetected[0]++;
+                }
+            }
         });
 
 
@@ -110,8 +117,18 @@ public class CameraSensorTest {
                     n.beliefTruth(p, when);
                     p.beliefs().print(System.out);
                 }
-                assertNotNull(t, ()->p.term + " is null");
-                Assertions.assertEquals(f[i][j], t.freq(), tolerance, ()->p + " has inaccurate result @ t=" + n.time());
+                assertNotNull(t, new Supplier<String>() {
+                    @Override
+                    public String get() {
+                        return p.term + " is null";
+                    }
+                });
+                Assertions.assertEquals(f[i][j], t.freq(), tolerance, new Supplier<String>() {
+                    @Override
+                    public String get() {
+                        return p + " has inaccurate result @ t=" + n.time();
+                    }
+                });
             }
         }
     }

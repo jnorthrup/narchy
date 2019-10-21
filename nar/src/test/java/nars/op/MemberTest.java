@@ -3,6 +3,7 @@ package nars.op;
 import nars.$;
 import nars.NAR;
 import nars.NARS;
+import nars.Task;
 import nars.derive.Deriver;
 import nars.derive.Derivers;
 import nars.eval.Evaluation;
@@ -15,6 +16,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.Set;
+import java.util.function.Consumer;
 
 import static nars.$.$$;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -106,7 +108,12 @@ public class MemberTest {
 		TestNAR t = new TestNAR(n);
 
         double[] priSum = {0};
-		n.onTask((x)-> priSum[0] += x.pri());
+		n.onTask(new Consumer<Task>() {
+            @Override
+            public void accept(Task x) {
+                priSum[0] += x.pri();
+            }
+        });
 
 		String belief = "(member(#x,{a,b}) " + op + " #x)";
 

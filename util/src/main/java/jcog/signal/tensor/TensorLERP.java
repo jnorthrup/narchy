@@ -12,7 +12,12 @@ public class TensorLERP extends TensorMerge implements FloatFloatToFloatFunction
     private float currentRate;
 
     public TensorLERP(Tensor from, float rate) {
-        this(from, ()->rate);
+        this(from, new FloatSupplier() {
+            @Override
+            public float asFloat() {
+                return rate;
+            }
+        });
     }
 
     public TensorLERP(Tensor from, FloatSupplier rate) {

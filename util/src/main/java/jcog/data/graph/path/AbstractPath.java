@@ -31,6 +31,7 @@ import org.eclipse.collections.impl.list.mutable.primitive.IntArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 /**
  * Путь в графе
@@ -120,7 +121,12 @@ public abstract class AbstractPath<N, E> implements Path<N, E> {
         Map<N, IntArrayList> nposmap = new LinkedHashMap<>();
         for (int ni = 0; ni < nodeCount(); ni++) {
             N na = node(ni);
-            IntArrayList npos = nposmap.computeIfAbsent(na, k -> new IntArrayList());
+            IntArrayList npos = nposmap.computeIfAbsent(na, new Function<N, IntArrayList>() {
+                @Override
+                public IntArrayList apply(N k) {
+                    return new IntArrayList();
+                }
+            });
             npos.add(ni);
         }
 

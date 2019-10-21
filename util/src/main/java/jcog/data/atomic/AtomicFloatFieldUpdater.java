@@ -80,14 +80,29 @@ public final class AtomicFloatFieldUpdater<X>  {
 
 
     public float updateIntAndGet(X x, FloatToIntFunction f) {
-        return updateGet(x, v -> f.valueOf(intBitsToFloat(v)));
+        return updateGet(x, new IntUnaryOperator() {
+            @Override
+            public int applyAsInt(int v) {
+                return f.valueOf(intBitsToFloat(v));
+            }
+        });
     }
 
     public float getAndUpdate(X x, FloatSupplier f) {
-        return getUpdate(x, v -> floatToIntBits(f.asFloat()));
+        return getUpdate(x, new IntUnaryOperator() {
+            @Override
+            public int applyAsInt(int v) {
+                return floatToIntBits(f.asFloat());
+            }
+        });
     }
     public float updateAndGet(X x, FloatSupplier f) {
-        return updateGet(x, v -> floatToIntBits(f.asFloat()));
+        return updateGet(x, new IntUnaryOperator() {
+            @Override
+            public int applyAsInt(int v) {
+                return floatToIntBits(f.asFloat());
+            }
+        });
     }
 
 //    public float updateAndGet(X x, FloatToFloatFunction f) {
@@ -155,15 +170,24 @@ public final class AtomicFloatFieldUpdater<X>  {
     }
 
     public void zero(X v, FloatConsumer with) {
-        this.INT.getAndUpdate(v, x->{
-            with.accept(intBitsToFloat(x));
-            return AtomicFloatFieldUpdater.iZero;
+        this.INT.getAndUpdate(v, new IntUnaryOperator() {
+            @Override
+            public int applyAsInt(int x) {
+                with.accept(intBitsToFloat(x));
+                return AtomicFloatFieldUpdater.iZero;
+            }
         });
     }
 
 
     float getAndSetZero(X v, FloatConsumer with) {
-        return intBitsToFloat(this.INT.getAndUpdate(v, (x)->{ with.accept(intBitsToFloat(x)); return AtomicFloatFieldUpdater.iZero; } ));
+        return intBitsToFloat(this.INT.getAndUpdate(v, new IntUnaryOperator() {
+            @Override
+            public int applyAsInt(int x) {
+                with.accept(intBitsToFloat(x));
+                return AtomicFloatFieldUpdater.iZero;
+            }
+        }));
     }
 
     public boolean compareAndSet(X x, float expected, float newvalue) {

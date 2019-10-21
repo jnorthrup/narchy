@@ -9,11 +9,15 @@ import nars.term.atom.Atomic;
 import nars.test.TestNAR;
 import nars.time.Tense;
 import nars.util.AtomicOperations;
+import nars.util.Timed;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 import static nars.Op.COMMAND;
 import static nars.term.Functor.f;
@@ -27,10 +31,13 @@ class OperatorTest {
     void testEcho() throws Narsese.NarseseException {
         NAR n = NARS.tmp();
         AtomicBoolean invoked = new AtomicBoolean();
-        n.add(f("c", (args) -> {
-            assertEquals("(x)", args.toString());
-            invoked.set(true);
-            return null;
+        n.add(f("c", new Function<Subterms, Term>() {
+            @Override
+            public Term apply(Subterms args) {
+                assertEquals("(x)", args.toString());
+                invoked.set(true);
+                return null;
+            }
         }));
         Task t = Narsese.task("c(x);", n);
         assertNotNull(t);
@@ -58,7 +65,12 @@ class OperatorTest {
         n.input("log(the(sys))");
 
         String s = b.toString();
-        assertTrue(s.contains("→("), ()->s);
+        assertTrue(s.contains("→("), new Supplier<String>() {
+            @Override
+            public String get() {
+                return s;
+            }
+        });
     }
 
     @Test
@@ -66,10 +78,13 @@ class OperatorTest {
         NAR n = NARS.tmp();
         int[] count = {0};
 
-        n.setOp(Atomic.atom("x"), new AtomicOperations((x, nar) -> {
-            System.err.println("INVOKE " + x);
-            count[0]++;
-            n.believe(x);
+        n.setOp(Atomic.atom("x"), new AtomicOperations(new BiConsumer<Term, Timed>() {
+            @Override
+            public void accept(Term x, Timed nar) {
+                System.err.println("INVOKE " + x);
+                count[0]++;
+                n.believe(x);
+            }
         }, 0.66f));
         n.run(1);
         n.input("x(1)! :|:");
@@ -86,20 +101,23 @@ class OperatorTest {
     void testChoose() throws Narsese.NarseseException {
         NAR n = NARS.tmp();
         n.time.dur(10);
-        n.setOp(Atomic.atom("x"), new AtomicOperations((x, nar) -> {
-            Subterms args = Functor.args(x);
-            if (args.subs() > 0) {
-                Term r;
-                if ($.the(1).equals(args.sub(0))) {
-                    System.err.println("YES");
-                    r = $.the("good");
-                } else if ($.the(0).equals(args.sub(0))) {
-                    r = $.the("good").neg();
-                } else {
-                    return;
-                }
+        n.setOp(Atomic.atom("x"), new AtomicOperations(new BiConsumer<Term, Timed>() {
+            @Override
+            public void accept(Term x, Timed nar) {
+                Subterms args = Functor.args(x);
+                if (args.subs() > 0) {
+                    Term r;
+                    if ($.the(1).equals(args.sub(0))) {
+                        System.err.println("YES");
+                        r = $.the("good");
+                    } else if ($.the(0).equals(args.sub(0))) {
+                        r = $.the("good").neg();
+                    } else {
+                        return;
+                    }
 
-                n.believe($.impl(x.term(), r), Tense.Present);
+                    n.believe($.impl(x.term(), r), Tense.Present);
+                }
             }
         }, 0.51f));
 
@@ -114,12 +132,15 @@ class OperatorTest {
     @Test
     void testGoal2() throws Narsese.NarseseException {
         NAR n = NARS.tmp();
-        n.setOp(Atomic.atom("x"), new AtomicOperations((t, nar) -> {
-            Term x = t.term();
-            Subterms args = Functor.args(t);
-            Term y = $.func("args", args);
-            Term xy = $.impl(x, y);
-            n.believe(xy, Tense.Present);
+        n.setOp(Atomic.atom("x"), new AtomicOperations(new BiConsumer<Term, Timed>() {
+            @Override
+            public void accept(Term t, Timed nar) {
+                Term x = t.term();
+                Subterms args = Functor.args(t);
+                Term y = $.func("args", args);
+                Term xy = $.impl(x, y);
+                n.believe(xy, Tense.Present);
+            }
         }, 1));
 
         n.run(1);

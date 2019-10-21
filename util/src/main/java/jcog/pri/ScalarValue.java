@@ -55,9 +55,12 @@ public interface ScalarValue extends Prioritized {
 
     default float[] priDelta(FloatFloatToFloatFunction update, float x) {
         float[] beforeAfter = new float[2];
-        beforeAfter[1] = pri((xx,yy)-> {
-            beforeAfter[0] = xx;
-            return update.apply(xx, yy);
+        beforeAfter[1] = pri(new FloatFloatToFloatFunction() {
+            @Override
+            public float apply(float xx, float yy) {
+                beforeAfter[0] = xx;
+                return update.apply(xx, yy);
+            }
         }, x);
         return beforeAfter;
     }
@@ -82,16 +85,24 @@ public interface ScalarValue extends Prioritized {
 
 
 
-    FloatFloatToFloatFunction priAddUpdateFunction = (x, y) -> {
-        if (x != x)
-            //remains deleted by non-positive addend
-            //undeleted by positive addend
-            return y <= (float) 0 ? Float.NaN : y;
-        else
-            return x + y;
+    FloatFloatToFloatFunction priAddUpdateFunction = new FloatFloatToFloatFunction() {
+        @Override
+        public float apply(float x, float y) {
+            if (x != x)
+                //remains deleted by non-positive addend
+                //undeleted by positive addend
+                return y <= (float) 0 ? Float.NaN : y;
+            else
+                return x + y;
+        }
     };
 
-    FloatFloatToFloatFunction priMulUpdateFunction = (x,y)-> (x == x) ? (x * y) : Float.NaN;
+    FloatFloatToFloatFunction priMulUpdateFunction = new FloatFloatToFloatFunction() {
+        @Override
+        public float apply(float x, float y) {
+            return (x == x) ? (x * y) : Float.NaN;
+        }
+    };
 
     /** doesnt return any value so implementations may be slightly faster than priAdd(x) */
     default void priAdd(float a) {

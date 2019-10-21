@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import static spacegraph.space2d.container.grid.Gridding.column;
 import static spacegraph.space2d.container.grid.Gridding.row;
@@ -60,9 +61,19 @@ public class BagLab {
                 
                 column(
                         LabeledPane.the("Bag Selection Distribution (0..1)", new HistogramChart(
-                                () -> selectionHistogram, new Color3f(0.5f, 0.25f, 0f), new Color3f(1f, 0.5f, 0.1f))),
+                                new Supplier<float[]>() {
+                                    @Override
+                                    public float[] get() {
+                                        return selectionHistogram;
+                                    }
+                                }, new Color3f(0.5f, 0.25f, 0f), new Color3f(1f, 0.5f, 0.1f))),
                         LabeledPane.the("Bag Content Distribution (0..1)", new HistogramChart(
-                                () -> bag.histogram(new float[BINS]),
+                                new Supplier<float[]>() {
+                                    @Override
+                                    public float[] get() {
+                                        return bag.histogram(new float[BINS]);
+                                    }
+                                },
                                 new Color3f(0f, 0.25f, 0.5f), new Color3f(0.1f, 0.5f, 1f)))
                 )
                 

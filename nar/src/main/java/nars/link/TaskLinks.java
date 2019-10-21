@@ -1,5 +1,6 @@
 package nars.link;
 
+import com.google.common.base.Supplier;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
 import jcog.data.list.FasterList;
@@ -18,6 +19,7 @@ import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 import java.util.function.Function;
@@ -90,9 +92,12 @@ public class TaskLinks implements Sampler<TaskLink> {
     }
 
     public @Nullable Multimap<Term,TaskLink> get(Predicate<Term> f, boolean sourceOrTargetMatch) {
-        return get((t)->{
-            Term tgt = sourceOrTargetMatch ? t.from() : t.to();
-            return f.test(tgt) ? tgt : null;
+        return get(new Function<TaskLink, Term>() {
+            @Override
+            public Term apply(TaskLink t) {
+                Term tgt = sourceOrTargetMatch ? t.from() : t.to();
+                return f.test(tgt) ? tgt : null;
+            }
         });
     }
 
@@ -102,7 +107,12 @@ public class TaskLinks implements Sampler<TaskLink> {
             @Nullable Term y = f.apply(x);
             if (y!=null) {
                 if (m == null)
-                    m = Multimaps.newListMultimap(new UnifiedMap<>(1), ()-> new FasterList<>(1));
+                    m = Multimaps.newListMultimap(new UnifiedMap<>(1), new Supplier<List<TaskLink>>() {
+                        @Override
+                        public List<TaskLink> get() {
+                            return new FasterList<>(1);
+                        }
+                    });
                 m.put(y, x);
             }
         }
@@ -154,18 +164,33 @@ public class TaskLinks implements Sampler<TaskLink> {
 
     public Stream<Term> terms() {
         return links.stream()
-                .flatMap(x -> Stream.of(x.from(), x.to()).distinct())
+                .flatMap(new Function<TaskLink, Stream<? extends Term>>() {
+                    @Override
+                    public Stream<? extends Term> apply(TaskLink x) {
+                        return Stream.of(x.from(), x.to()).distinct();
+                    }
+                })
                 .distinct();
     }
 
     public Stream<Term> terms(Predicate<Term> filter) {
         return links.stream()
-                .flatMap(x -> Stream.of(x.from(), x.to()).distinct().filter(filter))
+                .flatMap(new Function<TaskLink, Stream<? extends Term>>() {
+                    @Override
+                    public Stream<? extends Term> apply(TaskLink x) {
+                        return Stream.of(x.from(), x.to()).distinct().filter(filter);
+                    }
+                })
                 .distinct();
     }
 
     public final Stream<Concept> concepts(NAR n) {
-        return terms(x -> x.op().conceptualizable)
+        return terms(new Predicate<Term>() {
+            @Override
+            public boolean test(Term x) {
+                return x.op().conceptualizable;
+            }
+        })
                 .map(n::concept)
                 .filter(Objects::nonNull)
                 ;

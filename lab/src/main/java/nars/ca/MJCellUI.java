@@ -4,6 +4,8 @@ package nars.ca;
 
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.List;
@@ -1058,7 +1060,12 @@ class MJCellUI extends Frame {
 		btnPnl.add(btnOk);
 		msgDlg.add(ta, BorderLayout.CENTER);
 		msgDlg.add(btnPnl, BorderLayout.SOUTH);
-		btnOk.addActionListener(e -> msgDlg.dispose());
+		btnOk.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                msgDlg.dispose();
+            }
+        });
 		msgDlg.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
@@ -1117,10 +1124,13 @@ class MJCellUI extends Frame {
 
 		msgDlg.add(ta, BorderLayout.CENTER);
 		msgDlg.add(btnPnl, BorderLayout.SOUTH);
-		btnOk.addActionListener(e -> {
-            msgDlg.dispose();
-            if (fOldRun)
-                mjb.start();
+		btnOk.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                msgDlg.dispose();
+                if (fOldRun)
+                    mjb.start();
+            }
         });
 		msgDlg.addWindowListener(new WindowAdapter() {
 			@Override
@@ -1163,10 +1173,13 @@ class MJCellUI extends Frame {
 
 		msgDlg.add(ta, BorderLayout.CENTER);
 		msgDlg.add(btnPnl, BorderLayout.SOUTH);
-		btnOk.addActionListener(e -> {
-            msgDlg.dispose();
-            if (fOldRun)
-                mjb.start();
+		btnOk.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                msgDlg.dispose();
+                if (fOldRun)
+                    mjb.start();
+            }
         });
 		msgDlg.addWindowListener(new WindowAdapter() {
 			@Override

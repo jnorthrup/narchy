@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.*;
+import java.util.function.Supplier;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -128,7 +129,17 @@ public class ISOIOPrologLibTestCase {
 		final String dataToRead = "ciao";
 		
 		
-		OutputListener listener = e -> assertEquals("", dataToRead, () -> e.msg);
+		OutputListener listener = new OutputListener() {
+            @Override
+            public void onOutput(OutputEvent e) {
+                assertEquals("", dataToRead, new Supplier<String>() {
+                    @Override
+                    public String get() {
+                        return e.msg;
+                    }
+                });
+            }
+        };
 
 		engine.addOutputListener(listener);
 
@@ -155,7 +166,12 @@ public class ISOIOPrologLibTestCase {
 			@Override
 			public void onOutput(OutputEvent e) 
 			{
-                assertEquals("", dataToRead[count], () -> e.msg);
+                assertEquals("", dataToRead[count], new Supplier<String>() {
+                    @Override
+                    public String get() {
+                        return e.msg;
+                    }
+                });
 				count++;
 			}
 		};
@@ -181,7 +197,17 @@ public class ISOIOPrologLibTestCase {
 		final String dataToRead = "c";
 		
 		
-		OutputListener listener = e -> assertEquals("", dataToRead, () -> e.msg);
+		OutputListener listener = new OutputListener() {
+            @Override
+            public void onOutput(OutputEvent e) {
+                assertEquals("", dataToRead, new Supplier<String>() {
+                    @Override
+                    public String get() {
+                        return e.msg;
+                    }
+                });
+            }
+        };
 
 		engine.addOutputListener(listener);
 
@@ -197,7 +223,17 @@ public class ISOIOPrologLibTestCase {
 		final int dataToRead = 51;
 		
 		
-		OutputListener listener = e -> assertEquals("", dataToRead+"", () -> e.msg);
+		OutputListener listener = new OutputListener() {
+            @Override
+            public void onOutput(OutputEvent e) {
+                assertEquals("", dataToRead + "", new Supplier<String>() {
+                    @Override
+                    public String get() {
+                        return e.msg;
+                    }
+                });
+            }
+        };
 
 		engine.addOutputListener(listener);
 

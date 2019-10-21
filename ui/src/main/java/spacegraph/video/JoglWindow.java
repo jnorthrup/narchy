@@ -240,20 +240,23 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
         //solution is to queue this to the global timer which starts the self-invoking loop
 
         //GLWorkerThread.invokeLater(()-> {
-        Exe.runLater(() -> {
+        Exe.runLater(new Runnable() {
+            @Override
+            public void run() {
 
-            setSize(w, h);
-            window.setSize(w, h);
+                JoglWindow.this.setSize(w, h);
+                window.setSize(w, h);
 
-            if (x != Integer.MIN_VALUE) {
-                window.setPosition(x, y);
-                setPosition(x, y);
+                if (x != Integer.MIN_VALUE) {
+                    window.setPosition(x, y);
+                    JoglWindow.this.setPosition(x, y);
+                }
+
+                GLWindow W = JoglWindow.this.window;
+                W.setTitle(title); //needs lock
+                W.setVisible(true); //needs lock
+
             }
-
-            GLWindow W = this.window;
-            W.setTitle(title); //needs lock
-            W.setVisible(true); //needs lock
-
         });
 
     }
@@ -346,11 +349,21 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
      * adapter
      */
     public Off onUpdate(Animated c) {
-        return onUpdate.on(s -> c.animate(dtS));
+        return onUpdate.on(new Consumer<JoglWindow>() {
+            @Override
+            public void accept(JoglWindow s) {
+                c.animate(dtS);
+            }
+        });
     }
 
     public Off onUpdate(Runnable c) {
-        return onUpdate.on(s -> c.run());
+        return onUpdate.on(new Consumer<JoglWindow>() {
+            @Override
+            public void accept(JoglWindow s) {
+                c.run();
+            }
+        });
     }
 
     /**

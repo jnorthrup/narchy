@@ -25,7 +25,12 @@ public class Level {
     public int monsterDensity = 8;
 
     public List<Entity> entities = new ArrayList<>();
-    private final Comparator<Entity> spriteSorter = (e0, e1) -> Integer.compare(e0.y, e1.y);
+    private final Comparator<Entity> spriteSorter = new Comparator<Entity>() {
+        @Override
+        public int compare(Entity e0, Entity e1) {
+            return Integer.compare(e0.y, e1.y);
+        }
+    };
 
     @SuppressWarnings("unchecked")
     public Level(int w, int h, int level, Level parentLevel) {

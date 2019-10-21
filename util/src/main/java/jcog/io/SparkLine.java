@@ -1,5 +1,6 @@
 package jcog.io;
 
+import org.eclipse.collections.api.block.procedure.primitive.FloatProcedure;
 import org.eclipse.collections.impl.list.mutable.primitive.FloatArrayList;
 
 import java.util.Collection;
@@ -49,10 +50,13 @@ public enum SparkLine {
 	public static String renderFloats(FloatArrayList values, float min, float max) {
         float scale = (max - min);
         StringBuilder accumulator = new StringBuilder();
-		values.forEach(value -> {
-            int index = Math.round((value - min) / scale) * 7;
-			accumulator.append(ticks.get(index));
-		});
+		values.forEach(new FloatProcedure() {
+            @Override
+            public void value(float value) {
+                int index = Math.round((value - min) / scale) * 7;
+                accumulator.append(ticks.get(index));
+            }
+        });
 		return accumulator.toString();
 	}
 

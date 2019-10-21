@@ -2,6 +2,7 @@ package jcog.constraint.continuous;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.function.BiFunction;
 
 /**
  * Created by alex on 30/01/15.
@@ -51,12 +52,15 @@ class Row {
      * is zero, the symbol will be removed from the row
      */
     void insert(Symbol symbol, double _coefficient) {
-        cells.merge(symbol, _coefficient, (existingCoefficient, coefficient) -> {
-            double coefficient1 = coefficient;
-            if (existingCoefficient != null)
-                coefficient1 += existingCoefficient;
+        cells.merge(symbol, _coefficient, new BiFunction<Double, Double, Double>() {
+            @Override
+            public Double apply(Double existingCoefficient, Double coefficient) {
+                double coefficient1 = coefficient;
+                if (existingCoefficient != null)
+                    coefficient1 += existingCoefficient;
 
-            return ContinuousConstraintSolver.nearZero(coefficient1) ? null : coefficient1;
+                return ContinuousConstraintSolver.nearZero(coefficient1) ? null : coefficient1;
+            }
         });
     }
 
@@ -93,14 +97,17 @@ class Row {
 
 
             this.cells.merge(e.getKey(), e.getValue() * coefficient,
-                    (existing, cc)->{
-                        Double existing1 = existing;
-                        if (existing1 == null)
-                            existing1 = 0.0;
+                    new BiFunction<Double, Double, Double>() {
+                        @Override
+                        public Double apply(Double existing, Double cc) {
+                            Double existing1 = existing;
+                            if (existing1 == null)
+                                existing1 = 0.0;
 
-                        existing1 += cc;
+                            existing1 += cc;
 
-                        return ContinuousConstraintSolver.nearZero(existing1) ? null : existing1;
+                            return ContinuousConstraintSolver.nearZero(existing1) ? null : existing1;
+                        }
                     });
         }
     }
@@ -134,7 +141,12 @@ class Row {
      */
     void reverseSign() {
         this.constant = -this.constant;
-        cells.replaceAll((k,v)->-v);
+        cells.replaceAll(new BiFunction<Symbol, Double, Double>() {
+            @Override
+            public Double apply(Symbol k, Double v) {
+                return -v;
+            }
+        });
     }
 
     /**
@@ -153,7 +165,12 @@ class Row {
         double coeff = -1.0 / cells.remove(symbol);
         this.constant *= coeff;
 
-        cells.replaceAll((k,v)->v*coeff);
+        cells.replaceAll(new BiFunction<Symbol, Double, Double>() {
+            @Override
+            public Double apply(Symbol k, Double v) {
+                return v * coeff;
+            }
+        });
     }
 
     /**

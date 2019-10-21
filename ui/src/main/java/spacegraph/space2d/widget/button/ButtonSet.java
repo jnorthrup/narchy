@@ -2,6 +2,7 @@ package spacegraph.space2d.widget.button;
 
 import jcog.data.iterator.ArrayIterator;
 import jcog.data.set.ArrayHashSet;
+import org.eclipse.collections.api.block.predicate.Predicate;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectBooleanProcedure;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.container.grid.Gridding;
@@ -40,38 +41,46 @@ public class ButtonSet<T extends ToggleButton> extends Gridding {
         for (T b : buttons) {
             this.buttons.add(b);
             @Nullable ObjectBooleanProcedure<ToggleButton> outerAction = b.action;
-            b.on((bb,e) -> {
-                if (e) {
-                    switch (mode) {
-                        case Multi:
+            b.on(new ObjectBooleanProcedure<ToggleButton>() {
+                @Override
+                public void value(ToggleButton bb, boolean e) {
+                    if (e) {
+                        switch (mode) {
+                            case Multi:
 
-                            break;
-                        case One:
-                            for (T cc : this.buttons) {
-                                if (cc != bb) {
-                                    cc.on(false);
+                                break;
+                            case One:
+                                for (T cc : ButtonSet.this.buttons) {
+                                    if (cc != bb) {
+                                        cc.on(false);
+                                    }
                                 }
+                                break;
+                        }
+
+
+                        if (outerAction != null)
+                            outerAction.value(bb, true);
+                        if (action != null)
+                            action.value((T) bb, true);
+                    } else {
+
+                        if (ButtonSet.this.buttons.AND(new Predicate<T>() {
+                            @Override
+                            public boolean accept(T cc) {
+                                return cc == bb || !cc.on();
                             }
-                            break;
-                    }
+                        })) {
+                            //no other buttons are toggled, so re-toggle this one
+                            //Exe.invoke(()->{ //HACK
+                            bb.on(true);
+                            //});
+                            return;
+                        }
 
-
-                    if (outerAction != null)
-                        outerAction.value(bb, true);
-                    if (action!=null)
-                        action.value((T)bb, true);
-                } else {
-
-                    if (this.buttons.AND(cc -> cc==bb || !cc.on())) {
-                        //no other buttons are toggled, so re-toggle this one
-                        //Exe.invoke(()->{ //HACK
-                           bb.on(true);
-                        //});
-                        return;
                     }
 
                 }
-
             });
 
         }

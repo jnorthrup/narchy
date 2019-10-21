@@ -14,6 +14,7 @@ import spacegraph.video.JoglWindow;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 
 public class SpaceKeys extends KeyAdapter implements Consumer<JoglWindow> {
@@ -38,31 +39,40 @@ public class SpaceKeys extends KeyAdapter implements Consumer<JoglWindow> {
     public void accept(JoglWindow j) {
         if (!pending.isEmpty()) {
             synchronized(this) {
-                pending.removeIf(x -> {
-                    x.accept(this);
-                    return true;
+                pending.removeIf(new Predicate<Consumer<SpaceKeys>>() {
+                    @Override
+                    public boolean test(Consumer<SpaceKeys> x) {
+                        x.accept(SpaceKeys.this);
+                        return true;
+                    }
                 });
             }
         }
 
         if (!queue.isEmpty()) {
             float dt = j.dtS;
-            queue.clear(k -> {
-                FloatProcedure f = ((k >= 0) ? keyPressed : keyReleased).get((short) Math.abs(k));
-                if (f != null)
-                    f.value(dt);
+            queue.clear(new Consumer<Short>() {
+                @Override
+                public void accept(Short k) {
+                    FloatProcedure f = ((k >= 0) ? keyPressed : keyReleased).get((short) Math.abs(k));
+                    if (f != null)
+                        f.value(dt);
+                }
             });
         }
     }
 
     /** add a handler */
     public void on(int keyCode, @Nullable FloatProcedure ifPressed, @Nullable FloatProcedure ifReleased) {
-        pending.add((k)->{
-            if (ifPressed != null) {
-                k.keyPressed.put((short) keyCode, ifPressed);
-            }
-            if (ifReleased != null) {
-                k.keyReleased.put((short) keyCode, ifReleased);
+        pending.add(new Consumer<SpaceKeys>() {
+            @Override
+            public void accept(SpaceKeys k) {
+                if (ifPressed != null) {
+                    k.keyPressed.put((short) keyCode, ifPressed);
+                }
+                if (ifReleased != null) {
+                    k.keyReleased.put((short) keyCode, ifReleased);
+                }
             }
         });
     }

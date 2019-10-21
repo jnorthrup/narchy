@@ -262,7 +262,12 @@ public class LongObjectArraySet<X> extends FasterList<X> {
     }
 
     public boolean remove(long at, X t) {
-        return removeIf((when, what) -> at == when && what.equals(t));
+        return removeIf(new LongObjectPredicate<X>() {
+            @Override
+            public boolean accept(long when, X what) {
+                return at == when && what.equals(t);
+            }
+        });
     }
 
 
@@ -324,12 +329,22 @@ public class LongObjectArraySet<X> extends FasterList<X> {
 
     @Override
     public final boolean removeIf(Predicate<? super X> predicate) {
-        return removeIf((when,what)->predicate.test(what));
+        return removeIf(new LongObjectPredicate<X>() {
+            @Override
+            public boolean accept(long when, X what) {
+                return predicate.test(what);
+            }
+        });
     }
 
     @Override
     public final <P> boolean removeIfWith(Predicate2<? super X, ? super P> predicate, P parameter) {
-        return removeIf((when,what)->predicate.test(what, parameter));
+        return removeIf(new LongObjectPredicate<X>() {
+            @Override
+            public boolean accept(long when, X what) {
+                return predicate.test(what, parameter);
+            }
+        });
     }
 
     public boolean removeIf(LongObjectPredicate<X> iff) {
@@ -376,7 +391,12 @@ public class LongObjectArraySet<X> extends FasterList<X> {
 
     @Override
     public final boolean removeNulls() {
-        return removeIf((when,what)->what==null);
+        return removeIf(new LongObjectPredicate<X>() {
+            @Override
+            public boolean accept(long when, X what) {
+                return what == null;
+            }
+        });
     }
 
     @Override
@@ -414,7 +434,12 @@ public class LongObjectArraySet<X> extends FasterList<X> {
                     return true;
                 }
             default:
-                return removeIf((when, what) -> what.equals(X));
+                return removeIf(new LongObjectPredicate<X>() {
+                    @Override
+                    public boolean accept(long when, X what) {
+                        return what.equals(X);
+                    }
+                });
         }
 
     }

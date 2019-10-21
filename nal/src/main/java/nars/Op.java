@@ -294,13 +294,18 @@ public enum Op {
      * False wrapped in a subterm as the only element
      * determines what compound terms can shield subterms from recursion restrictions
      */
-    public static final Predicate<Term> statementLoopyContainer = x -> !x.isAny(
-            Op.PROD.bit
-            //Op.PROD.bit | Op.SETe.bit | Op.SETi.bit
-            //Op.PROD.bit | Op.CONJ.bit
-            //Op.PROD.bit | Op.INH.bit | Op.SIM.bit | Op.IMPL.bit
+    public static final Predicate<Term> statementLoopyContainer = new Predicate<Term>() {
+        @Override
+        public boolean test(Term x) {
+            return !x.isAny(
+                    Op.PROD.bit
+                    //Op.PROD.bit | Op.SETe.bit | Op.SETi.bit
+                    //Op.PROD.bit | Op.CONJ.bit
+                    //Op.PROD.bit | Op.INH.bit | Op.SIM.bit | Op.IMPL.bit
 
-    );
+            );
+        }
+    };
 
     @Deprecated public static final String DIFFe = "~";
     public static final String DIFFi = "-";

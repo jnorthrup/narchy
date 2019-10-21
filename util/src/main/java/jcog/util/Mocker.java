@@ -63,7 +63,12 @@ public enum Mocker {
 
     public static @NotNull <T> T intercepting(@NotNull Class<T> tClass, @NotNull String description, @NotNull Consumer<String> consumer, T t) {
         return intercepting(tClass,
-                (name, args) -> consumer.accept(description + name + (args == null ? "()" : Arrays.toString(args))),
+                new BiConsumer<String, Object[]>() {
+                    @Override
+                    public void accept(String name, Object[] args) {
+                        consumer.accept(description + name + (args == null ? "()" : Arrays.toString(args)));
+                    }
+                },
                 t);
     }
 

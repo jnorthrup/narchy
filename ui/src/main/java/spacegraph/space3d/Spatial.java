@@ -114,11 +114,14 @@ public abstract class Spatial<X> implements Active {
     public void stabilize(v3 boundsMin, v3 boundsMax) {
 
 
-        forEachBody(b -> {
-            v3 t = b.transform;
+        forEachBody(new Consumer<Collidable>() {
+            @Override
+            public void accept(Collidable b) {
+                v3 t = b.transform;
 
 
-            t.clamp(boundsMin, boundsMax);
+                t.clamp(boundsMin, boundsMax);
+            }
         });
     }
 

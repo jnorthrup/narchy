@@ -1,5 +1,7 @@
 package jcog.pri;
 
+import jcog.util.FloatFloatToFloatFunction;
+
 /** marker interface for implementations which limit values to the range of 0..1.0 (and deleted, NaN) */
 public interface UnitPrioritizable extends Prioritizable {
 
@@ -11,7 +13,12 @@ public interface UnitPrioritizable extends Prioritizable {
         if (inc <= EPSILON)
             return (float) 0;
 
-        float[] beforeAfter = priDelta((x, y)-> ((x!=x) ? (float) 0 : x) + y, inc);
+        float[] beforeAfter = priDelta(new FloatFloatToFloatFunction() {
+            @Override
+            public float apply(float x, float y) {
+                return ((x != x) ? (float) 0 : x) + y;
+            }
+        }, inc);
 
         float after = beforeAfter[1];
         float before = beforeAfter[0];

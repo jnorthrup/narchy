@@ -131,18 +131,48 @@ public class QuickSort {
 	}
 
 	public static void sort(int[] x, int left, int right /* inclusive */, IntToFloatFunction v) {
-		quickSort(left, right, (a, b)->a==b ? 0 : Float.compare(v.valueOf(a), v.valueOf(b)), (a, b)-> ArrayUtil.swapInt(x, a, b));
+		quickSort(left, right, new IntComparator() {
+            @Override
+            public int compare(int a, int b) {
+                return a == b ? 0 : Float.compare(v.valueOf(a), v.valueOf(b));
+            }
+        }, new IntIntProcedure() {
+            @Override
+            public void value(int a, int b) {
+                ArrayUtil.swapInt(x, a, b);
+            }
+        });
 	}
 
 	public static <X> void sort(X[] x, int left, int right /* inclusive */, IntToDoubleFunction v) {
-		quickSort(left, right, (a, b)->a==b ? 0 : Double.compare(v.valueOf(a), v.valueOf(b)), (a, b)-> ArrayUtil.swapObj(x, a, b));
+		quickSort(left, right, new IntComparator() {
+            @Override
+            public int compare(int a, int b) {
+                return a == b ? 0 : Double.compare(v.valueOf(a), v.valueOf(b));
+            }
+        }, new IntIntProcedure() {
+            @Override
+            public void value(int a, int b) {
+                ArrayUtil.swapObj(x, a, b);
+            }
+        });
 	}
 
 	/**
 	 * sorts descending, left and right BOTH inclusive
 	 */
 	public static <X> void sort(X[] x, int left, int right /* inclusive */, FloatFunction<X> v) {
-		quickSort(left, right, (a, b)->a==b ? 0 : Float.compare(v.floatValueOf(x[a]), v.floatValueOf(x[b])), (a, b)-> ArrayUtil.swapObj(x, a, b));
+		quickSort(left, right, new IntComparator() {
+            @Override
+            public int compare(int a, int b) {
+                return a == b ? 0 : Float.compare(v.floatValueOf(x[a]), v.floatValueOf(x[b]));
+            }
+        }, new IntIntProcedure() {
+            @Override
+            public void value(int a, int b) {
+                ArrayUtil.swapObj(x, a, b);
+            }
+        });
 	}
 
 	/** modifies order of input array */

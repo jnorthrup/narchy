@@ -17,30 +17,36 @@ abstract public class SonificationPanel extends Gridding {
 	private Sound<SoundProducer> sound;
 	int framesRead = 0;
 
-	final SoundProducer soundProducer = (buf, readRate) -> {
-		if (SonificationPanel.this.parent == null) {
-			stopAudio();
-			return false;
-		} else {
-			sound(buf, (float) readRate);
+	final SoundProducer soundProducer = new SoundProducer() {
+        @Override
+        public boolean read(float[] buf, int readRate) {
+            if (SonificationPanel.this.parent == null) {
+                SonificationPanel.this.stopAudio();
+                return false;
+            } else {
+                SonificationPanel.this.sound(buf, (float) readRate);
 
-			framesRead++;
-			sonifyButton.color.set((float) 0, 0.2f + 0.05f * (float) (framesRead / 4 % 8), (float) 0, 0.75f);
-			return true;
-		}
-	};
+                framesRead++;
+                sonifyButton.color.set((float) 0, 0.2f + 0.05f * (float) (framesRead / 4 % 8), (float) 0, 0.75f);
+                return true;
+            }
+        }
+    };
 
 	public SonificationPanel() {
 		super();
 
 		set(sonifyButton);
 
-		sonifyButton.on((BooleanProcedure) play -> {
-			synchronized (SonificationPanel.this) {
-				if (play) startAudio();
-				else stopAudio();
-			}
-		});
+		sonifyButton.on(new BooleanProcedure() {
+            @Override
+            public void value(boolean play) {
+                synchronized (SonificationPanel.this) {
+                    if (play) SonificationPanel.this.startAudio();
+                    else SonificationPanel.this.stopAudio();
+                }
+            }
+        });
 
 		stopAudio();
 	}

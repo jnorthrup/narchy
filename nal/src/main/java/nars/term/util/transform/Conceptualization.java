@@ -6,7 +6,10 @@ import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Interval;
 import nars.term.compound.Sequence;
+import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
+
+import java.util.function.Predicate;
 
 import static nars.Op.CONJ;
 import static nars.time.Tense.DTERNAL;
@@ -41,14 +44,22 @@ public enum Conceptualization {
         protected  Term transformConj(final Compound y) {
             final Subterms yy = y instanceof Sequence ? ((Sequence) y).events() : y.subterms();
 
-            if (yy.hasAny(CONJ) && yy.OR(yyy -> yyy/*.unneg()*/.op() == CONJ)) {
+            if (yy.hasAny(CONJ) && yy.OR(new Predicate<Term>() {
+                @Override
+                public boolean test(Term yyy) {
+                    return yyy/*.unneg()*/.op() == CONJ;
+                }
+            })) {
                 //collapse any embedded CONJ which will inevitably have dt=XTERNAL
                 final UnifiedSet<Term> t = new UnifiedSet(yy.subs());
                 for (final Term yyy : yy) {
                     if (yyy instanceof Compound && yyy.op() == CONJ) {
-                        yyy.eventsAND((when, what)->{
-                            t.add(what);
-                            return true;
+                        yyy.eventsAND(new LongObjectPredicate<Term>() {
+                            @Override
+                            public boolean accept(long when, Term what) {
+                                t.add(what);
+                                return true;
+                            }
                         }, 0L, true, true);
                     } else {
                         if (!(yyy instanceof Interval))
@@ -86,9 +97,12 @@ public enum Conceptualization {
                 final UnifiedSet<Term> t = new UnifiedSet(yy.subs());
                 for (final Term yyy : yy) {
                     if (yyy.unneg().op() == CONJ) {
-                        yyy.unneg().eventsAND((when, what)->{
-                            t.add(what.unneg());
-                            return true;
+                        yyy.unneg().eventsAND(new LongObjectPredicate<Term>() {
+                            @Override
+                            public boolean accept(long when, Term what) {
+                                t.add(what.unneg());
+                                return true;
+                            }
                         }, 0L, true, true);
                     } else {
                         if (!(yyy instanceof Interval))
@@ -152,7 +166,12 @@ public enum Conceptualization {
             } else if (!xo.temporal) {
                 //not temporal itself but contains a temporal inside
                 //if none of these temporal terms are temporally specific, return as-is
-                if (x.ANDrecurse(z -> !(z instanceof Compound) || !z.op().temporal || z.dt()==DTERNAL))
+                if (x.ANDrecurse(new Predicate<Term>() {
+                    @Override
+                    public boolean test(Term z) {
+                        return !(z instanceof Compound) || !z.op().temporal || z.dt() == DTERNAL;
+                    }
+                }))
                     return x;
             }
 

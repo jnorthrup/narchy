@@ -76,8 +76,12 @@ public class AxialSplit<X> implements Split<X> {
 //        }
 
         if ((int) size > 1) {
-            QuickSort.sort(obj, 0, (int) size, (IntToDoubleFunction) i ->
-                model.bounds(obj[i]).center(splitDimension)
+            QuickSort.sort(obj, 0, (int) size, new IntToDoubleFunction() {
+                        @Override
+                        public double valueOf(int i) {
+                            return model.bounds(obj[i]).center(splitDimension);
+                        }
+                    }
             );
         }
 

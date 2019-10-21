@@ -58,16 +58,24 @@ public class WaveBitmap extends Surface implements BitmapMatrixView.BitmapPainte
     }
 
     public WaveBitmap(Tensor wave, float sampleRate, int pixWidth, int pixHeight) {
-        this(pixWidth, pixHeight, (s,e)->{
-            double ss = s * (double) sampleRate, ee = e * (double) sampleRate;
-            double sum = Util.interpSum(wave::getAt, wave.volume(),
-                    ss, ee, false);
-            return (float) (sum / (1.0 +(ee - ss)));
+        this(pixWidth, pixHeight, new BitmapEvaluator() {
+            @Override
+            public float amplitude(double s, double e) {
+                double ss = s * (double) sampleRate, ee = e * (double) sampleRate;
+                double sum = Util.interpSum(wave::getAt, wave.volume(),
+                        ss, ee, false);
+                return (float) (sum / (1.0 + (ee - ss)));
+            }
         });
     }
 
     public WaveBitmap(CircularFloatBuffer wave, int pixWidth, int pixHeight) {
-        this(pixWidth, pixHeight, (s,e)-> (float) wave.mean(s, e));
+        this(pixWidth, pixHeight, new BitmapEvaluator() {
+            @Override
+            public float amplitude(double s, double e) {
+                return (float) wave.mean(s, e);
+            }
+        });
     }
 
     @Override

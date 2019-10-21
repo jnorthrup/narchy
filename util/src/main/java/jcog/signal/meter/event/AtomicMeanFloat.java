@@ -2,6 +2,7 @@ package jcog.signal.meter.event;
 
 import jcog.data.atomic.AtomicFloat;
 import jcog.data.atomic.MetalAtomicIntegerFieldUpdater;
+import jcog.util.FloatConsumer;
 import org.eclipse.collections.api.block.procedure.primitive.FloatProcedure;
 
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
@@ -55,9 +56,12 @@ public class AtomicMeanFloat extends AtomicFloat implements FloatProcedure {
     public float[] commit() {
         int[] c = new int[1];
 
-        float mean = this.mean = (this.sum = getAndZero((v) -> {
-            c[0] = count;
-            count = 0;
+        float mean = this.mean = (this.sum = getAndZero(new FloatConsumer() {
+            @Override
+            public void accept(float v) {
+                c[0] = count;
+                count = 0;
+            }
         })) / (c[0] > 0 ? (float) c[0] : Float.NaN);
 
         if (mean==mean) {

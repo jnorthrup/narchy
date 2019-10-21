@@ -72,7 +72,12 @@ public class NARS {
 
 
     public NARS index( Memory concepts) {
-        this.index = () -> concepts;
+        this.index = new Supplier<Memory>() {
+            @Override
+            public Memory get() {
+                return concepts;
+            }
+        };
         return this;
     }
 
@@ -82,12 +87,22 @@ public class NARS {
     }
 
     public NARS exe( Exec exe) {
-        this.exec = () -> exe;
+        this.exec = new Supplier<Exec>() {
+            @Override
+            public Exec get() {
+                return exe;
+            }
+        };
         return this;
     }
 
     public NARS concepts(ConceptBuilder cb) {
-        this.conceptBuilder = () -> cb;
+        this.conceptBuilder = new Supplier<ConceptBuilder>() {
+            @Override
+            public ConceptBuilder get() {
+                return cb;
+            }
+        };
         return this;
     }
 
@@ -99,15 +114,18 @@ public class NARS {
      * adds a deriver with the standard rules for the given range (inclusive) of NAL levels
      */
     @Deprecated public NARS withNAL(int minLevel, int maxLevel) {
-        return then((n)-> {
+        return then(new Consumer<NAR>() {
+            @Override
+            public void accept(NAR n) {
 
-            PremiseRuleSet r = Derivers.nal(n, minLevel, maxLevel);
+                PremiseRuleSet r = Derivers.nal(n, minLevel, maxLevel);
 
                 if (maxLevel >= 7)
                     r.add(new STMLinker(1));
 
                 new Deriver(r);
-            });
+            }
+        });
     }
 
     public NARS what(Function<Term,What> what) {
@@ -130,7 +148,12 @@ public class NARS {
             assert(nalMin <= nalMax);
 
             if (threadSafe)
-                index = () -> new CaffeineMemory((long) (64 * 1024));
+                index = new Supplier<Memory>() {
+                    @Override
+                    public Memory get() {
+                        return new CaffeineMemory((long) (64 * 1024));
+                    }
+                };
 
             if (nalMax > 0)
                 withNAL(nalMin, nalMax);
@@ -138,24 +161,27 @@ public class NARS {
 //            if (nalMax >= 7)
 //                then((nn)->new STMLinkage(nn, 1));
 
-            then((n)->{
+            then(new Consumer<NAR>() {
+                @Override
+                public void accept(NAR n) {
 
-                n.confMin.set(0.01f);
+                    n.confMin.set(0.01f);
 
-                n.termVolMax.set(22);
+                    n.termVolMax.set(22);
 
-                TaskLinkWhat main = (TaskLinkWhat) n.what();
-                main.links.decay.set(0.01f);
+                    TaskLinkWhat main = (TaskLinkWhat) n.what();
+                    main.links.decay.set(0.01f);
 
 
-                float p = 0.5f;
-                n.beliefPriDefault.pri(p);
-                n.goalPriDefault.pri(p);
-                n.questionPriDefault.pri(p);
-                n.questPriDefault.pri(p);
+                    float p = 0.5f;
+                    n.beliefPriDefault.pri(p);
+                    n.goalPriDefault.pri(p);
+                    n.questionPriDefault.pri(p);
+                    n.questPriDefault.pri(p);
 
 //                n.emotion.want(Perceive, -0.1f);
 
+                }
             });
         }
 
@@ -166,24 +192,43 @@ public class NARS {
      */
     public NARS() {
 
-        index = () ->
-                new SimpleMemory(8 * 1024)
+        index = new Supplier<Memory>() {
+            @Override
+            public Memory get() {
+                return new SimpleMemory(8 * 1024);
+            }
+        }
                 //new TemporaryConceptIndex()
         ;
 
         time = new CycleTime();
 
-        exec = () -> new UniExec(8);
+        exec = new Supplier<Exec>() {
+            @Override
+            public Exec get() {
+                return new UniExec(8);
+            }
+        };
 
-        what = w -> new TaskLinkWhat(w, 32,
-                       new PriBuffer.DirectTaskBuffer<>()
-                       //new PriBuffer.BagTaskBuffer(128, 0.1f)
-                       //new PriBuffer.MapTaskBuffer()
-        );
+        what = new Function<Term, What>() {
+            @Override
+            public What apply(Term w) {
+                return new TaskLinkWhat(w, 32,
+                        new PriBuffer.DirectTaskBuffer<>()
+                        //new PriBuffer.BagTaskBuffer(128, 0.1f)
+                        //new PriBuffer.MapTaskBuffer()
+                );
+            }
+        };
 
         rng = ThreadLocalRandom::current;
 
-        ToIntFunction<Concept> termVolume = c->c.term().volume();
+        ToIntFunction<Concept> termVolume = new ToIntFunction<Concept>() {
+            @Override
+            public int applyAsInt(Concept c) {
+                return c.term().volume();
+            }
+        };
 
 
         /** shared eternal belief and goal capacity curve */
@@ -206,23 +251,28 @@ public class NARS {
                 24, 4
         );
 
-        conceptBuilder = ()->new DefaultConceptBuilder(
+        conceptBuilder = new Supplier<ConceptBuilder>() {
+            @Override
+            public ConceptBuilder get() {
+                return new DefaultConceptBuilder(
 
-            new ConceptAllocator(
-                    //beliefs ete
-                    bgEternal,
-                    //beliefs tmp
-                    bgTemporal,
-                    //goals ete
-                    bgEternal,
-                    //goals tmp
-                    bgTemporal,
-                    //questions
-                    q,
-                    //quests
-                    q
-            )
-        );
+                        new ConceptAllocator(
+                                //beliefs ete
+                                bgEternal,
+                                //beliefs tmp
+                                bgTemporal,
+                                //goals ete
+                                bgEternal,
+                                //goals tmp
+                                bgTemporal,
+                                //questions
+                                q,
+                                //quests
+                                q
+                        )
+                );
+            }
+        };
 
 
     }

@@ -30,24 +30,27 @@ public class ReplChip extends Gridding {
            //TODO
         //});
 
-        in.edit.onKeyPress(x -> {
+        in.edit.onKeyPress(new Consumer<KeyEvent>() {
+            @Override
+            public void accept(KeyEvent x) {
 
-            //System.out.println(x.getKeyCode() + "\t" + x.getKeyChar() + "\t" + x.getKeySymbol());
+                //System.out.println(x.getKeyCode() + "\t" + x.getKeyChar() + "\t" + x.getKeySymbol());
 
-            if ((int) x.getKeyCode() == (int) KeyEvent.VK_ENTER && (!enterOrControlEnter() || x.isControlDown())) {
-                String cmd = in.edit.text();
+                if ((int) x.getKeyCode() == (int) KeyEvent.VK_ENTER && (!enterOrControlEnter() || x.isControlDown())) {
+                    String cmd = in.edit.text();
 
-                if (clearOnEnter())
-                    in.edit.text("");
+                    if (clearOnEnter())
+                        in.edit.text("");
 
-                //HACK
-                //                    if (appendOrReplace()) {
-                ////                        out.edit.text(e); //append?
-                ////                        out.out(out.edit.text());
-                //                    } else {
-                ////                        out.edit.text(e);
-                //                    }
-                model.input(cmd, System.err::println);
+                    //HACK
+                    //                    if (appendOrReplace()) {
+                    ////                        out.edit.text(e); //append?
+                    ////                        out.out(out.edit.text());
+                    //                    } else {
+                    ////                        out.edit.text(e);
+                    //                    }
+                    model.input(cmd, System.err::println);
+                }
             }
         });
     }

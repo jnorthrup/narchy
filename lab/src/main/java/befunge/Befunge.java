@@ -52,39 +52,64 @@ public enum Befunge {
             stack = new BefungeStack();
             this.board = board;
             map = new HashMap();
-            map.put('+', () -> {
-                long temp = stack.pop();
-                temp += stack.pop();
-                stack.push(temp);
+            map.put('+', new Runnable() {
+                @Override
+                public void run() {
+                    long temp = stack.pop();
+                    temp += stack.pop();
+                    stack.push(temp);
+                }
             });
 
-            map.put('-', () -> {
-                @NotNull long temp = -stack.pop();
-                temp += stack.pop();
-                stack.push(temp);
+            map.put('-', new Runnable() {
+                @Override
+                public void run() {
+                    @NotNull long temp = -stack.pop();
+                    temp += stack.pop();
+                    stack.push(temp);
+                }
             });
 
-            map.put('*', () -> {
-                long temp = stack.pop();
-                temp *= stack.pop();
-                stack.push(temp);
+            map.put('*', new Runnable() {
+                @Override
+                public void run() {
+                    long temp = stack.pop();
+                    temp *= stack.pop();
+                    stack.push(temp);
+                }
             });
 
-            map.put('/', () -> {
-                long t1 = stack.pop();
-                long t2 = stack.pop();
-                stack.push(t2/t1);
+            map.put('/', new Runnable() {
+                @Override
+                public void run() {
+                    long t1 = stack.pop();
+                    long t2 = stack.pop();
+                    stack.push(t2 / t1);
+                }
             });
 
-            map.put('%', () -> {
-                long t1 = stack.pop();
-                long t2 = stack.pop();
-                stack.push(t2%t1);
+            map.put('%', new Runnable() {
+                @Override
+                public void run() {
+                    long t1 = stack.pop();
+                    long t2 = stack.pop();
+                    stack.push(t2 % t1);
+                }
             });
 
-            map.put('!', () -> stack.push((long) (stack.pop() == 0L ? 1 : 0)));
+            map.put('!', new Runnable() {
+                @Override
+                public void run() {
+                    stack.push((long) (stack.pop() == 0L ? 1 : 0));
+                }
+            });
 
-            map.put('`', () -> stack.push((long) (stack.pop() <= stack.pop() ? 1 : 0)));
+            map.put('`', new Runnable() {
+                @Override
+                public void run() {
+                    stack.push((long) (stack.pop() <= stack.pop() ? 1 : 0));
+                }
+            });
 
             map.put('<', this::left);
 
@@ -94,67 +119,107 @@ public enum Befunge {
 
             map.put('^', this::up);
 
-            map.put('?', () -> {
-                int[] xarray = {-1, 1, 0, 0};
-                Random r = new Random();
-                int t = r.nextInt(3);
-                dx = xarray[t];
-                int[] yarray = {0, 0, -1, 1};
-                dy = yarray[t];
-            });
-
-            map.put('_', () -> {
-                if(stack.pop() == 0L) right();
-                else left();
-            });
-
-            map.put('|', () -> {
-                if(stack.pop() == 0L) down();
-                else up();
-            });
-
-            map.put('"', () -> {
-                move();
-                char c = this.board.get(y, x);
-                while((int) c != (int) '"'){
-                    stack.push((long) c);
-                    move();
-                    c = this.board.get(y, x);
+            map.put('?', new Runnable() {
+                @Override
+                public void run() {
+                    int[] xarray = {-1, 1, 0, 0};
+                    Random r = new Random();
+                    int t = r.nextInt(3);
+                    dx = xarray[t];
+                    int[] yarray = {0, 0, -1, 1};
+                    dy = yarray[t];
                 }
             });
 
-            map.put(':', () -> stack.push(stack.peek()));
+            map.put('_', new Runnable() {
+                @Override
+                public void run() {
+                    if (stack.pop() == 0L) Pointer.this.right();
+                    else Pointer.this.left();
+                }
+            });
 
-            map.put('\\', () -> {
-                long t1 = stack.pop();
-                long t2 = stack.pop();
-                stack.push(t2);
-                stack.push(t1);
+            map.put('|', new Runnable() {
+                @Override
+                public void run() {
+                    if (stack.pop() == 0L) Pointer.this.down();
+                    else Pointer.this.up();
+                }
+            });
+
+            map.put('"', new Runnable() {
+                @Override
+                public void run() {
+                    Pointer.this.move();
+                    char c = Pointer.this.board.get(y, x);
+                    while ((int) c != (int) '"') {
+                        stack.push((long) c);
+                        Pointer.this.move();
+                        c = Pointer.this.board.get(y, x);
+                    }
+                }
+            });
+
+            map.put(':', new Runnable() {
+                @Override
+                public void run() {
+                    stack.push(stack.peek());
+                }
+            });
+
+            map.put('\\', new Runnable() {
+                @Override
+                public void run() {
+                    long t1 = stack.pop();
+                    long t2 = stack.pop();
+                    stack.push(t2);
+                    stack.push(t1);
+                }
             });
 
             map.put('$', stack::pop);
 
-            map.put('.', () -> System.out.print(stack.pop()));
+            map.put('.', new Runnable() {
+                @Override
+                public void run() {
+                    System.out.print(stack.pop());
+                }
+            });
 
-            map.put(',', () -> System.out.print((char) stack.pop().shortValue()));
+            map.put(',', new Runnable() {
+                @Override
+                public void run() {
+                    System.out.print((char) stack.pop().shortValue());
+                }
+            });
 
             map.put('#', this::move);
 
-            map.put('p', () -> {
-                int y1 = stack.pop().intValue();
-                int x1 = stack.pop().intValue();
-                char v = (char)stack.pop().shortValue();
-                this.board.put(y1, x1, v);
+            map.put('p', new Runnable() {
+                @Override
+                public void run() {
+                    int y1 = stack.pop().intValue();
+                    int x1 = stack.pop().intValue();
+                    char v = (char) stack.pop().shortValue();
+                    Pointer.this.board.put(y1, x1, v);
+                }
             });
 
-            map.put('g', () -> {
-                int y1 = stack.pop().intValue();
-                int x1 = stack.pop().intValue();
-                char c = this.board.get(y1, x1);
-                stack.push((long) c);
+            map.put('g', new Runnable() {
+                @Override
+                public void run() {
+                    int y1 = stack.pop().intValue();
+                    int x1 = stack.pop().intValue();
+                    char c = Pointer.this.board.get(y1, x1);
+                    stack.push((long) c);
+                }
             });
 
-            map.put(' ', () -> {});
+            map.put(' ', new Runnable() {
+                @Override
+                public void run() {
+                }
+            });
         }
 
         private void move(){

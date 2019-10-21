@@ -5,6 +5,7 @@ import jcog.learn.Discretize1D;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Function;
+import java.util.function.IntFunction;
 import java.util.function.Predicate;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -32,8 +33,18 @@ public class DiscretizedScalarFeature {
         assert (labels == null || labels.length == 0 || labels.length == levels());
         return IntStream.range(0, levels()).mapToObj(
                 labels != null && labels.length == levels() ?
-                        i -> new CentroidMatch(i, labels[i]) :
-                        i -> new CentroidMatch(i, null)
+                        new IntFunction<Predicate<Function<Integer, Float>>>() {
+                            @Override
+                            public Predicate<Function<Integer, Float>> apply(int i) {
+                                return new CentroidMatch(i, labels[i]);
+                            }
+                        } :
+                        new IntFunction<Predicate<Function<Integer, Float>>>() {
+                            @Override
+                            public Predicate<Function<Integer, Float>> apply(int i) {
+                                return new CentroidMatch(i, null);
+                            }
+                        }
         );
     }
 

@@ -6,6 +6,7 @@ import jcog.signal.buffer.CircularFloatBuffer;
 import org.eclipse.collections.api.tuple.Pair;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
+import spacegraph.space2d.container.graph.NodeVis;
 import spacegraph.space2d.container.time.Timeline2D;
 import spacegraph.space2d.container.time.Timeline2DEvents;
 import spacegraph.space2d.container.time.Timeline2DSequence;
@@ -15,6 +16,7 @@ import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.meter.WaveBitmap;
 
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Consumer;
 
 public class Timeline2DTest {
 
@@ -56,8 +58,12 @@ public class Timeline2DTest {
         }
 
         return new Timeline2DEvents<>(dummyModel,
-                e ->
-                        e.set(new Scale(new PushButton(e.id.toString()), 0.8f)), new Timeline2DEvents.LaneTimelineUpdater());
+                new Consumer<NodeVis<Timeline2D.SimpleEvent>>() {
+                    @Override
+                    public void accept(NodeVis<Timeline2D.SimpleEvent> e) {
+                        e.set(new Scale(new PushButton(e.id.toString()), 0.8f));
+                    }
+                }, new Timeline2DEvents.LaneTimelineUpdater());
     }
 
     protected static Timeline2DEvents<Pair<Longerval,Tensor>> waveEvents() {
@@ -71,9 +77,13 @@ public class Timeline2DTest {
             s.buffer.set(noise);
         }
 
-        return new Timeline2DEvents<>(s, e ->
-            e.set(
-                    new Widget(new WaveBitmap(e.id.getTwo(), 1.0F, 128, 32))), new Timeline2DEvents.LaneTimelineUpdater()
+        return new Timeline2DEvents<>(s, new Consumer<NodeVis<Pair<Longerval, Tensor>>>() {
+            @Override
+            public void accept(NodeVis<Pair<Longerval, Tensor>> e) {
+                e.set(
+                        new Widget(new WaveBitmap(e.id.getTwo(), 1.0F, 128, 32)));
+            }
+        }, new Timeline2DEvents.LaneTimelineUpdater()
         );
     }
 }

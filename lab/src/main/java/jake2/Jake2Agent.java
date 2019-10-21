@@ -10,6 +10,7 @@ import jake2.sound.jsound.SND_JAVA;
 import jake2.sys.IN;
 import jcog.math.FloatFirstOrderDifference;
 import jcog.math.FloatNormalized;
+import jcog.math.FloatSupplier;
 import jcog.signal.buffer.CircularFloatBuffer;
 import jcog.signal.wave2d.BrightnessNormalize;
 import jcog.signal.wave2d.ImageFlip;
@@ -18,10 +19,12 @@ import nars.$;
 import nars.GameX;
 import nars.NAR;
 import nars.Narsese;
+import nars.game.Game;
 import nars.game.sensor.FreqVectorSensor;
 import nars.gui.sensor.VectorSensorChart;
 import nars.sensor.Bitmap2DSensor;
 import nars.sensor.PixelBag;
+import nars.term.Term;
 import nars.video.AutoclassifiedBitmap;
 import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;
 import spacegraph.SpaceGraph;
@@ -32,6 +35,8 @@ import spacegraph.video.GLScreenShot;
 
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.IntFunction;
 
 import static jake2.Globals.STAT_FRAGS;
 import static jake2.Globals.cl;
@@ -175,7 +180,12 @@ public class Jake2Agent extends GameX implements Runnable {
         SpaceGraph.window(grid(rgbView, rgbAE.newChart(), depthView ), 500, 500);
 
         hear = new FreqVectorSensor(nar, new CircularFloatBuffer(8*1024),
-                512, 16, f->$.inh($.the(f), "hear"));
+                512, 16, new IntFunction<Term>() {
+            @Override
+            public Term apply(int f) {
+                return $.inh($.the(f), "hear");
+            }
+        });
         addSensor(hear);
         WaveBitmap hearView = new WaveBitmap(hear.buf, 300, 64);
         onFrame(hearView::update);
@@ -186,8 +196,18 @@ public class Jake2Agent extends GameX implements Runnable {
 
         actionPushButtonMutex(
                 $.the("fore"), $.the("back"),
-                (BooleanProcedure) x -> CL_input.in_forward.state = x ? 1 : 0,
-                (BooleanProcedure) x -> CL_input.in_back.state = x ? 1 : 0
+                new BooleanProcedure() {
+                    @Override
+                    public void value(boolean x) {
+                        CL_input.in_forward.state = x ? 1 : 0;
+                    }
+                },
+                new BooleanProcedure() {
+                    @Override
+                    public void value(boolean x) {
+                        CL_input.in_back.state = x ? 1 : 0;
+                    }
+                }
         );
 
 //        actionPushButtonMutex(
@@ -198,21 +218,51 @@ public class Jake2Agent extends GameX implements Runnable {
 
         actionPushButtonMutex(
                 $.the("left"), $.the("right"),
-                ()->cl.viewangles[Defines.YAW] += yawSpeed,
-                ()->cl.viewangles[Defines.YAW] -= yawSpeed
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        cl.viewangles[Defines.YAW] += yawSpeed;
+                    }
+                },
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        cl.viewangles[Defines.YAW] -= yawSpeed;
+                    }
+                }
         );
 
 
-        actionPushButton($("jump"), (BooleanProcedure) x1 -> CL_input.in_up.state = x1 ? 1 : 0);
+        actionPushButton($("jump"), new BooleanProcedure() {
+            @Override
+            public void value(boolean x1) {
+                CL_input.in_up.state = x1 ? 1 : 0;
+            }
+        });
 
 
-        actionPushButton($("fire"), (BooleanProcedure) x -> CL_input.in_attack.state = x ? 1 : 0);
+        actionPushButton($("fire"), new BooleanProcedure() {
+            @Override
+            public void value(boolean x) {
+                CL_input.in_attack.state = x ? 1 : 0;
+            }
+        });
 
         if (lookPitch) {
             actionPushButtonMutex(
                     $.the("lookUp"), $.the("lookDown"),
-                    () -> cl.viewangles[Defines.PITCH] = Math.min((float) +30, cl.viewangles[Defines.PITCH] + pitchSpeed),
-                    () -> cl.viewangles[Defines.PITCH] = Math.max(-30.0F, cl.viewangles[Defines.PITCH] - pitchSpeed)
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            cl.viewangles[Defines.PITCH] = Math.min((float) +30, cl.viewangles[Defines.PITCH] + pitchSpeed);
+                        }
+                    },
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            cl.viewangles[Defines.PITCH] = Math.max(-30.0F, cl.viewangles[Defines.PITCH] - pitchSpeed);
+                        }
+                    }
             );
         }
 
@@ -222,9 +272,19 @@ public class Jake2Agent extends GameX implements Runnable {
 
         onFrame(player::update);
 
-        rewardNormalized("health", -1.0F, (float) +1, new FloatFirstOrderDifference(nar::time, () -> player.health).nanIfZero());
+        rewardNormalized("health", -1.0F, (float) +1, new FloatFirstOrderDifference(nar::time, new FloatSupplier() {
+            @Override
+            public float asFloat() {
+                return player.health;
+            }
+        }).nanIfZero());
 
-        rewardNormalized("speed", (float) 0, (float) +1, new FloatNormalized(() -> player.speed));
+        rewardNormalized("speed", (float) 0, (float) +1, new FloatNormalized(new FloatSupplier() {
+            @Override
+            public float asFloat() {
+                return player.speed;
+            }
+        }));
         rewardNormalized("frags", (float) 0, (float) +1,
                 new FloatFirstOrderDifference(nar::time, player.damageInflicted::getOpaque).nanIfZero());
 
@@ -361,12 +421,15 @@ public class Jake2Agent extends GameX implements Runnable {
 
     public static void main(String[] args) {
 
-        Companion.initFn((float) FPS, nar1 -> {
-            try {
-                return new Jake2Agent(nar1);
-            } catch (Narsese.NarseseException e) {
-                e.printStackTrace();
-                return null;
+        Companion.initFn((float) FPS, new Function<NAR, Game>() {
+            @Override
+            public Game apply(NAR nar1) {
+                try {
+                    return new Jake2Agent(nar1);
+                } catch (Narsese.NarseseException e) {
+                    e.printStackTrace();
+                    return null;
+                }
             }
         });
     }

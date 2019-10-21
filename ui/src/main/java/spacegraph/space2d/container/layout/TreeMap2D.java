@@ -2,6 +2,8 @@ package spacegraph.space2d.container.layout;
 
 import jcog.pri.ScalarValue;
 import jcog.tree.rtree.rect.RectFloat;
+import org.eclipse.collections.api.block.function.primitive.FloatFunction;
+import org.eclipse.collections.api.block.procedure.Procedure;
 import spacegraph.space2d.container.graph.Graph2D;
 import spacegraph.util.MutableRectFloat;
 
@@ -22,10 +24,13 @@ public class TreeMap2D<X> extends DynamicLayout2D<X> {
     protected void layout(Graph2D<X> g, float dtS) {
         RectFloat b = g.bounds;
         //sort descending
-        nodes.sortThisByFloat((a)-> {
-            a.w = b.w;
-            a.h = b.h;
-            return -a.node.pri;
+        nodes.sortThisByFloat(new FloatFunction<MutableRectFloat<X>>() {
+            @Override
+            public float floatValueOf(MutableRectFloat<X> a) {
+                a.w = b.w;
+                a.h = b.h;
+                return -a.node.pri;
+            }
         });
         int end = nodes.size() - 1;
         total = areaSum(0, end);
@@ -35,12 +40,15 @@ public class TreeMap2D<X> extends DynamicLayout2D<X> {
         //normalize
         float nw = b.w / newBounds.w;
         float nh = b.h / newBounds.h;
-        nodes.forEach(n -> {
-            n.x = b.x + (n.x - b.x) * nw;
-            n.y = b.y + (n.y - b.y) * nh;
-            n.w *= nw;
-            n.h *= nh;
+        nodes.forEach(new Procedure<MutableRectFloat<X>>() {
+            @Override
+            public void value(MutableRectFloat<X> n) {
+                n.x = b.x + (n.x - b.x) * nw;
+                n.y = b.y + (n.y - b.y) * nh;
+                n.w *= nw;
+                n.h *= nh;
 
+            }
         });
     }
 

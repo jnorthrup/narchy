@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.function.Supplier;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -49,7 +50,12 @@ public class PrologToNALTest {
 
     static void assertTranslated(String expected, Iterable<alice.tuprolog.Term> input) {
         String actual = Joiner.on(" , ").join(PrologToNAL.N(input));
-        assertEquals(expected, actual, ()->input + "\n\tshould produce:\n\t" + expected);
+        assertEquals(expected, actual, new Supplier<String>() {
+            @Override
+            public String get() {
+                return input + "\n\tshould produce:\n\t" + expected;
+            }
+        });
     }
 
 }

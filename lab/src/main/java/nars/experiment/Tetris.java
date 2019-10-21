@@ -3,7 +3,9 @@ package nars.experiment;
 import jcog.Config;
 import jcog.Util;
 import jcog.exe.Exe;
+import jcog.func.IntIntToObjectFunction;
 import jcog.math.FloatRange;
+import jcog.math.FloatSupplier;
 import jcog.signal.wave2d.AbstractBitmap2D;
 import jcog.signal.wave2d.Bitmap2D;
 import nars.$;
@@ -18,11 +20,16 @@ import nars.op.java.Opjects;
 import nars.sensor.Bitmap2DSensor;
 import nars.term.Term;
 import nars.term.atom.Atomic;
+import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
+import org.eclipse.collections.api.block.predicate.primitive.BooleanPredicate;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.IntPredicate;
 
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
@@ -117,58 +124,74 @@ public class Tetris extends GameX {
         };
         gridVision = addSensor(
                 pixels = new Bitmap2DSensor<>(
-                        n, grid, (x, y) -> $.inh(id, $.p(x, y))
+                        n, grid, new IntIntToObjectFunction<Term>() {
+                    @Override
+                    public Term apply(int x, int y) {
+                        return $.inh(id, $.p(x, y));
+                    }
+                }
                 ));
 
         if (TETRIS_USE_DENSITY) {
-            reward("density", 1.0F, () -> {
+            reward("density", 1.0F, new FloatSupplier() {
+                @Override
+                public float asFloat() {
 
-                long count = 0L;
-                for (double s : state.grid) {
-                    if (s > (double) 0) {
-                        count++;
+                    long count = 0L;
+                    for (double s : state.grid) {
+                        if (s > (double) 0) {
+                            count++;
+                        }
                     }
-                }
-                int filled = (int) count;
+                    int filled = (int) count;
 
-                int r = state.rowsFilled;
-                return r > 0 ? ((float) filled) / (float) (r * state.width) : (float) 0;
+                    int r = state.rowsFilled;
+                    return r > 0 ? ((float) filled) / (float) (r * state.width) : (float) 0;
+                }
             });
         }
 
-        actionUnipolar($.inh(id, "speed"), (s) -> {
-            int fastest = (int) this.timePerFall.min, slowest = (int) this.timePerFall.max;
-            int t = Math.round(Util.lerp(s, (float) slowest, (float) fastest));
-            this.timePerFall.set((float) t);
-            return Util.unlerp((float) t, (float) slowest, (float) fastest); //get the effective frequency after discretizing
+        actionUnipolar($.inh(id, "speed"), new FloatToFloatFunction() {
+            @Override
+            public float valueOf(float s) {
+                int fastest = (int) Tetris.this.timePerFall.min, slowest = (int) Tetris.this.timePerFall.max;
+                int t = Math.round(Util.lerp(s, (float) slowest, (float) fastest));
+                Tetris.this.timePerFall.set((float) t);
+                return Util.unlerp((float) t, (float) slowest, (float) fastest); //get the effective frequency after discretizing
+            }
         });
 
 
         int[] lastRowsFilled = {0};
-        SimpleReward lower = reward("lower", 1.0F, () -> {
-            int rowsFilled = state.rowsFilled;
-            int deltaRows = rowsFilled - lastRowsFilled[0];
-            lastRowsFilled[0] = rowsFilled;
-            if (deltaRows > 0) {
-                return -1.0F;
-            } else if (deltaRows == 0)
-                return
-                        Float.NaN;
-                //0.5f;
-            else {//if (deltaRows < 0) {
-                if (deltaRows > 5)
-                    return -1.0F; //board clear
-                else
-                    return (float) +1; //lower due to line
+        SimpleReward lower = reward("lower", 1.0F, new FloatSupplier() {
+            @Override
+            public float asFloat() {
+                int rowsFilled = state.rowsFilled;
+                int deltaRows = rowsFilled - lastRowsFilled[0];
+                lastRowsFilled[0] = rowsFilled;
+                if (deltaRows > 0) {
+                    return -1.0F;
+                } else if (deltaRows == 0)
+                    return
+                            Float.NaN;
+                    //0.5f;
+                else {//if (deltaRows < 0) {
+                    if (deltaRows > 5)
+                        return -1.0F; //board clear
+                    else
+                        return (float) +1; //lower due to line
+                }
             }
         });
 
 
-        Exe.runLater(() -> //HACK
-            {
-                lower.setDefault($.t(0.5f, n.confDefault(BELIEF) / 3.0F));
-                //lower.addGuard(true,false);
-            }
+        Exe.runLater(new Runnable() {
+                         @Override
+                         public void run() {
+                             lower.setDefault($.t(0.5f, n.confDefault(BELIEF) / 3.0F));
+                             //lower.addGuard(true,false);
+                         }
+                     }
         );
 
         actionPushButtonLR();
@@ -176,9 +199,12 @@ public class Tetris extends GameX {
 
         state.reset();
 
-        onFrame(() -> {
-            state.timePerFall = Math.round(this.timePerFall.floatValue());
-            state.next();
+        onFrame(new Runnable() {
+            @Override
+            public void run() {
+                state.timePerFall = Math.round(Tetris.this.timePerFall.floatValue());
+                state.next();
+            }
         });
 
 
@@ -187,13 +213,16 @@ public class Tetris extends GameX {
     public static void main(String[] args) {
 
 
-        GameX.Companion.initC(FPS * thinkPerFrame, n -> {
+        GameX.Companion.initC(FPS * thinkPerFrame, new Consumer<NAR>() {
+            @Override
+            public void accept(NAR n) {
 
-            Tetris t = new Tetris(n, tetris_width, tetris_height);
-            n.add(t);
+                Tetris t = new Tetris(n, tetris_width, tetris_height);
+                n.add(t);
 
-            window(new VectorSensorChart(t.gridVision, t).withControls(), 400, 800);
+                window(new VectorSensorChart(t.gridVision, t).withControls(), 400, 800);
 
+            }
         });
 
 
@@ -210,22 +239,40 @@ public class Tetris extends GameX {
 
     void actionPushButtonLR() {
         GoalActionConcept[] lr = actionPushButtonMutex(tLEFT, tRIGHT,
-                b -> b && state.act(TetrisState.actions.LEFT),
-                b -> b && state.act(TetrisState.actions.RIGHT)
+                new BooleanPredicate() {
+                    @Override
+                    public boolean accept(boolean b) {
+                        return b && state.act(TetrisState.actions.LEFT);
+                    }
+                },
+                new BooleanPredicate() {
+                    @Override
+                    public boolean accept(boolean b) {
+                        return b && state.act(TetrisState.actions.RIGHT);
+                    }
+                }
         );
 
     }
 
     void actionPushButtonRotateFall() {
 
-        actionPushButton(tROT, debounce(b ->
-                        b && state.act(TetrisState.actions.CW)
+        actionPushButton(tROT, debounce(new BooleanPredicate() {
+                                            @Override
+                                            public boolean accept(boolean b) {
+                                                return b && state.act(TetrisState.actions.CW);
+                                            }
+                                        }
                 , (float) debounceDurs));
 
         if (TETRIS_CAN_FALL)
             actionPushButton(tFALL,
-                    debounce(b ->
-                                    b && state.act(TetrisState.actions.FALL)
+                    debounce(new BooleanPredicate() {
+                                 @Override
+                                 public boolean accept(boolean b) {
+                                     return b && state.act(TetrisState.actions.FALL);
+                                 }
+                             }
                             , (float) (debounceDurs * 2))
             );
 
@@ -235,20 +282,28 @@ public class Tetris extends GameX {
     void actionsTriState() {
 
 
-        actionTriState($.inh(id, "X"), i -> {
-            switch (i) {
-                case -1:
-                    return state.act(TetrisState.actions.LEFT);
-                case +1:
-                    return state.act(TetrisState.actions.RIGHT);
-                default:
-                case 0:
-                    return true;
+        actionTriState($.inh(id, "X"), new IntPredicate() {
+            @Override
+            public boolean test(int i) {
+                switch (i) {
+                    case -1:
+                        return state.act(TetrisState.actions.LEFT);
+                    case +1:
+                        return state.act(TetrisState.actions.RIGHT);
+                    default:
+                    case 0:
+                        return true;
+                }
             }
         });
 
 
-        actionPushButton(tROT, () -> state.act(TetrisState.actions.CW));
+        actionPushButton(tROT, new Runnable() {
+            @Override
+            public void run() {
+                state.act(TetrisState.actions.CW);
+            }
+        });
 
 
     }
@@ -320,7 +375,12 @@ public class Tetris extends GameX {
             setShape(2, CENTER_5_X_5);
             setShape(3, CENTER_5_X_5);
         }},
-        }) : List.of(PossibleBlocks.values()).stream().map(possibleBlocks1 -> possibleBlocks1.shape).collect(toList());//.subList(0, 1);
+        }) : List.of(PossibleBlocks.values()).stream().map(new Function<PossibleBlocks, TetrisPiece>() {
+            @Override
+            public TetrisPiece apply(PossibleBlocks possibleBlocks1) {
+                return possibleBlocks1.shape;
+            }
+        }).collect(toList());//.subList(0, 1);
         //        CopyOnWriteArrayList<TetrisPiece> possibleBlocks = new CopyOnWriteArrayList<>();
         private int rowsFilled;
 

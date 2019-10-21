@@ -7,6 +7,7 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Vector;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /*
@@ -51,7 +52,12 @@ class PrettyParser {
 		Set<Assembly> inState = new HashSet<>();
 		inState.add(inAssembly);
 		Set<Assembly> outState = parser.matchAndAssemble(inState);
-        Set<Assembly> outComplete = outState.stream().filter(a -> !a.hasNext()).collect(Collectors.toSet());
+        Set<Assembly> outComplete = outState.stream().filter(new Predicate<Assembly>() {
+            @Override
+            public boolean test(Assembly a) {
+                return !a.hasNext();
+            }
+        }).collect(Collectors.toSet());
 		return outComplete;
 	}
 

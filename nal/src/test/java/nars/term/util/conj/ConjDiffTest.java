@@ -108,10 +108,20 @@ class ConjDiffTest {
     }
 
     static void assertEventOf(Term xy, Term x) {
-        assertTrue( Conj.eventOf(xy, x), ()->"eventOf(" + xy + ","+ x +")" ); //test detection
+        assertTrue( Conj.eventOf(xy, x), new Supplier<String>() {
+            @Override
+            public String get() {
+                return "eventOf(" + xy + "," + x + ")";
+            }
+        }); //test detection
     }
     static void assertNotEventOf(Term xy, Term x) {
-        assertFalse( Conj.eventOf(xy, x), ()->"!eventOf(" + xy + ","+ x +")" ); //test detection
+        assertFalse( Conj.eventOf(xy, x), new Supplier<String>() {
+            @Override
+            public String get() {
+                return "!eventOf(" + xy + "," + x + ")";
+            }
+        }); //test detection
     }
 
     @Test void eventOf() {

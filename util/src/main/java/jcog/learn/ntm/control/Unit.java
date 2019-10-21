@@ -20,25 +20,34 @@ public class Unit {
     }
 
     private static Consumer<Unit[]> vectorUpdateAction(Consumer<Unit> updateAction) {
-        return (units) -> {
-            for (Unit unit : units)
-                updateAction.accept(unit);
+        return new Consumer<Unit[]>() {
+            @Override
+            public void accept(Unit[] units) {
+                for (Unit unit : units)
+                    updateAction.accept(unit);
+            }
         };
     }
 
     static Consumer<Unit[][]> tensor2UpdateAction(Consumer<Unit> updateAction) {
         Consumer<Unit[]> vectorUpdateAction = vectorUpdateAction(updateAction);
-        return (units) -> {
-            for (Unit[] unit : units)
-                vectorUpdateAction.accept(unit);
+        return new Consumer<Unit[][]>() {
+            @Override
+            public void accept(Unit[][] units) {
+                for (Unit[] unit : units)
+                    vectorUpdateAction.accept(unit);
+            }
         };
     }
 
     static Consumer<Unit[][][]> tensor3UpdateAction(Consumer<Unit> updateAction) {
         Consumer<Unit[][]> tensor2UpdateAction = tensor2UpdateAction(updateAction);
-        return (units) -> {
-            for (Unit[][] unit : units)
-                tensor2UpdateAction.accept(unit);
+        return new Consumer<Unit[][][]>() {
+            @Override
+            public void accept(Unit[][][] units) {
+                for (Unit[][] unit : units)
+                    tensor2UpdateAction.accept(unit);
+            }
         };
     }
 

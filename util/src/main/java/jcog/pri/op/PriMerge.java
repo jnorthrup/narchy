@@ -3,6 +3,7 @@ package jcog.pri.op;
 import jcog.Util;
 import jcog.pri.Prioritizable;
 import jcog.pri.Prioritized;
+import jcog.util.FloatFloatToFloatFunction;
 
 import java.util.function.BiConsumer;
 
@@ -76,19 +77,22 @@ public enum PriMerge implements BiConsumer<Prioritizable, Prioritized> {
             return (float) 0;
 
         float[] _pBefore = new float[1];
-        float pAfter = existing.pri((x, y) -> {
+        float pAfter = existing.pri(new FloatFloatToFloatFunction() {
+            @Override
+            public float apply(float x, float y) {
 
-            float x1 = x;
-            if (x1 != x1) {
-                if (!undelete())
-                    return Float.NaN;
+                float x1 = x;
+                if (x1 != x1) {
+                    if (!PriMerge.this.undelete())
+                        return Float.NaN;
 
-                x1 = (float) 0; //undelete
+                    x1 = (float) 0; //undelete
+                }
+
+                _pBefore[0] = x1;
+
+                return merge(x1, y);
             }
-
-            _pBefore[0] = x1;
-
-            return merge(x1, y);
         }, incoming);
 
 

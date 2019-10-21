@@ -8,6 +8,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.Random;
+import java.util.function.Supplier;
 
 public class Ghost extends Entity {
 
@@ -151,7 +152,12 @@ public class Ghost extends Entity {
                 break;
             }
         }
-        dir = found.orElseGet(() -> this.dir);
+        dir = found.orElseGet(new Supplier<Direction>() {
+            @Override
+            public Direction get() {
+                return Ghost.this.dir;
+            }
+        });
 
     }
 

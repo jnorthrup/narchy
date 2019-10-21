@@ -24,6 +24,7 @@ import org.eclipse.collections.impl.factory.Maps;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 
 import java.util.Map;
+import java.util.function.UnaryOperator;
 
 import static nars.term.atom.IdempotentBool.Null;
 import static nars.term.util.conj.ConjMatch.CONJ_WITHOUT_UNIFY;
@@ -97,11 +98,14 @@ public enum DerivationFunctors {
 			},
 
 			/** applies # dep and $ indep variable introduction if possible. returns the input term otherwise  */
-			Functor.f1Inline("varIntro", x -> {
-				if (!(x instanceof Compound)) return Null;
-                Term y = DepIndepVarIntroduction.the.apply((Compound)x, nar.random(), d.retransform);
-				return y == null ? Null : y;
-			}),
+			Functor.f1Inline("varIntro", new UnaryOperator<Term>() {
+                @Override
+                public Term apply(Term x) {
+                    if (!(x instanceof Compound)) return Null;
+                    Term y = DepIndepVarIntroduction.the.apply((Compound) x, nar.random(), d.retransform);
+                    return y == null ? Null : y;
+                }
+            }),
 
 			new AbstractInlineFunctor1("negateRandomSubterm") {
 

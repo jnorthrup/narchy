@@ -48,6 +48,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 import static jcog.math.v3.v;
 import static spacegraph.space3d.phys.Body3D.ifDynamic;
@@ -203,27 +204,30 @@ public class Dynamics3D<X> extends Collisions<X> {
 
             s.update(this);
 
-            s.forEachBody(c -> {
+            s.forEachBody(new Consumer<Collidable>() {
+                @Override
+                public void accept(Collidable c) {
 
-                Body3D d = ifDynamic(c);
-                if (d != null) {
+                    Body3D d = ifDynamic(c);
+                    if (d != null) {
 
-                    on(d);
+                        Dynamics3D.this.on(d);
 
-                    nextCollidables.add(d);
+                        nextCollidables.add(d);
 
-                    if (d.getActivationState() != ISLAND_SLEEPING)
-                        d.saveKinematicState(dt);
+                        if (d.getActivationState() != ISLAND_SLEEPING)
+                            d.saveKinematicState(dt);
 
-                    if (gravity != null) {
-                        if (!d.isStaticOrKinematicObject())
-                            d.setGravity(gravity);
+                        if (gravity != null) {
+                            if (!d.isStaticOrKinematicObject())
+                                d.setGravity(gravity);
 
-                        if (d.isActive())
-                            d.applyGravity();
+                            if (d.isActive())
+                                d.applyGravity();
+                        }
+
+
                     }
-
-
                 }
             });
 
@@ -393,10 +397,14 @@ public class Dynamics3D<X> extends Collisions<X> {
     }
 
 
-    private static final Comparator<TypedConstraint> sortConstraintOnIslandPredicate = (lhs, rhs) ->
-            (lhs == rhs) ? 0
+    private static final Comparator<TypedConstraint> sortConstraintOnIslandPredicate = new Comparator<TypedConstraint>() {
+        @Override
+        public int compare(TypedConstraint lhs, TypedConstraint rhs) {
+            return (lhs == rhs) ? 0
                     :
                     ((getConstraintIslandId(lhs) < getConstraintIslandId(rhs)) ? -1 : +1);
+        }
+    };
 
     public void addConstraint(TypedConstraint constraint, boolean disableCollisionsBetweenLinkedBodies) {
         synchronized (constraints) {
@@ -499,16 +507,19 @@ public class Dynamics3D<X> extends Collisions<X> {
 
         islands.updateActivationState(this);
 
-        forEachConstraint(constraint -> {
-            Body3D colObj0 = constraint.getRigidBodyA();
-            if (colObj0 == null || !colObj0.isActive() || colObj0.isStaticOrKinematicObject())
-                return;
+        forEachConstraint(new Consumer<TypedConstraint>() {
+            @Override
+            public void accept(TypedConstraint constraint) {
+                Body3D colObj0 = constraint.getRigidBodyA();
+                if (colObj0 == null || !colObj0.isActive() || colObj0.isStaticOrKinematicObject())
+                    return;
 
-            Body3D colObj1 = constraint.getRigidBodyB();
-            if (colObj1 == null || !colObj1.isActive() || colObj1.isStaticOrKinematicObject())
-                return;
+                Body3D colObj1 = constraint.getRigidBodyB();
+                if (colObj1 == null || !colObj1.isActive() || colObj1.isStaticOrKinematicObject())
+                    return;
 
-            islands.find.unite(colObj0.tag(), colObj1.tag());
+                islands.find.unite(colObj0.tag(), colObj1.tag());
+            }
         });
 
 
@@ -577,10 +588,18 @@ public class Dynamics3D<X> extends Collisions<X> {
 
     private void predictUnconstraintMotion(float timeStep) {
 
-        collidables().stream().map((Function<Collidable, Body3D>) Body3D::ifDynamic).filter(body -> body != null && !body.isStaticOrKinematicObject() && body.isActive()).forEach(body -> {
-            body.integrateVelocities(timeStep);
-            body.applyDamping(timeStep);
-            body.predictIntegratedTransform(timeStep, body.interpolationWorldTransform);
+        collidables().stream().map((Function<Collidable, Body3D>) Body3D::ifDynamic).filter(new Predicate<Body3D>() {
+            @Override
+            public boolean test(Body3D body) {
+                return body != null && !body.isStaticOrKinematicObject() && body.isActive();
+            }
+        }).forEach(new Consumer<Body3D>() {
+            @Override
+            public void accept(Body3D body) {
+                body.integrateVelocities(timeStep);
+                body.applyDamping(timeStep);
+                body.predictIntegratedTransform(timeStep, body.interpolationWorldTransform);
+            }
         });
     }
 

@@ -1,6 +1,7 @@
 package jcog.test.control;
 
 import jcog.Util;
+import jcog.func.IntIntToFloatFunction;
 import jcog.math.FloatRange;
 import jcog.math.MutableEnum;
 import jcog.signal.wave2d.ArrayBitmap2D;
@@ -60,19 +61,22 @@ public class TrackXY  {
 
         mode.get().accept(this);
 
-        grid.set((x, y) -> {
+        grid.set(new IntIntToFloatFunction() {
+            @Override
+            public float value(int x, int y) {
 
 
-            float distOther = (float) (Util.sqr((double) (tx - (float) x) /((double)W)) + Util.sqr((double) (ty - (float) y) /((double)H)));
-            //return distOther > visionContrast.floatValue() ? 0 : 1;
-            //float distSelf = (float) Math.sqrt(Util.sqr(sx - x) + Util.sqr(sy - y));
-            return unitize(1.0F - distOther * (float) Math.max(W, H) * visionContrast.floatValue());
+                float distOther = (float) (Util.sqr((double) (tx - (float) x) / ((double) W)) + Util.sqr((double) (ty - (float) y) / ((double) H)));
+                //return distOther > visionContrast.floatValue() ? 0 : 1;
+                //float distSelf = (float) Math.sqrt(Util.sqr(sx - x) + Util.sqr(sy - y));
+                return unitize(1.0F - distOther * (float) Math.max(W, H) * visionContrast.floatValue());
 //                return Util.unitize(
 //                        Math.max(1 - distOther * visionContrast,
 //                                1 - distSelf * visionContrast
 //                        ));
 
 
+            }
         });
     }
 

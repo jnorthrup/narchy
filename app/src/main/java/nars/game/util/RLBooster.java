@@ -120,7 +120,12 @@ public class RLBooster  {
 
         //actionFeedback(g.when); //init
 
-        g.onFrame(()->accept(g));
+        g.onFrame(new Runnable() {
+            @Override
+            public void run() {
+                RLBooster.this.accept(g);
+            }
+        });
     }
 
     public int actions() {

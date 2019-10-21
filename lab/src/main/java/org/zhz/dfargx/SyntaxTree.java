@@ -56,7 +56,12 @@ public class SyntaxTree {
 
     private void shunt() {
         ShuntingStack shuntingStack = new ShuntingStack();
-        Consumer<Node> c = n -> n.accept(shuntingStack);
+        Consumer<Node> c = new Consumer<Node>() {
+            @Override
+            public void accept(Node n) {
+                n.accept(shuntingStack);
+            }
+        };
         for (Node node : nodeList) {
             c.accept(node);
         }

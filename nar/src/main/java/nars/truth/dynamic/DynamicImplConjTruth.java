@@ -76,27 +76,30 @@ public enum DynamicImplConjTruth {
 
         int superDT = superterm.dt() == DTERNAL ? 0 : superterm.dt();
         int decRange = subjOrPred ? decomposed.eventRange() : 0;
-		return DynamicConjTruth.ConjIntersection.evalComponents(decomposed, start, end, (what, s, e) -> {
+		return DynamicConjTruth.ConjIntersection.evalComponents(decomposed, start, end, new ObjectLongLongPredicate<Term>() {
+            @Override
+            public boolean accept(Term what, long s, long e) {
 
-			int innerDT;
-			if (superDT == XTERNAL) {
+                int innerDT;
+                if (superDT == XTERNAL) {
 
-				innerDT = XTERNAL; //force XTERNAL since 0 or DTERNAL will collapse
+                    innerDT = XTERNAL; //force XTERNAL since 0 or DTERNAL will collapse
 
-			} else {
+                } else {
 //                if (s == start && e - s >= decRange) {
 //                    innerDT = 0; //eternal/immediate component
 //                } else
-                long d = s - start;
-				innerDT = Tense.occToDT(subjOrPred ? (long) decRange - d : d) + superDT;
-			}
+                    long d = s - start;
+                    innerDT = Tense.occToDT(subjOrPred ? (long) decRange - d : d) + superDT;
+                }
 
-            Term i = subjOrPred ?
-				IMPL.the(what.negIf(negateConjComponents), innerDT, common)
-				:
-				IMPL.the(common, innerDT, what).negIf(negateConjComponents);
+                Term i = subjOrPred ?
+                        IMPL.the(what.negIf(negateConjComponents), innerDT, common)
+                        :
+                        IMPL.the(common, innerDT, what).negIf(negateConjComponents);
 
-			return i instanceof Compound && i.unneg().op() == IMPL && each.accept(i, start, end);
-		});
+                return i instanceof Compound && i.unneg().op() == IMPL && each.accept(i, start, end);
+            }
+        });
 	}
 }

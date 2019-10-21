@@ -25,6 +25,7 @@ import spacegraph.space2d.widget.textedit.TextEdit;
 import spacegraph.space2d.widget.windo.Windo;
 
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 
 import static spacegraph.space2d.container.grid.Gridding.HORIZONTAL;
 import static spacegraph.space2d.container.grid.Gridding.VERTICAL;
@@ -145,17 +146,20 @@ public class GraphEditTest {
 
                 WaveBitmap wave = new WaveBitmap(buffer, 600, 400);
                 AtomicBoolean busy = new AtomicBoolean(false);
-                TypedPort p = new TypedPort<>(String.class, text -> {
-                    if (busy.compareAndSet(false, true)) {
-                        try {
-                            buffer.clear();
-                            //buffer.write(TinySpeech._say(text)); //TODO
-                            wave.update();
-                        } finally {
-                            busy.set(false);
+                TypedPort p = new TypedPort<>(String.class, new Consumer<String>() {
+                    @Override
+                    public void accept(String text) {
+                        if (busy.compareAndSet(false, true)) {
+                            try {
+                                buffer.clear();
+                                //buffer.write(TinySpeech._say(text)); //TODO
+                                wave.update();
+                            } finally {
+                                busy.set(false);
+                            }
+                        } else {
+                            //pending.setAt(true);
                         }
-                    } else {
-                        //pending.setAt(true);
                     }
                 });
                 RectFloat r = RectFloat.XYXY((float) 300, (float) 0, (float) 850, (float) 550);
@@ -163,7 +167,12 @@ public class GraphEditTest {
                         new Bordering(wave)
                                 .set(Bordering.W, p, 0.1f)
                                 .set(Bordering.S, new Gridding(
-                                        PushButton.awesome("play").clicked(() -> Audio.the().play(new SamplePlayer(new SoundSample(buffer.data, TinySpeech.SAMPLE_FREQUENCY))))
+                                        PushButton.awesome("play").clicked(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                Audio.the().play(new SamplePlayer(new SoundSample(buffer.data, TinySpeech.SAMPLE_FREQUENCY)));
+                                            }
+                                        })
                                 ), 0.1f)
                 )).pos(r);
             }
@@ -181,23 +190,26 @@ public class GraphEditTest {
             GraphEdit2D g = new GraphEdit2D();
             SpaceGraph.window(g, 1600, 1000);
 
-            Exe.runLater(()->{
+            Exe.runLater(new Runnable() {
+                @Override
+                public void run() {
 //                RectFloat r5 = RectFloat.XYXY((float) 500, (float) 300, (float) 250, (float) 250);
 //                ((Surface) g.add(new SpectrogramChip())).pos(r5);
 
 //                RectFloat r4 = RectFloat.XYXY((float) 400, (float) 400, (float) 250, (float) 250);
 //                ((Surface) g.add(new AudioCaptureChip())).pos(r4);
 
-                RectFloat r2 = RectFloat.XYXY((float) 100, (float) 100, (float) 250, (float) 250);
-                ((Surface) g.add(new StringSynthChip())).pos(r2);
+                    RectFloat r2 = RectFloat.XYXY((float) 100, (float) 100, (float) 250, (float) 250);
+                    ((Surface) g.add(new StringSynthChip())).pos(r2);
 
-                RectFloat r1 = RectFloat.XYXY((float) 300, (float) 0, (float) 850, (float) 550);
-                ((Surface) g.add(new WaveViewChip())).pos(r1);
+                    RectFloat r1 = RectFloat.XYXY((float) 300, (float) 0, (float) 850, (float) 550);
+                    ((Surface) g.add(new WaveViewChip())).pos(r1);
 
-                RectFloat r = RectFloat.XYXY((float) 300, (float) 230, (float) 450, (float) 350);
-                ((Surface) g.add(new AudioOutPort())).pos(r);
+                    RectFloat r = RectFloat.XYXY((float) 300, (float) 230, (float) 450, (float) 350);
+                    ((Surface) g.add(new AudioOutPort())).pos(r);
 
 
+                }
             });
 
 

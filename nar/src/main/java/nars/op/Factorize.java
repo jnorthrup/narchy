@@ -13,6 +13,7 @@ import nars.term.*;
 import nars.term.atom.IdempotentBool;
 import nars.term.util.cache.Intermed;
 import org.eclipse.collections.api.RichIterable;
+import org.eclipse.collections.api.block.function.primitive.IntFunction;
 import org.eclipse.collections.api.list.MutableList;
 import org.eclipse.collections.api.list.primitive.ByteList;
 import org.eclipse.collections.api.set.primitive.ByteSet;
@@ -25,7 +26,10 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Comparator;
 import java.util.ListIterator;
 import java.util.Set;
+import java.util.function.BiPredicate;
 import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.ToIntFunction;
 
 import static nars.Op.*;
 import static nars.term.atom.IdempotentBool.Null;
@@ -131,9 +135,29 @@ public enum Factorize {
     private static final Variable f = $.varDep("_f");
     private static final Variable fIfNoDep = $.varDep(1);
     static final Comparator<Pair<Term, RichIterable<ObjectBytePair<Term>>>> c = Comparator
-            .comparingInt((Pair<Term, RichIterable<ObjectBytePair<Term>>> p) -> -p.getTwo().size()) //more unique subterms involved
-            .thenComparingInt(p -> -p.getOne().volume()) //longest common path
-            .thenComparingInt(p -> -(int)(p.getTwo().sumOfInt(z -> z.getOne().volume())));  //larger subterms involved
+            .comparingInt(new ToIntFunction<Pair<Term, RichIterable<ObjectBytePair<Term>>>>() {
+                @Override
+                public int applyAsInt(Pair<Term, RichIterable<ObjectBytePair<Term>>> p) {
+                    return -p.getTwo().size();
+                }
+            }) //more unique subterms involved
+            .thenComparingInt(new ToIntFunction<Pair<Term, RichIterable<ObjectBytePair<Term>>>>() {
+                @Override
+                public int applyAsInt(Pair<Term, RichIterable<ObjectBytePair<Term>>> p) {
+                    return -p.getOne().volume();
+                }
+            }) //longest common path
+            .thenComparingInt(new ToIntFunction<Pair<Term, RichIterable<ObjectBytePair<Term>>>>() {
+                @Override
+                public int applyAsInt(Pair<Term, RichIterable<ObjectBytePair<Term>>> p) {
+                    return -(int) (p.getTwo().sumOfInt(new IntFunction<ObjectBytePair<Term>>() {
+                        @Override
+                        public int intValueOf(ObjectBytePair<Term> z) {
+                            return z.getOne().volume();
+                        }
+                    }));
+                }
+            });  //larger subterms involved
 
     //TODO static class ShadowCompound extends Compound(Compound base, ByteList masked)
 
@@ -154,19 +178,32 @@ public enum Factorize {
             final int pathMin = s.subs() == 1 ? 2 : 1; //dont factor the direct subterm of 1-arity compound (ex: negation, {x}, (x) )
             if (s instanceof Compound) {
                 final int ii = i;
-                s.pathsTo((Term v) -> true, v -> true, (path, what) -> {
-
-                    //if (what.unneg().volume() > 1) { //dont remap any atomics
-                    if (!(what instanceof Variable)) { //dont remap variables
-                        if (path.size() >= pathMin) {
-                            if (pp[0] == null)
-                                pp[0] = UnifiedSetMultimap.newMultimap();
-                            final Term v1 = shadow(s, path, f);
-                            if (!(v1 instanceof IdempotentBool))
-                                pp[0].put(v1, pair(what, (byte)ii));
-                        }
+                s.pathsTo(new Predicate<Term>() {
+                    @Override
+                    public boolean test(Term v) {
+                        return true;
                     }
-                    return true;
+                }, new Predicate<Term>() {
+                    @Override
+                    public boolean test(Term v) {
+                        return true;
+                    }
+                }, new BiPredicate<ByteList, Term>() {
+                    @Override
+                    public boolean test(ByteList path, Term what) {
+
+                        //if (what.unneg().volume() > 1) { //dont remap any atomics
+                        if (!(what instanceof Variable)) { //dont remap variables
+                            if (path.size() >= pathMin) {
+                                if (pp[0] == null)
+                                    pp[0] = UnifiedSetMultimap.newMultimap();
+                                final Term v1 = shadow(s, path, f);
+                                if (!(v1 instanceof IdempotentBool))
+                                    pp[0].put(v1, pair(what, (byte) ii));
+                            }
+                        }
+                        return true;
+                    }
                 });
 
             }
@@ -176,7 +213,12 @@ public enum Factorize {
         if (p == null)
             return null;
 
-        final MutableList<Pair<Term, RichIterable<ObjectBytePair<Term>>>> r = p.keyMultiValuePairsView().select((pathwhat) -> pathwhat.getTwo().size() > 1).toSortedList(c);
+        final MutableList<Pair<Term, RichIterable<ObjectBytePair<Term>>>> r = p.keyMultiValuePairsView().select(new org.eclipse.collections.api.block.predicate.Predicate<Pair<Term, RichIterable<ObjectBytePair<Term>>>>() {
+            @Override
+            public boolean accept(Pair<Term, RichIterable<ObjectBytePair<Term>>> pathwhat) {
+                return pathwhat.getTwo().size() > 1;
+            }
+        }).toSortedList(c);
 
         if (r.isEmpty())
             return null;
@@ -189,9 +231,12 @@ public enum Factorize {
             if (!masked.contains(i)) {
                 t.add(x[(int) i]);
             }
-        final Term s = $.sete(rr.getTwo().collect((ob) -> {
-            final Term y = ob.getOne();
-            return y.op() == CONJ && y.dt() == DTERNAL ? SETe.the(y.subterms()) : y; //flatten
+        final Term s = $.sete(rr.getTwo().collect(new org.eclipse.collections.api.block.function.Function<ObjectBytePair<Term>, Term>() {
+            @Override
+            public Term valueOf(ObjectBytePair<Term> ob) {
+                final Term y = ob.getOne();
+                return y.op() == CONJ && y.dt() == DTERNAL ? SETe.the(y.subterms()) : y; //flatten
+            }
         }));
         if (s instanceof IdempotentBool)
             return null;
@@ -229,7 +274,12 @@ public enum Factorize {
             if (y.length == 0)
                 return x; //unchanged
 
-            if (Util.or(yy -> yy.hasAny(BOOL), y))
+            if (Util.or(new Predicate<Term>() {
+                @Override
+                public boolean test(Term yy) {
+                    return yy.hasAny(BOOL);
+                }
+            }, y))
                 return x; //something collapsed, maybe an interaction with a prior member application
 
             if (Util.sum(Term::volume, y) > volMax - 1)

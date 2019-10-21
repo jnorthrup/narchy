@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Function;
 
 
 public class ThreadLibrary extends PrologLib {
@@ -228,7 +229,12 @@ public class ThreadLibrary extends PrologLib {
 
 	public boolean createQueue(String name) {
 
-		queues.computeIfAbsent(name, (n) -> new TermQueue());
+		queues.computeIfAbsent(name, new Function<String, TermQueue>() {
+            @Override
+            public TermQueue apply(String n) {
+                return new TermQueue();
+            }
+        });
 
 		return true;
 	}
@@ -241,7 +247,12 @@ public class ThreadLibrary extends PrologLib {
 
 
 	public ReentrantLock createLock(String name) {
-		return locks.computeIfAbsent(name, (n) -> new ReentrantLock());
+		return locks.computeIfAbsent(name, new Function<String, ReentrantLock>() {
+            @Override
+            public ReentrantLock apply(String n) {
+                return new ReentrantLock();
+            }
+        });
 	}
 
 	public boolean destroyLock(String name) {

@@ -7,6 +7,7 @@ import spacegraph.space2d.widget.port.TypedPort;
 import spacegraph.space2d.widget.text.LabeledPane;
 
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 
 import static java.lang.Boolean.TRUE;
 
@@ -30,26 +31,29 @@ public class PulseChip extends Gridding {
         p = Float.NaN;
         loop = null;
         busy = new AtomicBoolean();
-        periodMS.on(x -> {
-            synchronized (this) {
+        periodMS.on(new Consumer<Integer>() {
+            @Override
+            public void accept(Integer x) {
+                synchronized (PulseChip.this) {
 
-                if (x instanceof Number) {
-                    p = ((Number) x).floatValue();
-                } else {
-                    p = Float.NaN;
+                    if (x instanceof Number) {
+                        p = ((Number) x).floatValue();
+                    } else {
+                        p = Float.NaN;
+                    }
+
+                    if (p > 0.5f) {
+                        if (loop == null)
+                            loop = Loop.of(PulseChip.this::tick);
+                        loop.setPeriodMS(Math.round(p));
+                    }
+
+                    if ((p != p || p < 0.5f)) {
+                        if (loop != null)
+                            loop.stop();
+                    }
+
                 }
-
-                if (p > 0.5f) {
-                    if (loop == null)
-                        loop = Loop.of(this::tick);
-                    loop.setPeriodMS(Math.round(p));
-                }
-
-                if ((p != p || p < 0.5f)) {
-                    if (loop != null)
-                        loop.stop();
-                }
-
             }
         });
     }

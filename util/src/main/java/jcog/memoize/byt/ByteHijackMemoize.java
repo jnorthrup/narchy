@@ -34,7 +34,12 @@ public class ByteHijackMemoize<X extends ByteKeyExternal,Y> extends HijackMemoiz
 
 
     public Huffman buildCodec() {
-        return buildCodec(new Huffman(bag.stream().map(b -> bag.key(b).array()),
+        return buildCodec(new Huffman(bag.stream().map(new Function<PriProxy<X, Y>, byte[]>() {
+            @Override
+            public byte[] apply(PriProxy<X, Y> b) {
+                return bag.key(b).array();
+            }
+        }),
                 Huffman.fastestCompDecompTime()));
     }
 

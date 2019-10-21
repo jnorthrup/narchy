@@ -97,9 +97,12 @@ public abstract class CircularBuffer {
         this.listener = listener;
     }
 
-    protected final Runnable _notifyListener = () -> {
-        if (listener != null)
-            listener.onChanged(CircularBuffer.this);
+    protected final Runnable _notifyListener = new Runnable() {
+        @Override
+        public void run() {
+            if (listener != null)
+                listener.onChanged(CircularBuffer.this);
+        }
     };
 
     public ReentrantLock getLock() {

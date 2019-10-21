@@ -20,7 +20,12 @@ import static org.junit.jupiter.api.Assertions.*;
 class DecisionTreeTrainingTest {
 
 
-    static final Function<JsonNode, @Nullable Function<String, Object>> jsonValue = (j) -> j::get;
+    static final Function<JsonNode, @Nullable Function<String, Object>> jsonValue = new Function<JsonNode, Function<String, Object>>() {
+        @Override
+        public Function<String, Object> apply(JsonNode j) {
+            return j::get;
+        }
+    };
     
 
     /**

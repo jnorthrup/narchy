@@ -117,7 +117,12 @@ public class SeriesBeliefTable extends DynamicTaskTable {
 			long finalEnd = sEnd - (long) marginCycles, finalStart = sStart + (long) marginCycles;
 			if (finalStart < finalEnd) {
 
-				Predicate<Task> cleaner = t -> absorbNonSignal(t, finalStart, finalEnd);
+				Predicate<Task> cleaner = new Predicate<Task>() {
+                    @Override
+                    public boolean test(Task t) {
+                        return SeriesBeliefTable.this.absorbNonSignal(t, finalStart, finalEnd);
+                    }
+                };
 
 				for (int i = 0, tablesSize = tables.size(); i < tablesSize; i++) {
 					TaskTable b = tables.get(i);

@@ -2,12 +2,15 @@ package jcog.exe;
 
 import jcog.exe.realtime.HashedWheelTimer;
 import jcog.exe.realtime.QueueWheelModel;
+import jcog.exe.realtime.TimedFuture;
 import org.jctools.queues.MpscArrayQueue;
 import org.slf4j.LoggerFactory;
 
+import java.util.Queue;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 
 
 /**
@@ -28,8 +31,12 @@ public enum Exe { ;
     private static final HashedWheelTimer timer = new HashedWheelTimer(
 
             new QueueWheelModel(64,
-                TimeUnit.MILLISECONDS.toNanos(/* 1 */ 4L /* 10 */ ), ()->
-                        new MpscArrayQueue<>(32)
+                TimeUnit.MILLISECONDS.toNanos(/* 1 */ 4L /* 10 */ ), new Supplier<Queue<TimedFuture>>() {
+                @Override
+                public Queue<TimedFuture> get() {
+                    return new MpscArrayQueue<>(32);
+                }
+            }
             ),
 
             HashedWheelTimer.WaitStrategy.SleepWait,
@@ -79,7 +86,12 @@ public enum Exe { ;
 //        }
 //    }
 
-    private static final ThreadLocal<Boolean> singleThreaded = ThreadLocal.withInitial(()->false);
+    private static final ThreadLocal<Boolean> singleThreaded = ThreadLocal.withInitial(new Supplier<Boolean>() {
+        @Override
+        public Boolean get() {
+            return false;
+        }
+    });
 
     /** if set, promises that the remainder of this thread executes in a single threaded context */
     public static void single() {

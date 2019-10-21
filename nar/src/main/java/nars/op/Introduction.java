@@ -8,7 +8,10 @@ import nars.derive.action.TaskTransformAction;
 import nars.task.TemporalTask;
 import nars.term.Term;
 import nars.term.atom.IdempotentBool;
+import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.function.BiFunction;
 
 public abstract class Introduction extends TaskTransformAction {
 
@@ -43,14 +46,17 @@ public abstract class Introduction extends TaskTransformAction {
 
     private static Task taskify(Task xt, Term x, Term y1, What w) {
         Task yy = Task.tryTask(y1, xt.punc(), xt.truth(),
-                (c, t) -> {
-                    if (c.equals(x)) //HACK normalization might cause this to become true although it is seemingly checked before Task.clone()
-                        return null;
+                new BiFunction<Term, Truth, TemporalTask>() {
+                    @Override
+                    public TemporalTask apply(Term c, Truth t) {
+                        if (c.equals(x)) //HACK normalization might cause this to become true although it is seemingly checked before Task.clone()
+                            return null;
 
-                    long now = w.time();
-                    return tasksUnevaluated() ?
-                            new TemporalTask.Unevaluated(c, xt, t, now) :
-                            new TemporalTask(c, xt, t, now);
+                        long now = w.time();
+                        return tasksUnevaluated() ?
+                                new TemporalTask.Unevaluated(c, xt, t, now) :
+                                new TemporalTask(c, xt, t, now);
+                    }
                 });
 
         if (yy != null) {

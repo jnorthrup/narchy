@@ -6,6 +6,7 @@ import spacegraph.video.Draw;
 import spacegraph.video.font.HersheyFont;
 
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 @FunctionalInterface
 public interface LabelRenderer extends BiConsumer<VectorLabel, GL2> {
@@ -13,31 +14,42 @@ public interface LabelRenderer extends BiConsumer<VectorLabel, GL2> {
     /**
      * hershey vector font renderer
      */
-    LabelRenderer Hershey = (label, gl2) -> Draw.bounds(label.bounds, gl2, (gl) -> {
+    LabelRenderer Hershey = new LabelRenderer() {
+        @Override
+        public void accept(VectorLabel label, GL2 gl2) {
+            Draw.bounds(label.bounds, gl2, new Consumer<GL2>() {
+                @Override
+                public void accept(GL2 gl) {
 
-        label.fgColor.apply(gl);
-        gl.glLineWidth(label.textThickness);
+                    label.fgColor.apply(gl);
+                    gl.glLineWidth(label.textThickness);
 
-        HersheyFont.hersheyText(gl, label.text, label.textScaleX, label.textScaleY, (float) 0, label.textY, (float) 0, Draw.TextAlignment.Left);
-    });
+                    HersheyFont.hersheyText(gl, label.text, label.textScaleX, label.textScaleY, (float) 0, label.textY, (float) 0, Draw.TextAlignment.Left);
+                }
+            });
+        }
+    };
 
 
     /** draws a filled box only, useful for LOD cases */
-    LabelRenderer LineBox = (label, gl) -> {
+    LabelRenderer LineBox = new LabelRenderer() {
+        @Override
+        public void accept(VectorLabel label, GL2 gl) {
 
-        label.fgColor.apply(gl);
-        //gl.glLineWidth(0.5f);
-        RectFloat b = label.bounds;
-        float x = b.x;
-        float y = b.y;
-        float W = b.w;
-        float H = b.h;
-        float w = W * label.textScaleX * (float) label.text.length();
-        float h = H * label.textScaleY;
-        float wm = (W - w) / 2.0F;
-        float hm = (H - h) / 2.0F;
-        Draw.rect(x + wm, y + hm, w, h, gl);
+            label.fgColor.apply(gl);
+            //gl.glLineWidth(0.5f);
+            RectFloat b = label.bounds;
+            float x = b.x;
+            float y = b.y;
+            float W = b.w;
+            float H = b.h;
+            float w = W * label.textScaleX * (float) label.text.length();
+            float h = H * label.textScaleY;
+            float wm = (W - w) / 2.0F;
+            float hm = (H - h) / 2.0F;
+            Draw.rect(x + wm, y + hm, w, h, gl);
 
+        }
     };
 
 //    /** TODO not ready */

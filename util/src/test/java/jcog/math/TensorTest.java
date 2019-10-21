@@ -3,6 +3,7 @@ package jcog.math;
 import jcog.signal.Tensor;
 import jcog.signal.tensor.ArrayTensor;
 import jcog.signal.tensor.TensorChain;
+import org.eclipse.collections.api.block.procedure.primitive.IntFloatProcedure;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -35,7 +36,12 @@ class TensorTest {
         assertEquals(3, t.index(1, 1));
 
         String[] s = {""};
-        t.forEach((i,v)-> s[0] +=v+ " ");
+        t.forEach(new IntFloatProcedure() {
+            @Override
+            public void value(int i, float v) {
+                s[0] += v + " ";
+            }
+        });
         assertEquals("[0.5 0.25 0.0 0.5 ]", Arrays.toString(s));
 
 
@@ -65,7 +71,12 @@ class TensorTest {
         assertEquals(1, ab.shape().length);
         assertEquals(6, ab.shape()[0]);
 
-        String[] s = {""}; ab.forEach((i,v)-> s[0] +=v+ " ");
+        String[] s = {""}; ab.forEach(new IntFloatProcedure() {
+            @Override
+            public void value(int i, float v) {
+                s[0] += v + " ";
+            }
+        });
         assertEquals("[0.0 0.0 1.0 0.0 2.0 0.0 ]", Arrays.toString(s));
 
     }

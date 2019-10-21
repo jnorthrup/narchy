@@ -6,6 +6,7 @@ import nars.Task;
 import nars.concept.Concept;
 import nars.control.NARPart;
 import nars.table.TaskTable;
+import org.eclipse.collections.api.block.predicate.primitive.FloatPredicate;
 import org.eclipse.collections.impl.list.mutable.primitive.FloatArrayList;
 
 import java.util.function.Consumer;
@@ -41,15 +42,35 @@ public class BeliefContradictionDetector extends NARPart implements Consumer<Tas
         int n = table.taskCount();
         if (n > 1) {
             FloatArrayList h = new FloatArrayList(n);
-            table.forEachTask(t -> h.add(t.freq()));
-            if (h.count(x -> x < 0.5f) > 0 && h.count(x -> x > 0.5f) > 0) {
+            table.forEachTask(new Consumer<Task>() {
+                @Override
+                public void accept(Task t) {
+                    h.add(t.freq());
+                }
+            });
+            if (h.count(new FloatPredicate() {
+                @Override
+                public boolean accept(float x) {
+                    return x < 0.5f;
+                }
+            }) > 0 && h.count(new FloatPredicate() {
+                @Override
+                public boolean accept(float x) {
+                    return x > 0.5f;
+                }
+            }) > 0) {
                 print(table);
             }
         }
     }
 
     private static void print(TaskTable table) {
-        table.forEachTask(t -> System.out.println(t.proof()));
+        table.forEachTask(new Consumer<Task>() {
+            @Override
+            public void accept(Task t) {
+                System.out.println(t.proof());
+            }
+        });
     }
 
 }

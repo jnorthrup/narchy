@@ -6,6 +6,8 @@ import jcog.util.ArrayUtil;
 import nars.Task;
 import nars.control.op.Remember;
 import nars.task.util.Answer;
+import org.eclipse.collections.api.block.predicate.Predicate;
+import org.eclipse.collections.api.block.procedure.Procedure;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
@@ -212,7 +214,12 @@ public class BeliefTables extends FasterList<BeliefTable> implements BeliefTable
 
     @Override
     public final boolean removeTask(Task x, boolean delete) {
-        return count(t -> t.removeTask(x, delete)) > 0;
+        return count(new Predicate<BeliefTable>() {
+            @Override
+            public boolean accept(BeliefTable t) {
+                return t.removeTask(x, delete);
+            }
+        }) > 0;
     }
 
     @Override
@@ -239,7 +246,12 @@ public class BeliefTables extends FasterList<BeliefTable> implements BeliefTable
 
     @Override
     public void forEachTask(long minT, long maxT, Consumer<? super Task> x) {
-        forEach(t -> t.forEachTask(minT, maxT, x));
+        forEach(new Procedure<BeliefTable>() {
+            @Override
+            public void value(BeliefTable t) {
+                t.forEachTask(minT, maxT, x);
+            }
+        });
     }
 
     @Override

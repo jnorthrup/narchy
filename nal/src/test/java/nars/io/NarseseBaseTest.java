@@ -14,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 import static nars.$.$$;
 import static nars.Op.FRAG;
@@ -335,7 +336,12 @@ class NarseseBaseTest extends NarseseTest {
         Term abcd = term("((a,b) --> (c,d))");
         Term ABCD = term("<(*,a,b) --> (*,c,d)>");
         assertEquals(Op.INH, x.op());
-        assertEquals(abcd, ABCD, () -> abcd + " != " + ABCD);
+        assertEquals(abcd, ABCD, new Supplier<String>() {
+            @Override
+            public String get() {
+                return abcd + " != " + ABCD;
+            }
+        });
     }
 
     private @NotNull

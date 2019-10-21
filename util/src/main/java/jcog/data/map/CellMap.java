@@ -99,17 +99,33 @@ public class CellMap<K, V> {
     }
 
     public CacheCell<K, V> compute(K key, BiFunction<K, V, V> builder) {
-        CacheCell<K, V> entry = map.computeIfAbsent(key, k -> cellPool.get());
+        CacheCell<K, V> entry = map.computeIfAbsent(key, new Function<K, CacheCell<K, V>>() {
+            @Override
+            public CacheCell<K, V> apply(K k) {
+                return cellPool.get();
+            }
+        });
         entry.update(key, builder);
         return update(key, entry, entry.key!=null);
     }
 
     public CacheCell<K, V> compute(K key, UnaryOperator<V> builder) {
-        return compute(key, (z, w)->builder.apply(w));
+        return compute(key, new BiFunction<K, V, V>() {
+            @Override
+            public V apply(K z, V w) {
+                return builder.apply(w);
+            }
+        });
     }
 
     public CacheCell<K, V> computeIfAbsent(K key, Function<K, V> builder) {
-        return compute(key, (z, w) -> { if (w==null) return builder.apply(z); else return w; } );
+        return compute(key, new BiFunction<K, V, V>() {
+            @Override
+            public V apply(K z, V w) {
+                if (w == null) return builder.apply(z);
+                else return w;
+            }
+        });
     }
 
 
@@ -161,9 +177,12 @@ public class CellMap<K, V> {
     }
 
     public void clear() {
-        map.removeIf(e -> {
-            removed(e);
-            return true;
+        map.removeIf(new Predicate<CacheCell<K, V>>() {
+            @Override
+            public boolean test(CacheCell<K, V> e) {
+                CellMap.this.removed(e);
+                return true;
+            }
         });
     }
 
@@ -176,19 +195,39 @@ public class CellMap<K, V> {
     public @Nullable K first(Predicate v) {
         for (CacheCell<K, V> kvCacheCell : map.valueArray()) {
             if (v.test(kvCacheCell.value)) {
-                return Optional.of(kvCacheCell).map(c -> c.key).orElse(null);
+                return Optional.of(kvCacheCell).map(new Function<CacheCell<K, V>, K>() {
+                    @Override
+                    public K apply(CacheCell<K, V> c) {
+                        return c.key;
+                    }
+                }).orElse(null);
             }
         }
-        return Optional.<CacheCell<K, V>>empty().map(c -> c.key).orElse(null);
+        return Optional.<CacheCell<K, V>>empty().map(new Function<CacheCell<K, V>, K>() {
+            @Override
+            public K apply(CacheCell<K, V> c) {
+                return c.key;
+            }
+        }).orElse(null);
     }
 
     public @Nullable K firstByIdentity(V x) {
         for (CacheCell<K, V> kvCacheCell : map.valueArray()) {
             if (kvCacheCell.value == x) {
-                return Optional.of(kvCacheCell).map(c -> c.key).orElse(null);
+                return Optional.of(kvCacheCell).map(new Function<CacheCell<K, V>, K>() {
+                    @Override
+                    public K apply(CacheCell<K, V> c) {
+                        return c.key;
+                    }
+                }).orElse(null);
             }
         }
-        return Optional.<CacheCell<K, V>>empty().map(c -> c.key).orElse(null);
+        return Optional.<CacheCell<K, V>>empty().map(new Function<CacheCell<K, V>, K>() {
+            @Override
+            public K apply(CacheCell<K, V> c) {
+                return c.key;
+            }
+        }).orElse(null);
     }
 
     /**
@@ -214,7 +253,12 @@ public class CellMap<K, V> {
 
 
         public final void update(K nextKey, UnaryOperator<V> update) {
-            update(nextKey, (k, v) -> update.apply(v));
+            update(nextKey, new BiFunction<K, V, V>() {
+                @Override
+                public V apply(K k, V v) {
+                    return update.apply(v);
+                }
+            });
         }
 
 

@@ -8,7 +8,10 @@ import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.hud.Hover;
 import spacegraph.space2d.hud.HoverModel;
 import spacegraph.space2d.widget.button.AbstractButton;
+import spacegraph.space2d.widget.text.AbstractLabel;
 import spacegraph.space2d.widget.text.BitmapLabel;
+
+import java.util.function.Function;
 
 /** hover / tooltip tests */
 public class HoverTest {
@@ -32,8 +35,12 @@ public class HoverTest {
 
         public HoverButton(String label, HoverModel m) {
             super();
-            this.hover = new Hover<>(this, b ->
-                    new BitmapLabel("yes").backgroundColor(0.9f, 0.5f, 0f, 0.5f)
+            this.hover = new Hover<>(this, new Function<HoverButton, AbstractLabel>() {
+                @Override
+                public AbstractLabel apply(HoverButton b) {
+                    return new BitmapLabel("yes").backgroundColor(0.9f, 0.5f, 0f, 0.5f);
+                }
+            }
                     , m);
         }
 

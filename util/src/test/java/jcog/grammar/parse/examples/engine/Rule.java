@@ -8,6 +8,7 @@ package jcog.grammar.parse.examples.engine;
  * including the implied warranty of merchantability.
  */
 
+import java.util.function.IntPredicate;
 import java.util.stream.IntStream;
 
 /**
@@ -82,7 +83,12 @@ public class Rule implements Axiom {
 			Rule r = (Rule) o;
 			if (structures.length == r.structures.length) {
 				int bound = structures.length;
-				boolean b = IntStream.range(0, bound).allMatch(i -> structures[i].equals(r.structures[i]));
+				boolean b = IntStream.range(0, bound).allMatch(new IntPredicate() {
+                    @Override
+                    public boolean test(int i) {
+                        return structures[i].equals(r.structures[i]);
+                    }
+                });
 				result = b;
             }
 		}

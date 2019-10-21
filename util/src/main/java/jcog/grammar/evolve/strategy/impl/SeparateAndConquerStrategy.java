@@ -41,17 +41,20 @@ import java.util.*;
  */
 public class SeparateAndConquerStrategy extends DiversityElitarismStrategy{
 
-    public static final Comparator<Ranking> comparator = (o1, o2) -> {
-        double[] fitness1 = o1.getFitness();
-        double[] fitness2 = o2.getFitness();
-        int compare = 0;
-        for (int i = 0; i < fitness1.length; i++) {
-            compare = Double.compare(fitness1[i], fitness2[i]);
-            if (compare != 0) {
-                return compare;
+    public static final Comparator<Ranking> comparator = new Comparator<Ranking>() {
+        @Override
+        public int compare(Ranking o1, Ranking o2) {
+            double[] fitness1 = o1.getFitness();
+            double[] fitness2 = o2.getFitness();
+            int compare = 0;
+            for (int i = 0; i < fitness1.length; i++) {
+                compare = Double.compare(fitness1[i], fitness2[i]);
+                if (compare != 0) {
+                    return compare;
+                }
             }
+            return -o1.getDescription().compareTo(o2.getDescription());
         }
-        return -o1.getDescription().compareTo(o2.getDescription());
     };
     private boolean convertToUnmatch = true;
     private boolean isFlagging = false;

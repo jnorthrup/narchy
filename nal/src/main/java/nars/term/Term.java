@@ -195,7 +195,12 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
      * convenience, do not override (except in Atomic)
      */
     default   boolean recurseTermsOrdered(Predicate<Term> whileTrue) {
-        return recurseTermsOrdered(x->true, whileTrue, null);
+        return recurseTermsOrdered(new Predicate<Term>() {
+            @Override
+            public boolean test(Term x) {
+                return true;
+            }
+        }, whileTrue, null);
     }
 
     /**
@@ -212,9 +217,17 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
      * convenience, do not override (except in Atomic)
      */
     default void recurseTerms(BiConsumer<Term, Compound> each) {
-        recurseTerms(x -> true, (sub, sup) -> {
-            each.accept(sub, sup);
-            return true;
+        recurseTerms(new Predicate<Compound>() {
+            @Override
+            public boolean test(Compound x) {
+                return true;
+            }
+        }, new BiPredicate<Term, Compound>() {
+            @Override
+            public boolean test(Term sub, Compound sup) {
+                each.accept(sub, sup);
+                return true;
+            }
         }, null);
     }
 
@@ -222,9 +235,17 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
      * convenience, do not override (except in Atomic)
      */
     default void recurseTerms(Consumer<Term> each) {
-        recurseTerms(a -> true, (sub) -> {
-            each.accept(sub);
-            return true;
+        recurseTerms(new Predicate<Term>() {
+            @Override
+            public boolean test(Term a) {
+                return true;
+            }
+        }, new Predicate<Term>() {
+            @Override
+            public boolean test(Term sub) {
+                each.accept(sub);
+                return true;
+            }
         }, null);
     }
 
@@ -271,7 +292,12 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
     }
 
     default boolean pathsTo(Predicate<Term> selector, Predicate<Term> descendIf, BiPredicate<ByteList, Term> receiver) {
-        return pathsTo((UnaryOperator<Term>) (x) -> selector.test(x) ? x : null, descendIf, receiver);
+        return pathsTo(new UnaryOperator<Term>() {
+            @Override
+            public Term apply(Term x) {
+                return selector.test(x) ? x : null;
+            }
+        }, descendIf, receiver);
     }
 
 
@@ -420,9 +446,12 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
      */
     default int subTimeFirst(Term x) {
         int[] time = { DTERNAL };
-        subTimesWhile(x, (w) -> {
-            time[0] = w; //got it
-            return false; //stop
+        subTimesWhile(x, new IntPredicate() {
+            @Override
+            public boolean test(int w) {
+                time[0] = w; //got it
+                return false; //stop
+            }
         });
         return time[0];
     }
@@ -433,9 +462,12 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
      */
     default int subTimeLast(Term x) {
         int[] time = { DTERNAL };
-        subTimesWhile(x, (w) -> {
-            time[0] = Math.max(time[0], w); //got it
-            return true; //keep going
+        subTimesWhile(x, new IntPredicate() {
+            @Override
+            public boolean test(int w) {
+                time[0] = Math.max(time[0], w); //got it
+                return true; //keep going
+            }
         });
         return time[0];
     }
@@ -452,20 +484,23 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
         if (op() == CONJ) {
             if (Conj.isSeq(this)) {
 //                final int[] hits = {0};
-                eventsAND((when, what) -> {
-                    if (what.equals(match)) {
+                eventsAND(new LongObjectPredicate<Term>() {
+                    @Override
+                    public boolean accept(long when, Term what) {
+                        if (what.equals(match)) {
 //                        hits[0]++;
-                        return each.test(Tense.occToDT(when));
-                    } else {
-                        if (Term.this != what && what.op() == CONJ) { //HACK unwrap this better to avoid unnecessary recursion
-                            int subWhen = what.subTimeFirst(match);
-                            if (subWhen != DTERNAL) {
+                            return each.test(Tense.occToDT(when));
+                        } else {
+                            if (Term.this != what && what.op() == CONJ) { //HACK unwrap this better to avoid unnecessary recursion
+                                int subWhen = what.subTimeFirst(match);
+                                if (subWhen != DTERNAL) {
 //                                hits[0]++;
-                                return each.test(Tense.occToDT(when + (long) subWhen));
+                                    return each.test(Tense.occToDT(when + (long) subWhen));
+                                }
                             }
                         }
+                        return true;
                     }
-                    return true;
                 }, 0L, match.op()!=CONJ || match.dt()!=DTERNAL, true);
                 return true;
             } else {
@@ -488,14 +523,24 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
     default boolean pathsTo(Term target, BiPredicate<ByteList, Term> receiver) {
         return pathsTo(
                 target::equals,
-                x -> !x.impossibleSubTerm(target),
+                new Predicate<Term>() {
+                    @Override
+                    public boolean test(Term x) {
+                        return !x.impossibleSubTerm(target);
+                    }
+                },
                 receiver);
     }
 
     default boolean pathsTo(Term target, Predicate<Term> superTermFilter, BiPredicate<ByteList, Term> receiver) {
         return pathsTo(
                 target::equals,
-                x -> superTermFilter.test(x) && !x.impossibleSubTerm(target),
+                new Predicate<Term>() {
+                    @Override
+                    public boolean test(Term x) {
+                        return superTermFilter.test(x) && !x.impossibleSubTerm(target);
+                    }
+                },
                 receiver);
     }
 
@@ -658,10 +703,13 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
     default SortedSet<Term> eventSet() {
         assert (op() == CONJ);
         MetalTreeSet<Term> s = new MetalTreeSet();
-        eventsAND((when, what) -> {
-            if (what != Term.this)
-                s.add(what);
-            return true;
+        eventsAND(new LongObjectPredicate<Term>() {
+            @Override
+            public boolean accept(long when, Term what) {
+                if (what != Term.this)
+                    s.add(what);
+                return true;
+            }
         }, 0L, true, true);
         return s;
     }

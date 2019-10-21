@@ -50,10 +50,14 @@ public class Minimal1 implements World {
         final int duration = 9000000;
         final double freq = 0.5;
         
-        new Thread(() -> {
-            try {
-                new Simulation(r, new Minimal1(duration, freq));
-            } catch (Exception ex) {                }
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    new Simulation(r, new Minimal1(duration, freq));
+                } catch (Exception ex) {
+                }
+            }
         }).start();
         /*
         new Thread(new Runnable() {

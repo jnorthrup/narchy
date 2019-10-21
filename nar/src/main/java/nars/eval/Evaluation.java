@@ -270,14 +270,17 @@ public class Evaluation extends Termerator {
 
 	public static Term solveFirst(Term x, Function<Atom, Functor> axioms) {
         Term[] y = new Term[1];
-		Evaluation.eval(x, true, true, (what) -> {
-			if (what instanceof IdempotentBool) {
-				if (y[0] != null)
-					return true; //ignore and continue try to find a non-bool solution
-			}
-			y[0] = what;
-			return false;
-		}, axioms);
+		Evaluation.eval(x, true, true, new Predicate<Term>() {
+            @Override
+            public boolean test(Term what) {
+                if (what instanceof IdempotentBool) {
+                    if (y[0] != null)
+                        return true; //ignore and continue try to find a non-bool solution
+                }
+                y[0] = what;
+                return false;
+            }
+        }, axioms);
 		return y[0];
 	}
 
@@ -300,11 +303,14 @@ public class Evaluation extends Termerator {
 
         UnifiedSet<Term> ee = new UnifiedSet<Term>(0);
 
-		Evaluation.eval(x, includeTrues, includeFalses, t -> {
-			if (t != Null)
-				ee.add(t);
-			return true;
-		}, resolver);
+		Evaluation.eval(x, includeTrues, includeFalses, new Predicate<Term>() {
+            @Override
+            public boolean test(Term t) {
+                if (t != Null)
+                    ee.add(t);
+                return true;
+            }
+        }, resolver);
 
 		return ee.isEmpty() ? Set.of() : ee;
 		//java.util.Set.of($.func(Inperience.wonder, x))
@@ -313,11 +319,14 @@ public class Evaluation extends Termerator {
 
         UnifiedSet ee = new UnifiedSet(0, 0.5f);
 
-		Evaluation.eval(x, includeTrues, includeFalses, e, t -> {
-			if (t != Null)
-				ee.add(t);
-			return true;
-		});
+		Evaluation.eval(x, includeTrues, includeFalses, e, new Predicate<Term>() {
+            @Override
+            public boolean test(Term t) {
+                if (t != Null)
+                    ee.add(t);
+                return true;
+            }
+        });
 
 		return ee.isEmpty() ? Set.of() : ee;
 	}

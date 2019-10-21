@@ -33,6 +33,9 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.*;
+import java.util.function.Function;
+import java.util.function.IntPredicate;
+import java.util.function.Supplier;
 import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -58,7 +61,12 @@ class RTree2DTest {
         Double2D[] result = new Double2D[10];
 
         int n = pTree.containedToArray(rect, result);
-        assertEquals(7, n, ()->Arrays.toString(result));
+        assertEquals(7, n, new Supplier<String>() {
+            @Override
+            public String get() {
+                return Arrays.toString(result);
+            }
+        });
 
         for(int i=0; i<n; i++) {
             assertTrue(result[i].x >= 2);
@@ -88,12 +96,22 @@ class RTree2DTest {
 
             rTree.intersectsWhile(searchRect, results::add);
             int bound = results.size();
-            long count = IntStream.range(0, bound).filter(i1 -> results.get(i1) != null).count();
+            long count = IntStream.range(0, bound).filter(new IntPredicate() {
+                @Override
+                public boolean test(int i1) {
+                    return results.get(i1) != null;
+                }
+            }).count();
             int resultCount = (int) count;
 
             final int expectedCount = 9;
             
-            assertEquals(expectedCount, resultCount, () -> "[" + type + "] Search returned incorrect number of rectangles - expected: " + expectedCount + " actual: " + resultCount);
+            assertEquals(expectedCount, resultCount, new Supplier<String>() {
+                @Override
+                public String get() {
+                    return "[" + type + "] Search returned incorrect number of rectangles - expected: " + expectedCount + " actual: " + resultCount;
+                }
+            });
 
             Collections.sort(results);
 
@@ -129,14 +147,29 @@ class RTree2DTest {
             RectDouble[] results = new RectDouble[entryCount];
 
             int foundCount = rTree.containedToArray(searchRect, results);
-            long count = IntStream.range(0, results.length).filter(i -> results[i] != null).count();
+            long count = IntStream.range(0, results.length).filter(new IntPredicate() {
+                @Override
+                public boolean test(int i) {
+                    return results[i] != null;
+                }
+            }).count();
             int resultCount = (int) count;
 
             final int expectedCount = entryCount;
             assertTrue(Math.abs(expectedCount - foundCount) < 10,
-                    () -> "[" + type + "] Search returned incorrect search result count - expected: " + expectedCount + " actual: " + foundCount /* in case of duplicates */);
+                    new Supplier<String>() {
+                        @Override
+                        public String get() {
+                            return "[" + type + "] Search returned incorrect search result count - expected: " + expectedCount + " actual: " + foundCount;
+                        }
+                    } /* in case of duplicates */);
             assertTrue(Math.abs(expectedCount - resultCount) < 10,
-                    () -> "[" + type + "] Search returned incorrect search result count - expected: " + expectedCount + " actual: " + foundCount /* in case of duplicates */);
+                    new Supplier<String>() {
+                        @Override
+                        public String get() {
+                            return "[" + type + "] Search returned incorrect search result count - expected: " + expectedCount + " actual: " + foundCount;
+                        }
+                    } /* in case of duplicates */);
 
         }
     }
@@ -415,9 +448,19 @@ class RTree2DTest {
      * @return tree
      */
     public static RTree<RectDouble> createRect2DTree(int maxM, Spatialization.DefaultSplits splitType) {
-        return new RTree<>((r->r), maxM, splitType.get());
+        return new RTree<>((new Function<RectDouble, HyperRegion>() {
+            @Override
+            public HyperRegion apply(RectDouble r) {
+                return r;
+            }
+        }), maxM, splitType.get());
     }
     public static RTree<HyperRectFloat> createRectNDTree(int maxM, Spatialization.DefaultSplits splitType) {
-        return new RTree<>((r->r), maxM, splitType.get());
+        return new RTree<>((new Function<HyperRectFloat, HyperRegion>() {
+            @Override
+            public HyperRegion apply(HyperRectFloat r) {
+                return r;
+            }
+        }), maxM, splitType.get());
     }
 }

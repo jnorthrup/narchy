@@ -25,6 +25,7 @@ import jcog.grammar.evolve.selections.Selection;
 import jcog.grammar.evolve.tree.Node;
 import jcog.grammar.evolve.utils.UniqueList;
 import jcog.grammar.evolve.utils.Utils;
+import org.eclipse.collections.api.block.procedure.Procedure2;
 import org.eclipse.collections.api.map.MutableMap;
 import org.eclipse.collections.api.tuple.Twin;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
@@ -145,9 +146,12 @@ public class DiversityElitarismStrategy extends DefaultStrategy{
 
         Set<Ranking> rankings = this.rankings;
         rankings.clear();
-        remaining.forEachKeyValue( (n,f) -> {
-            rankings.add(new Ranking(n,f));
-            pp.add(n);
+        remaining.forEachKeyValue(new Procedure2<Node, double[]>() {
+            @Override
+            public void value(Node n, double[] f) {
+                rankings.add(new Ranking(n, f));
+                pp.add(n);
+            }
         });
 
     }   

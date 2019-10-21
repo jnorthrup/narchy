@@ -8,6 +8,7 @@ import org.ejml.data.DMatrixRBlock;
 import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.ToDoubleFunction;
 
 
 public enum MatrixOps { ;
@@ -773,14 +774,17 @@ public enum MatrixOps { ;
 
 		int cols = matrix[0].length;
 		int rows = matrix.length;
-		double sum = Arrays.stream(matrix).mapToDouble(aMatrix -> {
-			double result = 0.0;
-			for (int i = 0; i < cols; i++) {
-				double v = aMatrix[i];
-				result += v;
-			}
-			return result;
-		}).sum();
+		double sum = Arrays.stream(matrix).mapToDouble(new ToDoubleFunction<double[]>() {
+            @Override
+            public double applyAsDouble(double[] aMatrix) {
+                double result = 0.0;
+                for (int i = 0; i < cols; i++) {
+                    double v = aMatrix[i];
+                    result += v;
+                }
+                return result;
+            }
+        }).sum();
 
 
 		return sum;
@@ -1225,14 +1229,17 @@ public enum MatrixOps { ;
 
 		int N = matrix.length * matrix[0].length;
 
-		double total = Arrays.stream(matrix).mapToDouble(aMatrix -> {
-			double sum = 0.0;
-			for (double x : aMatrix) {
-				double v = (x - m) * (x - m);
-				sum += v;
-			}
-			return sum;
-		}).sum();
+		double total = Arrays.stream(matrix).mapToDouble(new ToDoubleFunction<double[]>() {
+            @Override
+            public double applyAsDouble(double[] aMatrix) {
+                double sum = 0.0;
+                for (double x : aMatrix) {
+                    double v = (x - m) * (x - m);
+                    sum += v;
+                }
+                return sum;
+            }
+        }).sum();
 
         return Math.sqrt(total / (double) (N - 1));
 	}

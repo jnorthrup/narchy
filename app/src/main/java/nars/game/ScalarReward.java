@@ -1,6 +1,7 @@
 package nars.game;
 
 import com.google.common.collect.Iterators;
+import jcog.math.FloatSupplier;
 import nars.NAL;
 import nars.NAR;
 import nars.Task;
@@ -255,7 +256,12 @@ public abstract class ScalarReward extends Reward {
 
         why = in.why.why;
 
-        concept = new ScalarSignal(id, () -> reward, why, pri, g.nar);
+        concept = new ScalarSignal(id, new FloatSupplier() {
+            @Override
+            public float asFloat() {
+                return reward;
+            }
+        }, why, pri, g.nar);
 //        if (!concept.pri.equals(attn))
 //            nar().control.input(concept.pri, attn);
     }

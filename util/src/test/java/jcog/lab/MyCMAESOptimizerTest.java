@@ -14,6 +14,9 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Random;
+import java.util.function.DoubleUnaryOperator;
+import java.util.function.IntToDoubleFunction;
+import java.util.function.Supplier;
 import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -274,10 +277,13 @@ class MyCMAESOptimizerTest {
 		MyCMAESOptimizer optimizer
 			= new MyCMAESOptimizer(30000, 0, true, 10,
 			0, rng(), false, null, 5, sigma);
-		MultivariateFunction fitnessFunction = parameters -> {
-            final double target = 1;
-            double error = target - parameters[0];
-            return error * error;
+		MultivariateFunction fitnessFunction = new MultivariateFunction() {
+            @Override
+            public double value(double[] parameters) {
+                final double target = 1;
+                double error = target - parameters[0];
+                return error * error;
+            }
         };
 
 		double[] start = {0};
@@ -289,7 +295,12 @@ class MyCMAESOptimizerTest {
 			new InitialGuess(start),
 			new SimpleBounds(lower, upper)).getPoint();
 		assertTrue(
-			result[0] <= upper[0], () -> "Out of bounds (" + result[0] + " > " + upper[0] + ')');
+			result[0] <= upper[0], new Supplier<String>() {
+                    @Override
+                    public String get() {
+                        return "Out of bounds (" + result[0] + " > " + upper[0] + ')';
+                    }
+                });
 	}
 
 	/**
@@ -302,10 +313,13 @@ class MyCMAESOptimizerTest {
 		MyCMAESOptimizer optimizer
 			= new MyCMAESOptimizer(30000, 0, true, 10,
 			0, rng(), false, null, 5, sigma1);
-		MultivariateFunction fitnessFunction = parameters -> {
-            final double target = 11.1;
-            double error = target - parameters[0];
-            return error * error;
+		MultivariateFunction fitnessFunction = new MultivariateFunction() {
+            @Override
+            public double value(double[] parameters) {
+                final double target = 11.1;
+                double error = target - parameters[0];
+                return error * error;
+            }
         };
 
 		double[] start = {1};
@@ -430,7 +444,12 @@ class MyCMAESOptimizerTest {
 
 		@Override
 		public double value(double[] x) {
-			double f = Arrays.stream(x).map(v -> v * v).sum();
+			double f = Arrays.stream(x).map(new DoubleUnaryOperator() {
+                @Override
+                public double applyAsDouble(double v) {
+                    return v * v;
+                }
+            }).sum();
 			return f;
 		}
 	}
@@ -449,7 +468,12 @@ class MyCMAESOptimizerTest {
 		@Override
 		public double value(double[] x) {
 			double f = x[0] * x[0];
-			double sum = IntStream.range(1, x.length).mapToDouble(i -> factor * x[i] * x[i]).sum();
+			double sum = IntStream.range(1, x.length).mapToDouble(new IntToDoubleFunction() {
+                @Override
+                public double applyAsDouble(int i) {
+                    return factor * x[i] * x[i];
+                }
+            }).sum();
 			f += sum;
 			return f;
 		}
@@ -469,7 +493,12 @@ class MyCMAESOptimizerTest {
 		@Override
 		public double value(double[] x) {
 			double f = factor * x[0] * x[0];
-			double sum = IntStream.range(1, x.length).mapToDouble(i -> x[i] * x[i]).sum();
+			double sum = IntStream.range(1, x.length).mapToDouble(new IntToDoubleFunction() {
+                @Override
+                public double applyAsDouble(int i) {
+                    return x[i] * x[i];
+                }
+            }).sum();
 			f += sum;
 			return f;
 		}
@@ -490,7 +519,12 @@ class MyCMAESOptimizerTest {
 		public double value(double[] x) {
 			int end = x.length - 1;
 			double f = x[0] * x[0] / factor + factor * x[end] * x[end];
-			double sum = IntStream.range(1, end).mapToDouble(i -> x[i] * x[i]).sum();
+			double sum = IntStream.range(1, end).mapToDouble(new IntToDoubleFunction() {
+                @Override
+                public double applyAsDouble(int i) {
+                    return x[i] * x[i];
+                }
+            }).sum();
 			f += sum;
 			return f;
 		}
@@ -510,7 +544,12 @@ class MyCMAESOptimizerTest {
 
 		@Override
 		public double value(double[] x) {
-			double f = IntStream.range(0, x.length).mapToDouble(i -> (i < x.length / 2 ? factor : 1) * x[i] * x[i]).sum();
+			double f = IntStream.range(0, x.length).mapToDouble(new IntToDoubleFunction() {
+                @Override
+                public double applyAsDouble(int i) {
+                    return (i < x.length / 2 ? factor : 1) * x[i] * x[i];
+                }
+            }).sum();
 			return f;
 		}
 	}
@@ -552,7 +591,12 @@ class MyCMAESOptimizerTest {
 
 		@Override
 		public double value(double[] x) {
-			double f = IntStream.range(0, x.length).mapToDouble(i -> FastMath.pow(factor, i / (x.length - 1.)) * x[i] * x[i]).sum();
+			double f = IntStream.range(0, x.length).mapToDouble(new IntToDoubleFunction() {
+                @Override
+                public double applyAsDouble(int i) {
+                    return FastMath.pow(factor, i / (x.length - 1.)) * x[i] * x[i];
+                }
+            }).sum();
 			return f;
 		}
 	}
@@ -569,8 +613,13 @@ class MyCMAESOptimizerTest {
 
 		@Override
 		public double value(double[] x) {
-			double f = IntStream.range(0, x.length).mapToDouble(i -> FastMath.pow(FastMath.abs(x[i]), 2. + 10 * (double) i
-					/ (x.length - 1.))).sum();
+			double f = IntStream.range(0, x.length).mapToDouble(new IntToDoubleFunction() {
+                @Override
+                public double applyAsDouble(int i) {
+                    return FastMath.pow(FastMath.abs(x[i]), 2. + 10 * (double) i
+                            / (x.length - 1.));
+                }
+            }).sum();
 			return f;
 		}
 	}
@@ -589,8 +638,13 @@ class MyCMAESOptimizerTest {
 		@Override
 		public double value(double[] x) {
             int bound = x.length - 1;
-            double f = IntStream.range(0, bound).mapToDouble(i -> 1e2 * (x[i] * x[i] - x[i + 1]) * (x[i] * x[i] - x[i + 1])
-                    + (x[i] - 1.) * (x[i] - 1.)).sum();
+            double f = IntStream.range(0, bound).mapToDouble(new IntToDoubleFunction() {
+                @Override
+                public double applyAsDouble(int i) {
+                    return 1e2 * (x[i] * x[i] - x[i + 1]) * (x[i] * x[i] - x[i + 1])
+                            + (x[i] - 1.) * (x[i] - 1.);
+                }
+            }).sum();
             return f;
 		}
 	}

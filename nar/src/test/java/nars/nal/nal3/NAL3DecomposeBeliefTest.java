@@ -10,6 +10,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import java.util.function.LongPredicate;
+
 import static nars.$.$$;
 import static nars.Op.BELIEF;
 import static nars.Op.QUESTION;
@@ -319,7 +321,12 @@ public class NAL3DecomposeBeliefTest extends NAL3Test {
             .termVolMax(9)
             .believe("( ((a2-a1) & --a0) --> x)")
             .mustBelieve(cycles, "(a0-->x)", 0, 0.73f)
-            .mustNotOutput(cycles, "(a0-->x)", BELIEF, 0.5f, 1f, 0, 0.99f, (t)->true)
+            .mustNotOutput(cycles, "(a0-->x)", BELIEF, 0.5f, 1f, 0, 0.99f, new LongPredicate() {
+                @Override
+                public boolean test(long t) {
+                    return true;
+                }
+            })
 
         ;
     }

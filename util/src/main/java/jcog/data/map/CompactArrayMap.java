@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
 import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
+import java.util.function.BinaryOperator;
 import java.util.function.Function;
 
 
@@ -73,51 +74,54 @@ public class CompactArrayMap<K, V> {
      */
     public V put(Object key, V value) {
         Object[] returned = new Object[1];
-        ITEMS.accumulateAndGet(this, new Object[]{key, value}, (a, kv) -> {
-            if (a == null) {
-                return kv;
-            } else {
-                int s = a.length;
+        ITEMS.accumulateAndGet(this, new Object[]{key, value}, new BinaryOperator<Object[]>() {
+            @Override
+            public Object[] apply(Object[] a, Object[] kv) {
+                if (a == null) {
+                    return kv;
+                } else {
+                    int s = a.length;
 
-                Object k = kv[0], v = kv[1];
-                int found = -1;
-                for (int i = 0; i < s; i += 2) {
-                    if (keyEquals(k, a[i])) {
-                        found = i+1;
-                        break;
-                    }
-                }
-
-                if (found!=-1) {
-                    returned[0] = a[found];
-                    if (v != null) {
-                        a[found] = v;
-                        return a;
-                    } else {
-                        if (a.length == 2) {
-                            return null; //map emptied
-                        } else {
-                            Object[] b = Arrays.copyOf(a, a.length-2);
-                            if (found-1 < a.length-2) {
-                                //TODO test
-                                System.arraycopy(a, found+1, b, found-1, a.length - (found-1) - 2);
-                            }
-                            return b;
+                    Object k = kv[0], v = kv[1];
+                    int found = -1;
+                    for (int i = 0; i < s; i += 2) {
+                        if (keyEquals(k, a[i])) {
+                            found = i + 1;
+                            break;
                         }
                     }
-                } else {
-                    if (v!=null) {
-                        Object[] b = Arrays.copyOf(a, s + 2);
-                        returned[0] = -1;
-                        b[s++] = k;
-                        b[s] = v;
-                        return b;
-                    } else {
-                        //tried to remove key which isnt presented; no effect
-                        return a;
-                    }
-                }
 
+                    if (found != -1) {
+                        returned[0] = a[found];
+                        if (v != null) {
+                            a[found] = v;
+                            return a;
+                        } else {
+                            if (a.length == 2) {
+                                return null; //map emptied
+                            } else {
+                                Object[] b = Arrays.copyOf(a, a.length - 2);
+                                if (found - 1 < a.length - 2) {
+                                    //TODO test
+                                    System.arraycopy(a, found + 1, b, found - 1, a.length - (found - 1) - 2);
+                                }
+                                return b;
+                            }
+                        }
+                    } else {
+                        if (v != null) {
+                            Object[] b = Arrays.copyOf(a, s + 2);
+                            returned[0] = -1;
+                            b[s++] = k;
+                            b[s] = v;
+                            return b;
+                        } else {
+                            //tried to remove key which isnt presented; no effect
+                            return a;
+                        }
+                    }
+
+                }
             }
         });
         return (V) returned[0];
@@ -153,9 +157,12 @@ public class CompactArrayMap<K, V> {
     }
 
     public void forEach(BiConsumer<K, V> each) {
-        whileEach((k,v)->{
-            each.accept(k,v);
-            return true;
+        whileEach(new BiPredicate<K, V>() {
+            @Override
+            public boolean test(K k, V v) {
+                each.accept(k, v);
+                return true;
+            }
         });
     }
 

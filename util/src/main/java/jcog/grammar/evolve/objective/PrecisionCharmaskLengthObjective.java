@@ -29,6 +29,8 @@ import jcog.grammar.evolve.utils.BasicStats;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Predicate;
+import java.util.function.ToIntFunction;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -110,14 +112,17 @@ public class PrecisionCharmaskLengthObjective implements Objective {
 
     
     private static int intersection(Bounds[] extractedRanges, List<Bounds> expectedRanges) {
-        int overallNumChars = Arrays.stream(extractedRanges).mapToInt(extractedBounds -> {
-            int sum = 0;
-            for (Bounds expectedBounds : expectedRanges) {
-                int numChars = Math.min(extractedBounds.end, expectedBounds.end) - Math.max(extractedBounds.start, expectedBounds.start);
-                int max = Math.max(0, numChars);
-                sum += max;
+        int overallNumChars = Arrays.stream(extractedRanges).mapToInt(new ToIntFunction<Bounds>() {
+            @Override
+            public int applyAsInt(Bounds extractedBounds) {
+                int sum = 0;
+                for (Bounds expectedBounds : expectedRanges) {
+                    int numChars = Math.min(extractedBounds.end, expectedBounds.end) - Math.max(extractedBounds.start, expectedBounds.start);
+                    int max = Math.max(0, numChars);
+                    sum += max;
+                }
+                return sum;
             }
-            return sum;
         }).sum();
 
         return overallNumChars;
@@ -125,13 +130,16 @@ public class PrecisionCharmaskLengthObjective implements Objective {
 
     
     private static int countIdenticalRanges(Bounds[] rangesA, List<Bounds> rangesB) {
-        int identicalRanges = (int) Arrays.stream(rangesA).filter(boundsA -> {
-            for (Bounds bounds : rangesB) {
-                if (boundsA.equals(bounds)) {
-                    return true;
+        int identicalRanges = (int) Arrays.stream(rangesA).filter(new Predicate<Bounds>() {
+            @Override
+            public boolean test(Bounds boundsA) {
+                for (Bounds bounds : rangesB) {
+                    if (boundsA.equals(bounds)) {
+                        return true;
+                    }
                 }
+                return false;
             }
-            return false;
         }).count();
 
         return identicalRanges;

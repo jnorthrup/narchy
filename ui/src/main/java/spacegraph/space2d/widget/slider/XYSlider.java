@@ -14,6 +14,8 @@ import spacegraph.space2d.container.PaintSurface;
 import spacegraph.space2d.widget.port.TypedPort;
 import spacegraph.video.Draw;
 
+import java.util.function.Supplier;
+
 import static jcog.Texts.n4;
 import static jcog.Util.unitize;
 
@@ -45,9 +47,12 @@ public class XYSlider extends PaintSurface  {
     public XYSlider(FloatRange x, FloatRange y) {
         this();
         set(x.floatValue(), y.floatValue());
-        on((xx, yy) -> {
-            x.setProportionally(xx);
-            y.setProportionally(yy);
+        on(new FloatFloatProcedure() {
+            @Override
+            public void value(float xx, float yy) {
+                x.setProportionally(xx);
+                y.setProportionally(yy);
+            }
         });
     }
 
@@ -173,7 +178,17 @@ public class XYSlider extends PaintSurface  {
 //        b.set(S, px, 0.1f);
 //        b.set(E, py, 0.1f);
         TypedPort<v2> b = new TypedPort<v2>(v2.class);
-        on((x, y) -> b.outLazy(() -> knob));
+        on(new FloatFloatProcedure() {
+            @Override
+            public void value(float x, float y) {
+                b.outLazy(new Supplier<v2>() {
+                    @Override
+                    public v2 get() {
+                        return knob;
+                    }
+                });
+            }
+        });
         b.set(this);
 
         return b;

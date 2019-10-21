@@ -48,7 +48,12 @@ public class ConcurrentFastIteratingHashMap<X, Y> extends AbstractMap<X, Y>  {
 
 
     public final boolean removeIf(BiPredicate<X, ? super Y> filter) {
-        if (map.entrySet().removeIf((e) -> filter.test(e.getKey(), e.getValue()))) {
+        if (map.entrySet().removeIf(new Predicate<Entry<X, Y>>() {
+            @Override
+            public boolean test(Entry<X, Y> e) {
+                return filter.test(e.getKey(), e.getValue());
+            }
+        })) {
             invalidate();
             return true;
         }
@@ -56,9 +61,12 @@ public class ConcurrentFastIteratingHashMap<X, Y> extends AbstractMap<X, Y>  {
     }
 
     public final void clear(Consumer<Y> each) {
-        removeIf((y)-> {
-            each.accept(y);
-            return true;
+        removeIf(new Predicate<Y>() {
+            @Override
+            public boolean test(Y y) {
+                each.accept(y);
+                return true;
+            }
         });
     }
 
@@ -149,11 +157,14 @@ public class ConcurrentFastIteratingHashMap<X, Y> extends AbstractMap<X, Y>  {
     @Override
     public Y compute(X key, BiFunction<? super X, ? super Y, ? extends Y> remappingFunction) {
         boolean[] changed = {false};
-        Y v = map.compute(key, (k, pv) -> {
-            Y next = remappingFunction.apply(k, pv);
-            if (next != pv)
-                changed[0] = true;
-            return next;
+        Y v = map.compute(key, new BiFunction<X, Y, Y>() {
+            @Override
+            public Y apply(X k, Y pv) {
+                Y next = remappingFunction.apply(k, pv);
+                if (next != pv)
+                    changed[0] = true;
+                return next;
+            }
         });
         if (changed[0])
             invalidate();
@@ -163,10 +174,13 @@ public class ConcurrentFastIteratingHashMap<X, Y> extends AbstractMap<X, Y>  {
     @Override
     public Y computeIfAbsent(X key, Function<? super X, ? extends Y> mappingFunction) {
         boolean[] changed = {false};
-        Y v = map.computeIfAbsent(key, (p) -> {
-            Y next = mappingFunction.apply(p);
-            changed[0] = true;
-            return next;
+        Y v = map.computeIfAbsent(key, new Function<X, Y>() {
+            @Override
+            public Y apply(X p) {
+                Y next = mappingFunction.apply(p);
+                changed[0] = true;
+                return next;
+            }
         });
         if (changed[0])
             invalidate();
@@ -190,7 +204,22 @@ public class ConcurrentFastIteratingHashMap<X, Y> extends AbstractMap<X, Y>  {
 
     public boolean whileEachValueReverse(Predicate<? super Y> action) {
         Y[] x = valueArray();
-        return IntStream.iterate(x.length - 1, i -> i >= 0, i -> i - 1).mapToObj(i -> x[i]).allMatch(action);
+        return IntStream.iterate(x.length - 1, new IntPredicate() {
+            @Override
+            public boolean test(int i) {
+                return i >= 0;
+            }
+        }, new IntUnaryOperator() {
+            @Override
+            public int applyAsInt(int i) {
+                return i - 1;
+            }
+        }).mapToObj(new IntFunction<Y>() {
+            @Override
+            public Y apply(int i) {
+                return x[i];
+            }
+        }).allMatch(action);
     }
 
     @Override

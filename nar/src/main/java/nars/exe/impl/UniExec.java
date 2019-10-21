@@ -70,7 +70,12 @@ public class UniExec extends Exec {
             kontinue = null;
         } else {
             long deadline = nanoTime() + timeSliceNS();
-            kontinue = () -> nanoTime() < deadline;
+            kontinue = new BooleanSupplier() {
+                @Override
+                public boolean getAsBoolean() {
+                    return nanoTime() < deadline;
+                }
+            };
         }
 
 

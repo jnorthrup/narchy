@@ -4,7 +4,11 @@ package spacegraph.audio.synth.granular;
 import spacegraph.audio.Audio;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class TimeStretchGui extends JPanel {
 
@@ -18,10 +22,20 @@ public class TimeStretchGui extends JPanel {
 
 
         Button playButton = new Button("Play");
-		playButton.addActionListener(e -> play());
+		playButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                TimeStretchGui.this.play();
+            }
+        });
 
         Button stopButton = new Button("Stop");
-		stopButton.addActionListener(e -> stop());
+		stopButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                TimeStretchGui.this.stop();
+            }
+        });
 
 
         JLabel sliderLabel = new JLabel("Tempo", SwingConstants.CENTER);
@@ -32,7 +46,12 @@ public class TimeStretchGui extends JPanel {
 		tempoSlider.setMajorTickSpacing(10);
 		tempoSlider.setMinorTickSpacing(1);
 		tempoSlider.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
-		tempoSlider.addChangeListener(e -> updateStretchFactor(1.0 - (double) (tempoSlider.getValue() - 50) / 100.0));
+		tempoSlider.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                TimeStretchGui.this.updateStretchFactor(1.0 - (double) (tempoSlider.getValue() - 50) / 100.0);
+            }
+        });
 
 		
 

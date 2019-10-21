@@ -39,6 +39,7 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Set;
@@ -168,31 +169,33 @@ public class Opjects extends DefaultTermizer {
     private final Memoize<Pair<Pair<Class, Term>, List<Class<?>>>, MethodHandle> methodCache =
             CaffeineMemoize.build(
             //new SoftMemoize<>(
-        x -> {
+                    new Function<Pair<Pair<Class, Term>, List<Class<?>>>, MethodHandle>() {
+                        @Override
+                        public MethodHandle apply(Pair<Pair<Class, Term>, List<Class<?>>> x) {
 
-            Class c = x.getOne().getOne();
-            Term methodTerm = x.getOne().getTwo();
-            List<Class<?>> types = x.getTwo();
+                            Class c = x.getOne().getOne();
+                            Term methodTerm = x.getOne().getTwo();
+                            List<Class<?>> types = x.getTwo();
 
-            String mName = methodTerm.toString();
-            Class<?>[] cc = types.isEmpty() ? ArrayUtil.EMPTY_CLASS_ARRAY : ((FasterList<Class<?>>) types).array();
-            Method m = findMethod(c, mName, cc);
-            if (m == null || !methodEvokable(m))
-                return null;
+                            String mName = methodTerm.toString();
+                            Class<?>[] cc = types.isEmpty() ? ArrayUtil.EMPTY_CLASS_ARRAY : ((FasterList<Class<?>>) types).array();
+                            Method m = findMethod(c, mName, cc);
+                            if (m == null || !methodEvokable(m))
+                                return null;
 
-            m.setAccessible(true);
-            try {
-                MethodHandle mh = MethodHandles.lookup()
-                        .unreflect(m)
-                        .asFixedArity()
-                ;
-                return mh;
+                            m.setAccessible(true);
+                            try {
+                                MethodHandle mh = MethodHandles.lookup()
+                                        .unreflect(m)
+                                        .asFixedArity();
+                                return mh;
 
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            }
-            return null;
-        },
+                            } catch (IllegalAccessException e) {
+                                e.printStackTrace();
+                            }
+                            return null;
+                        }
+                    },
     -1 /* soft */, false);
     //, 512, STRONG, SOFT);
 
@@ -248,8 +251,12 @@ public class Opjects extends DefaultTermizer {
      * registers an alias/binding shortcut target rewrite macro
      */
     public void alias(String op, Term instance, String method) {
-        nar.add(Functor.f(op, s ->
-            $.func(method, instance, s.subs() == 1 ? s.sub(0) : PROD.the(s))
+        nar.add(Functor.f(op, new Function<Subterms, Term>() {
+                    @Override
+                    public Term apply(Subterms s) {
+                        return $.func(method, instance, s.subs() == 1 ? s.sub(0) : PROD.the(s));
+                    }
+                }
         ));
     }
 
@@ -262,7 +269,12 @@ public class Opjects extends DefaultTermizer {
 
 
     final InstanceMethodValueModel pointTasks = new PointMethodValueModel();
-    final Function<Term, InstanceMethodValueModel> valueModel = (x) -> pointTasks /* memoryless */;
+    final Function<Term, InstanceMethodValueModel> valueModel = new Function<Term, InstanceMethodValueModel>() {
+        @Override
+        public InstanceMethodValueModel apply(Term x) {
+            return pointTasks;
+        }
+    } /* memoryless */;
 
     public class PointMethodValueModel implements InstanceMethodValueModel {
 
@@ -481,58 +493,64 @@ public class Opjects extends DefaultTermizer {
 
             this.methodName = $.the(_methodName);
 
-            runCache = CaffeineMemoize.build(term -> {
+            runCache = CaffeineMemoize.build(new Function<Term, Runnable>() {
+                @Override
+                public Runnable apply(Term term) {
 
-                Subterms args = validArgs(Functor.args(term));
-                if (args == null)
-                    return null;
+                    Subterms args = validArgs(Functor.args(term));
+                    if (args == null)
+                        return null;
 
-                Term instanceTerm = args.sub(0);
-                Object instance = termToObj.get(instanceTerm);
-                if (instance == null)
-                    return null;
+                    Term instanceTerm = args.sub(0);
+                    Object instance = termToObj.get(instanceTerm);
+                    if (instance == null)
+                        return null;
 
-                int as = args.subs();
-                Term methodArgs = as > 1 && (as > 2 || !args.sub(as - 1).op().var) ? args.sub(1) : Op.EmptyProduct;
+                    int as = args.subs();
+                    Term methodArgs = as > 1 && (as > 2 || !args.sub(as - 1).op().var) ? args.sub(1) : Op.EmptyProduct;
 
-                boolean maWrapped = methodArgs.op() == PROD;
+                    boolean maWrapped = methodArgs.op() == PROD;
 
-                int aa = maWrapped ? methodArgs.subs() : 1;
+                    int aa = maWrapped ? methodArgs.subs() : 1;
 
-                Object[] instanceAndArgs;
-                List<Class<?>> types;
-                if (aa == 0) {
-                    instanceAndArgs = new Object[]{instance};
-                    types = Collections.emptyList();
-                } else {
-                    instanceAndArgs = object(instance, maWrapped ? methodArgs.subterms().arrayShared() : new Term[]{methodArgs});
-                    types = Util.typesOf(instanceAndArgs, 1 /* skip leading instance value */, instanceAndArgs.length);
-                }
-
-
-                Pair<Pair<Class, Term>, List<Class<?>>> key = pair(pair(instance.getClass(), methodName), types);
-                MethodHandle mh = methodCache.apply(key);
-                if (mh == null) {
-                    return null;
-                }
-
-                return () -> {
-
-                    AtomicBoolean flag = evoking.get();
-                    flag.set(true);
-
-                    try {
-                        mh.invokeWithArguments(instanceAndArgs);
-                        evoked(methodName, instance, instanceAndArgs);
-                    } catch (Throwable throwable) {
-                        logger.error("{} execution {}", term, throwable);
-                    } finally {
-                        flag.set(false);
+                    Object[] instanceAndArgs;
+                    List<Class<?>> types;
+                    if (aa == 0) {
+                        instanceAndArgs = new Object[]{instance};
+                        types = Collections.emptyList();
+                    } else {
+                        instanceAndArgs = MethodExec.this.object(instance, maWrapped ? methodArgs.subterms().arrayShared() : new Term[]{methodArgs});
+                        types = Util.typesOf(instanceAndArgs, 1 /* skip leading instance value */, instanceAndArgs.length);
                     }
 
 
-                };
+                    Pair<Pair<Class, Term>, List<Class<?>>> key = pair(pair(instance.getClass(), methodName), types);
+                    MethodHandle mh = methodCache.apply(key);
+                    if (mh == null) {
+                        return null;
+                    }
 
+                    return new Runnable() {
+                        @Override
+                        public void run() {
+
+                            AtomicBoolean flag = evoking.get();
+                            flag.set(true);
+
+                            try {
+                                mh.invokeWithArguments(instanceAndArgs);
+                                MethodExec.this.evoked(methodName, instance, instanceAndArgs);
+                            } catch (Throwable throwable) {
+                                logger.error("{} execution {}", term, throwable);
+                            } finally {
+                                flag.set(false);
+                            }
+
+
+                        }
+                    };
+
+                }
             }, -1, false);
             //, 512, STRONG, SOFT);
         }
@@ -600,8 +618,12 @@ public class Opjects extends DefaultTermizer {
                     .subclass(instance.getClass())
                     .method(ElementMatchers.isPublic().and(ElementMatchers.not(ElementMatchers.isDeclaredBy(Object.class))))
 
-                    .intercept(InvocationHandlerAdapter.of((objWrapper, method, margs) ->
-                            invoke(objWrapper, instance, method, margs)))
+                    .intercept(InvocationHandlerAdapter.of(new InvocationHandler() {
+                        @Override
+                        public Object invoke(Object objWrapper, Method method, Object[] margs) throws Throwable {
+                            return Opjects.this.invoke(objWrapper, instance, method, margs);
+                        }
+                    }))
                     .make()
                     .load(
                             Thread.currentThread().getContextClassLoader(),
@@ -624,10 +646,13 @@ public class Opjects extends DefaultTermizer {
     }
 
     private void reflect(Class<?> cl) {
-        clCache.computeIfAbsent(cl, (clazz) -> {
-            for (Method m: clazz.getMethods())
-                reflect(m);
-            return true;
+        clCache.computeIfAbsent(cl, new Function<Class, Boolean>() {
+            @Override
+            public Boolean apply(Class clazz) {
+                for (Method m : clazz.getMethods())
+                    Opjects.this.reflect(m);
+                return true;
+            }
         });
     }
 
@@ -638,11 +663,14 @@ public class Opjects extends DefaultTermizer {
         m.setAccessible(true);
 
         String n = m.getName();
-        return opCache.computeIfAbsent(n, (mn) -> {
-            MethodExec methodExec = new MethodExec(mn);
-            Operator op = nar.setOp(Atomic.atom(mn), methodExec);
-            methodExec.operator = op;
-            return methodExec;
+        return opCache.computeIfAbsent(n, new Function<String, MethodExec>() {
+            @Override
+            public MethodExec apply(String mn) {
+                MethodExec methodExec = new MethodExec(mn);
+                Operator op = nar.setOp(Atomic.atom(mn), methodExec);
+                methodExec.operator = op;
+                return methodExec;
+            }
         });
     }
 
@@ -655,28 +683,31 @@ public class Opjects extends DefaultTermizer {
      */
     public <T> T a(Term id, Class<? extends T> cl, Object... args) {
 
-        Class ccc = proxyCache.computeIfAbsent(cl, (baseClass) -> {
+        Class ccc = proxyCache.computeIfAbsent(cl, new Function<Class, Class>() {
+            @Override
+            public Class apply(Class baseClass) {
 
-            Class cc = bb
-                    .with(TypeValidation.DISABLED)
-                    .subclass(baseClass)
-
-
-                    .method(ElementMatchers.isPublic().and(ElementMatchers.not(ElementMatchers.isDeclaredBy(Object.class))))
-                    .intercept(MethodDelegation.to(this))
-                    .make()
-                    .load(
-                            Thread.currentThread().getContextClassLoader(),
-
-                            classLoadingStrategy
-                    )
-                    .getLoaded();
-
-            reflect(cc);
-
-            return cc;
+                Class cc = bb
+                        .with(TypeValidation.DISABLED)
+                        .subclass(baseClass)
 
 
+                        .method(ElementMatchers.isPublic().and(ElementMatchers.not(ElementMatchers.isDeclaredBy(Object.class))))
+                        .intercept(MethodDelegation.to(Opjects.this))
+                        .make()
+                        .load(
+                                Thread.currentThread().getContextClassLoader(),
+
+                                classLoadingStrategy
+                        )
+                        .getLoaded();
+
+                Opjects.this.reflect(cc);
+
+                return cc;
+
+
+            }
         });
 
 
@@ -880,6 +911,11 @@ public class Opjects extends DefaultTermizer {
         Preconditions.notNull(parameterTypes, "Parameter types array must not be null");
         Preconditions.containsNoNullElements(parameterTypes, "Individual parameter types must not be null");
 
-        return Opjects.findMethod(clazz, method -> Opjects.hasCompatibleSignature(method, methodName, parameterTypes));
+        return Opjects.findMethod(clazz, new Predicate<Method>() {
+            @Override
+            public boolean test(Method method) {
+                return Opjects.hasCompatibleSignature(method, methodName, parameterTypes);
+            }
+        });
     }
 }

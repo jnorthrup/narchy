@@ -21,6 +21,7 @@ package jurls.core.reinforcementlearning;
 
     import java.util.ArrayList;
     import java.util.Arrays;
+    import java.util.Comparator;
     import java.util.List;
 
     /**
@@ -81,7 +82,12 @@ public class QZeroAgent extends LearnerAndActor {
 
     public int chooseAction(double[] state) {
         ActionValuePair[] actionProbabilityPairs = getActionProbabilities(state);
-        Arrays.sort(actionProbabilityPairs, (o1, o2) -> (int) Math.signum(o1.getV() - o2.getV()));
+        Arrays.sort(actionProbabilityPairs, new Comparator<ActionValuePair>() {
+            @Override
+            public int compare(ActionValuePair o1, ActionValuePair o2) {
+                return (int) Math.signum(o1.getV() - o2.getV());
+            }
+        });
 
         double x = Math.random();
         int i = -1;

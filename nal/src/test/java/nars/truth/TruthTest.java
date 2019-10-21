@@ -8,6 +8,7 @@ import nars.truth.func.TruthFunctions;
 import org.junit.jupiter.api.Test;
 
 import java.util.Random;
+import java.util.function.Supplier;
 
 import static nars.$.t;
 import static nars.NAL.truth.TRUTH_EPSILON;
@@ -124,7 +125,12 @@ class TruthTest {
     private static void hashUnhash(float f, float c) {
         Truth t = new DiscreteTruth(f, c);
         Truth u = Truth.intToTruth(t.hashCode());
-        assertNotNull(u, () -> t + " unhased to null via hashCode " + t.hashCode());
+        assertNotNull(u, new Supplier<String>() {
+            @Override
+            public String get() {
+                return t + " unhased to null via hashCode " + t.hashCode();
+            }
+        });
         assertEquals(t, u);
     }
 

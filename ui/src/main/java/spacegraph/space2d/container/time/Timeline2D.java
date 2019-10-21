@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 /** view for one or more TimeRangeAware implementing surfaces that display aspects of a time-varying signal */
 public class Timeline2D extends Stacking implements Finger.ScrollWheelConsumer {
@@ -226,7 +227,12 @@ public class Timeline2D extends Stacking implements Finger.ScrollWheelConsumer {
             if (this.start!=start || this.end!=end) {
                 this.start = start;
                 this.end = end;
-                forEach(x -> setLayerTime(x, this.start, this.end));
+                forEach(new Consumer<Surface>() {
+                    @Override
+                    public void accept(Surface x) {
+                        setLayerTime(x, Timeline2D.this.start, Timeline2D.this.end);
+                    }
+                });
             }
         }
     }
@@ -338,7 +344,12 @@ public class Timeline2D extends Stacking implements Finger.ScrollWheelConsumer {
         @Override
         public Iterable<SimpleEvent> events(long start, long end) {
 
-            return this.stream().filter(x -> intersects(x, start, end))::iterator;
+            return this.stream().filter(new Predicate<SimpleEvent>() {
+                @Override
+                public boolean test(SimpleEvent x) {
+                    return SimpleEventBuffer.this.intersects(x, start, end);
+                }
+            })::iterator;
         }
 
         @Override
@@ -417,16 +428,19 @@ public class Timeline2D extends Stacking implements Finger.ScrollWheelConsumer {
                 double interval = interval(range);
                 double phase = (double) start % interval;
                 double iMax = (range / interval) + 0.5;
-                paintGrid = (gl,sr)->{
-                    float H = h(), W = w(), LEFT = x(), BOTTOM = y();
-                    gl.glColor4f(0.3f,0.3f,0.3f,0.9f);
+                paintGrid = new BiConsumer<GL2, ReSurface>() {
+                    @Override
+                    public void accept(GL2 gl, ReSurface sr) {
+                        float H = TimelineGrid.this.h(), W = TimelineGrid.this.w(), LEFT = TimelineGrid.this.x(), BOTTOM = TimelineGrid.this.y();
+                        gl.glColor4f(0.3f, 0.3f, 0.3f, 0.9f);
 
-                    gl.glLineWidth((float) THICKNESS);
-                    long x = Math.round((double) start - phase);
-                    for (int i = 0; (double) i <= iMax; i++) {
-                        float xx = Timeline2D.x(x, LEFT, W, start, end);
-                        Draw.line(xx, BOTTOM, xx, BOTTOM + H, gl);
-                        x = (long) ((double) x + interval);
+                        gl.glLineWidth((float) THICKNESS);
+                        long x = Math.round((double) start - phase);
+                        for (int i = 0; (double) i <= iMax; i++) {
+                            float xx = Timeline2D.x(x, LEFT, W, start, end);
+                            Draw.line(xx, BOTTOM, xx, BOTTOM + H, gl);
+                            x = (long) ((double) x + interval);
+                        }
                     }
                 };
             }

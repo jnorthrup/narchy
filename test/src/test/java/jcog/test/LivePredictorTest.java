@@ -9,14 +9,26 @@ import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 import org.eclipse.collections.api.block.function.primitive.LongToFloatFunction;
 import org.junit.jupiter.api.Test;
 
+import java.util.function.Supplier;
+
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class LivePredictorTest {
 
     @Test
     void test1() {
-        IntToFloatFunction ii = x -> (float) Math.sin(x / 4f);
-        IntToFloatFunction oo = x -> (float) Math.cos(x / 4f);
+        IntToFloatFunction ii = new IntToFloatFunction() {
+            @Override
+            public float valueOf(int x) {
+                return (float) Math.sin(x / 4f);
+            }
+        };
+        IntToFloatFunction oo = new IntToFloatFunction() {
+            @Override
+            public float valueOf(int x) {
+                return (float) Math.cos(x / 4f);
+            }
+        };
         LivePredictor.LSTMPredictor model = new LivePredictor.LSTMPredictor(0.1f, 1);
 
         int iHistory = 4;
@@ -27,8 +39,18 @@ class LivePredictorTest {
 
     @Test
     void test21_LSTM() {
-        IntToFloatFunction ii = x -> (float) Math.sin(x / 4f);
-        IntToFloatFunction oo = x -> (float) Math.cos(x / 8f);
+        IntToFloatFunction ii = new IntToFloatFunction() {
+            @Override
+            public float valueOf(int x) {
+                return (float) Math.sin(x / 4f);
+            }
+        };
+        IntToFloatFunction oo = new IntToFloatFunction() {
+            @Override
+            public float valueOf(int x) {
+                return (float) Math.cos(x / 8f);
+            }
+        };
         LivePredictor.LSTMPredictor model = new LivePredictor.LSTMPredictor(0.2f, 1);
         int iHistory = 6;
         int totalTime = 8192 * 2;
@@ -41,8 +63,18 @@ class LivePredictorTest {
     @Test
     void test12_MLP() {
 
-        IntToFloatFunction ii = x -> (float) Math.sin(x / 8f);
-        IntToFloatFunction oo = x -> (float) Math.cos(x / 8f);
+        IntToFloatFunction ii = new IntToFloatFunction() {
+            @Override
+            public float valueOf(int x) {
+                return (float) Math.sin(x / 8f);
+            }
+        };
+        IntToFloatFunction oo = new IntToFloatFunction() {
+            @Override
+            public float valueOf(int x) {
+                return (float) Math.cos(x / 8f);
+            }
+        };
         LivePredictor.MLPPredictor model =
                 new LivePredictor.MLPPredictor(0.05f);
         int iHistory = 4;
@@ -56,8 +88,23 @@ class LivePredictorTest {
         MutableInteger m = new MutableInteger();
 
 
-        LongToFloatFunction[] in = {(w) -> ii.valueOf((int) w), (w) -> oo.valueOf((int) w - 1)};
-        LongToFloatFunction[] out = {(w) -> oo.valueOf((int) w)};
+        LongToFloatFunction[] in = {new LongToFloatFunction() {
+            @Override
+            public float valueOf(long w) {
+                return ii.valueOf((int) w);
+            }
+        }, new LongToFloatFunction() {
+            @Override
+            public float valueOf(long w) {
+                return oo.valueOf((int) w - 1);
+            }
+        }};
+        LongToFloatFunction[] out = {new LongToFloatFunction() {
+            @Override
+            public float valueOf(long w) {
+                return oo.valueOf((int) w);
+            }
+        }};
 
         LivePredictor.DenseShiftFramer ih = new LivePredictor.DenseShiftFramer(in, iHistory, 1, out);
         LivePredictor l = new LivePredictor(model, ih);
@@ -93,7 +140,12 @@ class LivePredictorTest {
                 errortime.leastSquaresFit().slope());
 
         assertTrue(errortime.leastSquaresFit().slope() < -1E-8);
-        assertTrue(eMean < maxMeanError, () -> "mean error: " + eMean);
+        assertTrue(eMean < maxMeanError, new Supplier<String>() {
+            @Override
+            public String get() {
+                return "mean error: " + eMean;
+            }
+        });
     }
 
 

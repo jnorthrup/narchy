@@ -3,6 +3,7 @@ package jcog.data.atomic;
 import jcog.data.NumberX;
 import jcog.math.FloatSupplier;
 import jcog.util.FloatConsumer;
+import jcog.util.FloatFloatToFloatFunction;
 
 /**
  * https:
@@ -92,7 +93,12 @@ public class AtomicFloat extends NumberX implements FloatSupplier {
 
 
     public float multiply(float _y) {
-        return F.updateAndGet(this, (x, y) -> x * y, _y);
+        return F.updateAndGet(this, new FloatFloatToFloatFunction() {
+            @Override
+            public float apply(float x, float y) {
+                return x * y;
+            }
+        }, _y);
     }
 
     @Override

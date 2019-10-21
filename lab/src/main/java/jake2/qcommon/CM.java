@@ -34,6 +34,8 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.IntBuffer;
 import java.util.Arrays;
+import java.util.function.IntConsumer;
+import java.util.function.IntPredicate;
 import java.util.stream.IntStream;
 
 public class CM {
@@ -358,8 +360,12 @@ public class CM {
             Com.DPrintf("surfaces:\n");
 
         //for (int i = 0; i < count; i++)
-        IntStream.range(0, count).parallel().forEach(i->
-            CMod_LoadSurfaces(l, i)
+        IntStream.range(0, count).parallel().forEach(new IntConsumer() {
+                                                         @Override
+                                                         public void accept(int i) {
+                                                             CMod_LoadSurfaces(l, i);
+                                                         }
+                                                     }
         );
     }
 
@@ -406,8 +412,12 @@ public class CM {
         }
 
         //for (int i = 0; i < count; i++)
-        IntStream.range(0, count).parallel().forEach(i->
-            loadNode(l, i)
+        IntStream.range(0, count).parallel().forEach(new IntConsumer() {
+                                                         @Override
+                                                         public void accept(int i) {
+                                                             loadNode(l, i);
+                                                         }
+                                                     }
         );
     }
 
@@ -449,8 +459,12 @@ public class CM {
 
 
         //for (int i = 0; i < count; i++)
-        IntStream.range(0, count).parallel().forEach(i->
-            loadBrush(l, i)
+        IntStream.range(0, count).parallel().forEach(new IntConsumer() {
+                                                         @Override
+                                                         public void accept(int i) {
+                                                             loadBrush(l, i);
+                                                         }
+                                                     }
         );
     }
 
@@ -1484,7 +1498,12 @@ public class CM {
 
 
         boolean rotated = headnode != box_headnode
-                && (IntStream.of(0, 1, 2).anyMatch(i -> angles[i] != (float) 0));
+                && (IntStream.of(0, 1, 2).anyMatch(new IntPredicate() {
+            @Override
+            public boolean test(int i) {
+                return angles[i] != (float) 0;
+            }
+        }));
 
         float[] temp = {(float) 0, (float) 0, (float) 0};
         float[] up = {(float) 0, (float) 0, (float) 0};

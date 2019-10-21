@@ -51,13 +51,16 @@ public class BooleanConvertor implements Function<String,Object> {
         return null;
     }
 
-    public static final Function<Object,String> toString = srcData -> {
-        if (srcData == null) {
-            throw new IllegalArgumentException("srcData == null");
+    public static final Function<Object,String> toString = new Function<Object, String>() {
+        @Override
+        public String apply(Object srcData) {
+            if (srcData == null) {
+                throw new IllegalArgumentException("srcData == null");
+            }
+            if (srcData instanceof Boolean) {
+                return ((Boolean) srcData) ? "true" : "false";
+            }
+            return null;
         }
-        if (srcData instanceof Boolean) {
-            return ((Boolean) srcData) ? "true" : "false";
-        }
-        return null;
     };
 }

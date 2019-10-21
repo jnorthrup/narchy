@@ -10,6 +10,8 @@ import jcog.memoize.QuickMemoize;
 import jcog.random.XoRoShiRo128PlusRandom;
 import jcog.tree.radix.MyRadixTree;
 import org.HdrHistogram.ConcurrentHistogram;
+import org.eclipse.collections.api.block.function.primitive.ByteToObjectFunction;
+import org.eclipse.collections.api.block.procedure.primitive.ByteObjectProcedure;
 import org.eclipse.collections.impl.map.mutable.primitive.ByteObjectHashMap;
 
 import java.io.PrintStream;
@@ -23,6 +25,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.function.BooleanSupplier;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
@@ -53,12 +59,25 @@ public class MetaFlow {
 
 
     public MetaFlow() {
-        base = walkerSummary.walk(s -> s.dropWhile(x -> {
-            String cn = x.getClassName();
-            return cn.equals(MetaFlow.class.getName()) || cn.startsWith(ThreadLocal.class.getName());
-        })
-                .findFirst().get());
-        cursors = ThreadLocal.withInitial(() -> new StackCursor(base));
+        base = walkerSummary.walk(new Function<Stream<StackWalker.StackFrame>, StackWalker.StackFrame>() {
+            @Override
+            public StackWalker.StackFrame apply(Stream<StackWalker.StackFrame> s) {
+                return s.dropWhile(new Predicate<StackWalker.StackFrame>() {
+                    @Override
+                    public boolean test(StackWalker.StackFrame x) {
+                        String cn = x.getClassName();
+                        return cn.equals(MetaFlow.class.getName()) || cn.startsWith(ThreadLocal.class.getName());
+                    }
+                })
+                        .findFirst().get();
+            }
+        });
+        cursors = ThreadLocal.withInitial(new Supplier<StackCursor>() {
+            @Override
+            public StackCursor get() {
+                return new StackCursor(base);
+            }
+        });
     }
 
     static boolean equalsClassAndMethod(StackWalker.StackFrame x, StackWalker.StackFrame y) {
@@ -69,13 +88,16 @@ public class MetaFlow {
     }
 
     static byte[] compactDescriptor(String _descriptor) {
-        return compactMethodDescriptors.apply(_descriptor, (descriptor) -> {
-            //TODO use byteseek automaton
-            String descriptor1 = descriptor;
-            descriptor1 = descriptor1.replace("java/lang/", "");
-            if (descriptor1.endsWith("V")) //void return value
-                descriptor1 = descriptor1.substring(0, descriptor1.length() - 1);
-            return descriptor1.getBytes();
+        return compactMethodDescriptors.apply(_descriptor, new Function<String, byte[]>() {
+            @Override
+            public byte[] apply(String descriptor) {
+                //TODO use byteseek automaton
+                String descriptor1 = descriptor;
+                descriptor1 = descriptor1.replace("java/lang/", "");
+                if (descriptor1.endsWith("V")) //void return value
+                    descriptor1 = descriptor1.substring(0, descriptor1.length() - 1);
+                return descriptor1.getBytes();
+            }
         });
     }
 
@@ -151,11 +173,21 @@ public class MetaFlow {
         assert (iterations > 0);
 
         int[] countDown = {iterations};
-        return forkWhile(() -> countDown[0]-- > 0, options);
+        return forkWhile(new BooleanSupplier() {
+            @Override
+            public boolean getAsBoolean() {
+                return countDown[0]-- > 0;
+            }
+        }, options);
     }
 
     public MetaFlow forkUntil(long deadlineNS, Runnable... options) {
-        return forkWhile(() -> System.nanoTime() < deadlineNS, options);
+        return forkWhile(new BooleanSupplier() {
+            @Override
+            public boolean getAsBoolean() {
+                return System.nanoTime() < deadlineNS;
+            }
+        }, options);
     }
 
     public MetaFlow runOne(Runnable[] options) {
@@ -176,22 +208,30 @@ public class MetaFlow {
     private void value(byte[] cursor, byte quality, float value) {
         Node n = plan.putIfAbsent(cursor, Node::new);
         n.getIfAbsentPutWithKey(quality,
-                (q) -> new ConcurrentHistogram(digitResolution) {
+                new ByteToObjectFunction<ConcurrentHistogram>() {
                     @Override
-                    public String toString() {
-                        return Texts.histogramString(this, false);
+                    public ConcurrentHistogram valueOf(byte q) {
+                        return new ConcurrentHistogram(digitResolution) {
+                            @Override
+                            public String toString() {
+                                return Texts.histogramString(this, false);
+                            }
+                        };
                     }
                 })
                 .recordValue((long) Math.round(ditherScale * value));
     }
 
     public Quality quality(String q) {
-        return qualia.computeIfAbsent(q, qq -> {
-            synchronized (qualia) {
-                int id = qualia.size();
-                if (id > 126)
-                    throw new TODO("limit to 127 qualities");
-                return new Quality(qq, (byte) id);
+        return qualia.computeIfAbsent(q, new Function<String, Quality>() {
+            @Override
+            public Quality apply(String qq) {
+                synchronized (qualia) {
+                    int id = qualia.size();
+                    if (id > 126)
+                        throw new TODO("limit to 127 qualities");
+                    return new Quality(qq, (byte) id);
+                }
             }
         });
     }
@@ -255,16 +295,22 @@ public class MetaFlow {
             //TODO align with previous buffer rather than clearing it, at least some of it is common
             //store the character position of each frame so that on ascent, it can just reposition to that previous location
             buffer.clear();
-            walkerSummary.walk((s) -> {
-                s.skip((long) preSkip).takeWhile(f -> {
+            walkerSummary.walk(new Function<Stream<StackWalker.StackFrame>, Object>() {
+                @Override
+                public Object apply(Stream<StackWalker.StackFrame> s) {
+                    s.skip((long) preSkip).takeWhile(new Predicate<StackWalker.StackFrame>() {
+                        @Override
+                        public boolean test(StackWalker.StackFrame f) {
 //                    if (f == at) {
 //                        //no change
 //                        return false;
 //                    } else { //TODO
-                    return !equalsClassAndMethod(f, base);
+                            return !equalsClassAndMethod(f, base);
 //                    }
-                }).filter(MetaFlow::frameFilter).forEach(buffer::add);
-                return null;
+                        }
+                    }).filter(MetaFlow::frameFilter).forEach(buffer::add);
+                    return null;
+                }
             });
 
             StackWalker.StackFrame at = buffer.getLast();
@@ -348,7 +394,12 @@ public class MetaFlow {
 
             StringBuilder sb = new StringBuilder(512);
             sb.append('{');
-            forEachKeyValue((k, v) -> sb.append(qualia.getIndex((int) k).name).append('=').append(v).append(", "));
+            forEachKeyValue(new ByteObjectProcedure<ConcurrentHistogram>() {
+                @Override
+                public void value(byte k, ConcurrentHistogram v) {
+                    sb.append(qualia.getIndex((int) k).name).append('=').append(v).append(", ");
+                }
+            });
             sb.setLength(sb.length() - 2);
             sb.append('}');
             return sb.toString();

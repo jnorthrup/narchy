@@ -1375,10 +1375,26 @@ public class ExtendedCastGraph extends CastGraph {
 
 
         //single element vector/tensor
-        addEdge(Tensor.class, (Function<Tensor, Float>) (t) -> { if (t.volume()==1) return t.getAt(0); else return Float.NaN;}, Float.class);
+        addEdge(Tensor.class, new Function<Tensor, Float>() {
+            @Override
+            public Float apply(Tensor t) {
+                if (t.volume() == 1) return t.getAt(0);
+                else return Float.NaN;
+            }
+        }, Float.class);
 
-        addEdge(Boolean.class, (Function<Boolean, Integer>) (i) -> i ? 1 : 0, Integer.class);
-        addEdge(Number.class, (Function<Number, Boolean>) (i) -> i.intValue() > 0, Boolean.class);
+        addEdge(Boolean.class, new Function<Boolean, Integer>() {
+            @Override
+            public Integer apply(Boolean i) {
+                return i ? 1 : 0;
+            }
+        }, Integer.class);
+        addEdge(Number.class, new Function<Number, Boolean>() {
+            @Override
+            public Boolean apply(Number i) {
+                return i.intValue() > 0;
+            }
+        }, Boolean.class);
 
         addEdge(Short.class, (Function<Short, Integer>) Short::intValue, Integer.class);
 
@@ -1398,23 +1414,51 @@ public class ExtendedCastGraph extends CastGraph {
         //default scalar value projection
         //addEdge(v2.class, (Function<v2, Either<Double>>)(v4 -> Math.sqrt(Util.sqr(v4.x)+Util.sqr(v4.y))), Double.class);
 
-        addEdge(v2.class, (Function<v2, float[]>) (v3 -> new float[]{v3.x, v3.y}), float[].class);
-        addEdge(v3.class, (Function<v3, float[]>) (v2 -> new float[]{v2.x, v2.y, v2.z}), float[].class);
-        addEdge(v2.class, (Function<v2, v3>) (v1 -> new v3(v1.x, v1.y, (float) 0)), v3.class);
+        addEdge(v2.class, (Function<v2, float[]>) (new Function<v2, float[]>() {
+            @Override
+            public float[] apply(v2 v3) {
+                return new float[]{v3.x, v3.y};
+            }
+        }), float[].class);
+        addEdge(v3.class, (Function<v3, float[]>) (new Function<v3, float[]>() {
+            @Override
+            public float[] apply(v3 v2) {
+                return new float[]{v2.x, v2.y, v2.z};
+            }
+        }), float[].class);
+        addEdge(v2.class, (Function<v2, v3>) (new Function<v2, v3>() {
+            @Override
+            public v3 apply(v2 v1) {
+                return new v3(v1.x, v1.y, (float) 0);
+            }
+        }), v3.class);
 
         addEdge(float[].class, (Function<float[], Tensor>) (ArrayTensor::new), Tensor.class);
         addEdge(double[].class, (Function<double[], float[]>) Util::toFloat, float[].class);
         //1-element
-        addEdge(Float.class, (Function<Float, float[]>) (v -> v != null ? new float[]{v} : new float[]{Float.NaN}), float[].class);
+        addEdge(Float.class, (Function<Float, float[]>) (new Function<Float, float[]>() {
+            @Override
+            public float[] apply(Float v) {
+                return v != null ? new float[]{v} : new float[]{Float.NaN};
+            }
+        }), float[].class);
         //        setAt(Float.class, Tensor.class, (Function<Float,Tensor>)((f) -> new ArrayTensor(new float[] { f} ))); //1-element
         //does this happen
-        addEdge(Tensor.class, (Function<Tensor, ArrayTensor>) (t -> {
-            if (t instanceof ArrayTensor) {
-                return (ArrayTensor) t; //does this happen
+        addEdge(Tensor.class, (Function<Tensor, ArrayTensor>) (new Function<Tensor, ArrayTensor>() {
+            @Override
+            public ArrayTensor apply(Tensor t) {
+                if (t instanceof ArrayTensor) {
+                    return (ArrayTensor) t; //does this happen
+                }
+                return new ArrayTensor(t.floatArrayShared());
             }
-            return new ArrayTensor(t.floatArrayShared());
         }), ArrayTensor.class);
-        addEdge(ArrayTensor.class, (Function<ArrayTensor, float[]>) (a -> a.data), float[].class);
+        addEdge(ArrayTensor.class, (Function<ArrayTensor, float[]>) (new Function<ArrayTensor, float[]>() {
+            @Override
+            public float[] apply(ArrayTensor a) {
+                return a.data;
+            }
+        }), float[].class);
 
     }
 

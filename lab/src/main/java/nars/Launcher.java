@@ -1,5 +1,6 @@
 package nars;
 
+import nars.game.Game;
 import org.reflections.Reflections;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
@@ -9,6 +10,7 @@ import spacegraph.space2d.widget.meta.ObjectSurface;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 
 import static spacegraph.space2d.container.grid.Gridding.grid;
 
@@ -25,14 +27,22 @@ public class Launcher {
         @Override
         public void run() {
 
-            new Thread(()-> GameX.Companion.initFn(fps, (n) -> {
-                try {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    GameX.Companion.initFn(fps, new Function<NAR, Game>() {
+                        @Override
+                        public Game apply(NAR n) {
+                            try {
 
-                    return env.getConstructor(NAR.class).newInstance(n);
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
+                                return env.getConstructor(NAR.class).newInstance(n);
+                            } catch (Exception e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
+                    });
                 }
-            })).start();
+            }).start();
         }
 
         @Override
@@ -74,7 +84,12 @@ public class Launcher {
                         list
                 ),
                 new ObjectSurface(
-                        List.of(new MainRunner(() -> GUI.main(new String[]{})))
+                        List.of(new MainRunner(new Runnable() {
+                            @Override
+                            public void run() {
+                                GUI.main(new String[]{});
+                            }
+                        }))
 //                            List.of(new MainRunner(OSMTest.class))
                 )
         );

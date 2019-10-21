@@ -10,6 +10,8 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import static java.util.stream.Collectors.toList;
 import static nars.$.$$;
@@ -36,7 +38,12 @@ public class InterNARTest {
         }
         for (int i = 0; i < 8; i++) {
             assertFalse(x.peer.them.contains(x.peer.me));
-            assertFalse(x.peer.connected(),()->x.peer.them.stream().collect(toList()).toString());
+            assertFalse(x.peer.connected(), new Supplier<String>() {
+                @Override
+                public String get() {
+                    return x.peer.them.stream().collect(toList()).toString();
+                }
+            });
             Util.sleepMS(100);
         }
 
@@ -122,28 +129,37 @@ public class InterNARTest {
     public void testInterNAR1() {
         AtomicBoolean aRecvQuestionFromB = new AtomicBoolean();
 
-        testAB((a, b) -> {
+        testAB(new BiConsumer<NAR, NAR>() {
+            @Override
+            public void accept(NAR a, NAR b) {
 
-            a.onTask(task -> {
-                if (task.toString().contains("(?1-->y)"))
-                    aRecvQuestionFromB.set(true);
-            }, QUESTION);
+                a.onTask(new Consumer<Task>() {
+                    @Override
+                    public void accept(Task task) {
+                        if (task.toString().contains("(?1-->y)"))
+                            aRecvQuestionFromB.set(true);
+                    }
+                }, QUESTION);
 
 
-            try {
-                b.believe("(X --> y)");
-            } catch (Narsese.NarseseException e) {
-                fail(e);
+                try {
+                    b.believe("(X --> y)");
+                } catch (Narsese.NarseseException e) {
+                    fail(e);
+                }
+
             }
+        }, new BiConsumer<NAR, NAR>() {
+            @Override
+            public void accept(NAR a, NAR b) {
 
-        }, (a, b) -> {
+                try {
+                    a.input("(?x --> y)?");
+                } catch (Narsese.NarseseException e) {
+                    e.printStackTrace();
+                }
 
-            try {
-                a.input("(?x --> y)?");
-            } catch (Narsese.NarseseException e) {
-                e.printStackTrace();
             }
-
         });
 
         assertTrue(aRecvQuestionFromB.get());
@@ -158,24 +174,33 @@ public class InterNARTest {
 
         AtomicBoolean recv = new AtomicBoolean();
 
-        testAB((a, b) -> {
+        testAB(new BiConsumer<NAR, NAR>() {
+            @Override
+            public void accept(NAR a, NAR b) {
 
-            a.termVolMax.set(3);
-            b.termVolMax.set(3);
+                a.termVolMax.set(3);
+                b.termVolMax.set(3);
 
-            b.onTask(bt -> {
-                if (bt.isBelief() && bt.term().toString().contains("(a-->d)"))
-                    recv.set(true);
-            }, BELIEF);
+                b.onTask(new Consumer<Task>() {
+                    @Override
+                    public void accept(Task bt) {
+                        if (bt.isBelief() && bt.term().toString().contains("(a-->d)"))
+                            recv.set(true);
+                    }
+                }, BELIEF);
 
-        }, (a, b) -> {
+            }
+        }, new BiConsumer<NAR, NAR>() {
+            @Override
+            public void accept(NAR a, NAR b) {
 
 
-            a.believe($$("(b --> c)"));
-            b.believe($$("(a --> b)"));
-            b.believe($$("(c --> d)"));
-            b.question($$("(a --> d)"));
+                a.believe($$("(b --> c)"));
+                b.believe($$("(a --> b)"));
+                b.believe($$("(c --> d)"));
+                b.question($$("(a --> d)"));
 
+            }
         });
 
         assertTrue(recv.get());

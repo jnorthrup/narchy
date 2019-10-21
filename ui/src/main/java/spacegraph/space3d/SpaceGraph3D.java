@@ -31,8 +31,11 @@ import com.jogamp.opengl.glu.GLUquadric;
 import com.jogamp.opengl.util.texture.Texture;
 import jcog.data.list.FasterList;
 import jcog.signal.wave2d.Bitmap2D;
+import org.eclipse.collections.api.block.procedure.Procedure;
+import org.jctools.queues.MessagePassingQueue;
 import org.jctools.queues.MpscArrayQueue;
 import spacegraph.input.finger.util.FPSLook;
+import spacegraph.space3d.phys.Collidable;
 import spacegraph.space3d.phys.Dynamics3D;
 import spacegraph.space3d.phys.collision.DefaultCollisionConfiguration;
 import spacegraph.space3d.phys.collision.DefaultIntersecter;
@@ -154,9 +157,19 @@ public class SpaceGraph3D<X> extends JoglDisplay implements Iterable<Spatial<X>>
 
     private void update(long dtMS) {
 
-        toRemove.drain(x-> x.delete(dyn));
+        toRemove.drain(new MessagePassingQueue.Consumer<Spatial>() {
+            @Override
+            public void accept(Spatial x) {
+                x.delete(dyn);
+            }
+        });
 
-        inputs.forEach((anIi) -> anIi.update(this, dtMS));
+        inputs.forEach(new Procedure<AbstractSpace<X>>() {
+            @Override
+            public void value(AbstractSpace<X> anIi) {
+                anIi.update(SpaceGraph3D.this, dtMS);
+            }
+        });
 
         boolean simulating = true;
         if (simulating) {
@@ -191,16 +204,19 @@ public class SpaceGraph3D<X> extends JoglDisplay implements Iterable<Spatial<X>>
         }
 
         for (Spatial<X> s : this) {
-            s.forEachBody(body -> {
+            s.forEachBody(new Consumer<Collidable>() {
+                @Override
+                public void accept(Collidable body) {
 
-                gl.glPushMatrix();
+                    gl.glPushMatrix();
 
-                Draw.transform(gl, body.transform);
+                    Draw.transform(gl, body.transform);
 
-                s.renderRelative(gl, body, dtS);
+                    s.renderRelative(gl, body, dtS);
 
-                gl.glPopMatrix();
+                    gl.glPopMatrix();
 
+                }
             });
         }
 

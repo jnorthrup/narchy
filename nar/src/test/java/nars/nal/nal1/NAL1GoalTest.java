@@ -6,6 +6,8 @@ import nars.test.NALTest;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import java.util.function.LongPredicate;
+
 import static nars.Op.GOAL;
 
 public class NAL1GoalTest extends NALTest {
@@ -54,7 +56,12 @@ public class NAL1GoalTest extends NALTest {
 			.input("--(nars --> stupid)!")
 			.input("(derivation --> nars).")
 			.mustGoal(cycles, "(derivation-->stupid)", 0f, 0.81f)
-			.mustNotOutput(cycles, "(stupid-->derivation)", GOAL, 0, 1, 0.5f, 1, (t) -> true)
+			.mustNotOutput(cycles, "(stupid-->derivation)", GOAL, 0, 1, 0.5f, 1, new LongPredicate() {
+                @Override
+                public boolean test(long t) {
+                    return true;
+                }
+            })
 		;
 	}
 

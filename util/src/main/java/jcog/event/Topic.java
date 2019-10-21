@@ -30,7 +30,12 @@ public interface Topic<X> extends Iterable<Consumer<X>> {
 
 
     static RunThese all(Object obj, BiConsumer<String /* fieldName*/, Object /* value */> f) {
-        return all(obj, f, (key) -> true);
+        return all(obj, f, new Predicate<String>() {
+            @Override
+            public boolean test(String key) {
+                return true;
+            }
+        });
     }
 
     /**
@@ -42,15 +47,17 @@ public interface Topic<X> extends Iterable<Consumer<X>> {
         /** TODO cache the fields because reflection may be slow */
 
 
-        for (Field field : fieldCache.computeIfAbsent(c, (cc) ->
-                {
-                    List<Field> list = new ArrayList<>();
-                    for (Field x : cc.getFields()) {
-                        if (x.getType() == Topic.class) {
-                            list.add(x);
+        for (Field field : fieldCache.computeIfAbsent(c, new Function<Class<?>, Field[]>() {
+                    @Override
+                    public Field[] apply(Class<?> cc) {
+                        List<Field> list = new ArrayList<>();
+                        for (Field x : cc.getFields()) {
+                            if (x.getType() == Topic.class) {
+                                list.add(x);
+                            }
                         }
+                        return list.toArray(new Field[0]);
                     }
-                    return list.toArray(new Field[0]);
                 }
         )) {
             f.accept(field);
@@ -67,26 +74,34 @@ public interface Topic<X> extends Iterable<Consumer<X>> {
 
         RunThese s = new RunThese();
 
-        each(obj.getClass(), (field) -> {
-            String fieldName = field.getName();
-            if (includeKey != null && !includeKey.test(fieldName))
-                return;
+        each(obj.getClass(), new Consumer<Field>() {
+            @Override
+            public void accept(Field field) {
+                String fieldName = field.getName();
+                if (includeKey != null && !includeKey.test(fieldName))
+                    return;
 
-            try {
-                Topic<X> t = ((Topic<X>) field.get(obj));
+                try {
+                    Topic<X> t = ((Topic<X>) field.get(obj));
 
 
-                s.add(
-                        t.on((nextValue) -> f.accept(
-                                fieldName /* could also be the Topic itself */,
-                                nextValue
-                        )));
+                    s.add(
+                            t.on(new Consumer<X>() {
+                                @Override
+                                public void accept(X nextValue) {
+                                    f.accept(
+                                            fieldName /* could also be the Topic itself */,
+                                            nextValue
+                                    );
+                                }
+                            }));
 
-            } catch (IllegalAccessException e) {
-                //f.accept(fieldName, e);
-                throw new RuntimeException(e);
+                } catch (IllegalAccessException e) {
+                    //f.accept(fieldName, e);
+                    throw new RuntimeException(e);
+                }
+
             }
-
         });
 
 
@@ -107,16 +122,24 @@ public interface Topic<X> extends Iterable<Consumer<X>> {
 
     default Off on(long minUpdatePeriodMS, Consumer<X> o) {
         return minUpdatePeriodMS == 0L ? on(o) :
-                on(System::currentTimeMillis, () -> minUpdatePeriodMS, o);
+                on(System::currentTimeMillis, new LongSupplier() {
+                    @Override
+                    public long getAsLong() {
+                        return minUpdatePeriodMS;
+                    }
+                }, o);
     }
 
     default Off on(LongSupplier time, LongSupplier minUpdatePeriod, Consumer<X> o) {
         AtomicLong lastUpdate = new AtomicLong(time.getAsLong() - minUpdatePeriod.getAsLong());
-        return on((x) -> {
-            long now = time.getAsLong();
-            if (now - lastUpdate.get() >= minUpdatePeriod.getAsLong()) {
-                lastUpdate.set(now);
-                o.accept(x);
+        return on(new Consumer<X>() {
+            @Override
+            public void accept(X x) {
+                long now = time.getAsLong();
+                if (now - lastUpdate.get() >= minUpdatePeriod.getAsLong()) {
+                    lastUpdate.set(now);
+                    o.accept(x);
+                }
             }
         });
     }

@@ -51,6 +51,7 @@ import org.ejml.data.DMatrixRMaj;
 import org.ejml.data.FMatrixRMaj;
 import org.ejml.dense.row.CommonOps_DDRM;
 import org.ejml.ops.ConvertMatrixData;
+import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.meta.LazySurface;
@@ -64,6 +65,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 import static spacegraph.SpaceGraph.window;
 
@@ -72,11 +74,21 @@ public class WebcamStereoTest {
 
         VideoSource[] ab = WebCam.theFirst(2);
 
-        OrthoSurfaceGraph g = window(new LazySurface(() -> new LabeledPane(new Gridding(new PushButton("stereo", ()-> stereo3d(ab[0], ab[1]))),
-        new Gridding(
-                new VideoSurface(ab[0]),
-                new VideoSurface(ab[1])
-        ))), 1400, 800);
+        OrthoSurfaceGraph g = window(new LazySurface(new Supplier<Surface>() {
+            @Override
+            public Surface get() {
+                return new LabeledPane(new Gridding(new PushButton("stereo", new Runnable() {
+                    @Override
+                    public void run() {
+                        stereo3d(ab[0], ab[1]);
+                    }
+                })),
+                        new Gridding(
+                                new VideoSurface(ab[0]),
+                                new VideoSurface(ab[1])
+                        ));
+            }
+        }), 1400, 800);
 
     }
 

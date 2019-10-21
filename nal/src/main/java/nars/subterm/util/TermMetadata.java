@@ -10,6 +10,8 @@ import nars.term.util.Image;
 import nars.term.util.TermException;
 import nars.term.var.NormalizedVariable;
 
+import java.util.function.Predicate;
+
 /**
  * cached values for target/subterm metadata
  */
@@ -74,24 +76,27 @@ public abstract class TermMetadata implements Termlike {
         //depth first traversal, determine if variables encountered are monotonically increasing
 
         ByteArrayList types = new ByteArrayList(vars);
-        return x.recurseTermsOrdered(Term::hasVars, v -> {
-            if (!(v instanceof Variable))
-                return true;
-
-            if (v instanceof NormalizedVariable) {
-                NormalizedVariable nv = (NormalizedVariable) v;
-                byte varID = nv.id();
-                int nTypes = types.size();
-                if ((int) varID <= nTypes) {
-                    return (int) types.getByte((int) varID - 1) == (int) nv.anonType();
-                } else if ((int) varID == 1 + nTypes) {
-                    types.add(nv.anonType());
+        return x.recurseTermsOrdered(Term::hasVars, new Predicate<Term>() {
+            @Override
+            public boolean test(Term v) {
+                if (!(v instanceof Variable))
                     return true;
+
+                if (v instanceof NormalizedVariable) {
+                    NormalizedVariable nv = (NormalizedVariable) v;
+                    byte varID = nv.id();
+                    int nTypes = types.size();
+                    if ((int) varID <= nTypes) {
+                        return (int) types.getByte((int) varID - 1) == (int) nv.anonType();
+                    } else if ((int) varID == 1 + nTypes) {
+                        types.add(nv.anonType());
+                        return true;
+                    }
                 }
+
+                return false;
+
             }
-
-            return false;
-
         }, null);
     }
 

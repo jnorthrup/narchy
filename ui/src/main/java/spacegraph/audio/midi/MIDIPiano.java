@@ -2,6 +2,8 @@ package spacegraph.audio.midi;
 
 import javax.sound.midi.*;
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.*;
 
@@ -237,7 +239,12 @@ public class MIDIPiano extends JPanel {
                 volumeControl.setValue(127);
                 forceControl.setMaximum(127);
                 forceControl.setValue(127);
-                volumeControl.addChangeListener(e -> channel.controlChange(7, volumeControl.getValue()));
+                volumeControl.addChangeListener(new ChangeListener() {
+                    @Override
+                    public void stateChanged(ChangeEvent e) {
+                        channel.controlChange(7, volumeControl.getValue());
+                    }
+                });
                 volumeControl.setFocusable(false);
                 forceControl.setFocusable(false);
             }

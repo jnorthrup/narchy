@@ -27,17 +27,25 @@ public class Submitter extends Bordering {
     }
 
     public <S extends Surface, X> Submitter(String label, S editable, Function<S,X> valueAccessor, Consumer<X> input) {
-        this(new PushButton(label), editable, valueAccessor, (s, x)->input.accept(x));
+        this(new PushButton(label), editable, valueAccessor, new BiConsumer<S, X>() {
+            @Override
+            public void accept(S s, X x) {
+                input.accept(x);
+            }
+        });
     }
 
     public <S extends Surface, X> Submitter(PushButton submitButton, S editable, Function<S,X> valueAccessor, BiConsumer<S,X> input) {
         super(submitButton);
         north(editable);
-        submitButton.clicked(()->{
-            try {
-                input.accept(editable, valueAccessor.apply(editable));
-            } catch (Exception e) {
-                south(new OKSurface(e));
+        submitButton.clicked(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    input.accept(editable, valueAccessor.apply(editable));
+                } catch (Exception e) {
+                    Submitter.this.south(new OKSurface(e));
+                }
             }
         });
     }

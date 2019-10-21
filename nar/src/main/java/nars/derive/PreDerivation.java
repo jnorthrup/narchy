@@ -7,6 +7,8 @@ import nars.term.Term;
 import nars.time.When;
 import nars.truth.MutableTruth;
 
+import java.util.function.IntFunction;
+
 /** contains only information which depends on the premise itself (Task, Belief, BeliefTerm).
  * used for first stage winnowing to determine the (memoizable) set of possible forkable outcomes */
 public abstract class PreDerivation extends When<What> {
@@ -36,7 +38,12 @@ public abstract class PreDerivation extends When<What> {
 
     protected PreDerivation() {
 
-        post = Util.map(MAX_FANOUT, PremiseRunnable[]::new, i->new PremiseRunnable());
+        post = Util.map(MAX_FANOUT, PremiseRunnable[]::new, new IntFunction<PremiseRunnable>() {
+            @Override
+            public PremiseRunnable apply(int i) {
+                return new PremiseRunnable();
+            }
+        });
     }
 
     public abstract boolean hasBeliefTruth();

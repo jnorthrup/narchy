@@ -4,21 +4,28 @@ import jcog.exe.Loop;
 import nars.$;
 import nars.NAR;
 import nars.NARS;
+import nars.Task;
 import nars.concept.Concept;
+import nars.game.action.ActionSignal;
 import nars.game.action.GoalActionConcept;
 import nars.gui.NARui;
 import nars.task.DerivedTask;
 import nars.task.NALTask;
 import nars.term.Term;
 import nars.time.Tense;
+import nars.truth.Truth;
 import nars.util.Timed;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import spacegraph.SpaceGraph;
+import spacegraph.audio.SoundProducer;
 import spacegraph.audio.synth.SineWave;
 
 import javax.sound.midi.*;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 import static nars.Op.BELIEF;
 import static nars.Op.GOAL;
@@ -37,10 +44,13 @@ public class MIDITaskifier {
         nar.termVolMax.set(16);
 
 
-        nar.onTask(t -> {
-            if (t instanceof DerivedTask && t.isGoal()) {
-                
-                System.err.println(t.proof());
+        nar.onTask(new Consumer<Task>() {
+            @Override
+            public void accept(Task t) {
+                if (t instanceof DerivedTask && t.isGoal()) {
+
+                    System.err.println(t.proof());
+                }
             }
         });
 
@@ -69,39 +79,42 @@ public class MIDITaskifier {
             int finalI = i;
 
 
-            GoalActionConcept c = new GoalActionConcept(keyTerm, (b, d) -> {
+            GoalActionConcept c = new GoalActionConcept(keyTerm, new ActionSignal.MotorFunction() {
+                @Override
+                public @Nullable Truth apply(@Nullable Truth b, @Nullable Truth d) {
 
 
-
-                if (d == null)
-                    return null;
-                float v = d.freq();
-                if (v > 0.55f)
-                    return $.t(v, nar.confDefault(BELIEF));
-                else if (b != null && b.freq() > 0.5f)
-                    return $.t((float) 0, nar.confDefault(BELIEF));
-                else
-                    return null;
+                    if (d == null)
+                        return null;
+                    float v = d.freq();
+                    if (v > 0.55f)
+                        return $.t(v, nar.confDefault(BELIEF));
+                    else if (b != null && b.freq() > 0.5f)
+                        return $.t((float) 0, nar.confDefault(BELIEF));
+                    else
+                        return null;
+                }
             }, nar);
             nar.add(c);
 
 
             nar.input(NALTask.the(c.term(), BELIEF, $.t(0f, 0.35f), (long) 0, ETERNAL, ETERNAL, nar.evidence()));
             nar.input(NALTask.the(c.term(), GOAL, $.t(0f, 0.1f), (long) 0, ETERNAL, ETERNAL, nar.evidence()));
-            nar.onCycle(n -> {
+            nar.onCycle(new Consumer<NAR>() {
+                @Override
+                public void accept(NAR n) {
 
-                float v = volume[finalI];
+                    float v = volume[finalI];
 
-                if (v == (float) 0) {
-                    volume[finalI] = Float.NaN;
-                }
+                    if (v == (float) 0) {
+                        volume[finalI] = Float.NaN;
+                    }
 
-                
-                
 
 //                int dur = n.dur();
-                //c.update(n.time()-dur, n.time(), null);
-                c.accept(null);
+                    //c.update(n.time()-dur, n.time(), null);
+                    c.accept(null);
+                }
             });
 
 
@@ -110,7 +123,12 @@ public class MIDITaskifier {
 
 
 
-            s.listen(c, (k) -> new SineWave((float) (100.0 + Math.random() * 1000.0)));
+            s.listen(c, new Function<Concept, SoundProducer>() {
+                @Override
+                public SoundProducer apply(Concept k) {
+                    return new SineWave((float) (100.0 + Math.random() * 1000.0));
+                }
+            });
 
         }
 

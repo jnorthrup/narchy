@@ -1,9 +1,6 @@
 package jcog.grammar.parse.examples.mechanics;
 
-import jcog.grammar.parse.Alternation;
-import jcog.grammar.parse.IAssembler;
-import jcog.grammar.parse.Parser;
-import jcog.grammar.parse.Repetition;
+import jcog.grammar.parse.*;
 import jcog.grammar.parse.tokens.TokenAssembly;
 
 /**
@@ -31,15 +28,21 @@ public class ShowNewTerminals {
 
 		
 
-		variable.put((IAssembler) a -> {
-			Object o = a.pop();
-			a.push("VAR(" + o + ')');
-		});
+		variable.put(new IAssembler() {
+            @Override
+            public void accept(Assembly a) {
+                Object o = a.pop();
+                a.push("VAR(" + o + ')');
+            }
+        });
 
-		known.put((IAssembler) a -> {
-			Object o = a.pop();
-			a.push("KNOWN(" + o + ')');
-		});
+		known.put(new IAssembler() {
+            @Override
+            public void accept(Assembly a) {
+                Object o = a.pop();
+                a.push("KNOWN(" + o + ')');
+            }
+        });
 
 		
 

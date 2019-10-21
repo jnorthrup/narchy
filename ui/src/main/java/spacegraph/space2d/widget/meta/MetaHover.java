@@ -46,6 +46,11 @@ public class MetaHover extends Stacking {
     }
 
     public MetaHover(Widget w, Supplier<Surface> hover) {
-        this(w, hover, (currentlyVisible)-> w.pri() > (currentlyVisible ? 0.1f : 0.25f) );
+        this(w, hover, new BooleanToBooleanFunction() {
+            @Override
+            public boolean valueOf(boolean currentlyVisible) {
+                return w.pri() > (currentlyVisible ? 0.1f : 0.25f);
+            }
+        });
     }
 }

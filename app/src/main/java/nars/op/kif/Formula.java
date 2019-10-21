@@ -27,6 +27,7 @@ import com.google.common.collect.Sets;
 import java.io.File;
 import java.io.Serializable;
 import java.util.*;
+import java.util.function.BiPredicate;
 
 /** ************************************************************
  * Handle operations on an individual formula.  This includes
@@ -1322,7 +1323,12 @@ public class Formula implements Comparable, Serializable {
             
             List<Set<VariableMapping>> unionMaps = new ArrayList<>();
             List<int[]> permutations = FormulaUtil.getPermutations(args1.size(),
-                    (a,b)-> mapFormulaVariables(new Formula(args1.get(a)), new Formula(args2.get(b)), kb, memoMap) != null);
+                    new BiPredicate<Integer, Integer>() {
+                        @Override
+                        public boolean test(Integer a, Integer b) {
+                            return mapFormulaVariables(new Formula(args1.get(a)), new Formula(args2.get(b)), kb, memoMap) != null;
+                        }
+                    });
             for (int[] perm:permutations) {
                 List<Set<VariableMapping>> currentMaps = headMaps;
                 boolean currentPairingValid = true;

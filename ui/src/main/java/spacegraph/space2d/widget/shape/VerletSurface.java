@@ -16,6 +16,7 @@ import toxi.geom.QuadtreeIndex;
 import toxi.geom.Vec2D;
 import toxi.physics2d.VerletParticle2D;
 import toxi.physics2d.VerletPhysics2D;
+import toxi.physics2d.behavior.ParticleBehavior2D;
 import toxi.physics2d.constraint.ParticleConstraint2D;
 import toxi.physics2d.spring.VerletSpring2D;
 
@@ -177,32 +178,35 @@ public class VerletSurface extends PaintSurface implements Animated {
         WeakReference<Surface> wrs = new WeakReference<Surface>(s);
 
 
-        v.addBehavior((vv) -> {
-            Surface ss = wrs.get();
-            if (ss == null || ss.parent == null) {
-                vv.delete();
-                return;
-            }
+        v.addBehavior(new ParticleBehavior2D() {
+            @Override
+            public void accept(VerletParticle2D vv) {
+                Surface ss = wrs.get();
+                if (ss == null || ss.parent == null) {
+                    vv.delete();
+                    return;
+                }
 
-            Vec2D pNext = b.targetVerlet(vv, ss);
-            if (pNext != null) {
-                //p.next.setAt(pNext);
-                //System.out.println(vv.id + " " + vv.x + "," + vv.y);
+                Vec2D pNext = b.targetVerlet(vv, ss);
+                if (pNext != null) {
+                    //p.next.setAt(pNext);
+                    //System.out.println(vv.id + " " + vv.x + "," + vv.y);
 
 
-                //gradual
+                    //gradual
 //                    float force = 5.5f;
 //                    vv.addForce(pNext.sub(vv).normalize().scaleSelf(force));
 
-                //immediate
-                vv.next.set(pNext);
+                    //immediate
+                    vv.next.set(pNext);
 
-                float density = 0.01f;
-                vv.mass = ss.bounds.area() * density;
+                    float density = 0.01f;
+                    vv.mass = ss.bounds.area() * density;
 
 //                    vv.setAt(pNext);
 //                    vv.prev.setAt(pNext);
-                //vv.next.setAt(pNext);
+                    //vv.next.setAt(pNext);
+                }
             }
         });
 
@@ -216,23 +220,25 @@ public class VerletSurface extends PaintSurface implements Animated {
         if (!surfaceOverrides) {
 
             //pre
-            v.addConstraint(vv -> {
-                Surface ss = wrs.get();
+            v.addConstraint(new ParticleConstraint2D() {
+                @Override
+                public void accept(VerletParticle2D vv) {
+                    Surface ss = wrs.get();
 //                vv.next.setAt(b.targetVerlet(vv, ss));
 //                vv.constrainAll(physics.bounds);
 
-                if (ss == null) {
-                    physics.removeParticle(vv);
-                    return;
-                }
+                    if (ss == null) {
+                        physics.removeParticle(vv);
+                        return;
+                    }
 
-                Vec2D sNext = b.targetSurface(vv, ss);
-                if (sNext != null) {
-                    //ss.pos(Util.lerp(0.5f, sNext.x, ss.x()))
-                    //ss.pos(RectFloat2D.XYWH(sNext.x, sNext.y, ss.w(), ss.h()));
-                    //ss.pos(ss.bounds.posLerp(sNext.x, sNext.y, 0.75f));
-                    ss.pos(ss.bounds.posLerp(sNext.x, sNext.y, 1f));
-                }
+                    Vec2D sNext = b.targetSurface(vv, ss);
+                    if (sNext != null) {
+                        //ss.pos(Util.lerp(0.5f, sNext.x, ss.x()))
+                        //ss.pos(RectFloat2D.XYWH(sNext.x, sNext.y, ss.w(), ss.h()));
+                        //ss.pos(ss.bounds.posLerp(sNext.x, sNext.y, 0.75f));
+                        ss.pos(ss.bounds.posLerp(sNext.x, sNext.y, 1f));
+                    }
 //            } else {
 
 //                Vec2D pNext = b.targetVerlet(vv, ss);
@@ -248,6 +254,7 @@ public class VerletSurface extends PaintSurface implements Animated {
 //                    vv.setAt(pNext);
 //
 //                }
+                }
             });
         }
         return null;

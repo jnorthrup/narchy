@@ -29,9 +29,7 @@ import org.jetbrains.annotations.NotNull;
 import java.lang.reflect.Array;
 import java.net.URL;
 import java.util.*;
-import java.util.function.Consumer;
-import java.util.function.IntFunction;
-import java.util.function.Predicate;
+import java.util.function.*;
 import java.util.stream.IntStream;
 
 /**
@@ -137,14 +135,17 @@ public enum ArrayUtil {
     public static final Consumer[] EMPTY_CONSUMER_ARRAY = new Consumer[0];
     public static final URL[] EMPTY_URL_ARRAY = new URL[0];
     public static final LongObjectPair[] EMPTY_LONGOBJECT_PAIR_ARRAY = new LongObjectPair[0];
-    public static final Comparator NullCompactingComparator = (o1, o2) -> {
-        if (o1 == o2) return 0;
-        if (o1 == null) return 1;
-        if (o2 == null) return -1;
-        return Integer.compare(
-                System.identityHashCode(o1),
-                System.identityHashCode(o2)
-        );
+    public static final Comparator NullCompactingComparator = new Comparator() {
+        @Override
+        public int compare(Object o1, Object o2) {
+            if (o1 == o2) return 0;
+            if (o1 == null) return 1;
+            if (o2 == null) return -1;
+            return Integer.compare(
+                    System.identityHashCode(o1),
+                    System.identityHashCode(o2)
+            );
+        }
     };
     /**
      * The number of distinct byte values.
@@ -2386,9 +2387,39 @@ public enum ArrayUtil {
         if (startIndex < 0) return INDEX_NOT_FOUND;
         if (startIndex >= array.length) startIndex = array.length - 1;
         if (objectToFind == null)
-            return IntStream.iterate(startIndex, i -> i >= 0, i -> i - 1).filter(i -> array[i] == null).findFirst().orElse(INDEX_NOT_FOUND);
+            return IntStream.iterate(startIndex, new IntPredicate() {
+                @Override
+                public boolean test(int i) {
+                    return i >= 0;
+                }
+            }, new IntUnaryOperator() {
+                @Override
+                public int applyAsInt(int i) {
+                    return i - 1;
+                }
+            }).filter(new IntPredicate() {
+                @Override
+                public boolean test(int i) {
+                    return array[i] == null;
+                }
+            }).findFirst().orElse(INDEX_NOT_FOUND);
         else if (array.getClass().getComponentType().isInstance(objectToFind))
-            return IntStream.iterate(startIndex, i -> i >= 0, i -> i - 1).filter(i -> objectToFind.equals(array[i])).findFirst().orElse(INDEX_NOT_FOUND);
+            return IntStream.iterate(startIndex, new IntPredicate() {
+                @Override
+                public boolean test(int i) {
+                    return i >= 0;
+                }
+            }, new IntUnaryOperator() {
+                @Override
+                public int applyAsInt(int i) {
+                    return i - 1;
+                }
+            }).filter(new IntPredicate() {
+                @Override
+                public boolean test(int i) {
+                    return objectToFind.equals(array[i]);
+                }
+            }).findFirst().orElse(INDEX_NOT_FOUND);
         return INDEX_NOT_FOUND;
     }
 
@@ -2476,7 +2507,22 @@ public enum ArrayUtil {
         if (array == null) return INDEX_NOT_FOUND;
         if (startIndex < 0) return INDEX_NOT_FOUND;
         if (startIndex >= array.length) startIndex = array.length - 1;
-        return IntStream.iterate(startIndex, i -> i >= 0, i -> i - 1).filter(i -> valueToFind == array[i]).findFirst().orElse(INDEX_NOT_FOUND);
+        return IntStream.iterate(startIndex, new IntPredicate() {
+            @Override
+            public boolean test(int i) {
+                return i >= 0;
+            }
+        }, new IntUnaryOperator() {
+            @Override
+            public int applyAsInt(int i) {
+                return i - 1;
+            }
+        }).filter(new IntPredicate() {
+            @Override
+            public boolean test(int i) {
+                return valueToFind == array[i];
+            }
+        }).findFirst().orElse(INDEX_NOT_FOUND);
     }
 
     /**
@@ -2576,7 +2622,22 @@ public enum ArrayUtil {
         if (array == null) return INDEX_NOT_FOUND;
         if (startIndex < 0) return INDEX_NOT_FOUND;
         if (startIndex >= array.length) startIndex = array.length - 1;
-        return IntStream.iterate(startIndex, i -> i >= 0, i -> i - 1).filter(i -> valueToFind == array[i]).findFirst().orElse(INDEX_NOT_FOUND);
+        return IntStream.iterate(startIndex, new IntPredicate() {
+            @Override
+            public boolean test(int i) {
+                return i >= 0;
+            }
+        }, new IntUnaryOperator() {
+            @Override
+            public int applyAsInt(int i) {
+                return i - 1;
+            }
+        }).filter(new IntPredicate() {
+            @Override
+            public boolean test(int i) {
+                return valueToFind == array[i];
+            }
+        }).findFirst().orElse(INDEX_NOT_FOUND);
     }
 
     /**
@@ -2662,7 +2723,22 @@ public enum ArrayUtil {
         if (array == null) return INDEX_NOT_FOUND;
         if (startIndex < 0) return INDEX_NOT_FOUND;
         if (startIndex >= array.length) startIndex = array.length - 1;
-        return IntStream.iterate(startIndex, i -> i >= 0, i -> i - 1).filter(i -> (int) valueToFind == (int) array[i]).findFirst().orElse(INDEX_NOT_FOUND);
+        return IntStream.iterate(startIndex, new IntPredicate() {
+            @Override
+            public boolean test(int i) {
+                return i >= 0;
+            }
+        }, new IntUnaryOperator() {
+            @Override
+            public int applyAsInt(int i) {
+                return i - 1;
+            }
+        }).filter(new IntPredicate() {
+            @Override
+            public boolean test(int i) {
+                return (int) valueToFind == (int) array[i];
+            }
+        }).findFirst().orElse(INDEX_NOT_FOUND);
     }
 
     /**
@@ -2753,7 +2829,22 @@ public enum ArrayUtil {
         if (array == null) return INDEX_NOT_FOUND;
         if (startIndex < 0) return INDEX_NOT_FOUND;
         if (startIndex >= array.length) startIndex = array.length - 1;
-        return IntStream.iterate(startIndex, i -> i >= 0, i -> i - 1).filter(i -> (int) valueToFind == (int) array[i]).findFirst().orElse(INDEX_NOT_FOUND);
+        return IntStream.iterate(startIndex, new IntPredicate() {
+            @Override
+            public boolean test(int i) {
+                return i >= 0;
+            }
+        }, new IntUnaryOperator() {
+            @Override
+            public int applyAsInt(int i) {
+                return i - 1;
+            }
+        }).filter(new IntPredicate() {
+            @Override
+            public boolean test(int i) {
+                return (int) valueToFind == (int) array[i];
+            }
+        }).findFirst().orElse(INDEX_NOT_FOUND);
     }
 
     /**
@@ -2847,7 +2938,22 @@ public enum ArrayUtil {
         if (array == null) return INDEX_NOT_FOUND;
         if (startIndex < 0) return INDEX_NOT_FOUND;
         if (startIndex >= array.length) startIndex = array.length - 1;
-        return IntStream.iterate(startIndex, i -> i >= 0, i -> i - 1).filter(i -> (int) valueToFind == (int) array[i]).findFirst().orElse(INDEX_NOT_FOUND);
+        return IntStream.iterate(startIndex, new IntPredicate() {
+            @Override
+            public boolean test(int i) {
+                return i >= 0;
+            }
+        }, new IntUnaryOperator() {
+            @Override
+            public int applyAsInt(int i) {
+                return i - 1;
+            }
+        }).filter(new IntPredicate() {
+            @Override
+            public boolean test(int i) {
+                return (int) valueToFind == (int) array[i];
+            }
+        }).findFirst().orElse(INDEX_NOT_FOUND);
     }
 
     /**
@@ -2998,7 +3104,22 @@ public enum ArrayUtil {
         if (array.length == 0) return INDEX_NOT_FOUND;
         if (startIndex < 0) return INDEX_NOT_FOUND;
         if (startIndex >= array.length) startIndex = array.length - 1;
-        return IntStream.iterate(startIndex, i -> i >= 0, i -> i - 1).filter(i -> valueToFind == array[i]).findFirst().orElse(INDEX_NOT_FOUND);
+        return IntStream.iterate(startIndex, new IntPredicate() {
+            @Override
+            public boolean test(int i) {
+                return i >= 0;
+            }
+        }, new IntUnaryOperator() {
+            @Override
+            public int applyAsInt(int i) {
+                return i - 1;
+            }
+        }).filter(new IntPredicate() {
+            @Override
+            public boolean test(int i) {
+                return valueToFind == array[i];
+            }
+        }).findFirst().orElse(INDEX_NOT_FOUND);
     }
 
     /**
@@ -3024,7 +3145,22 @@ public enum ArrayUtil {
         if (startIndex >= array.length) startIndex = array.length - 1;
         double min = valueToFind - tolerance;
         double max = valueToFind + tolerance;
-        return IntStream.iterate(startIndex, i -> i >= 0, i -> i - 1).filter(i -> array[i] >= min && array[i] <= max).findFirst().orElse(INDEX_NOT_FOUND);
+        return IntStream.iterate(startIndex, new IntPredicate() {
+            @Override
+            public boolean test(int i) {
+                return i >= 0;
+            }
+        }, new IntUnaryOperator() {
+            @Override
+            public int applyAsInt(int i) {
+                return i - 1;
+            }
+        }).filter(new IntPredicate() {
+            @Override
+            public boolean test(int i) {
+                return array[i] >= min && array[i] <= max;
+            }
+        }).findFirst().orElse(INDEX_NOT_FOUND);
     }
 
     /**
@@ -3128,7 +3264,22 @@ public enum ArrayUtil {
         if (array.length == 0) return INDEX_NOT_FOUND;
         if (startIndex < 0) return INDEX_NOT_FOUND;
         if (startIndex >= array.length) startIndex = array.length - 1;
-        return IntStream.iterate(startIndex, i -> i >= 0, i -> i - 1).filter(i -> valueToFind == array[i]).findFirst().orElse(INDEX_NOT_FOUND);
+        return IntStream.iterate(startIndex, new IntPredicate() {
+            @Override
+            public boolean test(int i) {
+                return i >= 0;
+            }
+        }, new IntUnaryOperator() {
+            @Override
+            public int applyAsInt(int i) {
+                return i - 1;
+            }
+        }).filter(new IntPredicate() {
+            @Override
+            public boolean test(int i) {
+                return valueToFind == array[i];
+            }
+        }).findFirst().orElse(INDEX_NOT_FOUND);
     }
 
     /**
@@ -3217,7 +3368,22 @@ public enum ArrayUtil {
         if (array.length == 0) return INDEX_NOT_FOUND;
         if (startIndex < 0) return INDEX_NOT_FOUND;
         if (startIndex >= array.length) startIndex = array.length - 1;
-        return IntStream.iterate(startIndex, i -> i >= 0, i -> i - 1).filter(i -> valueToFind == array[i]).findFirst().orElse(INDEX_NOT_FOUND);
+        return IntStream.iterate(startIndex, new IntPredicate() {
+            @Override
+            public boolean test(int i) {
+                return i >= 0;
+            }
+        }, new IntUnaryOperator() {
+            @Override
+            public int applyAsInt(int i) {
+                return i - 1;
+            }
+        }).filter(new IntPredicate() {
+            @Override
+            public boolean test(int i) {
+                return valueToFind == array[i];
+            }
+        }).findFirst().orElse(INDEX_NOT_FOUND);
     }
 
     /**
@@ -4246,19 +4412,59 @@ public enum ArrayUtil {
     }
 
     private static byte[] copyArrayGrow1(byte[] array) {
-        return Optional.ofNullable(array).map(bytes -> Arrays.copyOf(bytes, bytes.length + 1)).orElseGet(() -> new byte[1]);
+        return Optional.ofNullable(array).map(new Function<byte[], byte[]>() {
+            @Override
+            public byte[] apply(byte[] bytes) {
+                return Arrays.copyOf(bytes, bytes.length + 1);
+            }
+        }).orElseGet(new Supplier<byte[]>() {
+            @Override
+            public byte[] get() {
+                return new byte[1];
+            }
+        });
     }
 
     private static short[] copyArrayGrow1(short[] array) {
-        return Optional.ofNullable(array).map(shorts -> Arrays.copyOf(shorts, shorts.length + 1)).orElseGet(() -> new short[1]);
+        return Optional.ofNullable(array).map(new Function<short[], short[]>() {
+            @Override
+            public short[] apply(short[] shorts) {
+                return Arrays.copyOf(shorts, shorts.length + 1);
+            }
+        }).orElseGet(new Supplier<short[]>() {
+            @Override
+            public short[] get() {
+                return new short[1];
+            }
+        });
     }
 
     private static long[] copyArrayGrow1(long[] array) {
-        return Optional.ofNullable(array).map(longs -> Arrays.copyOf(longs, longs.length + 1)).orElseGet(() -> new long[1]);
+        return Optional.ofNullable(array).map(new Function<long[], long[]>() {
+            @Override
+            public long[] apply(long[] longs) {
+                return Arrays.copyOf(longs, longs.length + 1);
+            }
+        }).orElseGet(new Supplier<long[]>() {
+            @Override
+            public long[] get() {
+                return new long[1];
+            }
+        });
     }
 
     private static int[] copyArrayGrow1(int[] array) {
-        return Optional.ofNullable(array).map(ints -> Arrays.copyOf(ints, ints.length + 1)).orElseGet(() -> new int[1]);
+        return Optional.ofNullable(array).map(new Function<int[], int[]>() {
+            @Override
+            public int[] apply(int[] ints) {
+                return Arrays.copyOf(ints, ints.length + 1);
+            }
+        }).orElseGet(new Supplier<int[]>() {
+            @Override
+            public int[] get() {
+                return new int[1];
+            }
+        });
     }
 
     /**

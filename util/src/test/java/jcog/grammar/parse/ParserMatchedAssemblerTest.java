@@ -63,10 +63,13 @@ class ParserMatchedAssemblerTest {
 		assembly.announceMatchingStart();
 		assembly.push(new Token("b"));
 
-		matchedRule = (tokens, stack) -> {
-			String result = stack.pop() + ((Token) tokens.get(0)).sval();
-			stack.push(result);
-		};
+		matchedRule = new BiConsumer<List, Stack>() {
+            @Override
+            public void accept(List tokens, Stack stack) {
+                String result = stack.pop() + ((Token) tokens.get(0)).sval();
+                stack.push(result);
+            }
+        };
 
 		assembler = new ParserMatchedAssembler(matchedRule);
 		assembler.accept(assembly);

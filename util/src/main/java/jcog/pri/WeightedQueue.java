@@ -50,13 +50,14 @@ import java.util.concurrent.TimeUnit;
 public class WeightedQueue<T> implements BlockingQueue<T>
 {
     private static final Logger logger = LoggerFactory.getLogger(WeightedQueue.class);
-    public static final Weigher NATURAL_WEIGHER = (Weigher<Object>) weighable ->
-    {
-        if (weighable instanceof Weighable)
-        {
-            return ((Weighable)weighable).weight();
+    public static final Weigher NATURAL_WEIGHER = new Weigher<Object>() {
+        @Override
+        public int weigh(Object weighable) {
+            if (weighable instanceof Weighable) {
+                return ((Weighable) weighable).weight();
+            }
+            return 1;
         }
-        return 1;
     };
 
     private final Weigher<T> weigher;

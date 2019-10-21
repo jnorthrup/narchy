@@ -120,7 +120,11 @@ public class VectorSensorChart extends BitmapMatrixView implements BitmapMatrixV
 
     private TaskConcept touchConcept;
 
-    private Consumer<TaskConcept> touchMode = (x) -> { };
+    private Consumer<TaskConcept> touchMode = new Consumer<TaskConcept>() {
+        @Override
+        public void accept(TaskConcept x) {
+        }
+    };
     public final transient TaskConcept[][] concept;
 
 //    final AtomicBoolean ready = new AtomicBoolean(true);
@@ -478,7 +482,9 @@ public class VectorSensorChart extends BitmapMatrixView implements BitmapMatrixV
 
             /** TODO use MutableEnum */
             set(new ButtonSet<>(ButtonSet.Mode.One,
-                    new CheckBox("Pri+", ()->{
+                    new CheckBox("Pri+", new Runnable() {
+                        @Override
+                        public void run() {
 //                        view.onConceptTouch((c)->{
 //                            next.set(()-> {
 //                                        //view.nar.activate(c, 1f)
@@ -486,6 +492,7 @@ public class VectorSensorChart extends BitmapMatrixView implements BitmapMatrixV
 //                                    }
 //                            );
 //                        });
+                        }
                     }),
 
 
@@ -506,10 +513,13 @@ public class VectorSensorChart extends BitmapMatrixView implements BitmapMatrixV
 
         /** from,to allows specifying a transition, ex: (--x &&+1 x) or (x &&+1 --x) if they differe */
         CheckBox goalCheckBox(String s, /* TODO */ float fromValue, float toValue) {
-            return new CheckBox(s, () -> {
+            return new CheckBox(s, new Runnable() {
+                @Override
+                public void run() {
 //                view.onConceptTouch((c) -> {
 //                    next.set(() -> view.nar.want(c.term(), Tense.Present, toValue));
 //                });
+                }
             });
         }
 

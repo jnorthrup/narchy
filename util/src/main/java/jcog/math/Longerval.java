@@ -1,9 +1,11 @@
 package jcog.math;
 
+import org.eclipse.collections.api.block.function.primitive.LongFunction;
 import org.eclipse.collections.impl.block.factory.Comparators;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Comparator;
+import java.util.function.ToLongFunction;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
@@ -14,8 +16,18 @@ import static java.lang.Math.min;
 public class Longerval implements LongInterval, Comparable<Longerval> {
 
     static final Comparator<Longerval> comparator = Comparators
-            .byLongFunction((Longerval l) -> l.start)
-            .thenComparingLong((l) -> l.end);
+            .byLongFunction(new LongFunction<Longerval>() {
+                @Override
+                public long longValueOf(Longerval l) {
+                    return l.start;
+                }
+            })
+            .thenComparingLong(new ToLongFunction<Longerval>() {
+                @Override
+                public long applyAsLong(Longerval l) {
+                    return l.end;
+                }
+            });
 
     private static final Longerval Eternal = new Longerval(ETERNAL, ETERNAL);
 

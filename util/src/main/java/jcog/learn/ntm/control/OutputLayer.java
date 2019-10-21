@@ -4,6 +4,7 @@ import jcog.learn.ntm.learn.IWeightUpdater;
 import jcog.learn.ntm.memory.address.Head;
 
 import java.util.function.Consumer;
+import java.util.function.UnaryOperator;
 
 public class OutputLayer {
     private final int _outputSize;
@@ -92,7 +93,12 @@ public class OutputLayer {
     public OutputLayer clone() {
 
 
-        Head[] heads = Head.getVector(this.heads.length, i -> memoryWidth);
+        Head[] heads = Head.getVector(this.heads.length, new UnaryOperator<Integer>() {
+            @Override
+            public Integer apply(Integer i) {
+                return memoryWidth;
+            }
+        });
         return new OutputLayer(_hiddenToOutputLayerWeights, _hiddenToHeadsWeights,
                 new UVector(_outputSize), heads, _outputSize, controllerSize, memoryWidth, _headUnitSize);
 

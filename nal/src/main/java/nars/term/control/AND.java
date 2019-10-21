@@ -185,9 +185,14 @@ public abstract class AND<X> extends AbstractPred<X> {
                 }
                 if (needsFlat || !(cond instanceof PREDICATE[])) {
                     cond = stream(cond).flatMap(
-                            x -> x instanceof AND ?
-                                    ((Compound)x).subStream() :
-                                    Stream.of(x))
+                            new Function<Term, Stream<? extends Term>>() {
+                                @Override
+                                public Stream<? extends Term> apply(Term x) {
+                                    return x instanceof AND ?
+                                            ((Compound) x).subStream() :
+                                            Stream.of(x);
+                                }
+                            })
                     .toArray(PREDICATE[]::new);
                 }
 

@@ -39,6 +39,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -100,11 +101,14 @@ public class CastGraph extends jcog.data.graph.MapNodeGraph<Class, Function> {
      */
     public static Function<FromTo<jcog.data.graph.Node<Class, Function>, Function>, Double> createEdgeWeight() {
         return
-                from -> {
-                    Object edge = from.id();
-                    if (edge instanceof PrioritizedDouble)
-                        return ((PrioritizedDouble) edge).weight();
-                    return (double) 1;
+                new Function<FromTo<Node<Class, Function>, Function>, Double>() {
+                    @Override
+                    public Double apply(FromTo<Node<Class, Function>, Function> from) {
+                        Object edge = from.id();
+                        if (edge instanceof PrioritizedDouble)
+                            return ((PrioritizedDouble) edge).weight();
+                        return (double) 1;
+                    }
                 };
     }
 
@@ -209,7 +213,13 @@ public class CastGraph extends jcog.data.graph.MapNodeGraph<Class, Function> {
         if (from == null) throw new IllegalArgumentException("from==null");
         if (to == null) throw new IllegalArgumentException("to==null");
         Path[] y = new Path[1];
-        findPath(from, to, (x -> { y[0] = x; return false; /* just the first one */}));
+        findPath(from, to, (new Predicate<Path<Class, Function>>() {
+            @Override
+            public boolean test(Path<Class, Function> x) {
+                y[0] = x;
+                return false; /* just the first one */
+            }
+        }));
         return y[0];
     }
 
@@ -286,10 +296,13 @@ public class CastGraph extends jcog.data.graph.MapNodeGraph<Class, Function> {
                     //if( findPathMinimum<2 )return true;
                     return true;
                 } */
-                    pathFound -> {
-                        p.add(pathFound);
-                        //return variants.size() >= findPathMinimum || findPathMinimum < 0;//if( findPathMinimum<2 )return true;
-                        return true; //continue
+                    new Predicate<Path<Class, Function>>() {
+                        @Override
+                        public boolean test(Path<Class, Function> pathFound) {
+                            p.add(pathFound);
+                            //return variants.size() >= findPathMinimum || findPathMinimum < 0;//if( findPathMinimum<2 )return true;
+                            return true; //continue
+                        }
                     }
             );
 

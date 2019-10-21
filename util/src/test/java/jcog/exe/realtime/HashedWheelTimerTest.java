@@ -17,8 +17,10 @@ import org.junit.jupiter.api.parallel.ExecutionMode;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Queue;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -39,7 +41,12 @@ abstract class HashedWheelTimerTest {
 
     protected static WheelModel model(long resolution, int wheels) {
         //return new AdmissionQueueWheelModel(wheels, resolution);
-        return new QueueWheelModel(wheels, resolution, ()->new MpscArrayQueue<>(32));
+        return new QueueWheelModel(wheels, resolution, new Supplier<Queue<TimedFuture>>() {
+            @Override
+            public Queue<TimedFuture> get() {
+                return new MpscArrayQueue<>(32);
+            }
+        });
     }
 
     protected abstract HashedWheelTimer.WaitStrategy waitStrategy();
@@ -83,10 +90,13 @@ abstract class HashedWheelTimerTest {
     @Test
     void scheduleOneShotCallableTest() throws InterruptedException {
         AtomicInteger i = new AtomicInteger(1);
-        ScheduledFuture<String> future = timer.schedule(() -> {
-                    i.decrementAndGet();
-                    return "Hello";
-                },
+        ScheduledFuture<String> future = timer.schedule(new Callable<String>() {
+                                                            @Override
+                                                            public String call() throws Exception {
+                                                                i.decrementAndGet();
+                                                                return "Hello";
+                                                            }
+                                                        },
                 100,
                 TimeUnit.MILLISECONDS);
 
@@ -98,10 +108,13 @@ abstract class HashedWheelTimerTest {
     void testOneShotCallableFuture() throws InterruptedException, ExecutionException, TimeoutException {
         AtomicInteger i = new AtomicInteger(1);
         long start = System.currentTimeMillis();
-        assertEquals("Hello", timer.schedule(() -> {
-                    i.decrementAndGet();
-                    return "Hello";
-                },
+        assertEquals("Hello", timer.schedule(new Callable<String>() {
+                                                 @Override
+                                                 public String call() throws Exception {
+                                                     i.decrementAndGet();
+                                                     return "Hello";
+                                                 }
+                                             },
                 100,
                 TimeUnit.MILLISECONDS)
                 .get(250, TimeUnit.MILLISECONDS));
@@ -130,23 +143,26 @@ abstract class HashedWheelTimerTest {
         CountDownLatch latch = new CountDownLatch(2);
         List<Long> r = new ArrayList<>();
         int periodMS = 100;
-        timer.scheduleAtFixedRate(() -> {
+        timer.scheduleAtFixedRate(new Runnable() {
+                                      @Override
+                                      public void run() {
 
-                    r.add(System.currentTimeMillis());
+                                          r.add(System.currentTimeMillis());
 
-                    latch.countDown();
+                                          latch.countDown();
 
-                    if (latch.getCount() == 0)
-                        return; 
+                                          if (latch.getCount() == 0)
+                                              return;
 
-                    try {
-                        Thread.sleep(50);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+                                          try {
+                                              Thread.sleep(50);
+                                          } catch (InterruptedException e) {
+                                              e.printStackTrace();
+                                          }
 
-                    r.add(System.currentTimeMillis());
-                },
+                                          r.add(System.currentTimeMillis());
+                                      }
+                                  },
                 periodMS,
                 periodMS,
                 TimeUnit.MILLISECONDS);
@@ -160,11 +176,13 @@ abstract class HashedWheelTimerTest {
         //CountDownLatch latch = new CountDownLatch(2);
         List<Long> r = new ArrayList<>();
         long start = System.nanoTime();
-        timer.scheduleWithFixedDelay(() -> {
+        timer.scheduleWithFixedDelay(new Runnable() {
+                                         @Override
+                                         public void run() {
 
-                    long now = System.nanoTime();
-                    r.add(now);
-                    System.out.println(Texts.timeStr(now - start));
+                                             long now = System.nanoTime();
+                                             r.add(now);
+                                             System.out.println(Texts.timeStr(now - start));
 
 //                    latch.countDown();
 //
@@ -177,7 +195,8 @@ abstract class HashedWheelTimerTest {
 //                        e.printStackTrace();
 //                    }
 
-                },
+                                         }
+                                     },
             100,
             100,
             TimeUnit.MILLISECONDS);
@@ -190,7 +209,12 @@ abstract class HashedWheelTimerTest {
 
         Long a2 = r.get(5);
         Long a1 = r.get(4);
-        assertTrue(Math.abs(a2 - a1) >= 90L*1E6 && Math.abs(a2-a1) < 110L*1E6, ()-> Texts.timeStr(a2) + " vs " + Texts.timeStr(a1));
+        assertTrue(Math.abs(a2 - a1) >= 90L*1E6 && Math.abs(a2-a1) < 110L*1E6, new Supplier<String>() {
+            @Override
+            public String get() {
+                return Texts.timeStr(a2) + " vs " + Texts.timeStr(a1);
+            }
+        });
     }
 
     @Test
@@ -235,14 +259,17 @@ abstract class HashedWheelTimerTest {
 
         long start = System.nanoTime();
         long[] last = {start};
-        Runnable task = () -> {
-            long now = System.nanoTime();
+        Runnable task = new Runnable() {
+            @Override
+            public void run() {
+                long now = System.nanoTime();
 
-            if (latch.getCount() < count)
-                when.recordValue(now - last[0]);
+                if (latch.getCount() < count)
+                    when.recordValue(now - last[0]);
 
-            last[0] = now;
-            latch.countDown();
+                last[0] = now;
+                latch.countDown();
+            }
         };
 
         if (fixedDelayOrRate) {
@@ -257,8 +284,18 @@ abstract class HashedWheelTimerTest {
                     TimeUnit.MILLISECONDS);
         }
 
-        assertTrue(latch.await(count, TimeUnit.SECONDS), ()->latch.getCount() + " should be zero");
-        assertTrue(1 >= timer.size(), () -> timer.size() + " tasks in wheel");
+        assertTrue(latch.await(count, TimeUnit.SECONDS), new Supplier<String>() {
+            @Override
+            public String get() {
+                return latch.getCount() + " should be zero";
+            }
+        });
+        assertTrue(1 >= timer.size(), new Supplier<String>() {
+            @Override
+            public String get() {
+                return timer.size() + " tasks in wheel";
+            }
+        });
 
         {
             Histogram w = when.copy();
@@ -281,9 +318,19 @@ abstract class HashedWheelTimerTest {
                 100,
                 100,
                 TimeUnit.MILLISECONDS);
-        assertTrue(latch.await(3, TimeUnit.SECONDS), ()->latch.getCount() + " should be zero");
+        assertTrue(latch.await(3, TimeUnit.SECONDS), new Supplier<String>() {
+            @Override
+            public String get() {
+                return latch.getCount() + " should be zero";
+            }
+        });
         long end = System.currentTimeMillis();
-        assertTrue(end - start >= 900, ()->end-start + "(ms) start to end");
+        assertTrue(end - start >= 900, new Supplier<String>() {
+            @Override
+            public String get() {
+                return end - start + "(ms) start to end";
+            }
+        });
     }
 
     
@@ -295,10 +342,13 @@ abstract class HashedWheelTimerTest {
     @Test
     void testScheduleTimeoutShouldNotRunBeforeDelay() throws InterruptedException {
         CountDownLatch barrier = new CountDownLatch(1);
-        Future timeout = timer.schedule(() -> {
-            fail("This should not have run");
-            barrier.countDown();
-            fail();
+        Future timeout = timer.schedule(new Runnable() {
+            @Override
+            public void run() {
+                fail("This should not have run");
+                barrier.countDown();
+                fail();
+            }
         }, 2, TimeUnit.SECONDS);
         assertFalse(barrier.await(1, TimeUnit.SECONDS));
         assertFalse(timeout.isDone(), "timer should not expire");
@@ -363,10 +413,13 @@ abstract class HashedWheelTimerTest {
         for (int i = 0; i < scheduledTasks; i++) {
             long start = System.nanoTime();
 
-            timer.schedule(() -> {
-                long ms = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - start);
-                //System.out.println(ms);
-                queue.addValue(ms);
+            timer.schedule(new Runnable() {
+                @Override
+                public void run() {
+                    long ms = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - start);
+                    //System.out.println(ms);
+                    queue.addValue(ms);
+                }
             }, delayTime, TimeUnit.MILLISECONDS);
         }
 
@@ -378,7 +431,12 @@ abstract class HashedWheelTimerTest {
         int tolerance = 50;
         int maxTimeout = (delayTime) + tolerance;
         assertTrue(delay >= delayTime - tolerance && delay <= delayTime + tolerance,
-                () -> "Timeout + " + scheduledTasks + " delay must be " + delayTime + " < " + delay + " < " + maxTimeout);
+                new Supplier<String>() {
+                    @Override
+                    public String get() {
+                        return "Timeout + " + scheduledTasks + " delay must be " + delayTime + " < " + delay + " < " + maxTimeout;
+                    }
+                });
 
     }
 

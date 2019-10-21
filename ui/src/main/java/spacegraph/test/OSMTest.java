@@ -23,9 +23,12 @@ public class OSMTest {
             IRL i = new IRL(User.the());
 
             Osm o = new Osm().load("/home/me/m/test.osm.bz2");
-            Consumer<OsmElement> index = x -> {
-                if (x.tags != null && !x.tags.isEmpty())
-                    i.index.add(x);
+            Consumer<OsmElement> index = new Consumer<OsmElement>() {
+                @Override
+                public void accept(OsmElement x) {
+                    if (x.tags != null && !x.tags.isEmpty())
+                        i.index.add(x);
+                }
             };
             for (OsmNode osmNode : o.nodes.values()) {
                 index.accept(osmNode);

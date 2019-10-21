@@ -7,9 +7,12 @@ import nars.attention.TaskLinkWhat;
 import nars.gui.DurSurface;
 import nars.link.TaskLinks;
 import nars.term.Term;
+import org.jetbrains.annotations.NotNull;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.meta.ObjectSurface;
+
+import java.util.Iterator;
 
 public class BagregateConceptGraph2D extends ConceptGraph2D {
 
@@ -28,7 +31,13 @@ public class BagregateConceptGraph2D extends ConceptGraph2D {
     }
 
     public static Surface get(TaskLinks links, NAR n) {
-        Bagregate<Term> b = new Bagregate<Term>(() -> links.terms().iterator(), 512);
+        Bagregate<Term> b = new Bagregate<Term>(new Iterable<Term>() {
+            @NotNull
+            @Override
+            public Iterator<Term> iterator() {
+                return links.terms().iterator();
+            }
+        }, 512);
 
         return DurSurface.get(
                 new nars.gui.graph.run.BagregateConceptGraph2D(b, links, n).widget(),

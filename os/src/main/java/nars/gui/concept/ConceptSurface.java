@@ -28,7 +28,12 @@ public class ConceptSurface extends TabMenu {
 
     public static Map<String, Supplier<Surface>> conceptMenu(Term x, NAR n) {
         Map<String, Supplier<Surface>> m = Map.of(
-                x.toString(), () -> new VectorLabel(x.toString()),
+                x.toString(), new Supplier<Surface>() {
+                    @Override
+                    public Surface get() {
+                        return new VectorLabel(x.toString());
+                    }
+                },
 //                "budget", () -> {
 //
 //                    Term xx = x.concept();
@@ -48,13 +53,21 @@ public class ConceptSurface extends TabMenu {
 ////                        }
 //                    });
 //                },
-                "print", ()->{
-                    //TODO better
+                "print", new Supplier<Surface>() {
+                    @Override
+                    public Surface get() {
+                        //TODO better
 
-                    n.conceptualizeDynamic(x).print();
-                    return new EmptySurface();
+                        n.conceptualizeDynamic(x).print();
+                        return new EmptySurface();
+                    }
                 } /* TODO*/,
-                "beliefs", () -> NARui.beliefChart(n.conceptualizeDynamic(x), n)
+                "beliefs", new Supplier<Surface>() {
+                    @Override
+                    public Surface get() {
+                        return NARui.beliefChart(n.conceptualizeDynamic(x), n);
+                    }
+                }
 //                        "termlinks", () -> new BagView("TermLinks", n.concept(id).termlinks(), n),
 //                "tasklinks", () -> new LabeledPane("TaskLinks", new BagView(n.concept(x).tasklinks(), n)),
 //                "goal", () -> {
@@ -89,7 +102,12 @@ public class ConceptSurface extends TabMenu {
         Concept c = n.conceptualizeDynamic(x);
         if (c instanceof PermanentConcept) {
             m = new HashMap(m);
-            m.put(c.getClass().getSimpleName(), ()-> new ObjectSurface(c));
+            m.put(c.getClass().getSimpleName(), new Supplier<Surface>() {
+                @Override
+                public Surface get() {
+                    return new ObjectSurface(c);
+                }
+            });
         }
         return m;
     }

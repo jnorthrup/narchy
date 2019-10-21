@@ -29,6 +29,7 @@ import jake2.util.Lib;
 import jake2.util.Math3D;
 
 import java.util.Objects;
+import java.util.function.Supplier;
 
 public class GameTurret {
 
@@ -182,7 +183,12 @@ public class GameTurret {
         public void blocked(edict_t self, edict_t other) {
 
             if (other.takedamage != 0) {
-                edict_t attacker = Objects.requireNonNullElseGet(self.teammaster.owner, () -> self.teammaster);
+                edict_t attacker = Objects.requireNonNullElseGet(self.teammaster.owner, new Supplier<edict_t>() {
+                    @Override
+                    public edict_t get() {
+                        return self.teammaster;
+                    }
+                });
                 GameCombat.T_Damage(other, self, attacker, Globals.vec3_origin,
                         other.s.origin, Globals.vec3_origin,
                         self.teammaster.dmg, 10, 0, Defines.MOD_CRUSH);

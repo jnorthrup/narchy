@@ -1,8 +1,6 @@
 package spacegraph.video;
 
-import com.github.benmanes.caffeine.cache.Caffeine;
-import com.github.benmanes.caffeine.cache.LoadingCache;
-import com.github.benmanes.caffeine.cache.RemovalListener;
+import com.github.benmanes.caffeine.cache.*;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLContext;
@@ -13,6 +11,8 @@ import jcog.io.bzip2.BZip2InputStream;
 import jcog.io.tar.TarEntry;
 import jcog.io.tar.TarInputStream;
 import jcog.tree.rtree.rect.RectFloat;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.eclipse.collections.api.map.ImmutableMap;
 import org.eclipse.collections.api.map.MutableMap;
 import org.eclipse.collections.api.tuple.Pair;
@@ -38,31 +38,37 @@ public class ImageTexture extends Tex {
     private static final LoadingCache<Pair<GLContext, String>, TextureData> textureCache =
             //new SoftMemoize<>(cu -> {
             Caffeine.newBuilder().softValues().executor(MoreExecutors.directExecutor()).
-                    removalListener((RemovalListener<Pair<GLContext, String>, TextureData>)
-                            (c, t, cause) -> {
-                                if (t!=null)
-                                    t.destroy();
-                            })
-                    .build(cu -> {
-                        try {
-                            String u = cu.getTwo();
-                            GLProfile profile = cu.getOne().getGL().getGLProfile();
-                            if (u.startsWith(fa_prefix)) {
-                                String icon = u.substring(fa_prefix.length());
-                                byte[] b = fontAwesomeIcons.get("x128/" + icon + "-fs8.png");
-                                if (b != null) {
-                                    InputStream in = new ByteArrayInputStream(b);
-                                    return TextureIO.newTextureData(profile, in, true, "png");
+                    removalListener(new RemovalListener<Pair<GLContext, String>, TextureData>() {
+                        @Override
+                        public void onRemoval(@Nullable Pair<GLContext, String> c, @Nullable TextureData t, @NonNull RemovalCause cause) {
+                            if (t != null)
+                                t.destroy();
+                        }
+                    })
+                    .build(new CacheLoader<Pair<GLContext, String>, TextureData>() {
+                        @Nullable
+                        @Override
+                        public TextureData load(@NonNull Pair<GLContext, String> cu) throws Exception {
+                            try {
+                                String u = cu.getTwo();
+                                GLProfile profile = cu.getOne().getGL().getGLProfile();
+                                if (u.startsWith(fa_prefix)) {
+                                    String icon = u.substring(fa_prefix.length());
+                                    byte[] b = fontAwesomeIcons.get("x128/" + icon + "-fs8.png");
+                                    if (b != null) {
+                                        InputStream in = new ByteArrayInputStream(b);
+                                        return TextureIO.newTextureData(profile, in, true, "png");
+                                    } else {
+                                        throw new UnsupportedOperationException("unrecognized FontAwesome icon: " + u);
+                                    }
                                 } else {
-                                    throw new UnsupportedOperationException("unrecognized FontAwesome icon: " + u);
+                                    //return TextureIO.newTexture(new URL(u), true, null);
+                                    return TextureIO.newTextureData(profile, new URL(u), true, null);
                                 }
-                            } else {
-                                //return TextureIO.newTexture(new URL(u), true, null);
-                                return TextureIO.newTextureData(profile, new URL(u), true, null);
-                            }
 
-                        } catch (IOException e) {
-                            return null;
+                            } catch (IOException e) {
+                                return null;
+                            }
                         }
                     });
 

@@ -82,10 +82,20 @@ public class InterningTermBuilder extends HeapTermBuilder {
         atoms = new HijackMemoize<>(super::atom, cacheSizePerOp, 3);
 
         subterms = newOpCache("subterms",
-                cacheSizePerOp * 2, x -> super.subterms(null, resolve(x.subs)));
+                cacheSizePerOp * 2, new Function<InternedSubterms, Subterms>() {
+                    @Override
+                    public Subterms apply(InternedSubterms x) {
+                        return InterningTermBuilder.super.subterms(null, resolve(x.subs));
+                    }
+                });
 
         anonSubterms = newOpCache("intrinSubterms",
-                cacheSizePerOp, x -> new IntrinSubterms(x.subs));
+                cacheSizePerOp, new Function<InternedSubterms, Subterms>() {
+                    @Override
+                    public Subterms apply(InternedSubterms x) {
+                        return new IntrinSubterms(x.subs);
+                    }
+                });
 
         Function statements = newOpCache("statement", cacheSizePerOp * 3, this::_statement);
 
@@ -98,12 +108,22 @@ public class InterningTermBuilder extends HeapTermBuilder {
             Function<Intermed.InternedCompoundByComponents, Term> c;
             if (o == CONJ) {
                 c = newOpCache("conj",
-                        cacheSizePerOp, x -> super.conj(true, x.dt, x.subs()));
+                        cacheSizePerOp, new Function<InternedCompoundByComponents, Term>() {
+                            @Override
+                            public Term apply(InternedCompoundByComponents x) {
+                                return InterningTermBuilder.super.conj(true, x.dt, x.subs());
+                            }
+                        });
             } else if (o.statement) {
                 c = statements;
             } else {
                 c = newOpCache(o.str,
-                        cacheSizePerOp, x -> newCompound(ops[(int) x.op], x.dt, x.subs(), x.key));
+                        cacheSizePerOp, new Function<InternedCompoundByComponents, Term>() {
+                            @Override
+                            public Term apply(InternedCompoundByComponents x) {
+                                return newCompound(ops[(int) x.op], x.dt, x.subs(), x.key);
+                            }
+                        });
             }
             terms[i] = c;
         }

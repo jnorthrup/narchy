@@ -74,11 +74,21 @@ public class ToggleButton extends AbstractButton {
     }
 
     public <T extends ToggleButton> T on(Runnable a) {
-        return on((x)->{ if (x) a.run(); });
+        return on(new BooleanProcedure() {
+            @Override
+            public void value(boolean x) {
+                if (x) a.run();
+            }
+        });
     }
 
     public <T extends ToggleButton> T on(BooleanProcedure a) {
-        return on((thizz, x)->a.value(x));
+        return on(new ObjectBooleanProcedure<ToggleButton>() {
+            @Override
+            public void value(ToggleButton thizz, boolean x) {
+                a.value(x);
+            }
+        });
     }
 
     public <T extends ToggleButton> T on(ObjectBooleanProcedure<ToggleButton> a) {

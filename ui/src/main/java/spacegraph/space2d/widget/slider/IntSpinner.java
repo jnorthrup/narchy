@@ -27,8 +27,18 @@ public class IntSpinner extends Widget {
             new Splitting(
                 label = new VectorLabel(),
                     0.8f, false, new Splitting(
-                    new PushButton("+", ()-> update(+1)),
-                        0.5f, new PushButton("-", ()-> update(-1)))
+                    new PushButton("+", new Runnable() {
+                        @Override
+                        public void run() {
+                            IntSpinner.this.update(+1);
+                        }
+                    }),
+                        0.5f, new PushButton("-", new Runnable() {
+                @Override
+                public void run() {
+                    IntSpinner.this.update(-1);
+                }
+            }))
             )
         );
         update(0);

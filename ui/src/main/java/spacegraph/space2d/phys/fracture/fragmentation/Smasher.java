@@ -364,10 +364,13 @@ public class Smasher {
 
     }
 
-    private static final Comparator<Vec2Intersect> c = (o1, o2) -> {
-        Vec2Intersect v1 = o1;
-        Vec2Intersect v2 = o2;
-        return Double.compare(v1.k, v2.k);
+    private static final Comparator<Vec2Intersect> c = new Comparator<Vec2Intersect>() {
+        @Override
+        public int compare(Vec2Intersect o1, Vec2Intersect o2) {
+            Vec2Intersect v1 = o1;
+            Vec2Intersect v2 = o2;
+            return Double.compare(v1.k, v2.k);
+        }
     };
 
     /**

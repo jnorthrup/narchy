@@ -25,7 +25,9 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.locks.StampedLock;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import static nars.table.BeliefTable.eternalTaskValueWithOriginality;
@@ -58,9 +60,12 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
 
     @Override
     public void forEach(Consumer<? super Task> x) {
-        lock.read(()-> {
-            for (Task task : this) {
-                x.accept(task);
+        lock.read(new Runnable() {
+            @Override
+            public void run() {
+                for (Task task : EternalTable.this) {
+                    x.accept(task);
+                }
             }
         });
     }
@@ -95,7 +100,12 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
     public void match(Answer a) {
         //long r = lock.readLock();
         //try {
-        lock.read(()->whileEach(a));
+        lock.read(new Supplier<Boolean>() {
+            @Override
+            public Boolean get() {
+                return EternalTable.this.whileEach(a);
+            }
+        });
 //        } finally {
 //            lock.unlockRead(r);
 //        }
@@ -390,8 +400,12 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
 
             Task theOldBelief = oldBelief;
             float finalAProp = aProp;
-            revised = Task.tryTask(newTerm, input.punc(), conclusion, (term, revisionTruth) ->
-                NALTask.the(term, input.punc(), revisionTruth, nar.time(), ETERNAL, ETERNAL, Stamp.merge(input.stamp(), theOldBelief.stamp(), finalAProp, nar.random())));
+            revised = Task.tryTask(newTerm, input.punc(), conclusion, new BiFunction<Term, Truth, NALTask>() {
+                @Override
+                public NALTask apply(Term term, Truth revisionTruth) {
+                    return NALTask.the(term, input.punc(), revisionTruth, nar.time(), ETERNAL, ETERNAL, Stamp.merge(input.stamp(), theOldBelief.stamp(), finalAProp, nar.random()));
+                }
+            });
             if (revised != null) {
                 //TODO maybe based on relative evidence
                 revised.pri(Prioritizable.fund(Math.max(theOldBelief.priElseZero(), input.priElseZero()), false, theOldBelief, input));

@@ -8,6 +8,7 @@ import jcog.pri.bag.impl.PLinkArrayBag;
 import jcog.pri.op.PriMerge;
 import nars.link.TaskLink;
 import nars.term.Term;
+import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Random;
@@ -55,18 +56,21 @@ public final class TaskLinkSnapshot {
 			return null;
 		else {
 
-            int li = Roulette.selectRouletteCached(lls, i -> {
+            int li = Roulette.selectRouletteCached(lls, new IntToFloatFunction() {
+                @Override
+                public float valueOf(int i) {
 
-				PLink<Term> x = (PLink) ll[i];
-				return x != null && filter.test(x.id) ?
-					Math.max(ScalarValue.EPSILON,
-					//x.priPunc(punc)
-					x.pri()
-					)
-					:
-					Float.NaN;
+                    PLink<Term> x = (PLink) ll[i];
+                    return x != null && filter.test(x.id) ?
+                            Math.max(ScalarValue.EPSILON,
+                                    //x.priPunc(punc)
+                                    x.pri()
+                            )
+                            :
+                            Float.NaN;
 
-			}, rng::nextFloat);
+                }
+            }, rng::nextFloat);
 
             PLink<Term> l = li >= 0 ? (PLink<Term>) ll[li] : null;
 

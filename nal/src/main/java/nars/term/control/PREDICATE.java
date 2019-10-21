@@ -16,6 +16,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.UnaryOperator;
 
 /**
  * The PrediTerm - a target-identified predicate (boolean-returning) function of a state
@@ -26,18 +27,26 @@ public interface PREDICATE<X> extends Term, Predicate<X> {
 
 
     /** suspect */
-    Comparator<PREDICATE> sortByCostIncreasing = (a, b) -> {
-        if (a.equals(b)) return 0;
-        float ac = a.cost(), bc = b.cost();
-        if (ac > bc) return +1;
-        else if (ac < bc) return -1;
-        else return a.compareTo(b);
+    Comparator<PREDICATE> sortByCostIncreasing = new Comparator<PREDICATE>() {
+        @Override
+        public int compare(PREDICATE a, PREDICATE b) {
+            if (a.equals(b)) return 0;
+            float ac = a.cost(), bc = b.cost();
+            if (ac > bc) return +1;
+            else if (ac < bc) return -1;
+            else return a.compareTo(b);
+        }
     };
     PREDICATE[] EmptyPredicateArray = new PREDICATE[0];
 
 
     static <X> PREDICATE<X>[] transform(Function<PREDICATE<X>, PREDICATE<X>> f, PREDICATE[] cache) {
-        return Util.mapIfChanged(x -> x.transform(f), cache);
+        return Util.mapIfChanged(new UnaryOperator<PREDICATE>() {
+            @Override
+            public PREDICATE apply(PREDICATE x) {
+                return x.transform(f);
+            }
+        }, cache);
     }
 
     static <X> PREDICATE<X> andFlat(List<PREDICATE<X>> p) {

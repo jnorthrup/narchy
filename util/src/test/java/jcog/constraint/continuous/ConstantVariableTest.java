@@ -3,6 +3,7 @@ package jcog.constraint.continuous;
 import jcog.constraint.continuous.exceptions.DuplicateConstraintException;
 import jcog.constraint.continuous.exceptions.UnsatisfiableConstraintException;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -27,15 +28,18 @@ class ConstantVariableTest {
 
     @Test
     void lessThanEqualToUnsatisfiable() throws DuplicateConstraintException, UnsatisfiableConstraintException {
-        assertThrows(UnsatisfiableConstraintException.class, () -> {
-            DoubleVar x = new DoubleVar("x");
-            ContinuousConstraintSolver solver = new ContinuousConstraintSolver();
-            solver.add(C.lessThanOrEqualTo(100, x));
-            solver.update();
-            assertTrue(x.getAsDouble() <= 100);
-            solver.add(C.equals(x, 10));
-            solver.update();
+        assertThrows(UnsatisfiableConstraintException.class, new Executable() {
+            @Override
+            public void execute() throws Throwable {
+                DoubleVar x = new DoubleVar("x");
+                ContinuousConstraintSolver solver = new ContinuousConstraintSolver();
+                solver.add(C.lessThanOrEqualTo(100, x));
+                solver.update();
+                assertTrue(x.getAsDouble() <= 100);
+                solver.add(C.equals(x, 10));
+                solver.update();
 
+            }
         });
 
     }
@@ -54,14 +58,17 @@ class ConstantVariableTest {
 
     @Test
     void greaterThanEqualToUnsatisfiable() throws DuplicateConstraintException, UnsatisfiableConstraintException {
-        assertThrows(UnsatisfiableConstraintException.class, () -> {
-            DoubleVar x = new DoubleVar("x");
-            ContinuousConstraintSolver solver = new ContinuousConstraintSolver();
-            solver.add(C.greaterThanOrEqualTo(100, x));
-            solver.update();
-            assertTrue(100 >= x.getAsDouble());
-            solver.add(C.equals(x, 110));
-            solver.update();
+        assertThrows(UnsatisfiableConstraintException.class, new Executable() {
+            @Override
+            public void execute() throws Throwable {
+                DoubleVar x = new DoubleVar("x");
+                ContinuousConstraintSolver solver = new ContinuousConstraintSolver();
+                solver.add(C.greaterThanOrEqualTo(100, x));
+                solver.update();
+                assertTrue(100 >= x.getAsDouble());
+                solver.add(C.equals(x, 110));
+                solver.update();
+            }
         });
     }
 }

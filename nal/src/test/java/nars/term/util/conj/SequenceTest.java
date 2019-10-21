@@ -3,8 +3,11 @@ package nars.term.util.conj;
 import nars.Op;
 import nars.term.Term;
 import nars.term.compound.Sequence;
+import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+
+import java.util.function.Supplier;
 
 import static nars.$.$$;
 import static nars.Op.CONJ;
@@ -39,17 +42,23 @@ class SequenceTest {
 
         {
             StringBuilder ee = new StringBuilder();
-            s.eventsAND((when, what) -> {
-                ee.append(when).append(what).append(' ');
-                return true;
+            s.eventsAND(new LongObjectPredicate<Term>() {
+                @Override
+                public boolean accept(long when, Term what) {
+                    ee.append(when).append(what).append(' ');
+                    return true;
+                }
             }, 0, true, true);
             assertEquals("0x 1y 1z 3x ", ee.toString());
         }
         {
             StringBuilder ee = new StringBuilder();
-            s.eventsAND((when, what) -> {
-                ee.append(when).append(what).append(' ');
-                return true;
+            s.eventsAND(new LongObjectPredicate<Term>() {
+                @Override
+                public boolean accept(long when, Term what) {
+                    ee.append(when).append(what).append(' ');
+                    return true;
+                }
             }, 0, false, true);
             assertEquals("0x 1(y&&z) 3x ", ee.toString());
         }
@@ -84,7 +93,12 @@ class SequenceTest {
 
         {
             Term wrapped = CONJ.the(A, x);
-            assertTrue(wrapped.op() == CONJ, () -> x + " -> " + wrapped);
+            assertTrue(wrapped.op() == CONJ, new Supplier<String>() {
+                @Override
+                public String get() {
+                    return x + " -> " + wrapped;
+                }
+            });
         }
 
 

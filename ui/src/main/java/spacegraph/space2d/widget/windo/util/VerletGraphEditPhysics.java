@@ -4,10 +4,12 @@ import com.jogamp.opengl.GL2;
 import jcog.TODO;
 import jcog.Util;
 import jcog.data.map.ConcurrentFastIteratingHashMap;
+import jcog.event.Off;
 import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
+import spacegraph.space2d.container.ContainerSurface;
 import spacegraph.space2d.container.graph.GraphEdit2D;
 import spacegraph.space2d.container.graph.Link;
 import spacegraph.space2d.widget.button.PushButton;
@@ -23,6 +25,7 @@ import toxi.physics2d.behavior.AttractionBehavior2D;
 import toxi.physics2d.spring.VerletSpring2D;
 
 import java.util.List;
+import java.util.function.Function;
 
 public class VerletGraphEditPhysics extends GraphEditPhysics {
 
@@ -73,10 +76,13 @@ public class VerletGraphEditPhysics extends GraphEditPhysics {
 
     @Override
     public PhySurface add(Surface x) {
-        return this.w.computeIfAbsent(x, (ww->{
-            PhySurface wd = new PhySurface(ww);
-            physics.physics.addBehavior(wd.repel);
-            return wd;
+        return this.w.computeIfAbsent(x, (new Function<Surface, PhySurface>() {
+            @Override
+            public PhySurface apply(Surface ww) {
+                PhySurface wd = new PhySurface(ww);
+                physics.physics.addBehavior(wd.repel);
+                return wd;
+            }
         }));
     }
 
@@ -114,11 +120,14 @@ public class VerletGraphEditPhysics extends GraphEditPhysics {
                     chainLen, 0f /* some minimal # */, 0.5f);
 
             List<VerletSpring2D> springs = chain.getTwo();
-            on(() -> {
-                //destroy the chain springs on destruction
-                VerletPhysics2D verletPhysics2D = physics.physics;
-                for (VerletSpring2D spring : springs) {
-                    verletPhysics2D.removeSpringAndItsParticles(spring);
+            on(new Off() {
+                @Override
+                public void close() {
+                    //destroy the chain springs on destruction
+                    VerletPhysics2D verletPhysics2D = physics.physics;
+                    for (VerletSpring2D spring : springs) {
+                        verletPhysics2D.removeSpringAndItsParticles(spring);
+                    }
                 }
             });
 
@@ -133,8 +142,17 @@ public class VerletGraphEditPhysics extends GraphEditPhysics {
 //        }
 
 
-            bind(graph.add(new PushButton("x", () -> remove(graph)), ff ->
-                            new Windo(new MetaFrame(ff))).resize(20.0F, 20.0F),
+            bind(graph.add(new PushButton("x", new Runnable() {
+                        @Override
+                        public void run() {
+                            VerletVisibleLink.this.remove(graph);
+                        }
+                    }), new Function<Surface, ContainerSurface>() {
+                        @Override
+                        public ContainerSurface apply(Surface ff) {
+                            return new Windo(new MetaFrame(ff));
+                        }
+                    }).resize(20.0F, 20.0F),
                     mid, false, VerletSurface.VerletSurfaceBinding.Center, graph);
 
 

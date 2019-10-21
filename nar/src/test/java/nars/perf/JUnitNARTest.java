@@ -1,6 +1,7 @@
 package nars.perf;
 
 
+import nars.NAR;
 import nars.NARS;
 import nars.nal.nal1.NAL1Test;
 import nars.test.NALTest;
@@ -10,6 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.function.Supplier;
 
 import static java.util.stream.Collectors.toList;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -37,7 +39,12 @@ class JUnitNARTest {
 
     @Test
     void testTestNARSuiteOutsideJUnit() {
-        TestNARSuite s = new TestNARSuite(() -> NARS.tmp(1), NAL1Test.class);
+        TestNARSuite s = new TestNARSuite(new Supplier<NAR>() {
+            @Override
+            public NAR get() {
+                return NARS.tmp(1);
+            }
+        }, NAL1Test.class);
         s.run(true);
         s.print();
         //assertTrue(s.score() > 0);

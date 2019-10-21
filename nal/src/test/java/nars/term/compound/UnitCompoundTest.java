@@ -12,6 +12,7 @@ import nars.term.util.map.TermRadixTree;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
+import java.util.function.Supplier;
 
 import static nars.Op.PROD;
 import static org.junit.jupiter.api.Assertions.*;
@@ -35,8 +36,18 @@ class UnitCompoundTest {
 
     private static void assertEqual(Op o, Atomic x, Compound u) {
         Compound g = Op.terms.newCompound(o, new UniSubterm(x));
-        assertEquals(g.hashCode(), u.hashCode(), ()->"inconsistent hash:\n" + g + "\n" + u);
-        assertEquals(g.hashCodeSubterms(), u.hashCodeSubterms(), ()->"inconsistent subhash:\n" + g + "\n" + u);
+        assertEquals(g.hashCode(), u.hashCode(), new Supplier<String>() {
+            @Override
+            public String get() {
+                return "inconsistent hash:\n" + g + "\n" + u;
+            }
+        });
+        assertEquals(g.hashCodeSubterms(), u.hashCodeSubterms(), new Supplier<String>() {
+            @Override
+            public String get() {
+                return "inconsistent subhash:\n" + g + "\n" + u;
+            }
+        });
         assertEquals(u, g);
         assertEquals(g, u);
         assertEquals(0, u.compareTo(g));

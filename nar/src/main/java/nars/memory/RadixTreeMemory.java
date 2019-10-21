@@ -14,6 +14,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -85,7 +86,12 @@ public class RadixTreeMemory extends Memory implements Consumer<NAR> {
         ConceptRadixTree c = this.concepts;
 
 		return createIfMissing ?
-			c.putIfAbsent(k, () -> nar.conceptBuilder.apply(t, null))
+			c.putIfAbsent(k, new Supplier<Concept>() {
+                @Override
+                public Concept get() {
+                    return nar.conceptBuilder.apply(t, null);
+                }
+            })
 			:
 			c.get(k);
 	}

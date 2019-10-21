@@ -6,6 +6,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import java.util.function.Supplier;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -49,7 +51,12 @@ public class TestVarIsEqual {
 
     Solution info = core.solve("test. ");
     assertTrue(info.isSuccess(),
-            () -> "Test should complete normally: " + info);
+            new Supplier<String>() {
+                @Override
+                public String get() {
+                    return "Test should complete normally: " + info;
+                }
+            });
     String expected = ""
       + '\n' +    "body_for_head_literal input Head: d(X_e1,Y_e1)"
       + '\n' +    "                             Wff: ';'(not_d(X_e1,U_e1),d(X_e1,Y_e1))"

@@ -5,9 +5,12 @@ import spacegraph.space2d.container.grid.Gridding;
 
 import javax.swing.*;
 import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLFrameHyperlinkEvent;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
 
 public final class HTMLSurface extends AWTSurface {
@@ -45,8 +48,12 @@ public final class HTMLSurface extends AWTSurface {
             panel.add(btnBrowse);
 
 
-            btnBrowse.addActionListener(e ->
-                go(txtURL.getText().trim())
+            btnBrowse.addActionListener(new ActionListener() {
+                                            @Override
+                                            public void actionPerformed(ActionEvent e) {
+                                                HTMLView.this.go(txtURL.getText().trim());
+                                            }
+                                        }
             );
             
 
@@ -61,18 +68,21 @@ public final class HTMLSurface extends AWTSurface {
             ed = new JEditorPane();
             ed.setEditable(false);
 
-            ed.addHyperlinkListener(e -> {
-                if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
-                    JEditorPane pane = (JEditorPane) e.getSource();
-                    if (e instanceof HTMLFrameHyperlinkEvent) {
-                        HTMLFrameHyperlinkEvent evt = (HTMLFrameHyperlinkEvent) e;
-                        HTMLDocument doc = (HTMLDocument) pane.getDocument();
-                        doc.processHTMLFrameHyperlinkEvent(evt);
-                    } else {
-                        try {
-                            pane.setPage(e.getURL());
-                        } catch (Throwable t) {
-                            t.printStackTrace();
+            ed.addHyperlinkListener(new HyperlinkListener() {
+                @Override
+                public void hyperlinkUpdate(HyperlinkEvent e) {
+                    if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+                        JEditorPane pane = (JEditorPane) e.getSource();
+                        if (e instanceof HTMLFrameHyperlinkEvent) {
+                            HTMLFrameHyperlinkEvent evt = (HTMLFrameHyperlinkEvent) e;
+                            HTMLDocument doc = (HTMLDocument) pane.getDocument();
+                            doc.processHTMLFrameHyperlinkEvent(evt);
+                        } else {
+                            try {
+                                pane.setPage(e.getURL());
+                            } catch (Throwable t) {
+                                t.printStackTrace();
+                            }
                         }
                     }
                 }

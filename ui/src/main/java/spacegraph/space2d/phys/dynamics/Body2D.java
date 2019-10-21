@@ -43,6 +43,8 @@ import spacegraph.space2d.phys.fracture.PolygonFixture;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
+import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 
 import static spacegraph.space2d.phys.dynamics.BodyType.DYNAMIC;
@@ -230,22 +232,25 @@ public class Body2D extends Transform {
         fixture.create(this, def);
 
 
-        W.invoke(() -> {
-            if ((flags & e_activeFlag) == e_activeFlag) {
-                BroadPhase broadPhase = W.contactManager.broadPhase;
-                fixture.createProxies(broadPhase, this);
-            }
+        W.invoke(new Runnable() {
+            @Override
+            public void run() {
+                if ((flags & e_activeFlag) == e_activeFlag) {
+                    BroadPhase broadPhase = W.contactManager.broadPhase;
+                    fixture.createProxies(broadPhase, Body2D.this);
+                }
 
-            fixture.next = fixtures;
-            fixtures = fixture;
-            ++fixtureCount;
+                fixture.next = fixtures;
+                fixtures = fixture;
+                ++fixtureCount;
 
 
-            W.flags |= Dynamics2D.NEW_FIXTURE;
+                W.flags |= Dynamics2D.NEW_FIXTURE;
 
 
-            if (fixture.density > 0.0f) {
-                resetMassData();
+                if (fixture.density > 0.0f) {
+                    Body2D.this.resetMassData();
+                }
             }
         });
 
@@ -256,22 +261,25 @@ public class Body2D extends Transform {
      * call this if shape changes
      */
     public final void updateFixtures(Consumer<Fixture> tx) {
-        W.invoke(() -> {
-            BroadPhase broadPhase = W.contactManager.broadPhase;
+        W.invoke(new Runnable() {
+            @Override
+            public void run() {
+                BroadPhase broadPhase = W.contactManager.broadPhase;
 
-            for (Fixture f = fixtures; f != null; f = f.next) {
+                for (Fixture f = fixtures; f != null; f = f.next) {
 
-                f.destroyProxies(broadPhase);
+                    f.destroyProxies(broadPhase);
 
-                tx.accept(f);
+                    tx.accept(f);
 
-                f.createProxies(broadPhase, this);
+                    f.createProxies(broadPhase, Body2D.this);
 
-                if (f.density > 0.0f)
-                    resetMassData();
+                    if (f.density > 0.0f)
+                        Body2D.this.resetMassData();
+                }
+                Body2D.this.synchronizeFixtures();
+                Body2D.this.synchronizeTransform();
             }
-            synchronizeFixtures();
-            synchronizeTransform();
         });
     }
 
@@ -332,65 +340,68 @@ public class Body2D extends Transform {
      */
     public final void removeFixture(Fixture fixture) {
 
-        W.invoke(() -> {
-            assert (fixture.body == this);
+        W.invoke(new Runnable() {
+            @Override
+            public void run() {
+                assert (fixture.body == Body2D.this);
 
 
-            assert (fixtureCount > 0);
+                assert (fixtureCount > 0);
 
 
-            Fixture node = fixtures;
-            Fixture last = null;
-            boolean found = false;
-            while (node != null) {
-                if (node == fixture) {
-                    node = fixture.next;
-                    found = true;
-                    break;
+                Fixture node = fixtures;
+                Fixture last = null;
+                boolean found = false;
+                while (node != null) {
+                    if (node == fixture) {
+                        node = fixture.next;
+                        found = true;
+                        break;
+                    }
+                    last = node;
+                    node = node.next;
                 }
-                last = node;
-                node = node.next;
-            }
 
 
-            assert (found);
+                assert (found);
 
 
-            if (last == null) {
-                fixtures = fixture.next;
-            } else {
-                last.next = fixture.next;
-            }
-
-
-            ContactEdge edge = contacts;
-            while (edge != null) {
-                Contact c = edge.contact;
-                edge = edge.next;
-
-                Fixture fixtureA = c.aFixture;
-                Fixture fixtureB = c.bFixture;
-
-                if (fixture == fixtureA || fixture == fixtureB) {
-
-
-                    W.contactManager.destroy(c);
+                if (last == null) {
+                    fixtures = fixture.next;
+                } else {
+                    last.next = fixture.next;
                 }
+
+
+                ContactEdge edge = contacts;
+                while (edge != null) {
+                    Contact c = edge.contact;
+                    edge = edge.next;
+
+                    Fixture fixtureA = c.aFixture;
+                    Fixture fixtureB = c.bFixture;
+
+                    if (fixture == fixtureA || fixture == fixtureB) {
+
+
+                        W.contactManager.destroy(c);
+                    }
+                }
+
+                if ((flags & e_activeFlag) == e_activeFlag) {
+                    BroadPhase broadPhase = W.contactManager.broadPhase;
+                    fixture.destroyProxies(broadPhase);
+                }
+
+                fixture.destroy();
+                fixture.body = null;
+                fixture.next = null;
+
+                --fixtureCount;
+
+
+                Body2D.this.resetMassData();
             }
-
-            if ((flags & e_activeFlag) == e_activeFlag) {
-                BroadPhase broadPhase = W.contactManager.broadPhase;
-                fixture.destroyProxies(broadPhase);
-            }
-
-            fixture.destroy();
-            fixture.body = null;
-            fixture.next = null;
-
-            --fixtureCount;
-
-
-            resetMassData();
         });
 
     }
@@ -425,20 +436,23 @@ public class Body2D extends Transform {
             return false;
 
 
-        W.invoke(() -> {
+        W.invoke(new Runnable() {
+            @Override
+            public void run() {
 
-            pos.set(posNext);
+                pos.set(posNext);
 
-            this.set(angleNext);
-            Transform.mulToOutUnsafe(this, sweep.localCenter, sweep.c);
-            sweep.a = angleNext;
+                Body2D.this.set(angleNext);
+                Transform.mulToOutUnsafe(Body2D.this, sweep.localCenter, sweep.c);
+                sweep.a = angleNext;
 
-            sweep.c0.set(sweep.c);
-            sweep.a0 = sweep.a;
+                sweep.c0.set(sweep.c);
+                sweep.a0 = sweep.a;
 
-            BroadPhase broadPhase = W.contactManager.broadPhase;
-            for (Fixture f = fixtures; f != null; f = f.next)
-                f.synchronize(broadPhase, this, this);
+                BroadPhase broadPhase = W.contactManager.broadPhase;
+                for (Fixture f = fixtures; f != null; f = f.next)
+                    f.synchronize(broadPhase, Body2D.this, Body2D.this);
+            }
         });
 
         return true;
@@ -985,40 +999,43 @@ public class Body2D extends Transform {
         if (this.type == type)
             return;
 
-        dyn.invoke(() -> {
+        dyn.invoke(new Runnable() {
+            @Override
+            public void run() {
 
-            this.type = type;
+                Body2D.this.type = type;
 
-            resetMassData();
+                Body2D.this.resetMassData();
 
-            force.setZero();
-            torque = 0.0f;
+                force.setZero();
+                torque = 0.0f;
 
-            if (this.type == STATIC) {
-                vel.setZero();
-                velAngular = 0.0f;
-                sweep.a0 = sweep.a;
-                sweep.c0.set(sweep.c);
-                synchronizeFixtures();
-            }
+                if (Body2D.this.type == STATIC) {
+                    vel.setZero();
+                    velAngular = 0.0f;
+                    sweep.a0 = sweep.a;
+                    sweep.c0.set(sweep.c);
+                    Body2D.this.synchronizeFixtures();
+                }
 
-            setAwake(true);
-
-
-            ContactEdge ce = contacts;
-            while (ce != null) {
-                ContactEdge ce0 = ce;
-                ce = ce.next;
-                W.contactManager.destroy(ce0.contact);
-            }
-            contacts = null;
+                Body2D.this.setAwake(true);
 
 
-            BroadPhase broadPhase = W.contactManager.broadPhase;
-            for (Fixture f = fixtures; f != null; f = f.next) {
-                int proxyCount = f.m_proxyCount;
-                for (int i = 0; i < proxyCount; ++i) {
-                    broadPhase.touchProxy(f.proxies[i].id);
+                ContactEdge ce = contacts;
+                while (ce != null) {
+                    ContactEdge ce0 = ce;
+                    ce = ce.next;
+                    W.contactManager.destroy(ce0.contact);
+                }
+                contacts = null;
+
+
+                BroadPhase broadPhase = W.contactManager.broadPhase;
+                for (Fixture f = fixtures; f != null; f = f.next) {
+                    int proxyCount = f.m_proxyCount;
+                    for (int i = 0; i < proxyCount; ++i) {
+                        broadPhase.touchProxy(f.proxies[i].id);
+                    }
                 }
             }
         });
@@ -1115,35 +1132,38 @@ public class Body2D extends Transform {
             return;
         }
 
-        W.invoke(() -> {
+        W.invoke(new Runnable() {
+            @Override
+            public void run() {
 
-            if (flag) {
-                flags |= e_activeFlag;
+                if (flag) {
+                    flags |= e_activeFlag;
 
 
-                BroadPhase broadPhase = W.contactManager.broadPhase;
-                for (Fixture f = fixtures; f != null; f = f.next) {
-                    f.createProxies(broadPhase, this);
+                    BroadPhase broadPhase = W.contactManager.broadPhase;
+                    for (Fixture f = fixtures; f != null; f = f.next) {
+                        f.createProxies(broadPhase, Body2D.this);
+                    }
+
+
+                } else {
+                    flags &= ~e_activeFlag;
+
+
+                    BroadPhase broadPhase = W.contactManager.broadPhase;
+                    for (Fixture f = fixtures; f != null; f = f.next) {
+                        f.destroyProxies(broadPhase);
+                    }
+
+
+                    ContactEdge ce = contacts;
+                    while (ce != null) {
+                        ContactEdge ce0 = ce;
+                        ce = ce.next;
+                        W.contactManager.destroy(ce0.contact);
+                    }
+                    contacts = null;
                 }
-
-
-            } else {
-                flags &= ~e_activeFlag;
-
-
-                BroadPhase broadPhase = W.contactManager.broadPhase;
-                for (Fixture f = fixtures; f != null; f = f.next) {
-                    f.destroyProxies(broadPhase);
-                }
-
-
-                ContactEdge ce = contacts;
-                while (ce != null) {
-                    ContactEdge ce0 = ce;
-                    ce = ce.next;
-                    W.contactManager.destroy(ce0.contact);
-                }
-                contacts = null;
             }
         });
     }
@@ -1269,7 +1289,17 @@ public class Body2D extends Transform {
         }
 
 
-        return Stream.iterate(joints, Objects::nonNull, jn -> jn.next).noneMatch(jn -> jn.other == other && !jn.joint.getCollideConnected());
+        return Stream.iterate(joints, Objects::nonNull, new UnaryOperator<JointEdge>() {
+            @Override
+            public JointEdge apply(JointEdge jn) {
+                return jn.next;
+            }
+        }).noneMatch(new Predicate<JointEdge>() {
+            @Override
+            public boolean test(JointEdge jn) {
+                return jn.other == other && !jn.joint.getCollideConnected();
+            }
+        });
     }
 
     final void advance(float t) {

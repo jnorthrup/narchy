@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
+import java.util.function.Supplier;
 
 import static jcog.grammar.parse.RepetitionTest.contains;
 import static jcog.grammar.parse.RepetitionTest.size;
@@ -58,7 +59,12 @@ public class SequenceTest extends AbstractParsingTest {
 		sequence.get(new CaselessLiteral("abc"));
 		sequence.get(new Num());
 		assertEquals(1, size(getParser().leftChildren()));
-		assertTrue(contains(getParser().leftChildren(), new CaselessLiteral("abc")), ()->"" + getParser().leftChildren());
+		assertTrue(contains(getParser().leftChildren(), new CaselessLiteral("abc")), new Supplier<String>() {
+            @Override
+            public String get() {
+                return "" + SequenceTest.this.getParser().leftChildren();
+            }
+        });
 	}
 
 	@Override

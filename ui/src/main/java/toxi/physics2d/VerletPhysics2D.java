@@ -38,6 +38,8 @@ import toxi.physics2d.behavior.ParticleBehavior2D;
 import toxi.physics2d.constraint.ParticleConstraint2D;
 import toxi.physics2d.spring.VerletSpring2D;
 
+import java.util.function.Predicate;
+
 /**
  * 3D particle physics engine using Verlet integration based on:
  * http://en.wikipedia.org/wiki/Verlet_integration
@@ -312,7 +314,12 @@ public class VerletPhysics2D {
     protected void preUpdate(float subDT) {
 
         //local behaviors
-        particles.removeIf((t)-> !t.preUpdate(VerletPhysics2D.this, subDT));
+        particles.removeIf(new Predicate<VerletParticle2D>() {
+            @Override
+            public boolean test(VerletParticle2D t) {
+                return !t.preUpdate(VerletPhysics2D.this, subDT);
+            }
+        });
 
         //global behaviors
         behaviors.forEachWith(ParticleBehavior2D::applyGlobal, this);
@@ -341,7 +348,12 @@ public class VerletPhysics2D {
      * @param subDT
      */
     protected void spring(float subDT) {
-        springs.removeIf(s -> !s.update(false));
+        springs.removeIf(new Predicate<VerletSpring2D>() {
+            @Override
+            public boolean test(VerletSpring2D s) {
+                return !s.update(false);
+            }
+        });
     }
 
     public void bounds(RectFloat bounds) {

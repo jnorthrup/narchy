@@ -25,7 +25,12 @@ public class VpTree<StorageType> {
 	public void search(DataPoint target, int k, List<DataPoint> results, List<Double> distances) {
 
 
-        PriorityQueue<HeapItem> heap = new PriorityQueue<HeapItem>(k, (o1, o2) -> -1 * o1.compareTo(o2));
+        PriorityQueue<HeapItem> heap = new PriorityQueue<HeapItem>(k, new Comparator<HeapItem>() {
+            @Override
+            public int compare(HeapItem o1, HeapItem o2) {
+                return -1 * o1.compareTo(o2);
+            }
+        });
 
 
         double tau = Double.MAX_VALUE;

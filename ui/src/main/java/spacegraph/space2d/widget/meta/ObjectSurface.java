@@ -39,17 +39,20 @@ import static java.util.stream.Collectors.toList;
  */
 public class ObjectSurface extends MutableUnitContainer<Surface> {
 
-    public static final AutoBuilder.AutoBuilding<Object, Surface> DefaultObjectSurfaceBuilder = (@Nullable Object ctx, List<Pair<Object, Iterable<Surface>>> target, @Nullable Object obj) -> {
+    public static final AutoBuilder.AutoBuilding<Object, Surface> DefaultObjectSurfaceBuilder = new AutoBuilder.AutoBuilding<Object, Surface>() {
+        @Override
+        public Surface build(Object ctx, List<Pair<Object, Iterable<Surface>>> target, Object obj) {
 
-        List<Surface> outer = new FasterList(0, EmptySurfaceArray);
+            List<Surface> outer = new FasterList(0, EmptySurfaceArray);
 
-        for (Pair<Object, Iterable<Surface>> p : target) {
-            Surface l = collectionSurface(Streams.stream(p.getTwo()).filter(Objects::nonNull).collect(toList()));
-            if (l!=null)
-                outer.add(l);
+            for (Pair<Object, Iterable<Surface>> p : target) {
+                Surface l = collectionSurface(Streams.stream(p.getTwo()).filter(Objects::nonNull).collect(toList()));
+                if (l != null)
+                    outer.add(l);
+            }
+
+            return collectionSurface(outer);
         }
-
-        return collectionSurface(outer);
     };
 
 
@@ -163,53 +166,100 @@ public class ObjectSurface extends MutableUnitContainer<Surface> {
 //           return xv; //forward  //TODO
 //        });
 
-        builtin.put(Map.Entry.class, (Map.Entry x, Object relation) ->
-                new VectorLabel(x.toString())
+        builtin.put(Map.Entry.class, new BiFunction<Map.Entry, Object, Surface>() {
+                    @Override
+                    public Surface apply(Map.Entry x, Object relation) {
+                        return new VectorLabel(x.toString());
+                    }
+                }
         );
-        builtin.put(FloatRange.class, (FloatRange x, Object relation) -> new LiveFloatSlider(objLabel(x, relation), x.min, x.max, x, x::set));
+        builtin.put(FloatRange.class, new BiFunction<FloatRange, Object, Surface>() {
+            @Override
+            public Surface apply(FloatRange x, Object relation) {
+                return new LiveFloatSlider(objLabel(x, relation), x.min, x.max, x, x::set);
+            }
+        });
 
-        builtin.put(PLink.class, (PLink x, Object relation) -> new LiveFloatSlider(objLabel(x, relation), (float) 0, 1.0F, x, x::pri));
+        builtin.put(PLink.class, new BiFunction<PLink, Object, Surface>() {
+            @Override
+            public Surface apply(PLink x, Object relation) {
+                return new LiveFloatSlider(objLabel(x, relation), (float) 0, 1.0F, x, x::pri);
+            }
+        });
 
-        builtin.put(IntRange.class, (IntRange x, Object relation) -> !(x instanceof MutableEnum) ? new MyIntSlider(x, relationLabel(relation)) : null);
+        builtin.put(IntRange.class, new BiFunction<IntRange, Object, Surface>() {
+            @Override
+            public Surface apply(IntRange x, Object relation) {
+                return !(x instanceof MutableEnum) ? new MyIntSlider(x, relationLabel(relation)) : null;
+            }
+        });
 
-        builtin.put(Runnable.class, (Runnable x, Object relation) -> new PushButton(objLabel(x, relation), x));
-        builtin.put(AtomicBoolean.class, (AtomicBoolean x, Object relation) -> new MyAtomicBooleanCheckBox(objLabel(x, relation), x));
+        builtin.put(Runnable.class, new BiFunction<Runnable, Object, Surface>() {
+            @Override
+            public Surface apply(Runnable x, Object relation) {
+                return new PushButton(objLabel(x, relation), x);
+            }
+        });
+        builtin.put(AtomicBoolean.class, new BiFunction<AtomicBoolean, Object, Surface>() {
+            @Override
+            public Surface apply(AtomicBoolean x, Object relation) {
+                return new MyAtomicBooleanCheckBox(objLabel(x, relation), x);
+            }
+        });
 
-        builtin.put(Loop.class, (Loop l, Object relation)-> new LoopPanel(l));
+        builtin.put(Loop.class, new BiFunction<Loop, Object, Surface>() {
+            @Override
+            public Surface apply(Loop l, Object relation) {
+                return new LoopPanel(l);
+            }
+        });
 
-        builtin.put(MutableEnum.class, (MutableEnum x, Object relation) -> EnumSwitch.the(x, relationLabel(relation)));
+        builtin.put(MutableEnum.class, new BiFunction<MutableEnum, Object, Surface>() {
+            @Override
+            public Surface apply(MutableEnum x, Object relation) {
+                return EnumSwitch.the(x, relationLabel(relation));
+            }
+        });
 
-        builtin.put(String.class, (String x, Object relation) -> new VectorLabel(x)); //TODO support multi-line word wrap etc
+        builtin.put(String.class, new BiFunction<String, Object, Surface>() {
+            @Override
+            public Surface apply(String x, Object relation) {
+                return new VectorLabel(x);
+            }
+        }); //TODO support multi-line word wrap etc
 
-        builtin.put(Collection.class, (Collection cx, Object relation) -> {
-            if (cx.isEmpty())
-                return null;
+        builtin.put(Collection.class, new BiFunction<Collection, Object, Surface>() {
+            @Override
+            public Surface apply(Collection cx, Object relation) {
+                if (cx.isEmpty())
+                    return null;
 
-            List<Surface> yy = new FasterList(cx.size());
+                List<Surface> yy = new FasterList(cx.size());
 
-            //return SupplierPort.button(relationLabel(relation), ()-> {
+                //return SupplierPort.button(relationLabel(relation), ()-> {
 
 
                 for (Object cxx : cx) {
                     if (cxx == null)
                         continue;
 
-                    Surface yyy = build(cxx);
+                    Surface yyy = ObjectSurface.this.build(cxx);
                     if (yyy != null)
                         yy.add(yyy); //TODO depth, parent, ..
                 }
                 if (yy.isEmpty())
                     return null;
 
-            Surface xx = collectionSurface(yy);
+                Surface xx = collectionSurface(yy);
 
-            String l = relationLabel(relation);
+                String l = relationLabel(relation);
 
                 if (!l.isEmpty())
                     return LabeledPane.the(l, xx);
                 else
                     return xx;
-            //});
+                //});
+            }
         });
 //        classer.put(Surface.class, (Surface x, Object relation) -> {
 //            return x.parent==null ? LabeledPane.the(relationLabel(relation), x) : x;

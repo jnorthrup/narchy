@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.function.Function;
 
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
@@ -84,8 +85,12 @@ public class DefaultScientist<S,E> extends Scientist<S,E> {
 
     /** gets the table of bests for the current result's goal */
     public TopN<FloatObjectPair<String>> bestsTable(Optimize<S, E> results) {
-        return best.computeIfAbsent(results.goal.id, (g) ->
-                new TopN<>(new FloatObjectPair[64], FloatObjectPair::getOne)
+        return best.computeIfAbsent(results.goal.id, new Function<String, TopN<FloatObjectPair<String>>>() {
+                    @Override
+                    public TopN<FloatObjectPair<String>> apply(String g) {
+                        return new TopN<>(new FloatObjectPair[64], FloatObjectPair::getOne);
+                    }
+                }
         );
     }
 

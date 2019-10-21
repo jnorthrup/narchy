@@ -263,18 +263,21 @@ public class Splitting<X extends Surface, Y extends Surface> extends MutableArra
         final Surface hv = new CheckBox("*").on(vertical).on((BooleanProcedure)
                 (Splitting.this::vertical));
 
-        final PushButton swap = new PushButton("<->").clicked(() -> {
-            //synchronized (Splitting.this) {
-            X a = Splitting.this.L();
-            if (a != null) {
-                Y b = Splitting.this.R();
-                if (b != null) {
-                    if (children.compareAndSet(0, a, b)) {
-                        children.setFast(1, a);
+        final PushButton swap = new PushButton("<->").clicked(new Runnable() {
+            @Override
+            public void run() {
+                //synchronized (Splitting.this) {
+                X a = Splitting.this.L();
+                if (a != null) {
+                    Y b = Splitting.this.R();
+                    if (b != null) {
+                        if (children.compareAndSet(0, a, b)) {
+                            children.setFast(1, a);
+                        }
                     }
                 }
-            }
 
+            }
         });
 
         ResizeBar() {

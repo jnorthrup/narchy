@@ -7,6 +7,8 @@ import jcog.constraint.continuous.exceptions.UnknownConstraintException;
 import jcog.constraint.continuous.exceptions.UnsatisfiableConstraintException;
 
 import java.util.*;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * Created by alex on 30/01/15.
@@ -464,7 +466,12 @@ public class ContinuousConstraintSolver {
             }
         }
         Symbol symbol =
-                found.orElseGet(() -> new Symbol(Symbol.Type.INVALID));
+                found.orElseGet(new Supplier<Symbol>() {
+                    @Override
+                    public Symbol get() {
+                        return new Symbol(Symbol.Type.INVALID);
+                    }
+                });
 
 
 
@@ -515,7 +522,12 @@ public class ContinuousConstraintSolver {
      * If a symbol does not exist for the variable, one will be created.
      */
     private Symbol getVarSymbol(DoubleVar variable) {
-        return vars.computeIfAbsent(variable, (v) -> new Symbol(Symbol.Type.EXTERNAL));
+        return vars.computeIfAbsent(variable, new Function<DoubleVar, Symbol>() {
+            @Override
+            public Symbol apply(DoubleVar v) {
+                return new Symbol(Symbol.Type.EXTERNAL);
+            }
+        });
     }
 
     /**

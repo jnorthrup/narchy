@@ -22,6 +22,7 @@ import org.junit.jupiter.api.Test;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
+import java.util.function.Supplier;
 
 import static nars.$.$;
 import static nars.$.$$$;
@@ -257,8 +258,18 @@ public class EllipsisTest {
             Set<Term> s = super.test(arity, repeats);
             Term the = s.isEmpty() ? null : s.iterator().next();
             assertNotNull(the);
-            assertTrue(!the.toString().substring(1).isEmpty(), () -> the + " is empty");
-            assertTrue(the.toString().substring(1).charAt(0) == 'Z', () -> the + " does not begin with Z");
+            assertTrue(!the.toString().substring(1).isEmpty(), new Supplier<String>() {
+                @Override
+                public String get() {
+                    return the + " is empty";
+                }
+            });
+            assertTrue(the.toString().substring(1).charAt(0) == 'Z', new Supplier<String>() {
+                @Override
+                public String get() {
+                    return the + " does not begin with Z";
+                }
+            });
             return s;
         }
 
@@ -272,7 +283,12 @@ public class EllipsisTest {
         public Term getResult() throws Narsese.NarseseException {
             String s = prefix + "Z, " + ellipsisTerm + suffix;
             Compound c = $(s);
-            assertNotNull(c, () -> s + " produced null compound");
+            assertNotNull(c, new Supplier<String>() {
+                @Override
+                public String get() {
+                    return s + " produced null compound";
+                }
+            });
             return c;
         }
 
@@ -428,7 +444,12 @@ public class EllipsisTest {
             //results.forEach(System.out::println);
 
             assertEquals(expect, results.size(),
-                    ()->"insufficient permutations for: " + X + " .. " + Y);
+                    new Supplier<String>() {
+                        @Override
+                        public String get() {
+                            return "insufficient permutations for: " + X + " .. " + Y;
+                        }
+                    });
 
             results.clear();
         }

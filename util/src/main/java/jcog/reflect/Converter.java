@@ -67,12 +67,15 @@ public class Converter<X,Y> extends MutableWeightedCaster<X,Y> implements Priori
             default: {
                 Function[] ff = functions.toArrayRecycled(Function[]::new);
                 this.functionsArray = ff;
-                this.F = (x) -> {
-                    Object y = x;
-                    for (Function f : ff)
-                        y = f.apply(y);
+                this.F = new Function() {
+                    @Override
+                    public Object apply(Object x) {
+                        Object y = x;
+                        for (Function f : ff)
+                            y = f.apply(y);
 
-                    return y;
+                        return y;
+                    }
                 };
             }
         }
@@ -85,10 +88,13 @@ public class Converter<X,Y> extends MutableWeightedCaster<X,Y> implements Priori
 
         for (Function c : functions) {
             if (c instanceof WeightChangeSender) {
-                WeightChangeListener listener = event -> {
-                    Double oldw = Converter.this.weight;
-                    Converter.this.weight = Double.NaN;
-                    fireEvent(oldw, null);
+                WeightChangeListener listener = new WeightChangeListener() {
+                    @Override
+                    public void weightChanged(WeightChangeEvent event) {
+                        Double oldw = Converter.this.weight;
+                        Converter.this.weight = Double.NaN;
+                        Converter.this.fireEvent(oldw, null);
+                    }
                 };
                 ((WeightChangeSender) c).addWeightChangeListener(listener, true);
             }

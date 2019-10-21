@@ -9,6 +9,7 @@ import jcog.data.list.FasterList;
 
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -89,7 +90,12 @@ public class MapNodeGraph<N, E> extends NodeGraph<N, E> {
 
     /** ensures each root node is added before searching */
     public boolean bfsAdd(Iterable<N> roots, Search<N, E> search) {
-        return bfs(StreamSupport.stream(roots.spliterator(), false).map(r -> addNode(r).id).collect(Collectors.toList()), search);
+        return bfs(StreamSupport.stream(roots.spliterator(), false).map(new Function<N, N>() {
+            @Override
+            public N apply(N r) {
+                return MapNodeGraph.this.addNode(r).id;
+            }
+        }).collect(Collectors.toList()), search);
     }
     /** ensures each root node is added before searching */
     public boolean bfsAdd(N root, Search<N, E> search) {
@@ -102,9 +108,12 @@ public class MapNodeGraph<N, E> extends NodeGraph<N, E> {
 
     private MutableNode<N, E> addNode(N key, boolean returnNodeIfExisted) {
         boolean[] created = {false};
-        MutableNode<N, E> r = (MutableNode<N, E>) nodes.computeIfAbsent(key, (x) -> {
-            created[0] = true;
-            return newNode(x);
+        MutableNode<N, E> r = (MutableNode<N, E>) nodes.computeIfAbsent(key, new Function<N, Node<N, E>>() {
+            @Override
+            public Node<N, E> apply(N x) {
+                created[0] = true;
+                return MapNodeGraph.this.newNode(x);
+            }
         });
         if (created[0]) {
             onAdd(r);
@@ -226,7 +235,12 @@ public class MapNodeGraph<N, E> extends NodeGraph<N, E> {
 
         s.append("Edges: ");
 
-        edges().forEach(e -> s.append(e).append('\n'));
+        edges().forEach(new Consumer<FromTo<Node<N, E>, E>>() {
+            @Override
+            public void accept(FromTo<Node<N, E>, E> e) {
+                s.append(e).append('\n');
+            }
+        });
 
         return s.toString();
     }
@@ -248,17 +262,23 @@ public class MapNodeGraph<N, E> extends NodeGraph<N, E> {
                 int e = fromNode.ins() + fromNode.outs();
                 if (e > 0) {
                     List<FromTo> removed = new FasterList(e);
-                    fromNode.edgeIterator(true, false).forEachRemaining(inEdge -> {
-                        removed.add(inEdge);
-                        MutableNode x = (MutableNode) (inEdge.from());
-                        if (x != fromNode)
-                            addEdgeByNode(x, inEdge.id(), toNode);
+                    fromNode.edgeIterator(true, false).forEachRemaining(new Consumer<FromTo<Node<N, E>, E>>() {
+                        @Override
+                        public void accept(FromTo<Node<N, E>, E> inEdge) {
+                            removed.add(inEdge);
+                            MutableNode x = (MutableNode) (inEdge.from());
+                            if (x != fromNode)
+                                MapNodeGraph.this.addEdgeByNode(x, inEdge.id(), toNode);
+                        }
                     });
-                    fromNode.edgeIterator(false, true).forEachRemaining(outEdge -> {
-                        removed.add(outEdge);
-                        MutableNode x = (MutableNode) (outEdge.to());
-                        if (x != fromNode)
-                            addEdgeByNode(toNode, outEdge.id(), x);
+                    fromNode.edgeIterator(false, true).forEachRemaining(new Consumer<FromTo<Node<N, E>, E>>() {
+                        @Override
+                        public void accept(FromTo<Node<N, E>, E> outEdge) {
+                            removed.add(outEdge);
+                            MutableNode x = (MutableNode) (outEdge.to());
+                            if (x != fromNode)
+                                MapNodeGraph.this.addEdgeByNode(toNode, outEdge.id(), x);
+                        }
                     });
                     for (FromTo fromTo : removed) {
                         edgeRemove(fromTo);

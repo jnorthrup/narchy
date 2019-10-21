@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Predicate;
 
 import static alice.tuprolog.PrologPrim.PREDICATE;
 
@@ -161,7 +162,12 @@ public final class BuiltIn extends PrologLib {
         boolean sClause = sarg0.isClause();
 
 
-        if (theories.retract(sarg0, c -> unify(!sClause ? new Struct(":-", arg0, new Struct("true")) : sarg0, c.clause)
+        if (theories.retract(sarg0, new Predicate<ClauseInfo>() {
+                    @Override
+                    public boolean test(ClauseInfo c) {
+                        return BuiltIn.this.unify(!sClause ? new Struct(":-", arg0, new Struct("true")) : sarg0, c.clause);
+                    }
+                }
         ) > 0) {
             return true;
         }

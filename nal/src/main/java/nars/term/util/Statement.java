@@ -263,7 +263,17 @@ public enum Statement {
                                         //True; //TODO negate
                                         return Null;
                                     }
-                                    Predicate<Term> notCommon = common.length > 1 ? z -> ArrayUtil.indexOf(common, z) == -1 : z -> !common[0].equals(z);
+                                    Predicate<Term> notCommon = common.length > 1 ? new Predicate<Term>() {
+                                        @Override
+                                        public boolean test(Term z) {
+                                            return ArrayUtil.indexOf(common, z) == -1;
+                                        }
+                                    } : new Predicate<Term>() {
+                                        @Override
+                                        public boolean test(Term z) {
+                                            return !common[0].equals(z);
+                                        }
+                                    };
                                     subject = CONJ.the(ssub.subsIncluding(notCommon));
                                     predicate = CONJ.the(psub.subsIncluding(notCommon));
                                     return statement(B, op, dt, subject, predicate, depth-1);

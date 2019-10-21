@@ -1,5 +1,6 @@
 package nars.impiler;
 
+import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Streams;
 import jcog.TODO;
@@ -21,12 +22,15 @@ import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Termed;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 import static java.util.Optional.ofNullable;
 import static nars.Op.IMPL;
@@ -47,11 +51,21 @@ public class Impiler {
 
 
     public static @Nullable ImplNode node(Termed x, boolean createIfMissing, NAR nar) {
-        return ofNullable(createIfMissing ? nar.conceptualize(x) : nar.concept(x)).map(concept -> node(concept, createIfMissing)).orElse(null);
+        return ofNullable(createIfMissing ? nar.conceptualize(x) : nar.concept(x)).map(new java.util.function.Function<Concept, ImplNode>() {
+            @Override
+            public ImplNode apply(Concept concept) {
+                return node(concept, createIfMissing);
+            }
+        }).orElse(null);
     }
 
     private static @Nullable ImplNode node(Concept sc, boolean createIfMissing) {
-        return createIfMissing ? sc.meta(IMPILER_NODE, s -> new ImplNode(sc.term())) : sc.meta(IMPILER_NODE);
+        return createIfMissing ? sc.meta(IMPILER_NODE, new java.util.function.Function<String, ImplNode>() {
+            @Override
+            public ImplNode apply(String s) {
+                return new ImplNode(sc.term());
+            }
+        }) : sc.meta(IMPILER_NODE);
     }
 
     private static boolean filter(Term next) {
@@ -70,7 +84,13 @@ public class Impiler {
 
 
     public static AdjGraph<Term, Task> graph(NAR nar) {
-        return graph(() -> nar.concepts().iterator());
+        return graph(new Iterable<Concept>() {
+            @NotNull
+            @Override
+            public Iterator<Concept> iterator() {
+                return nar.concepts().iterator();
+            }
+        });
     }
 
     public static AdjGraph<Term, Task> graph(What w) {
@@ -87,13 +107,16 @@ public class Impiler {
         Streams.stream(concepts)
                 .map(c -> node(c, false))
                 .filter(Objects::nonNull)
-                .forEach(m -> {
-                    for (FromTo<Node<Term, Task>, Task> e : m.edges(false, true)) {
-                        Term s = e.from().id();
-                        g.addNode(s);
-                        Term t = e.to().id();
-                        g.addNode(t);
-                        g.setEdge(s, t, e.id());
+                .forEach(new Consumer<ImplNode>() {
+                    @Override
+                    public void accept(ImplNode m) {
+                        for (FromTo<Node<Term, Task>, Task> e : m.edges(false, true)) {
+                            Term s = e.from().id();
+                            g.addNode(s);
+                            Term t = e.to().id();
+                            g.addNode(t);
+                            g.setEdge(s, t, e.id());
+                        }
                     }
                 });
         return g;        //unstreamable monster
@@ -106,7 +129,12 @@ public class Impiler {
      */
     public static void impile(NAR n) {
 
-        n.tasks().forEach(t -> impile(t, n));
+        n.tasks().forEach(new Consumer<Task>() {
+            @Override
+            public void accept(Task t) {
+                impile(t, n);
+            }
+        });
     }
 
 
@@ -230,20 +258,24 @@ public class Impiler {
         @Override
         public Iterable<FromTo<Node<Term, Task>, Task>> edges(boolean in, boolean out) {
             assert (in ^ out);
-            return tasks.isEmpty() ? Collections.EMPTY_LIST : Iterables.filter(Iterables.transform(tasks, (tLink) -> {
-                boolean td = tLink.direction;
-                if ((out && td) || (in && !td)) {
-                    Task tt = tLink.get();
+            return tasks.isEmpty() ? Collections.EMPTY_LIST : Iterables.filter(Iterables.transform(tasks, new Function<ImplPLink, FromTo<Node<Term, Task>, Task>>() {
+                @org.checkerframework.checker.nullness.qual.Nullable
+                @Override
+                public FromTo<Node<Term, Task>, Task> apply(@org.checkerframework.checker.nullness.qual.Nullable ImplPLink tLink) {
+                    boolean td = tLink.direction;
+                    if ((out && td) || (in && !td)) {
+                        Task tt = tLink.get();
 
 
-                    Node otherNode = node(tLink.target, false);
-                    if (otherNode != null) {
-                        return out ? Node.edge(this, tt, otherNode) : Node.edge(otherNode, tt, this);
-                    } else {
-                        tLink.delete();
+                        Node otherNode = node(tLink.target, false);
+                        if (otherNode != null) {
+                            return out ? Node.edge(ImplNode.this, tt, otherNode) : Node.edge(otherNode, tt, ImplNode.this);
+                        } else {
+                            tLink.delete();
+                        }
                     }
+                    return null;
                 }
-                return null;
             }), Objects::nonNull);
         }
 

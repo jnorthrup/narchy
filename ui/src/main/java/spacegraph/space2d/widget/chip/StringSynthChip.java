@@ -25,7 +25,12 @@ public class StringSynthChip extends Bordering {
     //                e.click(()->{
 //                    Synth
 //                })
-    final TypedPort<ObjectIntPair<float[]>> output = new TypedPort(ObjectIntPair.class, (Consumer<ObjectIntPair<float[]>>) mixTarget -> h.next(mixTarget.getOne()));
+    final TypedPort<ObjectIntPair<float[]>> output = new TypedPort(ObjectIntPair.class, new Consumer<ObjectIntPair<float[]>>() {
+        @Override
+        public void accept(ObjectIntPair<float[]> mixTarget) {
+            h.next(mixTarget.getOne());
+        }
+    });
 
     final FloatPort pitch = new FloatPort();
     final BoolPort pluck = new BoolPort ();
@@ -38,11 +43,14 @@ public class StringSynthChip extends Bordering {
 //        pitch.on(p -> {
 //            h.keyPressed();
 //        });
-        pluck.on(b->{
-            if (b) {
-                h.keyPress(10, true);
-            } else {
-                h.keyRelease(10, true);
+        pluck.on(new Consumer<Boolean>() {
+            @Override
+            public void accept(Boolean b) {
+                if (b) {
+                    h.keyPress(10, true);
+                } else {
+                    h.keyRelease(10, true);
+                }
             }
         });
 
@@ -53,6 +61,11 @@ public class StringSynthChip extends Bordering {
         set(o);
 
 
-        set(S, new Gridding(new PushButton("x").clicked(()-> h.keyPress(10, false)),/*e, */new FloatSlider(h.amp(), (float) 0, 8f).on(h::amp)));
+        set(S, new Gridding(new PushButton("x").clicked(new Runnable() {
+            @Override
+            public void run() {
+                h.keyPress(10, false);
+            }
+        }),/*e, */new FloatSlider(h.amp(), (float) 0, 8f).on(h::amp)));
     }
 }

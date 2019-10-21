@@ -11,7 +11,9 @@ import nars.term.util.TermException;
 import nars.term.util.builder.InterningTermBuilder;
 import nars.term.util.builder.TermBuilder;
 import nars.time.Tense;
+import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 import org.eclipse.collections.api.iterator.LongIterator;
+import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.impl.list.mutable.primitive.IntArrayList;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;
@@ -77,8 +79,20 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
     public static ConjList subtract(ConjList from, Term conj, long occOffset) {
         conj.eventsAND(
             occOffset == ETERNAL ?
-                (when,what)->{ from.removeAll(what); return true; } :
-                (when,what)->{ from.remove(when,what); return true; }
+                    new LongObjectPredicate<Term>() {
+                        @Override
+                        public boolean accept(long when, Term what) {
+                            from.removeAll(what);
+                            return true;
+                        }
+                    } :
+                    new LongObjectPredicate<Term>() {
+                        @Override
+                        public boolean accept(long when, Term what) {
+                            from.remove(when, what);
+                            return true;
+                        }
+                    }
         , occOffset, true, false);
         return from;
     }
@@ -365,12 +379,15 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
 //        if (x.op() == CONJ && x.dt() != XTERNAL) {
             //remove components
             boolean[] removed = {false};
-            if (x.eventsOR((when, what) -> {
-                if (contains(when, what.negIf(polarity)))
-                    return true; //contradiction
+            if (x.eventsOR(new LongObjectPredicate<Term>() {
+                @Override
+                public boolean accept(long when, Term what) {
+                    if (contains(when, what.negIf(polarity)))
+                        return true; //contradiction
 
-                removed[0] |= remove(when, what.negIf(!polarity));
-                return false;
+                    removed[0] |= remove(when, what.negIf(!polarity));
+                    return false;
+                }
             }, offset, true, x.dt()==XTERNAL))
                 return -1;
 
@@ -411,7 +428,12 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
         }
 
 
-        if (count.allSatisfy(t->t.getCardinality()==u)) {
+        if (count.allSatisfy(new org.eclipse.collections.api.block.predicate.Predicate<RoaringBitmap>() {
+            @Override
+            public boolean accept(RoaringBitmap t) {
+                return t.getCardinality() == u;
+            }
+        })) {
             //completely annihilates everything
             //so also remove any occurring in the parallel events
             //T.removeParallel(count.keySet());
@@ -427,10 +449,12 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
 //            }
 
 //            TermList toDistribute = new TermList(n);
-            if (!count.keyValuesView().toSortedList().allSatisfy((xcc) -> {
-                RoaringBitmap cc = xcc.getTwo();
-                int c = cc.getCardinality();
-                if (c < u) {
+            if (!count.keyValuesView().toSortedList().allSatisfy(new org.eclipse.collections.api.block.predicate.Predicate<Pair<Term, RoaringBitmap>>() {
+                @Override
+                public boolean accept(Pair<Term, RoaringBitmap> xcc) {
+                    RoaringBitmap cc = xcc.getTwo();
+                    int c = cc.getCardinality();
+                    if (c < u) {
 //                    if (x.op() != NEG) {
 //                        if (T.pos != null && T.posRemove(x))
 //                            toDistribute.add(x);
@@ -438,19 +462,20 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
 //                        if (T.neg != null && T.negRemove(x.unneg()))
 //                            toDistribute.add(x);
 //                    }
-                } else {
-                    PeekableIntIterator ei = cc.getIntIterator();
-                    while (ei.hasNext()) {
-                        if (eventCount((long) ei.next()) == 1)
-                            return true; //factoring would erase this event so ignore it
+                    } else {
+                        PeekableIntIterator ei = cc.getIntIterator();
+                        while (ei.hasNext()) {
+                            if (ConjList.this.eventCount((long) ei.next()) == 1)
+                                return true; //factoring would erase this event so ignore it
+                        }
+                        Term x = xcc.getOne();
+                        //new factor component
+                        if (!T.addParallel(x))
+                            return false;
+                        ConjList.this.removeAll(x);
                     }
-                    Term x = xcc.getOne();
-                    //new factor component
-                    if (!T.addParallel(x))
-                        return false;
-                    removeAll(x);
+                    return true;
                 }
-                return true;
             })) {
                 T.terminate(False);
             }

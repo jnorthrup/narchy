@@ -25,7 +25,12 @@ public class SwingBitmap2D extends MonoBufImgBitmap2D implements Supplier<Buffer
         super();
         this.component = component;
         input(0, 0, component.getWidth(), component.getHeight());
-        source = ()-> AWTCamera.get(component, img, in);
+        source = new Supplier<BufferedImage>() {
+            @Override
+            public BufferedImage get() {
+                return AWTCamera.get(component, img, in);
+            }
+        };
         updateBitmap();
     }
 

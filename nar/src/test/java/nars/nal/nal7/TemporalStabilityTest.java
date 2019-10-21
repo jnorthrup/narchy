@@ -2,6 +2,8 @@ package nars.nal.nal7;
 
 import nars.NAR;
 import nars.Task;
+import nars.term.Term;
+import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 
 import static nars.time.Tense.ETERNAL;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -69,7 +71,12 @@ abstract class TemporalStabilityTest {
         long s = t.start();
         if (s == ETERNAL)
             return false;
-        return t.term().eventsAND((r, xt) -> !validOccurrence(s + r), (long) 0, false, false);
+        return t.term().eventsAND(new LongObjectPredicate<Term>() {
+            @Override
+            public boolean accept(long r, Term xt) {
+                return !TemporalStabilityTest.this.validOccurrence(s + r);
+            }
+        }, (long) 0, false, false);
     }
 
     private static void run(int cycles, NAR n) {

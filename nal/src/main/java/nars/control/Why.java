@@ -18,6 +18,7 @@ import org.roaringbitmap.RoaringBitmap;
 
 import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Predicate;
 
 import static nars.Op.SETe;
 
@@ -220,11 +221,19 @@ public enum Why { ;
 	@Deprecated private static void toSet(Term whyA, ShortHashSet s) {
 		if (whyA==null)
 			return;
-		whyA.recurseTermsOrdered(x -> true, (e) -> {
-			if (e instanceof IdempotInt)
-				s.add(s(e));
-			return true;
-		}, null);
+		whyA.recurseTermsOrdered(new Predicate<Term>() {
+            @Override
+            public boolean test(Term x) {
+                return true;
+            }
+        }, new Predicate<Term>() {
+            @Override
+            public boolean test(Term e) {
+                if (e instanceof IdempotInt)
+                    s.add(s(e));
+                return true;
+            }
+        }, null);
 	}
 	private static void toSet(Term w, IntConsumer each) {
 		if (w instanceof IdempotInt) {

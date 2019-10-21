@@ -4,6 +4,7 @@ import nars.$;
 import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.unify.Unify;
+import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 
 import java.util.Arrays;
 import java.util.SortedSet;
@@ -62,12 +63,15 @@ public enum ConjUnify {
                         ConjList yl = ConjList.events(y);//TODO this can possibly work if a raw variable matches a range
                         if (xl.size() == yl.size()) {//TODO allow time splicing/shifting
                             if (Arrays.equals(xl.when, yl.when)) {
-                                xl.removeIf((when, z) -> {
-                                    if (!u.varIn(z)) {
-                                        yl.remove(when, z);
-                                        return true;
+                                xl.removeIf(new LongObjectPredicate<Term>() {
+                                    @Override
+                                    public boolean accept(long when, Term z) {
+                                        if (!u.varIn(z)) {
+                                            yl.remove(when, z);
+                                            return true;
+                                        }
+                                        return false;
                                     }
-                                    return false;
                                 });
                                 int xls = xl.size();
                                 if (xls == yl.size()) {
@@ -96,7 +100,12 @@ public enum ConjUnify {
         }
 
         Term Y = y;
-        return x.eventsOR((when, xx) -> Conj.eventOf(Y, xx, ETERNAL, 1), ETERNAL, true, true);
+        return x.eventsOR(new LongObjectPredicate<Term>() {
+            @Override
+            public boolean accept(long when, Term xx) {
+                return Conj.eventOf(Y, xx, ETERNAL, 1);
+            }
+        }, ETERNAL, true, true);
 
 
 //        if (y.subterms().containsAny(x.subterms()))

@@ -17,6 +17,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.AbstractList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Predicate;
 
 import static nars.Op.EmptyTermArray;
 import static nars.time.Tense.DTERNAL;
@@ -104,21 +105,29 @@ public abstract class FastCompound implements SameSubtermsCompound /* The */ {
         shadow.writeUnsignedByte(o.ordinal());
         shadow.writeUnsignedByte(subs);
         byte[] numAtoms = {(byte) 0};
-        ByteFunction0 nextUniqueAtom = () -> numAtoms[0]++;
+        ByteFunction0 nextUniqueAtom = new ByteFunction0() {
+            @Override
+            public byte value() {
+                return numAtoms[0]++;
+            }
+        };
         int structure = o.bit, hashCode = 1;
         byte volume = (byte) 1;
 
         for (Term x : subterms) {
-            x.recurseTermsOrdered(child -> {
-                shadow.writeUnsignedByte((int) (byte) child.op().ordinal());
-                if (child.op().atomic) {
-                    int aid = (int) atoms.getIfAbsentPut(child, nextUniqueAtom);
-                    shadow.writeUnsignedByte((int) (byte) aid);
-                } else {
-                    shadow.writeUnsignedByte(child.subs());
+            x.recurseTermsOrdered(new Predicate<Term>() {
+                @Override
+                public boolean test(Term child) {
+                    shadow.writeUnsignedByte((int) (byte) child.op().ordinal());
+                    if (child.op().atomic) {
+                        int aid = (int) atoms.getIfAbsentPut(child, nextUniqueAtom);
+                        shadow.writeUnsignedByte((int) (byte) aid);
+                    } else {
+                        shadow.writeUnsignedByte(child.subs());
 
+                    }
+                    return true;
                 }
-                return true;
             });
             structure |= x.structure();
             hashCode = Util.hashCombine(hashCode, x.hashCode());
@@ -196,12 +205,15 @@ public abstract class FastCompound implements SameSubtermsCompound /* The */ {
         }
 
         int[] o = new int[1];
-        subtermOffsets(at, (sub, offset) -> {
-            if ((int) sub == subterm) {
-                o[0] = offset;
-                return false;
+        subtermOffsets(at, new ByteIntPredicate() {
+            @Override
+            public boolean test(byte sub, int offset) {
+                if ((int) sub == subterm) {
+                    o[0] = offset;
+                    return false;
+                }
+                return true;
             }
-            return true;
         });
         assert (o[0] != 0);
         return o[0];
@@ -341,11 +353,14 @@ public abstract class FastCompound implements SameSubtermsCompound /* The */ {
         public int intifyShallow(int v, IntObjectToIntFunction<Term> reduce) {
             int o = offset;
             int[] vv = {v};
-            c.subtermOffsets(o, (subterm, at) -> {
-                Term t = c.term(at);
+            c.subtermOffsets(o, new ByteIntPredicate() {
+                @Override
+                public boolean test(byte subterm, int at) {
+                    Term t = c.term(at);
 
-                vv[0] = reduce.intValueOf(vv[0], t);
-                return true;
+                    vv[0] = reduce.intValueOf(vv[0], t);
+                    return true;
+                }
             });
             return vv[0];
         }
@@ -354,7 +369,12 @@ public abstract class FastCompound implements SameSubtermsCompound /* The */ {
         public int hashCode() {
 
             int h = _hash;
-			return h == 0 ? (_hash = intifyShallow(1, (i, t) -> Util.hashCombine(i, t.hashCode()))) : h;
+			return h == 0 ? (_hash = intifyShallow(1, new IntObjectToIntFunction<Term>() {
+                @Override
+                public int intValueOf(int i, Term t) {
+                    return Util.hashCombine(i, t.hashCode());
+                }
+            })) : h;
         }
 
 

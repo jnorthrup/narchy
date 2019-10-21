@@ -40,6 +40,8 @@ import nars.derive.action.How;
 import nars.test.impl.DeductiveMeshTest;
 
 import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 /**
  * Symbolic regression involves finding a mathematical expression, in symbolic
@@ -92,7 +94,12 @@ public class EvolveGovernor {
 			Var.of("clsHash"), Var.of("value"),
 			//, Var.of("priPrev"),
 			//Const.of(0.5), Const.of(1.0), Const.of(2.0), Const.of(3.0)
-			EphemeralConst.of(() -> (double) RandomRegistry.getRandom().nextInt(4))
+			EphemeralConst.of(new Supplier<Double>() {
+                @Override
+                public Double get() {
+                    return (double) RandomRegistry.getRandom().nextInt(4);
+                }
+            })
 		);
 
 		private final Codec<Tree<Op<Double>, ?>, ProgramGene<Double>> codec;
@@ -102,7 +109,12 @@ public class EvolveGovernor {
 			codec = Codec.of(
 				Genotype.of(ProgramChromosome.of(
 					depth,
-					(t) -> true,
+                        new Predicate<ProgramChromosome<Double>>() {
+                            @Override
+                            public boolean test(ProgramChromosome<Double> t) {
+                                return true;
+                            }
+                        },
 					ops,
 					terminals
 				)),
@@ -112,38 +124,44 @@ public class EvolveGovernor {
 
 		@Override
 		public Function<Tree<Op<Double>, ?>, Double> fitness() {
-			return (g) -> {
-                NAR n = NARS.tmp(6);
-                Deriver d = n.parts(Deriver.class).findFirst().get();
-                DeductiveMeshTest t = new DeductiveMeshTest(n, new int[]{2, 1}, 100);
+			return new Function<Tree<Op<Double>, ?>, Double>() {
+                @Override
+                public Double apply(Tree<Op<Double>, ?> g) {
+                    NAR n = NARS.tmp(6);
+                    Deriver d = n.parts(Deriver.class).findFirst().get();
+                    DeductiveMeshTest t = new DeductiveMeshTest(n, new int[]{2, 1}, 100);
 
 //				Op<Double> gov = g.getValue();
-                TreeNode tree = ((ProgramGene) g).toTreeNode();
+                    TreeNode tree = ((ProgramGene) g).toTreeNode();
 
-                Double[] govParm = new Double[2];
-				n.onDur(() -> {
-					for (How a : d.program.branch) {
-						govParm[0] = Math.abs((double) a.getClass().hashCode()) / (double) Integer.MAX_VALUE;
-						govParm[1] = (double) a.why.value;
+                    Double[] govParm = new Double[2];
+                    n.onDur(new Runnable() {
+                        @Override
+                        public void run() {
+                            for (How a : d.program.branch) {
+                                govParm[0] = Math.abs((double) a.getClass().hashCode()) / (double) Integer.MAX_VALUE;
+                                govParm[1] = (double) a.why.value;
 //						govParm[2] = (double) a.why.pri;
-                        Double pp = (Double) ((ProgramGene) g).eval(govParm);
-                        float p = pp.floatValue(); //<-
-						if (!Float.isFinite(p)) p = (float) 0;
-						p = Util.clamp(p, 0.1f, 1f);
-						a.why.pri(p);
-					}
-				});
-				try {
-					t.test.test();
-				} catch (Throwable tt) {
+                                Double pp = (Double) ((ProgramGene) g).eval(govParm);
+                                float p = pp.floatValue(); //<-
+                                if (!Float.isFinite(p)) p = (float) 0;
+                                p = Util.clamp(p, 0.1f, 1f);
+                                a.why.pri(p);
+                            }
+                        }
+                    });
+                    try {
+                        t.test.test();
+                    } catch (Throwable tt) {
 
-				}
-                float score = t.test.score;
+                    }
+                    float score = t.test.score;
 
-				System.out.println(score + "\t" + tree);
+                    System.out.println(score + "\t" + tree);
 
-				return (double) score;
-			};
+                    return (double) score;
+                }
+            };
 		}
 
 		@Override

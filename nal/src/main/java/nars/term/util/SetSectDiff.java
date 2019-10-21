@@ -10,6 +10,8 @@ import nars.term.Neg;
 import nars.term.Term;
 import nars.term.atom.IdempotentBool;
 import nars.term.util.builder.TermBuilder;
+import org.eclipse.collections.api.block.procedure.Procedure2;
+import org.eclipse.collections.api.tuple.primitive.ObjectBytePair;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectByteHashMap;
 import org.jetbrains.annotations.Nullable;
 
@@ -113,7 +115,12 @@ public enum SetSectDiff {
                 return single(y.keysView().getOnly(), o, B);
             default:
                 TermList yyy = new TermList(s);
-                y.keyValuesView().forEachWith((e, YYY) -> YYY.addFast(e.getOne().negIf((int) e.getTwo() == -1)), yyy);
+                y.keyValuesView().forEachWith(new Procedure2<ObjectBytePair<Term>, TermList>() {
+                    @Override
+                    public void value(ObjectBytePair<Term> e, TermList YYY) {
+                        YYY.addFast(e.getOne().negIf((int) e.getTwo() == -1));
+                    }
+                }, yyy);
 
 //            //Filter temporal terms that resolve to the same roots
 //            if (yyy.hasAny(Temporal)) {

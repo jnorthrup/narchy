@@ -5,6 +5,8 @@ import spacegraph.SpaceGraph;
 import spacegraph.space2d.ReSurface;
 import spacegraph.video.Draw;
 
+import java.util.function.Consumer;
+
 /** https://gist.github.com/daltonks/4c2d1c5e6fd5017ea9f0 */
 public class StencilTest extends PaintSurface {
 
@@ -19,14 +21,20 @@ public class StencilTest extends PaintSurface {
         gl.glColor4f(1,1,1, 0.75f);
         Draw.rect(bounds, gl);
 
-        Draw.stencilMask(gl, true, (g)-> {
-            
-            
-            gl.glColor3f(0,0,1);
-            Draw.rect(bounds.scale(0.75f).move(0.5f, 0.5f), gl);
-        }, (g)->{
-            gl.glColor3f(1,0,0);
-            Draw.rect(bounds.scale(0.75f).move(Math.random()*w(), Math.random()*h()), gl);
+        Draw.stencilMask(gl, true, new Consumer<GL2>() {
+            @Override
+            public void accept(GL2 g) {
+
+
+                gl.glColor3f(0, 0, 1);
+                Draw.rect(bounds.scale(0.75f).move(0.5f, 0.5f), gl);
+            }
+        }, new Consumer<GL2>() {
+            @Override
+            public void accept(GL2 g) {
+                gl.glColor3f(1, 0, 0);
+                Draw.rect(bounds.scale(0.75f).move(Math.random() * StencilTest.this.w(), Math.random() * StencilTest.this.h()), gl);
+            }
         });
 
         

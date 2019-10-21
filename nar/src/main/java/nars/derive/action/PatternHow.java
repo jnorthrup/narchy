@@ -47,6 +47,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
@@ -168,30 +170,46 @@ public class PatternHow extends CondHow {
                         case "Answer":
                             assert (taskPunc == null && concPunc == null);
                             assert (beliefTruth != null && goalTruth != null);
-                            taskPunc = p -> (int) p == (int) QUESTION || (int) p == (int) QUEST;
-                            concPunc = p -> {
-                                switch (p) {
-                                    case QUESTION:
-                                        return BELIEF;
-                                    case QUEST:
-                                        return GOAL;
-                                    default:
-                                        return (byte) 0;
+                            taskPunc = new BytePredicate() {
+                                @Override
+                                public boolean accept(byte p) {
+                                    return (int) p == (int) QUESTION || (int) p == (int) QUEST;
+                                }
+                            };
+                            concPunc = new ByteToByteFunction() {
+                                @Override
+                                public byte valueOf(byte p) {
+                                    switch (p) {
+                                        case QUESTION:
+                                            return BELIEF;
+                                        case QUEST:
+                                            return GOAL;
+                                        default:
+                                            return (byte) 0;
+                                    }
                                 }
                             };
                             break;
                         /** belief -> question, goal -> quest */
                         case "Ask":
                             assert (taskPunc == null && concPunc == null);
-                            taskPunc = p -> (int) p == (int) BELIEF || (int) p == (int) GOAL;
-                            concPunc = p -> {
-                                switch (p) {
-                                    case BELIEF:
-                                        return QUESTION;
-                                    case GOAL:
-                                        return QUEST;
-                                    default:
-                                        return (byte) 0;
+                            taskPunc = new BytePredicate() {
+                                @Override
+                                public boolean accept(byte p) {
+                                    return (int) p == (int) BELIEF || (int) p == (int) GOAL;
+                                }
+                            };
+                            concPunc = new ByteToByteFunction() {
+                                @Override
+                                public byte valueOf(byte p) {
+                                    switch (p) {
+                                        case BELIEF:
+                                            return QUESTION;
+                                        case GOAL:
+                                            return QUEST;
+                                        default:
+                                            return (byte) 0;
+                                    }
                                 }
                             };
                             break;
@@ -199,15 +217,23 @@ public class PatternHow extends CondHow {
                         /** re-ask a new question/quest in response to question/quest */
                         case "AskAsk":
                             assert (taskPunc == null && concPunc == null);
-                            taskPunc = p -> (int) p == (int) QUESTION || (int) p == (int) QUEST;
-                            concPunc = p -> {
-                                switch (p) {
-                                    case QUESTION:
-                                        return QUESTION;
-                                    case QUEST:
-                                        return QUEST;
-                                    default:
-                                        return (byte) 0;
+                            taskPunc = new BytePredicate() {
+                                @Override
+                                public boolean accept(byte p) {
+                                    return (int) p == (int) QUESTION || (int) p == (int) QUEST;
+                                }
+                            };
+                            concPunc = new ByteToByteFunction() {
+                                @Override
+                                public byte valueOf(byte p) {
+                                    switch (p) {
+                                        case QUESTION:
+                                            return QUESTION;
+                                        case QUEST:
+                                            return QUEST;
+                                        default:
+                                            return (byte) 0;
+                                    }
                                 }
                             };
                             break;
@@ -215,17 +241,25 @@ public class PatternHow extends CondHow {
                         /** belief,question -> question, goal,quest -> quest */
                         case "AskAll":
                             assert (taskPunc == null && concPunc == null);
-                            taskPunc = p -> true;
-                            concPunc = p -> {
-                                switch (p) {
-                                    case BELIEF:
-                                    case QUESTION:
-                                        return QUESTION;
-                                    case GOAL:
-                                    case QUEST:
-                                        return QUEST;
-                                    default:
-                                        throw new UnsupportedOperationException();
+                            taskPunc = new BytePredicate() {
+                                @Override
+                                public boolean accept(byte p) {
+                                    return true;
+                                }
+                            };
+                            concPunc = new ByteToByteFunction() {
+                                @Override
+                                public byte valueOf(byte p) {
+                                    switch (p) {
+                                        case BELIEF:
+                                        case QUESTION:
+                                            return QUESTION;
+                                        case GOAL:
+                                        case QUEST:
+                                            return QUEST;
+                                        default:
+                                            throw new UnsupportedOperationException();
+                                    }
                                 }
                             };
                             break;
@@ -268,36 +302,86 @@ public class PatternHow extends CondHow {
 
 
                     case "\"?\"":
-                        taskPunc = t -> (int) t == (int) QUESTION;
+                        taskPunc = new BytePredicate() {
+                            @Override
+                            public boolean accept(byte t) {
+                                return (int) t == (int) QUESTION;
+                            }
+                        };
                         break;
                     case "\"@\"":
-                        taskPunc = t -> (int) t == (int) QUEST;
+                        taskPunc = new BytePredicate() {
+                            @Override
+                            public boolean accept(byte t) {
+                                return (int) t == (int) QUEST;
+                            }
+                        };
                         break;
                     case "\".\"":
-                        taskPunc = t -> (int) t == (int) BELIEF;
+                        taskPunc = new BytePredicate() {
+                            @Override
+                            public boolean accept(byte t) {
+                                return (int) t == (int) BELIEF;
+                            }
+                        };
                         break;
                     case "\"!\"":
-                        taskPunc = t -> (int) t == (int) GOAL;
+                        taskPunc = new BytePredicate() {
+                            @Override
+                            public boolean accept(byte t) {
+                                return (int) t == (int) GOAL;
+                            }
+                        };
                         break;
 
                     case "\".?\"":
                         assert (taskPunc == null);
-                        taskPunc = t -> (int) t == (int) BELIEF || (int) t == (int) QUESTION;
+                        taskPunc = new BytePredicate() {
+                            @Override
+                            public boolean accept(byte t) {
+                                return (int) t == (int) BELIEF || (int) t == (int) QUESTION;
+                            }
+                        };
                         break;
 
                     case "\"?@\"":
                         assert (taskPunc == null && concPunc == null);
-                        taskPunc = t -> (int) t == (int) QUESTION || (int) t == (int) QUEST;
-                        concPunc = c -> c;
+                        taskPunc = new BytePredicate() {
+                            @Override
+                            public boolean accept(byte t) {
+                                return (int) t == (int) QUESTION || (int) t == (int) QUEST;
+                            }
+                        };
+                        concPunc = new ByteToByteFunction() {
+                            @Override
+                            public byte valueOf(byte c) {
+                                return c;
+                            }
+                        };
                         break;
 
                     case "\".!\"":
                         assert (taskPunc == null && concPunc == null);
-                        taskPunc = t -> (int) t == (int) BELIEF || (int) t == (int) GOAL;
-                        concPunc = c -> c;
+                        taskPunc = new BytePredicate() {
+                            @Override
+                            public boolean accept(byte t) {
+                                return (int) t == (int) BELIEF || (int) t == (int) GOAL;
+                            }
+                        };
+                        concPunc = new ByteToByteFunction() {
+                            @Override
+                            public byte valueOf(byte c) {
+                                return c;
+                            }
+                        };
                         break;
                     case "all":
-                        taskPunc = t -> true;
+                        taskPunc = new BytePredicate() {
+                            @Override
+                            public boolean accept(byte t) {
+                                return true;
+                            }
+                        };
                         break;
 //                        case "\"*\"":
 //                            pre.addAt(new TaskBeliefOp(PROD, true, false));
@@ -322,33 +406,41 @@ public class PatternHow extends CondHow {
     }
 
     @Deprecated public static Stream<PremiseRule> parse(String... rules) {
-        return parse(Stream.of(rules).map(String::trim).filter(x -> !x.isEmpty()), NALTruth.the);
+        return parse(Stream.of(rules).map(String::trim).filter(new Predicate<String>() {
+            @Override
+            public boolean test(String x) {
+                return !x.isEmpty();
+            }
+        }), NALTruth.the);
     }
 
     public static Stream<PremiseRule> parse(Stream<String> rules, TruthModel truthModel) {
         String[] currentTag = {null};
-        Stream<PremiseRule> s = rules.flatMap(line ->{
-            if (!line.contains("|-")) {
-                if (line.endsWith("{")) {
-                    //start tag
-                    assert(currentTag[0] ==null);
-                    currentTag[0] = line.substring(0, line.length()-1).trim();
-                    assert(currentTag[0].length() > 0);
-                    return Stream.of();
-                } else if (line.endsWith("}")) {
-                    //close tag
-                    assert(currentTag[0] !=null);
-                    currentTag[0] = null;
+        Stream<PremiseRule> s = rules.flatMap(new Function<String, Stream<? extends HowBuilder>>() {
+            @Override
+            public Stream<? extends HowBuilder> apply(String line) {
+                if (!line.contains("|-")) {
+                    if (line.endsWith("{")) {
+                        //start tag
+                        assert (currentTag[0] == null);
+                        currentTag[0] = line.substring(0, line.length() - 1).trim();
+                        assert (currentTag[0].length() > 0);
+                        return Stream.of();
+                    } else if (line.endsWith("}")) {
+                        //close tag
+                        assert (currentTag[0] != null);
+                        currentTag[0] = null;
+                        return Stream.of();
+                    }
+                }
+
+                try {
+                    HowBuilder h = PatternHow.parse(line, truthModel, currentTag[0]);
+                    return Stream.of(h);
+                } catch (Narsese.NarseseException e) {
+                    e.printStackTrace();
                     return Stream.of();
                 }
-            }
-
-            try {
-                HowBuilder h = PatternHow.parse(line, truthModel, currentTag[0]);
-                return Stream.of(h);
-            } catch (Narsese.NarseseException e) {
-                e.printStackTrace();
-                return Stream.of();
             }
         }).map(HowBuilder::get).distinct();
 
@@ -420,18 +512,26 @@ public class PatternHow extends CondHow {
     @Deprecated
     private static Term saveEteConj(Term c, List<Term> subbedConj, ArrayHashSet<Term> savedConj) {
 
-        c.recurseTerms(x -> x.hasAll(INH.bit | CONJ.bit), t -> {
-            if (t.op() == INH) {
-                Term s = t.sub(0);
-                Term su = s.unneg();
-                if (su.op() == CONJ && su.dt() == DTERNAL)
-                    savedConj.add(patternify(s, false));
-                Term p = t.sub(1);
-                Term pu = p.unneg();
-                if (pu.op() == CONJ && pu.dt() == DTERNAL)
-                    savedConj.add(patternify(p, false));
+        c.recurseTerms(new Predicate<Term>() {
+            @Override
+            public boolean test(Term x) {
+                return x.hasAll(INH.bit | CONJ.bit);
             }
-            return true;
+        }, new Predicate<Term>() {
+            @Override
+            public boolean test(Term t) {
+                if (t.op() == INH) {
+                    Term s = t.sub(0);
+                    Term su = s.unneg();
+                    if (su.op() == CONJ && su.dt() == DTERNAL)
+                        savedConj.add(patternify(s, false));
+                    Term p = t.sub(1);
+                    Term pu = p.unneg();
+                    if (pu.op() == CONJ && pu.dt() == DTERNAL)
+                        savedConj.add(patternify(p, false));
+                }
+                return true;
+            }
         }, null);
         if (!savedConj.isEmpty()) {
             int i = 0;
@@ -447,14 +547,17 @@ public class PatternHow extends CondHow {
 
     private void assertConclusionVariablesPresent(Term c) {
         boolean tb = taskPattern.equals(beliefPattern);
-        c.recurseTerms(Termlike::hasVarPattern, z -> {
-            if (z.op() == VAR_PATTERN) {
-                if (!(taskPattern.equals(z) || taskPattern.containsRecursively(z)) &&
-                    (tb || !(beliefPattern.equals(z) || beliefPattern.containsRecursively(z)))) {
-                    throw new RuntimeException("conclusion has pattern variable not contained in task or belief pattern: " + z);
+        c.recurseTerms(Termlike::hasVarPattern, new Predicate<Term>() {
+            @Override
+            public boolean test(Term z) {
+                if (z.op() == VAR_PATTERN) {
+                    if (!(taskPattern.equals(z) || taskPattern.containsRecursively(z)) &&
+                            (tb || !(beliefPattern.equals(z) || beliefPattern.containsRecursively(z)))) {
+                        throw new RuntimeException("conclusion has pattern variable not contained in task or belief pattern: " + z);
+                    }
                 }
+                return true;
             }
-            return true;
         }, null);
     }
 
@@ -539,19 +642,49 @@ public class PatternHow extends CondHow {
 
             if (!concQuest && !concQuestion) {
                 if (beliefTruth != null && goalTruth == null) {
-                    concPunc = (p) -> BELIEF;
+                    concPunc = new ByteToByteFunction() {
+                        @Override
+                        public byte valueOf(byte p) {
+                            return BELIEF;
+                        }
+                    };
                 } else if (beliefTruth == null && goalTruth != null) {
-                    concPunc = (p) -> GOAL;
+                    concPunc = new ByteToByteFunction() {
+                        @Override
+                        public byte valueOf(byte p) {
+                            return GOAL;
+                        }
+                    };
                 } else if (beliefTruth != null && goalTruth != null) {
-                    concPunc = (p) -> (int) p == (int) BELIEF ? BELIEF : GOAL;
+                    concPunc = new ByteToByteFunction() {
+                        @Override
+                        public byte valueOf(byte p) {
+                            return (int) p == (int) BELIEF ? BELIEF : GOAL;
+                        }
+                    };
                 }
             } else {
                 if (concQuestion && !concQuest) {
-                    concPunc = (p) -> QUESTION;
+                    concPunc = new ByteToByteFunction() {
+                        @Override
+                        public byte valueOf(byte p) {
+                            return QUESTION;
+                        }
+                    };
                 } else if (concQuest && !concQuestion) {
-                    concPunc = (p) -> QUEST;
+                    concPunc = new ByteToByteFunction() {
+                        @Override
+                        public byte valueOf(byte p) {
+                            return QUEST;
+                        }
+                    };
                 } else if (concQuestion && concQuest) {
-                    concPunc = (p) -> ((int) p == (int) QUESTION || (int) p == (int) BELIEF) ? QUESTION : QUEST;
+                    concPunc = new ByteToByteFunction() {
+                        @Override
+                        public byte valueOf(byte p) {
+                            return ((int) p == (int) QUESTION || (int) p == (int) BELIEF) ? QUESTION : QUEST;
+                        }
+                    };
                 }
             }
 
@@ -606,11 +739,26 @@ public class PatternHow extends CondHow {
         if (taskPunc == null) {
             //auto
             if (beliefTruth != null && goalTruth != null) {
-                taskPunc = t -> (int) t == (int) BELIEF || (int) t == (int) GOAL; //accept belief and goal and map to those
+                taskPunc = new BytePredicate() {
+                    @Override
+                    public boolean accept(byte t) {
+                        return (int) t == (int) BELIEF || (int) t == (int) GOAL;
+                    }
+                }; //accept belief and goal and map to those
             } else if (beliefTruth != null) {
-                taskPunc = t -> (int) t == (int) BELIEF; //accept only belief -> belief
+                taskPunc = new BytePredicate() {
+                    @Override
+                    public boolean accept(byte t) {
+                        return (int) t == (int) BELIEF;
+                    }
+                }; //accept only belief -> belief
             } else if (goalTruth != null) {
-                taskPunc = t -> (int) t == (int) GOAL; //accept only goal -> goal
+                taskPunc = new BytePredicate() {
+                    @Override
+                    public boolean accept(byte t) {
+                        return (int) t == (int) GOAL;
+                    }
+                }; //accept only goal -> goal
             }
             //concPunc = t -> t;
         }
@@ -686,7 +834,12 @@ public class PatternHow extends CondHow {
                 if (!reservedMetaInfoCategories.contains(atomic)) {
                     String name = atomic.toString();
                     if (name.length() == 1 && Character.isUpperCase(name.charAt(0))) {
-                        return map.computeIfAbsent(name, (n) -> $.varPattern(1 + map.size()));
+                        return map.computeIfAbsent(name, new Function<String, Term>() {
+                            @Override
+                            public Term apply(String n) {
+                                return $.varPattern(1 + map.size());
+                            }
+                        });
 
                     }
                 }

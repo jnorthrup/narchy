@@ -62,23 +62,26 @@ public class BroadphasePair {
 		return (pProxy0 == p.pProxy0 && pProxy1 == p.pProxy1);
 	}
 	
-	public static final Comparator<BroadphasePair> broadphasePairSortPredicate = (a, b) -> {
-		if (a == b)
-			return 0;
+	public static final Comparator<BroadphasePair> broadphasePairSortPredicate = new Comparator<BroadphasePair>() {
+        @Override
+        public int compare(BroadphasePair a, BroadphasePair b) {
+            if (a == b)
+                return 0;
 
 
-        Broadphasing a0 = a.pProxy0;
-        Broadphasing b0 = b.pProxy0;
-        Broadphasing a1 = a.pProxy1;
-        Broadphasing b1 = b.pProxy1;
-        int a0uid = a0.uid;
-        int b0uid = b0.uid;
-        int a1uid = a1.uid;
-        int b1uid = b1.uid;
-        boolean result = a0uid > b0uid ||
-                (a0uid == b0uid && a1uid > b1uid) ||
-                (a0uid == b0uid && a1uid == b1uid /*&& a.algorithm > b.m_algorithm*/);
-        return result? -1 : 1;
+            Broadphasing a0 = a.pProxy0;
+            Broadphasing b0 = b.pProxy0;
+            Broadphasing a1 = a.pProxy1;
+            Broadphasing b1 = b.pProxy1;
+            int a0uid = a0.uid;
+            int b0uid = b0.uid;
+            int a1uid = a1.uid;
+            int b1uid = b1.uid;
+            boolean result = a0uid > b0uid ||
+                    (a0uid == b0uid && a1uid > b1uid) ||
+                    (a0uid == b0uid && a1uid == b1uid /*&& a.algorithm > b.m_algorithm*/);
+            return result ? -1 : 1;
+        }
     };
 	
 }

@@ -12,7 +12,10 @@ import org.junit.jupiter.api.Test;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.IntFunction;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
@@ -114,10 +117,20 @@ class BooleanTest {
 
 
             if (positive && b.isNegative() && b.conf() > confThresh)
-                fail(() -> "wrong true case:\n" + t.proof());
+                fail(new Supplier<String>() {
+                    @Override
+                    public String get() {
+                        return "wrong true case:\n" + t.proof();
+                    }
+                });
 
             if (!positive && b != null && b.isPositive() && b.conf() > confThresh)
-                fail(() -> "wrong false case:\n" + t.proof());
+                fail(new Supplier<String>() {
+                    @Override
+                    public String get() {
+                        return "wrong false case:\n" + t.proof();
+                    }
+                });
 
         }
 
@@ -198,7 +211,12 @@ class BooleanTest {
 
         for (Concept x : new Concept[]{ a,b,c,d}) {
             x.print();
-            x.beliefs().forEachTask(t -> System.out.println(t.proof()));
+            x.beliefs().forEachTask(new Consumer<Task>() {
+                @Override
+                public void accept(Task t) {
+                    System.out.println(t.proof());
+                }
+            });
             System.out.println();
         }
 
@@ -220,7 +238,12 @@ class BooleanTest {
 
         IntFunction<Term> termizer =
                 //(i)->$$("x" + i);
-                (i)->$.inh($.the(i),$.the("x"));
+                new IntFunction<Term>() {
+                    @Override
+                    public Term apply(int i) {
+                        return $.inh($.the(i), $.the("x"));
+                    }
+                };
 
         NAR n = NARS.tmp(6,8);
         //n.log();
@@ -251,7 +274,12 @@ class BooleanTest {
             if (i == cRemoveInputs) {
                 float bConf = n.confDefault(BELIEF);
                 //get all structural transformed inputs (ex: images)
-                n.tasks().filter(z -> (beliefOrGoal ? z.isBelief() : z.isGoal()) && z.conf() >= bConf).forEach(inputs::add);
+                n.tasks().filter(new Predicate<Task>() {
+                    @Override
+                    public boolean test(Task z) {
+                        return (beliefOrGoal ? z.isBelief() : z.isGoal()) && z.conf() >= bConf;
+                    }
+                }).forEach(inputs::add);
                 for (Task z : inputs) {
                     n.concept(z).remove(z);
                     z.delete();
@@ -266,8 +294,13 @@ class BooleanTest {
                     if (i == c-1) {
                         //last cycle:
                         int J = j;
-                        assertNotNull(tj, ()->t[J] + " without truth @ " + when + "\n" +
-                                Joiner.on("\n").join(n.concept(t[J]).table(beliefOrGoal ? BELIEF : GOAL).taskStream().iterator()));
+                        assertNotNull(tj, new Supplier<String>() {
+                            @Override
+                            public String get() {
+                                return t[J] + " without truth @ " + when + "\n" +
+                                        Joiner.on("\n").join(n.concept(t[J]).table(beliefOrGoal ? BELIEF : GOAL).taskStream().iterator());
+                            }
+                        });
                     }
 
                     if (tj != null) {
@@ -282,8 +315,18 @@ class BooleanTest {
             int ii = i;
             n.concept(t[i])
                 .tasks()
-                .filter(z -> z.isBeliefOrGoal(beliefOrGoal))
-                .forEach(z -> assertEquals(b[ii], z.isPositive(), z::proof));
+                .filter(new Predicate<Task>() {
+                    @Override
+                    public boolean test(Task z) {
+                        return z.isBeliefOrGoal(beliefOrGoal);
+                    }
+                })
+                .forEach(new Consumer<Task>() {
+                    @Override
+                    public void accept(Task z) {
+                        assertEquals(b[ii], z.isPositive(), z::proof);
+                    }
+                });
         }
 
 

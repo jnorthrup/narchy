@@ -8,11 +8,13 @@ import nars.control.NARPart;
 import nars.term.Term;
 import nars.truth.Truth;
 import nars.truth.util.TruthAccumulator;
+import org.eclipse.collections.api.block.procedure.primitive.LongProcedure;
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.impl.list.mutable.primitive.LongArrayList;
 import org.eclipse.collections.impl.tuple.Tuples;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Comparator;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
@@ -42,11 +44,14 @@ public class Vocalization extends NARPart {
     @Override
     protected void starting(NAR nar) {
         on(
-                nar.onDur(() -> {
-                    energy = Math.min(1f, energy + 1f / (this.durationsPerWord));
-                    if (energy >= 1f) {
-                        energy = (float) 0;
-                        next();
+                nar.onDur(new Runnable() {
+                    @Override
+                    public void run() {
+                        energy = Math.min(1f, energy + 1f / (Vocalization.this.durationsPerWord));
+                        if (energy >= 1f) {
+                            energy = (float) 0;
+                            Vocalization.this.next();
+                        }
                     }
                 }),
                 nar.eventClear.on(this::clear)
@@ -105,16 +110,19 @@ public class Vocalization extends NARPart {
                     ll.add(aLong);
                 }
 
-                ll.forEach(t -> {
-                    Set<Map.Entry<Term, TruthAccumulator>> entries = vocalize.row(t).entrySet();
-                    if (t >= startOfNow) {
-                        for (Map.Entry<Term, TruthAccumulator> e : entries) {
-                            Truth x = e.getValue().commitSum();
-                            if (x.expectation() > expectationThreshold)
-                                pending.add(Tuples.pair(e.getKey(), x));
+                ll.forEach(new LongProcedure() {
+                    @Override
+                    public void value(long t) {
+                        Set<Map.Entry<Term, TruthAccumulator>> entries = vocalize.row(t).entrySet();
+                        if (t >= startOfNow) {
+                            for (Map.Entry<Term, TruthAccumulator> e : entries) {
+                                Truth x = e.getValue().commitSum();
+                                if (x.expectation() > expectationThreshold)
+                                    pending.add(Tuples.pair(e.getKey(), x));
+                            }
                         }
+                        entries.clear();
                     }
-                    entries.clear();
                 });
             }
         }
@@ -135,14 +143,17 @@ public class Vocalization extends NARPart {
      */
     private @Nullable
     static Term decide(FasterList<Pair<Term, Truth>> pending) {
-        return pending.max((a, b) -> {
-            float ta = a.getTwo().expectation();
-            float tb = b.getTwo().expectation();
-            if (ta > tb) {
-                int tab = Float.compare(ta, tb);
-                return tab;
-            } else {
-                return a.getOne().compareTo(b.getOne());
+        return pending.max(new Comparator<Pair<Term, Truth>>() {
+            @Override
+            public int compare(Pair<Term, Truth> a, Pair<Term, Truth> b) {
+                float ta = a.getTwo().expectation();
+                float tb = b.getTwo().expectation();
+                if (ta > tb) {
+                    int tab = Float.compare(ta, tb);
+                    return tab;
+                } else {
+                    return a.getOne().compareTo(b.getOne());
+                }
             }
         }).getOne();
     }

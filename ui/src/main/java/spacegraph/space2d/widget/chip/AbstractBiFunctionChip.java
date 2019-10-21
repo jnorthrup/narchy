@@ -5,6 +5,7 @@ import spacegraph.space2d.widget.port.TypedPort;
 import spacegraph.space2d.widget.text.LabeledPane;
 
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 
 public abstract class AbstractBiFunctionChip<X, Y, Z> extends Gridding {
     protected final TypedPort<X> xIn;
@@ -18,15 +19,21 @@ public abstract class AbstractBiFunctionChip<X, Y, Z> extends Gridding {
     protected AbstractBiFunctionChip(Class<? super X> xClass, Class<? super Y> yClass, Class<? super Z> zClass) {
         super();
         out = new TypedPort<>(zClass);
-        xIn = new TypedPort<>(xClass, (X a) -> {
-            AbstractBiFunctionChip.this.x = a;
-            if (y != null)
-                commit(x, y);
+        xIn = new TypedPort<>(xClass, new Consumer<X>() {
+            @Override
+            public void accept(X a) {
+                AbstractBiFunctionChip.this.x = a;
+                if (y != null)
+                    AbstractBiFunctionChip.this.commit(x, y);
+            }
         });
-        yIn = new TypedPort<>(yClass, (Y b) -> {
-            AbstractBiFunctionChip.this.y = b;
-            if (x != null)
-                commit(x, y);
+        yIn = new TypedPort<>(yClass, new Consumer<Y>() {
+            @Override
+            public void accept(Y b) {
+                AbstractBiFunctionChip.this.y = b;
+                if (x != null)
+                    AbstractBiFunctionChip.this.commit(x, y);
+            }
         });
 
         set(new Gridding(

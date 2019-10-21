@@ -15,6 +15,7 @@ import nars.task.TemporalTask;
 import nars.term.Neg;
 import nars.term.Term;
 import nars.truth.Truth;
+import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 
 import java.util.Iterator;
@@ -115,7 +116,12 @@ public class AutoConceptualizer extends VectorSensor {
             order[i] = i;
 
         float finalMean = 0.5f;
-        QuickSort.sort(order, (i) -> Math.abs(finalMean - a[i]));
+        QuickSort.sort(order, new IntToFloatFunction() {
+            @Override
+            public float valueOf(int i) {
+                return Math.abs(finalMean - a[i]);
+            }
+        });
 
         Set<Term> x = new UnifiedSet(maxArity);
         int j = 0;

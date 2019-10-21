@@ -32,6 +32,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 import static jcog.Util.sqr;
 import static nars.gui.graph.DynamicConceptSpace.ColorNode.Hash;
@@ -90,7 +93,12 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
         synchronized (this) {
             super.start(space);
             init();
-            updater = nar.onDur(nn -> concepts.commit());
+            updater = nar.onDur(new Consumer<NAR>() {
+                @Override
+                public void accept(NAR nn) {
+                    concepts.commit();
+                }
+            });
         }
 
     }
@@ -103,18 +111,24 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
             if (onClear != null)
                 onClear.close();
 
-            onDur = nar.onDur(() -> {
-                if (concepts.commit()) {
-                    updated.set(true);
-                }
+            onDur = nar.onDur(new Runnable() {
+                @Override
+                public void run() {
+                    if (concepts.commit()) {
+                        updated.set(true);
+                    }
 
+                }
             }).durs(1.0F);
 
-            (this.onClear = new RunThese()).add(nar.eventClear.on(() -> {
-                synchronized (this) {
-                    next.write().clear();
-                    next.commit();
-                    concepts.clear();
+            (this.onClear = new RunThese()).add(nar.eventClear.on(new Runnable() {
+                @Override
+                public void run() {
+                    synchronized (DynamicConceptSpace.this) {
+                        next.write().clear();
+                        next.commit();
+                        concepts.clear();
+                    }
                 }
             }));
 
@@ -285,21 +299,33 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
 
 
             for (ConceptWidget conceptWidget : pending) {
-                conceptWidget.edges.write().forEachValue(x -> x.inactive = true);
+                conceptWidget.edges.write().forEachValue(new Consumer<ConceptWidget.ConceptEdge>() {
+                    @Override
+                    public void accept(ConceptWidget.ConceptEdge x) {
+                        x.inactive = true;
+                    }
+                });
             }
 
-            edges.commit(e -> {
-                if (!e.active()) {
-                    e.delete();
-                    return;
-                }
+            edges.commit(new Consumer<ConceptWidget.EdgeComponent>() {
+                @Override
+                public void accept(ConceptWidget.EdgeComponent e) {
+                    if (!e.active()) {
+                        e.delete();
+                        return;
+                    }
 
-                ConceptWidget src = e.src();
-                Map<Concept, ConceptWidget.ConceptEdge> eee = src.edges.write();
-                ConceptWidget tgt = e.tgt();
-                eee.computeIfAbsent(tgt.id, (t) ->
-                    new ConceptWidget.ConceptEdge(src, tgt, (float) 0)
-                ).merge(e);
+                    ConceptWidget src = e.src();
+                    Map<Concept, ConceptWidget.ConceptEdge> eee = src.edges.write();
+                    ConceptWidget tgt = e.tgt();
+                    eee.computeIfAbsent(tgt.id, new Function<Concept, ConceptWidget.ConceptEdge>() {
+                                @Override
+                                public ConceptWidget.ConceptEdge apply(Concept t) {
+                                    return new ConceptWidget.ConceptEdge(src, tgt, (float) 0);
+                                }
+                            }
+                    ).merge(e);
+                }
             });
             float termlinkOpac = termlinkOpacity.floatValue();
             float tasklinkOpac = tasklinkOpacity.floatValue();
@@ -312,47 +338,50 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
             float lineAlphaMax = Math.max(lineAlphaMin, _lineAlphaMax);
             for (ConceptWidget c : pending) {
                 float srcRad = c.radius();
-                c.edges.write().removeIf(e -> {
-                    if (e.inactive || !e.connected()) {
-                        e.delete();
-                        return true;
-                    }
-
-                    float edgeSum = (e.termlinkPri + e.tasklinkPri);
-
-                    if (edgeSum >= (float) 0) {
-
-                        float p = e.priElseZero();
-                        if (p != p)
+                c.edges.write().removeIf(new Predicate<ConceptWidget.ConceptEdge>() {
+                    @Override
+                    public boolean test(ConceptWidget.ConceptEdge e) {
+                        if (e.inactive || !e.connected()) {
+                            e.delete();
                             return true;
-
-                        e.width = minLineWidth + 0.5f * sqr(1.0F + p * MaxEdgeWidth);
-
-                        float taskish, termish;
-                        if (edgeSum > (float) 0) {
-                            taskish = e.tasklinkPri / edgeSum * termlinkOpac;
-                            termish = e.termlinkPri / edgeSum * tasklinkOpac;
-                        } else {
-                            taskish = termish = 0.5f;
                         }
-                        e.r = 0.05f + 0.65f * (taskish);
-                        e.b = 0.05f + 0.65f * (termish);
-                        e.g = 0.1f * (1f - (e.r + e.g) / 1.5f);
 
-                        e.a = Util.lerpSafe(p /* * Math.max(taskish, termish) */, lineAlphaMin, lineAlphaMax);
+                        float edgeSum = (e.termlinkPri + e.tasklinkPri);
+
+                        if (edgeSum >= (float) 0) {
+
+                            float p = e.priElseZero();
+                            if (p != p)
+                                return true;
+
+                            e.width = minLineWidth + 0.5f * sqr(1.0F + p * MaxEdgeWidth);
+
+                            float taskish, termish;
+                            if (edgeSum > (float) 0) {
+                                taskish = e.tasklinkPri / edgeSum * termlinkOpac;
+                                termish = e.termlinkPri / edgeSum * tasklinkOpac;
+                            } else {
+                                taskish = termish = 0.5f;
+                            }
+                            e.r = 0.05f + 0.65f * (taskish);
+                            e.b = 0.05f + 0.65f * (termish);
+                            e.g = 0.1f * (1f - (e.r + e.g) / 1.5f);
+
+                            e.a = Util.lerpSafe(p /* * Math.max(taskish, termish) */, lineAlphaMin, lineAlphaMax);
 
 
-                        e.attraction = 0.5f * e.width / 2f;
-                        float totalRad = srcRad + e.tgt().radius();
-                        e.attractionDist =
+                            e.attraction = 0.5f * e.width / 2f;
+                            float totalRad = srcRad + e.tgt().radius();
+                            e.attractionDist =
 
-                                (totalRad * separation) + totalRad;
-                    } else {
-                        e.a = -1.0F;
-                        e.attraction = (float) 0;
+                                    (totalRad * separation) + totalRad;
+                        } else {
+                            e.a = -1.0F;
+                            e.attraction = (float) 0;
+                        }
+
+                        return false;
                     }
-
-                    return false;
                 });
                 c.edges.commit();
             }

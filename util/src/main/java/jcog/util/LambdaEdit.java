@@ -56,7 +56,12 @@ public class LambdaEdit {
         return getClass().getClassLoader().getResourceAsStream(path);
     }
 
-    final Supplier<Integer> MY_LAMBDA = (Supplier<Integer>&Serializable)() -> 1;
+    final Supplier<Integer> MY_LAMBDA = new Supplier<Integer>() {
+        @Override
+        public Integer get() {
+            return 1;
+        }
+    };
 
     {
         try {

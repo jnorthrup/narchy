@@ -1,6 +1,7 @@
 package nars.game.sensor;
 
 import jcog.data.list.FasterList;
+import jcog.math.FloatSupplier;
 import nars.NAR;
 import nars.term.Term;
 
@@ -20,7 +21,12 @@ public class SelectorSensor extends VectorSensor {
         for (int e : values) {
             choices.add(newComponent(
                 termizer.apply(e),
-                () -> value.getAsInt() == e ? 1f : 0f)
+                    new FloatSupplier() {
+                        @Override
+                        public float asFloat() {
+                            return value.getAsInt() == e ? 1f : 0f;
+                        }
+                    })
             );
         }
 

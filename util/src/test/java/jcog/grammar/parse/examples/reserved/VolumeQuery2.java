@@ -68,10 +68,13 @@ class VolumeQuery2 {
 
 		
 
-		p.put((IAssembler) a -> {
-			Object o = a.pop();
-			a.push("VOL(" + o + ')');
-		});
+		p.put(new IAssembler() {
+            @Override
+            public void accept(Assembly a) {
+                Object o = a.pop();
+                a.push("VOL(" + o + ')');
+            }
+        });
 
 		return p;
 	}

@@ -126,7 +126,12 @@ import java.io.PrintStream;
 
 
     public Cause newCause(Object name) {
-        return newCause((id) -> new Cause(id, name));
+        return newCause(new ShortToObjectFunction<Cause>() {
+            @Override
+            public Cause valueOf(short id) {
+                return new Cause(id, name);
+            }
+        });
     }
 
     /**

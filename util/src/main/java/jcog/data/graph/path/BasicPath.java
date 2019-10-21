@@ -27,6 +27,7 @@ import jcog.data.graph.MapNodeGraph;
 import jcog.data.graph.Node;
 import jcog.data.graph.edge.ImmutableDirectedEdge;
 import jcog.data.list.FasterList;
+import org.eclipse.collections.api.block.predicate.primitive.IntPredicate;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectIntHashMap;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 
@@ -193,7 +194,12 @@ public class BasicPath<N, E> extends AbstractPath<N, E> {
 
     @Override
     public boolean hasCycles() {
-        return getCountMap().values().anySatisfy(x -> x > 1);
+        return getCountMap().values().anySatisfy(new IntPredicate() {
+            @Override
+            public boolean accept(int x) {
+                return x > 1;
+            }
+        });
 //        MutableIntIterator vv = getCountMap().values().intIterator();
 //        while (vv.hasNext()) {
 //            int c = vv.next();

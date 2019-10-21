@@ -8,6 +8,8 @@ import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.ScrollXY;
 import spacegraph.space2d.container.collection.MutableMapContainer;
 
+import java.util.function.Predicate;
+
 import static jcog.Util.short2Int;
 
 /**
@@ -119,19 +121,22 @@ public class DynGrid<X> extends MutableMapContainer<Integer, X> implements Scrol
         ch = hh / vh;
 
 
-        cells.map.removeIf(e -> {
-            Surface s = ((SurfaceCacheCell) e).surface;
+        cells.map.removeIf(new Predicate<CellMap.CacheCell<Integer, X>>() {
+            @Override
+            public boolean test(CellMap.CacheCell<Integer, X> e) {
+                Surface s = ((SurfaceCacheCell) e).surface;
 
-            if (s == null) {
-                //return true;
-            } else {
-                int cellID = e.key;
-                short sx = (short) (cellID >> 16);
-                short sy = (short) (cellID & 0xffff);
-                return !cellVisible(sx, sy);
+                if (s == null) {
+                    //return true;
+                } else {
+                    int cellID = e.key;
+                    short sx = (short) (cellID >> 16);
+                    short sy = (short) (cellID & 0xffff);
+                    return !DynGrid.this.cellVisible(sx, sy);
+                }
+
+                return false;
             }
-
-            return false;
         });
 
 

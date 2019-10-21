@@ -108,7 +108,12 @@ public class MonoBufImgBitmap2D implements Bitmap2D {
     static final BufferedImage Empty = new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB);
 
     public MonoBufImgBitmap2D filter(ColorMode c) {
-        return new MonoBufImgBitmap2D(() -> img) {
+        return new MonoBufImgBitmap2D(new Supplier<BufferedImage>() {
+            @Override
+            public BufferedImage get() {
+                return MonoBufImgBitmap2D.this.img;
+            }
+        }) {
             @Override
             public int width() {
                 return MonoBufImgBitmap2D.this.width();

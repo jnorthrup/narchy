@@ -52,7 +52,10 @@ public final class DequeCleaningPool<X> {
 
 
     public DequeCleaningPool(Supplier<X> builder) {
-        this(builder, (x) -> {
+        this(builder, new Consumer<X>() {
+            @Override
+            public void accept(X x) {
+            }
         });
     }
 
@@ -78,7 +81,12 @@ public final class DequeCleaningPool<X> {
 
 
     public static <X> ThreadLocal<DequeCleaningPool<X>> threadLocal(Supplier<X> builder, Consumer<X> cleaner) {
-        ThreadLocal<DequeCleaningPool<X>> t = ThreadLocal.withInitial(() -> new DequeCleaningPool<>(builder, cleaner));
+        ThreadLocal<DequeCleaningPool<X>> t = ThreadLocal.withInitial(new Supplier<DequeCleaningPool<X>>() {
+            @Override
+            public DequeCleaningPool<X> get() {
+                return new DequeCleaningPool<>(builder, cleaner);
+            }
+        });
         return t;
     }
 

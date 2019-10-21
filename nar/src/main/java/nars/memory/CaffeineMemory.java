@@ -1,14 +1,13 @@
 package nars.memory;
 
-import com.github.benmanes.caffeine.cache.Cache;
-import com.github.benmanes.caffeine.cache.Caffeine;
-import com.github.benmanes.caffeine.cache.RemovalCause;
-import com.github.benmanes.caffeine.cache.RemovalListener;
+import com.github.benmanes.caffeine.cache.*;
 import com.google.common.util.concurrent.MoreExecutors;
 import nars.NAL;
 import nars.concept.Concept;
 import nars.concept.PermanentConcept;
 import nars.term.Term;
+import org.checkerframework.checker.index.qual.NonNegative;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
@@ -24,7 +23,12 @@ public class CaffeineMemory extends Memory implements /*CacheLoader<Term, Concep
 //    private DurLoop cleanup;
 
 	public CaffeineMemory(long capacity) {
-		this(capacity, false, c -> 1);
+		this(capacity, false, new ToIntFunction<Concept>() {
+            @Override
+            public int applyAsInt(Concept c) {
+                return 1;
+            }
+        });
 	}
 
 	public CaffeineMemory(long capacity, ToIntFunction<Concept> w) {
@@ -32,10 +36,13 @@ public class CaffeineMemory extends Memory implements /*CacheLoader<Term, Concep
 	}
 
 	public CaffeineMemory(long capacity, boolean weightDynamic, ToIntFunction<Concept> w) {
-		this(Caffeine.newBuilder().maximumWeight(capacity).weigher((k, v) -> {
-			if (v instanceof PermanentConcept) return 0;
-			return w.applyAsInt((Concept) v);
-		}), weightDynamic);
+		this(Caffeine.newBuilder().maximumWeight(capacity).weigher(new Weigher<Object, Object>() {
+            @Override
+            public @NonNegative int weigh(@NonNull Object k, @NonNull Object v) {
+                if (v instanceof PermanentConcept) return 0;
+                return w.applyAsInt((Concept) v);
+            }
+        }), weightDynamic);
 	}
 
 	private CaffeineMemory(Caffeine builder, boolean weightDynamic) {

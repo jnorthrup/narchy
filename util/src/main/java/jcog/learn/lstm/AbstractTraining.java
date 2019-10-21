@@ -23,25 +23,27 @@ public abstract class AbstractTraining {
         double[] fit = {(double) 0};
         double[] max_fit = {(double) 0};
 
-        this.interact(inter -> {
-            if (inter.forget > (float) 0)
-                agent.forget(inter.forget);
+        this.interact(new Consumer<ExpectedVsActual>() {
+            @Override
+            public void accept(ExpectedVsActual inter) {
+                if (inter.forget > (float) 0)
+                    agent.forget(inter.forget);
 
-            if (inter.expected == null) {
-                agent.predict(inter.actual);
-            }
-            else {
-                double[] actual_output;
+                if (inter.expected == null) {
+                    agent.predict(inter.actual);
+                } else {
+                    double[] actual_output;
 
-                if (validation_mode)
-                    actual_output = agent.predict(inter.actual);
-                else
-                    actual_output = agent.learn(inter.actual, inter.expected, learningRate);
+                    if (validation_mode)
+                        actual_output = agent.predict(inter.actual);
+                    else
+                        actual_output = agent.learn(inter.actual, inter.expected, learningRate);
 
-                if (Util.argmax(actual_output) == Util.argmax(inter.expected))
-                    fit[0]++;
+                    if (Util.argmax(actual_output) == Util.argmax(inter.expected))
+                        fit[0]++;
 
-                max_fit[0]++;
+                    max_fit[0]++;
+                }
             }
         });
 

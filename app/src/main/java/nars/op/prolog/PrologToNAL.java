@@ -16,6 +16,8 @@ import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 
 import java.util.Map;
+import java.util.function.IntFunction;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -65,16 +67,22 @@ public class PrologToNAL {
 
                     if (pre.varQuery()>0 && post.varQuery()>0) {
                         MutableSet<Variable> prev = new UnifiedSet();
-                        pre.recurseTerms(Termlike::hasVarQuery, (a) -> {
-                            if (a.op() == Op.VAR_QUERY)
-                                prev.add((Variable)a);
-                            return true;
+                        pre.recurseTerms(Termlike::hasVarQuery, new Predicate<Term>() {
+                            @Override
+                            public boolean test(Term a) {
+                                if (a.op() == Op.VAR_QUERY)
+                                    prev.add((Variable) a);
+                                return true;
+                            }
                         }, null);
                         MutableSet<Variable> posv = new UnifiedSet();
-                        post.recurseTerms(Termlike::hasVarQuery, (a) -> {
-                            if (a.op() == Op.VAR_QUERY)
-                                posv.add((Variable)a);
-                            return true;
+                        post.recurseTerms(Termlike::hasVarQuery, new Predicate<Term>() {
+                            @Override
+                            public boolean test(Term a) {
+                                if (a.op() == Op.VAR_QUERY)
+                                    posv.add((Variable) a);
+                                return true;
+                            }
                         }, null);
 
                         MutableSet<Variable> common = prev.intersect(posv);
@@ -98,7 +106,12 @@ public class PrologToNAL {
                         return atom;
                     } else {
                         return $.inh(
-                                $.p((Term[])Util.map(0, arity, Term[]::new, i -> N(s.sub(i)))),
+                                $.p((Term[])Util.map(0, arity, Term[]::new, new IntFunction<Term>() {
+                                    @Override
+                                    public Term apply(int i) {
+                                        return N(s.sub(i));
+                                    }
+                                })),
                                 atom);
                     }
             }

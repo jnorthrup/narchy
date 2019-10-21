@@ -7,6 +7,7 @@ import jcog.random.XoRoShiRo128PlusRandom;
 import jcog.signal.Tensor;
 import jcog.signal.tensor.TensorFunc;
 import jcog.signal.tensor.TensorLERP;
+import org.eclipse.collections.api.block.procedure.primitive.FloatProcedure;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.container.grid.Gridding;
@@ -43,7 +44,12 @@ public class NoiseVectorChip extends Splitting {
 
         updater = Loop.of(this::next);
         R( new Gridding(
-                LabeledPane.the("fps", new FloatSlider(1f, (float) 0, 120.0F).on((f)-> updater.setFPS(f))),
+                LabeledPane.the("fps", new FloatSlider(1f, (float) 0, 120.0F).on(new FloatProcedure() {
+                    @Override
+                    public void value(float f) {
+                        updater.setFPS(f);
+                    }
+                })),
 
                 LabeledPane.the("size", new IntSlider(size)),
 

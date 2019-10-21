@@ -3,6 +3,7 @@ package alice.tuprolog;
 import alice.util.JavaDynamicClassLoader;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 
 import java.io.File;
 import java.io.IOException;
@@ -58,20 +59,26 @@ public class JavaDynamicClassLoaderTestCase {
 
     @Test
     public void LoadClassNotFoundTest() {
-        assertThrows(ClassNotFoundException.class, () -> {
-            setPath(true);
-            URL[] urls = getURLsFromStringArray(paths);
-            JavaDynamicClassLoader loader = new JavaDynamicClassLoader(urls, this.getClass().getClassLoader());
-            loader.loadClass("ClassNotFound");
+        assertThrows(ClassNotFoundException.class, new Executable() {
+            @Override
+            public void execute() throws Throwable {
+                JavaDynamicClassLoaderTestCase.this.setPath(true);
+                URL[] urls = getURLsFromStringArray(paths);
+                JavaDynamicClassLoader loader = new JavaDynamicClassLoader(urls, JavaDynamicClassLoaderTestCase.this.getClass().getClassLoader());
+                loader.loadClass("ClassNotFound");
+            }
         });
     }
 
     @Test
     public void InvalidPathTest() {
-        assertThrows(ClassNotFoundException.class, () -> {
-            URL url = new File(".").toURI().toURL();
-            JavaDynamicClassLoader loader = new JavaDynamicClassLoader(new URL[]{url}, this.getClass().getClassLoader());
-            loader.loadClass("Counter");
+        assertThrows(ClassNotFoundException.class, new Executable() {
+            @Override
+            public void execute() throws Throwable {
+                URL url = new File(".").toURI().toURL();
+                JavaDynamicClassLoader loader = new JavaDynamicClassLoader(new URL[]{url}, JavaDynamicClassLoaderTestCase.this.getClass().getClassLoader());
+                loader.loadClass("Counter");
+            }
         });
     }
 
@@ -91,21 +98,24 @@ public class JavaDynamicClassLoaderTestCase {
 
     @Test
     public void TestNestedPackage() {
-        assertThrows(ClassNotFoundException.class, () -> {
+        assertThrows(ClassNotFoundException.class, new Executable() {
+            @Override
+            public void execute() throws Throwable {
 
-            File file = new File(".");
-            String tempPath = file.getCanonicalPath()
-                    + File.separator + "test"
-                    + File.separator + "unit"
-                    + File.separator + "TestURLClassLoaderNestedPackage.jar";
-            URL[] urls = getURLsFromStringArray(tempPath);
-            JavaDynamicClassLoader loader = new JavaDynamicClassLoader(urls, this.getClass().getClassLoader());
-            Class<?> cl = loader.loadClass("acme.corp.Counter");
-            assertNotNull(cl);
-            cl = loader.loadClass("java.lang.String");
-            assertNotNull(cl);
-            loader.removeAllURLs();
-            cl = loader.loadClass("Counter");
+                File file = new File(".");
+                String tempPath = file.getCanonicalPath()
+                        + File.separator + "test"
+                        + File.separator + "unit"
+                        + File.separator + "TestURLClassLoaderNestedPackage.jar";
+                URL[] urls = getURLsFromStringArray(tempPath);
+                JavaDynamicClassLoader loader = new JavaDynamicClassLoader(urls, JavaDynamicClassLoaderTestCase.this.getClass().getClassLoader());
+                Class<?> cl = loader.loadClass("acme.corp.Counter");
+                assertNotNull(cl);
+                cl = loader.loadClass("java.lang.String");
+                assertNotNull(cl);
+                loader.removeAllURLs();
+                cl = loader.loadClass("Counter");
+            }
         });
     }
 

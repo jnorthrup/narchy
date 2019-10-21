@@ -22,6 +22,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Arrays;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.ToLongFunction;
 
 import static nars.Op.NEG;
 
@@ -119,7 +120,12 @@ public class DynTaskify extends TaskList {
                 s = earliest;
                 e = s == LongInterval.ETERNAL ?
                     LongInterval.ETERNAL :
-                    s + minValue(t -> t.rangeIfNotEternalElse(1L) - 1L);
+                    s + minValue(new ToLongFunction<Task>() {
+                        @Override
+                        public long applyAsLong(Task t) {
+                            return t.rangeIfNotEternalElse(1L) - 1L;
+                        }
+                    });
             } else {
 
                 long[] u = Tense.union(0, this);
@@ -157,7 +163,12 @@ public class DynTaskify extends TaskList {
             order = Arrays.copyOfRange(order, 0, count);
             Component[] cc = c.array();
 
-            IntToFloatFunction smallestFirst = j -> (float) +cc[j].termVolume;
+            IntToFloatFunction smallestFirst = new IntToFloatFunction() {
+                @Override
+                public float valueOf(int j) {
+                    return (float) +cc[j].termVolume;
+                }
+            };
             //IntToFloatFunction biggestFirst = (int j) -> -(cc[j]).termVolume;
             QuickSort.sort(order,
                     smallestFirst
@@ -266,9 +277,12 @@ public class DynTaskify extends TaskList {
 
     /** earliest start time, excluding ETERNALs.  returns ETERNAL if all ETERNAL */
     public long earliestStart() {
-        long w = minValue(t -> {
-            long ts = t.start();
-            return ts != LongInterval.ETERNAL ? ts : LongInterval.TIMELESS;
+        long w = minValue(new ToLongFunction<Task>() {
+            @Override
+            public long applyAsLong(Task t) {
+                long ts = t.start();
+                return ts != LongInterval.ETERNAL ? ts : LongInterval.TIMELESS;
+            }
         });
         return w == TIMELESS ? ETERNAL : w;
     }

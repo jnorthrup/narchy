@@ -9,6 +9,8 @@ import nars.unify.UnifyAny;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
+import java.util.function.Supplier;
+
 import static nars.$.$$;
 import static nars.Op.BELIEF;
 import static nars.time.Tense.ETERNAL;
@@ -40,7 +42,12 @@ class AnswerTest {
         queries = ArrayUtil.add(queries, belief);
         for (String q : queries) {
             @Nullable Task a = n.answer($$(q), BELIEF, ETERNAL);
-            assertNotNull(a, ()->q + " did not match " + belief);
+            assertNotNull(a, new Supplier<String>() {
+                @Override
+                public String get() {
+                    return q + " did not match " + belief;
+                }
+            });
             assertEquals($$(belief), a.term());
         }
     }

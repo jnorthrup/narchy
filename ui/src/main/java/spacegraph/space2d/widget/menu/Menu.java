@@ -17,7 +17,12 @@ public abstract class Menu extends MutableUnitContainer {
     public final Map<String, Supplier<Surface>> options;
 
 
-    protected UnaryOperator<Surface> wrapper = x->x;
+    protected UnaryOperator<Surface> wrapper = new UnaryOperator<Surface>() {
+        @Override
+        public Surface apply(Surface x) {
+            return x;
+        }
+    };
 
 
     /** view model */

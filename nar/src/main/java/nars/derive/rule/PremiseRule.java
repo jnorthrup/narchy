@@ -8,6 +8,7 @@ import nars.derive.util.Forkable;
 import nars.term.ProxyTerm;
 import nars.term.Term;
 import nars.term.control.PREDICATE;
+import org.eclipse.collections.api.block.function.primitive.ShortToObjectFunction;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
@@ -56,7 +57,12 @@ public class PremiseRule extends ProxyTerm  {
     }
 
     private static RuleCause cause(NAR n, Term ref) {
-        return n.newCause(ruleInstanceID -> new RuleCause(ref, ruleInstanceID));
+        return n.newCause(new ShortToObjectFunction<RuleCause>() {
+            @Override
+            public RuleCause valueOf(short ruleInstanceID) {
+                return new RuleCause(ref, ruleInstanceID);
+            }
+        });
     }
 
 }

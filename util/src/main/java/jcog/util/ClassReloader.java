@@ -222,6 +222,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.function.BiFunction;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -425,7 +426,12 @@ public class ClassReloader extends ClassLoader {
         }
         if (this.reloadableCache.contains(s)) {
             addToCache(clazz);
-            reloadedClasses.computeIfPresent(s,(x,y)->TRUE);
+            reloadedClasses.computeIfPresent(s, new BiFunction<String, Boolean, Boolean>() {
+                @Override
+                public Boolean apply(String x, Boolean y) {
+                    return TRUE;
+                }
+            });
 //            if (this.reloadedClasses.containsKey(s)) {
 //                this.reloadedClasses.put(s, Boolean.TRUE);
 //            }

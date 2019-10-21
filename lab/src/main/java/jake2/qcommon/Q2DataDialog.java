@@ -10,6 +10,8 @@ import jake2.Globals;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.*;
@@ -379,7 +381,12 @@ public class Q2DataDialog extends javax.swing.JDialog {
             constraints.fill = GridBagConstraints.NONE;
             constraints.anchor = GridBagConstraints.SOUTHWEST;
             JButton exit = new JButton("Exit");
-            exit.addActionListener(e -> System.exit(0));
+            exit.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    System.exit(0);
+                }
+            });
 
 
 
@@ -459,7 +466,12 @@ public class Q2DataDialog extends javax.swing.JDialog {
             constraints.gridwidth = 1;
             constraints.fill = GridBagConstraints.NONE;
             JButton choose = new JButton("...");
-            choose.addActionListener(e -> choose());
+            choose.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    InstallPanel.this.choose();
+                }
+            });
             add(choose, constraints);
 
             constraints.gridx = 0;
@@ -468,7 +480,12 @@ public class Q2DataDialog extends javax.swing.JDialog {
             constraints.weighty = 1.0;
             constraints.fill = GridBagConstraints.NONE;
             JButton exit = new JButton("Exit");
-            exit.addActionListener(e -> exit());
+            exit.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    exit();
+                }
+            });
             add(exit, constraints);
 
             constraints.gridx = 0;
@@ -476,7 +493,12 @@ public class Q2DataDialog extends javax.swing.JDialog {
             constraints.gridwidth = 4;
             constraints.anchor = GridBagConstraints.SOUTH;
             JButton cancel = new JButton("Cancel");
-            cancel.addActionListener(e -> cancel());
+            cancel.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    InstallPanel.this.cancel();
+                }
+            });
             add(cancel, constraints);
 
             constraints.gridx = 2;
@@ -484,7 +506,12 @@ public class Q2DataDialog extends javax.swing.JDialog {
             constraints.gridwidth = 2;
             constraints.anchor = GridBagConstraints.SOUTHEAST;
             JButton install = new JButton("Install");
-            install.addActionListener(e -> install());
+            install.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    InstallPanel.this.install();
+                }
+            });
             add(install, constraints);
         }
 
@@ -598,7 +625,12 @@ public class Q2DataDialog extends javax.swing.JDialog {
             gridBagConstraints.fill = GridBagConstraints.NONE;
             gridBagConstraints.weighty = 1.0;
             gridBagConstraints.weightx = (double) 0;
-            cancel.addActionListener(e -> cancel());
+            cancel.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    ProgressPanel.this.cancel();
+                }
+            });
             add(cancel, gridBagConstraints);
 
             Dimension d = new Dimension(400, 100);

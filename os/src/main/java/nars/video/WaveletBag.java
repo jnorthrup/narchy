@@ -35,7 +35,12 @@ public class WaveletBag implements Bitmap2D {
 
 
     public WaveletBag(BufferedImage b, int px, int py) {
-        this(()->b, px, py);
+        this(new Supplier<BufferedImage>() {
+            @Override
+            public BufferedImage get() {
+                return b;
+            }
+        }, px, py);
     }
 
     public WaveletBag(Supplier<BufferedImage> b, int px, int py) {

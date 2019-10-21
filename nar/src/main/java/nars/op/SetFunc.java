@@ -14,10 +14,12 @@ import nars.term.atom.Atomic;
 import nars.term.functor.UnaryParametricBidiFunctor;
 import nars.term.util.SetSectDiff;
 import nars.term.util.transform.InlineFunctor;
+import org.eclipse.collections.api.block.predicate.primitive.IntObjectPredicate;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.Function;
 
 import static nars.term.atom.IdempotentBool.Null;
 
@@ -105,7 +107,17 @@ public enum SetFunc {
                 Comparator<Term> cmp;
                 if (param instanceof Atomic && !param.hasVars()) {
                     
-                    cmp = Comparator.comparing((Term t) -> eval(t, (Atomic) param)).thenComparing(t -> t);
+                    cmp = Comparator.comparing(new Function<Term, Term>() {
+                        @Override
+                        public Term apply(Term t) {
+                            return eval(t, (Atomic) param);
+                        }
+                    }).thenComparing(new Function<Term, Term>() {
+                        @Override
+                        public Term apply(Term t) {
+                            return t;
+                        }
+                    });
                 } else
                     return Null; 
 
@@ -132,7 +144,12 @@ public enum SetFunc {
                         }
                     }
                     if (missing.size() == 1) {
-                        Term[] xxx = xx.terms((n, xs) -> xs.op().var);
+                        Term[] xxx = xx.terms(new IntObjectPredicate<Term>() {
+                            @Override
+                            public boolean accept(int n, Term xs) {
+                                return xs.op().var;
+                            }
+                        });
                         if (xxx.length == 1) {
                             return e.is(xxx[0], missing.get(0)) ? null : Null;
                         }

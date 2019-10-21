@@ -141,14 +141,17 @@ public interface Concept extends Termed, MetaMap {
             e.printStackTrace();
         }
 
-        Consumer<Task> printTask = s -> {
-            try {
-                out.append(printIndent);
-                out.append(s.toString());
-                out.append(" ");
-                out.append('\n');
-            } catch (IOException e) {
-                e.printStackTrace();
+        Consumer<Task> printTask = new Consumer<Task>() {
+            @Override
+            public void accept(Task s) {
+                try {
+                    out.append(printIndent);
+                    out.append(s.toString());
+                    out.append(" ");
+                    out.append('\n');
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         };
 

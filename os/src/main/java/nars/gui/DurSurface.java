@@ -59,7 +59,12 @@ public abstract class DurSurface<S extends Surface> extends UnitContainer<S> {
     }
 
     public static DurSurface get(Surface x, NAR n, Runnable eachDur) {
-        return get(x, n, (nn)->eachDur.run());
+        return get(x, n, new Consumer<NAR>() {
+            @Override
+            public void accept(NAR nn) {
+                eachDur.run();
+            }
+        });
     }
     public static DurSurface get(BitmapMatrixView x, NAR n) {
         return get(x, n, x::updateIfShowing);

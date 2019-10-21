@@ -6,6 +6,7 @@ import com.google.common.math.DoubleMath;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.function.ToDoubleFunction;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -23,12 +24,20 @@ public class EntropyCalculator implements ImpurityCalculator {
      */
     @Override
     public <K, V> double impurity(K value, Supplier<Stream<Function<K, V>>> splitData) {
-        List<V> labels = splitData.get().map((x) -> x.apply(value)).distinct().collect(Collectors.toList());
+        List<V> labels = splitData.get().map(new Function<Function<K, V>, V>() {
+            @Override
+            public V apply(Function<K, V> x) {
+                return x.apply(value);
+            }
+        }).distinct().collect(Collectors.toList());
         if (labels.size() > 1) {
             // TODO this can be done faster by comparing each all at once
-            return labels.stream().mapToDouble(l -> {
-                double p = ImpurityCalculator.empiricalProb(value, splitData.get(), l);
-                return -1.0 * p * DoubleMath.log2(p) - ((1.0 - p) * DoubleMath.log2(1.0 - p));
+            return labels.stream().mapToDouble(new ToDoubleFunction<V>() {
+                @Override
+                public double applyAsDouble(V l) {
+                    double p = ImpurityCalculator.empiricalProb(value, splitData.get(), l);
+                    return -1.0 * p * DoubleMath.log2(p) - ((1.0 - p) * DoubleMath.log2(1.0 - p));
+                }
             }).sum();
         } else if (labels.size() == 1) {
             return 0.0; 

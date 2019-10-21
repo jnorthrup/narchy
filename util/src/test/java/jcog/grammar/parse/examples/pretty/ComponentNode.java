@@ -1,6 +1,7 @@
 package jcog.grammar.parse.examples.pretty;
 
 import java.util.Vector;
+import java.util.function.IntFunction;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -32,7 +33,12 @@ abstract class ComponentNode {
 	 * @return  a string of blanks
 	 */
 	static String indent(int n) {
-        String sb = IntStream.range(0, n).mapToObj(i -> "    ").collect(Collectors.joining());
+        String sb = IntStream.range(0, n).mapToObj(new IntFunction<String>() {
+            @Override
+            public String apply(int i) {
+                return "    ";
+            }
+        }).collect(Collectors.joining());
 		String buf = sb;
         return buf;
 	}

@@ -21,6 +21,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.util.function.Consumer;
+import java.util.function.IntFunction;
 import java.util.stream.IntStream;
 
 /**
@@ -89,16 +90,19 @@ public class Box2DTests extends JComponent implements Runnable {
     private volatile v2 mousePosition = new v2();
 
     private void initMouse() {
-        addMouseWheelListener(e -> {
-            if (e.getWheelRotation() < 0) {
-                zoom *= 1.25f * -e.getWheelRotation();
-            } else {
-                zoom /= 1.25f * e.getWheelRotation();
-            }
+        addMouseWheelListener(new MouseWheelListener() {
+            @Override
+            public void mouseWheelMoved(MouseWheelEvent e) {
+                if (e.getWheelRotation() < 0) {
+                    zoom *= 1.25f * -e.getWheelRotation();
+                } else {
+                    zoom /= 1.25f * e.getWheelRotation();
+                }
 
-            zoom = Math.min(zoom, 100);
-            zoom = Math.max(zoom, 0.1f);
-            repaint();
+                zoom = Math.min(zoom, 100);
+                zoom = Math.max(zoom, 0.1f);
+                Box2DTests.this.repaint();
+            }
         });
 
         addMouseMotionListener(new MouseMotionListener() {
@@ -150,22 +154,25 @@ public class Box2DTests extends JComponent implements Runnable {
                         v2 v = getPoint(p);
                         /*synchronized(Tests.this)*/
                     {
-                        w.bodies(b->{
-                            for (Fixture f = b.fixtures(); f != null; f = f.next) {
-                                if (f.testPoint(v)) {
-                                    MouseJointDef def = new MouseJointDef();
+                        w.bodies(new Consumer<Body2D>() {
+                            @Override
+                            public void accept(Body2D b) {
+                                for (Fixture f = b.fixtures(); f != null; f = f.next) {
+                                    if (f.testPoint(v)) {
+                                        MouseJointDef def = new MouseJointDef();
 
-                                    def.bodyA = ground;
-                                    def.bodyB = b;
-                                    def.collideConnected = true;
+                                        def.bodyA = ground;
+                                        def.bodyB = b;
+                                        def.collideConnected = true;
 
-                                    def.target.set(v);
+                                        def.target.set(v);
 
-                                    def.maxForce = 500f * b.getMass();
-                                    def.dampingRatio = 0;
+                                        def.maxForce = 500f * b.getMass();
+                                        def.dampingRatio = 0;
 
-                                    mjdef = def;
-                                    return;
+                                        mjdef = def;
+                                        return;
+                                    }
                                 }
                             }
                         });
@@ -253,11 +260,14 @@ public class Box2DTests extends JComponent implements Runnable {
     }
 
     private void setCase(Consumer<Dynamics2D> testcase) {
-        w.invoke(() -> {
-            this.testCase = testcase;
-            initWorld();
-            testCase.accept(w);
-            repaint();
+        w.invoke(new Runnable() {
+            @Override
+            public void run() {
+                Box2DTests.this.testCase = testcase;
+                Box2DTests.this.initWorld();
+                testCase.accept(w);
+                Box2DTests.this.repaint();
+            }
         });
     }
 
@@ -492,80 +502,91 @@ public class Box2DTests extends JComponent implements Runnable {
      * @param args
      */
     public static void main(String args[]) {
-        SwingUtilities.invokeLater(() -> {
-            JFrame frame = new JFrame("Tests");
-            frame.setBackground(Color.BLACK);
-            frame.getContentPane().setBackground(Color.BLACK);
-            frame.setIgnoreRepaint(true);
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                JFrame frame = new JFrame("Tests");
+                frame.setBackground(Color.BLACK);
+                frame.getContentPane().setBackground(Color.BLACK);
+                frame.setIgnoreRepaint(true);
+                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-            Container pane = frame.getContentPane();
+                Container pane = frame.getContentPane();
 
-            pane.setLayout(new BoxLayout(pane, BoxLayout.Y_AXIS));
+                pane.setLayout(new BoxLayout(pane, BoxLayout.Y_AXIS));
 
-            int bound = cases.length;
-            String[] caseNames = IntStream.range(0, bound).mapToObj(i -> (i + 1) + ". " + cases[i]).toArray(String[]::new);
+                int bound = cases.length;
+                String[] caseNames = IntStream.range(0, bound).mapToObj(new IntFunction<String>() {
+                    @Override
+                    public String apply(int i) {
+                        return (i + 1) + ". " + cases[i];
+                    }
+                }).toArray(String[]::new);
 
-            JComboBox petList = new JComboBox(caseNames);
-            pane.add(petList);
+                JComboBox petList = new JComboBox(caseNames);
+                pane.add(petList);
 
-            Dimension dimMax = petList.getMaximumSize();
-            petList.setMaximumSize(new Dimension(dimMax.width, 30));
+                Dimension dimMax = petList.getMaximumSize();
+                petList.setMaximumSize(new Dimension(dimMax.width, 30));
 
-            Box2DTests canvas = new Box2DTests();
+                Box2DTests canvas = new Box2DTests();
 
-            petList.addActionListener(e -> {
+                petList.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
 
-                JComboBox cb = (JComboBox) e.getSource();
-                int index = cb.getSelectedIndex();
-                canvas.setCase(cases[index]);
+                        JComboBox cb = (JComboBox) e.getSource();
+                        int index = cb.getSelectedIndex();
+                        canvas.setCase(cases[index]);
+                        pane.requestFocusInWindow();
+                    }
+                });
+
+                canvas.setAlignmentX(Component.CENTER_ALIGNMENT);
+                canvas.setIgnoreRepaint(true);
+                pane.add(canvas);
+
+                canvas.setCase(cases[0]);
+
+                pane.setFocusable(true);
                 pane.requestFocusInWindow();
-            });
 
-            canvas.setAlignmentX(Component.CENTER_ALIGNMENT);
-            canvas.setIgnoreRepaint(true);
-            pane.add(canvas);
-
-            canvas.setCase(cases[0]);
-
-            pane.setFocusable(true);
-            pane.requestFocusInWindow();
-
-            pane.addKeyListener(new KeyListener() {
-                @Override
-                public void keyTyped(KeyEvent e) {
-                }
-
-                @Override
-                public void keyPressed(KeyEvent e) {
-                    switch (e.getKeyChar()) {
-                        case 's':
-                            canvas.running = !canvas.running;
-                            break;
-                        case 'r':
-                            try { 
-                                canvas.t.interrupt();
-                                canvas.t.join();
-                            } catch (InterruptedException ex) {
-                            }
-                            canvas.t = canvas.createThread();
-                            canvas.initWorld();
-                            canvas.testCase.accept(canvas.w);
-                            canvas.t.start();
-                            break;
+                pane.addKeyListener(new KeyListener() {
+                    @Override
+                    public void keyTyped(KeyEvent e) {
                     }
 
-                }
+                    @Override
+                    public void keyPressed(KeyEvent e) {
+                        switch (e.getKeyChar()) {
+                            case 's':
+                                canvas.running = !canvas.running;
+                                break;
+                            case 'r':
+                                try {
+                                    canvas.t.interrupt();
+                                    canvas.t.join();
+                                } catch (InterruptedException ex) {
+                                }
+                                canvas.t = canvas.createThread();
+                                canvas.initWorld();
+                                canvas.testCase.accept(canvas.w);
+                                canvas.t.start();
+                                break;
+                        }
 
-                @Override
-                public void keyReleased(KeyEvent e) {
-                }
-            });
+                    }
 
-            canvas.run();
+                    @Override
+                    public void keyReleased(KeyEvent e) {
+                    }
+                });
 
-            frame.pack();
-            frame.setVisible(true);
+                canvas.run();
+
+                frame.pack();
+                frame.setVisible(true);
+            }
         });
     }
 }

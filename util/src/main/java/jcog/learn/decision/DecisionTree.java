@@ -54,7 +54,12 @@ public class DecisionTree<K, V> {
      */
     protected static <K, V> V label(final V value, final float homogenityPercentage, final Stream<UnaryOperator<V>> data) {
 
-        final Map<V, Long> labelCount = data.collect(groupingBy((x) -> x.apply(value), counting()));
+        final Map<V, Long> labelCount = data.collect(groupingBy(new Function<UnaryOperator<V>, V>() {
+            @Override
+            public V apply(UnaryOperator<V> x) {
+                return x.apply(value);
+            }
+        }, counting()));
 
         long totalCount = 0L;
         for (final Long x : labelCount.values()) {
@@ -101,7 +106,12 @@ public class DecisionTree<K, V> {
         boolean seen = false;
         Map.Entry<V, Long> best = null;
         final Comparator<Map.Entry<V, Long>> comparator = Map.Entry.comparingByValue();
-        for (final Map.Entry<V, Long> vLongEntry : data.collect(groupingBy(x -> x.apply(value), counting()))
+        for (final Map.Entry<V, Long> vLongEntry : data.collect(groupingBy(new Function<Function<K, V>, V>() {
+            @Override
+            public V apply(Function<K, V> x) {
+                return x.apply(value);
+            }
+        }, counting()))
                 .entrySet()) {
             if (!seen || comparator.compare(vLongEntry, best) > 0) {
                 seen = true;
@@ -156,7 +166,12 @@ public class DecisionTree<K, V> {
     }
 
     public Stream<DecisionNode.LeafNode<V>> leaves() {
-        return root != null ? root.recurse().filter(DecisionNode::isLeaf).map(n -> (DecisionNode.LeafNode<V>) n).distinct() : Stream.empty();
+        return root != null ? root.recurse().filter(DecisionNode::isLeaf).map(new Function<DecisionNode<V>, DecisionNode.LeafNode<V>>() {
+            @Override
+            public DecisionNode.LeafNode<V> apply(DecisionNode<V> n) {
+                return (DecisionNode.LeafNode<V>) n;
+            }
+        }).distinct() : Stream.empty();
     }
 
     /**
@@ -175,7 +190,12 @@ public class DecisionTree<K, V> {
      * constant precision
      */
     public DecisionNode put(final K value, final Collection<Function<K, V>> data, final Stream<Predicate<Function<K, V>>> features, final float precision) {
-        return put(value, data.stream(), features, (depth) -> precision);
+        return put(value, data.stream(), features, new IntToFloatFunction() {
+            @Override
+            public float valueOf(int depth) {
+                return precision;
+            }
+        });
     }
 
     public DecisionNode put(final K value, final Collection<Function<K, V>> data, final Collection<Predicate<Function<K, V>>> features) {
@@ -219,19 +239,34 @@ public class DecisionTree<K, V> {
 
         final DecisionNode<V> branch = split(split, d).map(
 
-                subsetTrainingData -> subsetTrainingData.isEmpty() ?
+                new Function<List<Function<K, V>>, DecisionNode<V>>() {
+                    @Override
+                    public DecisionNode<V> apply(List<Function<K, V>> subsetTrainingData) {
+                        return subsetTrainingData.isEmpty() ?
 
-                        leaf(majority(key, d.get()))
+                                leaf(majority(key, d.get()))
 
-                        :
+                                :
 
-                        put(key, StreamReplay.replay(subsetTrainingData.stream()),
-                                f.get().filter(p -> !p.equals(split)),
-                                currentDepth + 1,
-                                depthToPrecision
-                        ))
+                                DecisionTree.this.put(key, StreamReplay.replay(subsetTrainingData.stream()),
+                                        f.get().filter(new Predicate<Predicate<Function<K, V>>>() {
+                                            @Override
+                                            public boolean test(Predicate<Function<K, V>> p) {
+                                                return !p.equals(split);
+                                            }
+                                        }),
+                                        currentDepth + 1,
+                                        depthToPrecision
+                                );
+                    }
+                })
 
-                .collect(Collectors.toCollection(() -> DecisionNode.feature(split)));
+                .collect(Collectors.toCollection(new Supplier<DecisionNode<V>>() {
+                    @Override
+                    public DecisionNode<V> get() {
+                        return DecisionNode.feature(split);
+                    }
+                }));
 
         return (branch.size() == 1) ? branch.get(0) : branch;
 
@@ -258,15 +293,32 @@ public class DecisionTree<K, V> {
     protected Predicate<Function<K, V>> bestSplit(final K value, final Supplier<Stream<Function<K, V>>> data, final Stream<Predicate<Function<K, V>>> features) {
         final double[] currentImpurity = {Double.POSITIVE_INFINITY};
 
-        return features.reduce(null, (bestSplit, feature) -> {
-            final double calculatedSplitImpurity =
-                    split(feature, data).filter(x -> !x.isEmpty()).map(sd -> StreamReplay.replay(sd.stream())).mapToDouble(splitData ->
-                            impurity.impurity(value, splitData)).average().orElse(Double.POSITIVE_INFINITY);
-            if (calculatedSplitImpurity < currentImpurity[0]) {
-                currentImpurity[0] = calculatedSplitImpurity;
-                return feature;
+        return features.reduce(null, new BinaryOperator<Predicate<Function<K, V>>>() {
+            @Override
+            public Predicate<Function<K, V>> apply(Predicate<Function<K, V>> bestSplit, Predicate<Function<K, V>> feature) {
+                final double calculatedSplitImpurity =
+                        split(feature, data).filter(new Predicate<List<Function<K, V>>>() {
+                            @Override
+                            public boolean test(List<Function<K, V>> x) {
+                                return !x.isEmpty();
+                            }
+                        }).map(new Function<List<Function<K, V>>, Supplier<Stream<Function<K, V>>>>() {
+                            @Override
+                            public Supplier<Stream<Function<K, V>>> apply(List<Function<K, V>> sd) {
+                                return StreamReplay.replay(sd.stream());
+                            }
+                        }).mapToDouble(new ToDoubleFunction<Supplier<Stream<Function<K, V>>>>() {
+                            @Override
+                            public double applyAsDouble(Supplier<Stream<Function<K, V>>> splitData) {
+                                return impurity.impurity(value, splitData);
+                            }
+                        }).average().orElse(Double.POSITIVE_INFINITY);
+                if (calculatedSplitImpurity < currentImpurity[0]) {
+                    currentImpurity[0] = calculatedSplitImpurity;
+                    return feature;
+                }
+                return bestSplit;
             }
-            return bestSplit;
         });
     }
 
@@ -287,7 +339,12 @@ public class DecisionTree<K, V> {
      */
     public SortedMap<DecisionNode.LeafNode<V>, List<ObjectBooleanPair<DecisionNode<V>>>> explanations() {
         final SortedMap<DecisionNode.LeafNode<V>, List<ObjectBooleanPair<DecisionNode<V>>>> explanations = new TreeMap();
-        explain((path, result) -> explanations.put(result, new FasterList(path) /* clone it */));
+        explain(new BiConsumer<List<ObjectBooleanPair<DecisionNode<V>>>, DecisionNode.LeafNode<V>>() {
+            @Override
+            public void accept(List<ObjectBooleanPair<DecisionNode<V>>> path, DecisionNode.LeafNode<V> result) {
+                explanations.put(result, new FasterList(path) /* clone it */);
+            }
+        });
         return explanations;
     }
 

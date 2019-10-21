@@ -11,6 +11,7 @@ import nars.term.Term;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Iterator;
+import java.util.function.Predicate;
 
 import static java.lang.Long.MAX_VALUE;
 
@@ -295,13 +296,21 @@ public enum Tense {
 
     public static void assertDithered(Term t, int d) {
         if (d > 1 && t.hasAny(Op.Temporal)) {
-            t.recurseTerms(z -> z.hasAny(Op.Temporal), xx -> {
-                int zdt = xx.dt();
-                if (!Tense.dtSpecial(zdt)) {
-                    if (zdt != Tense.dither(zdt, d))
-                        throw WTF.WTF(t + " contains non-dithered DT in subterm " + xx);
+            t.recurseTerms(new Predicate<Term>() {
+                @Override
+                public boolean test(Term z) {
+                    return z.hasAny(Op.Temporal);
                 }
-                return true;
+            }, new Predicate<Term>() {
+                @Override
+                public boolean test(Term xx) {
+                    int zdt = xx.dt();
+                    if (!Tense.dtSpecial(zdt)) {
+                        if (zdt != Tense.dither(zdt, d))
+                            throw WTF.WTF(t + " contains non-dithered DT in subterm " + xx);
+                    }
+                    return true;
+                }
             }, null);
         }
     }

@@ -7,6 +7,8 @@ import jcog.tree.perfect.Trie;
 import jcog.tree.perfect.TrieMatch;
 import jcog.tree.perfect.Tries;
 import joptsimple.OptionException;
+import org.eclipse.collections.api.block.procedure.Procedure;
+import org.eclipse.collections.api.block.procedure.primitive.ObjectIntProcedure;
 import org.eclipse.collections.api.list.MutableList;
 import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.api.tuple.Pair;
@@ -30,6 +32,7 @@ import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 
 /*
  * Copyright (c) 2005, 2013, Oracle and/or its affiliates. All rights reserved.
@@ -86,7 +89,12 @@ public class StackProfiler2 implements InternalProfiler {
                     "sunw.", "com.sun.", "org.openjdk.jmh.", "com.intellij.rt.");
 
             excludePackageNames = Tries.forStrings();
-            exc.forEach(e -> excludePackageNames.put(e, true));
+            exc.forEach(new Procedure<String>() {
+                @Override
+                public void value(String e) {
+                    excludePackageNames.put(e, true);
+                }
+            });
 
         } catch (OptionException e) {
             throw new ProfilerException(e.getMessage());
@@ -304,7 +312,12 @@ public class StackProfiler2 implements InternalProfiler {
                 Thread.State state = e.getKey();
                 float totalHundredths = cc.size() / 100f;
                 sb.append(state).append(" (").append(totalHundredths + " recorded)\n");
-                dd.forEach(x -> sb.append('\t').append(Texts.n4(x.getTwo() / totalHundredths)).append("%\t").append(x.getOne()).append('\n'));
+                dd.forEach(new Procedure<ObjectIntPair<StackRecord>>() {
+                    @Override
+                    public void value(ObjectIntPair<StackRecord> x) {
+                        sb.append('\t').append(Texts.n4(x.getTwo() / totalHundredths)).append("%\t").append(x.getOne()).append('\n');
+                    }
+                });
 
                 sb.append("\n");
             }
@@ -318,7 +331,12 @@ public class StackProfiler2 implements InternalProfiler {
             StringBuilder sb = new StringBuilder(16 * 1024).append("CALlEES\n");
 
             float totalHundredths = calleeSum.size() / 100f;
-            calleeSum.topOccurrences(topCallees).forEach((x) -> sb.append('\t').append(Texts.n4(x.getTwo() / totalHundredths)).append("%\t").append(x.getOne()).append('\n'));
+            calleeSum.topOccurrences(topCallees).forEach(new Procedure<ObjectIntPair<Pair<String, IntObjectPair<String>>>>() {
+                @Override
+                public void value(ObjectIntPair<Pair<String, IntObjectPair<String>>> x) {
+                    sb.append('\t').append(Texts.n4(x.getTwo() / totalHundredths)).append("%\t").append(x.getOne()).append('\n');
+                }
+            });
 
             return sb.toString();
 
@@ -335,10 +353,18 @@ public class StackProfiler2 implements InternalProfiler {
                 for (Map.Entry<Thread.State, HashBag<StackRecord>> entry : r.calleeSum.entrySet()) {
                     Thread.State key = entry.getKey();
                     HashBag<StackRecord> value = entry.getValue();
-                    HashBag<StackRecord> sumSet = calleeSum.computeIfAbsent(key, (x) -> new HashBag<>());
-                    value.forEachWithOccurrences((x, o) -> {
-                        sumSet.addOccurrences(x, o);
-                        calledSum.addOccurrences(x.getFirst(), o);
+                    HashBag<StackRecord> sumSet = calleeSum.computeIfAbsent(key, new Function<Thread.State, HashBag<StackRecord>>() {
+                        @Override
+                        public HashBag<StackRecord> apply(Thread.State x) {
+                            return new HashBag<>();
+                        }
+                    });
+                    value.forEachWithOccurrences(new ObjectIntProcedure<StackRecord>() {
+                        @Override
+                        public void value(StackRecord x, int o) {
+                            sumSet.addOccurrences(x, o);
+                            calledSum.addOccurrences(x.getFirst(), o);
+                        }
                     });
 
                 }

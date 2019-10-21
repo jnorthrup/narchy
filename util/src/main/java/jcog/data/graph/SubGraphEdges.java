@@ -18,6 +18,7 @@
 
 package jcog.data.graph;
 
+import org.eclipse.collections.api.block.procedure.primitive.IntProcedure;
 import org.eclipse.collections.impl.set.mutable.primitive.IntHashSet;
 
 import java.util.BitSet;
@@ -76,8 +77,11 @@ public class SubGraphEdges implements Graph {
 
         IntHashSet result = new IntHashSet();
         if (nodes.get(i)) {
-            g.neighborsOut(i).forEach(j -> {
-                if (nodes.get(j)) result.add(j);
+            g.neighborsOut(i).forEach(new IntProcedure() {
+                @Override
+                public void value(int j) {
+                    if (nodes.get(j)) result.add(j);
+                }
             });
         }
 
@@ -147,8 +151,11 @@ public class SubGraphEdges implements Graph {
 
         int[] degree = {0};
         if (nodes.get(i)) {
-            g.neighborsOut(i).forEach(j -> {
-                if (nodes.get(j)) degree[0]++;
+            g.neighborsOut(i).forEach(new IntProcedure() {
+                @Override
+                public void value(int j) {
+                    if (nodes.get(j)) degree[0]++;
+                }
             });
         }
         return degree[0];

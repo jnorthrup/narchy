@@ -118,11 +118,14 @@ public class FloatSlider extends Widget implements FloatSupplier {
     public final FloatSlider on(ObjectFloatProcedure<SliderModel> c) {
         if (input instanceof NumberX) {
             ObjectFloatProcedure<SliderModel> c0 = c;
-            c = (each,x) -> {
-                //chain
-                ((NumberX)input).set(x);
-                c0.value(each,x);
-                updateText();
+            c = new ObjectFloatProcedure<SliderModel>() {
+                @Override
+                public void value(SliderModel each, float x) {
+                    //chain
+                    ((NumberX) input).set(x);
+                    c0.value(each, x);
+                    FloatSlider.this.updateText();
+                }
             };
         }
         slider.on(c);
@@ -131,7 +134,12 @@ public class FloatSlider extends Widget implements FloatSupplier {
 
 
     public final FloatSlider on(FloatProcedure c) {
-        return on((ObjectFloatProcedure<SliderModel>) (x, v) ->c.value(v));
+        return on(new ObjectFloatProcedure<SliderModel>() {
+            @Override
+            public void value(SliderModel x, float v) {
+                c.value(v);
+            }
+        });
     }
 
     @Override

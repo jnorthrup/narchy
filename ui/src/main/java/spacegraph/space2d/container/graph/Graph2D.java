@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
+import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 
 /**
@@ -92,16 +93,24 @@ public class Graph2D<X> extends MutableMapContainer<X, NodeVis<X>> {
 
     private volatile Graph2DUpdater<X> updater = NullUpdater;
 
-    private static final Graph2DUpdater NullUpdater = (c, d) -> {
+    private static final Graph2DUpdater NullUpdater = new Graph2DUpdater() {
+        @Override
+        public void update(Graph2D c, float d) {
+        }
     };
 
     private final transient Set<X> wontRemain = new ArrayHashSet();
 
-    private final Consumer<NodeVis<X>> DEFAULT_NODE_BUILDER = x -> x.set(
-            //new Scale(
+    private final Consumer<NodeVis<X>> DEFAULT_NODE_BUILDER = new Consumer<NodeVis<X>>() {
+        @Override
+        public void accept(NodeVis<X> x) {
+            x.set(
+                    //new Scale(
                     new PushButton(new VectorLabel(x.id.toString()))
                     //, 0.75f)
-    );
+            );
+        }
+    };
     private transient Consumer<NodeVis<X>> builder = DEFAULT_NODE_BUILDER;
 
     public Graph2D() {
@@ -214,9 +223,12 @@ public class Graph2D<X> extends MutableMapContainer<X, NodeVis<X>> {
 
     @Override
     protected void paintIt(GL2 gl, ReSurface r) {
-        cells.forEachValue(n -> {
-            if (n.visible())
-                n.paintEdges(gl);
+        cells.forEachValue(new Consumer<NodeVis<X>>() {
+            @Override
+            public void accept(NodeVis<X> n) {
+                if (n.visible())
+                    n.paintEdges(gl);
+            }
         });
     }
 
@@ -287,7 +299,12 @@ public class Graph2D<X> extends MutableMapContainer<X, NodeVis<X>> {
 
         for (X x : nodes) {
             CellMap.CacheCell<X, NodeVis<X>> xxx =
-                    compute(x, xx -> xx == null ? materialize(x) : rematerialize(xx));
+                    compute(x, new UnaryOperator<NodeVis<X>>() {
+                        @Override
+                        public NodeVis<X> apply(NodeVis<X> xx) {
+                            return xx == null ? Graph2D.this.materialize(x) : Graph2D.this.rematerialize(xx);
+                        }
+                    });
 
             NodeVis<X> cv = xxx.value;
             if (cv.parent == null)
@@ -421,9 +438,12 @@ public class Graph2D<X> extends MutableMapContainer<X, NodeVis<X>> {
         void node(NodeVis<X> node, GraphEditing<X> graph);
 
         default void nodes(CellMap<X, NodeVis<X>> cells, GraphEditing<X> edit) {
-            cells.forEachValue(nv -> {
-                if (nv.visible())
-                    node(nv, edit);
+            cells.forEachValue(new Consumer<NodeVis<X>>() {
+                @Override
+                public void accept(NodeVis<X> nv) {
+                    if (nv.visible())
+                        Graph2DRenderer.this.node(nv, edit);
+                }
             });
         }
 
@@ -432,6 +452,11 @@ public class Graph2D<X> extends MutableMapContainer<X, NodeVis<X>> {
     /**
      * invalidates all edges by setting their dirty flag
      */
-    protected static Graph2DRenderer InvalidateEdges = (n, g) -> n.invalidateEdges();
+    protected static Graph2DRenderer InvalidateEdges = new Graph2DRenderer() {
+        @Override
+        public void node(NodeVis n, GraphEditing g) {
+            n.invalidateEdges();
+        }
+    };
 
 }

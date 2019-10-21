@@ -1,14 +1,12 @@
 package nars.nal.nal6;
 
-import nars.$;
-import nars.NAR;
-import nars.NARS;
-import nars.Narsese;
+import nars.*;
 import nars.term.Term;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 
 import static nars.Op.BELIEF;
 import static org.junit.jupiter.api.Assertions.*;
@@ -77,11 +75,14 @@ class QueryVariableTest {
 
 
 
-        nar.onTask(a -> {
+        nar.onTask(new Consumer<Task>() {
+            @Override
+            public void accept(Task a) {
 //            if (a.isBelief() && a.term().unify(question, new UnifyAny())) {
 //                valid.set(true);
 //                //q.delete();
 //            }
+            }
         });
         nar.question(question);
 
@@ -109,11 +110,14 @@ class QueryVariableTest {
                 "(b --> a). %1.0;0.5%");
         n.run(cyclesBeforeQuestion);
 
-        n.onTask(a -> {
-            if (a.punc()==BELIEF && a.term().equals(question)) {
-                assertEquals('.', a.punc());
-                if (!a.isDeleted())
-                    b.set(true);
+        n.onTask(new Consumer<Task>() {
+            @Override
+            public void accept(Task a) {
+                if (a.punc() == BELIEF && a.term().equals(question)) {
+                    assertEquals('.', a.punc());
+                    if (!a.isDeleted())
+                        b.set(true);
+                }
             }
         });
         n.question(question);

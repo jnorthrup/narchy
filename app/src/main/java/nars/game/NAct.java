@@ -17,6 +17,7 @@ import nars.game.util.UnipolarMotor;
 import nars.term.Term;
 import nars.term.atom.IdempotInt;
 import nars.truth.Truth;
+import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFunction;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 import org.eclipse.collections.api.block.predicate.primitive.BooleanPredicate;
 import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;
@@ -52,26 +53,29 @@ import static nars.Op.BELIEF;
 
 
         float[] last = {(float) 0};
-        actionUnipolar(t, (f) -> {
+        actionUnipolar(t, new FloatToFloatFunction() {
+            @Override
+            public float valueOf(float f) {
 
-            float f1 = f;
-            boolean unknown = (f1 != f1) || (f1 < thresh && (f1 > (1f - thresh)));
-            if (unknown) {
-                f1 = defaultValue == defaultValue ? defaultValue : last[0];
-            }
+                float f1 = f;
+                boolean unknown = (f1 != f1) || (f1 < thresh && (f1 > (1f - thresh)));
+                if (unknown) {
+                    f1 = defaultValue == defaultValue ? defaultValue : last[0];
+                }
 
-            if (last[0] > 0.5f)
-                f1 = Util.lerp(momentumOn, f1, last[0]);
+                if (last[0] > 0.5f)
+                    f1 = Util.lerp(momentumOn, f1, last[0]);
 
-            boolean positive = f1 > 0.5f;
+                boolean positive = f1 > 0.5f;
 
 
-            if (positive) {
-                on.run();
-                return last[0] = 1f;
-            } else {
-                off.run();
-                return last[0] = 0f;
+                if (positive) {
+                    on.run();
+                    return last[0] = 1f;
+                } else {
+                    off.run();
+                    return last[0] = 0f;
+                }
             }
         });
     }
@@ -97,46 +101,49 @@ import static nars.Op.BELIEF;
 
     default @Nullable GoalActionConcept actionTriStateContinuous(Term s, IntPredicate i) {
 
-        GoalActionConcept m = new GoalActionConcept(s, (b, d) -> {
+        GoalActionConcept m = new GoalActionConcept(s, new ActionSignal.MotorFunction() {
+            @Override
+            public @Nullable Truth apply(@Nullable Truth b, @Nullable Truth d) {
 
 
-            int ii;
-            if (d == null) {
-                ii = 0;
-            } else {
-                float f = d.freq();
-                float deadZoneFreqRadius =
-                        //1f / 6;
-                        1f/ 12.0F;
-
-                if (f > 0.5f + deadZoneFreqRadius)
-                    ii = +1;
-                else if (f < 0.5f - deadZoneFreqRadius)
-                    ii = -1;
-                else
+                int ii;
+                if (d == null) {
                     ii = 0;
+                } else {
+                    float f = d.freq();
+                    float deadZoneFreqRadius =
+                            //1f / 6;
+                            1f / 12.0F;
+
+                    if (f > 0.5f + deadZoneFreqRadius)
+                        ii = +1;
+                    else if (f < 0.5f - deadZoneFreqRadius)
+                        ii = -1;
+                    else
+                        ii = 0;
+                }
+
+                boolean accepted = i.test(ii);
+                if (!accepted)
+                    ii = 0;
+
+                float f;
+                switch (ii) {
+                    case 1:
+                        f = 1f;
+                        break;
+                    case 0:
+                        f = 0.5f;
+                        break;
+                    case -1:
+                        f = 0f;
+                        break;
+                    default:
+                        throw new RuntimeException();
+                }
+
+                return $.t(f, NAct.this.nar().confDefault(BELIEF));
             }
-
-            boolean accepted = i.test(ii);
-            if (!accepted)
-                ii = 0;
-
-            float f;
-            switch (ii) {
-                case 1:
-                    f = 1f;
-                    break;
-                case 0:
-                    f = 0.5f;
-                    break;
-                case -1:
-                    f = 0f;
-                    break;
-                default:
-                    throw new RuntimeException();
-            }
-
-            return $.t(f, nar().confDefault(BELIEF));
         }, nar());
 
 
@@ -144,51 +151,54 @@ import static nars.Op.BELIEF;
     }
 
     default @Nullable ActionSignal actionTriStatePWM(Term s, IntConsumer i) {
-        ActionSignal m = new GoalActionConcept(s, (b, d) -> {
+        ActionSignal m = new GoalActionConcept(s, new ActionSignal.MotorFunction() {
+            @Override
+            public @Nullable Truth apply(@Nullable Truth b, @Nullable Truth d) {
 
 
-            int ii;
-            if (d == null) {
-                ii = 0;
-            } else {
-                float f = d.freq();
-                if (f == 1f) {
-                    ii = +1;
-                } else if (f == (float) 0) {
-                    ii = -1;
-                } else if (f > 0.5f) {
-                    ii = nar().random().nextFloat() <= ((f - 0.5f) * 2f) ? +1 : 0;
-                } else if (f < 0.5f) {
-                    ii = nar().random().nextFloat() <= ((0.5f - f) * 2f) ? -1 : 0;
-                } else
+                int ii;
+                if (d == null) {
                     ii = 0;
+                } else {
+                    float f = d.freq();
+                    if (f == 1f) {
+                        ii = +1;
+                    } else if (f == (float) 0) {
+                        ii = -1;
+                    } else if (f > 0.5f) {
+                        ii = NAct.this.nar().random().nextFloat() <= ((f - 0.5f) * 2f) ? +1 : 0;
+                    } else if (f < 0.5f) {
+                        ii = NAct.this.nar().random().nextFloat() <= ((0.5f - f) * 2f) ? -1 : 0;
+                    } else
+                        ii = 0;
+                }
+
+                i.accept(ii);
+
+                float f;
+                switch (ii) {
+                    case 1:
+                        f = 1f;
+                        break;
+                    case 0:
+                        f = 0.5f;
+                        break;
+                    case -1:
+                        f = 0f;
+                        break;
+                    default:
+                        throw new RuntimeException();
+                }
+
+                return
+
+                        $.t(f,
+
+                                NAct.this.nar().confDefault(BELIEF)
+                        )
+
+                        ;
             }
-
-            i.accept(ii);
-
-            float f;
-            switch (ii) {
-                case 1:
-                    f = 1f;
-                    break;
-                case 0:
-                    f = 0.5f;
-                    break;
-                case -1:
-                    f = 0f;
-                    break;
-                default:
-                    throw new RuntimeException();
-            }
-
-            return
-
-                    $.t(f,
-
-                            nar().confDefault(BELIEF)
-                    )
-
-                    ;
         }, nar());
         return addAction(m);
     }
@@ -199,9 +209,12 @@ import static nars.Op.BELIEF;
     }
 
     default void actionPushButton(Term s, FloatSupplier thresh, Runnable r) {
-        actionPushButton(s, b -> {
-            if (b)
-                r.run();
+        actionPushButton(s, new BooleanProcedure() {
+            @Override
+            public void value(boolean b) {
+                if (b)
+                    r.run();
+            }
         }, thresh);
     }
 
@@ -227,9 +240,12 @@ import static nars.Op.BELIEF;
     }
 
     default GoalActionConcept actionPushButton(Term t, BooleanProcedure on, FloatSupplier thresh) {
-        return actionPushButton(t, x -> {
-            on.value(x);
-            return x;
+        return actionPushButton(t, new BooleanPredicate() {
+            @Override
+            public boolean accept(boolean x) {
+                on.value(x);
+                return x;
+            }
         }, thresh);
     }
 
@@ -240,16 +256,32 @@ import static nars.Op.BELIEF;
 
     /** normally, feedback indicating whether the action caused any effect is HELPFUL so this method is not going to be as good as the BooleanPredicate one */
     @Deprecated default GoalActionConcept[] actionPushButtonMutex(Term l, Term r, Runnable L, Runnable R, FloatSupplier thresh) {
-        return actionPushButtonMutex(l, r, x -> {
-            if (x) L.run();
-        }, x -> {
-            if (x) R.run();
+        return actionPushButtonMutex(l, r, new BooleanProcedure() {
+            @Override
+            public void value(boolean x) {
+                if (x) L.run();
+            }
+        }, new BooleanProcedure() {
+            @Override
+            public void value(boolean x) {
+                if (x) R.run();
+            }
         }, thresh);
     }
     default GoalActionConcept[] actionPushButtonMutex(Term l, Term r, BooleanSupplier L, BooleanSupplier R, FloatSupplier thresh) {
         return actionPushButtonMutex(l, r,
-            x -> x && L.getAsBoolean(),
-            x -> x && R.getAsBoolean(),
+                new BooleanPredicate() {
+                    @Override
+                    public boolean accept(boolean x) {
+                        return x && L.getAsBoolean();
+                    }
+                },
+                new BooleanPredicate() {
+                    @Override
+                    public boolean accept(boolean x) {
+                        return x && R.getAsBoolean();
+                    }
+                },
             thresh, q());
     }
     /** normally, feedback indicating whether the action caused any effect is HELPFUL so this method is not going to be as good as the BooleanPredicate one */
@@ -260,8 +292,20 @@ import static nars.Op.BELIEF;
     /** normally, feedback indicating whether the action caused any effect is HELPFUL so this method is not going to be as good as the BooleanPredicate one */
     @Deprecated default GoalActionConcept[] actionPushButtonMutex(Term l, Term r, BooleanProcedure L, BooleanProcedure R, FloatSupplier thresh) {
         return actionPushButtonMutex(l, r,
-                    x->{ L.value(x); return x; },
-                    x->{ R.value(x); return x; },
+                new BooleanPredicate() {
+                    @Override
+                    public boolean accept(boolean x) {
+                        L.value(x);
+                        return x;
+                    }
+                },
+                new BooleanPredicate() {
+                    @Override
+                    public boolean accept(boolean x) {
+                        R.value(x);
+                        return x;
+                    }
+                },
                 thresh, q());
     }
 
@@ -293,13 +337,16 @@ import static nars.Op.BELIEF;
      */
     default GoalActionConcept[] actionDial(Term down, Term up, FloatSupplier x, FloatConsumer y, float min, float max, int steps) {
         float delta = 1f/ (float) steps * (max - min);
-        return actionStep(down,up, (c)->{
-            float before = x.asFloat();
-            float next = Util.clamp(before + (float) c * delta, min, max);
-            y.accept(next);
-            float actualNext = x.asFloat();
-            /** a significant change */
-            return !Util.equals(before, actualNext, delta / 4.0F);
+        return actionStep(down,up, new IntPredicate() {
+            @Override
+            public boolean test(int c) {
+                float before = x.asFloat();
+                float next = Util.clamp(before + (float) c * delta, min, max);
+                y.accept(next);
+                float actualNext = x.asFloat();
+                /** a significant change */
+                return !Util.equals(before, actualNext, delta / 4.0F);
+            }
         });
 
     }
@@ -313,17 +360,30 @@ import static nars.Op.BELIEF;
     @FunctionalInterface @Skill("Q_Learning") interface QFunction {
         float q(@Nullable Truth belief, @Nullable Truth goal);
 
-        QFunction GoalFreq = (b,g)-> g != null ? g.freq() : 0f;
-        QFunction GoalExp = (b,g)-> g != null ? g.expectation() : 0f;
+        QFunction GoalFreq = new QFunction() {
+            @Override
+            public float q(@Nullable Truth b, @Nullable Truth g) {
+                return g != null ? g.freq() : 0f;
+            }
+        };
+        QFunction GoalExp = new QFunction() {
+            @Override
+            public float q(@Nullable Truth b, @Nullable Truth g) {
+                return g != null ? g.expectation() : 0f;
+            }
+        };
 
-        QFunction GoalExpMinBeliefExp = (b,g)-> {
-            if (b==null) {
-                return GoalExp.q(b, g);
-            } else {
-                if (g == null) {
-                    return (float) 0; //TODO this could also be a way to introduce curiosity
+        QFunction GoalExpMinBeliefExp = new QFunction() {
+            @Override
+            public float q(@Nullable Truth b, @Nullable Truth g) {
+                if (b == null) {
+                    return GoalExp.q(b, g);
                 } else {
-                    return Util.unitize((g.expectation() - b.expectation())/2f + 0.5f);
+                    if (g == null) {
+                        return (float) 0; //TODO this could also be a way to introduce curiosity
+                    } else {
+                        return Util.unitize((g.expectation() - b.expectation()) / 2f + 0.5f);
+                    }
                 }
             }
         };
@@ -349,38 +409,44 @@ import static nars.Op.BELIEF;
 //                1f; //instant
 
         NAR n = nar();
-        GoalActionConcept LA = action(tl, (b, g) -> {
+        GoalActionConcept LA = action(tl, new GoalActionConcept.MotorFunction() {
+            @Override
+            public @Nullable Truth apply(@Nullable Truth b, @Nullable Truth g) {
 
-            float q = Q.q(b,g);
-            float qC =
-                //(g!=null ? g.expectation() : 0);
-                q;
-            boolean xq = q >= thresh.asFloat();
-            boolean y = L.accept(xq && qC >= r.floatValue());
-            l.set(xq ? qC : (float) 0);
+                float q = Q.q(b, g);
+                float qC =
+                        //(g!=null ? g.expectation() : 0);
+                        q;
+                boolean xq = q >= thresh.asFloat();
+                boolean y = L.accept(xq && qC >= r.floatValue());
+                l.set(xq ? qC : (float) 0);
 
 
-            float feedback =
-                    (float) (y ? 1 : 0);
-            float c =
-                    n.confDefault(BELIEF);
-            return $.t(feedback, c);
+                float feedback =
+                        (float) (y ? 1 : 0);
+                float c =
+                        n.confDefault(BELIEF);
+                return $.t(feedback, c);
 
+            }
         });
-        GoalActionConcept RA = action(tr, (b, g) -> {
-            float q = Q.q(b,g);
-            float qC =
-                //(g!=null ? g.expectation() : 0);
-                q;
-            boolean xq = q >= thresh.asFloat();
-            boolean y = R.accept(xq && qC >= l.floatValue());
-            r.set(xq ? qC : (float) 0);
+        GoalActionConcept RA = action(tr, new GoalActionConcept.MotorFunction() {
+            @Override
+            public @Nullable Truth apply(@Nullable Truth b, @Nullable Truth g) {
+                float q = Q.q(b, g);
+                float qC =
+                        //(g!=null ? g.expectation() : 0);
+                        q;
+                boolean xq = q >= thresh.asFloat();
+                boolean y = R.accept(xq && qC >= l.floatValue());
+                r.set(xq ? qC : (float) 0);
 
-            float feedback =
-                    (float) (y ? 1 : 0);
-            float c =
-                    n.confDefault(BELIEF);
-            return $.t(feedback, c);
+                float feedback =
+                        (float) (y ? 1 : 0);
+                float c =
+                        n.confDefault(BELIEF);
+                return $.t(feedback, c);
+            }
         });
 
 //        for (GoalActionConcept x : new GoalActionConcept[]{LA, RA}) {
@@ -407,8 +473,12 @@ import static nars.Op.BELIEF;
 
     default FloatSupplier midThresh() {
 
-        return () ->
-            0.5f;
+        return new FloatSupplier() {
+            @Override
+            public float asFloat() {
+                return 0.5f;
+            }
+        };
             //0.5f + nar().freqResolution.get()/2;
 
 
@@ -424,14 +494,22 @@ import static nars.Op.BELIEF;
 
 
         FloatToFloatFunction ifGoalMissing =
-                x -> (float) 0;
+                new FloatToFloatFunction() {
+                    @Override
+                    public float valueOf(float x) {
+                        return (float) 0;
+                    }
+                };
 
-        GoalActionConcept x = actionUnipolar(t, true, ifGoalMissing, (f) -> {
-            boolean posOrNeg = f >= thresh.asFloat();
-            return on.accept(posOrNeg) ?
-                    1f :
-                    (float) 0;  //deliberate off
-            //Float.NaN; //default off
+        GoalActionConcept x = actionUnipolar(t, true, ifGoalMissing, new FloatToFloatFunction() {
+            @Override
+            public float valueOf(float f) {
+                boolean posOrNeg = f >= thresh.asFloat();
+                return on.accept(posOrNeg) ?
+                        1f :
+                        (float) 0;  //deliberate off
+                //Float.NaN; //default off
+            }
         });
         //x.resolution(0.5f);
         //{
@@ -462,14 +540,23 @@ import static nars.Op.BELIEF;
 
 
     default GoalActionConcept actionUnipolar(Term s, FloatConsumer update) {
-        return actionUnipolar(s, (x) -> {
-            update.accept(x);
-            return x;
+        return actionUnipolar(s, new FloatToFloatFunction() {
+            @Override
+            public float valueOf(float x) {
+                update.accept(x);
+                return x;
+            }
         });
     }
 
     default GoalActionConcept actionHemipolar(Term s, FloatConsumer update) {
-        return actionHemipolar(s, (x)->{ update.accept(x); return x; } );
+        return actionHemipolar(s, new FloatToFloatFunction() {
+            @Override
+            public float valueOf(float x) {
+                update.accept(x);
+                return x;
+            }
+        });
     }
 
     /** maps the action range 0..1.0 to the 0.5..1.0 positive half of the frequency range.
@@ -478,30 +565,41 @@ import static nars.Op.BELIEF;
      */
     default GoalActionConcept actionHemipolar(Term s, FloatToFloatFunction update) {
         float epsilon = NAL.truth.TRUTH_EPSILON/ 2.0F;
-        return actionUnipolar(s, (raw)->{
-            if (raw==raw) {
+        return actionUnipolar(s, new FloatToFloatFunction() {
+            @Override
+            public float valueOf(float raw) {
+                if (raw == raw) {
 
-                if (raw > 0.5f + epsilon) {
-                    float feedback = update.valueOf((raw - 0.5f) * 2.0F);
-                    return feedback > (0.5f + epsilon) ? 0.5f + feedback / 2.0F : (float) 0;
-                } else {
-                    float feedback = update.valueOf((float) 0);
-                    return (float) 0; //override
+                    if (raw > 0.5f + epsilon) {
+                        float feedback = update.valueOf((raw - 0.5f) * 2.0F);
+                        return feedback > (0.5f + epsilon) ? 0.5f + feedback / 2.0F : (float) 0;
+                    } else {
+                        float feedback = update.valueOf((float) 0);
+                        return (float) 0; //override
+                    }
+
                 }
-
+                return Float.NaN;
             }
-            return Float.NaN;
         });
     }
 
     default GoalActionConcept actionUnipolar(Term s, FloatToFloatFunction update) {
-        return actionUnipolar(s, true, (x) -> x, update);
+        return actionUnipolar(s, true, new FloatToFloatFunction() {
+            @Override
+            public float valueOf(float x) {
+                return x;
+            }
+        }, update);
     }
 
     default GoalActionConcept[] actionStep(Term down, Term up, IntProcedure each) {
-        return actionStep(down, up, (e)->{
-            each.accept(e);
-            return true;
+        return actionStep(down, up, new IntPredicate() {
+            @Override
+            public boolean test(int e) {
+                each.accept(e);
+                return true;
+            }
         });
     }
 
@@ -509,9 +607,24 @@ import static nars.Op.BELIEF;
         float thresh = 4.0F /6f;
         return actionPushButtonMutex(
             down,up,
-            ifNeg -> ifNeg && each.test(-1),
-            ifPos -> ifPos && each.test(+1),
-            ()->thresh,
+                new BooleanPredicate() {
+                    @Override
+                    public boolean accept(boolean ifNeg) {
+                        return ifNeg && each.test(-1);
+                    }
+                },
+                new BooleanPredicate() {
+                    @Override
+                    public boolean accept(boolean ifPos) {
+                        return ifPos && each.test(+1);
+                    }
+                },
+                new FloatSupplier() {
+                    @Override
+                    public float asFloat() {
+                        return thresh;
+                    }
+                },
             q()
         );
 //        return actionTriStateContinuous(down, each);
@@ -524,11 +637,15 @@ import static nars.Op.BELIEF;
     default GoalActionConcept actionUnipolar(Term s, boolean freqOrExp, FloatToFloatFunction ifGoalMissing, FloatToFloatFunction update) {
 
         ActionSignal.MotorFunction motor = new UnipolarMotor(freqOrExp, ifGoalMissing, update,
-            (feedbackFreq,goalConf) ->
-                $.t(feedbackFreq,
-                        nar().confDefault(BELIEF)
-                        //Math.max(nar().confMin.floatValue(), goalConf)
-                )
+                new FloatFloatToObjectFunction<Truth>() {
+                    @Override
+                    public Truth value(float feedbackFreq, float goalConf) {
+                        return $.t(feedbackFreq,
+                                NAct.this.nar().confDefault(BELIEF)
+                                //Math.max(nar().confMin.floatValue(), goalConf)
+                        );
+                    }
+                }
         );
 
         return addAction(new GoalActionConcept(s, motor, nar()));
@@ -536,31 +653,45 @@ import static nars.Op.BELIEF;
 
 
     default BooleanPredicate debounce(Runnable f, float durations) {
-        return debounce((x)-> { if (x) f.run();  }, durations);
+        return debounce(new BooleanProcedure() {
+            @Override
+            public void value(boolean x) {
+                if (x) f.run();
+            }
+        }, durations);
     }
 
     default BooleanPredicate debounce(BooleanProcedure f, float durations) {
-        return debounce((x)-> { f.value(x); return x; }, durations);
+        return debounce(new BooleanPredicate() {
+            @Override
+            public boolean accept(boolean x) {
+                f.value(x);
+                return x;
+            }
+        }, durations);
     }
     
     default BooleanPredicate debounce(BooleanPredicate f, float durations) {
 
         long[] last = { Long.MIN_VALUE };
 
-        return x->{
-            boolean y = false;
-            if (x) {
-                What w = what();
-                long now = w.time();
-                long prev = last[0];
-                float period = durations * w.durPhysical();
-                if (prev == Long.MIN_VALUE) prev = (long) ((double) now - Math.ceil((double) period));
-                if ((float) (now - prev) >= period) {
-                    last[0] = now;
-                    y = true;
+        return new BooleanPredicate() {
+            @Override
+            public boolean accept(boolean x) {
+                boolean y = false;
+                if (x) {
+                    What w = NAct.this.what();
+                    long now = w.time();
+                    long prev = last[0];
+                    float period = durations * w.durPhysical();
+                    if (prev == Long.MIN_VALUE) prev = (long) ((double) now - Math.ceil((double) period));
+                    if ((float) (now - prev) >= period) {
+                        last[0] = now;
+                        y = true;
+                    }
                 }
+                return f.accept(y);
             }
-            return f.accept(y);
         };
     }
 

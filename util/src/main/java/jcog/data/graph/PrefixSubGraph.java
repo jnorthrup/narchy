@@ -18,6 +18,7 @@
 
 package jcog.data.graph;
 
+import org.eclipse.collections.api.block.procedure.primitive.IntProcedure;
 import org.eclipse.collections.impl.set.mutable.primitive.IntHashSet;
 
 /**
@@ -79,8 +80,11 @@ public class PrefixSubGraph implements Graph {
         if (i < 0 || i >= prefSize) throw new IndexOutOfBoundsException();
 
         IntHashSet result = new IntHashSet();
-        g.neighborsOut(i).forEach(j -> {
-            if (j < prefSize) result.add(j);
+        g.neighborsOut(i).forEach(new IntProcedure() {
+            @Override
+            public void value(int j) {
+                if (j < prefSize) result.add(j);
+            }
         });
 
         return result;

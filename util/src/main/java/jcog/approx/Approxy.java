@@ -106,7 +106,12 @@ import java.util.function.Function;
 
             for (ActualExecution xy : experience) {//TODO m.put(xEncoded,yEncoded..)
             }
-            approx = (x)-> experience.get(null /*encode(x)*/);
+            approx = new Approximator() {
+                @Override
+                public Object apply(Object[] x) {
+                    return experience.get(null /*encode(x)*/);
+                }
+            };
         }
 
         protected void learn(Object x, Object y) {

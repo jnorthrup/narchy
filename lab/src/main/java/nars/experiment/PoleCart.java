@@ -5,15 +5,20 @@ import com.google.common.collect.Streams;
 import jcog.Util;
 import jcog.exe.Exe;
 import jcog.exe.Loop;
+import jcog.func.IntIntToObjectFunction;
+import jcog.learn.Agent;
 import jcog.learn.LivePredictor;
 import jcog.learn.ql.dqn3.DQN3;
 import jcog.math.FloatNormalized;
 import jcog.math.FloatRange;
+import jcog.math.FloatSupplier;
+import jcog.util.FloatConsumer;
 import nars.$;
 import nars.GameX;
 import nars.NAR;
 import nars.attention.What;
 import nars.concept.Concept;
+import nars.game.Game;
 import nars.game.Reward;
 import nars.game.action.BiPolarAction;
 import nars.game.action.GoalActionConcept;
@@ -26,6 +31,7 @@ import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Atomic;
 import nars.truth.Truth;
+import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 import org.eclipse.collections.api.block.function.primitive.LongToObjectFunction;
 import org.jetbrains.annotations.Nullable;
 
@@ -35,6 +41,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Function;
 
 import static java.util.stream.Collectors.toList;
 import static nars.Op.GOAL;
@@ -69,80 +76,95 @@ public class PoleCart extends GameX {
         int instances = 1;
         int threadsEach = 4;
 		for (int i = 0; i < instances; i++)
-			Companion.runRTNet(threadsEach, fps * 2.0F, 8.0F, n -> {
-                PoleCart p = new PoleCart(
-						instances > 1 ?
-							$.p(Atomic.the(PoleCart.class.getSimpleName()), n.self()) :
-							$.the(PoleCart.class.getSimpleName()), n);
-					Iterable<? extends Termed> predicting = Iterables.concat(
-						p.angX.sensors, p.angY.sensors, p.angVel.sensors, p.xVel.sensors, p.x.sensors
-					);
+			Companion.runRTNet(threadsEach, fps * 2.0F, 8.0F, new Function<NAR, Game>() {
+                        @Override
+                        public Game apply(NAR n) {
+                            PoleCart p = new PoleCart(
+                                    instances > 1 ?
+                                            $.p(Atomic.the(PoleCart.class.getSimpleName()), n.self()) :
+                                            $.the(PoleCart.class.getSimpleName()), n);
+                            Iterable<? extends Termed> predicting = Iterables.concat(
+                                    p.angX.sensors, p.angY.sensors, p.angVel.sensors, p.xVel.sensors, p.x.sensors
+                            );
 
-					if (beliefPredict) {
-						Exe.runLater(()->{
-                            What what = p.what();
-						what.nar = n; //HACK
-						new BeliefPredict(
-							predicting,
-							8,
-							Math.round(6.0F * n.dur()),
-							3,
-							new LivePredictor.LSTMPredictor(0.1f, 1),
-							//new LivePredictor.MLPPredictor(0.01f),
-							what
-						);
-						});
-					}
-					if (impiler) {
+                            if (beliefPredict) {
+                                Exe.runLater(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        What what = p.what();
+                                        what.nar = n; //HACK
+                                        new BeliefPredict(
+                                                predicting,
+                                                8,
+                                                Math.round(6.0F * n.dur()),
+                                                3,
+                                                new LivePredictor.LSTMPredictor(0.1f, 1),
+                                                //new LivePredictor.MLPPredictor(0.01f),
+                                                what
+                                        );
+                                    }
+                                });
+                            }
+                            if (impiler) {
 
-						Loop.of(() -> {
+                                Loop.of(new Runnable() {
+                                    @Override
+                                    public void run() {
 
-							//TODO
-							//Impiler.impile(what);
+                                        //TODO
+                                        //Impiler.impile(what);
 
-							for (Concept a : p.actions()) {
-                                ImpilerDeduction d = new ImpilerDeduction(n);
-								@Nullable LongToObjectFunction<Truth> dd = d.estimator(false, a.term());
-								if (dd != null)
-									a.meta("impiler", (Object) dd);
+                                        for (Concept a : p.actions()) {
+                                            ImpilerDeduction d = new ImpilerDeduction(n);
+                                            @Nullable LongToObjectFunction<Truth> dd = d.estimator(false, a.term());
+                                            if (dd != null)
+                                                a.meta("impiler", (Object) dd);
 
-							}
-						}).setFPS(1f);
-						n.onDur(() -> {
-							double dur = (double) (n.dur() * 3.0F);
-                            long now = n.time();
-							for (Concept a : p.actions()) {
-								LongToObjectFunction<Truth> dd = a.meta("impiler");
-								if (dd != null) {
-									for (int pp = 1; pp < 4; pp++) {
-                                        long w = Math.round((double) now + (double) (2 + pp) * dur);
-                                        Truth x = dd.apply(w);
-										if (x != null) {
-											//System.out.println(a.term() + "\t" + x);
-											n.want(n.priDefault(GOAL), a.term(), Math.round((double) w - dur), w, x.freq(), x.conf()); //HACK
-										}
-									}
-								}
-							}
-						});
-					}
+                                        }
+                                    }
+                                }).setFPS(1f);
+                                n.onDur(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        double dur = (double) (n.dur() * 3.0F);
+                                        long now = n.time();
+                                        for (Concept a : p.actions()) {
+                                            LongToObjectFunction<Truth> dd = a.meta("impiler");
+                                            if (dd != null) {
+                                                for (int pp = 1; pp < 4; pp++) {
+                                                    long w = Math.round((double) now + (double) (2 + pp) * dur);
+                                                    Truth x = dd.apply(w);
+                                                    if (x != null) {
+                                                        //System.out.println(a.term() + "\t" + x);
+                                                        n.want(n.priDefault(GOAL), a.term(), Math.round((double) w - dur), w, x.freq(), x.conf()); //HACK
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                });
+                            }
 
-					if (rl) {
+                            if (rl) {
 
-                        RLBooster bb = new RLBooster(false, p, 2, 3, (ii, o) ->
-							//new HaiQae(i, 12, o).alpha(0.01f).gamma(0.9f).lambda(0.9f),
-							new DQN3(ii, o, Map.of(
+                                RLBooster bb = new RLBooster(false, p, 2, 3, new IntIntToObjectFunction<Agent>() {
+                                    @Override
+                                    public Agent apply(int ii, int o) {
+                                        return new DQN3(ii, o, Map.of(
 
-							))
-						);
-						bb.conf.set(0.01f);
-						window(NARui.rlbooster(bb), 500, 500);
+                                        ));
+                                    }
+                                }
+                                );
+                                bb.conf.set(0.01f);
+                                window(NARui.rlbooster(bb), 500, 500);
 
-					}
-					n.add(p);
+                            }
+                            n.add(p);
 
-					return p;
-				}
+                            return p;
+                        }
+                    }
             );
 
 
@@ -222,19 +244,44 @@ public class PoleCart extends GameX {
 		 */
 
 
-		x = senseNumberBi($.p("x", id), () -> (float) (pos - (double) posMin) / (posMax - posMin));
+		x = senseNumberBi($.p("x", id), new FloatSupplier() {
+            @Override
+            public float asFloat() {
+                return (float) (pos - (double) posMin) / (posMax - posMin);
+            }
+        });
 		xVel = senseNumberBi($.p(id, $.the("d"), $.the("x")),
-			new FloatNormalized(() -> (float) posDot)
+			new FloatNormalized(new FloatSupplier() {
+                @Override
+                public float asFloat() {
+                    return (float) posDot;
+                }
+            })
 		);
 
 		angX = senseNumberTri($.p(id, $.the("ang"), $.the("x")),
-			() -> (float) (0.5 + 0.5 * Math.sin(angle)));
+                new FloatSupplier() {
+                    @Override
+                    public float asFloat() {
+                        return (float) (0.5 + 0.5 * Math.sin(angle));
+                    }
+                });
 		angY = senseNumberTri($.p(id, $.the("ang"), $.the("y")),
-			() -> (float) (0.5 + 0.5 * Math.cos(angle)));
+                new FloatSupplier() {
+                    @Override
+                    public float asFloat() {
+                        return (float) (0.5 + 0.5 * Math.cos(angle));
+                    }
+                });
 
 
 		angVel = senseNumberBi($.p(id, $.the("d"), $.the("ang")),
-			new FloatNormalized(() -> (float) angleDot)
+			new FloatNormalized(new FloatSupplier() {
+                @Override
+                public float asFloat() {
+                    return (float) angleDot;
+                }
+            })
 		);
 
 
@@ -243,9 +290,12 @@ public class PoleCart extends GameX {
 		initUnipolar();
 
 		if (speedControl) {
-			actionUnipolar($.inh(id, "S"), s -> {
-				speed = Util.sqr(s * 2.0F);
-			});
+			actionUnipolar($.inh(id, "S"), new FloatConsumer() {
+                @Override
+                public void accept(float s) {
+                    speed = Util.sqr(s * 2.0F);
+                }
+            });
 		}
 
 
@@ -354,23 +404,30 @@ public class PoleCart extends GameX {
 
         Reward r = rewardNormalized("balanced", -1.0F, (float) +1, this::update);
 
-		Exe.runLater(() ->
-			window(NARui.beliefCharts(nar, sensors.stream()
-				.flatMap(s -> Streams.stream(s.components()))
-				.collect(toList())), 900, 900)
+		Exe.runLater(new Runnable() {
+                         @Override
+                         public void run() {
+                             window(NARui.beliefCharts(nar, sensors.stream()
+                                     .flatMap(s -> Streams.stream(s.components()))
+                                     .collect(toList())), 900, 900);
+                         }
+                     }
 		);
 	}
 
 	public void initBipolar() {
 		final float SPEED = 1f;
-        BiPolarAction F = actionBipolarFrequencyDifferential(id, false, x -> {
-            float a =
-				x * SPEED;
-			//(x * x * x) * SPEED;
-			actionLeft = (double) (a < (float) 0 ? -a : (float) 0);
-			actionRight = (double) (a > (float) 0 ? a : (float) 0);
-			return x;
-		});
+        BiPolarAction F = actionBipolarFrequencyDifferential(id, false, new FloatToFloatFunction() {
+            @Override
+            public float valueOf(float x) {
+                float a =
+                        x * SPEED;
+                //(x * x * x) * SPEED;
+                actionLeft = (double) (a < (float) 0 ? -a : (float) 0);
+                actionRight = (double) (a > (float) 0 ? a : (float) 0);
+                return x;
+            }
+        });
 	}
 
 	float power(float a) {
@@ -381,22 +438,28 @@ public class PoleCart extends GameX {
 	public void initUnipolar() {
         GoalActionConcept L = actionUnipolar(
 			//$.funcImg("mx", id, $.the(-1))
-			$.inh(id, "L"), a -> {
-				if (!manualOverride) {
-					actionLeft = (double) (a > 0.5f ? power((a - 0.5f) * 2.0F) : (float) 0);
-					//action = Util.clampBi((float) (action + a * a));
-				}
-				return a > 0.5f ? a : (float) 0;
-			});
+			$.inh(id, "L"), new FloatToFloatFunction() {
+                    @Override
+                    public float valueOf(float a) {
+                        if (!manualOverride) {
+                            actionLeft = (double) (a > 0.5f ? PoleCart.this.power((a - 0.5f) * 2.0F) : (float) 0);
+                            //action = Util.clampBi((float) (action + a * a));
+                        }
+                        return a > 0.5f ? a : (float) 0;
+                    }
+                });
         GoalActionConcept R = actionUnipolar(
 			//$.funcImg("mx", id, $.the(+1))
-			$.inh(id, "R"), a -> {
-				if (!manualOverride) {
-					actionRight = (double) (a > 0.5f ? power((a - 0.5f) * 2.0F) : (float) 0);
-					//action = Util.clampBi((float) (action - a * a));
-				}
-				return a > 0.5f ? a : (float) 0;
-			});
+			$.inh(id, "R"), new FloatToFloatFunction() {
+                    @Override
+                    public float valueOf(float a) {
+                        if (!manualOverride) {
+                            actionRight = (double) (a > 0.5f ? PoleCart.this.power((a - 0.5f) * 2.0F) : (float) 0);
+                            //action = Util.clampBi((float) (action - a * a));
+                        }
+                        return a > 0.5f ? a : (float) 0;
+                    }
+                });
 
 	}
 

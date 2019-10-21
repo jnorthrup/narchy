@@ -9,6 +9,7 @@ import nars.derive.PreDeriver;
 import nars.derive.action.How;
 import nars.derive.action.PatternHow;
 import nars.derive.util.Forkable;
+import nars.term.Term;
 import nars.term.control.AND;
 import nars.term.control.FORK;
 import nars.term.control.PREDICATE;
@@ -18,6 +19,7 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * compiled derivation rules
@@ -111,8 +113,12 @@ public class DeriverProgram {
         } else if (x instanceof AND) {
             out.println("and {");
             final AND ac = (AND) x;
-            ac.subStream().forEach(b->
-                print(b, out, indent + 2)
+            ac.subStream().forEach(new Consumer<Term>() {
+                                       @Override
+                                       public void accept(Term b) {
+                                           DeriverProgram.this.print(b, out, indent + 2);
+                                       }
+                                   }
             );
             Texts.indent(indent);
             out.println("}");

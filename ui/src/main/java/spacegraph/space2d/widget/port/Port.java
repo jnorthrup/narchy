@@ -78,11 +78,21 @@ public class Port<X> extends Widget implements Wiring.Wireable {
 
 
     public Port<X> on(Consumer<? super X> i) {
-        return on((w, x) -> i.accept(x));
+        return on(new In<X>() {
+            @Override
+            public void accept(Wire w, X x) {
+                i.accept(x);
+            }
+        });
     }
 
     public Port<X> on(Runnable i) {
-        return on((w, x) -> i.run());
+        return on(new In<X>() {
+            @Override
+            public void accept(Wire w, X x) {
+                i.run();
+            }
+        });
     }
 
 //    public Port<X> specify(Supplier<X> proto) {
@@ -104,12 +114,22 @@ public class Port<X> extends Widget implements Wiring.Wireable {
     }
 
     public Port<X> update(@Nullable Runnable update) {
-        this.updater = (i, p) -> update.run();
+        this.updater = new FloatObjectProcedure<Port<X>>() {
+            @Override
+            public void value(float i, Port<X> p) {
+                update.run();
+            }
+        };
         return this;
     }
 
     public Port<X> update(@Nullable Consumer<Port<X>> update) {
-        this.updater = (i, p) -> update.accept(p);
+        this.updater = new FloatObjectProcedure<Port<X>>() {
+            @Override
+            public void value(float i, Port<X> p) {
+                update.accept(p);
+            }
+        };
         return this;
     }
 

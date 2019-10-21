@@ -88,35 +88,38 @@ import java.util.stream.Stream;
 
         pending.incrementAndGet();
 
-        exe.execute(() -> {
+        exe.execute(new Runnable() {
+            @Override
+            public void run() {
 
-            try {
-                FasterList batch = drainBuffer.get();
-                batch.ensureCapacity(max);
+                try {
+                    FasterList batch = drainBuffer.get();
+                    batch.ensureCapacity(max);
 
-                if (b instanceof ArrayBag) {
-                    ((ArrayBag) b).popBatch(max, true, batch::addFast);
-                } else {
-                    b.pop(null, max, batch::addFast); //per item.. may be slow
-                }
-
-                int bs = batch.size();
-                if (bs > 0) {
-
-                    try {
-
-                        if (bs > 2 && batchSorter != null) {
-                            batch.sortThis(batchSorter);
-                        }
-
-                        acceptAll(batch);
-
-                    } finally {
-                        batch.clear();
+                    if (b instanceof ArrayBag) {
+                        ((ArrayBag) b).popBatch(max, true, batch::addFast);
+                    } else {
+                        b.pop(null, max, batch::addFast); //per item.. may be slow
                     }
+
+                    int bs = batch.size();
+                    if (bs > 0) {
+
+                        try {
+
+                            if (bs > 2 && batchSorter != null) {
+                                batch.sortThis(batchSorter);
+                            }
+
+                            ConsumerX.this.acceptAll(batch);
+
+                        } finally {
+                            batch.clear();
+                        }
+                    }
+                } finally {
+                    pending.decrementAndGet();
                 }
-            } finally {
-                pending.decrementAndGet();
             }
         });
 

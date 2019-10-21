@@ -166,7 +166,12 @@ public class PathFinder<N, E> extends RankedN<Path<N,E>> {
      * @return Comparator
      */
     protected static <N,E> FloatFunction<Path<N, E>> rank(Function<FromTo<Node<N,E>,E>, Double> getWeight) {
-        return p -> -(float)p.sum(getWeight::apply);
+        return new FloatFunction<Path<N, E>>() {
+            @Override
+            public float floatValueOf(Path<N, E> p) {
+                return -(float) p.sum(getWeight::apply);
+            }
+        };
     }
 
 

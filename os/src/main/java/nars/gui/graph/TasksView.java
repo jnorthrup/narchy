@@ -4,6 +4,7 @@ import com.jogamp.opengl.GL2;
 import nars.NAR;
 import nars.NARS;
 import nars.Task;
+import org.jetbrains.annotations.NotNull;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
@@ -14,13 +15,20 @@ import spacegraph.space2d.container.unit.Scale;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.video.Draw;
 
+import java.util.Iterator;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 import static nars.Op.*;
 
 public class TasksView implements Timeline2D.EventBuffer<Task> {
 
-    private static final Consumer<NodeVis<Task>> TaskRenderer = (n) -> n.set(new Scale(new TaskIcon(n.id), 0.9f));
+    private static final Consumer<NodeVis<Task>> TaskRenderer = new Consumer<NodeVis<Task>>() {
+        @Override
+        public void accept(NodeVis<Task> n) {
+            n.set(new Scale(new TaskIcon(n.id), 0.9f));
+        }
+    };
 
     private final Iterable<Task> tasks;
 
@@ -39,7 +47,18 @@ public class TasksView implements Timeline2D.EventBuffer<Task> {
         n.inputAt(3L,"x. |");
         n.run(10);
 
-        Iterable<Task> tasks = ()->n.tasks().filter(x->!x.isEternal()).iterator();
+        Iterable<Task> tasks = new Iterable<Task>() {
+            @NotNull
+            @Override
+            public Iterator<Task> iterator() {
+                return n.tasks().filter(new Predicate<Task>() {
+                    @Override
+                    public boolean test(Task x) {
+                        return !x.isEternal();
+                    }
+                }).iterator();
+            }
+        };
 
         Timeline2D t = timeline(tasks).setTime(0L, n.time());
         SpaceGraph.window(t.withControls(),

@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -164,13 +165,16 @@ public class PerformacesObjective implements Objective {
 
     
     private static int countIdenticalRanges(Bounds[] rangesA, List<Bounds> rangesB) {
-        int identicalRanges = (int) Arrays.stream(rangesA).filter(boundsA -> {
-            for (Bounds bounds : rangesB) {
-                if (boundsA.equals(bounds)) {
-                    return true;
+        int identicalRanges = (int) Arrays.stream(rangesA).filter(new Predicate<Bounds>() {
+            @Override
+            public boolean test(Bounds boundsA) {
+                for (Bounds bounds : rangesB) {
+                    if (boundsA.equals(bounds)) {
+                        return true;
+                    }
                 }
+                return false;
             }
-            return false;
         }).count();
 
         return identicalRanges;

@@ -333,12 +333,15 @@ private static void joinWith(Row r, Appendable s, CharSequence del) throws IOExc
     }
 
     public void saveOnShutdown(String file) {
-        Runtime.getRuntime().addShutdownHook(new Thread(()->{
-            try {
-                writeToFile(file);
-                System.out.println("saved " + rowCount() + " experiment results to: " + file);
-            } catch (IOException e) {
-                e.printStackTrace();
+        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    ARFF.this.writeToFile(file);
+                    System.out.println("saved " + ARFF.this.rowCount() + " experiment results to: " + file);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }));
     }
@@ -571,45 +574,57 @@ private static void joinWith(Row r, Appendable s, CharSequence del) throws IOExc
                 Class<?> t = Primitives.wrap(field.getType());
                 if (Byte.class.isAssignableFrom(t) || Short.class.isAssignableFrom(t) || Integer.class.isAssignableFrom(t) || Long.class.isAssignableFrom(t)) {
                     defineNumeric(n);
-                    extractor.add(x -> {
-                        try {
-                            return ((Number) field.get(x)).longValue();
-                        } catch (IllegalAccessException e1) {
-                            logger.error("field {} : {}", e1);
-                            return Double.NaN;
+                    extractor.add(new Function<X, Object>() {
+                        @Override
+                        public Object apply(X x) {
+                            try {
+                                return ((Number) field.get(x)).longValue();
+                            } catch (IllegalAccessException e1) {
+                                logger.error("field {} : {}", e1);
+                                return Double.NaN;
+                            }
                         }
                     });
 
                 } else if (Boolean.class.isAssignableFrom(t)) {
                     defineNominal(n, "true", "false");
-                    extractor.add(x -> {
-                        try {
-                            return Boolean.toString((Boolean) field.get(x));
-                        } catch (IllegalAccessException e1) {
-                            logger.error("field {} : {}", e1);
-                            return null;
+                    extractor.add(new Function<X, Object>() {
+                        @Override
+                        public Object apply(X x) {
+                            try {
+                                return Boolean.toString((Boolean) field.get(x));
+                            } catch (IllegalAccessException e1) {
+                                logger.error("field {} : {}", e1);
+                                return null;
+                            }
                         }
                     });
                 } else if (Number.class.isAssignableFrom(t)) {
 
                     defineNumeric(n);
-                    extractor.add(x -> {
-                        try {
-                            return ((Number) field.get(x)).doubleValue();
-                        } catch (IllegalAccessException e1) {
-                            logger.error("field {} : {}", e1);
-                            return Double.NaN;
+                    extractor.add(new Function<X, Object>() {
+                        @Override
+                        public Object apply(X x) {
+                            try {
+                                return ((Number) field.get(x)).doubleValue();
+                            } catch (IllegalAccessException e1) {
+                                logger.error("field {} : {}", e1);
+                                return Double.NaN;
+                            }
                         }
                     });
                 } else {
                     
                     defineText(n);
-                    extractor.add(x -> {
-                        try {
-                            return field.get(x).toString();
-                        } catch (IllegalAccessException e1) {
-                            logger.error("field {} : {}", e1);
-                            return "?";
+                    extractor.add(new Function<X, Object>() {
+                        @Override
+                        public Object apply(X x) {
+                            try {
+                                return field.get(x).toString();
+                            } catch (IllegalAccessException e1) {
+                                logger.error("field {} : {}", e1);
+                                return "?";
+                            }
                         }
                     });
                 }

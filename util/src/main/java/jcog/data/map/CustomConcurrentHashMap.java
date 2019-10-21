@@ -19,6 +19,8 @@ import java.util.*;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static com.github.benmanes.caffeine.base.UnsafeAccess.UNSAFE;
@@ -1112,8 +1114,18 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
             Node[] tab;
             if (seg != null && (tab = seg.table()) != null) {
                 for (Node aTab : tab) {
-                    if (Stream.iterate(aTab, Objects::nonNull, Node::getLinkage).map(p -> (V) (p.getValue())).anyMatch(v -> v == value ||
-                            (v != null && valueEquivalence.equal(v, value)))) {
+                    if (Stream.iterate(aTab, Objects::nonNull, Node::getLinkage).map(new Function<Node, V>() {
+                        @Override
+                        public V apply(Node p) {
+                            return (V) (p.getValue());
+                        }
+                    }).anyMatch(new Predicate<V>() {
+                        @Override
+                        public boolean test(V v) {
+                            return v == value ||
+                                    (v != null && valueEquivalence.equal(v, value));
+                        }
+                    })) {
                         return true;
                     }
                 }

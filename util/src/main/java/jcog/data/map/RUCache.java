@@ -2,6 +2,7 @@ package jcog.data.map;
 
 import java.util.Map;
 import java.util.WeakHashMap;
+import java.util.function.BiFunction;
 
 /**
  * Implementation which lets me keep an optimal number of elements in memory.
@@ -33,16 +34,18 @@ public class RUCache<K, V> {
 
     public V get(K k) {
         synchronized (mru) {
-            return mru.compute(k, (key, value) -> {
-                V value1 = value;
-                if (value1 != null) {
-				}
-                else {
-                    if ((value1 = lru.remove(key)) != null)
-                        mru.put(key, value1);
-				}
-				return value1;
-			});
+            return mru.compute(k, new BiFunction<K, V, V>() {
+                @Override
+                public V apply(K key, V value) {
+                    V value1 = value;
+                    if (value1 != null) {
+                    } else {
+                        if ((value1 = lru.remove(key)) != null)
+                            mru.put(key, value1);
+                    }
+                    return value1;
+                }
+            });
         }
     }
 

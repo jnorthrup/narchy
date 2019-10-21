@@ -5,6 +5,7 @@ import com.jogamp.opengl.GL2;
 import jcog.Skill;
 import jcog.Util;
 import jcog.tree.rtree.rect.RectFloat;
+import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.input.finger.Finger;
 import spacegraph.input.key.KeyPressed;
@@ -18,6 +19,9 @@ import spacegraph.space2d.hud.HoverModel;
 import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.util.math.Color4f;
 import spacegraph.video.Draw;
+
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * Base class for GUI widgets, loosely analogous to Swing's JComponent as an abstract hierarchy root
@@ -97,14 +101,17 @@ public class Widget extends MutableUnitContainer<Surface> implements KeyPressed 
 
         if (focused) {
             //focused indicator
-            r.on((gl)->{
-                if (focused) {
-                    float p = this.pri;
-                    //float th = Math.min(b.w, b.h) * (0.1f + 0.1f * t);
-                    gl.glColor4f(0.5f + 0.5f * p, 0.55f, 0.35f, 0.75f);
-                    //Draw.rectFrame(b, th, gl);
-                    float th = 3.0F + p;
-                    Draw.rectStroke(bounds, th, gl);
+            r.on(new Consumer<GL2>() {
+                @Override
+                public void accept(GL2 gl) {
+                    if (focused) {
+                        float p = Widget.this.pri;
+                        //float th = Math.min(b.w, b.h) * (0.1f + 0.1f * t);
+                        gl.glColor4f(0.5f + 0.5f * p, 0.55f, 0.35f, 0.75f);
+                        //Draw.rectFrame(b, th, gl);
+                        float th = 3.0F + p;
+                        Draw.rectStroke(bounds, th, gl);
+                    }
                 }
             });
         }
@@ -115,7 +122,12 @@ public class Widget extends MutableUnitContainer<Surface> implements KeyPressed 
     protected void paintWidget(RectFloat bounds, GL2 gl) {
         float dim = 1f - (dz /* + if disabled, dim further */) / 3f;
         float bri = 0.1f * dim;
-        color.set( rgb-> Util.or(rgb,bri,pri/ 8.0F), gl);
+        color.set(new FloatToFloatFunction() {
+            @Override
+            public float valueOf(float rgb) {
+                return Util.or(rgb, bri, pri / 8.0F);
+            }
+        }, gl);
         Draw.rect(bounds, gl);
     }
 
@@ -217,7 +229,12 @@ public class Widget extends MutableUnitContainer<Surface> implements KeyPressed 
     private class MyHover extends Hover {
 
         public MyHover(Surface hoverLabel) {
-            super(Widget.this, b -> hoverLabel, new MyCursorModel());
+            super(Widget.this, new Function() {
+                @Override
+                public Object apply(Object b) {
+                    return hoverLabel;
+                }
+            }, new MyCursorModel());
         }
 
         @Override

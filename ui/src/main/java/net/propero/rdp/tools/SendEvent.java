@@ -34,6 +34,8 @@ import net.propero.rdp.Rdp;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class SendEvent extends JFrame {
 
@@ -203,13 +205,16 @@ public class SendEvent extends JFrame {
         if (jButton == null) {
             jButton = new JButton();
             jButton.setText("Send Event");
-            jButton.addActionListener(e -> {
-                if (rdp != null) {
-                    rdp.sendInput(Input.getTime(), Integer.decode(
-                            inputTypeField.getText()), Integer
-                                    .decode(flagsField.getText()),
-                            Integer.decode(param1Field.getText()), Integer.decode(
-                                    param2Field.getText()));
+            jButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    if (rdp != null) {
+                        rdp.sendInput(Input.getTime(), Integer.decode(
+                                inputTypeField.getText()), Integer
+                                        .decode(flagsField.getText()),
+                                Integer.decode(param1Field.getText()), Integer.decode(
+                                        param2Field.getText()));
+                    }
                 }
             });
         }
@@ -237,13 +242,16 @@ public class SendEvent extends JFrame {
         if (jButton1 == null) {
             jButton1 = new JButton();
             jButton1.setText("Apply Mask");
-            jButton1.addActionListener(e -> {
-                
-                flagsField.setText("0x"
-                        + Integer.toHexString(Integer.decode(
-                        flagsField.getText())
-                        | Integer.decode(flagMaskField.getText())));
-                flagMaskField.setText("");
+            jButton1.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+
+                    flagsField.setText("0x"
+                            + Integer.toHexString(Integer.decode(
+                            flagsField.getText())
+                            | Integer.decode(flagMaskField.getText())));
+                    flagMaskField.setText("");
+                }
             });
         }
         return jButton1;

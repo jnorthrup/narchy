@@ -5,6 +5,8 @@ import org.eclipse.collections.api.tuple.primitive.ObjectIntPair;
 import spacegraph.space2d.widget.meter.WaveBitmap;
 import spacegraph.space2d.widget.port.TypedPort;
 
+import java.util.function.Consumer;
+
 public class WaveViewChip extends TypedPort<ObjectIntPair<float[]>> {
 
     final CircularFloatBuffer buffer = new CircularFloatBuffer(44100 * 2);
@@ -13,11 +15,14 @@ public class WaveViewChip extends TypedPort<ObjectIntPair<float[]>> {
     public WaveViewChip() {
         super(ObjectIntPair.class);
 
-        on(nextBuffer ->{
-            float[] b = nextBuffer.getOne();
-            buffer.freeHead(b.length);
-            buffer.write(b);
-            wave.update();
+        on(new Consumer<ObjectIntPair<float[]>>() {
+            @Override
+            public void accept(ObjectIntPair<float[]> nextBuffer) {
+                float[] b = nextBuffer.getOne();
+                buffer.freeHead(b.length);
+                buffer.write(b);
+                wave.update();
+            }
         });
         int c = buffer.capacity();
         for (int i = 0; i < c; i++) //HACK TODO use bulk array fill method

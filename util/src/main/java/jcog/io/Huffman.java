@@ -4,11 +4,14 @@ import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.Weigher;
 import jcog.util.ArrayUtil;
+import org.checkerframework.checker.index.qual.NonNegative;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.io.ByteArrayOutputStream;
 import java.util.Arrays;
 import java.util.Map.Entry;
 import java.util.PriorityQueue;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import java.util.zip.Deflater;
@@ -45,7 +48,12 @@ public class Huffman {
     private static final long PRIME64_3 = 1609587929392839161L;
     private static final long PRIME64_4 = -8796714831421723037L; //9650029242287828579
     private static final long PRIME64_5 = 2870177450012600261L;
-    private final Weigher<ByteAry, Integer> memoryUsageWeigher = (key, value) -> key.ary.length + 32;
+    private final Weigher<ByteAry, Integer> memoryUsageWeigher = new Weigher<ByteAry, Integer>() {
+        @Override
+        public @NonNegative int weigh(@NonNull ByteAry key, @NonNull Integer value) {
+            return key.ary.length + 32;
+        }
+    };
     private int nodeId;
     private int symbl2CodLstIdx;
     private int maxSymbolLength;
@@ -982,25 +990,28 @@ public class Huffman {
         @Override
         public void run() {
 
-            workQueue.forEach(dV -> {
-                int VLen = dV.length;
-                for (int i = 0; i < VLen; i += maxSymbolLength) {
-                    for (int j = i; j < VLen && j < i + maxSymbolLength; j++) {
-                        byte[] symbol = Arrays.copyOfRange(dV, i, j + 1);
-                        ByteAry ba = new ByteAry(symbol);
-                        while (true) {
-                            Integer oldWeight = freqList.getIfPresent(ba);
-                            int weight;
-                            if (oldWeight != null) {
-                                weight = oldWeight + symbol.length;
-                                if (freqList.asMap().replace(ba, oldWeight, weight)) break;
-                            } else {
-                                weight = symbol.length;
-                                if (freqList.asMap().putIfAbsent(ba, weight) == null) break;
+            workQueue.forEach(new Consumer<byte[]>() {
+                @Override
+                public void accept(byte[] dV) {
+                    int VLen = dV.length;
+                    for (int i = 0; i < VLen; i += maxSymbolLength) {
+                        for (int j = i; j < VLen && j < i + maxSymbolLength; j++) {
+                            byte[] symbol = Arrays.copyOfRange(dV, i, j + 1);
+                            ByteAry ba = new ByteAry(symbol);
+                            while (true) {
+                                Integer oldWeight = freqList.getIfPresent(ba);
+                                int weight;
+                                if (oldWeight != null) {
+                                    weight = oldWeight + symbol.length;
+                                    if (freqList.asMap().replace(ba, oldWeight, weight)) break;
+                                } else {
+                                    weight = symbol.length;
+                                    if (freqList.asMap().putIfAbsent(ba, weight) == null) break;
+                                }
                             }
                         }
-                    }
 
+                    }
                 }
             });
         }
@@ -1023,35 +1034,38 @@ public class Huffman {
 
         @Override
         public void run() {
-            workQueue.forEach(ba -> {
-                        if (ba.length == 0) return;
-                        startIdx = 0;
-                        endIdx = Math.min(ba.length, maxSymbolLength);
-                        while (true) {
-                            symbIdx = findSymblIdx(startIdx, endIdx, ba, symbl2CodLstIdx, symbol2Code);
-                            if (symbIdx != -1) {
-                                //symbUsed[symbIdx] = true;
-                                symbol = symbol2Code[symbIdx];
-                                bAry = new ByteAry(symbol);
-                                while (true) {
-                                    oldWeight = freqList.getIfPresent(bAry);
-                                    if (oldWeight != null) {
-                                        weight = oldWeight + symbol.length;
-                                        if (freqList.asMap().replace(bAry, oldWeight, weight)) break;
-                                    } else {
-                                        weight = symbol.length;
-                                        if (freqList.asMap().putIfAbsent(bAry, weight) == null) break;
-                                    }
-                                }
-                                startIdx += symbol.length;
-                            } else {
-                                startIdx += endIdx - startIdx;
-                            }
-                            if (startIdx >= ba.length) break;
-                            endIdx = startIdx + maxSymbolLength;
-                            if (endIdx > ba.length) endIdx = ba.length;
-                        }
-                    }
+            workQueue.forEach(new Consumer<byte[]>() {
+                                  @Override
+                                  public void accept(byte[] ba) {
+                                      if (ba.length == 0) return;
+                                      startIdx = 0;
+                                      endIdx = Math.min(ba.length, maxSymbolLength);
+                                      while (true) {
+                                          symbIdx = findSymblIdx(startIdx, endIdx, ba, symbl2CodLstIdx, symbol2Code);
+                                          if (symbIdx != -1) {
+                                              //symbUsed[symbIdx] = true;
+                                              symbol = symbol2Code[symbIdx];
+                                              bAry = new ByteAry(symbol);
+                                              while (true) {
+                                                  oldWeight = freqList.getIfPresent(bAry);
+                                                  if (oldWeight != null) {
+                                                      weight = oldWeight + symbol.length;
+                                                      if (freqList.asMap().replace(bAry, oldWeight, weight)) break;
+                                                  } else {
+                                                      weight = symbol.length;
+                                                      if (freqList.asMap().putIfAbsent(bAry, weight) == null) break;
+                                                  }
+                                              }
+                                              startIdx += symbol.length;
+                                          } else {
+                                              startIdx += endIdx - startIdx;
+                                          }
+                                          if (startIdx >= ba.length) break;
+                                          endIdx = startIdx + maxSymbolLength;
+                                          if (endIdx > ba.length) endIdx = ba.length;
+                                      }
+                                  }
+                              }
             );
 
         }

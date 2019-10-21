@@ -2,6 +2,7 @@ package asanf.FOM;
 
 
 import asanf.FOM.Util.DTMatrix;
+import org.eclipse.collections.api.block.procedure.Procedure;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -33,9 +34,12 @@ public class ContextVectors<E> extends DTMatrix<E> implements Iterable<E> {
      */
     public ArrayList<E> getConcepts() {
         ArrayList<E> filteredConcepts = new ArrayList<E>();
-        terms.forEachKey(concept -> {
-            if (getValue(concept) >= (double) 0)
-                filteredConcepts.add(concept);
+        terms.forEachKey(new Procedure<E>() {
+            @Override
+            public void value(E concept) {
+                if (ContextVectors.this.getValue(concept) >= (double) 0)
+                    filteredConcepts.add(concept);
+            }
         });
         return filteredConcepts;
     }
@@ -92,12 +96,20 @@ public class ContextVectors<E> extends DTMatrix<E> implements Iterable<E> {
 
     public String toString() {
         StringBuilder toRet = new StringBuilder();
-        terms.forEachKey(t1 -> {
+        terms.forEachKey(new Procedure<E>() {
+            @Override
+            public void value(E t1) {
 
-            toRet.append(t1 + ": ");
-            terms.forEachKey(t2 -> toRet.append(getValue(t1, t2) + "\t"));
+                toRet.append(t1 + ": ");
+                terms.forEachKey(new Procedure<E>() {
+                    @Override
+                    public void value(E t2) {
+                        toRet.append(ContextVectors.this.getValue(t1, t2) + "\t");
+                    }
+                });
 
-            toRet.append("\n");
+                toRet.append("\n");
+            }
         });
         return toRet.toString();
     }

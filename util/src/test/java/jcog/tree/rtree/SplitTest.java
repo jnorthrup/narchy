@@ -3,6 +3,9 @@ package jcog.tree.rtree;
 import jcog.tree.rtree.rect.RectDouble;
 import org.junit.jupiter.api.Test;
 
+import java.util.function.Consumer;
+import java.util.function.Predicate;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class SplitTest {
@@ -97,21 +100,32 @@ class SplitTest {
                     assertEquals(TOTAL, t.stats().size());
 
                     int[] andCount = {0};
-                    assertTrue(t.root().AND(x -> {
-                        andCount[0]++;
-                        return true;
+                    assertTrue(t.root().AND(new Predicate<RectDouble>() {
+                        @Override
+                        public boolean test(RectDouble x) {
+                            andCount[0]++;
+                            return true;
+                        }
                     }));
                     assertEquals(TOTAL, andCount[0]);
 
                     int[] orCount = {0};
-                    assertFalse(t.OR(x -> {
-                        orCount[0]++;
-                        return false;
+                    assertFalse(t.OR(new Predicate<RectDouble>() {
+                        @Override
+                        public boolean test(RectDouble x) {
+                            orCount[0]++;
+                            return false;
+                        }
                     }));
                     assertEquals(TOTAL, orCount[0]);
 
                     int[] eachCount= {0};
-                    t.forEach(x -> eachCount[0]++);
+                    t.forEach(new Consumer<RectDouble>() {
+                        @Override
+                        public void accept(RectDouble x) {
+                            eachCount[0]++;
+                        }
+                    });
                     assertEquals(TOTAL, eachCount[0]);
                 }
             }

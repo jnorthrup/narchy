@@ -16,6 +16,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 import java.util.*;
+import java.util.function.Supplier;
 import java.util.regex.Matcher;
 
 /**
@@ -255,7 +256,12 @@ public class HttpConnection {
         buf.limit(limit);
     }
 
-    static final ThreadLocal<StringBuilder> lineParser = ThreadLocal.withInitial(() -> new StringBuilder(4 * 1024));
+    static final ThreadLocal<StringBuilder> lineParser = ThreadLocal.withInitial(new Supplier<StringBuilder>() {
+        @Override
+        public StringBuilder get() {
+            return new StringBuilder(4 * 1024);
+        }
+    });
 
     /**
      * Read the request line and move the buffer position beyond the request line

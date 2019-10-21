@@ -16,6 +16,7 @@ import nars.term.util.Image;
 import nars.time.Tense;
 import nars.time.TimeGraph;
 import nars.truth.MutableTruth;
+import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 import org.eclipse.collections.api.map.ImmutableMap;
 import org.eclipse.collections.api.map.MutableMap;
 import org.eclipse.collections.api.tuple.Pair;
@@ -24,6 +25,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.Random;
+import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -197,7 +199,12 @@ public class Occurrify extends TimeGraph {
         float[] score = new float[ss];
         for (int i = 0; i < ss; i++)
             score[i] = score(s.get(i), occ);
-        return solutions.get(Roulette.selectRoulette(ss, i->score[i], random()));
+        return solutions.get(Roulette.selectRoulette(ss, new IntToFloatFunction() {
+            @Override
+            public float valueOf(int i) {
+                return score[i];
+            }
+        }, random()));
     }
 
     private static float score(Event e, boolean occ) {
@@ -780,14 +787,22 @@ public class Occurrify extends TimeGraph {
     static boolean nonTemporal(Term x) {
         return !x.hasAny(Op.Temporal) ||
                 (!x.hasXternal() && x.hasAny(INH.bit | SIM.bit) &&
-                x.recurseTerms(term->term.hasAny(Op.Temporal), (term, suuper) ->{
-                    if (term.op().temporal) {
-                        if (suuper==null)
-                            return false;
-                        Op suo = suuper.op();
-                        return suo == INH || suo == SIM;
+                x.recurseTerms(new Predicate<Compound>() {
+                    @Override
+                    public boolean test(Compound term) {
+                        return term.hasAny(Op.Temporal);
                     }
-                    return true;
+                }, new BiPredicate<Term, Compound>() {
+                    @Override
+                    public boolean test(Term term, Compound suuper) {
+                        if (term.op().temporal) {
+                            if (suuper == null)
+                                return false;
+                            Op suo = suuper.op();
+                            return suo == INH || suo == SIM;
+                        }
+                        return true;
+                    }
                 }, null));
     }
 
@@ -838,8 +853,12 @@ public class Occurrify extends TimeGraph {
 //    private static final Predicate<Derivation> intersection = d ->
 //        d.taskBelief_TimeIntersection[0] != TIMELESS;
 
-    private static final Predicate<Derivation> differentTermsOrTimes = d ->
-        !d.taskTerm.equals(d.beliefTerm) || !Tense.simultaneous(d.taskStart, d.beliefStart, (float) d.ditherDT);
+    private static final Predicate<Derivation> differentTermsOrTimes = new Predicate<Derivation>() {
+        @Override
+        public boolean test(Derivation d) {
+            return !d.taskTerm.equals(d.beliefTerm) || !Tense.simultaneous(d.taskStart, d.beliefStart, (float) d.ditherDT);
+        }
+    };
 
 }
 

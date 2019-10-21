@@ -1,5 +1,7 @@
 package spacegraph.space2d.widget.button;
 
+import org.eclipse.collections.api.block.procedure.primitive.ObjectBooleanProcedure;
+
 import java.util.Map;
 
 public enum MapSwitch { ;
@@ -13,9 +15,12 @@ public enum MapSwitch { ;
             X xx = entry.getKey();
             Runnable r = entry.getValue();
             CheckBox tb = new CheckBox(xx.toString());
-            tb.on((c, enabled) -> {
-                if (enabled)
-                    r.run();
+            tb.on(new ObjectBooleanProcedure<ToggleButton>() {
+                @Override
+                public void value(ToggleButton c, boolean enabled) {
+                    if (enabled)
+                        r.run();
+                }
             });
 //                if (xx == initialValue)
 //                    initialButton = i;

@@ -4,7 +4,9 @@ import jcog.Texts;
 import jcog.Util;
 import jcog.pri.op.PriMerge;
 import jcog.pri.op.PriReturn;
+import jcog.util.FloatFloatToFloatFunction;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 
 import java.util.function.Function;
 
@@ -60,12 +62,15 @@ public interface Prioritizable extends Prioritized, ScalarValue {
 
         float[] before = new float[1];
 
-        float after = pri((x, a)->{
-            float x1 = x;
-            if (x1 != x1)
-                x1 = (float) 0;
-            before[0] = x1;
-            return x1 + a;
+        float after = pri(new FloatFloatToFloatFunction() {
+            @Override
+            public float apply(float x, float a) {
+                float x1 = x;
+                if (x1 != x1)
+                    x1 = (float) 0;
+                before[0] = x1;
+                return x1 + a;
+            }
         }, amount);
 
         float b = before[0];
@@ -129,7 +134,12 @@ public interface Prioritizable extends Prioritized, ScalarValue {
 //    }
 
     static float fund(float maxPri, boolean copyOrTransfer, Prioritizable... src) {
-        return fund(maxPri, copyOrTransfer, (x -> x), src);
+        return fund(maxPri, copyOrTransfer, (new Function<Prioritizable, Prioritizable>() {
+            @Override
+            public Prioritizable apply(Prioritizable x) {
+                return x;
+            }
+        }), src);
     }
 
     /**
@@ -140,9 +150,12 @@ public interface Prioritizable extends Prioritized, ScalarValue {
 
         assert (src.length > 0);
 
-        double priTarget = Math.min((double) maxPri, Util.sumDouble(s -> {
-            if (s == null) return (float) 0;
-            return getPri.apply(s).priElseZero();
+        double priTarget = Math.min((double) maxPri, Util.sumDouble(new FloatFunction<X>() {
+            @Override
+            public float floatValueOf(X s) {
+                if (s == null) return (float) 0;
+                return getPri.apply(s).priElseZero();
+            }
         }, src));
 
         UnitPri u = new UnitPri();

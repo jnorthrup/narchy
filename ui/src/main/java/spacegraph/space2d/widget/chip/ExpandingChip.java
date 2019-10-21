@@ -1,5 +1,6 @@
 package spacegraph.space2d.widget.chip;
 
+import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.Bordering;
 import spacegraph.space2d.container.unit.MutableUnitContainer;
@@ -16,7 +17,12 @@ public class ExpandingChip extends MutableUnitContainer {
     private final CheckBox button;
 
     public ExpandingChip(String label, Supplier<Surface> builder) {
-        this(label, (x)->builder.get());
+        this(label, new Function<ExpandingChip, Surface>() {
+            @Override
+            public Surface apply(ExpandingChip x) {
+                return builder.get();
+            }
+        });
     }
 
     public ExpandingChip(String label, Function<ExpandingChip,Surface> builder) {
@@ -25,14 +31,17 @@ public class ExpandingChip extends MutableUnitContainer {
         this.builder = builder;
         this.button = new CheckBox(label);
 
-        button.on((state)->{
-            synchronized (ExpandingChip.this) {
-                if (state) {
-                    button.delete();
-                    set(new Bordering(builder.apply(this)).set(S, button));
-                } else {
-                    button.delete();
-                    set(button);
+        button.on(new BooleanProcedure() {
+            @Override
+            public void value(boolean state) {
+                synchronized (ExpandingChip.this) {
+                    if (state) {
+                        button.delete();
+                        ExpandingChip.this.set(new Bordering(builder.apply(ExpandingChip.this)).set(S, button));
+                    } else {
+                        button.delete();
+                        ExpandingChip.this.set(button);
+                    }
                 }
             }
         });

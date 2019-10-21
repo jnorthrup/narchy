@@ -76,13 +76,23 @@ public final class Answer implements Timed, Predicate<Task> {
     public static Predicate<Task> filter(@Nullable Predicate<Task> a, @Nullable Predicate<Task> b) {
         if (a == null) return b;
         if (b == null) return a;
-        return x -> a.test(x) && b.test(x);
+        return new Predicate<Task>() {
+            @Override
+            public boolean test(Task x) {
+                return a.test(x) && b.test(x);
+            }
+        };
     }
 
 
     /** for use only in temporal belief tables; eternal tasks not supported since i dont know how to directly compare them with temporals for the purposes of this interface */
     public static FloatFunction<TaskRegion> beliefStrength(long targetStart, long targetEnd) {
-        return t -> beliefStrength(t, targetStart, targetEnd);
+        return new FloatFunction<TaskRegion>() {
+            @Override
+            public float floatValueOf(TaskRegion t) {
+                return beliefStrength(t, targetStart, targetEnd);
+            }
+        };
     }
 
 
@@ -100,9 +110,19 @@ public final class Answer implements Timed, Predicate<Task> {
     public static FloatRank<TaskRegion> regionNearness(long qStart, long qEnd) {
         //TODO special impl for confPerTime==0
         return qStart == qEnd ?
-            (x,min) -> (float) -x.minTimeTo(qStart)
+                new FloatRank<TaskRegion>() {
+                    @Override
+                    public float rank(TaskRegion x, float min) {
+                        return (float) -x.minTimeTo(qStart);
+                    }
+                }
             :
-            (x,min) -> (float) -x.minTimeTo(qStart, qEnd);
+                new FloatRank<TaskRegion>() {
+                    @Override
+                    public float rank(TaskRegion x, float min) {
+                        return (float) -x.minTimeTo(qStart, qEnd);
+                    }
+                };
 //            (x,min) -> -(float)(((double)x.minTimeTo(qStart)) + x.confMax() * confPerTime) :
             //return (x,min) -> (float)(x.confMax() / (1.0 + x.maxTimeTo(qStart,qEnd)/dur));
         //return (x,min) -> (float)((1+x.confMin()) / (1.0 + x.maxTimeTo(qStart,qEnd)/dur));
@@ -150,14 +170,16 @@ public final class Answer implements Timed, Predicate<Task> {
 
 
     private static FloatRank<Task> intermpolateStrength(FloatRank<Task> strength, Term template) {
-        return (x, min) -> {
-            float str = strength.rank(x, min);
-            if (str < min)
-                return Float.NaN; //already below thresh
+        return new FloatRank<Task>() {
+            @Override
+            public float rank(Task x, float min) {
+                float str = strength.rank(x, min);
+                if (str < min)
+                    return Float.NaN; //already below thresh
 
-            Term xt = x.term();
-            float dtDiff = Intermpolate.dtDiff(template, xt);
-            if (!Float.isFinite(dtDiff)) {
+                Term xt = x.term();
+                float dtDiff = Intermpolate.dtDiff(template, xt);
+                if (!Float.isFinite(dtDiff)) {
 //                /* probably safe to ignore caused by a Dynamic task result that doesnt quite match what is being sought
 //                   TODO record a misfire event. this will measure how much dynamic task generation is reducing efficiency
 //                 */
@@ -169,15 +191,16 @@ public final class Answer implements Timed, Predicate<Task> {
 //                    if (NAL.DEBUG)
 //                        throw new TermException("mismatch for Answer template: " + template, x);
 //                    else {
-                       return Float.NaN;
-                    }
+                    return Float.NaN;
+                }
 //                }
 
 //            }
-            //dtDiff = dtDiff > 0 ? (float) Math.log(1+dtDiff) : 0; //HACK
+                //dtDiff = dtDiff > 0 ? (float) Math.log(1+dtDiff) : 0; //HACK
 
-            float d = 1.0F / (1.0F + dtDiff);
-            return str * d;
+                float d = 1.0F / (1.0F + dtDiff);
+                return str * d;
+            }
         };
     }
 
@@ -187,14 +210,22 @@ public final class Answer implements Timed, Predicate<Task> {
 
         return
                 (start == ETERNAL) ?
-                        (t, m) -> t.pri()
+                        new FloatRank<Task>() {
+                            @Override
+                            public float rank(Task t, float m) {
+                                return t.pri();
+                            }
+                        }
                         :
-                        (t, m) -> {
-                            float pri = t.pri(); // * t.originality();
-                            if (pri == pri && pri > m)
-                                return (float) (pri / (float) (1L + t.maxTimeTo(start, end)));
+                        new FloatRank<Task>() {
+                            @Override
+                            public float rank(Task t, float m) {
+                                float pri = t.pri(); // * t.originality();
+                                if (pri == pri && pri > m)
+                                    return (float) (pri / (float) (1L + t.maxTimeTo(start, end)));
                                 //return (float) (pri / (1 + Math.log(1+t.minTimeTo(start, end))));
-                            return Float.NaN;
+                                return Float.NaN;
+                            }
                         };
 
     }
@@ -204,13 +235,23 @@ public final class Answer implements Timed, Predicate<Task> {
      * TODO use FloatRank min
      */
     public static FloatRank<Task> beliefStrengthInEternity() {
-        return (x, min) -> (float) x.evi();
+        return new FloatRank<Task>() {
+            @Override
+            public float rank(Task x, float min) {
+                return (float) x.evi();
+            }
+        };
     }
 
 
     /** HACK needs double precision */
     public static FloatRank<Task> beliefStrengthInInterval(long start, long end) {
-        return (x,min) -> (float) TruthIntegration.eviFast(x, start, end);
+        return new FloatRank<Task>() {
+            @Override
+            public float rank(Task x, float min) {
+                return (float) TruthIntegration.eviFast(x, start, end);
+            }
+        };
     }
 
 

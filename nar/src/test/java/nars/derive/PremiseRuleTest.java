@@ -15,6 +15,9 @@ import nars.term.Term;
 import nars.term.Terms;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
+
+import java.util.function.Supplier;
 
 import static nars.$.$$;
 import static nars.term.util.TermTest.assertEq;
@@ -142,7 +145,12 @@ class PremiseRuleTest {
 
     @Test void MissingPatternVar() {
         assertThrows(Throwable.class,
-                ()-> new PremiseRuleSet(NARS.shell(), "X,Y |- (X,Z), (Belief:Analogy)"));
+                new Executable() {
+                    @Override
+                    public void execute() throws Throwable {
+                        new PremiseRuleSet(NARS.shell(), "X,Y |- (X,Z), (Belief:Analogy)");
+                    }
+                });
     }
 
     @Test
@@ -209,8 +217,18 @@ class PremiseRuleTest {
 //        n.run(10);
 
         String dw = dd.program.what.toString();
-        assertTrue(dw.contains("Is(taskTerm,\"&&\")"), ()->dw);
-        assertTrue(dw.contains("Has(taskTerm,any(\"--\"))"), ()->dw);
+        assertTrue(dw.contains("Is(taskTerm,\"&&\")"), new Supplier<String>() {
+            @Override
+            public String get() {
+                return dw;
+            }
+        });
+        assertTrue(dw.contains("Has(taskTerm,any(\"--\"))"), new Supplier<String>() {
+            @Override
+            public String get() {
+                return dw;
+            }
+        });
 
 
 
@@ -238,9 +256,19 @@ class PremiseRuleTest {
         //d.printRecursive();
         String rs = d.what.toString();
         if (inc!=null)
-            assertTrue(rs.contains(inc), ()->rs);
+            assertTrue(rs.contains(inc), new Supplier<String>() {
+                @Override
+                public String get() {
+                    return rs;
+                }
+            });
         if (exc!=null)
-            assertFalse(rs.contains(exc), ()->rs);
+            assertFalse(rs.contains(exc), new Supplier<String>() {
+                @Override
+                public String get() {
+                    return rs;
+                }
+            });
     }
 
     @Test
@@ -260,7 +288,12 @@ class PremiseRuleTest {
         ).compile();
         //        assertEquals("((\"?\"-->task),can({0}))", d.what.toString());
         String w = d.what.toString();
-        assertTrue(w.contains("punc((\"?\",\"?\"))"), ()->w);
+        assertTrue(w.contains("punc((\"?\",\"?\"))"), new Supplier<String>() {
+            @Override
+            public String get() {
+                return w;
+            }
+        });
     }
 
     @Test
@@ -270,7 +303,12 @@ class PremiseRuleTest {
             "X,Y |- unisubst(what,X,Y), (Belief:Intersection)").compile();
 
         String s = d.what.toString();
-        assertTrue(s.contains("Unifiability"), () -> s); //TODO this and other cases
+        assertTrue(s.contains("Unifiability"), new Supplier<String>() {
+            @Override
+            public String get() {
+                return s;
+            }
+        }); //TODO this and other cases
     }
 
     @Test
@@ -278,7 +316,12 @@ class PremiseRuleTest {
         DeriverProgram d = new PremiseRuleSet(NARS.shell(),
             "X,Y,is(X,\"*\") |- (X,Y), (Belief:Intersection)").compile();
         String s = d.what.toString();
-        assertTrue(s.contains("Is(taskTerm,\"*\")"), () -> s);
+        assertTrue(s.contains("Is(taskTerm,\"*\")"), new Supplier<String>() {
+            @Override
+            public String get() {
+                return s;
+            }
+        });
     }
 
     @Test
@@ -293,7 +336,12 @@ class PremiseRuleTest {
         DeriverProgram d = new PremiseRuleSet(NARS.shell(),
             "((Z),X),Y, --is(X,\"{\") |- (X,Y), (Belief:Intersection)").compile();
         String s = d.what.toString();
-        assertTrue(s.contains("(--,Is("), () -> s);
+        assertTrue(s.contains("(--,Is("), new Supplier<String>() {
+            @Override
+            public String get() {
+                return s;
+            }
+        });
     }
 
     @Test
@@ -301,7 +349,12 @@ class PremiseRuleTest {
         DeriverProgram d = new PremiseRuleSet(NARS.shell(),
             "((X),X),Y,is(X,\"*\") |- (X,Y), (Belief:Intersection)").compile();
         String s = d.what.toString();
-        assertTrue(s.contains("Is("), () -> s); //and not: (0,0)
+        assertTrue(s.contains("Is("), new Supplier<String>() {
+            @Override
+            public String get() {
+                return s;
+            }
+        }); //and not: (0,0)
     }
 
     @Test
@@ -309,7 +362,12 @@ class PremiseRuleTest {
         DeriverProgram d = new PremiseRuleSet(NARS.shell(),
             "((X),X),Y,subsMin(Y,2) |- (X,Y), (Belief:Intersection)").compile();
         String s = d.what.toString();
-        assertTrue(s.contains("SubsMin(beliefTerm,2)"), () -> s); //and not: (0,0)
+        assertTrue(s.contains("SubsMin(beliefTerm,2)"), new Supplier<String>() {
+            @Override
+            public String get() {
+                return s;
+            }
+        }); //and not: (0,0)
     }
 
     @Test
@@ -317,7 +375,12 @@ class PremiseRuleTest {
         DeriverProgram d = new PremiseRuleSet(NARS.shell(),
             "((X),Z),Y,subsMin(X,2) |- (X,Y), (Belief:Intersection)").compile();
         String s = d.what.toString();
-        assertTrue(s.contains("SubsMin("), () -> s); //and not: (0,0)
+        assertTrue(s.contains("SubsMin("), new Supplier<String>() {
+            @Override
+            public String get() {
+                return s;
+            }
+        }); //and not: (0,0)
     }
 
 

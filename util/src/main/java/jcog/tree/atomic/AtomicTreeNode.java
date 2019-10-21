@@ -6,6 +6,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 public abstract class AtomicTreeNode<T extends AtomicTreeNode<T>> {
@@ -81,11 +82,21 @@ public abstract class AtomicTreeNode<T extends AtomicTreeNode<T>> {
     public int size() { return children.size(); }
 
     public Stream<T> childrenStream() {
-        return children.stream().map(x->(T)x);
+        return children.stream().map(new Function<AtomicTreeNode<T>, T>() {
+            @Override
+            public T apply(AtomicTreeNode<T> x) {
+                return (T) x;
+            }
+        });
     }
 
     public Stream<T> childrenStreamRecurse() {
-        return Stream.concat(Stream.of(this).map(x->(T)x), childrenStream().flatMap(AtomicTreeNode::childrenStreamRecurse));
+        return Stream.concat(Stream.of(this).map(new Function<AtomicTreeNode<T>, T>() {
+            @Override
+            public T apply(AtomicTreeNode<T> x) {
+                return (T) x;
+            }
+        }), childrenStream().flatMap(AtomicTreeNode::childrenStreamRecurse));
     }
 
 //    public static class AtomicTreeBranch<T> extends AtomicTreeNode<T> {

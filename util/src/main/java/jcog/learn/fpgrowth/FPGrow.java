@@ -6,6 +6,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -30,8 +32,12 @@ public class FPGrow {
 
 
         for (List<String> transaction : data) {
-            transaction.sort((o1, o2) ->
-                    Integer.compare(itemCount.get(o2), itemCount.get(o1)));
+            transaction.sort(new Comparator<String>() {
+                @Override
+                public int compare(String o1, String o2) {
+                    return Integer.compare(itemCount.get(o2), itemCount.get(o1));
+                }
+            });
         }
 
         grow(data, null);
@@ -211,7 +217,12 @@ public class FPGrow {
         HashMap<String, Integer> itemCount = new HashMap<String, Integer>();
         for (List<String> transaction : transactions) {
             for (String item : transaction) {
-                itemCount.compute(item, (i, v) -> (v == null) ? 1 : v + 1);
+                itemCount.compute(item, new BiFunction<String, Integer, Integer>() {
+                    @Override
+                    public Integer apply(String i, Integer v) {
+                        return (v == null) ? 1 : v + 1;
+                    }
+                });
             }
         }
 
@@ -274,26 +285,32 @@ public class FPGrow {
      */
     private void print(int minLength) {
         float count = (float) freq.size();
-        stream().forEach(entry -> {
-            List<String> rule = entry.getKey();
-            if (rule.size() < minLength)
-                return;
-            int support = entry.getValue();
-            float supportPct = entry.getValue() / count;
-            System.out.println(n4(supportPct) + '\t' + Arrays.toString(rule.toArray()));
+        stream().forEach(new Consumer<Entry<List<String>, Integer>>() {
+            @Override
+            public void accept(Entry<List<String>, Integer> entry) {
+                List<String> rule = entry.getKey();
+                if (rule.size() < minLength)
+                    return;
+                int support = entry.getValue();
+                float supportPct = entry.getValue() / count;
+                System.out.println(n4(supportPct) + '\t' + Arrays.toString(rule.toArray()));
+            }
         });
     }
 
     private Stream<Entry<List<String>, Integer>> stream() {
-        return freq.entrySet().stream().sorted((e1, e2) -> {
+        return freq.entrySet().stream().sorted(new Comparator<Entry<List<String>, Integer>>() {
+            @Override
+            public int compare(Entry<List<String>, Integer> e1, Entry<List<String>, Integer> e2) {
 
-            int i = Integer.compare(e2.getValue(), e1.getValue());
-            if (i == 0) {
-                int c1 = e1.getKey().size();
-                int c2 = e2.getKey().size();
-                return Integer.compare(c1, c2);
+                int i = Integer.compare(e2.getValue(), e1.getValue());
+                if (i == 0) {
+                    int c1 = e1.getKey().size();
+                    int c2 = e2.getKey().size();
+                    return Integer.compare(c1, c2);
+                }
+                return i;
             }
-            return i;
         });
     }
 

@@ -6,6 +6,8 @@ import jcog.pri.NLink;
 
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 /**
@@ -76,15 +78,18 @@ public class MarkovChain<T> {
 
         List<T>[] tuple = new List[]{new FasterList<T>()};
         
-        phrase.forEach(t -> {
-            List<T> tu = tuple[0];
+        phrase.forEach(new Consumer<T>() {
+            @Override
+            public void accept(T t) {
+                List<T> tu = tuple[0];
 
-            int sz = tu.size();
-            if (sz < arity) {
-                tu.add(t);
-            } else {
-                current[0] = current[0].learn(getOrAdd(tu), strength);
-                (tuple[0] = new FasterList<>(1)).add(t);
+                int sz = tu.size();
+                if (sz < arity) {
+                    tu.add(t);
+                } else {
+                    current[0] = current[0].learn(MarkovChain.this.getOrAdd(tu), strength);
+                    (tuple[0] = new FasterList<>(1)).add(t);
+                }
             }
         });
 
@@ -272,7 +277,12 @@ public class MarkovChain<T> {
          * @return the node that was learned
          */
         public Chain<T> learn(Chain<T> n, float strength) {
-            NLink<Chain<T>> e = edges.computeIfAbsent(n, nn -> new NLink<>(nn, (float) 0));
+            NLink<Chain<T>> e = edges.computeIfAbsent(n, new Function<Chain<T>, NLink<Chain<T>>>() {
+                @Override
+                public NLink<Chain<T>> apply(Chain<T> nn) {
+                    return new NLink<>(nn, (float) 0);
+                }
+            });
             e.priAdd(strength);
             return e.get();
         }

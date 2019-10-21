@@ -21,6 +21,8 @@ package jcog.data.bit;
  */
 
 
+import java.util.function.LongPredicate;
+import java.util.function.LongUnaryOperator;
 import java.util.stream.LongStream;
 
 /** An abstract implementation of a {@link BitVector}.
@@ -293,7 +295,22 @@ public abstract class AbstractBitVector implements BitVector {
         long length = length();
 		if ( length != v.length() ) return false;
         long fullLength = length - length % (long) Long.SIZE;
-        return LongStream.iterate(0L, i -> i < fullLength, i -> i + (long) Long.SIZE).noneMatch(i -> getLong(i, i + (long) Long.SIZE) != v.getLong(i, i + (long) Long.SIZE)) && getLong(fullLength, length) == v.getLong(fullLength, length);
+        return LongStream.iterate(0L, new LongPredicate() {
+            @Override
+            public boolean test(long i) {
+                return i < fullLength;
+            }
+        }, new LongUnaryOperator() {
+            @Override
+            public long applyAsLong(long i) {
+                return i + (long) Long.SIZE;
+            }
+        }).noneMatch(new LongPredicate() {
+            @Override
+            public boolean test(long i) {
+                return AbstractBitVector.this.getLong(i, i + (long) Long.SIZE) != v.getLong(i, i + (long) Long.SIZE);
+            }
+        }) && getLong(fullLength, length) == v.getLong(fullLength, length);
 	}
 
 	@Override

@@ -1,6 +1,7 @@
 package spacegraph.input.key;
 
 import com.jogamp.newt.event.KeyEvent;
+import org.eclipse.collections.api.block.procedure.primitive.FloatProcedure;
 import spacegraph.video.JoglDisplay;
 
 /**
@@ -13,15 +14,45 @@ class KeyXY extends SpaceKeys {
         super(g);
 
 
-        on((int) KeyEvent.VK_NUMPAD4, (dt)-> moveX(speed), null);
-        on((int) KeyEvent.VK_NUMPAD6, (dt)-> moveX(-speed), null);
+        on((int) KeyEvent.VK_NUMPAD4, new FloatProcedure() {
+            @Override
+            public void value(float dt) {
+                KeyXY.this.moveX(speed);
+            }
+        }, null);
+        on((int) KeyEvent.VK_NUMPAD6, new FloatProcedure() {
+            @Override
+            public void value(float dt) {
+                KeyXY.this.moveX(-speed);
+            }
+        }, null);
 
-        on((int) KeyEvent.VK_NUMPAD8, (dt)-> moveY(speed), null);
-        on((int) KeyEvent.VK_NUMPAD2, (dt)-> moveY(-speed), null);
+        on((int) KeyEvent.VK_NUMPAD8, new FloatProcedure() {
+            @Override
+            public void value(float dt) {
+                KeyXY.this.moveY(speed);
+            }
+        }, null);
+        on((int) KeyEvent.VK_NUMPAD2, new FloatProcedure() {
+            @Override
+            public void value(float dt) {
+                KeyXY.this.moveY(-speed);
+            }
+        }, null);
 
 
-        on((int) KeyEvent.VK_NUMPAD5, (dt)-> moveZ(speed), null);
-        on((int) KeyEvent.VK_NUMPAD0, (dt)-> moveZ(-speed), null);
+        on((int) KeyEvent.VK_NUMPAD5, new FloatProcedure() {
+            @Override
+            public void value(float dt) {
+                KeyXY.this.moveZ(speed);
+            }
+        }, null);
+        on((int) KeyEvent.VK_NUMPAD0, new FloatProcedure() {
+            @Override
+            public void value(float dt) {
+                KeyXY.this.moveZ(-speed);
+            }
+        }, null);
 
     }
 

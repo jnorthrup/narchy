@@ -13,7 +13,10 @@ import jurls.core.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
+import java.util.function.DoubleUnaryOperator;
+import java.util.function.ToDoubleFunction;
 
 /**
  *
@@ -100,15 +103,23 @@ public class RLAgent extends LearnerAndActor {
             memoryIndex = 0;
         }
 
-        double nextFactor1 = Arrays.stream(memory).mapToDouble(m -> {
-            double sum = 0.0;
-            for (int j = 0; j < m.length; j++) {
-                double d = normalizedState[j] - m[j];
-                double v = d * d;
-                sum += v;
+        double nextFactor1 = Arrays.stream(memory).mapToDouble(new ToDoubleFunction<double[]>() {
+            @Override
+            public double applyAsDouble(double[] m) {
+                double sum = 0.0;
+                for (int j = 0; j < m.length; j++) {
+                    double d = normalizedState[j] - m[j];
+                    double v = d * d;
+                    sum += v;
+                }
+                return sum;
             }
-            return sum;
-        }).map(sum2 -> 1.0 / (1.0 + sum2 * factor1ComponentDivisor)).sum();
+        }).map(new DoubleUnaryOperator() {
+            @Override
+            public double applyAsDouble(double sum2) {
+                return 1.0 / (1.0 + sum2 * factor1ComponentDivisor);
+            }
+        }).sum();
         nextFactor1 = nextFactor1 / (double) memory.length;
 
         if (reward > rewardMax) {
@@ -163,7 +174,12 @@ public class RLAgent extends LearnerAndActor {
 
     public int chooseAction(double[] state) {
         ActionValuePair[] actionProbabilityPairs = getActionProbabilities(state);
-        Arrays.sort(actionProbabilityPairs, (o1, o2) -> (int) Math.signum(o1.getV() - o2.getV()));
+        Arrays.sort(actionProbabilityPairs, new Comparator<ActionValuePair>() {
+            @Override
+            public int compare(ActionValuePair o1, ActionValuePair o2) {
+                return (int) Math.signum(o1.getV() - o2.getV());
+            }
+        });
 
 
         int i = actionProbabilityPairs.length-1;

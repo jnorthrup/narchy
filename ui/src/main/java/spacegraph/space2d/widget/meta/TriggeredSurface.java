@@ -16,7 +16,12 @@ public class TriggeredSurface<X extends Surface> extends UnitContainer<X> {
     private transient Off on = null;
 
     public TriggeredSurface(X surface, Function<Runnable,Off> trigger, Runnable update) {
-        this(surface, trigger, (x)->update.run());
+        this(surface, trigger, new Consumer<X>() {
+            @Override
+            public void accept(X x) {
+                update.run();
+            }
+        });
     }
 
     public TriggeredSurface(X surface, Function<Runnable,Off> trigger, Consumer<X> update) {

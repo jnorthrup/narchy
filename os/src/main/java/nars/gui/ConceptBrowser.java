@@ -8,6 +8,8 @@ import spacegraph.space2d.container.Bordering;
 import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.space2d.widget.textedit.TextEdit;
 
+import java.util.function.Consumer;
+
 import static nars.$.$;
 
 public class ConceptBrowser extends Bordering {
@@ -19,7 +21,12 @@ public class ConceptBrowser extends Bordering {
         super();
 
         this.nar = nar;
-        TextEdit edit = new TextEdit(16, 2).onChange((te) -> update(te.text()));
+        TextEdit edit = new TextEdit(16, 2).onChange(new Consumer<TextEdit>() {
+            @Override
+            public void accept(TextEdit te) {
+                ConceptBrowser.this.update(te.text());
+            }
+        });
 
         north(edit.focus());
 

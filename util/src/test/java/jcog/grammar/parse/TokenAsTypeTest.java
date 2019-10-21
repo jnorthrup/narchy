@@ -2,6 +2,7 @@ package jcog.grammar.parse;
 
 import jcog.grammar.parse.tokens.Token;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -40,10 +41,13 @@ class TokenAsTypeTest {
 
 	@Test
     void asUnknownType() {
-		assertThrows(RuntimeException.class, ()-> {
-			token = new Token("hello");
-			token.asType(List.class);
-		});
+		assertThrows(RuntimeException.class, new Executable() {
+            @Override
+            public void execute() throws Throwable {
+                token = new Token("hello");
+                token.asType(List.class);
+            }
+        });
 	}
 
 }

@@ -6,6 +6,7 @@ import jcog.Util;
 import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Deque;
+import java.util.function.IntToDoubleFunction;
 
 class MatrixTransform {
     private final boolean needsBackprop;
@@ -24,7 +25,12 @@ class MatrixTransform {
 
     Mat tanh(Mat mat) {
         Mat out = new Mat(mat.n, mat.d);
-        Arrays.setAll(out.w, i -> Math.tanh(mat.w[i]));
+        Arrays.setAll(out.w, new IntToDoubleFunction() {
+            @Override
+            public double applyAsDouble(int i) {
+                return Math.tanh(mat.w[i]);
+            }
+        });
         if (this.needsBackprop)
             this.q.addLast(new Backprop(Backprop.BackpropMethod.TANH, mat, out));
         return out;

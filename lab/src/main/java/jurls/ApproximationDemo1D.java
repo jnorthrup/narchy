@@ -68,17 +68,25 @@ public class ApproximationDemo1D extends javax.swing.JFrame {
         jMenuBar1.add(approximatorMenu);
         jMenuBar1.add(iterationsMenu);
 
-        approximatorMenu.addActionListener(e -> {
-            renderParameterizedFunction.setParameterizedFunction(
-                    approximatorMenu.getFunctionGenerator(
-                            approxParameters
-                    ).generate(1)
-            );
-            numIterations = 0;
+        approximatorMenu.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                renderParameterizedFunction.setParameterizedFunction(
+                        approximatorMenu.getFunctionGenerator(
+                                approxParameters
+                        ).generate(1)
+                );
+                numIterations = 0;
+            }
         });
         approximatorMenu.notifyListeners();
 
-        iterationsMenu.addActionListener(e -> numIterationsPerLoop = (int) iterationsMenu.getObject());
+        iterationsMenu.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                numIterationsPerLoop = (int) iterationsMenu.getObject();
+            }
+        });
         iterationsMenu.notifyListeners();
 
         double[] ys = new double[10];
@@ -213,7 +221,12 @@ public class ApproximationDemo1D extends javax.swing.JFrame {
     public static void main(String[] args) {
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new ApproximationDemo1D().setVisible(true));
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                new ApproximationDemo1D().setVisible(true);
+            }
+        });
     }
 
     

@@ -184,7 +184,12 @@ public class Dynamics2D {
 
         allowSleep = flag;
         if (!allowSleep) {
-            bodies(b -> b.setAwake(true));
+            bodies(new Consumer<Body2D>() {
+                @Override
+                public void accept(Body2D b) {
+                    b.setAwake(true);
+                }
+            });
         }
     }
 
@@ -270,9 +275,12 @@ public class Dynamics2D {
 
         if (bodies.add(b)) {
             if (fd.length > 0) {
-                invoke(() -> {
-                    for (FixtureDef f : fd)
-                        b.addFixture(f);
+                invoke(new Runnable() {
+                    @Override
+                    public void run() {
+                        for (FixtureDef f : fd)
+                            b.addFixture(f);
+                    }
                 });
             }
         }
@@ -292,54 +300,57 @@ public class Dynamics2D {
 
         if (bodies.remove(b)) {
 
-            invoke(() -> {
+            invoke(new Runnable() {
+                @Override
+                public void run() {
 
-                b.onRemoval();
+                    b.onRemoval();
 
-                b.setActive(false);
+                    b.setActive(false);
 
 
-                JointEdge je = b.joints;
-                while (je != null) {
-                    JointEdge je0 = je;
-                    je = je.next;
-                    if (destructionListener != null) {
-                        destructionListener.beforeDestruct(je0.joint);
+                    JointEdge je = b.joints;
+                    while (je != null) {
+                        JointEdge je0 = je;
+                        je = je.next;
+                        if (destructionListener != null) {
+                            destructionListener.beforeDestruct(je0.joint);
+                        }
+
+                        Dynamics2D.this.removeJoint(je0.joint);
+
+                        b.joints = je;
                     }
-
-                    removeJoint(je0.joint);
-
-                    b.joints = je;
-                }
-                b.joints = null;
+                    b.joints = null;
 
 
-                ContactEdge ce = b.contacts;
-                while (ce != null) {
-                    ContactEdge ce0 = ce;
-                    ce = ce.next;
-                    contactManager.destroy(ce0.contact);
-                }
-                b.contacts = null;
-
-                Fixture f = b.fixtures;
-                while (f != null) {
-                    Fixture f0 = f;
-                    f = f.next;
-
-                    if (destructionListener != null) {
-                        destructionListener.beforeDestruct(f0);
+                    ContactEdge ce = b.contacts;
+                    while (ce != null) {
+                        ContactEdge ce0 = ce;
+                        ce = ce.next;
+                        contactManager.destroy(ce0.contact);
                     }
+                    b.contacts = null;
 
-                    f0.destroyProxies(contactManager.broadPhase);
-                    f0.destroy();
+                    Fixture f = b.fixtures;
+                    while (f != null) {
+                        Fixture f0 = f;
+                        f = f.next;
 
-                    b.fixtures = f;
-                    b.fixtureCount -= 1;
+                        if (destructionListener != null) {
+                            destructionListener.beforeDestruct(f0);
+                        }
+
+                        f0.destroyProxies(contactManager.broadPhase);
+                        f0.destroy();
+
+                        b.fixtures = f;
+                        b.fixtureCount -= 1;
+                    }
+                    b.fixtures = null;
+                    b.fixtureCount = 0;
+
                 }
-                b.fixtures = null;
-                b.fixtureCount = 0;
-
             });
         }
     }
@@ -359,49 +370,52 @@ public class Dynamics2D {
     public Joint addJoint(Joint j) {
         if (joints.add(j)) {
 
-            invoke(() -> {
+            invoke(new Runnable() {
+                @Override
+                public void run() {
 
-                ++jointCount;
-
-
-                j.edgeA.joint = j;
-                Body2D B = j.getBodyB();
-                j.edgeA.other = B;
-                j.edgeA.prev = null;
-                Body2D A = j.getBodyA();
-                j.edgeA.next = A.joints;
-                if (A.joints != null) {
-                    A.joints.prev = j.edgeA;
-                }
-                A.joints = j.edgeA;
-
-                j.edgeB.joint = j;
-                j.edgeB.other = A;
-                j.edgeB.prev = null;
-                j.edgeB.next = B.joints;
-                if (B.joints != null) {
-                    B.joints.prev = j.edgeB;
-                }
-                B.joints = j.edgeB;
+                    ++jointCount;
 
 
-                if (!j.getCollideConnected()) {
-                    Body2D bodyA = j.getBodyA();
-                    Body2D bodyB = j.getBodyB();
-
-                    ContactEdge edge = bodyB.contacts();
-                    while (edge != null) {
-                        if (edge.other == bodyA) {
-
-
-                            edge.contact.flagForFiltering();
-                        }
-
-                        edge = edge.next;
+                    j.edgeA.joint = j;
+                    Body2D B = j.getBodyB();
+                    j.edgeA.other = B;
+                    j.edgeA.prev = null;
+                    Body2D A = j.getBodyA();
+                    j.edgeA.next = A.joints;
+                    if (A.joints != null) {
+                        A.joints.prev = j.edgeA;
                     }
+                    A.joints = j.edgeA;
+
+                    j.edgeB.joint = j;
+                    j.edgeB.other = A;
+                    j.edgeB.prev = null;
+                    j.edgeB.next = B.joints;
+                    if (B.joints != null) {
+                        B.joints.prev = j.edgeB;
+                    }
+                    B.joints = j.edgeB;
+
+
+                    if (!j.getCollideConnected()) {
+                        Body2D bodyA = j.getBodyA();
+                        Body2D bodyB = j.getBodyB();
+
+                        ContactEdge edge = bodyB.contacts();
+                        while (edge != null) {
+                            if (edge.other == bodyA) {
+
+
+                                edge.contact.flagForFiltering();
+                            }
+
+                            edge = edge.next;
+                        }
+                    }
+
+
                 }
-
-
             });
         }
 
@@ -417,66 +431,69 @@ public class Dynamics2D {
     public void removeJoint(Joint j) {
 
         if (joints.remove(j)) {
-            invoke(() -> {
+            invoke(new Runnable() {
+                @Override
+                public void run() {
 
 
-                boolean collideConnected = j.getCollideConnected();
+                    boolean collideConnected = j.getCollideConnected();
 
 
-                Body2D bodyA = j.getBodyA();
-                bodyA.setAwake(true);
+                    Body2D bodyA = j.getBodyA();
+                    bodyA.setAwake(true);
 
-                Body2D bodyB = j.getBodyB();
-                bodyB.setAwake(true);
-
-
-                if (j.edgeA.prev != null) {
-                    j.edgeA.prev.next = j.edgeA.next;
-                }
-
-                if (j.edgeA.next != null) {
-                    j.edgeA.next.prev = j.edgeA.prev;
-                }
-
-                if (j.edgeA == bodyA.joints) {
-                    bodyA.joints = j.edgeA.next;
-                }
-
-                j.edgeA.prev = null;
-                j.edgeA.next = null;
+                    Body2D bodyB = j.getBodyB();
+                    bodyB.setAwake(true);
 
 
-                if (j.edgeB.prev != null) {
-                    j.edgeB.prev.next = j.edgeB.next;
-                }
+                    if (j.edgeA.prev != null) {
+                        j.edgeA.prev.next = j.edgeA.next;
+                    }
 
-                if (j.edgeB.next != null) {
-                    j.edgeB.next.prev = j.edgeB.prev;
-                }
+                    if (j.edgeA.next != null) {
+                        j.edgeA.next.prev = j.edgeA.prev;
+                    }
 
-                if (j.edgeB == bodyB.joints) {
-                    bodyB.joints = j.edgeB.next;
-                }
+                    if (j.edgeA == bodyA.joints) {
+                        bodyA.joints = j.edgeA.next;
+                    }
 
-                j.edgeB.prev = null;
-                j.edgeB.next = null;
-
-                Joint.destroy(j);
-
-                assert (jointCount > 0);
-                --jointCount;
+                    j.edgeA.prev = null;
+                    j.edgeA.next = null;
 
 
-                if (!collideConnected) {
-                    ContactEdge edge = bodyB.contacts();
-                    while (edge != null) {
-                        if (edge.other == bodyA) {
+                    if (j.edgeB.prev != null) {
+                        j.edgeB.prev.next = j.edgeB.next;
+                    }
+
+                    if (j.edgeB.next != null) {
+                        j.edgeB.next.prev = j.edgeB.prev;
+                    }
+
+                    if (j.edgeB == bodyB.joints) {
+                        bodyB.joints = j.edgeB.next;
+                    }
+
+                    j.edgeB.prev = null;
+                    j.edgeB.next = null;
+
+                    Joint.destroy(j);
+
+                    assert (jointCount > 0);
+                    --jointCount;
 
 
-                            edge.contact.flagForFiltering();
+                    if (!collideConnected) {
+                        ContactEdge edge = bodyB.contacts();
+                        while (edge != null) {
+                            if (edge.other == bodyA) {
+
+
+                                edge.contact.flagForFiltering();
+                            }
+
+                            edge = edge.next;
                         }
-
-                        edge = edge.next;
                     }
                 }
             });
@@ -580,9 +597,12 @@ public class Dynamics2D {
      * @see setAutoClearForces
      */
     private void clearForces() {
-        bodies(b -> {
-            b.force.setZero();
-            b.torque = (float) 0;
+        bodies(new Consumer<Body2D>() {
+            @Override
+            public void accept(Body2D b) {
+                b.force.setZero();
+                b.torque = (float) 0;
+            }
         });
     }
 
@@ -865,15 +885,18 @@ public class Dynamics2D {
         profiler.solvePosition.startAccum();
 
         Collection<Body2D> preRemove = new FasterList(0);
-        bodies(b -> {
+        bodies(new Consumer<Body2D>() {
+            @Override
+            public void accept(Body2D b) {
 
-            b.flags &= ~Body2D.e_islandFlag;
+                b.flags &= ~Body2D.e_islandFlag;
 
-            if (!b.preUpdate()) {
-                preRemove.add(b);
-            } else {
+                if (!b.preUpdate()) {
+                    preRemove.add(b);
+                } else {
 
-                b.transformPrev.set(b);
+                    b.transformPrev.set(b);
+                }
             }
         });
 
@@ -894,115 +917,123 @@ public class Dynamics2D {
             c.m_flags &= ~Contact.ISLAND_FLAG;
         }
 
-        joints(j -> j.islandFlag = false);
+        joints(new Consumer<Joint>() {
+            @Override
+            public void accept(Joint j) {
+                j.islandFlag = false;
+            }
+        });
 
 
         if (bodyCount > 0) {
             int stackSize = bodyCount;
             Body2D[] stack = new Body2D[stackSize];
 
-            bodies(seed -> {
-                if ((seed.flags & Body2D.e_islandFlag) == Body2D.e_islandFlag)
-                    return;
+            bodies(new Consumer<Body2D>() {
+                @Override
+                public void accept(Body2D seed) {
+                    if ((seed.flags & Body2D.e_islandFlag) == Body2D.e_islandFlag)
+                        return;
 
-                if (!seed.isAwake() || !seed.isActive())
-                    return;
-
-
-                if (seed.getType() == BodyType.STATIC)
-                    return;
+                    if (!seed.isAwake() || !seed.isActive())
+                        return;
 
 
-                island.clear();
-                int stackCount = 0;
-                stack[stackCount++] = seed;
-                seed.flags |= Body2D.e_islandFlag;
+                    if (seed.getType() == BodyType.STATIC)
+                        return;
 
 
-                while (stackCount > 0) {
-
-                    Body2D b = stack[--stackCount];
-                    if (!b.isActive())
-                        continue;
-
-                    island.add(b);
+                    island.clear();
+                    int stackCount = 0;
+                    stack[stackCount++] = seed;
+                    seed.flags |= Body2D.e_islandFlag;
 
 
-                    b.setAwake(true);
+                    while (stackCount > 0) {
 
-
-                    if (b.getType() == BodyType.STATIC)
-                        continue;
-
-
-                    for (ContactEdge ce = b.contacts; ce != null; ce = ce.next) {
-                        Contact contact = ce.contact;
-
-
-                        if ((contact.m_flags & Contact.ISLAND_FLAG) == Contact.ISLAND_FLAG) {
+                        Body2D b = stack[--stackCount];
+                        if (!b.isActive())
                             continue;
+
+                        island.add(b);
+
+
+                        b.setAwake(true);
+
+
+                        if (b.getType() == BodyType.STATIC)
+                            continue;
+
+
+                        for (ContactEdge ce = b.contacts; ce != null; ce = ce.next) {
+                            Contact contact = ce.contact;
+
+
+                            if ((contact.m_flags & Contact.ISLAND_FLAG) == Contact.ISLAND_FLAG) {
+                                continue;
+                            }
+
+
+                            if (!contact.isEnabled() || !contact.isTouching()) {
+                                continue;
+                            }
+
+
+                            boolean sensorA = contact.aFixture.isSensor;
+                            boolean sensorB = contact.bFixture.isSensor;
+                            if (sensorA || sensorB) {
+                                continue;
+                            }
+
+                            island.add(contact);
+                            contact.m_flags |= Contact.ISLAND_FLAG;
+
+                            Body2D other = ce.other;
+
+
+                            if ((other.flags & Body2D.e_islandFlag) == Body2D.e_islandFlag) {
+                                continue;
+                            }
+
+                            assert (stackCount < stackSize);
+                            stack[stackCount++] = other;
+                            other.flags |= Body2D.e_islandFlag;
                         }
 
 
-                        if (!contact.isEnabled() || !contact.isTouching()) {
-                            continue;
+                        for (JointEdge je = b.joints; je != null; je = je.next) {
+                            if (je.joint.islandFlag) {
+                                continue;
+                            }
+
+                            Body2D other = je.other;
+
+
+                            if (!other.isActive()) {
+                                continue;
+                            }
+
+                            island.add(je.joint);
+                            je.joint.islandFlag = true;
+
+                            if ((other.flags & Body2D.e_islandFlag) == Body2D.e_islandFlag) {
+                                continue;
+                            }
+
+                            assert (stackCount < stackSize);
+                            stack[stackCount++] = other;
+                            other.flags |= Body2D.e_islandFlag;
                         }
-
-
-                        boolean sensorA = contact.aFixture.isSensor;
-                        boolean sensorB = contact.bFixture.isSensor;
-                        if (sensorA || sensorB) {
-                            continue;
-                        }
-
-                        island.add(contact);
-                        contact.m_flags |= Contact.ISLAND_FLAG;
-
-                        Body2D other = ce.other;
-
-
-                        if ((other.flags & Body2D.e_islandFlag) == Body2D.e_islandFlag) {
-                            continue;
-                        }
-
-                        assert (stackCount < stackSize);
-                        stack[stackCount++] = other;
-                        other.flags |= Body2D.e_islandFlag;
                     }
+                    island.solve(profiler, step, gravity, allowSleep);
 
 
-                    for (JointEdge je = b.joints; je != null; je = je.next) {
-                        if (je.joint.islandFlag) {
-                            continue;
+                    for (int i = 0; i < island.m_bodyCount; ++i) {
+
+                        Body2D b = island.bodies[i];
+                        if (b.getType() == BodyType.STATIC) {
+                            b.flags &= ~Body2D.e_islandFlag;
                         }
-
-                        Body2D other = je.other;
-
-
-                        if (!other.isActive()) {
-                            continue;
-                        }
-
-                        island.add(je.joint);
-                        je.joint.islandFlag = true;
-
-                        if ((other.flags & Body2D.e_islandFlag) == Body2D.e_islandFlag) {
-                            continue;
-                        }
-
-                        assert (stackCount < stackSize);
-                        stack[stackCount++] = other;
-                        other.flags |= Body2D.e_islandFlag;
-                    }
-                }
-                island.solve(profiler, step, gravity, allowSleep);
-
-
-                for (int i = 0; i < island.m_bodyCount; ++i) {
-
-                    Body2D b = island.bodies[i];
-                    if (b.getType() == BodyType.STATIC) {
-                        b.flags &= ~Body2D.e_islandFlag;
                     }
                 }
             });
@@ -1015,13 +1046,16 @@ public class Dynamics2D {
         broadphaseTimer.reset();
 
         if (bodyCount > 0) {
-            bodies(b -> {
+            bodies(new Consumer<Body2D>() {
+                @Override
+                public void accept(Body2D b) {
 
-                if ((b.flags & Body2D.e_islandFlag) == 0 || b.getType() == BodyType.STATIC) return;
+                    if ((b.flags & Body2D.e_islandFlag) == 0 || b.getType() == BodyType.STATIC) return;
 
 
-                b.synchronizeFixtures();
-                b.postUpdate();
+                    b.synchronizeFixtures();
+                    b.postUpdate();
+                }
             });
         }
 
@@ -1037,9 +1071,12 @@ public class Dynamics2D {
         island.init(2 * Settings.maxTOIContacts, Settings.maxTOIContacts, 0,
                 contactManager.contactListener);
         if (stepComplete) {
-            bodies(b -> {
-                b.flags &= ~Body2D.e_islandFlag;
-                b.sweep.alpha0 = 0.0f;
+            bodies(new Consumer<Body2D>() {
+                @Override
+                public void accept(Body2D b) {
+                    b.flags &= ~Body2D.e_islandFlag;
+                    b.sweep.alpha0 = 0.0f;
+                }
             });
 
             for (Contact c = contactManager.m_contactList; c != null; c = c.m_next) {
@@ -1411,7 +1448,12 @@ public class Dynamics2D {
      * @warning This function is locked during callbacks.
      */
     public void joinParticleGroups(ParticleGroup groupA, ParticleGroup groupB) {
-        invoke(() -> particles.joinParticleGroups(groupA, groupB));
+        invoke(new Runnable() {
+            @Override
+            public void run() {
+                particles.joinParticleGroups(groupA, groupB);
+            }
+        });
     }
 
     /**
@@ -1422,7 +1464,12 @@ public class Dynamics2D {
      * @warning This function is locked during callbacks.
      */
     private void destroyParticlesInGroup(ParticleGroup group, boolean callDestructionListener) {
-        invoke(() -> particles.destroyParticlesInGroup(group, callDestructionListener));
+        invoke(new Runnable() {
+            @Override
+            public void run() {
+                particles.destroyParticlesInGroup(group, callDestructionListener);
+            }
+        });
     }
 
     /**
@@ -1433,7 +1480,12 @@ public class Dynamics2D {
      * @warning This function is locked during callbacks.
      */
     public void destroyParticlesInGroup(ParticleGroup group) {
-        invoke(() -> destroyParticlesInGroup(group, false));
+        invoke(new Runnable() {
+            @Override
+            public void run() {
+                Dynamics2D.this.destroyParticlesInGroup(group, false);
+            }
+        });
     }
 
     /**

@@ -23,6 +23,7 @@ import org.eclipse.collections.api.block.function.primitive.LongToFloatFunction;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.function.Function;
 
 import static jcog.Util.map;
 import static nars.Op.BELIEF;
@@ -82,10 +83,20 @@ public class BeliefPredict extends NARPart {
         this.target = target;
 
         predictor = new LivePredictor(m, new LivePredictor.DenseShiftFramer(
-            map(c -> freqSupplier(c, nar), LongToFloatFunction[]::new, pastSampling),
+            map(new Function<Termed, LongToFloatFunction>() {
+                @Override
+                public LongToFloatFunction apply(Termed c) {
+                    return BeliefPredict.this.freqSupplier(c, nar);
+                }
+            }, LongToFloatFunction[]::new, pastSampling),
             history,
             sampleDur,
-            map(c -> freqSupplier(c, nar), LongToFloatFunction[]::new, presentSampling)
+            map(new Function<Termed, LongToFloatFunction>() {
+                @Override
+                public LongToFloatFunction apply(Termed c) {
+                    return BeliefPredict.this.freqSupplier(c, nar);
+                }
+            }, LongToFloatFunction[]::new, presentSampling)
         ));
 
         this.predict = nar.newChannel(this);
@@ -174,17 +185,20 @@ public class BeliefPredict extends NARPart {
     }
 
     LongToFloatFunction freqSupplier(Termed c, NAR nar) {
-        return (when) -> {
-            long start = (when);
-            long end = (when + (long) sampleDur);
-            //System.out.println("<- " + start + " " + end);
-            @Nullable Truth t = nar.truth(c, BELIEF, start, end); //TODO filter predictions (PredictionTask's) from being used in this calculation
-            if (t == null)
-                return
-                        0.5f;
-                        
-            else
-                return t.freq();
+        return new LongToFloatFunction() {
+            @Override
+            public float valueOf(long when) {
+                long start = (when);
+                long end = (when + (long) sampleDur);
+                //System.out.println("<- " + start + " " + end);
+                @Nullable Truth t = nar.truth(c, BELIEF, start, end); //TODO filter predictions (PredictionTask's) from being used in this calculation
+                if (t == null)
+                    return
+                            0.5f;
+
+                else
+                    return t.freq();
+            }
         };
     }
 

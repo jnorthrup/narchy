@@ -7,6 +7,7 @@ import nars.term.Term;
 import nars.term.atom.IdempotentBool;
 import nars.term.compound.Sequence;
 import nars.term.util.conj.Conj;
+import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.jetbrains.annotations.Nullable;
 
@@ -70,13 +71,16 @@ public abstract class EventIntroduction extends Introduction {
                     if ((x.subStructure() & CONJ.bit) != 0) {
                         //search for any embedded parallel conj
                         Map<Term, Term> replacement = new UnifiedMap(1);
-                        if (!x.eventsAND((when, what) -> {
-                            if (what instanceof Compound && what.op() == CONJ && !Conj.isSeq(what) && what.dt()!=XTERNAL && !replacement.containsKey(what)) {
-                                Term what2 = applyUnnormalized(what, volMax - (x.volume() - what.volume()) - 1, w);
-                                if (what2 != null)
-                                    replacement.put(what, what2);
+                        if (!x.eventsAND(new LongObjectPredicate<Term>() {
+                            @Override
+                            public boolean accept(long when, Term what) {
+                                if (what instanceof Compound && what.op() == CONJ && !Conj.isSeq(what) && what.dt() != XTERNAL && !replacement.containsKey(what)) {
+                                    Term what2 = EventIntroduction.this.applyUnnormalized(what, volMax - (x.volume() - what.volume()) - 1, w);
+                                    if (what2 != null)
+                                        replacement.put(what, what2);
+                                }
+                                return true;
                             }
-                            return true;
                         }, 0L, false, true /* xternal disabled */))
                             return x; //fail
                         if (!replacement.isEmpty()) {

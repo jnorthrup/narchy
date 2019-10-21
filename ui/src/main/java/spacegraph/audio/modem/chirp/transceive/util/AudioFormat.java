@@ -1,6 +1,7 @@
 package spacegraph.audio.modem.chirp.transceive.util;
 
 import java.util.*;
+import java.util.function.Function;
 
 public class AudioFormat {
     private final AudioFormat.Encoding encoding;
@@ -72,7 +73,12 @@ public class AudioFormat {
     }
 
     public Object getProperty(String var1) {
-        return Optional.ofNullable(this.properties).map(stringObjectHashMap -> stringObjectHashMap.get(var1)).orElse(null);
+        return Optional.ofNullable(this.properties).map(new Function<HashMap<String, Object>, Object>() {
+            @Override
+            public Object apply(HashMap<String, Object> stringObjectHashMap) {
+                return stringObjectHashMap.get(var1);
+            }
+        }).orElse(null);
     }
 
     public boolean matches(AudioFormat var1) {

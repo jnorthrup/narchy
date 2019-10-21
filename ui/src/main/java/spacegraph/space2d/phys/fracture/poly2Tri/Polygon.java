@@ -1,6 +1,7 @@
 package spacegraph.space2d.phys.fracture.poly2Tri;
 
 import jcog.math.v2;
+import org.eclipse.collections.api.block.function.Function0;
 import org.eclipse.collections.api.iterator.IntIterator;
 import org.eclipse.collections.api.iterator.MutableIntIterator;
 import org.eclipse.collections.impl.map.mutable.primitive.IntObjectHashMap;
@@ -305,7 +306,12 @@ class Polygon {
     }
 
     private IntHashSet getSetFromStartAdjEdgeMap(int index) {
-        return _startAdjEdgeMap.getIfAbsentPut(index, ()->new IntHashSet(0));
+        return _startAdjEdgeMap.getIfAbsentPut(index, new Function0<IntHashSet>() {
+            @Override
+            public IntHashSet value() {
+                return new IntHashSet(0);
+            }
+        });
     }
 
     /**

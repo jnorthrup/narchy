@@ -15,8 +15,18 @@ import java.util.function.BiFunction;
 
 public abstract class ConstraintAsPremisePredicate<C extends UnifyConstraint<Derivation.PremiseUnify>> extends ConstraintAsPredicate<PreDerivation,C> {
 
-    private static final BiFunction<Term, Term, Term> TASK = (t, b) -> t;
-    private static final BiFunction<Term, Term, Term> BELIEF = (t, b) -> b;
+    private static final BiFunction<Term, Term, Term> TASK = new BiFunction<Term, Term, Term>() {
+        @Override
+        public Term apply(Term t, Term b) {
+            return t;
+        }
+    };
+    private static final BiFunction<Term, Term, Term> BELIEF = new BiFunction<Term, Term, Term>() {
+        @Override
+        public Term apply(Term t, Term b) {
+            return b;
+        }
+    };
 
     private ConstraintAsPremisePredicate(Term p, C m, float v, BiFunction<Term, Term, Term> extractX, BiFunction<Term, Term, Term> extractY) {
         super(p, v, m, extractX, extractY);
@@ -34,11 +44,21 @@ public abstract class ConstraintAsPremisePredicate<C extends UnifyConstraint<Der
         Term extractXterm;
         if (xInTask != null) { // && (xInBelief == null || xInTask.length < xInBelief.length)) {
             assert(xInBelief==null);
-            extractX = xInTask.length == 0 ? TASK : (t, b) -> t.subPath(xInTask);
+            extractX = xInTask.length == 0 ? TASK : new BiFunction<Term, Term, Term>() {
+                @Override
+                public Term apply(Term t, Term b) {
+                    return t.subPath(xInTask);
+                }
+            };
             extractXterm = $.func(DerivationFunctors.Task, $.p(xInTask));
             costPath += xInTask.length;
         } else {
-            extractX = xInBelief.length == 0 ? BELIEF : (t, b) -> b.subPath(xInBelief);
+            extractX = xInBelief.length == 0 ? BELIEF : new BiFunction<Term, Term, Term>() {
+                @Override
+                public Term apply(Term t, Term b) {
+                    return b.subPath(xInBelief);
+                }
+            };
             extractXterm = $.func(DerivationFunctors.Belief, $.p(xInBelief));
             costPath += xInBelief.length;
         }
@@ -49,11 +69,21 @@ public abstract class ConstraintAsPremisePredicate<C extends UnifyConstraint<Der
             BiFunction<Term, Term, Term> extractY;
             Term extractYterm;
             if (yInTask != null && (yInBelief == null || yInTask.length < yInBelief.length)) {
-                extractY = yInTask.length == 0 ? TASK : (t, b) -> t.subPath(yInTask);
+                extractY = yInTask.length == 0 ? TASK : new BiFunction<Term, Term, Term>() {
+                    @Override
+                    public Term apply(Term t, Term b) {
+                        return t.subPath(yInTask);
+                    }
+                };
                 extractYterm = $.func(DerivationFunctors.Task, $.p(yInTask));
                 costPath += yInTask.length;
             } else {
-                extractY = yInBelief.length == 0 ? BELIEF : (t, b) -> b.subPath(yInBelief);
+                extractY = yInBelief.length == 0 ? BELIEF : new BiFunction<Term, Term, Term>() {
+                    @Override
+                    public Term apply(Term t, Term b) {
+                        return b.subPath(yInBelief);
+                    }
+                };
                 extractYterm = $.func(DerivationFunctors.Belief, $.p(yInBelief));
                 costPath += yInBelief.length;
             }

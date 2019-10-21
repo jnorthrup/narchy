@@ -10,6 +10,9 @@ import nars.link.TaskLinks;
 import nars.term.Term;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.function.BiFunction;
+import java.util.function.Predicate;
+
 /**
  * caches ranked reverse atom termlinks in concept meta table
  * stateless
@@ -52,18 +55,26 @@ public class AdjacentIndexer implements AdjacentConcepts {
 //			return null;
 
 		if (cache(to)) {
-            TaskLinkSnapshot match = Snapshot.get(to, d.nar, links.links.id(false, true), d.time, Math.round(d.dur * (float) ATOM_TANGENT_REFRESH_DURS), (Concept T, TaskLinkSnapshot s) -> {
-                TaskLinkSnapshot s1 = s;
-				if (s1 == null)
-					s1 = new TaskLinkSnapshot();
-				s1.commit(T.term(), links.links, ((Table<?, TaskLink>) links.links).capacity(), true);
-				return s1;
-			});
+            TaskLinkSnapshot match = Snapshot.get(to, d.nar, links.links.id(false, true), d.time, Math.round(d.dur * (float) ATOM_TANGENT_REFRESH_DURS), new BiFunction<Concept, TaskLinkSnapshot, TaskLinkSnapshot>() {
+                @Override
+                public TaskLinkSnapshot apply(Concept T, TaskLinkSnapshot s) {
+                    TaskLinkSnapshot s1 = s;
+                    if (s1 == null)
+                        s1 = new TaskLinkSnapshot();
+                    s1.commit(T.term(), links.links, ((Table<?, TaskLink>) links.links).capacity(), true);
+                    return s1;
+                }
+            });
 
 			if (match == null || match.isEmpty())
 				return null;
 
-			return match.sample(x -> !from.equals(x), punc, d.random);
+			return match.sample(new Predicate<Term>() {
+                @Override
+                public boolean test(Term x) {
+                    return !from.equals(x);
+                }
+            }, punc, d.random);
 		} else {
 
 			return DirectTangent.the.adjacent(from, to, punc, links, d);

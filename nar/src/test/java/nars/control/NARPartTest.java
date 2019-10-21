@@ -22,8 +22,11 @@ class NARPartTest {
 
         Set<Part<NAR>> before = n.partStream().collect(toSet());
 
-        DurLoop d = n.onDur(() -> {
+        DurLoop d = n.onDur(new Runnable() {
+            @Override
+            public void run() {
 
+            }
         });
 
         Util.sleepMS(100);

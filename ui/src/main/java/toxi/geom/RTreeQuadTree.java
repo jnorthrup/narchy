@@ -6,6 +6,7 @@ import jcog.tree.rtree.rect.RectFloat;
 import toxi.physics2d.VerletParticle2D;
 
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 /** removal has bug */
 public class RTreeQuadTree<X extends VerletParticle2D> extends RTree<X> implements SpatialIndex<X> {
@@ -39,9 +40,12 @@ public class RTreeQuadTree<X extends VerletParticle2D> extends RTree<X> implemen
     @Override
     public void itemsWithinRadius(Vec2D p, float radius, Consumer<X> results) {
         synchronized (this) {
-            intersectsWhile(b(p, radius), (t) -> {
-                results.accept(t);
-                return true;
+            intersectsWhile(b(p, radius), new Predicate<X>() {
+                @Override
+                public boolean test(X t) {
+                    results.accept(t);
+                    return true;
+                }
             });
         }
     }

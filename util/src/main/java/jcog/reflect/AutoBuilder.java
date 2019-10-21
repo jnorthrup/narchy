@@ -85,7 +85,12 @@ public class AutoBuilder<X, Y> {
         if (!builders.isEmpty()) {
             target.add(pair(obj,
                     //builders.stream().map(b -> b.apply(obj, relation)).filter(Objects::nonNull)::iterator
-                    builders.stream().map(b -> b.apply(obj, relation)).filter(Objects::nonNull).limit((long) maxClassBuilders)::iterator
+                    builders.stream().map(new Function<BiFunction<Object, Object, Y>, Y>() {
+                        @Override
+                        public Y apply(BiFunction<Object, Object, Y> b) {
+                            return b.apply(obj, relation);
+                        }
+                    }).filter(Objects::nonNull).limit((long) maxClassBuilders)::iterator
             ));
         }
 
@@ -369,7 +374,13 @@ public class AutoBuilder<X, Y> {
 
         @Override
         public Iterator<Pair<X, Y>> iterator() {
-            return Iterators.transform(m.entrySet().iterator(), (x) -> pair(x.getKey(), x.getValue()));
+            return Iterators.transform(m.entrySet().iterator(), new com.google.common.base.Function<Map.Entry<X, Y>, Pair<X, Y>>() {
+                @org.checkerframework.checker.nullness.qual.Nullable
+                @Override
+                public Pair<X, Y> apply(Map.@org.checkerframework.checker.nullness.qual.Nullable Entry<X, Y> x) {
+                    return pair(x.getKey(), x.getValue());
+                }
+            });
         }
     }
 

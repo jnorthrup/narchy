@@ -36,6 +36,8 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
+import java.util.function.ToDoubleFunction;
 
 import static nars.Op.BELIEF;
 import static nars.time.Tense.ETERNAL;
@@ -157,13 +159,23 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
 	 */
 	@Paper
 	public final double happiness(long start, long end, float dur) {
-		return rewards.meanBy(rr -> rr.happiness(start, end, dur));
+		return rewards.meanBy(new ToDoubleFunction<Reward>() {
+            @Override
+            public double applyAsDouble(Reward rr) {
+                return rr.happiness(start, end, dur);
+            }
+        });
 	}
 
 	@Override
 	public final <A extends ActionSignal> A addAction(A c) {
         Term ct = c.term();
-		if (actions.OR(e -> e.term().equals(ct)))
+		if (actions.OR(new Predicate<ActionSignal>() {
+            @Override
+            public boolean test(ActionSignal e) {
+                return e.term().equals(ct);
+            }
+        }))
 			throw new RuntimeException("action exists with the ID: " + ct);
 		actions.add(c);
 		return c;
@@ -172,7 +184,12 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
 	@Override
 	public final <S extends GameLoop> S addSensor(S s) {
         Term st = s.term();
-		if (sensors.OR(e -> e.term().equals(st)))
+		if (sensors.OR(new Predicate<GameLoop>() {
+            @Override
+            public boolean test(GameLoop e) {
+                return e.term().equals(st);
+            }
+        }))
 			throw new RuntimeException("sensor exists with the ID: " + st);
 
 		sensors.add(s);
@@ -270,7 +287,17 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
 	}
 
 	protected void stopping(NAR nar) {
-		sensors.stream().filter(x -> x instanceof NARPart).forEach(s -> nar.remove((NARPart) s));
+		sensors.stream().filter(new Predicate<GameLoop>() {
+            @Override
+            public boolean test(GameLoop x) {
+                return x instanceof NARPart;
+            }
+        }).forEach(new Consumer<GameLoop>() {
+            @Override
+            public void accept(GameLoop s) {
+                nar.remove((NARPart) s);
+            }
+        });
 
 		nar.control.removeAll(actionPri, sensorPri, rewardPri);
 		actionPri = null;
@@ -333,7 +360,12 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
 	 * default reward module
 	 */
 	public final synchronized Reward reward(Reward r) {
-		if (rewards.OR(e -> e.term().equals(r.term())))
+		if (rewards.OR(new Predicate<Reward>() {
+            @Override
+            public boolean test(Reward e) {
+                return e.term().equals(r.term());
+            }
+        }))
 			throw new RuntimeException("reward exists with the ID: " + r.term());
 
 		rewards.add(r);
@@ -457,7 +489,12 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
 	}
 
 	public Off onFrame(Runnable each) {
-		return eventFrame.on((x) -> each.run());
+		return eventFrame.on(new Consumer<NAR>() {
+            @Override
+            public void accept(NAR x) {
+                each.run();
+            }
+        });
 	}
 
 	public FastCoWList<ActionSignal> actions() {

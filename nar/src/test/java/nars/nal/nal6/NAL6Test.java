@@ -9,6 +9,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import java.util.function.LongPredicate;
+
 import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
 
@@ -675,7 +677,12 @@ public class NAL6Test extends NALTest {
             .believe("(x($1)==>y($1))")
                 .goal("x(a)", Tense.Eternal, 1.00f, 0.90f)
                 .mustGoal(cycles, "y(a)", 1.00f, 0.45f)
-                .mustNotOutput(cycles, "y(a)", GOAL, 0.00f, 0.5f, 0, 0.9f, t->true)
+                .mustNotOutput(cycles, "y(a)", GOAL, 0.00f, 0.5f, 0, 0.9f, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return true;
+                    }
+                })
         ;
     }
 
@@ -697,7 +704,12 @@ public class NAL6Test extends NALTest {
             .believe("(--x($1)==>y($1))")
             .goal("x(a)", Tense.Eternal, 0.00f, 0.90f)
             .mustGoal(cycles, "y(a)", 1.00f, 0.45f)
-            .mustNotOutput(cycles, "y(a)", GOAL, 0f, 0.5f, 0, 0.9f, t->true)
+            .mustNotOutput(cycles, "y(a)", GOAL, 0f, 0.5f, 0, 0.9f, new LongPredicate() {
+                @Override
+                public boolean test(long t) {
+                    return true;
+                }
+            })
         ;
     }
     @Test
@@ -707,7 +719,12 @@ public class NAL6Test extends NALTest {
             .believe("(--x($1) ==> --y($1))")
             .goal("x(a)", Tense.Eternal, 0.00f, 0.90f)
             .mustGoal(cycles, "y(a)", 0.00f, 0.45f)
-            .mustNotOutput(cycles, "y(a)", GOAL, 0.5f, 1f, 0, 0.9f, t->true)
+            .mustNotOutput(cycles, "y(a)", GOAL, 0.5f, 1f, 0, 0.9f, new LongPredicate() {
+                @Override
+                public boolean test(long t) {
+                    return true;
+                }
+            })
         ;
     }
 
@@ -718,7 +735,12 @@ public class NAL6Test extends NALTest {
                 .believe("--(x($1)==>y($1))")
                 .goal("x(a)", Tense.Eternal, 1.00f, 0.90f)
                 .mustGoal(cycles, "y(a)", 0.00f, 0.45f)
-                .mustNotOutput(cycles, "y(a)", GOAL, 0.5f, 1f, 0, 0.9f, t->true)
+                .mustNotOutput(cycles, "y(a)", GOAL, 0.5f, 1f, 0, 0.9f, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return true;
+                    }
+                })
         ;
     }
 

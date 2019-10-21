@@ -2,6 +2,7 @@ package nars.gui;
 
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.AtomicDouble;
+import com.jogamp.newt.event.KeyEvent;
 import jcog.TODO;
 import jcog.Util;
 import jcog.data.iterator.ArrayIterator;
@@ -18,6 +19,7 @@ import nars.attention.TaskLinkWhat;
 import nars.attention.What;
 import nars.concept.Concept;
 import nars.game.Game;
+import nars.game.Reward;
 import nars.game.sensor.Signal;
 import nars.game.util.RLBooster;
 import nars.gui.concept.ConceptColorIcon;
@@ -36,6 +38,7 @@ import net.beadsproject.beads.data.Pitch;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.eclipse.collections.api.block.function.primitive.IntToIntFunction;
 import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
@@ -44,10 +47,12 @@ import spacegraph.space2d.container.ScrollXY;
 import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.container.graph.Graph2D;
 import spacegraph.space2d.container.graph.NodeVis;
+import spacegraph.space2d.container.grid.GridRenderer;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.container.grid.KeyValueGrid;
 import spacegraph.space2d.container.layout.TreeMap2D;
 import spacegraph.space2d.container.unit.Scale;
+import spacegraph.space2d.phys.common.Color3f;
 import spacegraph.space2d.widget.button.ButtonSet;
 import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.button.PushButton;
@@ -74,6 +79,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import static com.jogamp.newt.event.KeyEvent.VK_ENTER;
@@ -121,28 +127,88 @@ public class NARui {
 	}
 
 	public static HashMap<String, Supplier<Surface>> parts(Thing p) {
-		return (HashMap<String, Supplier<Surface>>) p.partStream().collect(Collectors.toMap(Object::toString, s -> () -> new ObjectSurface(s), (a, b) -> b, (Supplier<HashMap<String, Supplier<Surface>>>) HashMap::new));
+		return (HashMap<String, Supplier<Surface>>) p.partStream().collect(Collectors.toMap(Object::toString, new Function<Object, Supplier<Surface>>() {
+            @Override
+            public Supplier<Surface> apply(Object s) {
+                return new Supplier<Surface>() {
+                    @Override
+                    public Surface get() {
+                        return new ObjectSurface(s);
+                    }
+                };
+            }
+        }, new BinaryOperator<Supplier<Surface>>() {
+            @Override
+            public Supplier<Surface> apply(Supplier<Surface> a, Supplier<Surface> b) {
+                return b;
+            }
+        }, (Supplier<HashMap<String, Supplier<Surface>>>) HashMap::new));
 	}
 
 	public static HashMap<String, Supplier<Surface>> menu(NAR n) {
 		Map<String, Supplier<Surface>> m = Map.of(
 			//"shl", () -> new ConsoleTerminal(new TextUI(n).session(10f)),
-			"nar", () -> new ObjectSurface(n, 2),
-			"on", () -> new ObjectSurface(n.whens().entrySet(), 2),
-			"exe", () -> ExeCharts.exePanel(n),
-			"val", () -> ExeCharts.valuePanel(n),
-			"mem", () -> MemEdit(n),
+			"nar", new Supplier<Surface>() {
+                    @Override
+                    public Surface get() {
+                        return new ObjectSurface(n, 2);
+                    }
+                },
+			"on", new Supplier<Surface>() {
+                    @Override
+                    public Surface get() {
+                        return new ObjectSurface(n.whens().entrySet(), 2);
+                    }
+                },
+			"exe", new Supplier<Surface>() {
+                    @Override
+                    public Surface get() {
+                        return ExeCharts.exePanel(n);
+                    }
+                },
+			"val", new Supplier<Surface>() {
+                    @Override
+                    public Surface get() {
+                        return ExeCharts.valuePanel(n);
+                    }
+                },
+			"mem", new Supplier<Surface>() {
+                    @Override
+                    public Surface get() {
+                        return MemEdit(n);
+                    }
+                },
 //                "how", () -> ExeCharts.howChart(n),
 			//"can", () -> ExeCharts.causeProfiler(n),
 			//ExeCharts.focusPanel(n),
 			///causePanel(n),
-			"svc", () -> new PartsTable(n),
-			"cpt", () -> new ConceptBrowser(n)
+			"svc", new Supplier<Surface>() {
+                    @Override
+                    public Surface get() {
+                        return new PartsTable(n);
+                    }
+                },
+			"cpt", new Supplier<Surface>() {
+                    @Override
+                    public Surface get() {
+                        return new ConceptBrowser(n);
+                    }
+                }
 		);
 		HashMap<String, Supplier<Surface>> mm = new HashMap<>() {{
 			putAll(m);
-			put("snp", () -> memoryView(n));
-			put("tsk", () -> taskView(n));
+			put("snp", new Supplier<Surface>() {
+                @Override
+                public Surface get() {
+                    return memoryView(n);
+                }
+            });
+			put("tsk", new Supplier<Surface>() {
+                @Override
+                public Surface get() {
+                    return taskView(n);
+                }
+            });
 //            put("mem", () -> ScrollGrid.list(
 //                (int x, int y, Term v) -> new PushButton(m.toString()).click(() ->
 //                        window(
@@ -262,23 +328,34 @@ public class NARui {
 			path,
 			new Gridding(
 				mode,
-				new PushButton("save").clicked(() -> Exe.runLater(() -> {
-					try {
-						nar.output(new File(path.text()), false);
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
+				new PushButton("save").clicked(new Runnable() {
+                    @Override
+                    public void run() {
+                        Exe.runLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    nar.output(new File(path.text()), false);
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
 
-				}))
+                            }
+                        });
+                    }
+                })
 			));
 	}
 
 	public static Surface taskView(NAR n) {
 		List<Predicate<Task>> filter = new CopyOnWriteArrayList<>();
-		Consumer<Task> printer = t -> {
-			if (Util.and(t, (Iterable) filter))
-				System.out.println(t);
-		};
+		Consumer<Task> printer = new Consumer<Task>() {
+            @Override
+            public void accept(Task t) {
+                if (Util.and(t, (Iterable) filter))
+                    System.out.println(t);
+            }
+        };
 
 		return LabeledPane.the("Trace",
 			grid(
@@ -289,9 +366,24 @@ public class NARui {
 					new CheckBox("Quest").on(taskTrace(n, QUEST, printer))
 				),
 				grid(
-					new CheckBox("Not Eternal").on(taskFilter(filter, (x) -> !x.isEternal())),
-					new CheckBox("Not Signal").on(taskFilter(filter, (x) -> !(x instanceof Signal))),
-					new CheckBox("Not Input").on(taskFilter(filter, (x) -> x.stamp().length > 1))
+					new CheckBox("Not Eternal").on(taskFilter(filter, new Predicate<Task>() {
+                        @Override
+                        public boolean test(Task x) {
+                            return !x.isEternal();
+                        }
+                    })),
+					new CheckBox("Not Signal").on(taskFilter(filter, new Predicate<Task>() {
+                        @Override
+                        public boolean test(Task x) {
+                            return !(x instanceof Signal);
+                        }
+                    })),
+					new CheckBox("Not Input").on(taskFilter(filter, new Predicate<Task>() {
+                        @Override
+                        public boolean test(Task x) {
+                            return x.stamp().length > 1;
+                        }
+                    }))
 					//TODO priority and complexity sliders
 				)
 			)
@@ -390,15 +482,21 @@ public class NARui {
 	private static Surface memoryView(NAR n) {
 
 		return new ScrollXY<>(new KeyValueGrid(new MemorySnapshot(n).byAnon),
-			(x, y, v) -> {
-				if (x == 0) {
-					return new PushButton(v.toString()).clicked(() -> {
+                new GridRenderer<Object>() {
+                    @Override
+                    public Surface apply(int x, int y, Object v) {
+                        if (x == 0) {
+                            return new PushButton(v.toString()).clicked(new Runnable() {
+                                @Override
+                                public void run() {
 
-					});
-				} else {
-					return new VectorLabel(((Collection) v).size() + " concepts");
-				}
-			});
+                                }
+                            });
+                        } else {
+                            return new VectorLabel(((Collection) v).size() + " concepts");
+                        }
+                    }
+                });
 	}
 
 	public static void conceptWindow(String t, NAR n) {
@@ -411,51 +509,85 @@ public class NARui {
 
 	public static Surface game(Game a) {
 
-		Iterable<? extends Concept> rewards = () -> a.rewards.stream().flatMap(r -> StreamSupport.stream(r.spliterator(), false)).iterator();
+		Iterable<? extends Concept> rewards = new Iterable<Concept>() {
+            @NotNull
+            @Override
+            public Iterator<Concept> iterator() {
+                return a.rewards.stream().flatMap(new Function<Reward, Stream<? extends Concept>>() {
+                    @Override
+                    public Stream<? extends Concept> apply(Reward r) {
+                        return StreamSupport.stream(r.spliterator(), false);
+                    }
+                }).iterator();
+            }
+        };
 		Iterable<? extends Concept> actions = a.actions;
 
 		Menu aa = new TabMenu(Map.of(
-			a.toString(), () -> new ObjectSurface(a, 3),
+			a.toString(), new Supplier<Surface>() {
+                    @Override
+                    public Surface get() {
+                        return new ObjectSurface(a, 3);
+                    }
+                },
 
-			"stat", () -> new Gridding(
-				new TriggeredSurface<>(
-					new Plot2D(512, Plot2D.Line)
-						.add("Happy", a::happiness),
-					a::onFrame, Plot2D::commit),
-				new TriggeredSurface<>(
-					new Plot2D(512, Plot2D.Line)
-						.add("Dex+0", a::dexterity),
-					a::onFrame, Plot2D::commit),
-				new TriggeredSurface<>(
-					new Plot2D(512, Plot2D.Line)
-						.add("Coh", a::coherency),
-					a::onFrame, Plot2D::commit)
-			),
+			"stat", new Supplier<Surface>() {
+                    @Override
+                    public Surface get() {
+                        return new Gridding(
+                                new TriggeredSurface<>(
+                                        new Plot2D(512, Plot2D.Line)
+                                                .add("Happy", a::happiness),
+                                        a::onFrame, Plot2D::commit),
+                                new TriggeredSurface<>(
+                                        new Plot2D(512, Plot2D.Line)
+                                                .add("Dex+0", a::dexterity),
+                                        a::onFrame, Plot2D::commit),
+                                new TriggeredSurface<>(
+                                        new Plot2D(512, Plot2D.Line)
+                                                .add("Coh", a::coherency),
+                                        a::onFrame, Plot2D::commit)
+                        );
+                    }
+                },
 
 //                        .addAt("Dex+2", () -> a.dexterity(a.now() + 2 * a.nar().dur()))
 //                        .addAt("Dex+4", () -> a.dexterity(a.now() + 4 * a.nar().dur())), a),
-			"reward", () -> NARui.beliefCharts(a.nar(), rewards),
-			"actions", () -> NARui.beliefCharts(a.nar(), actions)
+			"reward", new Supplier<Surface>() {
+                    @Override
+                    public Surface get() {
+                        return NARui.beliefCharts(a.nar(), rewards);
+                    }
+                },
+			"actions", new Supplier<Surface>() {
+                    @Override
+                    public Surface get() {
+                        return NARui.beliefCharts(a.nar(), actions);
+                    }
+                }
 		));
 		return LabeledPane.the(a.id.toString(), aa);
 	}
 
 	public static Gridding beliefIcons(NAR nar, List<? extends Termed> c) {
 
-		BiConsumer<Concept, spacegraph.space2d.phys.common.Color3f> colorize = (concept, color) -> {
-			if (concept != null) {
+		BiConsumer<Concept, spacegraph.space2d.phys.common.Color3f> colorize = new BiConsumer<Concept, Color3f>() {
+            @Override
+            public void accept(Concept concept, Color3f color) {
+                if (concept != null) {
 
-				@Nullable Truth b = nar.beliefTruth(concept, nar.time());
-				if (b != null) {
-					float f = b.freq();
-					float conf = b.conf();
-					float a = 0.25f + conf * 0.75f;
-					color.set((1.0F - f) * a, f * a, (float) 0);
-					return;
-				}
-			}
-			color.set(0.5f, 0.5f, 0.5f);
-		};
+                    @Nullable Truth b = nar.beliefTruth(concept, nar.time());
+                    if (b != null) {
+                        float f = b.freq();
+                        float conf = b.conf();
+                        float a = 0.25f + conf * 0.75f;
+                        color.set((1.0F - f) * a, f * a, (float) 0);
+                        return;
+                    }
+                }
+                color.set(0.5f, 0.5f, 0.5f);
+            }
+        };
 		ArrayList<ConceptColorIcon> d = new ArrayList<>();
 		for (Termed x : c) {
 			ConceptColorIcon conceptColorIcon = new ConceptColorIcon(x.term(), nar, colorize);
@@ -466,20 +598,23 @@ public class NARui {
 
 	public static TextEdit newNarseseInput(NAR n, Consumer<Task> onTask, Consumer<Exception> onException) {
 		TextEdit input = new TextEdit(16, 1);
-		input.onKeyPress((k) -> {
-			if ((int) k.getKeyCode() == (int) VK_ENTER) {
-				String s = input.text();
-				input.text("");
-				try {
-					List<Task> t = n.input(s);
-					for (Task task : t) {
-						onTask.accept(task);
-					}
-				} catch (Narsese.NarseseException e) {
-					onException.accept(e);
-				}
-			}
-		});
+		input.onKeyPress(new Consumer<KeyEvent>() {
+            @Override
+            public void accept(KeyEvent k) {
+                if ((int) k.getKeyCode() == (int) VK_ENTER) {
+                    String s = input.text();
+                    input.text("");
+                    try {
+                        List<Task> t = n.input(s);
+                        for (Task task : t) {
+                            onTask.accept(task);
+                        }
+                    } catch (Narsese.NarseseException e) {
+                        onException.accept(e);
+                    }
+                }
+            }
+        });
 		return input;
 	}
 
@@ -542,11 +677,14 @@ public class NARui {
 		};
 
 		ScatterPlot2D<VLink<Task>> s = new ScatterPlot2D<>(model);
-		return DurSurface.get(s, n, () -> {
+		return DurSurface.get(s, n, new Runnable() {
+            @Override
+            public void run() {
 
-			s.set(c.data.bag); //Iterable Concat the Centroids as dynamic VLink's
+                s.set(c.data.bag); //Iterable Concat the Centroids as dynamic VLink's
 
-		}).every();
+            }
+        }).every();
 	}
 
 	public static Surface taskBufferView(PriBuffer b, NAR n) {
@@ -586,13 +724,28 @@ public class NARui {
 		//TODO watch for added and removed What's for live update
 
 		Map<String, Supplier<Surface>> global = new HashMap();
-		global.put("Attention", () -> AttentionUI.objectGraphs(n));
-		global.put("What", () -> AttentionUI.whatMixer(n));
+		global.put("Attention", new Supplier<Surface>() {
+            @Override
+            public Surface get() {
+                return AttentionUI.objectGraphs(n);
+            }
+        });
+		global.put("What", new Supplier<Surface>() {
+            @Override
+            public Surface get() {
+                return AttentionUI.whatMixer(n);
+            }
+        });
 
 
 		Map<String, Supplier<Surface>> attentions = new HashMap();
 		for (What v : n.what) {
-			attentions.put(v.id.toString(), () -> attentionUI(v));
+			attentions.put(v.id.toString(), new Supplier<Surface>() {
+                @Override
+                public Surface get() {
+                    return attentionUI(v);
+                }
+            });
 		}
 		TabMenu atMenu = new TabMenu(attentions);
 		return new Splitting(new TabMenu(global), 0.25f, atMenu).horizontal(true).resizeable();
@@ -603,23 +756,64 @@ public class NARui {
 		NAR n = w.nar;
 		TaskLinks attn = ((TaskLinkWhat) w).links;
 		m.center(new TabMenu(Map.of(
-			"Input", () -> taskBufferView(w.inBuffer, n),
-			"Spectrum", () -> tasklinkSpectrogram(w, 300),
-			"Histogram", () -> new BagView(attn.links, n),
-			"ConceptGraph", () -> BagregateConceptGraph2D.get(attn, n),
-			"TaskList", () -> new TaskListView(w, 32),
-			"ConceptList", () -> new ConceptListView(w, 32)
+			"Input", new Supplier<Surface>() {
+                    @Override
+                    public Surface get() {
+                        return taskBufferView(w.inBuffer, n);
+                    }
+                },
+			"Spectrum", new Supplier<Surface>() {
+                    @Override
+                    public Surface get() {
+                        return tasklinkSpectrogram(w, 300);
+                    }
+                },
+			"Histogram", new Supplier<Surface>() {
+                    @Override
+                    public Surface get() {
+                        return new BagView(attn.links, n);
+                    }
+                },
+			"ConceptGraph", new Supplier<Surface>() {
+                    @Override
+                    public Surface get() {
+                        return BagregateConceptGraph2D.get(attn, n);
+                    }
+                },
+			"TaskList", new Supplier<Surface>() {
+                    @Override
+                    public Surface get() {
+                        return new TaskListView(w, 32);
+                    }
+                },
+			"ConceptList", new Supplier<Surface>() {
+                    @Override
+                    public Surface get() {
+                        return new ConceptListView(w, 32);
+                    }
+                }
 		)));
 		m.south(new ObjectSurface(attn));
 		m.west(new Gridding(
 			new PushButton("Clear").clicked(w::clear), //TODO n::clear "Clear All"
-			Submitter.text("Load", t -> {
-				throw new TODO();
-			}),
-			Submitter.text("Save", t -> {
-				throw new TODO(); //tagging
-			}),
-			new PushButton("List").clicked(() -> attn.links.bag.print()) //TODO better
+			Submitter.text("Load", new Consumer<String>() {
+                @Override
+                public void accept(String t) {
+                    throw new TODO();
+                }
+            }),
+			Submitter.text("Save", new Consumer<String>() {
+                @Override
+                public void accept(String t) {
+                    throw new TODO(); //tagging
+                }
+            }),
+			new PushButton("List").clicked(new Runnable() {
+                @Override
+                public void run() {
+                    attn.links.bag.print();
+                }
+            }) //TODO better
 
 		));
 //        m.east(new Gridding(
@@ -658,36 +852,60 @@ public class NARui {
 				Draw.rgbInt(0.5f, 0.5f, 0.5f),
 				Draw.rgbInt(0.5f, 0.5f, 0.5f)
 			};
-			final IntToIntFunction opColor = _x -> {
-				TaskLink x = items[_x];
-				if (x == null) return 0;
-				Op o = x.term().op();
-				return opColors[(int) o.id];
-			};
-			final IntToIntFunction volColor = _x -> {
-				TaskLink x = items[_x];
-				if (x == null) return 0;
-				float v = (float) Math.log((double) (1 + x.term().volume()));
-				return Draw.colorHSB(v / 10f, 0.5f + 0.5f * v / 10f, v / 10f); //TODO
-			};
-			final IntToIntFunction puncColor = _x -> {
-				TaskLink x = items[_x];
-				if (x == null)
-					return 0;
+			final IntToIntFunction opColor = new IntToIntFunction() {
+                @Override
+                public int valueOf(int _x) {
+                    TaskLink x = items[_x];
+                    if (x == null) return 0;
+                    Op o = x.term().op();
+                    return opColors[(int) o.id];
+                }
+            };
+			final IntToIntFunction volColor = new IntToIntFunction() {
+                @Override
+                public int valueOf(int _x) {
+                    TaskLink x = items[_x];
+                    if (x == null) return 0;
+                    float v = (float) Math.log((double) (1 + x.term().volume()));
+                    return Draw.colorHSB(v / 10f, 0.5f + 0.5f * v / 10f, v / 10f); //TODO
+                }
+            };
+			final IntToIntFunction puncColor = new IntToIntFunction() {
+                @Override
+                public int valueOf(int _x) {
+                    TaskLink x = items[_x];
+                    if (x == null)
+                        return 0;
 
-				float r = x.priPunc(BELIEF);
-				float g = x.priPunc(GOAL);
-				float b = (x.priPunc(QUESTION) + x.priPunc(QUEST)) / 2.0F;
-				return Draw.rgbInt(r, g, b);
-			};
+                    float r = x.priPunc(BELIEF);
+                    float g = x.priPunc(GOAL);
+                    float b = (x.priPunc(QUESTION) + x.priPunc(QUEST)) / 2.0F;
+                    return Draw.rgbInt(r, g, b);
+                }
+            };
 
 			IntToIntFunction color = puncColor;
 
 			{
 				m.set(
-					new PushButton("Punc", () -> color = puncColor),
-					new PushButton("Op", () -> color = opColor),
-					new PushButton("Vol", () -> color = volColor)
+					new PushButton("Punc", new Runnable() {
+                        @Override
+                        public void run() {
+                            color = puncColor;
+                        }
+                    }),
+					new PushButton("Op", new Runnable() {
+                        @Override
+                        public void run() {
+                            color = opColor;
+                        }
+                    }),
+					new PushButton("Vol", new Runnable() {
+                        @Override
+                        public void run() {
+                            color = volColor;
+                        }
+                    })
 				);
 			}
 
@@ -789,7 +1007,12 @@ public class NARui {
 			charts.add(
 				new ObjectSurface(d),
 				new Gridding(VERTICAL,
-					new PaintUpdateMatrixView(() -> d.input, d.inputs),
+					new PaintUpdateMatrixView(new Supplier<double[]>() {
+                        @Override
+                        public double[] get() {
+                            return d.input;
+                        }
+                    }, d.inputs),
 					matrix(d.W1.w),
 					matrix(d.B1.w),
 //                            matrix(d.W1.dw),
@@ -799,19 +1022,30 @@ public class NARui {
 				)
 			);
 			Plot2D dqn3Plot = new Plot2D(200, Plot2D.Line);
-			dqn3Plot.add("DQN3 Err", () -> d.lastErr);
+			dqn3Plot.add("DQN3 Err", new DoubleSupplier() {
+                @Override
+                public double getAsDouble() {
+                    return d.lastErr;
+                }
+            });
 			charts.add(dqn3Plot);
 			rlb.env.onFrame(dqn3Plot::commit);
 		}
 		AtomicDouble rewardSum = new AtomicDouble();
-		plot.add("Reward", () -> {
-			return rewardSum.getAndSet((double) 0); //clear
-		}, (float) 0, (float) +1);
+		plot.add("Reward", new DoubleSupplier() {
+            @Override
+            public double getAsDouble() {
+                return rewardSum.getAndSet((double) 0); //clear
+            }
+        }, (float) 0, (float) +1);
 
-		rlb.env.onFrame(() -> {
-			rewardSum.addAndGet(rlb.lastReward);
-			plot.commit();
-		});
+		rlb.env.onFrame(new Runnable() {
+            @Override
+            public void run() {
+                rewardSum.addAndGet(rlb.lastReward);
+                plot.commit();
+            }
+        });
 
 		charts.add(plot);
 		return charts;
@@ -1003,38 +1237,54 @@ public class NARui {
 	public static PaintUpdateMatrixView matrix(double[] dw) {
 		return dw.length > 2048 ?
 			PaintUpdateMatrixView.scroll(dw, false, 64, 8) :
-			new PaintUpdateMatrixView(() -> dw, dw.length, dw.length / Math.max(1, (int) Math.ceil((double) sqrt((float) dw.length))));
+			new PaintUpdateMatrixView(new Supplier<double[]>() {
+                @Override
+                public double[] get() {
+                    return dw;
+                }
+            }, dw.length, dw.length / Math.max(1, (int) Math.ceil((double) sqrt((float) dw.length))));
 	}
 
 	public static <X> Surface focusPanel(Iterable<X> all, FloatFunction<X> pri, Function<X, String> str, NAR nar) {
 
-		Graph2D<X> s = new Graph2D<X>().render((node, g) -> {
-			X c = node.id;
+		Graph2D<X> s = new Graph2D<X>().render(new Graph2D.Graph2DRenderer<X>() {
+            @Override
+            public void node(NodeVis<X> node, Graph2D.GraphEditing<X> g) {
+                X c = node.id;
 
-			//float p = Math.max(Math.max(epsilon, c.pri()), epsilon);
-			float p = pri.floatValueOf(c);
-			float v = p; //TODO support separate color fucntion
-			node.color(p, v, 0.25f);
+                //float p = Math.max(Math.max(epsilon, c.pri()), epsilon);
+                float p = pri.floatValueOf(c);
+                float v = p; //TODO support separate color fucntion
+                node.color(p, v, 0.25f);
 
 
-			//Graph2D G = node.parent(Graph2D.class);
+                //Graph2D G = node.parent(Graph2D.class);
 //                float parentRadius = node.parent(Graph2D.class).radius(); //TODO cache ref
 //                float r = (float) ((parentRadius * 0.5f) * (sqrt(p) + 0.1f));
 
-			final float epsilon = 0.01f;
-			node.pri = Math.max(epsilon, p);
-		})
+                final float epsilon = 0.01f;
+                node.pri = Math.max(epsilon, p);
+            }
+        })
 			//.layout(fd)
 			.update(new TreeMap2D<>())
-			.build((node) -> {
-				node.set(new Scale(new ExeCharts.CausableWidget<>(node.id, str.apply(node.id)), 0.9f));
-			});
+			.build(new Consumer<NodeVis<X>>() {
+                @Override
+                public void accept(NodeVis<X> node) {
+                    node.set(new Scale(new ExeCharts.CausableWidget<>(node.id, str.apply(node.id)), 0.9f));
+                }
+            });
 
 
 		return DurSurface.get(
 			new Splitting(s, 0.1f, s.configWidget()),
 			nar,
-			() -> s.set(all));
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        s.set(all);
+                    }
+                });
 	}
 
 

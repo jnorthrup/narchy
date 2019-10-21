@@ -6,8 +6,7 @@ import nars.Task;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
+import java.util.function.*;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -269,7 +268,27 @@ public class RingBufferTaskSeries<T extends Task> extends AbstractTaskSeries<T> 
             //just return the latest items while it keeps asking
             //TODO iterate from oldest to newest if the target time is before or near series start
             //            int offset = ThreadLocalRandom.current().nextInt(qs);
-            return IntStream.iterate(q.size() - 1, i -> i >= 0, i -> i - 1).mapToObj(i -> q.peek(head, i, len)).noneMatch(qi -> qi != null && !whle.test(qi));
+            return IntStream.iterate(q.size() - 1, new IntPredicate() {
+                @Override
+                public boolean test(int i) {
+                    return i >= 0;
+                }
+            }, new IntUnaryOperator() {
+                @Override
+                public int applyAsInt(int i) {
+                    return i - 1;
+                }
+            }).mapToObj(new IntFunction<T>() {
+                @Override
+                public T apply(int i) {
+                    return q.peek(head, i, len);
+                }
+            }).noneMatch(new Predicate<T>() {
+                @Override
+                public boolean test(T qi) {
+                    return qi != null && !whle.test(qi);
+                }
+            });
         }
 
 

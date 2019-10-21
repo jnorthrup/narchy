@@ -139,7 +139,11 @@ public abstract class Memory {
     }
 
     /** useful for map-like impl */
-    static final BiFunction<? super Concept, ? super Concept, ? extends Concept> setOrReplaceNonPermanent = (prev, next) ->
-        prev instanceof PermanentConcept && !(next instanceof PermanentConcept) ? prev : next;
+    static final BiFunction<? super Concept, ? super Concept, ? extends Concept> setOrReplaceNonPermanent = new BiFunction<Concept, Concept, Concept>() {
+        @Override
+        public Concept apply(Concept prev, Concept next) {
+            return prev instanceof PermanentConcept && !(next instanceof PermanentConcept) ? prev : next;
+        }
+    };
 
 }

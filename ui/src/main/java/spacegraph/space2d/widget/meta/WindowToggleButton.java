@@ -28,7 +28,12 @@ public class WindowToggleButton extends CheckBox implements WindowListener {
     private volatile JoglDisplay space;
 
     public WindowToggleButton(String text, Object o) {
-        this(text, () -> o);
+        this(text, new Supplier() {
+            @Override
+            public Object get() {
+                return o;
+            }
+        });
     }
 
     public WindowToggleButton(String text, Supplier spacer) {
@@ -63,18 +68,21 @@ public class WindowToggleButton extends CheckBox implements WindowListener {
                 this.space = SpaceGraph.window(spacer.get(), width, height);
 
 //                space.pre(s -> {
-                Exe.runLater(()->{
-                    GLWindow w = space.video.window;
-                    
-                        w.addWindowListener(this);
-                        if (f!=null) {
+                Exe.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        GLWindow w = space.video.window;
+
+                        w.addWindowListener(WindowToggleButton.this);
+                        if (f != null) {
                             int nx = Math.round(f.posPixel.x - (float) width / 2f);
                             int ny = Math.round(f.posPixel.y - (float) height / 2f);
                             space.video.setPosition(nx, ny);
                         }
-                    
-                        busy.set(false); 
-                    
+
+                        busy.set(false);
+
+                    }
                 });
 
                 

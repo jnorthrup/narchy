@@ -19,6 +19,7 @@ import nars.memory.CaffeineMemory;
 import nars.sensor.Bitmap2DSensor;
 import nars.term.Term;
 import nars.time.clock.CycleTime;
+import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 import org.eclipse.collections.api.block.predicate.primitive.BooleanPredicate;
 import org.jetbrains.annotations.NotNull;
 import spacegraph.space2d.ReSurface;
@@ -28,6 +29,8 @@ import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.video.Draw;
 
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
+import java.util.function.IntPredicate;
 
 import static jcog.Texts.n2;
 import static nars.$.$$;
@@ -72,16 +75,36 @@ public class TrackXY_NAR extends GameX {
 		assert (sourceNumerics | targetNumerics | targetCam);
 
 		if (sourceNumerics) {
-			senseNumberBi($.inh(id, "sx"), new FloatNormalized(() -> track.cx, (float) 0, (float) (W - 1)));
+			senseNumberBi($.inh(id, "sx"), new FloatNormalized(new FloatSupplier() {
+                @Override
+                public float asFloat() {
+                    return track.cx;
+                }
+            }, (float) 0, (float) (W - 1)));
 			if (H > 1)
-				senseNumberBi($.inh(id, "sy"), new FloatNormalized(() -> track.cy, (float) 0, (float) (H - 1)));
+				senseNumberBi($.inh(id, "sy"), new FloatNormalized(new FloatSupplier() {
+                    @Override
+                    public float asFloat() {
+                        return track.cy;
+                    }
+                }, (float) 0, (float) (H - 1)));
 		}
 
 
 		if (targetNumerics) {
-			senseNumberBi($.inh(id, "tx"), new FloatNormalized(() -> track.tx, (float) 0, (float) W));
+			senseNumberBi($.inh(id, "tx"), new FloatNormalized(new FloatSupplier() {
+                @Override
+                public float asFloat() {
+                    return track.tx;
+                }
+            }, (float) 0, (float) W));
 			if (H > 1)
-				senseNumberBi($.inh(id, "ty"), new FloatNormalized(() -> track.ty, (float) 0, (float) H));
+				senseNumberBi($.inh(id, "ty"), new FloatNormalized(new FloatSupplier() {
+                    @Override
+                    public float asFloat() {
+                        return track.ty;
+                    }
+                }, (float) 0, (float) H));
 		}
 
 		if (targetCam) {
@@ -129,7 +152,12 @@ public class TrackXY_NAR extends GameX {
 //            });
 //        } else {
 
-		FloatSupplier nearness = () -> Util.sqr(1f - (track.dist() / track.distMax()));
+		FloatSupplier nearness = new FloatSupplier() {
+            @Override
+            public float asFloat() {
+                return Util.sqr(1f - (track.dist() / track.distMax()));
+            }
+        };
 		reward("near", nearness);
 
 
@@ -154,23 +182,26 @@ public class TrackXY_NAR extends GameX {
 
 		onFrame(track::act);
 
-		onFrame(() -> {
+		onFrame(new Runnable() {
+            @Override
+            public void run() {
 
-			if (trainer.getOpaque()) {
-                long now = nar.time();
-                int durMS = Math.round(dur());
-				if (track.ty < track.cy) {
-					nar().want(0.1f, $.the("down"), now, now + (long) durMS, 1f, 0.02f);
-				} else if (track.ty > track.cy) {
-					nar().want(0.1f, $.the("up"), now, now + (long) durMS, 1f, 0.02f);
-				}
-				if (track.tx < track.cx) {
-					nar().want(0.1f, $.the("left"), now, now + (long) durMS, 1f, 0.02f);
-				} else if (track.tx > track.cx) {
-					nar().want(0.1f, $.the("right"), now, now + (long) durMS, 1f, 0.02f);
-				}
-			}
-		});
+                if (trainer.getOpaque()) {
+                    long now = nar.time();
+                    int durMS = Math.round(TrackXY_NAR.this.dur());
+                    if (track.ty < track.cy) {
+                        TrackXY_NAR.this.nar().want(0.1f, $.the("down"), now, now + (long) durMS, 1f, 0.02f);
+                    } else if (track.ty > track.cy) {
+                        TrackXY_NAR.this.nar().want(0.1f, $.the("up"), now, now + (long) durMS, 1f, 0.02f);
+                    }
+                    if (track.tx < track.cx) {
+                        TrackXY_NAR.this.nar().want(0.1f, $.the("left"), now, now + (long) durMS, 1f, 0.02f);
+                    } else if (track.tx > track.cx) {
+                        TrackXY_NAR.this.nar().want(0.1f, $.the("right"), now, now + (long) durMS, 1f, 0.02f);
+                    }
+                }
+            }
+        });
 	}
 
 	public static void main(String[] args) {
@@ -305,83 +336,89 @@ public class TrackXY_NAR extends GameX {
 
 		n.synch();
 
-		Exe.runLater(() -> {
-			window(NARui.game(a), 800, 600);
-			g.add(NARui.top(n)).posRel(0.5f, 0.5f, 0.2f, 0.1f);
-			g.add(NARui.attentionUI(n)).sizeRel(0.1f, 0.1f);
+		Exe.runLater(new Runnable() {
+            @Override
+            public void run() {
+                window(NARui.game(a), 800, 600);
+                g.add(NARui.top(n)).posRel(0.5f, 0.5f, 0.2f, 0.1f);
+                g.add(NARui.attentionUI(n)).sizeRel(0.1f, 0.1f);
 
-			if (a.cam != null) {
-                Splitting<?, ?> vv = Splitting.column(new VectorSensorChart(a.cam, a) {
-					@Override
-					protected void paint(GL2 gl, ReSurface reSurface) {
-						super.paint(gl, reSurface);
-                        RectFloat at = cellRect(a.track.cx, a.track.cy, 0.5f, 0.5f);
-						gl.glColor4f(1.0F, (float) 0, (float) 0, 0.9f);
-						Draw.rect(at.move(x(), y(), 0.01f), gl);
-					}
-				}.withControls(), 0.1f, new ObjectSurface(a.track));
-				window(vv, 640,480);
-				//g.add(vv).posRel(1f, 1f, 0.1f, 0.1f);
+                if (a.cam != null) {
+                    Splitting<?, ?> vv = Splitting.column(new VectorSensorChart(a.cam, a) {
+                        @Override
+                        protected void paint(GL2 gl, ReSurface reSurface) {
+                            super.paint(gl, reSurface);
+                            RectFloat at = cellRect(a.track.cx, a.track.cy, 0.5f, 0.5f);
+                            gl.glColor4f(1.0F, (float) 0, (float) 0, 0.9f);
+                            Draw.rect(at.move(x(), y(), 0.01f), gl);
+                        }
+                    }.withControls(), 0.1f, new ObjectSurface(a.track));
+                    window(vv, 640, 480);
+                    //g.add(vv).posRel(1f, 1f, 0.1f, 0.1f);
 
-				//});
-			}
+                    //});
+                }
 
 //        new Impiler(n);
 
-            Term L = a.actions.get(0).term();
-            Term R = a.actions.get(1).term();
+                Term L = a.actions.get(0).term();
+                Term R = a.actions.get(1).term();
 //			a.what().eventTask.on(tt -> {
 //				int stampLen = tt.stamp().length;
 //				//if (stampLen > 1)
 //					System.out.println(stampLen + " " + tt);
 //			});
-			a.what().eventTask.on(tt -> {
+                a.what().eventTask.on(new Consumer<Task>() {
+                    @Override
+                    public void accept(Task tt) {
 
 
-				if (!tt.isEternal()) {
-					{
-                        Term ttt = tt.term();
-                        boolean l = ttt.equals(L);
-                        boolean r = ttt.equals(R);
-						System.out.println(tt);
-						if (l || r) {
+                        if (!tt.isEternal()) {
+                            {
+                                Term ttt = tt.term();
+                                boolean l = ttt.equals(L);
+                                boolean r = ttt.equals(R);
+                                System.out.println(tt);
+                                if (l || r) {
 
 
-							//if (n.concept(tt) instanceof ActionConcept)
-							long window = 5L;
-                            float dur = n.dur();
-                            long now = n.time();
-							if (tt.intersects((long) Math.round((float) now - (float) (window / 2L) * dur), (long) Math.round((float) now + (float) (window / 2L) * dur))) {
+                                    //if (n.concept(tt) instanceof ActionConcept)
+                                    long window = 5L;
+                                    float dur = n.dur();
+                                    long now = n.time();
+                                    if (tt.intersects((long) Math.round((float) now - (float) (window / 2L) * dur), (long) Math.round((float) now + (float) (window / 2L) * dur))) {
 
-								float wantsDir = (float) ((l ? -1 : +1) * (tt.freq() < 0.5f ? -1 : +1));
-                                float needsDir = a.track.tx - a.track.cx;
+                                        float wantsDir = (float) ((l ? -1 : +1) * (tt.freq() < 0.5f ? -1 : +1));
+                                        float needsDir = a.track.tx - a.track.cx;
 
 
-                                boolean ok = Math.signum(wantsDir) == Math.signum(needsDir);
-								if (!ok) {
-                                    String summary = ok ? "OK" : "WRONG";
-									System.out.println(ttt + " " + n2(wantsDir) + " ? " + n2(needsDir) + " " + summary);
-									System.out.println(tt.proof());
+                                        boolean ok = Math.signum(wantsDir) == Math.signum(needsDir);
+                                        if (!ok) {
+                                            String summary = ok ? "OK" : "WRONG";
+                                            System.out.println(ttt + " " + n2(wantsDir) + " ? " + n2(needsDir) + " " + summary);
+                                            System.out.println(tt.proof());
 
 //									((TaskLinkWhat)a.what()).links.links.print();
 //									System.out.println();
-									//n.proofPrint(tt);
-								}
+                                            //n.proofPrint(tt);
+                                        }
 
-								//System.out.println(NAR.proof(tt, n));
-								System.out.println();
+                                        //System.out.println(NAR.proof(tt, n));
+                                        System.out.println();
 
-							}
-
-
-						}
-
-					}
-				}
-			}, GOAL);
+                                    }
 
 
-		});
+                                }
+
+                            }
+                        }
+                    }
+                }, GOAL);
+
+
+            }
+        });
 		//n.run(experimentTime);
 		n.startFPS(10.0F);
 
@@ -457,16 +494,19 @@ public class TrackXY_NAR extends GameX {
 //        });
 
 		//FloatAveragedWindow _controlSpeed = new FloatAveragedWindow(8, 0.05f);
-		actionUnipolar($.inh(id, $.the("speed")), a -> {
+		actionUnipolar($.inh(id, $.the("speed")), new FloatToFloatFunction() {
+            @Override
+            public float valueOf(float a) {
 //            System.out.println(a);
-			//track.controlSpeed.add(Math.pow(((a-0.5)*2),3)/100f);
-            float cc = (float) Math.pow((double) a, 1);
-			//float c = _controlSpeed.valueOf(cc);
-            float c = Util.lerp(cc, 0.01f, 0.2f);
-			track.controlSpeed.set(c);
-			return c;
-			//TODO check change
-		});
+                //track.controlSpeed.add(Math.pow(((a-0.5)*2),3)/100f);
+                float cc = (float) Math.pow((double) a, 1);
+                //float c = _controlSpeed.valueOf(cc);
+                float c = Util.lerp(cc, 0.01f, 0.2f);
+                track.controlSpeed.set(c);
+                return c;
+                //TODO check change
+            }
+        });
 	}
 
 
@@ -523,19 +563,25 @@ public class TrackXY_NAR extends GameX {
 	private void actionTriState() {
 
 		if (track.grid.height() > 1) {
-			actionTriState($.p($.the("Y"), id), (dy) -> {
-                float py = track.cy;
-				//noinspection NonAtomicOperationOnVolatileField
-				track.cy = Util.clamp(track.cy + track.controlSpeed.floatValue() * (float) dy, (float) 0, (float) (track.grid.height() - 1));
-				return !Util.equals(py, track.cy, 0.01f);
-			});
+			actionTriState($.p($.the("Y"), id), new IntPredicate() {
+                @Override
+                public boolean test(int dy) {
+                    float py = track.cy;
+                    //noinspection NonAtomicOperationOnVolatileField
+                    track.cy = Util.clamp(track.cy + track.controlSpeed.floatValue() * (float) dy, (float) 0, (float) (track.grid.height() - 1));
+                    return !Util.equals(py, track.cy, 0.01f);
+                }
+            });
 		}
 
-		actionTriState($.p($.the("X"), id), (dx) -> {
-            float px = track.cx;
-			track.cx = Util.clamp(track.cx + track.controlSpeed.floatValue() * (float) dx, (float) 0, (float) (track.grid.width() - 1));
-			return !Util.equals(px, track.cx, 0.01f);
-		});
+		actionTriState($.p($.the("X"), id), new IntPredicate() {
+            @Override
+            public boolean test(int dx) {
+                float px = track.cx;
+                track.cx = Util.clamp(track.cx + track.controlSpeed.floatValue() * (float) dx, (float) 0, (float) (track.grid.width() - 1));
+                return !Util.equals(px, track.cx, 0.01f);
+            }
+        });
 	}
 
 
@@ -551,56 +597,71 @@ public class TrackXY_NAR extends GameX {
 	}
 
 	private @NotNull BooleanPredicate movement(float dx, float dy) {
-		return (b) -> {
-			if (b) {
-                float speed = track.controlSpeed.floatValue();
-                float nextCX = Util.clamp(track.cx + dx * speed, (float) 0, (float) (track.grid.width() - 1));
-                float nextCY = Util.clamp(track.cy + dy * speed, (float) 0, (float) (track.grid.height() - 1));
-				if (track.cx != nextCX || track.cy!=nextCY) {
-					track.cx = nextCX;
-					track.cy = nextCY;
-					return true;
-				}
-			}
-			return false;
-		};
+		return new BooleanPredicate() {
+            @Override
+            public boolean accept(boolean b) {
+                if (b) {
+                    float speed = track.controlSpeed.floatValue();
+                    float nextCX = Util.clamp(track.cx + dx * speed, (float) 0, (float) (track.grid.width() - 1));
+                    float nextCY = Util.clamp(track.cy + dy * speed, (float) 0, (float) (track.grid.height() - 1));
+                    if (track.cx != nextCX || track.cy != nextCY) {
+                        track.cx = nextCX;
+                        track.cy = nextCY;
+                        return true;
+                    }
+                }
+                return false;
+            }
+        };
 	}
 
 	private void actionPushButtonMutex() {
 
 		if (track.grid.height() > 1) {
-			actionPushButtonMutex($.inh(id, $.the("up")), $.inh(id, $.the("down")), (b) -> {
-				if (b) {
-                    float pcy = track.cy;
-					track.cy = Util.clamp(track.cy + track.controlSpeed.floatValue(), (float) 0, (float) (track.grid.height() - 1));
-					return track.cy != pcy;
-				} else
-					return false;
-			}, (b) -> {
-				if (b) {
-                    float pcy = track.cy;
-					track.cy = Util.clamp(track.cy - track.controlSpeed.floatValue(), (float) 0, (float) (track.grid.height() - 1));
-					return track.cy != pcy;
-				} else
-					return false;
-			});
+			actionPushButtonMutex($.inh(id, $.the("up")), $.inh(id, $.the("down")), new BooleanPredicate() {
+                @Override
+                public boolean accept(boolean b) {
+                    if (b) {
+                        float pcy = track.cy;
+                        track.cy = Util.clamp(track.cy + track.controlSpeed.floatValue(), (float) 0, (float) (track.grid.height() - 1));
+                        return track.cy != pcy;
+                    } else
+                        return false;
+                }
+            }, new BooleanPredicate() {
+                @Override
+                public boolean accept(boolean b) {
+                    if (b) {
+                        float pcy = track.cy;
+                        track.cy = Util.clamp(track.cy - track.controlSpeed.floatValue(), (float) 0, (float) (track.grid.height() - 1));
+                        return track.cy != pcy;
+                    } else
+                        return false;
+                }
+            });
 		}
 
-		actionPushButtonMutex($.inh(id, $.the("left")), $.inh(id, $.the("right")), (b) -> {
-			if (b) {
-                float pcx = track.cx;
-				track.cx = Util.clamp(track.cx - track.controlSpeed.floatValue(), (float) 0, (float) (track.grid.width() - 1));
-				return track.cx != pcx;
-			} else
-				return false;
-		}, (b) -> {
-			if (b) {
-                float pcx = track.cx;
-				track.cx = Util.clamp(track.cx + track.controlSpeed.floatValue(), (float) 0, (float) (track.grid.width() - 1));
-				return track.cx != pcx;
-			} else
-				return false;
-		});
+		actionPushButtonMutex($.inh(id, $.the("left")), $.inh(id, $.the("right")), new BooleanPredicate() {
+            @Override
+            public boolean accept(boolean b) {
+                if (b) {
+                    float pcx = track.cx;
+                    track.cx = Util.clamp(track.cx - track.controlSpeed.floatValue(), (float) 0, (float) (track.grid.width() - 1));
+                    return track.cx != pcx;
+                } else
+                    return false;
+            }
+        }, new BooleanPredicate() {
+            @Override
+            public boolean accept(boolean b) {
+                if (b) {
+                    float pcx = track.cx;
+                    track.cx = Util.clamp(track.cx + track.controlSpeed.floatValue(), (float) 0, (float) (track.grid.width() - 1));
+                    return track.cx != pcx;
+                } else
+                    return false;
+            }
+        });
 	}
 
 }

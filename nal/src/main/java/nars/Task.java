@@ -33,14 +33,14 @@ import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.truth.Truthed;
 import nars.truth.proj.TruthIntegration;
+import org.eclipse.collections.api.block.predicate.primitive.BytePredicate;
 import org.eclipse.collections.api.tuple.primitive.ShortBytePair;
 import org.eclipse.collections.impl.map.mutable.primitive.ShortByteHashMap;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.function.BiFunction;
-import java.util.function.Function;
+import java.util.function.*;
 
 import static java.lang.Math.min;
 import static nars.Op.*;
@@ -67,11 +67,19 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
      * fast, imprecise sort.  for cache locality and concurrency purposes
      */
     Comparator<Task> sloppySorter = Comparator
-            .comparingInt((Task x) ->
-                    //x.term()
-                    x.term().concept()
-                            .hashCode())
-            .thenComparing(x -> -x.priElseZero());
+            .comparingInt(new ToIntFunction<Task>() {
+                @Override
+                public int applyAsInt(Task x) {
+                    return x.term().concept()
+                            .hashCode();
+                }
+            })
+            .thenComparing(new Function<Task, Float>() {
+                @Override
+                public Float apply(Task x) {
+                    return -x.priElseZero();
+                }
+            });
 
     static boolean equal(Task thiz, Object that) {
         return (thiz == that) ||
@@ -384,20 +392,24 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
         if (v > 0 && t.hasAny(NEG.bit)) {
             ShortByteHashMap counts = new ShortByteHashMap(v);
             boolean[] skipNext = {false};
-            t.recurseTermsOrdered(Termlike::hasVars, x -> {
-                if (skipNext[0]) {
-                    skipNext[0] = false;
-                    return true; //this is the variable contained inside a Neg that was counted
-                } if (x instanceof Neg) {
-                    Term xu = x.unneg();
-                    if (xu instanceof Variable) {
-                        counts.addToValue(((NormalizedVariable)xu).i, (byte)-1);
-                        skipNext[0] = true;
+            t.recurseTermsOrdered(Termlike::hasVars, new Predicate<Term>() {
+                @Override
+                public boolean test(Term x) {
+                    if (skipNext[0]) {
+                        skipNext[0] = false;
+                        return true; //this is the variable contained inside a Neg that was counted
                     }
-                } else if (x instanceof Variable) {
-                    counts.addToValue(((NormalizedVariable)x).i, (byte)+1);
+                    if (x instanceof Neg) {
+                        Term xu = x.unneg();
+                        if (xu instanceof Variable) {
+                            counts.addToValue(((NormalizedVariable) xu).i, (byte) -1);
+                            skipNext[0] = true;
+                        }
+                    } else if (x instanceof Variable) {
+                        counts.addToValue(((NormalizedVariable) x).i, (byte) +1);
+                    }
+                    return true;
                 }
-                return true;
             }, null);
             int cs = counts.size();
             if (cs == 1) {
@@ -407,7 +419,12 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
                     return (Compound) t.replace(vv, vv.neg());
                 }
             } else if (cs > 1) {
-                counts.values().removeIf(c -> (int) c >= 0); //keep only entries where more neg than positive. these will be flipped
+                counts.values().removeIf(new BytePredicate() {
+                    @Override
+                    public boolean accept(byte c) {
+                        return (int) c >= 0;
+                    }
+                }); //keep only entries where more neg than positive. these will be flipped
                 cs = counts.size();
                 if (cs > 0) {
                     return (Compound) t.transform(new InvertVariableTransform(counts));
@@ -577,7 +594,12 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
         if (y.isEternal())
             rangeFactor = 1.0;
         else {
-            long xRangeMax = Util.max((Task t) -> t.rangeIfNotEternalElse(1L), x);
+            long xRangeMax = Util.max(new ToLongFunction<Task>() {
+                @Override
+                public long applyAsLong(Task t) {
+                    return t.rangeIfNotEternalElse(1L);
+                }
+            }, x);
             long yRange = y.range();
             rangeFactor = min(1.0, ((double) yRange) / (double) xRangeMax);
         }
@@ -620,8 +642,12 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
     default <X extends HyperRegion> Function<X, HyperRegion> mbrBuilder() {
         long s = start(), e = end();
         float tf = freq(), tc = conf();
-        return y ->
-                TasksRegion.mbr((TaskRegion) y, s, e, tf, tc);
+        return new Function<X, HyperRegion>() {
+            @Override
+            public HyperRegion apply(X y) {
+                return TasksRegion.mbr((TaskRegion) y, s, e, tf, tc);
+            }
+        };
 //        {
 //
 //            if (y instanceof Task) {

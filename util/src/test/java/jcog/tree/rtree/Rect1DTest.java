@@ -6,6 +6,9 @@ import jcog.tree.rtree.util.Stats;
 import org.eclipse.collections.impl.list.mutable.primitive.DoubleArrayList;
 import org.junit.jupiter.api.Test;
 
+import java.util.function.Function;
+import java.util.function.Supplier;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -20,7 +23,12 @@ class Rect1DTest {
 
         HyperPoint centroid = rect.center();
         double x = centroid.coord(0);
-        assertTrue(x == 2.0d, () -> "Bad X-coord of centroid - expected " + 2.0 + " but was " + x);
+        assertTrue(x == 2.0d, new Supplier<String>() {
+            @Override
+            public String get() {
+                return "Bad X-coord of centroid - expected " + 2.0 + " but was " + x;
+            }
+        });
 
     }
 
@@ -34,7 +42,12 @@ class Rect1DTest {
         final int entryCount = 20;
 
         
-            RTree<Double> t = new RTree<>(x -> new RectDouble1D.DefaultRect1D(x, x), 3, new LinearSplit<>());
+            RTree<Double> t = new RTree<>(new Function<Double, HyperRegion>() {
+                @Override
+                public HyperRegion apply(Double x) {
+                    return new RectDouble1D.DefaultRect1D(x, x);
+                }
+            }, 3, new LinearSplit<>());
             for (int i = 0; i < entryCount; i++) {
                 t.add((double)(i*i));
             }

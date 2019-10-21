@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.Supplier;
 
 import static jcog.Util.assertUnitized;
 import static nars.$.$$;
@@ -34,14 +35,24 @@ class IntermpolationTest {
         assertEquals(a.op(),a.op());
         {
             float ab = Intermpolate.dtDiff(a, b);
-            assertTrue(Float.isFinite(ab), ()->"dtDiff(" +a + ","+ b + ")=" + ab);
+            assertTrue(Float.isFinite(ab), new Supplier<String>() {
+                @Override
+                public String get() {
+                    return "dtDiff(" + a + "," + b + ")=" + ab;
+                }
+            });
             assertEquals(ab, Intermpolate.dtDiff(b, a), ScalarValue.EPSILON); //commutative
         }
 
         NAR s = NARS.shell();
 
         Term concept = a.concept();
-        assertEquals(concept, b.concept(), () -> "concepts differ: " + a + ' ' + b);
+        assertEquals(concept, b.concept(), new Supplier<String>() {
+            @Override
+            public String get() {
+                return "concepts differ: " + a + ' ' + b;
+            }
+        });
 
 
         Set<Term> ss = new TreeSet();
@@ -50,7 +61,12 @@ class IntermpolationTest {
         for (int i = 0; i < n; i++) {
             float r = s.random().nextFloat();
             Term ab = Intermpolate.intermpolate(a, b, r, s);
-            assertEquals(a.op(),ab.op(), ()->a + " + " + b + " @ " + r);
+            assertEquals(a.op(),ab.op(), new Supplier<String>() {
+                @Override
+                public String get() {
+                    return a + " + " + b + " @ " + r;
+                }
+            });
             ss.add(ab);
         }
 
@@ -145,7 +161,12 @@ class IntermpolationTest {
 
         float ab = Intermpolate.dtDiff(a, b);
         float ac = Intermpolate.dtDiff(a, c);
-        assertTrue(ab < ac, () -> "fail: " + ab + " < " + ac);
+        assertTrue(ab < ac, new Supplier<String>() {
+            @Override
+            public String get() {
+                return "fail: " + ab + " < " + ac;
+            }
+        });
         permuteChoose(a, b,
                 "[((--,(x &&+1 y)) &&+1 c), ((--,(x &&+2 y)) &&+1 c)]"
         );

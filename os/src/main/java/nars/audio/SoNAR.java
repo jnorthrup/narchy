@@ -127,12 +127,15 @@ public class SoNAR extends TimerTask {
     float soundVolume = 0.25f;
 
     public void listen(Concept k, Function<? super Concept, ? extends SoundProducer> p) {
-        termSounds.computeIfAbsent(k, kk -> {
-            SoundProducer ss = p.apply(kk);
-            return audio.play(ss, soundVolume,
-                    0.5f, /* priority */
-                    (float) (Math.random() - 0.5) /* balance */
-            );
+        termSounds.computeIfAbsent(k, new Function<Concept, Sound>() {
+            @Override
+            public Sound apply(Concept kk) {
+                SoundProducer ss = p.apply(kk);
+                return audio.play(ss, soundVolume,
+                        0.5f, /* priority */
+                        (float) (Math.random() - 0.5) /* balance */
+                );
+            }
         });
     }
 

@@ -57,7 +57,12 @@ public class MultiStatistics<X> implements Consumer<X> {
         this.cond = new FasterList();
 
         /** wildcard catch-all; by default will not collect all the unique values but other added conditions will */
-        cond.add(new BooleanClassifierWithStatistics<>("*", x -> true) );
+        cond.add(new BooleanClassifierWithStatistics<>("*", new Predicate<X>() {
+            @Override
+            public boolean test(X x) {
+                return true;
+            }
+        }) );
     }
 
 

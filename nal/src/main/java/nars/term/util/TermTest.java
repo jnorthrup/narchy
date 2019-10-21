@@ -30,6 +30,8 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
 
 import java.util.List;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 import static nars.$.$$;
 import static nars.Op.NEG;
@@ -107,7 +109,12 @@ public enum TermTest { ;
     }
 
     private static Term assertEq(Object exp, String is, Term x) {
-        assertEquals(exp, exp instanceof String ? x.toString() : x, () -> is + " reduces to " + exp);
+        assertEquals(exp, exp instanceof String ? x.toString() : x, new Supplier<String>() {
+            @Override
+            public String get() {
+                return is + " reduces to " + exp;
+            }
+        });
 
 
         //test for stability:
@@ -116,7 +123,12 @@ public enum TermTest { ;
             y = $.$(x.toString());
         } catch (Narsese.NarseseException e) {
             e.printStackTrace();
-            fail(() -> x + " -> " + e);
+            fail(new Supplier<String>() {
+                @Override
+                public String get() {
+                    return x + " -> " + e;
+                }
+            });
         }
         //assertEquals(u, t, ()-> is + " unstable:\n0:\t" + t + "\n1:\t" + u);
         assertEquals(x, y);
@@ -138,7 +150,12 @@ public enum TermTest { ;
     }
 
     public static void assertEq(String exp, Term x) {
-        assertEquals(exp, x.toString(), () -> exp + " != " + x);
+        assertEquals(exp, x.toString(), new Supplier<String>() {
+            @Override
+            public String get() {
+                return exp + " != " + x;
+            }
+        });
     }
 
     public static void assertEq(Termlike x, Termlike y) {
@@ -173,9 +190,12 @@ public enum TermTest { ;
 
     private static List<Term> orderedRecursion(Term x) {
         List<Term> m = new FasterList(x.volume()*2);
-        x.recurseTermsOrdered((t)->{
-            m.add(t);
-            return true;
+        x.recurseTermsOrdered(new Predicate<Term>() {
+            @Override
+            public boolean test(Term t) {
+                m.add(t);
+                return true;
+            }
         });
         return m;
     }
@@ -207,7 +227,12 @@ public enum TermTest { ;
 
         boolean aNorm = a.isNormalized();
         boolean bNorm = b.isNormalized();
-        assertEquals(aNorm, bNorm, () -> a + " (" + a.getClass() + ") normalized=" + aNorm + ", " + " (" + b.getClass() + ") normalized=" + bNorm);
+        assertEquals(aNorm, bNorm, new Supplier<String>() {
+            @Override
+            public String get() {
+                return a + " (" + a.getClass() + ") normalized=" + aNorm + ", " + " (" + b.getClass() + ") normalized=" + bNorm;
+            }
+        });
         assertEquals(a.isSorted(), b.isSorted());
         assertEquals(a.isCommuted(), b.isCommuted());
 
@@ -251,7 +276,12 @@ public enum TermTest { ;
 
             try {
                 Term e = Narsese.term(s);
-                assertTrue(e instanceof IdempotentBool, () -> s + " should not be parseable but got: " + e);
+                assertTrue(e instanceof IdempotentBool, new Supplier<String>() {
+                    @Override
+                    public String get() {
+                        return s + " should not be parseable but got: " + e;
+                    }
+                });
 
             } catch (Narsese.NarseseException | TermException e) {
                 assertTrue(true);

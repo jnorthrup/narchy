@@ -13,6 +13,8 @@ import spacegraph.space2d.widget.meter.ScatterPlot2D;
 import spacegraph.space2d.widget.port.Port;
 import spacegraph.space2d.widget.port.TypedPort;
 
+import java.util.function.Consumer;
+
 public class Cluster2DChip extends Bordering {
 
     private final ScatterPlot2D centroids;
@@ -47,14 +49,17 @@ public class Cluster2DChip extends Bordering {
 
         config.update(1);
 
-        Port<Tensor> in = new TypedPort<>(Tensor.class).on(t -> {
-            synchronized (Cluster2DChip.this) {
-                int volume = t.volume();
-                config.update(volume);
-                if (volume >= 2) {
-                    g.put(t.doubleArray());
-                } else if (volume == 1) {
-                    g.put((double) t.getAt(0));
+        Port<Tensor> in = new TypedPort<>(Tensor.class).on(new Consumer<Tensor>() {
+            @Override
+            public void accept(Tensor t) {
+                synchronized (Cluster2DChip.this) {
+                    int volume = t.volume();
+                    config.update(volume);
+                    if (volume >= 2) {
+                        g.put(t.doubleArray());
+                    } else if (volume == 1) {
+                        g.put((double) t.getAt(0));
+                    }
                 }
             }
         });

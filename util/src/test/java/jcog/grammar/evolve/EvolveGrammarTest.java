@@ -7,6 +7,7 @@ import jcog.random.XoRoShiRo128PlusRandom;
 import org.junit.jupiter.api.Test;
 
 import java.util.Random;
+import java.util.function.Supplier;
 
 import static jcog.grammar.evolve.DataSetTest.noise;
 
@@ -43,7 +44,12 @@ class EvolveGrammarTest {
         Random rng = new XoRoShiRo128PlusRandom(1);
         run(DataSetTest.getExampleDataSet2(
 
-                () -> "/*" + noise(2 + rng.nextInt(3)) + "*/",
+                new Supplier<String>() {
+                    @Override
+                    public String get() {
+                        return "/*" + noise(2 + rng.nextInt(3)) + "*/";
+                    }
+                },
 
                 "acs(x111111);", "fn_c(yy3333,ab);", "d123();", "a(x,y,z);",
                 "xf(/*ab,c*/z, z1);", "gggg(b /* !;*(fs)s! */);"

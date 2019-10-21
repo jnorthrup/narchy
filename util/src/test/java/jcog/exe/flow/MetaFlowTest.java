@@ -59,7 +59,12 @@ class MetaFlowTest {
         MetaFlow m = exe().forkUntil(System.nanoTime() + 500L * 1_000_000L,
                 MetaFlowTest::a,
                 MetaFlowTest::b,
-                () -> c(0));
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        c(0);
+                    }
+                });
         System.out.println(m.plan.prettyPrint());
     }
 

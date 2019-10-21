@@ -25,7 +25,12 @@ public final class StatePath extends FasterList<Context> {
     }
 
     public MatchPath types(boolean innerGlob) {
-        return match((c)->c.getClass().getSimpleName(), innerGlob);
+        return match(new Function<Context, String>() {
+            @Override
+            public String apply(Context c) {
+                return c.getClass().getSimpleName();
+            }
+        }, innerGlob);
     }
 
     public MatchPath ids(boolean innerGlob) {

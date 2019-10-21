@@ -37,6 +37,9 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -170,14 +173,17 @@ public final class Cmd {
 
     private static final char[] temporary = new char[Defines.MAX_STRING_CHARS];
 
-    public static final Comparator PlayerSort = (o1, o2) -> {
-        int anum = (Integer) o1;
-        int bnum = (Integer) o2;
+    public static final Comparator PlayerSort = new Comparator() {
+        @Override
+        public int compare(Object o1, Object o2) {
+            int anum = (Integer) o1;
+            int bnum = (Integer) o2;
 
-        int anum1 = (int) GameBase.game.clients[anum].ps.stats[Defines.STAT_FRAGS];
-        int bnum1 = (int) GameBase.game.clients[bnum].ps.stats[Defines.STAT_FRAGS];
+            int anum1 = (int) GameBase.game.clients[anum].ps.stats[Defines.STAT_FRAGS];
+            int bnum1 = (int) GameBase.game.clients[bnum].ps.stats[Defines.STAT_FRAGS];
 
-        return Integer.compare(anum1, bnum1);
+            return Integer.compare(anum1, bnum1);
+        }
     };
 
     /** 
@@ -1131,9 +1137,39 @@ public final class Cmd {
      * TODO: revisit Vector syncronization replaced with lockless COW Array here
      * */
     public static List  CompleteCommand(String partial) {
-        List<String> cmds = Stream.iterate(cmd_functions, Objects::nonNull, cmd -> cmd.next).filter(cmd -> cmd.name.startsWith(partial)).map(cmd -> cmd.name).collect(Collectors.toList());
+        List<String> cmds = Stream.iterate(cmd_functions, Objects::nonNull, new UnaryOperator<cmd_function_t>() {
+            @Override
+            public cmd_function_t apply(cmd_function_t cmd) {
+                return cmd.next;
+            }
+        }).filter(new Predicate<cmd_function_t>() {
+            @Override
+            public boolean test(cmd_function_t cmd) {
+                return cmd.name.startsWith(partial);
+            }
+        }).map(new Function<cmd_function_t, String>() {
+            @Override
+            public String apply(cmd_function_t cmd) {
+                return cmd.name;
+            }
+        }).collect(Collectors.toList());
 
-        Stream.iterate(Globals.cmd_alias, Objects::nonNull, a -> a.next).filter(a -> a.name.startsWith(partial)).map(a -> a.name).forEach(cmds::add);
+        Stream.iterate(Globals.cmd_alias, Objects::nonNull, new UnaryOperator<cmdalias_t>() {
+            @Override
+            public cmdalias_t apply(cmdalias_t a) {
+                return a.next;
+            }
+        }).filter(new Predicate<cmdalias_t>() {
+            @Override
+            public boolean test(cmdalias_t a) {
+                return a.name.startsWith(partial);
+            }
+        }).map(new Function<cmdalias_t, String>() {
+            @Override
+            public String apply(cmdalias_t a) {
+                return a.name;
+            }
+        }).forEach(cmds::add);
         return new CopyOnWriteArrayList( cmds);
     }
 

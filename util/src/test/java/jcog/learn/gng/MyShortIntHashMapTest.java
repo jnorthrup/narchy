@@ -1,6 +1,8 @@
 package jcog.learn.gng;
 
 import jcog.learn.gng.impl.MyShortIntHashMap;
+import org.eclipse.collections.api.block.predicate.primitive.IntPredicate;
+import org.eclipse.collections.api.block.procedure.primitive.ShortIntProcedure;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -21,9 +23,19 @@ class MyShortIntHashMapTest {
 
             m.addToValues(4);
 
-            m.forEachKeyValue((k, v) -> assertEquals(5, v));
+            m.forEachKeyValue(new ShortIntProcedure() {
+                @Override
+                public void value(short k, int v) {
+                    assertEquals(5, v);
+                }
+            });
 
-            m.filter(v -> v == 0);
+            m.filter(new IntPredicate() {
+                @Override
+                public boolean accept(int v) {
+                    return v == 0;
+                }
+            });
 
             assertTrue(m.isEmpty());
         }

@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -795,16 +796,19 @@ public class DataSet implements Serializable {
             Collections.sort(zoneRanges);
 
 
-            int overallEOAA = (int) Arrays.stream(ranges).filter(extractedBounds -> {
-                for (Bounds expectedBounds : zoneRanges) {
-                    if (expectedBounds.start >= extractedBounds.end) {
-                        break;
+            int overallEOAA = (int) Arrays.stream(ranges).filter(new Predicate<Bounds>() {
+                @Override
+                public boolean test(Bounds extractedBounds) {
+                    for (Bounds expectedBounds : zoneRanges) {
+                        if (expectedBounds.start >= extractedBounds.end) {
+                            break;
+                        }
+                        if (extractedBounds.overlaps(expectedBounds)) {
+                            return true;
+                        }
                     }
-                    if (extractedBounds.overlaps(expectedBounds)) {
-                        return true;
-                    }
+                    return false;
                 }
-                return false;
             }).count();
             return overallEOAA;
         }

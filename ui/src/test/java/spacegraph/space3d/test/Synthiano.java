@@ -82,7 +82,12 @@ public class Synthiano extends Widget {
 
 
 
-        set(new BitmapMatrixView(4,4, (x, y)->0) {
+        set(new BitmapMatrixView(4,4, new BitmapMatrixView.ViewFunction2D() {
+            @Override
+            public int color(int x, int y) {
+                return 0;
+            }
+        }) {
 
             @Override
             public boolean updateTouch(Finger finger) {

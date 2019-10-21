@@ -9,8 +9,11 @@ import jcog.pri.ScalarValue;
 import jcog.tree.rtree.point.DoubleND;
 import jcog.tree.rtree.rect.HyperRectDouble;
 import jcog.tree.rtree.rect.MutableHyperRectDouble;
+import org.eclipse.collections.api.block.procedure.primitive.ShortIntProcedure;
+import org.eclipse.collections.api.block.procedure.primitive.ShortProcedure;
 
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 /**
@@ -256,7 +259,12 @@ public class NeuralGasNet<N extends Centroid>  /*extends SimpleGraph<N, Connecti
         this.centroids[(int) closest].updateLocalError(x, winnerUpdateRate);
 
 
-        edges.edgesOf(closest, (connection, age) -> this.centroids[(int) connection].lerp(x, winnerNeighborUpdateRate));
+        edges.edgesOf(closest, new ShortIntProcedure() {
+            @Override
+            public void value(short connection, int age) {
+                NeuralGasNet.this.centroids[(int) connection].lerp(x, winnerNeighborUpdateRate);
+            }
+        });
         edges.addToEdges(closest, -1);
 
 
@@ -292,13 +300,16 @@ public class NeuralGasNet<N extends Centroid>  /*extends SimpleGraph<N, Connecti
             maxError = Double.NEGATIVE_INFINITY;
             _maxErrorNeighbour = (short) -1;
 
-            edges.edgesOf(maxErrorID, (otherNodeID) -> {
+            edges.edgesOf(maxErrorID, new ShortProcedure() {
+                @Override
+                public void value(short otherNodeID) {
 
-                Centroid otherNode = this.centroids[(int) otherNodeID];
+                    Centroid otherNode = NeuralGasNet.this.centroids[(int) otherNodeID];
 
-                if (otherNode.localError() > maxError) {
-                    _maxErrorNeighbour = otherNodeID;
-                    maxError = otherNode.localError();
+                    if (otherNode.localError() > maxError) {
+                        _maxErrorNeighbour = otherNodeID;
+                        maxError = otherNode.localError();
+                    }
                 }
             });
 
@@ -363,7 +374,12 @@ public class NeuralGasNet<N extends Centroid>  /*extends SimpleGraph<N, Connecti
     }
 
     public Stream<N> nodeStream() {
-        return Stream.of(centroids).filter(Centroid::active).map(n -> (N) n);
+        return Stream.of(centroids).filter(Centroid::active).map(new Function<Centroid, N>() {
+            @Override
+            public N apply(Centroid n) {
+                return (N) n;
+            }
+        });
     }
 
     public void compact() {

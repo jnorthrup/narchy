@@ -9,6 +9,7 @@ import nars.table.eternal.EternalDefaultTable;
 import nars.term.Term;
 import nars.truth.Truth;
 import org.apache.commons.math3.exception.OutOfRangeException;
+import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFunction;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -66,22 +67,25 @@ public class DigitizedScalar extends DemultiplexedScalarSensor {
      * [ ] = freq 0
      * [x] = freq 1,
      */
-    public static final ScalarEncoder Fluid = (v, i, indices) -> {
+    public static final ScalarEncoder Fluid = new ScalarEncoder() {
+        @Override
+        public float truth(float v, int i, int indices) {
 
 
-        float vv = v * (float) (indices);
-        int which = (int) Math.ceil((double) vv);
-        float f;
-        if (i < which) {
-            f = 1f;
-        } else if (i > which) {
-            f = 0f;
-        } else {
-            f = 1f-Math.max((float) 0,(vv - (float) which));
+            float vv = v * (float) (indices);
+            int which = (int) Math.ceil((double) vv);
+            float f;
+            if (i < which) {
+                f = 1f;
+            } else if (i > which) {
+                f = 0f;
+            } else {
+                f = 1f - Math.max((float) 0, (vv - (float) which));
+            }
+
+            return f;
+
         }
-
-        return f;
-
     };
 //    public final static ScalarEncoder Mirror = (v, i, indices) -> {
 //        assert (indices == 2);
@@ -94,10 +98,13 @@ public class DigitizedScalar extends DemultiplexedScalarSensor {
     /**
      * hard
      */
-    public static final ScalarEncoder Needle = (v, i, indices) -> {
-        float vv = v * (float) indices;
-        int which = (int) Math.floor((double) vv);
-        return (float) (i == which ? 1 : 0);
+    public static final ScalarEncoder Needle = new ScalarEncoder() {
+        @Override
+        public float truth(float v, int i, int indices) {
+            float vv = v * (float) indices;
+            int which = (int) Math.floor((double) vv);
+            return (float) (i == which ? 1 : 0);
+        }
     };
 
     /**
@@ -108,30 +115,35 @@ public class DigitizedScalar extends DemultiplexedScalarSensor {
      * + + +    + + +     + + +
      * TODO need to analyze the interaction of the produced frequency values being reported by all concepts.
      */
-    public static final ScalarEncoder FuzzyNeedle = (v, i, indices) -> {
+    public static final ScalarEncoder FuzzyNeedle = new ScalarEncoder() {
+        @Override
+        public float truth(float v, int i, int indices) {
 
-        float dr = 1f / (float) (indices - 1);
+            float dr = 1f / (float) (indices - 1);
 
-        return Math.max((float) 0, (1f - Math.abs(((float) i * dr) - v) / dr));
+            return Math.max((float) 0, (1f - Math.abs(((float) i * dr) - v) / dr));
+        }
     };
 
 
     /**
      * TODO not quite working yet. it is supposed to recursively subdivide like a binary number, and each concept represents the balance corresponding to each radix's progressively increasing sensitivity
      */
-    public static final ScalarEncoder FuzzyBinary = (v, i, indices) -> {
+    public static final ScalarEncoder FuzzyBinary = new ScalarEncoder() {
+        @Override
+        public float truth(float v, int i, int indices) {
 
 
-        float b = v;
-        float dv = 1f;
-        for (int j = 0; j < i; j++) {
-            dv /= 2f;
-            b = Math.max((float) 0, b - dv);
+            float b = v;
+            float dv = 1f;
+            for (int j = 0; j < i; j++) {
+                dv /= 2f;
+                b = Math.max((float) 0, b - dv);
+            }
+
+
+            return b / (dv);
         }
-
-
-
-        return b / (dv);
     };
 
     @Override
@@ -159,11 +171,14 @@ public class DigitizedScalar extends DemultiplexedScalarSensor {
                 ///*,$.quote(Util.toString(input))*/, $.the(freqer.getClass().getSimpleName())
                  //   )
                 ,
-                nar, (prev, next) -> {
-                if (next < (float) 0 || next > 1.0F)
-                    throw new OutOfRangeException(next, 0, 1);
-                return next == next ? $.t(next, nar.confDefault(BELIEF)) : null;
-            }
+                nar, new FloatFloatToObjectFunction<Truth>() {
+                    @Override
+                    public Truth value(float prev, float next) {
+                        if (next < (float) 0 || next > 1.0F)
+                            throw new OutOfRangeException(next, 0, 1);
+                        return next == next ? $.t(next, nar.confDefault(BELIEF)) : null;
+                    }
+                }
         );
 
 
@@ -177,9 +192,12 @@ public class DigitizedScalar extends DemultiplexedScalarSensor {
         int i = 0;
         for (Term s : states) {
             int ii = i++;
-            ComponentSignal sc = newComponent(s, () -> {
-                float x = freqer.truth(asFloat(), ii, states.length);
-                return Util.equals(x, defaultFreq) ? Float.NaN : x;
+            ComponentSignal sc = newComponent(s, new FloatSupplier() {
+                @Override
+                public float asFloat() {
+                    float x = freqer.truth(DigitizedScalar.this.asFloat(), ii, states.length);
+                    return Util.equals(x, defaultFreq) ? Float.NaN : x;
+                }
             });
 
             if (defaultFreq==defaultFreq)

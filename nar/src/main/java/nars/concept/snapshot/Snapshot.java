@@ -33,7 +33,12 @@ public class Snapshot<X> {
 
 	public static @Nullable <X> X get(Concept src, String id, long now, int ttl, BiFunction<Concept, X, X> updater) {
 		return src.<Snapshot<X>>meta(id, Snapshot::new)
-			.get(now, ttl, (existing) -> updater.apply(src, existing));
+			.get(now, ttl, new UnaryOperator<X>() {
+                @Override
+                public X apply(X existing) {
+                    return updater.apply(src, existing);
+                }
+            });
 	}
 
 

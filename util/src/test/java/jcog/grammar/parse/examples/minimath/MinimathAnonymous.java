@@ -26,22 +26,28 @@ public class MinimathAnonymous {
 		Seq e = new Seq();
 
 		Num n = new Num();
-		n.put((IAssembler) a -> {
-			Token t = (Token) a.pop();
-			a.push(new Double(t.nval()));
-		});
+		n.put(new IAssembler() {
+            @Override
+            public void accept(Assembly a) {
+                Token t = (Token) a.pop();
+                a.push(new Double(t.nval()));
+            }
+        });
 
 		e.get(n);
 
 		Seq m = new Seq();
 		m.get(new Symbol('-').ok());
 		m.get(n);
-		m.put((IAssembler) a -> {
-			Double d1 = (Double) a.pop();
-			Double d2 = (Double) a.pop();
-			Double d3 = new Double(d2.doubleValue() - d1.doubleValue());
-			a.push(d3);
-		});
+		m.put(new IAssembler() {
+            @Override
+            public void accept(Assembly a) {
+                Double d1 = (Double) a.pop();
+                Double d2 = (Double) a.pop();
+                Double d3 = new Double(d2.doubleValue() - d1.doubleValue());
+                a.push(d3);
+            }
+        });
 
 		e.get(new Repetition(m));
 

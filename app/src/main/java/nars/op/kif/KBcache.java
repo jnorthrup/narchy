@@ -36,6 +36,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.Serializable;
 import java.util.*;
+import java.util.function.Function;
 
 public class KBcache implements Serializable {
 
@@ -756,7 +757,12 @@ public class KBcache implements Serializable {
                 HashSet<String> relSubs = collectArgFromFormulas(1,forms);
 
                 for (String newTerm : relSubs) {
-                    HashSet<String> oldParents = relParents.computeIfAbsent(t, k -> new HashSet<>());
+                    HashSet<String> oldParents = relParents.computeIfAbsent(t, new Function<String, HashSet<String>>() {
+                        @Override
+                        public HashSet<String> apply(String k) {
+                            return new HashSet<>();
+                        }
+                    });
                     HashSet<String> newParents = new HashSet<String>(oldParents);
                     newParents.add(t);
                     HashSet<String> newTermParents = relParents.get(newTerm);
@@ -799,7 +805,12 @@ public class KBcache implements Serializable {
                 HashSet<String> relSubs = collectArgFromFormulas(2,forms);
                 if (debug) System.out.println("visiting subs of t: " + relSubs);
                 for (String newTerm : relSubs) {
-                    HashSet<String> oldChildren = relChildren.computeIfAbsent(t, k -> new HashSet<>());
+                    HashSet<String> oldChildren = relChildren.computeIfAbsent(t, new Function<String, HashSet<String>>() {
+                        @Override
+                        public HashSet<String> apply(String k) {
+                            return new HashSet<>();
+                        }
+                    });
                     HashSet<String> newChildren = new HashSet<String>(oldChildren);
                     newChildren.add(t);
                     HashSet<String> newTermChildren = relChildren.get(newTerm);

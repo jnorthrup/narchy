@@ -43,7 +43,12 @@ public class QuickMemoize<X, Y> {
     }
 
     public final @Nullable Y apply(@Nullable X X, Function<X, Y> calc) {
-        return apply(X, calc, (x, c)->c.apply(x));
+        return apply(X, calc, new BiFunction<X, Function<X, Y>, Y>() {
+            @Override
+            public Y apply(X x, Function<X, Y> c) {
+                return c.apply(x);
+            }
+        });
     }
 
     public @Nullable <P> Y apply(@Nullable X x, P p, BiFunction<X, P, Y> calc) {

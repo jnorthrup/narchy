@@ -5,6 +5,7 @@ import jcog.data.list.FasterList;
 import jcog.func.IntIntToFloatFunction;
 import jcog.learn.Autoencoder;
 import jcog.math.FloatRange;
+import jcog.math.FloatSupplier;
 import jcog.signal.wave2d.Bitmap2D;
 import jcog.util.ArrayUtil;
 import nars.$;
@@ -23,6 +24,7 @@ import spacegraph.space2d.widget.meter.BitmapMatrixView;
 
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.function.Consumer;
 
 import static nars.$.$$;
 import static nars.Op.BELIEF;
@@ -44,7 +46,12 @@ public class AutoclassifiedBitmap extends VectorSensor {
 
 
 
-    public static final MetaBits NoMetaBits = (x, y) -> ArrayUtil.EMPTY_FLOAT_ARRAY;
+    public static final MetaBits NoMetaBits = new MetaBits() {
+        @Override
+        public float[] get(int x, int y) {
+            return ArrayUtil.EMPTY_FLOAT_ARRAY;
+        }
+    };
 
     private final MetaBits metabits;
 
@@ -87,10 +94,18 @@ public class AutoclassifiedBitmap extends VectorSensor {
 
                 new VectorSensorChart(this, game).withControls()) {
             {
-                game.onFrame(() -> forEach(x -> {
-                    if (x instanceof BitmapMatrixView)
-                        ((BitmapMatrixView) x).updateIfShowing();
-                }));
+                game.onFrame(new Runnable() {
+                    @Override
+                    public void run() {
+                        forEach(new Consumer<Surface>() {
+                            @Override
+                            public void accept(Surface x) {
+                                if (x instanceof BitmapMatrixView)
+                                    ((BitmapMatrixView) x).updateIfShowing();
+                            }
+                        });
+                    }
+                });
             }
         }
                 ;
@@ -130,7 +145,12 @@ public class AutoclassifiedBitmap extends VectorSensor {
     }
 
     public AutoclassifiedBitmap(Term root, float[][] pixIn, int sw, int sh, MetaBits metabits, int states, Game game) {
-        this(root, (x, y) -> pixIn[x][y],
+        this(root, new IntIntToFloatFunction() {
+                    @Override
+                    public float value(int x, int y) {
+                        return pixIn[x][y];
+                    }
+                },
                 pixIn.length, pixIn[0].length,
                 sw, sh, metabits, states, game);
     }
@@ -186,7 +206,12 @@ public class AutoclassifiedBitmap extends VectorSensor {
                 for (int f = 0; f < features; f++) {
                     Term term = coord(r, i, j, f);
                     int x = i, y = j, ff = f;
-                    signals.add( newComponent(term, () -> encoded[x][y][ff]) );
+                    signals.add( newComponent(term, new FloatSupplier() {
+                        @Override
+                        public float asFloat() {
+                            return encoded[x][y][ff];
+                        }
+                    }) );
                 }
             }
         }

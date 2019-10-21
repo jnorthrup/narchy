@@ -1,7 +1,10 @@
 package spacegraph.video;
 
 import jcog.event.Off;
+import jcog.signal.wave2d.RGBBufImgBitmap2D;
 import spacegraph.space2d.container.unit.AspectAlign;
+
+import java.util.function.Consumer;
 
 public class VideoSurface extends AspectAlign {
 
@@ -23,9 +26,12 @@ public class VideoSurface extends AspectAlign {
     @Override
     protected void starting() {
         super.starting();
-        on = in.tensor.on((x)-> {
-            aspect(in.aspect());
-            tex.set(in.image);
+        on = in.tensor.on(new Consumer<RGBBufImgBitmap2D>() {
+            @Override
+            public void accept(RGBBufImgBitmap2D x) {
+                VideoSurface.this.aspect(in.aspect());
+                tex.set(in.image);
+            }
         });
 
 //            on = in.eventChange.on(x -> {

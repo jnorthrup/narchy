@@ -62,7 +62,11 @@ public class Use {
 		return Exe.PROFILE ? new time() : NullAutocloseable;
 	}
 
-	static final SafeAutocloseable NullAutocloseable = () -> { };
+	static final SafeAutocloseable NullAutocloseable = new SafeAutocloseable() {
+        @Override
+        public void close() {
+        }
+    };
 
 	@Override
 	public String toString() {

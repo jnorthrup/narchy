@@ -24,14 +24,17 @@ public class DependentWindow extends Windo {
 
         GraphEdit2D g = parentOrSelf(GraphEdit2D.class);
 
-        this.on = new RunThese(()->{
-            g.physics.remove(this);
+        this.on = new RunThese(new Runnable() {
+            @Override
+            public void run() {
+                g.physics.remove(DependentWindow.this);
 
-            //remove any associated links, recursively
-            if (content instanceof ContainerSurface) {
-                ((ContainerSurface) content).forEachRecursively(g::removeComponent);
-            } else {
-                g.removeComponent(content);
+                //remove any associated links, recursively
+                if (content instanceof ContainerSurface) {
+                    ((ContainerSurface) content).forEachRecursively(g::removeComponent);
+                } else {
+                    g.removeComponent(content);
+                }
             }
         });
 

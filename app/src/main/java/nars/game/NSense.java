@@ -52,7 +52,12 @@ public interface NSense {
 
 
     default Signal sense(Term term, BooleanSupplier value) {
-        return sense(term, () -> value.getAsBoolean() ? 1f : 0f);
+        return sense(term, new FloatSupplier() {
+            @Override
+            public float asFloat() {
+                return value.getAsBoolean() ? 1f : 0f;
+            }
+        });
     }
 
 
@@ -72,13 +77,23 @@ public interface NSense {
     default <E extends Enum> void senseSwitch(String term, Supplier<E> value) throws Narsese.NarseseException {
         E[] values = ((Class<? extends E>) value.get().getClass()).getEnumConstants();
         for (E e : values) {
-            sense(switchTerm(term, e.toString()), () -> value.get() == e);
+            sense(switchTerm(term, e.toString()), new BooleanSupplier() {
+                @Override
+                public boolean getAsBoolean() {
+                    return value.get() == e;
+                }
+            });
         }
     }
 
     /** TODO move to a SelectorSensor constuctor */
     default SelectorSensor senseSwitch(Term term, IntSupplier value, int min, int max) {
-        return senseSwitch(min, max, value, (e) -> switchTerm(term, the(e)));
+        return senseSwitch(min, max, value, new IntFunction<Term>() {
+            @Override
+            public Term apply(int e) {
+                return switchTerm(term, the(e));
+            }
+        });
     }
 
     /**
@@ -119,7 +134,12 @@ public interface NSense {
      */
     default <O> void senseSwitch(String term, Supplier<O> value, O... values) throws Narsese.NarseseException {
         for (O e : values)
-            sense(switchTerm(term, '"' + e.toString() + '"'), () -> value.get().equals(e));
+            sense(switchTerm(term, '"' + e.toString() + '"'), new BooleanSupplier() {
+                @Override
+                public boolean getAsBoolean() {
+                    return value.get().equals(e);
+                }
+            });
     }
 
     /*
@@ -244,13 +264,23 @@ public interface NSense {
 
     default DigitizedScalar senseAngle(FloatSupplier angleInRadians, int divisions, Term root) {
         return senseAngle(divisions, root, angleInRadians,
-                angle -> $.inh(root,the(angle))
+                new IntFunction<Term>() {
+                    @Override
+                    public Term apply(int angle) {
+                        return $.inh(root, the(angle));
+                    }
+                }
                 //angle -> $.inh($.pRadix(angle, 2, divisions-1), root)
         );
     }
 
     default DigitizedScalar senseAngle(int divisions, Term root, FloatSupplier angleInRadians, IntFunction<Term> termizer) {
-        DigitizedScalar ang = senseNumber(divisions, DigitizedScalar.FuzzyNeedle, ()->(float) (0.5 + 0.5 * MathUtils.normalizeAngle((double) angleInRadians.asFloat(), (double) 0) / (2.0 * Math.PI)), termizer
+        DigitizedScalar ang = senseNumber(divisions, DigitizedScalar.FuzzyNeedle, new FloatSupplier() {
+                    @Override
+                    public float asFloat() {
+                        return (float) (0.5 + 0.5 * MathUtils.normalizeAngle((double) angleInRadians.asFloat(), (double) 0) / (2.0 * Math.PI));
+                    }
+                }, termizer
                 //$.inst($.the(angle), ANGLE),
                 //$.func("ang", id, $.the(angle)) /*SETe.the($.the(angle)))*/,
                 //$.funcImageLast("ang", id, $.the(angle)) /*SETe.the($.the(angle)))*/,
@@ -290,7 +320,12 @@ public interface NSense {
 
         Term t = template;
         return actionBipolarFrequencyDifferential(
-                fair, posOrNeg -> t.replace($.varQuery(1), posOrNeg ? POS : NEG),
+                fair, new BooleanToObjectFunction<Term>() {
+                    @Override
+                    public Term valueOf(boolean posOrNeg) {
+                        return t.replace($.varQuery(1), posOrNeg ? POS : NEG);
+                    }
+                },
                 motor);
     }
     default BiPolarAction actionBipolarFrequencyDifferential(boolean fair, BooleanToObjectFunction<Term> s, FloatToFloatFunction motor) {
@@ -308,7 +343,12 @@ public interface NSense {
         nar.add(pn);
         g.addAction(pn.pos);
         g.addAction(pn.neg);
-        g.onFrame(aa->pn.accept(g));
+        g.onFrame(new Consumer() {
+            @Override
+            public void accept(Object aa) {
+                pn.accept(g);
+            }
+        });
 
         nar.control.input(pn.pri, g.actionPri);
 
@@ -328,35 +368,38 @@ public interface NSense {
         float deadZoneFreqRadius =
                 1.0F / 6f;
 
-        return actionBipolar(cc, false, f -> {
+        return actionBipolar(cc, false, new FloatToFloatFunction() {
+            @Override
+            public float valueOf(float f) {
 
-            int s;
-            if (f > deadZoneFreqRadius)
-                s = +1;
-            else if (f < -deadZoneFreqRadius)
-                s = -1;
-            else
-                s = 0;
+                int s;
+                if (f > deadZoneFreqRadius)
+                    s = +1;
+                else if (f < -deadZoneFreqRadius)
+                    s = -1;
+                else
+                    s = 0;
 
-            if (i.test(s)) {
+                if (i.test(s)) {
 
 
-                switch (s) {
-                    case -1:
-                        return -1f;
-                    case 0:
-                        //return 0f;
-                        return Float.NaN;
-                    case +1:
-                        return +1f;
-                    default:
-                        throw new RuntimeException();
+                    switch (s) {
+                        case -1:
+                            return -1f;
+                        case 0:
+                            //return 0f;
+                            return Float.NaN;
+                        case +1:
+                            return +1f;
+                        default:
+                            throw new RuntimeException();
+                    }
+
                 }
 
+                return 0f;
+
             }
-
-            return 0f;
-
         });
 //        float res = 0.5f;
 //        g[0].resolution(res);
@@ -368,14 +411,17 @@ public interface NSense {
         float dt = 0.1f;
         float max = 1f;
         float decay = 0.9f;
-        actionTriState(s, (i) -> {
-            float a = amp[0];
-            float b = Util.clamp((a * decay) + dt * (float) i, -max, max);
-            amp[0] = b;
+        actionTriState(s, new IntPredicate() {
+            @Override
+            public boolean test(int i) {
+                float a = amp[0];
+                float b = Util.clamp((a * decay) + dt * (float) i, -max, max);
+                amp[0] = b;
 
-            act.accept(b);
+                act.accept(b);
 
-            return !Util.equals(a, b);
+                return !Util.equals(a, b);
+            }
         });
 
 
@@ -387,9 +433,12 @@ public interface NSense {
      * push-buttons like keyboard keys. by default with no desire the state is off.   the off procedure will not be called immediately.
      */
     default void actionTriState(Term s, IntConsumer i) {
-        actionTriState(s, (v) -> {
-            i.accept(v);
-            return true;
+        actionTriState(s, new IntPredicate() {
+            @Override
+            public boolean test(int v) {
+                i.accept(v);
+                return true;
+            }
         });
     }
 

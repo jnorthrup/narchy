@@ -4,6 +4,7 @@ import com.jogamp.opengl.GL2;
 import jcog.event.Off;
 import jcog.thing.Part;
 import jcog.thing.Thing;
+import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
@@ -79,7 +80,12 @@ public class PartsTable extends Gridding implements GridModel, GridRenderer {
             switch (x) {
                 case 0: {
                     return new Bordering(
-                            new PushButton(k.toString()).clicked(() -> window(p, 500, 500))
+                            new PushButton(k.toString()).clicked(new Runnable() {
+                                @Override
+                                public void run() {
+                                    window(p, 500, 500);
+                                }
+                            })
                     ).set(Bordering.W, new PartToggle(context, pe));
                 }
                 case 1: {
@@ -107,15 +113,18 @@ public class PartsTable extends Gridding implements GridModel, GridRenderer {
             this.key = p.getKey();
             this.part = p.getValue();
             on(part.isOn());
-            on(state -> {
-                //Exe.invokeLater(()->{
-                    synchronized(part) {
+            on(new BooleanProcedure() {
+                @Override
+                public void value(boolean state) {
+                    //Exe.invokeLater(()->{
+                    synchronized (part) {
                         if (state)
                             thing.restart(key);
                         else
                             thing.stop(key);
                     }
-                //});
+                    //});
+                }
             });
         }
 

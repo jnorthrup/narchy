@@ -8,6 +8,7 @@ import spacegraph.space2d.widget.text.LabeledPane;
 import spacegraph.space2d.widget.windo.Windo;
 
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 /** holds a pair of function lists */
@@ -41,14 +42,24 @@ public class PortAdapter<X,Y> extends Widget {
             whichXY = 0;
             this.fxy = fxy;
 
-            x.on((xx)->PortAdapter.this.out(xx, true));
+            x.on(new Consumer<X>() {
+                @Override
+                public void accept(X xx) {
+                    PortAdapter.this.out(xx, true);
+                }
+            });
 
         } else { this.fxy = null; }
         if (!fyx.isEmpty()) {
             whichYX = 0;
             this.fyx = fyx;
 
-            y.on((yy)->PortAdapter.this.out(yy, false));
+            y.on(new Consumer<Y>() {
+                @Override
+                public void accept(Y yy) {
+                    PortAdapter.this.out(yy, false);
+                }
+            });
 
         } else this.fyx = null;
 

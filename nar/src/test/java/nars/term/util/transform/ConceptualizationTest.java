@@ -12,6 +12,9 @@ import nars.term.Termed;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+
 import static nars.$.$;
 import static nars.$.$$;
 import static nars.Op.CONJ;
@@ -31,7 +34,12 @@ class ConceptualizationTest {
         Term c1 = c.concept();
 
         Term c2 = c1.concept();
-        assertEquals(c1, c2, () -> "unstable: irst " + c1 + "\n\t, then " + c2);
+        assertEquals(c1, c2, new Supplier<String>() {
+            @Override
+            public String get() {
+                return "unstable: irst " + c1 + "\n\t, then " + c2;
+            }
+        });
         return c1;
     }
 
@@ -142,7 +150,10 @@ class ConceptualizationTest {
         String c = "( &&+- ,((--,((#1)-->$2)) ==>+- (isRow(#1,(0,false),true) &&+- ((#1)-->$2))),(--,checkScore(#1)),#1)";
         assertEquals(c, t.concept().toString());
         assertEquals(c, t.concept().concept().toString());
-        Termed x = new DefaultConceptBuilder((z) -> {
+        Termed x = new DefaultConceptBuilder(new Consumer<Concept>() {
+            @Override
+            public void accept(Concept z) {
+            }
         }).apply(t);
         assertTrue(x instanceof TaskConcept);
     }
@@ -349,7 +360,12 @@ class ConceptualizationTest {
 
         for (int dt : new int[]{ /*XTERNAL,*/ 0, DTERNAL}) {
             assertEquals("( &&+- ,a,b,c)",
-                    CONJ.the(dt, $$("a"), $$("b"), $$("c")).concept().toString(), () -> "dt=" + dt);
+                    CONJ.the(dt, $$("a"), $$("b"), $$("c")).concept().toString(), new Supplier<String>() {
+                        @Override
+                        public String get() {
+                            return "dt=" + dt;
+                        }
+                    });
         }
 
 
@@ -392,7 +408,12 @@ class ConceptualizationTest {
             assertEquals("(x " + op + "+- y)", f0.root().toString());
 
             Concept f = n.conceptualize(f0);
-            assertSame(e, f, () -> e + "==" + f);
+            assertSame(e, f, new Supplier<String>() {
+                @Override
+                public String get() {
+                    return e + "==" + f;
+                }
+            });
 
 
             Concept g = n.conceptualize($("(x " + op + "+- x)"));

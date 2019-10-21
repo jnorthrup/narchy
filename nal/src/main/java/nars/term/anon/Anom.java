@@ -6,6 +6,8 @@ import nars.io.IO;
 import nars.term.Neg;
 import nars.term.Term;
 
+import java.util.function.IntFunction;
+
 import static nars.Op.ATOM;
 
 /* indexed anonymous target */
@@ -58,11 +60,21 @@ public final class Anom extends IntrinAtomic {
 
     /** intrinsic anom */
     private static final Anom[] the =
-        Util.map(0, (int) Byte.MAX_VALUE, Anom[]::new, i -> new Anom((byte) i));
+        Util.map(0, (int) Byte.MAX_VALUE, Anom[]::new, new IntFunction<Anom>() {
+            @Override
+            public Anom apply(int i) {
+                return new Anom((byte) i);
+            }
+        });
 
     /** intrinsic anoms negated */
     private static final Neg.NegIntrin[] theNeg =
-        Util.map(0, (int) Byte.MAX_VALUE, Neg.NegIntrin[]::new, i -> new Neg.NegIntrin(the[i]));
+        Util.map(0, (int) Byte.MAX_VALUE, Neg.NegIntrin[]::new, new IntFunction<Neg.NegIntrin>() {
+            @Override
+            public Neg.NegIntrin apply(int i) {
+                return new Neg.NegIntrin(the[i]);
+            }
+        });
 
     static {
         the[0] = null;

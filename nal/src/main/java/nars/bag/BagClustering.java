@@ -17,6 +17,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static java.util.Arrays.sort;
@@ -86,13 +87,19 @@ public class BagClustering<X> {
     }
 
     public void print(PrintStream out) {
-        forEachCluster(c -> {
-            out.println(c);
-            stream(c._id).forEach(i -> {
-                out.print("\t");
-                out.println(i);
-            });
-            out.println();
+        forEachCluster(new Consumer<Centroid>() {
+            @Override
+            public void accept(Centroid c) {
+                out.println(c);
+                BagClustering.this.stream(c._id).forEach(new Consumer<VLink<X>>() {
+                    @Override
+                    public void accept(VLink<X> i) {
+                        out.print("\t");
+                        out.println(i);
+                    }
+                });
+                out.println();
+            }
         });
         out.println(net.edges);
     }
@@ -134,16 +141,19 @@ public class BagClustering<X> {
         int[] centroids = {0};
 //        for (VLink<X> x : bag) {
 //        }
-        bag.sampleUnique(ThreadLocalRandom.current(), x ->{
-            int c = x.centroid;
-            if (c >= 0) {
-                L llc = ll[c % cc];
-                llc.add(x.id); //round robin populate the buffer
-                if (llc.size() == minPerCentroid) {
-                    return ++centroids[0] != maxCentroids;
+        bag.sampleUnique(ThreadLocalRandom.current(), new Predicate<VLink<X>>() {
+            @Override
+            public boolean test(VLink<X> x) {
+                int c = x.centroid;
+                if (c >= 0) {
+                    L llc = ll[c % cc];
+                    llc.add(x.id); //round robin populate the buffer
+                    if (llc.size() == minPerCentroid) {
+                        return ++centroids[0] != maxCentroids;
+                    }
                 }
+                return true;
             }
-            return true;
         });
         if (centroids[0]>0) {
             sort(ll, ListSizeSorter);
@@ -155,7 +165,12 @@ public class BagClustering<X> {
     public void learn(float forgetRate, int learningIterations) {
 
             @Nullable Consumer<VLink<X>> f = bag.forget(forgetRate);
-            bag.commit(v -> v.update(f));
+            bag.commit(new Consumer<VLink<X>>() {
+                @Override
+                public void accept(VLink<X> v) {
+                    v.update(f);
+                }
+            });
 
 //            net.alpha.setAt(0.8f / s);
         float lambdaFactor = 1f;
@@ -246,7 +261,12 @@ public class BagClustering<X> {
      * TODO this is O(N) not great
      */
     public Stream<VLink<X>> stream(int internalID) {
-        return bag.stream().filter(y -> y.centroid == internalID);
+        return bag.stream().filter(new Predicate<VLink<X>>() {
+            @Override
+            public boolean test(VLink<X> y) {
+                return y.centroid == internalID;
+            }
+        });
     }
 
     public Stream<VLink<X>> neighbors(X x) {
@@ -257,13 +277,23 @@ public class BagClustering<X> {
                 Centroid[] nodes = net.centroids;
                 if (centroid < nodes.length)
                     return stream(centroid)
-                            .filter(y -> !y.equals(x))
+                            .filter(new Predicate<VLink<X>>() {
+                                @Override
+                                public boolean test(VLink<X> y) {
+                                    return !y.equals(x);
+                                }
+                            })
                             ;
             }
         }
         return Stream.empty();
     }
 
-    private static final Comparator<List> ListSizeSorter =(x, y)->Integer.compare(y.size(),x.size());
+    private static final Comparator<List> ListSizeSorter = new Comparator<List>() {
+        @Override
+        public int compare(List x, List y) {
+            return Integer.compare(y.size(), x.size());
+        }
+    };
 
 }

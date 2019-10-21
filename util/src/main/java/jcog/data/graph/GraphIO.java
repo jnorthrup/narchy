@@ -18,6 +18,8 @@
 
 package jcog.data.graph;
 
+import org.eclipse.collections.api.block.procedure.primitive.IntProcedure;
+
 import java.io.DataInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -44,7 +46,12 @@ public enum GraphIO { ;
 
         for (int i = 0; i < g.size(); ++i) {
             int ii = i;
-            g.neighborsOut(i).forEach(o -> out.println(ii + " " + o));
+            g.neighborsOut(i).forEach(new IntProcedure() {
+                @Override
+                public void value(int o) {
+                    out.println(ii + " " + o);
+                }
+            });
         }
     }
 
@@ -60,7 +67,12 @@ public enum GraphIO { ;
 
         for (int i = 0; i < g.size(); ++i) {
             out.print(i + " ");
-            g.neighborsOut(i).forEach(o -> out.print(o + " "));
+            g.neighborsOut(i).forEach(new IntProcedure() {
+                @Override
+                public void value(int o) {
+                    out.print(o + " ");
+                }
+            });
             out.println();
         }
     }
@@ -77,11 +89,14 @@ public enum GraphIO { ;
 
         for (int i = 0; i < g.size(); ++i) {
             int ii = i;
-            g.neighborsOut(i).forEach(j -> {
-                if (g.directed())
-                    out.println(ii + " -> " + j + ';');
-                else if (ii <= j)
-                    out.println(ii + " -- " + j + ';');
+            g.neighborsOut(i).forEach(new IntProcedure() {
+                @Override
+                public void value(int j) {
+                    if (g.directed())
+                        out.println(ii + " -> " + j + ';');
+                    else if (ii <= j)
+                        out.println(ii + " -- " + j + ';');
+                }
             });
         }
 
@@ -105,9 +120,12 @@ public enum GraphIO { ;
 
         for (int i = 0; i < size; ++i) {
             int ii = i;
-            g.neighborsOut(i).forEach(o -> {
-                out.println(
-                        "edge [ source " + ii + " target " + o + " ]"); //TODO edge label
+            g.neighborsOut(i).forEach(new IntProcedure() {
+                @Override
+                public void value(int o) {
+                    out.println(
+                            "edge [ source " + ii + " target " + o + " ]"); //TODO edge label
+                }
             });
         }
 
@@ -129,8 +147,13 @@ public enum GraphIO { ;
         out.println("*Arcs");
         for (int i = 0; i < g.size(); ++i) {
             int ii = i;
-            g.neighborsOut(i).forEach(o -> out.println((ii + 1) + " " +
-                    (o + 1) + " 1"));
+            g.neighborsOut(i).forEach(new IntProcedure() {
+                @Override
+                public void value(int o) {
+                    out.println((ii + 1) + " " +
+                            (o + 1) + " 1");
+                }
+            });
         }
         out.println("*Edges");
     }
@@ -147,7 +170,12 @@ public enum GraphIO { ;
 
         for (int i = 0; i < g.size(); ++i) {
             out.print(" " + (i + 1));
-            g.neighborsOut(i).forEach(o -> out.print(" " + (o + 1)));
+            g.neighborsOut(i).forEach(new IntProcedure() {
+                @Override
+                public void value(int o) {
+                    out.print(" " + (o + 1));
+                }
+            });
             out.println();
         }
         out.println();
@@ -197,7 +225,12 @@ public enum GraphIO { ;
         out.println(g.size() + " " + edges / 2L);
 
         for (int i = 0; i < g.size(); ++i) {
-            g.neighborsOut(i).forEach(o -> out.print((o + 1) + " "));
+            g.neighborsOut(i).forEach(new IntProcedure() {
+                @Override
+                public void value(int o) {
+                    out.print((o + 1) + " ");
+                }
+            });
             out.println();
         }
 

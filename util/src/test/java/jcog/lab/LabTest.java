@@ -4,8 +4,11 @@ import jcog.lab.util.ExperimentRun;
 import jcog.learn.decision.RealDecisionTree;
 import jcog.math.FloatRange;
 import jcog.util.Range;
+import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.junit.jupiter.api.Test;
 import tech.tablesaw.api.Row;
+
+import java.util.function.BiConsumer;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -47,21 +50,29 @@ public class LabTest {
                 .sense(Sensor.unixtime)
                 .sense(Sensor.nanotime())
                 .sense(ctx = Sensor.label("ctx"))
-                .sense("a", (Dummy m) -> m.a);
+                .sense("a", new FloatFunction<Dummy>() {
+                    @Override
+                    public float floatValueOf(Dummy m) {
+                        return m.a;
+                    }
+                });
 
-        ExperimentRun<Dummy> t = lab.run((m, trial) -> {
-            ctx.record("start", trial).set("running");
+        ExperimentRun<Dummy> t = lab.run(new BiConsumer<Dummy, ExperimentRun<Dummy>>() {
+            @Override
+            public void accept(Dummy m, ExperimentRun<Dummy> trial) {
+                ctx.record("start", trial).set("running");
 
 
-            for (int i = 0; i < 10; i++) {
-                m.a = (float) Math.sin(i);
-                trial.record();
+                for (int i = 0; i < 10; i++) {
+                    m.a = (float) Math.sin(i);
+                    trial.record();
+                }
+
+                m.a = 0.5f;
+                m.a = 0.2f;
+
+                ctx.record("end", trial);
             }
-
-            m.a = 0.5f;
-            m.a = 0.2f;
-
-            ctx.record("end", trial);
         });
 
         t.run();

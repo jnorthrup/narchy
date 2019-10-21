@@ -22,6 +22,8 @@ import net.propero.rdp.RdesktopException;
 import net.propero.rdp.RdesktopFrame;
 import org.slf4j.LoggerFactory;
 
+import java.util.function.Function;
+
 import static nars.$.$$;
 
 
@@ -41,18 +43,21 @@ public class RDP extends Game {
     }
 
     public static void main(String[] args) {
-        GameX.Companion.initFn(16f, (n)->{
-            try {
-                return new RDP(n,
-                        //"localhost"
-                        "10.0.0.249"
-                        , 3389) {
+        GameX.Companion.initFn(16f, new Function<NAR, Game>() {
+            @Override
+            public Game apply(NAR n) {
+                try {
+                    return new RDP(n,
+                            //"localhost"
+                            "10.0.0.249"
+                            , 3389) {
 
 
-                };
-            } catch (Exception e) {
-                e.printStackTrace();
-                return null;
+                    };
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return null;
+                }
             }
         });
     }

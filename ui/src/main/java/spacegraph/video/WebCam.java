@@ -20,6 +20,8 @@ import spacegraph.space2d.widget.meter.BitmapMatrixView;
 
 import java.awt.*;
 import java.util.Arrays;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 
 /**
@@ -71,7 +73,12 @@ public class WebCam extends VideoSource implements WebcamListener {
     public static WebCam the() {
         logger.info("Webcam Devices:\n{} ", Joiner.on("\n").join(Webcam.getDriver().getDevices()));
         logger.info("Webcams:\n{} ", Joiner.on("\n").join(com.github.sarxos.webcam.Webcam.getWebcams().stream().map(
-                w -> w.getName() + "\t" + Arrays.toString(w.getViewSizes())).iterator()));
+                new Function<Webcam, String>() {
+                    @Override
+                    public String apply(Webcam w) {
+                        return w.getName() + "\t" + Arrays.toString(w.getViewSizes());
+                    }
+                }).iterator()));
 
 //        new WebcamViewer();
 
@@ -144,13 +151,15 @@ public class WebCam extends VideoSource implements WebcamListener {
         ChannelView(VideoSource cam) {
             this.cam = cam;
 
-            BitmapMatrixView bmp = new BitmapMatrixView(cam.width, cam.height, (x, y) -> {
-                Tensor c = current;
-                if (c != null) {
-                    mixed.update((RGBBufImgBitmap2D) current);
-                    float intensity = //c.get(x, y, channel);
-                            mixed.get(x, y);
-                    return Draw.rgbInt(intensity, intensity, intensity);
+            BitmapMatrixView bmp = new BitmapMatrixView(cam.width, cam.height, new BitmapMatrixView.ViewFunction2D() {
+                @Override
+                public int color(int x, int y) {
+                    Tensor c = current;
+                    if (c != null) {
+                        mixed.update((RGBBufImgBitmap2D) current);
+                        float intensity = //c.get(x, y, channel);
+                                mixed.get(x, y);
+                        return Draw.rgbInt(intensity, intensity, intensity);
 //                    switch (channel) {
 //                        case 0:
 //                            return Draw.rgbInt(intensity, 0, 0);
@@ -162,13 +171,17 @@ public class WebCam extends VideoSource implements WebcamListener {
 //                            throw new UnsupportedOperationException();
 //
 //                    }
+                    }
+                    return 0;
                 }
-                return 0;
             });
-            cam.tensor.on(x -> {
-                current = x;
+            cam.tensor.on(new Consumer<RGBBufImgBitmap2D>() {
+                @Override
+                public void accept(RGBBufImgBitmap2D x) {
+                    current = x;
 
-                bmp.updateIfShowing();
+                    bmp.updateIfShowing();
+                }
             });
 
             add(bmp);
@@ -180,7 +193,12 @@ public class WebCam extends VideoSource implements WebcamListener {
             VideoSource wc = the();
 
             Gridding menu = new Gridding();
-            menu.add(new PushButton("++").clicked(() -> SpaceGraph.window(new ChannelView(wc), 400, 400)));
+            menu.add(new PushButton("++").clicked(new Runnable() {
+                @Override
+                public void run() {
+                    SpaceGraph.window(new ChannelView(wc), 400, 400);
+                }
+            }));
 
             SpaceGraph.window(new Splitting(new Gridding(menu, new ObjectSurface(wc)), 0.9f, new VideoSurface(wc)), 1000, 1000);
         }

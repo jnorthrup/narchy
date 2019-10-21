@@ -1,5 +1,7 @@
 package nars.experiment;
 
+import jcog.func.IntIntToObjectFunction;
+import jcog.math.FloatSupplier;
 import jcog.signal.wave2d.Bitmap2D;
 import jcog.signal.wave2d.BrightnessNormalize;
 import jcog.signal.wave2d.ScaledBitmap2D;
@@ -8,9 +10,14 @@ import nars.GameX;
 import nars.NAR;
 import nars.experiment.pacman.PacmanGame;
 import nars.experiment.pacman.maze.Maze;
+import nars.game.Game;
 import nars.game.GameTime;
 import nars.sensor.Bitmap2DSensor;
+import nars.term.Term;
 import nars.video.SwingBitmap2D;
+import org.eclipse.collections.api.block.predicate.primitive.BooleanPredicate;
+
+import java.util.function.Function;
 
 import static nars.$.$$;
 
@@ -50,38 +57,55 @@ public class Pacman extends GameX {
 //            c.resolution(0.1f);
 //        }
         {
-            Bitmap2DSensor c = senseCamera((x, y)->$.inh(id,$.p(x,y)), camScale/*, 0*/);
+            Bitmap2DSensor c = senseCamera(new IntIntToObjectFunction<Term>() {
+                @Override
+                public Term apply(int x, int y) {
+                    return $.inh(id, $.p(x, y));
+                }
+            }, camScale/*, 0*/);
 //            VectorSensorView v = new VectorSensorView(c, this);
 //            gg.add(v/*.withControls()*/);
             c.resolution(0.02f);
         }
 //        SpaceGraph.window(gg, 300, 300);
 
-        actionPushButtonMutex($.inh(id,"left"), $.inh(id,"right"), (b)->{
-            if (b) {
-                g.keys[1] = true;
-                g.keys[0] = false;
-                return !g.player.walled(Maze.Direction.left);
-            } else return false;
-        }, (b)->{
-            if (b) {
-                g.keys[0] = true;
-                g.keys[1] = false;
-                return !g.player.walled(Maze.Direction.right);
-            } else return false;
+        actionPushButtonMutex($.inh(id,"left"), $.inh(id,"right"), new BooleanPredicate() {
+            @Override
+            public boolean accept(boolean b) {
+                if (b) {
+                    g.keys[1] = true;
+                    g.keys[0] = false;
+                    return !g.player.walled(Maze.Direction.left);
+                } else return false;
+            }
+        }, new BooleanPredicate() {
+            @Override
+            public boolean accept(boolean b) {
+                if (b) {
+                    g.keys[0] = true;
+                    g.keys[1] = false;
+                    return !g.player.walled(Maze.Direction.right);
+                } else return false;
+            }
         });
-        actionPushButtonMutex($.inh(id,"up"), $.inh(id,"down"), (b)->{
-            if (b) {
-                g.keys[2] = true;
-                g.keys[3] = false;
-                return !g.player.walled(Maze.Direction.up);
-            } else return false;
-        }, (b)->{
-            if (b) {
-                g.keys[3] = true;
-                g.keys[2] = false;
-                return !g.player.walled(Maze.Direction.down);
-            } else return false;
+        actionPushButtonMutex($.inh(id,"up"), $.inh(id,"down"), new BooleanPredicate() {
+            @Override
+            public boolean accept(boolean b) {
+                if (b) {
+                    g.keys[2] = true;
+                    g.keys[3] = false;
+                    return !g.player.walled(Maze.Direction.up);
+                } else return false;
+            }
+        }, new BooleanPredicate() {
+            @Override
+            public boolean accept(boolean b) {
+                if (b) {
+                    g.keys[3] = true;
+                    g.keys[2] = false;
+                    return !g.player.walled(Maze.Direction.down);
+                } else return false;
+            }
         });
 //        actionTriState($.p(id,$.p($.the("x"), $.varQuery(1))), (dh) -> {
 //            switch (dh) {
@@ -117,22 +141,25 @@ public class Pacman extends GameX {
 
 
         //TODO multiple reward signals: eat, alive, dist->ghost (cheat)
-        reward("score", ()->{
-            g.update();
+        reward("score", new FloatSupplier() {
+            @Override
+            public float asFloat() {
+                g.update();
 
-            int nextScore = g.score;
+                int nextScore = g.score;
 
-            float r = (float) (nextScore - lastScore);
+                float r = (float) (nextScore - lastScore);
 //            if(r == 0)
 //                return Float.NaN;
 
 
-            lastScore = nextScore;
-            if (r > (float) 0) return (float) +1;
-            else if (r < (float) 0) return (float) 0;
-            else
-                return 0.5f;
-            //return (Util.tanhFast(r) + 1)/2f;
+                lastScore = nextScore;
+                if (r > (float) 0) return (float) +1;
+                else if (r < (float) 0) return (float) 0;
+                else
+                    return 0.5f;
+                //return (Util.tanhFast(r) + 1)/2f;
+            }
         });
     }
 
@@ -141,12 +168,15 @@ public class Pacman extends GameX {
 
 
     public static void main(String[] args) {
-        GameX.Companion.initFn(fps* 2.0F, (n) -> {
+        GameX.Companion.initFn(fps* 2.0F, new Function<NAR, Game>() {
+            @Override
+            public Game apply(NAR n) {
 
-            Pacman a = new Pacman(n);
-            n.add(a);
-            return a;
+                Pacman a = new Pacman(n);
+                n.add(a);
+                return a;
 
+            }
         });
     }
 

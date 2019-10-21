@@ -14,6 +14,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 import static nars.$.$$;
 import static nars.Op.BELIEF;
@@ -146,7 +147,12 @@ class DynamicImplConjTest extends AbstractDynamicTaskTest {
                     //negated pred
                     fxy = 1f - fxy;
                 }
-                assertEquals(fxy, task.freq(), 0.01f, () -> cccase + "\n\tin: " + task);
+                assertEquals(fxy, task.freq(), 0.01f, new Supplier<String>() {
+                    @Override
+                    public String get() {
+                        return cccase + "\n\tin: " + task;
+                    }
+                });
 
                 assertEquals(0.81f, task.conf(), 0.01f, cccase);
             }
@@ -182,7 +188,12 @@ class DynamicImplConjTest extends AbstractDynamicTaskTest {
         Term x = $$(inputTerm);
         assertDynamicTable(n, x);
         Task t = n.answer(x, BELIEF, when);
-        assertNotNull(t, ()->x + " gave return null answer @ " + when);
+        assertNotNull(t, new Supplier<String>() {
+            @Override
+            public String get() {
+                return x + " gave return null answer @ " + when;
+            }
+        });
         assertEquals(answerTermExpected, t.term().toString());
         assertEquals(when, t.start());
         int stampLen = 2;

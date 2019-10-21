@@ -21,6 +21,9 @@ package jcog.data.graph;
 import com.google.common.base.Joiner;
 import jcog.func.TriConsumer;
 import jcog.func.TriFunction;
+import org.eclipse.collections.api.block.procedure.primitive.IntProcedure;
+import org.eclipse.collections.api.block.procedure.primitive.LongObjectProcedure;
+import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.eclipse.collections.impl.map.mutable.primitive.IntObjectHashMap;
 import org.eclipse.collections.impl.map.mutable.primitive.LongObjectHashMap;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectIntHashMap;
@@ -32,6 +35,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -231,9 +235,12 @@ public class AdjGraph<V, E> implements Graph<V, E>, java.io.Serializable {
 
     @Override
     public String toString() {
-        return nodes + " * " + Joiner.on(",").join(StreamSupport.stream(edges.keyValuesView().spliterator(), false).map((e) -> {
-            long id = e.getOne();
-            return (id >> 32) + "->" + (id & 0xffffffffL) + '=' + e.getTwo();
+        return nodes + " * " + Joiner.on(",").join(StreamSupport.stream(edges.keyValuesView().spliterator(), false).map(new Function<LongObjectPair<E>, String>() {
+            @Override
+            public String apply(LongObjectPair<E> e) {
+                long id = e.getOne();
+                return (id >> 32) + "->" + (id & 0xffffffffL) + '=' + e.getTwo();
+            }
         }).collect(Collectors.toList()));
     }
 
@@ -287,22 +294,28 @@ public class AdjGraph<V, E> implements Graph<V, E>, java.io.Serializable {
         int i = node(v);
         if (i < 0)
             return;
-        antinodes.get(i).e.forEach(ee -> {
-            E ej = edge(i, ee);
-            Node<V> nohd = antinodes.get(ee);
-            each.accept(nohd.v, ej);
+        antinodes.get(i).e.forEach(new IntProcedure() {
+            @Override
+            public void value(int ee) {
+                E ej = edge(i, ee);
+                Node<V> nohd = antinodes.get(ee);
+                each.accept(nohd.v, ej);
+            }
         });
     }
    public void neighborEdges(V v, BiFunction<V,E,E> each) {
        int i = node(v);
         if (i < 0)
             return;
-        antinodes.get(i).e.forEach(ee -> {
-            E ej = edge(i, ee);
-            Node<V> nohd = antinodes.get(ee);
-            E ej2 = each.apply(nohd.v, ej);
-            if (ej2!=ej)
-                setEdge(i, ee, ej2);
+        antinodes.get(i).e.forEach(new IntProcedure() {
+            @Override
+            public void value(int ee) {
+                E ej = edge(i, ee);
+                Node<V> nohd = antinodes.get(ee);
+                E ej2 = each.apply(nohd.v, ej);
+                if (ej2 != ej)
+                    setEdge(i, ee, ej2);
+            }
         });
     }
 
@@ -354,7 +367,12 @@ public class AdjGraph<V, E> implements Graph<V, E>, java.io.Serializable {
     }
 
     public E edge(int s, int p, E ifMissing) {
-        return edge(s, p, ()->ifMissing);
+        return edge(s, p, new Supplier<E>() {
+            @Override
+            public E get() {
+                return ifMissing;
+            }
+        });
     }
 
     private E edge(int s, int p, Supplier<E> ifMissing) {
@@ -380,15 +398,18 @@ public class AdjGraph<V, E> implements Graph<V, E>, java.io.Serializable {
     }
 
     private void eachNode(TriConsumer<Node<V>, Node<V>, E> edge) {
-        edges.forEachKeyValue((eid, ev) -> {
-            int a = (int) (eid >> 32);
-            int b = (int) (eid);
-            Node<V> na = antinodes.get(a);
-            Node<V> nb = antinodes.get(b);
-            if (na == null || nb == null) {
-                throw new RuntimeException("oob");
+        edges.forEachKeyValue(new LongObjectProcedure<E>() {
+            @Override
+            public void value(long eid, E ev) {
+                int a = (int) (eid >> 32);
+                int b = (int) (eid);
+                Node<V> na = antinodes.get(a);
+                Node<V> nb = antinodes.get(b);
+                if (na == null || nb == null) {
+                    throw new RuntimeException("oob");
+                }
+                edge.accept(na, nb, ev);
             }
-            edge.accept(na, nb, ev);
         });
 
     }
@@ -397,23 +418,36 @@ public class AdjGraph<V, E> implements Graph<V, E>, java.io.Serializable {
      * returns true if modified
      */
     private void each(TriConsumer<V, V, E> edge) {
-        eachNode((an, bn, e) -> edge.accept(an.v, bn.v, e));
+        eachNode(new TriConsumer<Node<V>, Node<V>, E>() {
+            @Override
+            public void accept(Node<V> an, Node<V> bn, E e) {
+                edge.accept(an.v, bn.v, e);
+            }
+        });
     }
 
 
     public AdjGraph<V, E> compact() {
-        return compact((x, y, z) -> z);
+        return compact(new TriFunction<V, V, E, E>() {
+            @Override
+            public E apply(V x, V y, E z) {
+                return z;
+            }
+        });
     }
 
     private AdjGraph<V, E> compact(TriFunction<V, V, E, E> retain) {
         AdjGraph g = new AdjGraph(directed);
-        each((a, b, e) -> {
+        each(new TriConsumer<V, V, E>() {
+            @Override
+            public void accept(V a, V b, E e) {
 
-            E e1 = retain.apply(a, b, e);
-            if (e1 != null) {
-                int aa = g.addNode(a);
-                int bb = g.addNode(b);
-                g.setEdge(aa, bb, e1);
+                E e1 = retain.apply(a, b, e);
+                if (e1 != null) {
+                    int aa = g.addNode(a);
+                    int bb = g.addNode(b);
+                    g.setEdge(aa, bb, e1);
+                }
             }
         });
         return g;
@@ -431,9 +465,14 @@ public class AdjGraph<V, E> implements Graph<V, E>, java.io.Serializable {
             out.println("node [ id " + k.id + " label \"" +
                     k.v.toString().replace('\"','\'') + "\" ]");
 
-        eachNode((a, b, e) -> out.println(
-                "edge [ source " + a.id + " target " + b.id + " label \"" +
-                        e.toString().replace('\"','\'') + "\" ]"));
+        eachNode(new TriConsumer<Node<V>, Node<V>, E>() {
+            @Override
+            public void accept(Node<V> a, Node<V> b, E e) {
+                out.println(
+                        "edge [ source " + a.id + " target " + b.id + " label \"" +
+                                e.toString().replace('\"', '\'') + "\" ]");
+            }
+        });
 
         out.println("]");
     }

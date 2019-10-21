@@ -5,6 +5,8 @@ import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.space2d.widget.meter.Spectrogram;
 import spacegraph.space2d.widget.port.TypedPort;
 
+import java.util.function.Consumer;
+
 public class SpectrogramChip extends TypedPort<float[]> {
 
     private transient Spectrogram s = null;
@@ -14,11 +16,14 @@ public class SpectrogramChip extends TypedPort<float[]> {
     public SpectrogramChip() {
 
         super(float[].class);
-        on(row ->{
-            Spectrogram s = this.s;
-            if (s == null || s.N.intValue()!=row.length) {
-                //s = new Spectrogram()
-                set(s = this.s = new Spectrogram(true, history, row.length));
+        on(new Consumer<float[]>() {
+            @Override
+            public void accept(float[] row) {
+                Spectrogram s = SpectrogramChip.this.s;
+                if (s == null || s.N.intValue() != row.length) {
+                    //s = new Spectrogram()
+                    SpectrogramChip.this.set(s = SpectrogramChip.this.s = new Spectrogram(true, history, row.length));
+                }
             }
         });
     }

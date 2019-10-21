@@ -780,13 +780,16 @@ public enum Texts {
 
 				out.append('\n');
 
-				histogramDecode(h, "", (label, value) -> {
-					try {
-						out.append(label).append(' ').append(String.valueOf(value)).append('\n');
-					} catch (IOException e) {
-						throw new WTF(e);
-					}
-				});
+				histogramDecode(h, "", new BiConsumer<String, Object>() {
+                    @Override
+                    public void accept(String label, Object value) {
+                        try {
+                            out.append(label).append(' ').append(String.valueOf(value)).append('\n');
+                        } catch (IOException e) {
+                            throw new WTF(e);
+                        }
+                    }
+                });
 			}
 		} catch (IOException e) {
 			throw new WTF(e);

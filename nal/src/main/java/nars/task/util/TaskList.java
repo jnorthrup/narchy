@@ -9,6 +9,7 @@ import nars.Task;
 import nars.term.Term;
 import nars.truth.Stamp;
 import nars.truth.Truth;
+import org.eclipse.collections.api.block.function.primitive.LongObjectToLongFunction;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
@@ -61,9 +62,12 @@ public class TaskList extends FasterList<Task> implements TaskRegion {
     @Override
     public long start() {
 
-        long start = longify((m, t) ->{
-            long s = t.start();
-            return s != ETERNAL && s < m ? s : m;
+        long start = longify(new LongObjectToLongFunction<Task>() {
+            @Override
+            public long longValueOf(long m, Task t) {
+                long s = t.start();
+                return s != ETERNAL && s < m ? s : m;
+            }
         }, TIMELESS);
 
 		return start == TIMELESS ? ETERNAL : start;
@@ -118,24 +122,35 @@ public class TaskList extends FasterList<Task> implements TaskRegion {
         int ss = size();
         switch (ss) {
             case 1:
-                return () -> stamp(0);
+                return new Supplier<long[]>() {
+                    @Override
+                    public long[] get() {
+                        return TaskList.this.stamp(0);
+                    }
+                };
             case 2:
-                return ()-> {
-                    long[] a = stamp(0), b = stamp(1);
+                return new Supplier<long[]>() {
+                    @Override
+                    public long[] get() {
+                        long[] a = TaskList.this.stamp(0), b = TaskList.this.stamp(1);
 //                    if (a == null && b == null) throw new NullPointerException();
 //                    if (a == null) return b;
 //                    if (b == null) return a;
-                    return Stamp.sample(capacity, Stamp.toSet(a.length + b.length, a, b), rng);
+                        return Stamp.sample(capacity, Stamp.toSet(a.length + b.length, a, b), rng);
+                    }
                 };
             default:
 
-                return () -> {
-                    @Nullable MetalLongSet stampSet = Stamp.toMutableSet(
-                        capacity,
-                        this::stamp,
-                        ss); //calculate stamp after filtering and after intermpolation filtering
-                    //assert(!stampSet.isEmpty());
-					return stampSet.size() > capacity ? Stamp.sample(capacity, stampSet, rng) : stampSet.toSortedArray();
+                return new Supplier<long[]>() {
+                    @Override
+                    public long[] get() {
+                        @Nullable MetalLongSet stampSet = Stamp.toMutableSet(
+                                capacity,
+                                TaskList.this::stamp,
+                                ss); //calculate stamp after filtering and after intermpolation filtering
+                        //assert(!stampSet.isEmpty());
+                        return stampSet.size() > capacity ? Stamp.sample(capacity, stampSet, rng) : stampSet.toSortedArray();
+                    }
                 };
         }
     }

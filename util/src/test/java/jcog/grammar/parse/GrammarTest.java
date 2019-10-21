@@ -3,12 +3,15 @@ package jcog.grammar.parse;
 import jcog.grammar.parse.tokens.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
+import java.util.function.BiConsumer;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -73,7 +76,12 @@ class GrammarTest {
         MyTarget target = new MyTarget();
         assertNull(grammar.getRule("mystart"));
         grammar.addRule("mystart", new Empty());
-        grammar.addAssembler("mystart", (IAssembler) a -> a.setTarget(target));
+        grammar.addAssembler("mystart", new IAssembler() {
+            @Override
+            public void accept(Assembly a) {
+                a.setTarget(target);
+            }
+        });
 
         assertSame(target, grammar.parse("").getTarget());
     }
@@ -81,8 +89,16 @@ class GrammarTest {
 
     @Test
     void assemblersCanOnlyBeAddedToExistingRules() {
-        assertThrows(GrammarException.class, () -> grammar.addAssembler("mystart", (IAssembler) a -> {
-        }));
+        assertThrows(GrammarException.class, new Executable() {
+            @Override
+            public void execute() throws Throwable {
+                grammar.addAssembler("mystart", new IAssembler() {
+                    @Override
+                    public void accept(Assembly a) {
+                    }
+                });
+            }
+        });
     }
 
     @Test
@@ -156,10 +172,13 @@ class GrammarTest {
     void textualRuleWithGroovyClosure() {
         List<Object> expectedMatches = new ArrayList<>();
         expectedMatches.add(new Token("test"));
-        String ruleName = grammar.defineRule("mystart = \"test\"", (matches, stack) -> {
-            assertEquals(expectedMatches, matches);
-            assertTrue(stack.isEmpty());
-            called = true;
+        String ruleName = grammar.defineRule("mystart = \"test\"", new BiConsumer<List, Stack>() {
+            @Override
+            public void accept(List matches, Stack stack) {
+                assertEquals(expectedMatches, matches);
+                assertTrue(stack.isEmpty());
+                called = true;
+            }
         });
         assertEquals("mystart", ruleName);
         grammar.parse("test");
@@ -177,9 +196,12 @@ class GrammarTest {
 
     @Test
     void leftRecursivenessCheckerIsPluggedIn() {
-        assertThrows(GrammarException.class, () -> {
-            grammar.defineRule("r = r '>'");
-            grammar.check();
+        assertThrows(GrammarException.class, new Executable() {
+            @Override
+            public void execute() throws Throwable {
+                grammar.defineRule("r = r '>'");
+                grammar.check();
+            }
         });
     }
 

@@ -12,6 +12,8 @@ import nars.term.compound.LightDTCompound;
 import nars.term.util.cache.Intermed;
 import org.junit.jupiter.api.Test;
 
+import java.util.function.Supplier;
+
 import static nars.$.$$;
 import static nars.Op.CONJ;
 import static nars.Op.PROD;
@@ -50,7 +52,12 @@ class InterningTermBuilderTest {
         InterningTermBuilder t = new InterningTermBuilder();
         assertTrue(InterningTermBuilder.sortCanonically);
         Subterms s = t.subterms((Op)null, $$("x1").neg(), $$("y1"));
-        assertTrue(s instanceof RemappedSubterms, ()->s.getClass().toString());
+        assertTrue(s instanceof RemappedSubterms, new Supplier<String>() {
+            @Override
+            public String get() {
+                return s.getClass().toString();
+            }
+        });
         assertEquals("((--,x1),y1)", s.toString());
     }
 

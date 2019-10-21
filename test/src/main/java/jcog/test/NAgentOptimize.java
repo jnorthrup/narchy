@@ -7,21 +7,38 @@ import nars.NAL;
 import nars.NAR;
 import nars.NARS;
 import nars.game.Game;
+import org.eclipse.collections.api.block.function.primitive.FloatFunction;
+import org.eclipse.collections.api.block.predicate.primitive.BooleanBooleanPredicate;
+import org.eclipse.collections.api.block.procedure.primitive.ObjectFloatProcedure;
+import org.eclipse.collections.api.block.procedure.primitive.ObjectIntProcedure;
 
+import java.util.function.BooleanSupplier;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class NAgentOptimize {
     public static void main(String[] args) {
 
-        new NAgentOptimize(n ->
-                //new BooleanChoiceTest(n, (prev,next)->next==true)
-                new BooleanReactionTest(n,
-                        ()-> {
-                            int period = 8;
-                            return n.time() % (long) period < (long) (period / 2);
+        new NAgentOptimize(new Function<NAR, Game>() {
+            @Override
+            public Game apply(NAR n) {
+                return new BooleanReactionTest(n,
+                        new BooleanSupplier() {
+                            @Override
+                            public boolean getAsBoolean() {
+                                int period = 8;
+                                return n.time() % (long) period < (long) (period / 2);
+                            }
                         },
-                        (i, o) -> i==o
-                )
+                        new BooleanBooleanPredicate() {
+                            @Override
+                            public boolean accept(boolean i, boolean o) {
+                                return i == o;
+                            }
+                        }
+                );
+            }
+        }
 
                 //..new TrackXY(5,5)
 
@@ -31,15 +48,18 @@ public class NAgentOptimize {
     public NAgentOptimize(Function<NAR, Game> agent, int experimentCycles, int repeats) {
 
 
-        Lab<NAR> l = new Lab<NAR>(() -> {
-            NAR n = NARS.tmp();
-            n.random();
+        Lab<NAR> l = new Lab<NAR>(new Supplier<NAR>() {
+            @Override
+            public NAR get() {
+                NAR n = NARS.tmp();
+                n.random();
 
-            /* defaults TODO "learn" these from the experiments and reapply them in future experiments */
-            n.termVolMax.set(4);
-            n.goalPriDefault.pri(0.6f);
+                /* defaults TODO "learn" these from the experiments and reapply them in future experiments */
+                n.termVolMax.set(4);
+                n.goalPriDefault.pri(0.6f);
 
-            return n;
+                return n;
+            }
         });
 
         l.hints.put("autoInc", 3);
@@ -47,7 +67,12 @@ public class NAgentOptimize {
 //                .var("attnCapacity", 4, 128, 8,
 //                        (NAR n, int i) -> n.attn.active.setCapacity(i))
                 .var("termVolMax", 3, 16, 2,
-                        (NAR n, int i) -> n.termVolMax.set(i))
+                        new ObjectIntProcedure<NAR>() {
+                            @Override
+                            public void value(NAR n, int i) {
+                                n.termVolMax.set(i);
+                            }
+                        })
 //                .var("ttlMax", 6, 20, 3,
 //                        (NAR n, int i) -> n.deriveBranchTTL.setAt(i))
 //                .var("linkFanOut", 1, 16, 1,
@@ -59,12 +84,20 @@ public class NAgentOptimize {
 //                .var("beliefPriDefault", 0, 1f, 0.1f,
 //                        (NAR n, float f) -> n.beliefPriDefault.setAt(f))
                 .var("questionPriDefault", (float) 0, 1f, 0.1f,
-                        (n, f) -> {
-                            n.questionPriDefault.pri(f);
-                            n.questPriDefault.pri(f);
+                        new ObjectFloatProcedure<NAR>() {
+                            @Override
+                            public void value(NAR n, float f) {
+                                n.questionPriDefault.pri(f);
+                                n.questPriDefault.pri(f);
+                            }
                         })
                 .var("goalPriDefault", (float) 0, 1f, 0.1f,
-                    (NAR n, float f) -> n.goalPriDefault.pri(f))
+                        new ObjectFloatProcedure<NAR>() {
+                            @Override
+                            public void value(NAR n, float f) {
+                                n.goalPriDefault.pri(f);
+                            }
+                        })
 
 //                .var("derivationComplexityExponent", 1f, 3f, 0.5f,
 //                        (NAR n, float f) -> Deriver.derivers(n).forEach(x ->
@@ -91,27 +124,38 @@ public class NAgentOptimize {
         ;
 
 
-        Optilive<NAR, Game> o = l.optilive(n->agent.apply(n.get()),
-                jcog.lab.Optimize.repeat((Game t) -> {
-                    double[] rewardSum = {(double) 0}, dexSum = {(double) 0};
-                    t.onFrame(()-> {
-                        rewardSum[0] += t.happiness();
-                        dexSum[0] += t.dexterity();
-                    });
-                    try {
-                        t.nar().run(experimentCycles);
-                    } catch (Throwable ee) {
-                        if (NAL.DEBUG)
-                            ee.printStackTrace();
-                        return Float.NEGATIVE_INFINITY;
+        Optilive<NAR, Game> o = l.optilive(new Function<Supplier<NAR>, Game>() {
+                                               @Override
+                                               public Game apply(Supplier<NAR> n) {
+                                                   return agent.apply(n.get());
+                                               }
+                                           },
+                jcog.lab.Optimize.repeat(new FloatFunction<Game>() {
+                    @Override
+                    public float floatValueOf(Game t) {
+                        double[] rewardSum = {(double) 0}, dexSum = {(double) 0};
+                        t.onFrame(new Runnable() {
+                            @Override
+                            public void run() {
+                                rewardSum[0] += t.happiness();
+                                dexSum[0] += t.dexterity();
+                            }
+                        });
+                        try {
+                            t.nar().run(experimentCycles);
+                        } catch (Throwable ee) {
+                            if (NAL.DEBUG)
+                                ee.printStackTrace();
+                            return Float.NEGATIVE_INFINITY;
+                        }
+                        long time = t.nar().time();
+                        double frames = ((double) time) / (double) t.nar().dur();
+                        double rewardMean = rewardSum[0] / frames;
+                        double dexMean = dexSum[0] / frames;
+                        //return rewardSum[0];
+                        return (float) ((1.0 + rewardMean) * (1.0 + dexMean));
+                        //return rewardSum[0] * (1 + dexSum[0]);
                     }
-                    long time = t.nar().time();
-                    double frames = ((double)time) / (double) t.nar().dur();
-                    double rewardMean = rewardSum[0]/frames;
-                    double dexMean= dexSum[0]/frames;
-                    //return rewardSum[0];
-                    return (float) ((1.0 + rewardMean) * (1.0 + dexMean));
-                    //return rewardSum[0] * (1 + dexSum[0]);
                 }, repeats)
         );
 ////            o.sense("numConcepts",

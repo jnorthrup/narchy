@@ -22,7 +22,12 @@ import static java.lang.Float.NEGATIVE_INFINITY;
 public class TopN<X> extends SortedArray<X> implements FloatFunction<X>, TopFilter<X> {
 
 
-    public static final TopFilter Empty = new TopN(ArrayUtil.EMPTY_OBJECT_ARRAY, (x, min) -> Float.NaN) {
+    public static final TopFilter Empty = new TopN(ArrayUtil.EMPTY_OBJECT_ARRAY, new FloatRank() {
+        @Override
+        public float rank(Object x, float min) {
+            return Float.NaN;
+        }
+    }) {
         @Override
         public void setCapacity(int capacity) {
 
@@ -217,7 +222,12 @@ public class TopN<X> extends SortedArray<X> implements FloatFunction<X>, TopFilt
         return size > 0 ? getRoulette(rng::nextFloat) : null;
     }
     public final @Nullable X getRoulette(Supplier<Random> rng) {
-        return size > 0 ? getRoulette(()->rng.get().nextFloat()) : null;
+        return size > 0 ? getRoulette(new FloatSupplier() {
+            @Override
+            public float asFloat() {
+                return rng.get().nextFloat();
+            }
+        }) : null;
     }
 
     public @Nullable X getRoulette(FloatSupplier rng) {
@@ -236,7 +246,12 @@ public class TopN<X> extends SortedArray<X> implements FloatFunction<X>, TopFilt
             case 1:
                 return items[0];
             default:
-                IntToFloatFunction select = i -> rank.floatValueOf(items[i]);
+                IntToFloatFunction select = new IntToFloatFunction() {
+                    @Override
+                    public float valueOf(int i) {
+                        return rank.floatValueOf(items[i]);
+                    }
+                };
                 return items[
                     this instanceof TopFilter ?
                         Roulette.selectRoulette(n, select, rng) : //RankedTopN acts as the cache

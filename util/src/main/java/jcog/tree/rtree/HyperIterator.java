@@ -90,7 +90,12 @@ public class HyperIterator<X>  {
 //                    throw new WTF();
 
 
-        } while (findingLeaves || Util.or(x -> x instanceof RBranch, 0, plan.size(), plan.items)); //HACK
+        } while (findingLeaves || Util.or(new Predicate<Object>() {
+            @Override
+            public boolean test(Object x) {
+                return x instanceof RBranch;
+            }
+        }, 0, plan.size(), plan.items)); //HACK
         //} while (findingLeaves);
     }
 

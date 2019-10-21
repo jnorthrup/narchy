@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.function.IntFunction;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -31,7 +33,12 @@ class FalsePositiveRateTest {
             }
 
             long truePositives = containedStrings.stream().filter(filter::contains).count();
-            long trueNegatives = nonContainedStrings.stream().filter(string -> !filter.contains(string)).count();
+            long trueNegatives = nonContainedStrings.stream().filter(new Predicate<String>() {
+                @Override
+                public boolean test(String string) {
+                    return !filter.contains(string);
+                }
+            }).count();
             double falsePositiveRate = 100.0 * (batchSize - trueNegatives) / batchSize;
             double falseNegativeRate = 100.0 * (batchSize - truePositives) / batchSize;
             double accuracy = 100.0 * (truePositives + trueNegatives) / (2 * batchSize);
@@ -46,7 +53,12 @@ class FalsePositiveRateTest {
     }
 
     private static List<String> randomStrings(String prefix, int count) {
-        List<String> strings = IntStream.range(0, count).mapToObj(i -> prefix + UUID.randomUUID()).collect(Collectors.toList());
+        List<String> strings = IntStream.range(0, count).mapToObj(new IntFunction<String>() {
+            @Override
+            public String apply(int i) {
+                return prefix + UUID.randomUUID();
+            }
+        }).collect(Collectors.toList());
         return strings;
     }
 

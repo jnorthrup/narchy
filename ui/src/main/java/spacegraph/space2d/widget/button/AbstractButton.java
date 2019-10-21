@@ -10,6 +10,7 @@ import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.video.ImageTexture;
 
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 
 import static java.awt.event.KeyEvent.VK_ENTER;
 import static java.awt.event.KeyEvent.VK_SPACE;
@@ -22,10 +23,28 @@ public abstract class AbstractButton extends Widget {
 
     static final int CLICK_BUTTON = 0;
 
-    final Clicking click = new Clicking(CLICK_BUTTON,this, (f) -> {
-        dz = (float) 0;
-        onClick(f);
-    }, () -> dz = 0.5f, () -> dz = 0f, () -> dz = 0f);
+    final Clicking click = new Clicking(CLICK_BUTTON,this, new Consumer<Finger>() {
+        @Override
+        public void accept(Finger f) {
+            dz = (float) 0;
+            onClick(f);
+        }
+    }, new Runnable() {
+        @Override
+        public void run() {
+            dz = 0.5f;
+        }
+    }, new Runnable() {
+        @Override
+        public void run() {
+            dz = 0f;
+        }
+    }, new Runnable() {
+        @Override
+        public void run() {
+            dz = 0f;
+        }
+    });
 
     private final AtomicBoolean enabled = new AtomicBoolean(true);
 

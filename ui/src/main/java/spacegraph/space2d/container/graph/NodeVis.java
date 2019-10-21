@@ -8,6 +8,10 @@ import spacegraph.space2d.widget.windo.Windo;
 import spacegraph.util.MutableRectFloat;
 import spacegraph.video.Draw;
 
+import java.util.function.BiFunction;
+import java.util.function.BiPredicate;
+import java.util.function.Consumer;
+
 public class NodeVis<X> extends Windo {
 
     public transient volatile X id; //TODO WeakReference
@@ -61,7 +65,12 @@ public class NodeVis<X> extends Windo {
 //        }
 
     void paintEdges(GL2 gl) {
-        outs.forEachValue(x -> x.draw(this, gl));
+        outs.forEachValue(new Consumer<EdgeVis<X>>() {
+            @Override
+            public void accept(EdgeVis<X> x) {
+                x.draw(NodeVis.this, gl);
+            }
+        });
     }
 
     @Override
@@ -101,13 +110,16 @@ public class NodeVis<X> extends Windo {
         if (tid == null)
             return null;
 
-        EdgeVis<X> y = outs.compute(tid, (tt, yy) -> {
-            EdgeVis<X> yy1 = yy;
-            if (yy1 == null) {
-                yy1 = pool.get();
-                yy1.to = target;
+        EdgeVis<X> y = outs.compute(tid, new BiFunction<X, EdgeVis<X>, EdgeVis<X>>() {
+            @Override
+            public EdgeVis<X> apply(X tt, EdgeVis<X> yy) {
+                EdgeVis<X> yy1 = yy;
+                if (yy1 == null) {
+                    yy1 = pool.get();
+                    yy1.to = target;
+                }
+                return yy1;
             }
-            return yy1;
         });
         y.invalid = false;
         return y;
@@ -115,15 +127,23 @@ public class NodeVis<X> extends Windo {
 
     public void update() {
         //remove dead edges, or edges to NodeVis's which have been recycled after removal
-        outs.removeIf((x, e) -> {
-            if (e.invalid) return true;
-            NodeVis<X> ee = e.to;
-            return ee == null || !x.equals(ee.id);
+        outs.removeIf(new BiPredicate<X, EdgeVis<X>>() {
+            @Override
+            public boolean test(X x, EdgeVis<X> e) {
+                if (e.invalid) return true;
+                NodeVis<X> ee = e.to;
+                return ee == null || !x.equals(ee.id);
+            }
         });
     }
 
     void invalidateEdges() {
-        outs.forEachValue(e -> e.invalid = true);
+        outs.forEachValue(new Consumer<EdgeVis<X>>() {
+            @Override
+            public void accept(EdgeVis<X> e) {
+                e.invalid = true;
+            }
+        });
     }
 
     public void color(float r, float g, float b, float a) {

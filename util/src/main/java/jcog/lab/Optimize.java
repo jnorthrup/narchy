@@ -20,6 +20,7 @@ import org.apache.commons.math3.optim.nonlinear.scalar.noderiv.NelderMeadSimplex
 import org.apache.commons.math3.optim.nonlinear.scalar.noderiv.SimplexOptimizer;
 import org.apache.commons.math3.util.MathArrays;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
+import org.eclipse.collections.api.block.procedure.Procedure;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tech.tablesaw.api.Row;
@@ -96,15 +97,18 @@ public class Optimize<S, E> extends Lab<E>  {
     }
 
     public static <X> FloatFunction<X> repeat(FloatFunction<X> f, int repeats) {
-        return (x) -> {
-            double sum = (double) 0;
-            for (int i = 0; i < repeats; i++) {
-                float y = f.floatValueOf(x);
-                if (!Float.isFinite(y))
-                    return y;
-                sum = sum + (double) y;
+        return new FloatFunction<X>() {
+            @Override
+            public float floatValueOf(X x) {
+                double sum = (double) 0;
+                for (int i = 0; i < repeats; i++) {
+                    float y = f.floatValueOf(x);
+                    if (!Float.isFinite(y))
+                        return y;
+                    sum = sum + (double) y;
+                }
+                return (float) (sum / (double) repeats);
             }
-            return (float) (sum / (double) repeats);
         };
     }
 
@@ -170,7 +174,12 @@ public class Optimize<S, E> extends Lab<E>  {
         for (Sensor<S, ?> varSensor : varSensors) {
             varSensor.addToSchema(data);
         }
-        sensors.forEach(s -> s.addToSchema(data));
+        sensors.forEach(new Procedure<Sensor<E, ?>>() {
+            @Override
+            public void value(Sensor<E, ?> s) {
+                s.addToSchema(data);
+            }
+        });
 
         if (logger.isTraceEnabled()) {
             String s = data.columnNames().toString();
@@ -200,10 +209,13 @@ public class Optimize<S, E> extends Lab<E>  {
 
         try {
             Object[] copy = new Object[1];
-            E y = experiment.apply(() -> {
-                S s = subject(subj.get(), point);
-                copy[0] = s; //for measurement
-                return s;
+            E y = experiment.apply(new Supplier<S>() {
+                @Override
+                public S get() {
+                    S s = Optimize.this.subject(subj.get(), point);
+                    copy[0] = s; //for measurement
+                    return s;
+                }
             });
 
             double score = goal.apply(y).doubleValue();

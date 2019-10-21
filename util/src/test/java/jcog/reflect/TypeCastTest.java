@@ -135,7 +135,12 @@ public class TypeCastTest {
         
         CastGraph tcast = new CastGraph();
 
-        tcast.addEdge(Interface1.class, from -> null, Interface2.class);
+        tcast.addEdge(Interface1.class, new Function() {
+            @Override
+            public Object apply(Object from) {
+                return null;
+            }
+        }, Interface2.class);
 
         Class clsFrom = Intf1Impl.class;
 

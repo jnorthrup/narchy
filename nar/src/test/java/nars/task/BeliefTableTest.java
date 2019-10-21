@@ -12,6 +12,10 @@ import nars.truth.Truth;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
+import java.util.function.Consumer;
+import java.util.function.LongPredicate;
+import java.util.function.Supplier;
+
 import static nars.Op.BELIEF;
 import static nars.Op.IMPL;
 import static nars.task.RevisionTest.x;
@@ -26,7 +30,12 @@ class BeliefTableTest {
 
     private static void assertDuration(NAR n, String c, long start, long end) throws Narsese.NarseseException {
         TaskConcept cc = (TaskConcept) n.conceptualize(c);
-        assertNotNull(cc, () -> c + " unconceptualized");
+        assertNotNull(cc, new Supplier<String>() {
+            @Override
+            public String get() {
+                return c + " unconceptualized";
+            }
+        });
 
 
         assertTrue(((BeliefTables)cc.beliefs()).tableFirst(DynamicTruthTable.class)!=null);
@@ -34,7 +43,12 @@ class BeliefTableTest {
         Task t = n.belief(cc, start, end);
         assertNotNull(t);
         assertEquals(start, t.start());
-        assertEquals(end, t.end(), ()-> t + " but end should be: " + end + '\n' + t.proof());
+        assertEquals(end, t.end(), new Supplier<String>() {
+            @Override
+            public String get() {
+                return t + " but end should be: " + end + '\n' + t.proof();
+            }
+        });
     }
 
 
@@ -117,17 +131,32 @@ class BeliefTableTest {
             long w = timing[i];
             Truth truth = table.truth(w, n);
             float fExpected = freqPattern[i];
-            assertEquals(fExpected, truth.freq(), 0.01f, () -> "exact truth @" + w + " == " + fExpected);
+            assertEquals(fExpected, truth.freq(), 0.01f, new Supplier<String>() {
+                @Override
+                public String get() {
+                    return "exact truth @" + w + " == " + fExpected;
+                }
+            });
 
             Task match = table.match(w, w, null, 0, n);
-            assertEquals(fExpected, match.freq(), 0.01f, () -> "exact belief @" + w + " == " + fExpected);
+            assertEquals(fExpected, match.freq(), 0.01f, new Supplier<String>() {
+                @Override
+                public String get() {
+                    return "exact belief @" + w + " == " + fExpected;
+                }
+            });
         }
 
 
         for (int i = 1; i < c - 1; i++) {
             float f = (freqPattern[i - 1] + freqPattern[i] + freqPattern[i + 1]) / 3f;
             long w = timing[i];
-            assertEquals(f, table.truth(w, n).freq(), 0.1f, () -> "t=" + w);
+            assertEquals(f, table.truth(w, n).freq(), 0.1f, new Supplier<String>() {
+                @Override
+                public String get() {
+                    return "t=" + w;
+                }
+            });
         }
 
 
@@ -163,13 +192,31 @@ class BeliefTableTest {
         t.confTolerance(0.1f);
         t.inputAt(1, "x. |");
         t.inputAt(dur*2-1, "y. |");
-        t.mustBelieve(dur*2-1, "(x&&y)", 1f, 0.81f, s -> true  /* TODO test occ = 0..3 */);
+        t.mustBelieve(dur*2-1, "(x&&y)", 1f, 0.81f, new LongPredicate() {
+            @Override
+            public boolean test(long s) {
+                return true;
+            }
+        }  /* TODO test occ = 0..3 */);
         t.mustNotOutput(dur*2-1, "(x &&+3 y)", BELIEF);
-        t.mustBelieve(dur*2-1, "(x==>y)", 1f, 0.45f, s -> true  /* TODO test occ = 0..3 */);
+        t.mustBelieve(dur*2-1, "(x==>y)", 1f, 0.45f, new LongPredicate() {
+            @Override
+            public boolean test(long s) {
+                return true;
+            }
+        }  /* TODO test occ = 0..3 */);
         t.mustNotOutput(dur*2-1, "(x ==>+3 y)", BELIEF);
-        n.onTask(tt -> {
-            if (!tt.isInput() && tt.start() % dur != 0 && tt.end() % dur != 0 || tt.end() > 0 && tt.start() > dur)
-                fail(()->tt + " is not aligned");
+        n.onTask(new Consumer<Task>() {
+            @Override
+            public void accept(Task tt) {
+                if (!tt.isInput() && tt.start() % dur != 0 && tt.end() % dur != 0 || tt.end() > 0 && tt.start() > dur)
+                    fail(new Supplier<String>() {
+                        @Override
+                        public String get() {
+                            return tt + " is not aligned";
+                        }
+                    });
+            }
         });
         t.test();
     }
@@ -227,7 +274,12 @@ class BeliefTableTest {
         { int dt = 3;
             Term tt = IMPL.the((Term)$.$("a"), +dt, $.$("b"));
             Task fwd = n.answer(tt, BELIEF, when);
-            assertEquals("(a ==>+3 b)", fwd.term().toString(), ()->tt + " -> " + fwd);
+            assertEquals("(a ==>+3 b)", fwd.term().toString(), new Supplier<String>() {
+                @Override
+                public String get() {
+                    return tt + " -> " + fwd;
+                }
+            });
         }
 
         //TODO

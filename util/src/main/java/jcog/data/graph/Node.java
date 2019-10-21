@@ -13,6 +13,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -66,7 +67,12 @@ public interface Node<N, E> {
         if (!in && !out)
             return Collections.EMPTY_LIST;
 
-        Function<FromTo<Node<N, E>, E>, @org.checkerframework.checker.nullness.qual.Nullable Node<N, E>> other = x -> x.other(this);
+        Function<FromTo<Node<N, E>, E>, @org.checkerframework.checker.nullness.qual.Nullable Node<N, E>> other = new Function<FromTo<Node<N, E>, E>, Node<N, E>>() {
+            @Override
+            public Node<N, E> apply(FromTo<Node<N, E>, E> x) {
+                return x.other(Node.this);
+            }
+        };
         Iterable<Node<N, E>> i = in ? StreamSupport.stream(edges(true, false).spliterator(), false).map(other).collect(Collectors.toList()) : null;
         Iterable<Node<N, E>> o = out ? StreamSupport.stream(edges(false, true).spliterator(), false).map(other).collect(Collectors.toList()) : null;
         if (in && out)
@@ -91,7 +97,12 @@ public interface Node<N, E> {
 
     default void print(PrintStream out) {
         out.println(this);
-        stream().forEach(e -> out.println("\t" + e));
+        stream().forEach(new Consumer<FromTo<Node<N, E>, E>>() {
+            @Override
+            public void accept(FromTo<Node<N, E>, E> e) {
+                out.println("\t" + e);
+            }
+        });
     }
 
     default int edgeCount(boolean in, boolean out) {

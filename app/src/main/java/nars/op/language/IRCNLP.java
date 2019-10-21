@@ -1,9 +1,11 @@
 
 package nars.op.language;
 
+import jcog.exe.Loop;
 import nars.$;
 import nars.NAR;
 import nars.NARS;
+import nars.Task;
 import nars.derive.Deriver;
 import nars.derive.Derivers;
 import nars.op.language.util.IRC;
@@ -21,6 +23,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
@@ -131,7 +135,12 @@ public class IRCNLP extends IRC {
 
     void hear(String text, String src) {
 
-        NARHear.hearIfNotNarsese(nar, text, src, (t) -> new NARHear(nar, NARHear.tokenize(t.toLowerCase()), src, 200));
+        NARHear.hearIfNotNarsese(nar, text, src, new Function<String, Loop>() {
+            @Override
+            public Loop apply(String t) {
+                return new NARHear(nar, NARHear.tokenize(t.toLowerCase()), src, 200);
+            }
+        });
     }
 
     @Override
@@ -209,11 +218,14 @@ public class IRCNLP extends IRC {
                 "#nars"
 
         );
-        new Thread(()-> {
-            try {
-                bot.start();
-            } catch (IOException | IrcException e) {
-                e.printStackTrace();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    bot.start();
+                } catch (IOException | IrcException e) {
+                    e.printStackTrace();
+                }
             }
         }).start();
 
@@ -222,22 +234,25 @@ public class IRCNLP extends IRC {
         Term HEAR = $.the("hear");
 
 
-        n.onTask(t -> {
+        n.onTask(new Consumer<Task>() {
+            @Override
+            public void accept(Task t) {
 
 
-            long taskTime = t.mid();
-            if (taskTime != ETERNAL) {
-                if (t.isGoal() && t.isPositive()) { //t.isBeliefOrGoal() /* BOTH */) {
-                    //long now = n.time();
-                    //int dur = n.dur();
-                    //if (taskTime >= now - dur) {
-                    Term tt = t.term();
+                long taskTime = t.mid();
+                if (taskTime != ETERNAL) {
+                    if (t.isGoal() && t.isPositive()) { //t.isBeliefOrGoal() /* BOTH */) {
+                        //long now = n.time();
+                        //int dur = n.dur();
+                        //if (taskTime >= now - dur) {
+                        Term tt = t.term();
                         if (tt.op() == INH && HEAR.equals(tt.sub(1))) {
-                            if (((Compound)tt).subIs(0, PROD) && tt.sub(0).sub(0).op().taskable) {
+                            if (((Compound) tt).subIs(0, PROD) && tt.sub(0).sub(0).op().taskable) {
                                 bot.speak(tt.sub(0).sub(0), taskTime, t.truth());
                             }
                         }
-                    //}
+                        //}
+                    }
                 }
             }
         }, GOAL);

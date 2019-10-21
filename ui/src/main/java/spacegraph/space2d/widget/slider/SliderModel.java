@@ -14,6 +14,8 @@ import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.PaintSurface;
 import spacegraph.video.Draw;
 
+import java.util.function.Consumer;
+
 /**
  * abstract 1D slider/scrollbar
  */
@@ -48,7 +50,12 @@ public class SliderModel extends PaintSurface {
 
     @Override
     protected final void paint(GL2 gl, ReSurface reSurface) {
-        Draw.bounds(bounds, gl, g -> ui.paint(this.p, g));
+        Draw.bounds(bounds, gl, new Consumer<GL2>() {
+            @Override
+            public void accept(GL2 g) {
+                ui.paint(SliderModel.this.p, g);
+            }
+        });
     }
 
     public SliderUI ui = SolidLeft;

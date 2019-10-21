@@ -121,14 +121,17 @@ public class Theories {
             return 0;
 
         int[] removals = {0};
-        family.removeIf(ci -> {
-            if (clause.unifiable(ci.clause)) {
-                if (each.test(ci)) {
-                    removals[0]++;
-                    return true;
+        family.removeIf(new Predicate<ClauseInfo>() {
+            @Override
+            public boolean test(ClauseInfo ci) {
+                if (clause.unifiable(ci.clause)) {
+                    if (each.test(ci)) {
+                        removals[0]++;
+                        return true;
+                    }
                 }
+                return false;
             }
-            return false;
         });
 
 

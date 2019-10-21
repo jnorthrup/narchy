@@ -1,6 +1,7 @@
 package jcog.bloom;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 
 import java.util.Random;
 
@@ -16,30 +17,53 @@ class LongBitsetBloomFilterTest {
 
     @Test
     void testBloomIllegalArg1() {
-        assertThrows(AssertionError.class, ()-> {
+        assertThrows(AssertionError.class, new Executable() {
+            @Override
+            public void execute() throws Throwable {
 
-            LongBitsetBloomFilter bf = new LongBitsetBloomFilter(0, 0);
+                LongBitsetBloomFilter bf = new LongBitsetBloomFilter(0, 0);
+            }
         });
     }
 
     @Test
     void testBloomIllegalArg2() {
-        assertThrows(AssertionError.class, ()->{LongBitsetBloomFilter bf = new LongBitsetBloomFilter(0, 0.1);});
+        assertThrows(AssertionError.class, new Executable() {
+            @Override
+            public void execute() throws Throwable {
+                LongBitsetBloomFilter bf = new LongBitsetBloomFilter(0, 0.1);
+            }
+        });
     }
 
     @Test
     void testBloomIllegalArg3() {
-        assertThrows(AssertionError.class, ()->{LongBitsetBloomFilter bf = new LongBitsetBloomFilter(1, 0.0);});
+        assertThrows(AssertionError.class, new Executable() {
+            @Override
+            public void execute() throws Throwable {
+                LongBitsetBloomFilter bf = new LongBitsetBloomFilter(1, 0.0);
+            }
+        });
     }
 
     @Test
     void testBloomIllegalArg4() {
-        assertThrows(AssertionError.class, ()->{LongBitsetBloomFilter bf = new LongBitsetBloomFilter(1, 1.0);});
+        assertThrows(AssertionError.class, new Executable() {
+            @Override
+            public void execute() throws Throwable {
+                LongBitsetBloomFilter bf = new LongBitsetBloomFilter(1, 1.0);
+            }
+        });
     }
 
     @Test
     void testBloomIllegalArg5() {
-        assertThrows(AssertionError.class, ()->{LongBitsetBloomFilter bf = new LongBitsetBloomFilter(-1, -1);});
+        assertThrows(AssertionError.class, new Executable() {
+            @Override
+            public void execute() throws Throwable {
+                LongBitsetBloomFilter bf = new LongBitsetBloomFilter(-1, -1);
+            }
+        });
     }
 
 

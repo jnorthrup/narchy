@@ -104,15 +104,22 @@ public abstract class Functor extends AbstractAtomic implements BiFunction<Evalu
     }
 
     private static LambdaFunctor f(Atom termAtom, int arityRequired, Function<Subterms, Term> ff) {
-        return f(termAtom, tt ->
-                (tt.subs() == arityRequired) ? ff.apply(tt) : IdempotentBool.Null
+        return f(termAtom, new Function<Subterms, Term>() {
+                    @Override
+                    public Term apply(Subterms tt) {
+                        return (tt.subs() == arityRequired) ? ff.apply(tt) : IdempotentBool.Null;
+                    }
+                }
         );
     }
 
     private static LambdaFunctor f(Atom termAtom, int minArity, int maxArity, Function<Subterms, Term> ff) {
-        return f(termAtom, (tt) -> {
-            int n = tt.subs();
-            return ((n >= minArity) && ( n<=maxArity)) ? ff.apply(tt) : IdempotentBool.Null;
+        return f(termAtom, new Function<Subterms, Term>() {
+            @Override
+            public Term apply(Subterms tt) {
+                int n = tt.subs();
+                return ((n >= minArity) && (n <= maxArity)) ? ff.apply(tt) : IdempotentBool.Null;
+            }
         });
     }
 
@@ -120,7 +127,12 @@ public abstract class Functor extends AbstractAtomic implements BiFunction<Evalu
      * zero argument (void) functor (convenience method)
      */
     private static LambdaFunctor f0(Atom termAtom, Supplier<Term> ff) {
-        return f(termAtom, 0, (tt) -> ff.get());
+        return f(termAtom, 0, new Function<Subterms, Term>() {
+            @Override
+            public Term apply(Subterms tt) {
+                return ff.get();
+            }
+        });
     }
 
     public static LambdaFunctor f0(String termAtom, Supplier<Term> ff) {
@@ -129,18 +141,23 @@ public abstract class Functor extends AbstractAtomic implements BiFunction<Evalu
 
     public static LambdaFunctor r0(String termAtom, Supplier<Runnable> ff) {
         Atom fName = fName(termAtom);
-        return f0(fName, () -> new AbstractPred<>($.inst($.quote(Util.uuid64()), fName)) {
-
+        return f0(fName, new Supplier<Term>() {
             @Override
-            public boolean test(Object o) {
-                try {
-                    Runnable r = ff.get();
-                    r.run();
-                    return true;
-                } catch (Throwable t) {
-                    t.printStackTrace();
-                    return false;
-                }
+            public Term get() {
+                return new AbstractPred<>($.inst($.quote(Util.uuid64()), fName)) {
+
+                    @Override
+                    public boolean test(Object o) {
+                        try {
+                            Runnable r = ff.get();
+                            r.run();
+                            return true;
+                        } catch (Throwable t) {
+                            t.printStackTrace();
+                            return false;
+                        }
+                    }
+                };
             }
         });
     }
@@ -149,7 +166,12 @@ public abstract class Functor extends AbstractAtomic implements BiFunction<Evalu
      * one argument functor (convenience method)
      */
     public static LambdaFunctor f1(Atom termAtom, UnaryOperator<Term> ff) {
-        return f(termAtom, 1, (tt) -> ff.apply(tt.sub(0)));
+        return f(termAtom, 1, new Function<Subterms, Term>() {
+            @Override
+            public Term apply(Subterms tt) {
+                return ff.apply(tt.sub(0));
+            }
+        });
     }
 
     public static LambdaFunctor f1(String termAtom, UnaryOperator<Term> ff) {
@@ -166,8 +188,12 @@ public abstract class Functor extends AbstractAtomic implements BiFunction<Evalu
     }
 
     public static <X extends Term> LambdaFunctor f1Const(String termAtom, Function<X, Term> ff) {
-        return f1(fName(termAtom), x ->
-                ((x == null) || x.hasVars()) ? null : ff.apply((X) x)
+        return f1(fName(termAtom), new UnaryOperator<Term>() {
+                    @Override
+                    public Term apply(Term x) {
+                        return ((x == null) || x.hasVars()) ? null : ff.apply((X) x);
+                    }
+                }
         );
     }
 
@@ -175,9 +201,12 @@ public abstract class Functor extends AbstractAtomic implements BiFunction<Evalu
      * a functor involving a concept resolved by the 1st argument target
      */
     public static LambdaFunctor f1Concept(String termAtom, NAR nar, BiFunction<Concept, NAR, Term> ff) {
-        return f1(fName(termAtom), t -> {
-            Concept c = nar.conceptualizeDynamic(t);
-            return c != null ? ff.apply(c, nar) : null;
+        return f1(fName(termAtom), new UnaryOperator<Term>() {
+            @Override
+            public Term apply(Term t) {
+                Concept c = nar.conceptualizeDynamic(t);
+                return c != null ? ff.apply(c, nar) : null;
+            }
         });
     }
 
@@ -185,7 +214,12 @@ public abstract class Functor extends AbstractAtomic implements BiFunction<Evalu
      * two argument functor (convenience method)
      */
     private static LambdaFunctor f2(Atom termAtom, BiFunction<Term, Term, Term> ff) {
-        return f(termAtom, 2, tt -> ff.apply(tt.sub(0), tt.sub(1)));
+        return f(termAtom, 2, new Function<Subterms, Term>() {
+            @Override
+            public Term apply(Subterms tt) {
+                return ff.apply(tt.sub(0), tt.sub(1));
+            }
+        });
     }
 
     /**
@@ -208,7 +242,12 @@ public abstract class Functor extends AbstractAtomic implements BiFunction<Evalu
      * three argument functor (convenience method)
      */
     public static LambdaFunctor f3(Atom termAtom, TriFunction<Term, Term, Term, Term> ff) {
-        return f(termAtom, 3, (tt) -> ff.apply(tt.sub(0), tt.sub(1), tt.sub(2)));
+        return f(termAtom, 3, new Function<Subterms, Term>() {
+            @Override
+            public Term apply(Subterms tt) {
+                return ff.apply(tt.sub(0), tt.sub(1), tt.sub(2));
+            }
+        });
     }
 
     public static LambdaFunctor f2Or3(String termAtom, Function<Subterms, Term> ff) {

@@ -6,6 +6,7 @@ import nars.attention.TaskLinkWhat;
 import nars.concept.Concept;
 import nars.concept.snapshot.Snapshot;
 import nars.derive.Derivation;
+import nars.link.TaskLink;
 import nars.link.TaskLinkBag;
 import nars.link.TaskLinks;
 import nars.term.Term;
@@ -13,6 +14,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BiFunction;
+import java.util.function.Predicate;
 
 import static nars.Op.ATOM;
 
@@ -40,27 +43,33 @@ public abstract class AbstractAdjacentIndexer extends AdjacentIndexer {
             NAR nar = d.nar;
 
 
-            List<Term> tangent = Snapshot.get(to, nar, id, d.time, ttl(d), (Concept targetConcept, List<Term> t) -> {
-				//TOO SLOW, impl indexes
+            List<Term> tangent = Snapshot.get(to, nar, id, d.time, ttl(d), new BiFunction<Concept, List<Term>, List<Term>>() {
+                @Override
+                public List<Term> apply(Concept targetConcept, List<Term> t) {
+                    //TOO SLOW, impl indexes
 
-                TaskLinkBag bag = ((TaskLinkWhat) (d.x)).links.links;
-				int[] ttl = {Math.max(4, bag.size() / 8)}; //TODO parameter
+                    TaskLinkBag bag = ((TaskLinkWhat) (d.x)).links.links;
+                    int[] ttl = {Math.max(4, bag.size() / 8)}; //TODO parameter
 
-                FasterList<Term> l = new FasterList<Term>(ttl[0]);
-				bag.sampleUnique(d.random, (c -> {
-                    Term ct = c.term();
-					if (!ct.equals(to) && test(ct, to))
-						l.add(ct);
-					return --ttl[0] > 0;
-				}));
+                    FasterList<Term> l = new FasterList<Term>(ttl[0]);
+                    bag.sampleUnique(d.random, (new Predicate<TaskLink>() {
+                        @Override
+                        public boolean test(TaskLink c) {
+                            Term ct = c.term();
+                            if (!ct.equals(to) && AbstractAdjacentIndexer.this.test(ct, to))
+                                l.add(ct);
+                            return --ttl[0] > 0;
+                        }
+                    }));
 
-				if (l.isEmpty())
-					return EmptyFasterList;
-				else {
-					l.trimToSize();
-					return l;
-				}
-			});
+                    if (l.isEmpty())
+                        return EmptyFasterList;
+                    else {
+                        l.trimToSize();
+                        return l;
+                    }
+                }
+            });
 
 			if (tangent != null)
 				return ((FasterList<Term>)tangent).get(d.random); //System.out.println(target + "\t" + tangent);

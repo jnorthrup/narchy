@@ -15,13 +15,17 @@ import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.var.NormalizedVariable;
+import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 import static nars.Op.*;
 import static nars.time.Tense.DTERNAL;
@@ -150,25 +154,28 @@ public class PrologCore extends Prolog implements Consumer<Task> {
         if (!ct.hasAny(Op.AtomicConstant))
             return;
 
-        beliefs.computeIfAbsent(ct, (pp/*=ct?*/) -> {
+        beliefs.computeIfAbsent(ct, new Function<Term, alice.tuprolog.Term>() {
+            @Override
+            public alice.tuprolog.Term apply(Term pp) {
 
-            Struct next = (Struct) pterm(t.term());
+                Struct next = (Struct) pterm(t.term());
 
-            if (!truth) {
-                if (t.op() == IMPL) {
-                    next = new Struct(":-", negate(next.subResolve(1)), next.subResolve(0));
-                } else {
-                    next = negate(next);
+                if (!truth) {
+                    if (t.op() == IMPL) {
+                        next = new Struct(":-", negate(next.subResolve(1)), next.subResolve(0));
+                    } else {
+                        next = negate(next);
+                    }
                 }
+
+                Solution s = PrologCore.this.solve(assertion(next));
+                if (s.isSuccess())
+                    logger.info("believe {}", next);
+                else
+                    logger.warn("believe {} failed", next);
+
+                return next;
             }
-
-            Solution s = solve(assertion(next));
-            if (s.isSuccess())
-                logger.info("believe {}", next);
-            else
-                logger.warn("believe {} failed", next);
-
-            return next;
         });
 
 
@@ -189,26 +196,29 @@ public class PrologCore extends Prolog implements Consumer<Task> {
         logger.info("solve {}", questionTerm);
 
         long timeoutMS = 50L;
-        solveWhile(questionTerm, (answer) -> {
+        solveWhile(questionTerm, new Predicate<Solution>() {
+            @Override
+            public boolean test(Solution answer) {
 
 
-            switch (answer.result()) {
-                case PrologRun.TRUE:
-                case PrologRun.TRUE_CP:
+                switch (answer.result()) {
+                    case PrologRun.TRUE:
+                    case PrologRun.TRUE_CP:
 
 
-                    answer(question, answer);
+                        PrologCore.this.answer(question, answer);
 
-                    break;
-                case PrologRun.FALSE:
+                        break;
+                    case PrologRun.FALSE:
 
 
-                    break;
-                default:
+                        break;
+                    default:
 
-                    break;
+                        break;
+                }
+                return true;
             }
-            return true;
         }, timeoutMS);
 
     }
@@ -217,10 +227,13 @@ public class PrologCore extends Prolog implements Consumer<Task> {
         try {
             Term yt = nterm(answer.goal);
 
-            Task y = Task.tryTask(yt, BELIEF, $.t(1f, answerConf.floatValue()), (term, truth) -> {
-                Task t = NALTask.the(term, BELIEF, truth, nar.time(), ETERNAL, ETERNAL, nar.evidence())
-                        .pri(nar);
-                return t;
+            Task y = Task.tryTask(yt, BELIEF, $.t(1f, answerConf.floatValue()), new BiFunction<Term, Truth, Task>() {
+                @Override
+                public Task apply(Term term, Truth truth) {
+                    Task t = NALTask.the(term, BELIEF, truth, nar.time(), ETERNAL, ETERNAL, nar.evidence())
+                            .pri(nar);
+                    return t;
+                }
             });
 
 

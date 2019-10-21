@@ -23,6 +23,7 @@ import spacegraph.video.JoglDisplay;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.function.Function;
 
 import static java.lang.Math.sin;
 
@@ -193,37 +194,40 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
 
         finger.boundsScreen = bounds;
 
-        return finger.push(cam, (f)->{
-            Surface innerTouched = super.finger(f);
+        return finger.push(cam, new Function<Finger, Surface>() {
+            @Override
+            public Surface apply(Finger f) {
+                Surface innerTouched = Zoomed.super.finger(f);
 
-            if (!(innerTouched instanceof Finger.ScrollWheelConsumer)) {
-                //wheel zoom: absorb remaining rotationY
-                float dy = f.rotationY(true);
-                if (dy != (float) 0) {
-                    zoomDelta(f.posGlobal(), dy * wheelZoomRate);
-                    //zoomDelta(dy * wheelZoomRate);
-                    zoomStackReset();
+                if (!(innerTouched instanceof Finger.ScrollWheelConsumer)) {
+                    //wheel zoom: absorb remaining rotationY
+                    float dy = f.rotationY(true);
+                    if (dy != (float) 0) {
+                        Zoomed.this.zoomDelta(f.posGlobal(), dy * wheelZoomRate);
+                        //zoomDelta(dy * wheelZoomRate);
+                        Zoomed.this.zoomStackReset();
+                    }
                 }
-            }
 
 
-            if (innerTouched != null && f.clickedNow(2 /*right button*/)) {
-                /** click-zoom */
-                zoomNext(f, innerTouched);
-            }
+                if (innerTouched != null && f.clickedNow(2 /*right button*/)) {
+                    /** click-zoom */
+                    Zoomed.this.zoomNext(f, innerTouched);
+                }
 
 
-            if (innerTouched == null) {
+                if (innerTouched == null) {
                 /*if (f.tryFingering(zoomDrag)) {
                     zoomStackReset();
                 } else */
-                if (f.test(contentPan)) {
-                    zoomStackReset();
+                    if (f.test(contentPan)) {
+                        Zoomed.this.zoomStackReset();
+                    }
+                    //}
                 }
-                //}
-            }
 
-            return innerTouched;
+                return innerTouched;
+            }
         });
     }
 

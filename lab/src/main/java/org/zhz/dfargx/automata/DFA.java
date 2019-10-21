@@ -1,10 +1,12 @@
 package org.zhz.dfargx.automata;
 
+import org.eclipse.collections.api.block.procedure.primitive.CharObjectProcedure;
 import org.eclipse.collections.impl.map.mutable.primitive.CharObjectHashMap;
 import org.eclipse.collections.impl.map.mutable.primitive.IntIntHashMap;
 import org.zhz.dfargx.util.CommonSets;
 
 import java.util.*;
+import java.util.function.Function;
 
 /**
  * Created on 2015/5/10.
@@ -141,7 +143,12 @@ public class DFA {
             int[] state = newRejectState();
             CharObjectHashMap<Set<NFAState>> ev = entry.getValue();
 
-            ev.forEachKeyValue( (k, v) -> state[(int) k] = stateRenamingMap.get(v));
+            ev.forEachKeyValue(new CharObjectProcedure<Set<NFAState>>() {
+                @Override
+                public void value(char k, Set<NFAState> v) {
+                    state[(int) k] = stateRenamingMap.get(v);
+                }
+            });
 
             renamedDFATransitionTable.put(renamingStateID, state);
 
@@ -171,7 +178,12 @@ public class DFA {
                             int targetGroup = groupFlags.get(targetState);
                             targetGroupTable.put((int) ch, targetGroup);
                         }
-                        Set<Integer> stateIDSet = invertMap.computeIfAbsent(targetGroupTable, k -> new HashSet<>());
+                        Set<Integer> stateIDSet = invertMap.computeIfAbsent(targetGroupTable, new Function<Map<Integer, Integer>, Set<Integer>>() {
+                            @Override
+                            public Set<Integer> apply(Map<Integer, Integer> k) {
+                                return new HashSet<>();
+                            }
+                        });
                         stateIDSet.add(sid);
                     }
                 }

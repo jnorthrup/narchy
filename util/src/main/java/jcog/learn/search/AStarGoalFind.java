@@ -8,6 +8,7 @@ import jcog.learn.search.impl.OpenSet;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.ToDoubleFunction;
 
 /**
  * Uses the A* Algorithm to find the shortest path from
@@ -73,8 +74,12 @@ public class AStarGoalFind<F extends Solution> {
      */
     F search(Problem<F> problem,  F initialNode, F goalNode) {
 
-        Comparator<F> SEARCH_COMPARATOR = Comparator.comparingDouble((x)->
-                x.g() + problem.cost(x, goalNode));
+        Comparator<F> SEARCH_COMPARATOR = Comparator.comparingDouble(new ToDoubleFunction<F>() {
+            @Override
+            public double applyAsDouble(F x) {
+                return x.g() + problem.cost(x, goalNode);
+            }
+        });
 
         IOpenSet<F> openSet = new OpenSet(SEARCH_COMPARATOR);
         openSet.add(initialNode);

@@ -4,14 +4,17 @@ import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.opengl.GL2;
 import jcog.exe.Loop;
 import jcog.math.FloatRange;
+import jcog.math.FloatSupplier;
 import nars.$;
 import nars.GameX;
 import nars.NAR;
+import nars.game.Game;
 import nars.game.action.GoalActionConcept;
 import nars.game.sensor.Signal;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.truth.PreciseTruth;
+import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 import spacegraph.SpaceGraph;
 import spacegraph.input.finger.Finger;
 import spacegraph.input.key.KeyPressed;
@@ -20,6 +23,8 @@ import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.console.VectorTextGrid;
 
 import java.util.Arrays;
+import java.util.function.BooleanSupplier;
+import java.util.function.Function;
 
 import static nars.Op.BELIEF;
 
@@ -125,12 +130,15 @@ public class ConsoleAgent extends GameX {
                 for (char c : alphabet) {
                     Term C = $.inh(id, $.quote(String.valueOf(c)));
                     //actionPushButton(C, writeThresh::floatValue, () -> write(c));
-                    GoalActionConcept cc = actionUnipolar(C, (x) -> {
-                        if (x > writeThresh.floatValue()) {
-                            if (write(c))
-                                return 1.0F;
+                    GoalActionConcept cc = actionUnipolar(C, new FloatToFloatFunction() {
+                        @Override
+                        public float valueOf(float x) {
+                            if (x > writeThresh.floatValue()) {
+                                if (write(c))
+                                    return 1.0F;
+                            }
+                            return (float) 0;
                         }
-                        return (float) 0;
                     });
                     cc.goalDefault(OFF, nar);
                 }
@@ -138,16 +146,22 @@ public class ConsoleAgent extends GameX {
 
         };
 
-        reward("similar", 1f, () -> {
+        reward("similar", 1f, new FloatSupplier() {
+            @Override
+            public float asFloat() {
 
-            float s = similarity(R.chars, W.chars);
-            return s;
+                float s = similarity(R.chars, W.chars);
+                return s;
+            }
         });
 
-        noise = Loop.of(()->{
-            R.c[0] = random().nextInt(R.cols);
-            R.c[1] = random().nextInt(R.rows);
-            R.write(alphabet[random().nextInt(alphabet.length)]);
+        noise = Loop.of(new Runnable() {
+            @Override
+            public void run() {
+                R.c[0] = ConsoleAgent.this.random().nextInt(R.cols);
+                R.c[1] = ConsoleAgent.this.random().nextInt(R.rows);
+                R.write(alphabet[ConsoleAgent.this.random().nextInt(alphabet.length)]);
+            }
         }).setFPS(0.5f);
 
     }
@@ -155,10 +169,13 @@ public class ConsoleAgent extends GameX {
     public static void main(String[] args) {
 
 
-        GameX.Companion.initFn(fps, (n) -> {
-            ConsoleAgent a = new ConsoleAgent(3, 1, n);
-            SpaceGraph.window(new Gridding(a.R, a.W), 800, 400);
-            return a;
+        GameX.Companion.initFn(fps, new Function<NAR, Game>() {
+            @Override
+            public Game apply(NAR n) {
+                ConsoleAgent a = new ConsoleAgent(3, 1, n);
+                SpaceGraph.window(new Gridding(a.R, a.W), 800, 400);
+                return a;
+            }
         });
 
     }
@@ -210,7 +227,12 @@ public class ConsoleAgent extends GameX {
                         int yy = y;
 
                         //HACK
-                        Signal cm = charMatrix[x][y][i] = sense(xya, () -> (int) chars[xx][yy] == (int) a);
+                        Signal cm = charMatrix[x][y][i] = sense(xya, new BooleanSupplier() {
+                            @Override
+                            public boolean getAsBoolean() {
+                                return (int) chars[xx][yy] == (int) a;
+                            }
+                        });
                         //nar.control.input(((ScalarSignal)(cm).pri, xy);
 
                     }

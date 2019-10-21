@@ -13,8 +13,11 @@ import net.beadsproject.beads.ugens.Gain;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.function.Function;
+import java.util.function.IntFunction;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 /**
  * A UGen is the main base class for implementing signal generation and processing units (unit generators). UGens can have any number of audio input and output channels, which adopt the audio format of the {@link AudioContext} used to construct the UGen. Any UGen output can be connected to any other UGen input, using {@link #addInput(int, UGen, int)} (or use {@link #in(UGen)} to connect all outputs of one UGen to all inputs of another). UGens are constructed using an
@@ -260,14 +263,17 @@ public abstract class UGen extends Auvent {
 	private synchronized void pullInputs() {
 
 
-		dependents.removeIf(dependent -> {
-			if (dependent.isDeleted()) {
-				return true;
-			} else {
-				dependent.update();
-				return false;
-			}
-		});
+		dependents.removeIf(new Predicate<UGen>() {
+            @Override
+            public boolean test(UGen dependent) {
+                if (dependent.isDeleted()) {
+                    return true;
+                } else {
+                    dependent.update();
+                    return false;
+                }
+            }
+        });
 
 
 		if (!noInputs) {
@@ -477,7 +483,17 @@ public abstract class UGen extends Auvent {
 	 * @return set of UGens
 	 */
 	public synchronized Set<UGen> getConnectedInputs() {
-		Set<UGen> connectedInputs = IntStream.range(0, ins).mapToObj(i -> inputsAtChannel[i].stream()).flatMap(Function.identity()).map(bp -> bp.ugen).collect(Collectors.toSet());
+		Set<UGen> connectedInputs = IntStream.range(0, ins).mapToObj(new IntFunction<Stream<BufferPointer>>() {
+            @Override
+            public Stream<BufferPointer> apply(int i) {
+                return inputsAtChannel[i].stream();
+            }
+        }).flatMap(Function.identity()).map(new Function<BufferPointer, UGen>() {
+            @Override
+            public UGen apply(BufferPointer bp) {
+                return bp.ugen;
+            }
+        }).collect(Collectors.toSet());
         return connectedInputs;
 	}
 

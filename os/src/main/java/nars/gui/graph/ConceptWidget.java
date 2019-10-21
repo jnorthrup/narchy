@@ -15,6 +15,7 @@ import spacegraph.space3d.widget.SpaceWidget;
 import spacegraph.video.Draw;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 import static jcog.math.v3.v;
 import static nars.gui.graph.DynamicConceptSpace.ConceptVis2.TASKLINK;
@@ -28,7 +29,12 @@ public class ConceptWidget extends SpaceWidget<Concept> {
     public float pri;
 
     public final Flip<ConcurrentFastIteratingHashMap<Concept, ConceptEdge>> edges =
-            new Flip<>(()->new ConcurrentFastIteratingHashMap<>(new ConceptEdge[0]));
+            new Flip<>(new Supplier<ConcurrentFastIteratingHashMap<Concept, ConceptEdge>>() {
+                @Override
+                public ConcurrentFastIteratingHashMap<Concept, ConceptEdge> get() {
+                    return new ConcurrentFastIteratingHashMap<>(new ConceptEdge[0]);
+                }
+            });
 
     public ConceptWidget(Concept x) {
         super(x);

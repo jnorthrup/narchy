@@ -1,6 +1,7 @@
 package jcog.pri.bag.impl.hijack;
 
 import jcog.memoize.HijackMemoize;
+import jcog.memoize.Memoize;
 import org.junit.jupiter.api.Test;
 
 import java.util.function.Function;
@@ -15,7 +16,12 @@ class LambdaMemoizerTest {
 
 
         LambdaMemoizer.MemoizeBuilder<Integer> m =
-                f -> new HijackMemoize<>(f, 16, 3);
+                new LambdaMemoizer.MemoizeBuilder<Integer>() {
+                    @Override
+                    public Memoize<LambdaMemoizer.ArgKey, Integer> apply(Function<LambdaMemoizer.ArgKey, Integer> f) {
+                        return new HijackMemoize<>(f, 16, 3);
+                    }
+                };
         Function<Object[], Integer> cachingSlowFunction = LambdaMemoizer.memoize(
                 LambdaMemoizerTest.class, "slowFunction", new Class[]{int.class}, m);
 

@@ -16,6 +16,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import tech.tablesaw.api.DoubleColumn;
 
+import java.util.function.Supplier;
+
 import static jcog.Texts.n4;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -42,8 +44,18 @@ public class GameTest {
         int dur = 1; //cycles/100;
 
         boolean posOrNeg = posOrNegChar.charAt(0) == 't';
-        BooleanBooleanPredicate onlyTrue = (prev, next) -> next;
-        BooleanBooleanPredicate onlyFalse = (prev, next) -> !next;
+        BooleanBooleanPredicate onlyTrue = new BooleanBooleanPredicate() {
+            @Override
+            public boolean accept(boolean prev, boolean next) {
+                return next;
+            }
+        };
+        BooleanBooleanPredicate onlyFalse = new BooleanBooleanPredicate() {
+            @Override
+            public boolean accept(boolean prev, boolean next) {
+                return !next;
+            }
+        };
 
         NAR n = nar(dur);
 
@@ -59,16 +71,19 @@ public class GameTest {
 
         DataTable s = new DataTable();
         s.addColumns(DoubleColumn.create("reward"),DoubleColumn.create("dex"),DoubleColumn.create("x"));
-        n.onCycle(()->{
-            var reward = a.happiness();
-            if (reward!=reward) reward = 0;
-            double dex = a.dexterity();
-            try {
-                Truth t = n.goalTruth("x", n.time());
-                float x = t != null ? t.freq() : 0.5f;
-                s.add(reward, dex, x);
-            } catch (Narsese.NarseseException e) {
-                e.printStackTrace();
+        n.onCycle(new Runnable() {
+            @Override
+            public void run() {
+                var reward = a.happiness();
+                if (reward != reward) reward = 0;
+                double dex = a.dexterity();
+                try {
+                    Truth t = n.goalTruth("x", n.time());
+                    float x = t != null ? t.freq() : 0.5f;
+                    s.add(reward, dex, x);
+                } catch (Narsese.NarseseException e) {
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -88,7 +103,12 @@ public class GameTest {
         System.out.println("\tavgReward=" + n4(avgReward));
         System.out.println("\tavgDex=" + n4(avgDex));
 
-        assertTrue(avgReward > 0.6f, ()-> avgReward + " avgReward");
+        assertTrue(avgReward > 0.6f, new Supplier<String>() {
+            @Override
+            public String get() {
+                return avgReward + " avgReward";
+            }
+        });
         assertTrue(avgDex > 0f);
 
         //extended verification of beliefs:
@@ -137,8 +157,11 @@ public class GameTest {
 //        n.beliefPriDefault.setAt(0.1f);
 //        n.time.dur(period/2);
 
-        MiniTest a = new BooleanChoiceTest(n, (prev, next)->{
-            return next == (n.time() % period < period/2); //sawtooth: true half of duty cycle, false the other half
+        MiniTest a = new BooleanChoiceTest(n, new BooleanBooleanPredicate() {
+            @Override
+            public boolean accept(boolean prev, boolean next) {
+                return next == (n.time() % period < period / 2); //sawtooth: true half of duty cycle, false the other half
+            }
         });
 
         //n.log();
@@ -166,9 +189,12 @@ public class GameTest {
 
         NAR n = nar(1);
 
-        MiniTest a = new BooleanChoiceTest(n, (next, prev) -> {
-            //System.out.println(prev + " " + next);
-            return next != prev;
+        MiniTest a = new BooleanChoiceTest(n, new BooleanBooleanPredicate() {
+            @Override
+            public boolean accept(boolean next, boolean prev) {
+                //System.out.println(prev + " " + next);
+                return next != prev;
+            }
         });
 
         n.run(cycles);
@@ -191,10 +217,20 @@ public class GameTest {
         Game a = new Game("x", GameTime.durs(dursPerFrame));
 
         LongArrayList aFrames = new LongArrayList();
-        a.onFrame(()-> aFrames.add(nar.time()));
+        a.onFrame(new Runnable() {
+            @Override
+            public void run() {
+                aFrames.add(nar.time());
+            }
+        });
         LongArrayList sFrames = new LongArrayList();
         int dursPerService = 3;
-        nar.onDur(() -> sFrames.add(nar.time())).durs(dursPerService);
+        nar.onDur(new Runnable() {
+            @Override
+            public void run() {
+                sFrames.add(nar.time());
+            }
+        }).durs(dursPerService);
         nar.run(50);
         assertEquals("[10, 30, 50]", aFrames.toString());
         assertEquals("[0, 10, 40]", sFrames.toString());

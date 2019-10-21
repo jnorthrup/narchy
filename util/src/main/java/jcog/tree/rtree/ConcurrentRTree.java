@@ -48,12 +48,22 @@ public class ConcurrentRTree<X> extends LambdaStampedLock implements Space<X> {
 
     @Override
     public boolean OR(final Predicate<X> o) {
-        return testWith((tr,oo)->tr.root().OR(oo), o);
+        return testWith(new BiPredicate<RTree<X>, Predicate<X>>() {
+            @Override
+            public boolean test(RTree<X> tr, Predicate<X> oo) {
+                return tr.root().OR(oo);
+            }
+        }, o);
     }
 
     @Override
     public boolean AND(final Predicate<X> o) {
-        return testWith((tr,oo)->tr.root().AND(oo), o);
+        return testWith(new BiPredicate<RTree<X>, Predicate<X>>() {
+            @Override
+            public boolean test(RTree<X> tr, Predicate<X> oo) {
+                return tr.root().AND(oo);
+            }
+        }, o);
     }
 
     /**
@@ -65,7 +75,12 @@ public class ConcurrentRTree<X> extends LambdaStampedLock implements Space<X> {
      */
     @Deprecated  @Override
     public int containedToArray(final HyperRegion rect, final X[] t) {
-        return read(() -> tree.containedToArray(rect, t));
+        return read(new IntSupplier() {
+            @Override
+            public int getAsInt() {
+                return tree.containedToArray(rect, t);
+            }
+        });
     }
 
     /** TODO encapsulate. should not be exposed */
@@ -114,9 +129,12 @@ public class ConcurrentRTree<X> extends LambdaStampedLock implements Space<X> {
     }
 
     public void removeAll(final Iterable<? extends X> t) {
-        write(() -> {
-            for (final X x : t) {
-                remove(x);
+        write(new Runnable() {
+            @Override
+            public void run() {
+                for (final X x : t) {
+                    ConcurrentRTree.this.remove(x);
+                }
             }
         });
     }
@@ -180,7 +198,12 @@ public class ConcurrentRTree<X> extends LambdaStampedLock implements Space<X> {
     }
 
     public final void readOptimistic(final Consumer<Space<X>> x) {
-        readOptimistic(() -> x.accept(tree));
+        readOptimistic(new Runnable() {
+            @Override
+            public void run() {
+                x.accept(tree);
+            }
+        });
     }
 
     @Override
@@ -226,7 +249,12 @@ public class ConcurrentRTree<X> extends LambdaStampedLock implements Space<X> {
     }
 
     public final void forEachOptimistic(final Consumer<? super X> consumer) {
-        readOptimistic(() -> tree.forEach(consumer));
+        readOptimistic(new Runnable() {
+            @Override
+            public void run() {
+                tree.forEach(consumer);
+            }
+        });
     }
 
     public <Y> void readWith(final BiConsumer<RTree<X>,Y> readProcedure, final Y x) {
@@ -259,14 +287,24 @@ public class ConcurrentRTree<X> extends LambdaStampedLock implements Space<X> {
 
     @Override
     public boolean containsWhile(final HyperRegion rect, final Predicate<X> t) {
-        read(() -> tree.containsWhile(rect, t));
+        read(new Supplier<Boolean>() {
+            @Override
+            public Boolean get() {
+                return tree.containsWhile(rect, t);
+            }
+        });
         return false;
     }
 
     @Override
     public boolean intersectsWhile(final HyperRegion rect, final Predicate<X> t) {
         //Predicates.compose(t,)
-        read(() -> tree.intersectsWhile(rect, t));
+        read(new Supplier<Boolean>() {
+            @Override
+            public Boolean get() {
+                return tree.intersectsWhile(rect, t);
+            }
+        });
         return false;
     }
 

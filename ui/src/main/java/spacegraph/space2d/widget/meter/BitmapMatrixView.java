@@ -63,9 +63,12 @@ public class BitmapMatrixView extends TexSurface {
     }
 
     public BitmapMatrixView(Bitmap2D tex) {
-        this(tex.width(), tex.height(), (x, y)->{
-            float a = tex.brightness(x, y);
-            return Draw.rgbInt(a,a,a);
+        this(tex.width(), tex.height(), new ViewFunction2D() {
+            @Override
+            public int color(int x, int y) {
+                float a = tex.brightness(x, y);
+                return Draw.rgbInt(a, a, a);
+            }
         });
     }
 
@@ -79,9 +82,12 @@ public class BitmapMatrixView extends TexSurface {
     }
 
     private BitmapMatrixView(float[] d, int stride, ViewFunction1D view) {
-        this((int) Math.floor((double) (((float) d.length) / (float) stride)), stride, (x, y) -> {
-            int i = y * stride + x;
-            return i < d.length ? view.update(d[i]) : 0;
+        this((int) Math.floor((double) (((float) d.length) / (float) stride)), stride, new ViewFunction2D() {
+            @Override
+            public int color(int x, int y) {
+                int i = y * stride + x;
+                return i < d.length ? view.update(d[i]) : 0;
+            }
         });
     }
 
@@ -90,23 +96,32 @@ public class BitmapMatrixView extends TexSurface {
     }
 
     public BitmapMatrixView(IntToFloatFunction d, int len, int stride, ViewFunction1D view) {
-        this((int) Math.floor((double) (((float) len) / (float) stride)), stride, (x, y) -> {
-            int i = y * stride + x;
-            return i < len ? view.update(d.valueOf(i)) : 0;
+        this((int) Math.floor((double) (((float) len) / (float) stride)), stride, new ViewFunction2D() {
+            @Override
+            public int color(int x, int y) {
+                int i = y * stride + x;
+                return i < len ? view.update(d.valueOf(i)) : 0;
+            }
         });
     }
 
     public BitmapMatrixView(double[] d, int stride, ViewFunction1D view) {
-        this((int) Math.floor((double) (((float) d.length) / (float) stride)), stride, (x, y) -> {
-            int i = y * stride + x;
-            return i < d.length ? view.update((float) d[i]) : 0;
+        this((int) Math.floor((double) (((float) d.length) / (float) stride)), stride, new ViewFunction2D() {
+            @Override
+            public int color(int x, int y) {
+                int i = y * stride + x;
+                return i < d.length ? view.update((float) d[i]) : 0;
+            }
         });
     }
 
     public <P extends FloatSupplier> BitmapMatrixView(P[] d, int stride, ViewFunction1D view) {
-        this((int) Math.floor((double) (((float) d.length) / (float) stride)), stride, (x, y) -> {
-            int i = y * stride + x;
-            return i < d.length ? view.update(d[i].asFloat()) : 0;
+        this((int) Math.floor((double) (((float) d.length) / (float) stride)), stride, new ViewFunction2D() {
+            @Override
+            public int color(int x, int y) {
+                int i = y * stride + x;
+                return i < d.length ? view.update(d[i].asFloat()) : 0;
+            }
         });
     }
 
@@ -116,15 +131,18 @@ public class BitmapMatrixView extends TexSurface {
     }
 
     public BitmapMatrixView(Supplier<double[]> e, int len, int stride, ViewFunction1D view) {
-        this((int) Math.floor((double) (((float) len) / (float) stride)), stride, (x, y) -> {
-            double[] d = e.get();
-            if (d != null) {
+        this((int) Math.floor((double) (((float) len) / (float) stride)), stride, new ViewFunction2D() {
+            @Override
+            public int color(int x, int y) {
+                double[] d = e.get();
+                if (d != null) {
 
-                int i = y * stride + x;
-                if (i < d.length)
-                    return view.update((float) d[i]);
+                    int i = y * stride + x;
+                    if (i < d.length)
+                        return view.update((float) d[i]);
+                }
+                return 0;
             }
-            return 0;
         });
     }
 
@@ -134,24 +152,40 @@ public class BitmapMatrixView extends TexSurface {
 
 
     public static BitmapMatrixView.ViewFunction2D arrayRendererX(float[] ww) {
-        return (x, y) -> Draw.colorBipolar(ww[x]);
+        return new ViewFunction2D() {
+            @Override
+            public int color(int x, int y) {
+                return Draw.colorBipolar(ww[x]);
+            }
+        };
     }
     public static BitmapMatrixView.ViewFunction2D arrayRendererY(float[] ww) {
-        return (x, y) -> Draw.colorBipolar(ww[y]);
+        return new ViewFunction2D() {
+            @Override
+            public int color(int x, int y) {
+                return Draw.colorBipolar(ww[y]);
+            }
+        };
     }
 
     public static ViewFunction2D arrayRenderer(float[][] ww) {
-        return (x, y) -> {
-            float v = ww[x][y];
-            return Draw.colorBipolar(v);
+        return new ViewFunction2D() {
+            @Override
+            public int color(int x, int y) {
+                float v = ww[x][y];
+                return Draw.colorBipolar(v);
+            }
         };
     }
 
     public static BitmapMatrixView get(ArrayTensor t, int stride, ViewFunction1D view) {
         float[] d = t.data;
-        return new BitmapMatrixView((int) Math.floor((double) (((float) t.volume()) / (float) stride)), stride, (x, y) -> {
-            float v = d[x * stride + y];
-            return view.update(v);
+        return new BitmapMatrixView((int) Math.floor((double) (((float) t.volume()) / (float) stride)), stride, new ViewFunction2D() {
+            @Override
+            public int color(int x, int y) {
+                float v = d[x * stride + y];
+                return view.update(v);
+            }
         });
     }
 

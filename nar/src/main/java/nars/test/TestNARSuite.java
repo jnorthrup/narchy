@@ -3,11 +3,13 @@ package nars.test;
 import jcog.data.list.FasterList;
 import nars.NAR;
 import org.eclipse.collections.api.block.function.primitive.DoubleFunction;
+import org.eclipse.collections.api.block.procedure.Procedure;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -55,17 +57,20 @@ import java.util.stream.Stream;
         for (int i = 0; i < iterations; i++) {
 
 
-            (parallel ? mm.stream().parallel() : mm.stream()).forEach(m -> {
-                String testName = m.getDeclaringClass().getName() + ' ' + m.getName();
-                MyTestNAR t = new MyTestNAR(narBuilder.get(), testName);
-                synchronized (TestNARSuite.this) {
-                    add(t); //allow repeats
-                }
+            (parallel ? mm.stream().parallel() : mm.stream()).forEach(new Consumer<Method>() {
+                @Override
+                public void accept(Method m) {
+                    String testName = m.getDeclaringClass().getName() + ' ' + m.getName();
+                    MyTestNAR t = new MyTestNAR(narBuilder.get(), testName);
+                    synchronized (TestNARSuite.this) {
+                        TestNARSuite.this.add(t); //allow repeats
+                    }
 
-                try {
-                    NALTest.test(t, m);
-                } catch (Throwable e) {
-                    e.printStackTrace();
+                    try {
+                        NALTest.test(t, m);
+                    } catch (Throwable e) {
+                        e.printStackTrace();
+                    }
                 }
             });
         }
@@ -85,7 +90,12 @@ import java.util.stream.Stream;
     }
 
     public Stream<NAR> narStream() {
-        return stream().map(x -> x.nar);
+        return stream().map(new Function<MyTestNAR, NAR>() {
+            @Override
+            public NAR apply(MyTestNAR x) {
+                return x.nar;
+            }
+        });
     }
 
     public DoubleStream doubleStream(Function<NAR,Number> n) {
@@ -103,7 +113,12 @@ import java.util.stream.Stream;
 
     /** summary */
     public void print() {
-        forEach(x -> System.out.println(x.name + ' ' + x.score));
+        forEach(new Procedure<MyTestNAR>() {
+            @Override
+            public void value(MyTestNAR x) {
+                System.out.println(x.name + ' ' + x.score);
+            }
+        });
     }
 
     public double score(/* scoring mode */) {

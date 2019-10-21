@@ -78,20 +78,24 @@ public interface Termlike {
      * only 1-layer (shallow, non-recursive)
      */
     default int sum(ToIntFunction<Term> value) {
-//        int x = 0;
-//        int s = subs();
-//        for (int i = 0; i < s; i++)
-//            x += value.applyAsInt(sub(i));
-//
-//        return x;
-        return intifyShallow(0, (x, t) -> x + value.applyAsInt(t));
+        return intifyShallow(0, new IntObjectToIntFunction<Term>() {
+            @Override
+            public int intValueOf(int x, Term t) {
+                return x + value.applyAsInt(t);
+            }
+        });
     }
 
     /**
      * only 1-layer (shallow, non-recursive)
      */
     default int max(ToIntFunction<Term> value) {
-        return intifyShallow(Integer.MIN_VALUE, (x, t) -> Math.max(value.applyAsInt(t), x));
+        return intifyShallow(Integer.MIN_VALUE, new IntObjectToIntFunction<Term>() {
+            @Override
+            public int intValueOf(int x, Term t) {
+                return Math.max(value.applyAsInt(t), x);
+            }
+        });
     }
 
 
@@ -106,7 +110,12 @@ public interface Termlike {
     }
 
     default int intifyRecurse(int _v, IntObjectToIntFunction<Term> reduce) {
-        return intifyShallow(_v, (v, s) -> s.intifyRecurse(v, reduce));
+        return intifyShallow(_v, new IntObjectToIntFunction<Term>() {
+            @Override
+            public int intValueOf(int v, Term s) {
+                return s.intifyRecurse(v, reduce);
+            }
+        });
     }
 
     boolean recurseTerms(Predicate<Term> inSuperCompound, Predicate<Term> whileTrue, Compound parent);
@@ -234,7 +243,12 @@ public interface Termlike {
      * structure of the first layer (surface) only
      */
     default int structureSurface() {
-        return intifyShallow(0, (s, x) -> s | x.opBit());
+        return intifyShallow(0, new IntObjectToIntFunction<Term>() {
+            @Override
+            public int intValueOf(int s, Term x) {
+                return s | x.opBit();
+            }
+        });
     }
 
     /**

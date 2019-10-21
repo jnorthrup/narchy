@@ -3,6 +3,7 @@ package nars.truth;
 import jcog.WTF;
 import nars.NAL;
 import nars.NAR;
+import nars.Task;
 import nars.table.BeliefTable;
 import nars.task.util.Answer;
 import nars.term.Term;
@@ -10,6 +11,7 @@ import nars.time.Tense;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
+import java.util.function.Consumer;
 
 /**
  * compact chart-like representation of a belief state at each time cycle in a range of time.
@@ -84,28 +86,31 @@ public class TruthWave {
         int[] size = {0};
 
         //long[] st = new long[]{Long.MAX_VALUE}, en = new long[]{Long.MIN_VALUE};
-        b.forEachTask(minT, maxT, x -> {
-            int ss = size[0];
-            if (ss >= s) {
-                if (NAL.DEBUG)
-                    throw new WTF("truthwave capacity exceeded");
-                return;
-            }
+        b.forEachTask(minT, maxT, new Consumer<Task>() {
+            @Override
+            public void accept(Task x) {
+                int ss = size[0];
+                if (ss >= s) {
+                    if (NAL.DEBUG)
+                        throw new WTF("truthwave capacity exceeded");
+                    return;
+                }
 
-            long xs = x.start();
+                long xs = x.start();
 
-            if (xs > maxT)
-                return; //OOB
-            long xe = x.end();
-            if (xe < minT)
-                return; //OOB
+                if (xs > maxT)
+                    return; //OOB
+                long xe = x.end();
+                if (xe < minT)
+                    return; //OOB
 
-            int j = (size[0]++) * ENTRY_SIZE;
-            load(t, j, minT, maxT, xs, xe, x);
+                int j = (size[0]++) * ENTRY_SIZE;
+                load(t, j, minT, maxT, xs, xe, x);
 
 //            if (xs < st[0]) st[0] = xs;
 //            if (xe > en[0]) en[0] = xe;
 
+            }
         });
         this.size = size[0];
 
@@ -206,9 +211,12 @@ public class TruthWave {
     public float[] range() {
         float[] min = {Float.POSITIVE_INFINITY};
         float[] max = {Float.NEGATIVE_INFINITY};
-        forEach((f, c, start, end) -> {
-            if (c > max[0]) max[0] = c;
-            if (c < min[0]) min[0] = c;
+        forEach(new TruthWaveVisitor() {
+            @Override
+            public void onTruth(float f, float c, long start, long end) {
+                if (c > max[0]) max[0] = c;
+                if (c < min[0]) min[0] = c;
+            }
         });
         return new float[]{min[0], max[0]};
     }

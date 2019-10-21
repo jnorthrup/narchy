@@ -67,43 +67,77 @@ public class TemporalStabilityTests {
 
 
 
-    private static final IntToObjectFunction<String> inheritencer = (j) -> {
-        char c = (char) ('a' + j);
-        return c + ":" + c + "" + c;
+    private static final IntToObjectFunction<String> inheritencer = new IntToObjectFunction<String>() {
+        @Override
+        public String valueOf(int j) {
+            char c = (char) ('a' + j);
+            return c + ":" + c + "" + c;
+        }
     };
-    private static final IntToObjectFunction<String> implicator = (j) -> {
-        char c = (char) ('a' + j);
-        return '(' + (c + "==>" + (c + "" + c)) + ')';
+    private static final IntToObjectFunction<String> implicator = new IntToObjectFunction<String>() {
+        @Override
+        public String valueOf(int j) {
+            char c = (char) ('a' + j);
+            return '(' + (c + "==>" + (c + "" + c)) + ')';
+        }
     };
-    private static final IntToObjectFunction<String> atomizer = (j) -> String.valueOf((char)('a' + j));
-    private static final IntToObjectFunction<String> productor = (j) -> '(' + atomizer.apply(j) + ')';
-    private static final IntToObjectFunction<String> biproductor = (j) -> {
-        char c = (char) ('a' + j);
-        return "(" + c + ',' + (c + "" + c) + ')';
+    private static final IntToObjectFunction<String> atomizer = new IntToObjectFunction<String>() {
+        @Override
+        public String valueOf(int j) {
+            return String.valueOf((char) ('a' + j));
+        }
     };
-    private static final IntToObjectFunction<String> linkedproductor = (j) -> {
-        char c = (char) ('a' + j);
-        char d = (char) ('a' + (j+1)); 
-        return "(" + c + ',' + d + ')';
+    private static final IntToObjectFunction<String> productor = new IntToObjectFunction<String>() {
+        @Override
+        public String valueOf(int j) {
+            return '(' + atomizer.apply(j) + ')';
+        }
     };
-    private static final IntToObjectFunction<String> linkedinh= (j) -> {
-        char c = (char) ('a' + j);
-        char d = (char) ('a' + (j+1)); 
-        return "(" + c + "-->" + d + ')';
+    private static final IntToObjectFunction<String> biproductor = new IntToObjectFunction<String>() {
+        @Override
+        public String valueOf(int j) {
+            char c = (char) ('a' + j);
+            return "(" + c + ',' + (c + "" + c) + ')';
+        }
     };
-    private static final IntToObjectFunction<String> linkedimpl= (j) -> {
-        char c = (char) ('a' + j);
-        char d = (char) ('a' + (j+1)); 
-        return "(" + c + "==>" + d + ')';
+    private static final IntToObjectFunction<String> linkedproductor = new IntToObjectFunction<String>() {
+        @Override
+        public String valueOf(int j) {
+            char c = (char) ('a' + j);
+            char d = (char) ('a' + (j + 1));
+            return "(" + c + ',' + d + ')';
+        }
     };
-    protected static final IntToObjectFunction<String> conjSeq2 = (j) -> {
-        char c = (char) ('a' + j);
-        char d = (char) ('a' + (j+1)); 
-        return "(" + c + " &&+5 " + d + ')';
+    private static final IntToObjectFunction<String> linkedinh= new IntToObjectFunction<String>() {
+        @Override
+        public String valueOf(int j) {
+            char c = (char) ('a' + j);
+            char d = (char) ('a' + (j + 1));
+            return "(" + c + "-->" + d + ')';
+        }
     };
-    protected static final IntToObjectFunction<String> conjInvertor = (j) -> {
-        char c = (char) ('a' + j);
-        return "(" + c + " &&+5 (--," + c + "))";
+    private static final IntToObjectFunction<String> linkedimpl= new IntToObjectFunction<String>() {
+        @Override
+        public String valueOf(int j) {
+            char c = (char) ('a' + j);
+            char d = (char) ('a' + (j + 1));
+            return "(" + c + "==>" + d + ')';
+        }
+    };
+    protected static final IntToObjectFunction<String> conjSeq2 = new IntToObjectFunction<String>() {
+        @Override
+        public String valueOf(int j) {
+            char c = (char) ('a' + j);
+            char d = (char) ('a' + (j + 1));
+            return "(" + c + " &&+5 " + d + ')';
+        }
+    };
+    protected static final IntToObjectFunction<String> conjInvertor = new IntToObjectFunction<String>() {
+        @Override
+        public String valueOf(int j) {
+            char c = (char) ('a' + j);
+            return "(" + c + " &&+5 (--," + c + "))";
+        }
     };
 
 

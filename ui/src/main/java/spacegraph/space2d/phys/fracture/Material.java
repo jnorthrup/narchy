@@ -2,6 +2,7 @@ package spacegraph.space2d.phys.fracture;
 
 import jcog.Util;
 import jcog.math.v2;
+import spacegraph.space2d.phys.fracture.fragmentation.IContains;
 import spacegraph.space2d.phys.fracture.fragmentation.Smasher;
 import spacegraph.space2d.phys.fracture.materials.Diffusion;
 import spacegraph.space2d.phys.fracture.materials.Glass;
@@ -111,16 +112,19 @@ public abstract class Material {
             float cos = -localVel.y / ln;
 
             float rr = r * r;
-            geom.calculate(p, foceeArray, localPos, point -> {
-                float x = localPos.x - point.x;
-                float y = localPos.y - point.y;
+            geom.calculate(p, foceeArray, localPos, new IContains() {
+                @Override
+                public boolean contains(v2 point) {
+                    float x = localPos.x - point.x;
+                    float y = localPos.y - point.y;
 
-                x = cos * x + -sin * y;
-                y = sin * x + cos * y;
+                    x = cos * x + -sin * y;
+                    y = sin * x + cos * y;
 
-                float xx = x * x;
-                float yy = y * y;
-                return (y < (float) 0 && (xx + yy < rr)) || (y > (float) 0 && (xx / rr + yy / dd < 1.0F));
+                    float xx = x * x;
+                    float yy = y * y;
+                    return (y < (float) 0 && (xx + yy < rr)) || (y > (float) 0 && (xx / rr + yy / dd < 1.0F));
+                }
             });
         }
 

@@ -49,27 +49,52 @@ public class PointCloudViewerSwing implements PointCloudViewer {
 
 	@Override
 	public void setTranslationStep(double step) {
-		BoofSwingUtil.invokeNowOrLater(()->panel.stepSize = (float)step);
+		BoofSwingUtil.invokeNowOrLater(new Runnable() {
+            @Override
+            public void run() {
+                panel.stepSize = (float) step;
+            }
+        });
 	}
 
 	@Override
 	public void setDotSize(int pixels) {
-		BoofSwingUtil.invokeNowOrLater(()->panel.setDotRadius(pixels));
+		BoofSwingUtil.invokeNowOrLater(new Runnable() {
+            @Override
+            public void run() {
+                panel.setDotRadius(pixels);
+            }
+        });
 	}
 
 	@Override
 	public void setClipDistance(double distance) {
-		BoofSwingUtil.invokeNowOrLater(()->panel.maxRenderDistance = (float)distance);
+		BoofSwingUtil.invokeNowOrLater(new Runnable() {
+            @Override
+            public void run() {
+                panel.maxRenderDistance = (float) distance;
+            }
+        });
 	}
 
 	@Override
 	public void setFog(boolean active) {
-		BoofSwingUtil.invokeNowOrLater(()->panel.fog = active);
+		BoofSwingUtil.invokeNowOrLater(new Runnable() {
+            @Override
+            public void run() {
+                panel.fog = active;
+            }
+        });
 	}
 
 	@Override
 	public void setBackgroundColor(int rgb) {
-		BoofSwingUtil.invokeNowOrLater(()->panel.backgroundColor=rgb);
+		BoofSwingUtil.invokeNowOrLater(new Runnable() {
+            @Override
+            public void run() {
+                panel.backgroundColor = rgb;
+            }
+        });
 	}
 
 	@Override
@@ -83,12 +108,15 @@ public class PointCloudViewerSwing implements PointCloudViewer {
 				panel.addPoint((float) p.x, (float) p.y, (float) p.z, colorsRgb[i]);
 			}
 		} else {
-			SwingUtilities.invokeLater(() -> {
-				for (int i = 0; i < cloudXyz.size(); i++) {
-					Point3D_F64 p = cloudXyz.get(i);
-					panel.addPoint((float) p.x, (float) p.y, (float) p.z, colorsRgb[i]);
-				}
-			});
+			SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    for (int i = 0; i < cloudXyz.size(); i++) {
+                        Point3D_F64 p = cloudXyz.get(i);
+                        panel.addPoint((float) p.x, (float) p.y, (float) p.z, colorsRgb[i]);
+                    }
+                }
+            });
 		}
 	}
 
@@ -100,12 +128,15 @@ public class PointCloudViewerSwing implements PointCloudViewer {
 				panel.addPoint((float) p.x, (float) p.y, (float) p.z, 0xFF0000);
 			}
 		} else {
-			SwingUtilities.invokeLater(() -> {
-				for (int i = 0; i < cloud.size(); i++) {
-					Point3D_F64 p = cloud.get(i);
-					panel.addPoint((float) p.x, (float) p.y, (float) p.z, 0xFF0000);
-				}
-			});
+			SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    for (int i = 0; i < cloud.size(); i++) {
+                        Point3D_F64 p = cloud.get(i);
+                        panel.addPoint((float) p.x, (float) p.y, (float) p.z, 0xFF0000);
+                    }
+                }
+            });
 		}
 	}
 
@@ -117,7 +148,12 @@ public class PointCloudViewerSwing implements PointCloudViewer {
 		if( SwingUtilities.isEventDispatchThread() ) {
 			panel.addPoints(cloudXYZ.data, colorRGB.data, cloudXYZ.size / 3);
 		} else {
-			SwingUtilities.invokeLater(() -> panel.addPoints(cloudXYZ.data, colorRGB.data, cloudXYZ.size / 3));
+			SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    panel.addPoints(cloudXYZ.data, colorRGB.data, cloudXYZ.size / 3);
+                }
+            });
 		}
 	}
 
@@ -126,7 +162,12 @@ public class PointCloudViewerSwing implements PointCloudViewer {
 		if( SwingUtilities.isEventDispatchThread() ) {
 			panel.addPoint((float)x,(float)y,(float)z,rgb);
 		} else {
-			SwingUtilities.invokeLater(() -> panel.addPoint((float) x, (float) y, (float) z, rgb));
+			SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    panel.addPoint((float) x, (float) y, (float) z, rgb);
+                }
+            });
 		}
 	}
 
@@ -135,13 +176,23 @@ public class PointCloudViewerSwing implements PointCloudViewer {
 		if( SwingUtilities.isEventDispatchThread() ) {
 			panel.clearCloud();
 		} else {
-			SwingUtilities.invokeLater(() -> panel.clearCloud());
+			SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    panel.clearCloud();
+                }
+            });
 		}
 	}
 
 	@Override
 	public void setCameraHFov(double radians) {
-		BoofSwingUtil.invokeNowOrLater(()->panel.setHorizontalFieldOfView((float)radians));
+		BoofSwingUtil.invokeNowOrLater(new Runnable() {
+            @Override
+            public void run() {
+                panel.setHorizontalFieldOfView((float) radians);
+            }
+        });
 	}
 
 	@Override
@@ -149,7 +200,12 @@ public class PointCloudViewerSwing implements PointCloudViewer {
 		Se3_F64 worldToCamera = cameraToWorld.invert(null);
 		Se3_F32 worldToCameraF32 = new Se3_F32();
 		ConvertFloatType.convert(worldToCamera,worldToCameraF32);
-		BoofSwingUtil.invokeNowOrLater(()->panel.setWorldToCamera(worldToCameraF32));
+		BoofSwingUtil.invokeNowOrLater(new Runnable() {
+            @Override
+            public void run() {
+                panel.setWorldToCamera(worldToCameraF32);
+            }
+        });
 	}
 
 	@Override

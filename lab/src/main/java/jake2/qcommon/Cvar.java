@@ -38,7 +38,7 @@ import java.io.RandomAccessFile;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.function.Supplier;
+import java.util.function.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -359,13 +359,26 @@ public class Cvar extends Globals {
      */
     public static void GetLatchedVars() {
 
-        Stream.iterate(Globals.cvar_vars, Objects::nonNull, theVar -> theVar.next).filter(theVar -> theVar.latched_string != null && theVar.latched_string.length() != 0).forEachOrdered(theVar -> {
-            theVar.string = theVar.latched_string;
-            theVar.latched_string = null;
-            theVar.value = Lib.atof(theVar.string);
-            if ("game".equals(theVar.name)) {
-                FS.SetGamedir(theVar.string);
-                FS.ExecAutoexec();
+        Stream.iterate(Globals.cvar_vars, Objects::nonNull, new UnaryOperator<cvar_t>() {
+            @Override
+            public cvar_t apply(cvar_t theVar) {
+                return theVar.next;
+            }
+        }).filter(new Predicate<cvar_t>() {
+            @Override
+            public boolean test(cvar_t theVar) {
+                return theVar.latched_string != null && theVar.latched_string.length() != 0;
+            }
+        }).forEachOrdered(new Consumer<cvar_t>() {
+            @Override
+            public void accept(cvar_t theVar) {
+                theVar.string = theVar.latched_string;
+                theVar.latched_string = null;
+                theVar.value = Lib.atof(theVar.string);
+                if ("game".equals(theVar.name)) {
+                    FS.SetGamedir(theVar.string);
+                    FS.ExecAutoexec();
+                }
             }
         });
     }
@@ -410,7 +423,22 @@ public class Cvar extends Globals {
      * Variable typing auto completition.
      */
     public static List CompleteVariable(String partial) {
-        return (List) Stream.iterate(Globals.cvar_vars, Objects::nonNull, cvar -> cvar.next).filter(cvar -> cvar.name.startsWith(partial)).map(cvar -> cvar.name).collect(Collectors.toCollection((Supplier<CopyOnWriteArrayList>) CopyOnWriteArrayList::new));
+        return (List) Stream.iterate(Globals.cvar_vars, Objects::nonNull, new UnaryOperator<cvar_t>() {
+            @Override
+            public cvar_t apply(cvar_t cvar) {
+                return cvar.next;
+            }
+        }).filter(new Predicate<cvar_t>() {
+            @Override
+            public boolean test(cvar_t cvar) {
+                return cvar.name.startsWith(partial);
+            }
+        }).map(new Function<cvar_t, String>() {
+            @Override
+            public String apply(cvar_t cvar) {
+                return cvar.name;
+            }
+        }).collect(Collectors.toCollection((Supplier<CopyOnWriteArrayList>) CopyOnWriteArrayList::new));
     }
 
     /**

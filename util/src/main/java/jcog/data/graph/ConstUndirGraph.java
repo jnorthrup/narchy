@@ -18,6 +18,7 @@
 
 package jcog.data.graph;
 
+import org.eclipse.collections.api.block.procedure.primitive.IntProcedure;
 import org.eclipse.collections.impl.list.mutable.primitive.IntArrayList;
 import org.eclipse.collections.impl.set.mutable.primitive.IntHashSet;
 
@@ -74,8 +75,11 @@ public class ConstUndirGraph implements Graph {
         for (int i = 0; i < max; ++i) in[i] = new IntArrayList();
         for (int i = 0; i < max; ++i) {
             int ii = i;
-            g.neighborsOut(i).forEach(j -> {
-                if (!g.isEdge(j, ii)) in[j].add(ii);
+            g.neighborsOut(i).forEach(new IntProcedure() {
+                @Override
+                public void value(int j) {
+                    if (!g.isEdge(j, ii)) in[j].add(ii);
+                }
             });
         }
     }

@@ -3,20 +3,29 @@ package nars.experiment;
 import java4k.gradius4k.Gradius4K;
 import jcog.Util;
 import jcog.data.list.FasterList;
+import jcog.func.IntIntToObjectFunction;
+import jcog.math.FloatSupplier;
 import jcog.signal.wave2d.ScaledBitmap2D;
+import jcog.util.FloatConsumer;
 import nars.$;
 import nars.GameX;
 import nars.NAR;
+import nars.game.Game;
 import nars.game.Reward;
 import nars.game.action.GoalActionConcept;
 import nars.game.sensor.DigitizedScalar;
 import nars.sensor.Bitmap2DSensor;
 import nars.term.Term;
 import nars.term.atom.Atomic;
+import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 import org.eclipse.collections.api.block.predicate.primitive.BooleanPredicate;
 import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;
 
+import java.awt.image.BufferedImage;
 import java.util.List;
+import java.util.function.Function;
+import java.util.function.IntFunction;
+import java.util.function.Supplier;
 
 import static java4k.gradius4k.Gradius4K.*;
 import static nars.$.$$;
@@ -35,14 +44,17 @@ public class Gradius extends GameX {
     int lastScore;
 
     public static void main(String[] args) {
-        GameX.Companion.initFn(40f, nar -> {
-            Gradius g = new Gradius(nar);
-            nar.add(g);
+        GameX.Companion.initFn(40f, new Function<NAR, Game>() {
+            @Override
+            public Game apply(NAR nar) {
+                Gradius g = new Gradius(nar);
+                nar.add(g);
 //            g.what().onTask(t -> {
 //                if (t instanceof DerivedTask && t.isGoal())
 //                    nar.proofPrint(t);
 //            });
-            return g;
+                return g;
+            }
         });
     }
 
@@ -101,13 +113,22 @@ public class Gradius extends GameX {
                         $.p(Atomic.atom("c" + ii),Atomic.atom("c" + jj));
 
                     //Term subSection = $.p(id, $.the(ii), $.the(jj));
-                    Bitmap2DSensor c = senseCamera((x, y) ->
-                                    $.inh(id, $.p(Pbig, $.the(x), $.the(y))),
+                    Bitmap2DSensor c = senseCamera(new IntIntToObjectFunction<Term>() {
+                                                       @Override
+                                                       public Term apply(int x, int y) {
+                                                           return $.inh(id, $.p(Pbig, $.the(x), $.the(y)));
+                                                       }
+                                                   },
                             //$.p(
                             //$.inh(
 //                                        $.p(x, y),
 //                                        subSection
-                            new ScaledBitmap2D(() -> g.image, px, py)
+                            new ScaledBitmap2D(new Supplier<BufferedImage>() {
+                                @Override
+                                public BufferedImage get() {
+                                    return g.image;
+                                }
+                            }, px, py)
                                     .crop(
                                             (float) i / (float) dx, (float) j / (float) dy,
                                             (float) (i + 1) / (float) dx, (float) (j + 1) / (float) dy))
@@ -127,18 +148,46 @@ public class Gradius extends GameX {
         float height = (float) g.getHeight();
         int gpsDigits = 3;
         float gpsRes = 0.05f;
-        senseNumber(gpsDigits, DigitizedScalar.FuzzyNeedle, () -> g.player[OBJ_Y] / height, level -> $.p($.the(level), $.p(id, $.the("y")))
+        senseNumber(gpsDigits, DigitizedScalar.FuzzyNeedle, new FloatSupplier() {
+                    @Override
+                    public float asFloat() {
+                        return g.player[OBJ_Y] / height;
+                    }
+                }, new IntFunction<Term>() {
+                    @Override
+                    public Term apply(int level) {
+                        return $.p($.the(level), $.p(id, $.the("y")));
+                    }
+                }
         ).resolution(gpsRes);
-        senseNumber(gpsDigits, DigitizedScalar.FuzzyNeedle, () -> g.player[OBJ_X] / width, level -> $.p($.the(level), $.p(id, $.the("x")))
+        senseNumber(gpsDigits, DigitizedScalar.FuzzyNeedle, new FloatSupplier() {
+                    @Override
+                    public float asFloat() {
+                        return g.player[OBJ_X] / width;
+                    }
+                }, new IntFunction<Term>() {
+                    @Override
+                    public Term apply(int level) {
+                        return $.p($.the(level), $.p(id, $.the("x")));
+                    }
+                }
         ).resolution(gpsRes);
 
 
-        actionUnipolar($.inh(id,$$("speed")), (s)->{
-           g.SPEED = Util.lerp(s, 0.1f, 4.0F);
+        actionUnipolar($.inh(id,$$("speed")), new FloatConsumer() {
+            @Override
+            public void accept(float s) {
+                g.SPEED = Util.lerp(s, 0.1f, 4.0F);
+            }
         }).resolution(0.1f);
 
 
-        actionPushButton($.inh(id,$$("fire")), (BooleanProcedure) b -> g.keys[VK_SHOOT] = b);
+        actionPushButton($.inh(id,$$("fire")), new BooleanProcedure() {
+            @Override
+            public void value(boolean b) {
+                g.keys[VK_SHOOT] = b;
+            }
+        });
 
         //        if (canPause) {
 //            actionToggle($$("pause"),
@@ -149,29 +198,35 @@ public class Gradius extends GameX {
         initToggle();
         //initBipolar();
 
-        Reward alive = reward("alive", 1.0F, ()->{
-            if (g.paused) return Float.NaN;
+        Reward alive = reward("alive", 1.0F, new FloatSupplier() {
+            @Override
+            public float asFloat() {
+                if (g.paused) return Float.NaN;
 
-            if (g.playerDead > 1)
-                return (float) 0;
-            else
-                return (float) +1;
+                if (g.playerDead > 1)
+                    return (float) 0;
+                else
+                    return (float) +1;
+            }
         });
         //alive.setDefault($.t(1, nar.beliefConfDefault.floatValue()));
 
-        reward(rewardTerm("destroy"), ()->{
+        reward(rewardTerm("destroy"), new FloatSupplier() {
+            @Override
+            public float asFloat() {
 
-            if (g.paused) return Float.NaN;
+                if (g.paused) return Float.NaN;
 
-            int nextScore = g.score;
+                int nextScore = g.score;
 
-            float r = (float) (nextScore - lastScore);
+                float r = (float) (nextScore - lastScore);
 
-            lastScore = nextScore;
+                lastScore = nextScore;
 
-            return Util.unitize(r);
-            //return r!=0 ? Util.unitize(r) : Float.NaN;
-       }).conf(nar.goalConfDefault.floatValue()*0.75f);
+                return Util.unitize(r);
+                //return r!=0 ? Util.unitize(r) : Float.NaN;
+            }
+        }).conf(nar.goalConfDefault.floatValue()*0.75f);
        //destroy.setDefault($.t(0, nar.beliefConfDefault.floatValue()));
 
 
@@ -199,11 +254,31 @@ public class Gradius extends GameX {
         Term down =  $.inh(id, $.p(Y, NEG));
         Term up =  $.inh(id, $.p(Y, POS));
         GoalActionConcept[] lr = actionPushButtonMutex(left, right,
-                (BooleanPredicate) b -> g.keys[VK_LEFT] = b,
-                (BooleanPredicate) b -> g.keys[VK_RIGHT] = b);
+                new BooleanPredicate() {
+                    @Override
+                    public boolean accept(boolean b) {
+                        return g.keys[VK_LEFT] = b;
+                    }
+                },
+                new BooleanPredicate() {
+                    @Override
+                    public boolean accept(boolean b) {
+                        return g.keys[VK_RIGHT] = b;
+                    }
+                });
         GoalActionConcept[] ud = actionPushButtonMutex(down, up,
-                (BooleanPredicate) b -> g.keys[VK_DOWN] = b,
-                (BooleanPredicate) b -> g.keys[VK_UP] = b);
+                new BooleanPredicate() {
+                    @Override
+                    public boolean accept(boolean b) {
+                        return g.keys[VK_DOWN] = b;
+                    }
+                },
+                new BooleanPredicate() {
+                    @Override
+                    public boolean accept(boolean b) {
+                        return g.keys[VK_UP] = b;
+                    }
+                });
 
 //        for (GoalActionConcept x : ArrayUtil.addAll(lr, ud))
 //            x.goalDefault($.t(0, 0.001f), nar); //bias
@@ -212,37 +287,43 @@ public class Gradius extends GameX {
     void initBipolar() {
 
         float thresh = 0.1f;
-        actionBipolar($.inh(id, $.p($$("y"), $.varQuery(1))), dy -> {
-            if (dy < -thresh) {
-                g.keys[VK_UP] = false;
-                g.keys[VK_DOWN] = true;
-                return -1f;
-            } else if (dy > +thresh) {
-                g.keys[VK_UP] = true;
-                g.keys[VK_DOWN] = false;
-                return 1f;
-            } else {
-                g.keys[VK_UP] = false;
-                g.keys[VK_DOWN] = false;
-                return (float) 0;
-            }
+        actionBipolar($.inh(id, $.p($$("y"), $.varQuery(1))), new FloatToFloatFunction() {
+            @Override
+            public float valueOf(float dy) {
+                if (dy < -thresh) {
+                    g.keys[VK_UP] = false;
+                    g.keys[VK_DOWN] = true;
+                    return -1f;
+                } else if (dy > +thresh) {
+                    g.keys[VK_UP] = true;
+                    g.keys[VK_DOWN] = false;
+                    return 1f;
+                } else {
+                    g.keys[VK_UP] = false;
+                    g.keys[VK_DOWN] = false;
+                    return (float) 0;
+                }
 
+            }
         });
-        actionBipolar($.inh(id, $.p($$("x"), $.varQuery(1))), dx -> {
-            if (dx < -thresh) {
-                g.keys[VK_LEFT] = false;
-                g.keys[VK_RIGHT] = true;
-                return -1f;
-            } else if (dx > +thresh) {
-                g.keys[VK_LEFT] = true;
-                g.keys[VK_RIGHT] = false;
-                return 1f;
-            } else {
-                g.keys[VK_LEFT] = false;
-                g.keys[VK_RIGHT] = false;
-                return 0f;
-            }
+        actionBipolar($.inh(id, $.p($$("x"), $.varQuery(1))), new FloatToFloatFunction() {
+            @Override
+            public float valueOf(float dx) {
+                if (dx < -thresh) {
+                    g.keys[VK_LEFT] = false;
+                    g.keys[VK_RIGHT] = true;
+                    return -1f;
+                } else if (dx > +thresh) {
+                    g.keys[VK_LEFT] = true;
+                    g.keys[VK_RIGHT] = false;
+                    return 1f;
+                } else {
+                    g.keys[VK_LEFT] = false;
+                    g.keys[VK_RIGHT] = false;
+                    return 0f;
+                }
 
+            }
         });
     }
 

@@ -13,8 +13,12 @@ class ProxyTermTest {
     @Test
     void testEveryTermMethodProxied() {
 
-        Function<Method, String> methodSummarizer = x ->
-                x.getName() + '(' + Arrays.toString(x.getParameterTypes()) + ')';
+        Function<Method, String> methodSummarizer = new Function<Method, String>() {
+            @Override
+            public String apply(Method x) {
+                return x.getName() + '(' + Arrays.toString(x.getParameterTypes()) + ')';
+            }
+        };
 
 
         for (Class proxy : new Class[] { ProxyTerm.class }) {

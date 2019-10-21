@@ -47,7 +47,12 @@ public class PriNode implements Prioritized {
         },
         And {
             @Override public double merge(Iterable<? extends Node<PriNode, Object>> in) {
-                return reduce(in, 1.0, (p, c) -> p * c);
+                return reduce(in, 1.0, new DoubleDoubleToDoubleFunction() {
+                    @Override
+                    public double valueOf(double p, double c) {
+                        return p * c;
+                    }
+                });
             }
         },
         Or {

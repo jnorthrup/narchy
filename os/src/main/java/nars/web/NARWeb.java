@@ -119,7 +119,12 @@ public abstract class NARWeb extends EvalSocket<NAR> {
         private final NAR nar;
 
         public Single(NAR nar) {
-            super(()->nar);
+            super(new Supplier() {
+                @Override
+                public Object get() {
+                    return nar;
+                }
+            });
             this.nar = nar;
         }
 
@@ -308,7 +313,12 @@ public abstract class NARWeb extends EvalSocket<NAR> {
 //                w.send(s);
 
                 ArrayNode a = Util.cborMapper.createArrayNode();
-                out.clear(t -> taskify(t, a.addArray()));
+                out.clear(new Consumer<Task>() {
+                    @Override
+                    public void accept(Task t) {
+                        taskify(t, a.addArray());
+                    }
+                });
                 try {
                     w.send(Util.jsonMapper.writeValueAsString(a));
                 } catch (JsonProcessingException e) {

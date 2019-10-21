@@ -4,6 +4,7 @@ import com.jogamp.opengl.GL2;
 import jcog.TODO;
 import jcog.data.list.FastCoWList;
 import jcog.data.list.FasterList;
+import org.eclipse.collections.api.block.predicate.Predicate;
 import spacegraph.space2d.widget.textedit.buffer.BufferChar;
 import spacegraph.space2d.widget.textedit.buffer.BufferLine;
 import spacegraph.space2d.widget.textedit.buffer.BufferLineListener;
@@ -24,10 +25,13 @@ public class LineView extends TextEditRenderable implements BufferLineListener, 
         List<BufferChar> bufferChars = bufferLine.getChars();
         chars = new FastCoWList<>(bufferChars.size(), CharView[]::new);
         if (!bufferChars.isEmpty()) {
-            update((c) -> {
-                for (BufferChar bc : bufferChars)
-                    c.add(new CharView(bc));
-                //return true;
+            update(new Consumer<FasterList<CharView>>() {
+                @Override
+                public void accept(FasterList<CharView> c) {
+                    for (BufferChar bc : bufferChars)
+                        c.add(new CharView(bc));
+                    //return true;
+                }
             });
         }
     }
@@ -49,27 +53,33 @@ public class LineView extends TextEditRenderable implements BufferLineListener, 
     }
 
     protected void update() {
-        update((c) -> {  /* */ });
+        update(new Consumer<FasterList<CharView>>() {
+            @Override
+            public void accept(FasterList<CharView> c) {  /* */ }
+        });
     }
 
     private void update(Consumer<FasterList<CharView>> with) {
-        chars.synchDirect((cc) -> {
+        chars.synchDirect(new java.util.function.Predicate<FasterList<CharView>>() {
+            @Override
+            public boolean test(FasterList<CharView> cc) {
 
-            with.accept(cc);
+                with.accept(cc);
 
 //            if (cc.size() > 1)
 //                cc.sortThis();
 
-            float width = (float) 0;
-            for (CharView c : cc) {
-                float w = CharView.width() / 2.0F;
-                width += w;
-                c.position.set(width, (float) 0, (float) 0);
-                width += w;
-            }
-            this.width = width;
+                float width = (float) 0;
+                for (CharView c : cc) {
+                    float w = CharView.width() / 2.0F;
+                    width += w;
+                    c.position.set(width, (float) 0, (float) 0);
+                    width += w;
+                }
+                LineView.this.width = width;
 
-            return true; //TODO commit only if sort changed the order
+                return true; //TODO commit only if sort changed the order
+            }
         });
     }
 
@@ -85,7 +95,17 @@ public class LineView extends TextEditRenderable implements BufferLineListener, 
 
     @Override
     public void removeChar(BufferChar removed) {
-        update((chars) -> chars.removeIf(x -> x.bufferChar() == removed));
+        update(new Consumer<FasterList<CharView>>() {
+            @Override
+            public void accept(FasterList<CharView> chars) {
+                chars.removeIf(new Predicate<CharView>() {
+                    @Override
+                    public boolean accept(CharView x) {
+                        return x.bufferChar() == removed;
+                    }
+                });
+            }
+        });
     }
 
     BufferLine getBufferLine() {
@@ -104,16 +124,19 @@ public class LineView extends TextEditRenderable implements BufferLineListener, 
     CharView leaveChar(BufferChar bc) {
 
         CharView[] leaved = new CharView[1];
-        update((chars) -> {
-            CharView leave = null;
-            for (CharView c : chars) {
-                if (c.bufferChar() == bc) {
-                    leave = c;
-                    break;
+        update(new Consumer<FasterList<CharView>>() {
+            @Override
+            public void accept(FasterList<CharView> chars) {
+                CharView leave = null;
+                for (CharView c : chars) {
+                    if (c.bufferChar() == bc) {
+                        leave = c;
+                        break;
+                    }
                 }
+                leaved[0] = leave;
+                chars.remove(leave);
             }
-            leaved[0] = leave;
-            chars.remove(leave);
         });
         return leaved[0];
     }

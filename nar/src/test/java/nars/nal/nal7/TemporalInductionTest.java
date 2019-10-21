@@ -10,6 +10,7 @@ import nars.test.TestNAR;
 import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -189,7 +190,12 @@ class TemporalInductionTest {
 
     private static int getBeliefCount(NAR n) {
         AtomicInteger a = new AtomicInteger(0);
-        n.tasks(true, false, false, false).forEach(t -> a.addAndGet(1));
+        n.tasks(true, false, false, false).forEach(new Consumer<Task>() {
+            @Override
+            public void accept(Task t) {
+                a.addAndGet(1);
+            }
+        });
         return a.intValue();
     }
 

@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import javax.xml.stream.XMLInputFactory;
 import java.io.StringReader;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -31,15 +32,21 @@ class XMLTest {
         );
 
         XMLInputFactory f = XMLInputFactory.newDefaultFactory();
-        Predicate<String> oracle = (q) -> {
-            try {
-                f.createXMLEventReader(new StringReader(q)).forEachRemaining(r->{
-                    
-                });
-                return true;
-            } catch (Throwable e) {
-                
-                return false;
+        Predicate<String> oracle = new Predicate<String>() {
+            @Override
+            public boolean test(String q) {
+                try {
+                    f.createXMLEventReader(new StringReader(q)).forEachRemaining(new Consumer<Object>() {
+                        @Override
+                        public void accept(Object r) {
+
+                        }
+                    });
+                    return true;
+                } catch (Throwable e) {
+
+                    return false;
+                }
             }
         };
 

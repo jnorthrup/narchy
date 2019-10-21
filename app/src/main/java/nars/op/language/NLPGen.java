@@ -71,44 +71,47 @@ public class NLPGen {
     private void train(String natural, Task t) {
         Compound pattern = (Compound)(PatternTermBuilder.patternify(t.term()).term());
 
-        rules.add((tt, freq, conf, tense) -> {
-            if (timeMatch(t, tense)) {
-                if (Math.abs(t.freq() - freq) < 0.33f) {
-                    if (Math.abs(t.conf() - conf) < 0.33f) {
+        rules.add(new Rule() {
+            @Override
+            public @NotNull String get(Term tt, float freq, float conf, Tense tense) {
+                if (timeMatch(t, tense)) {
+                    if (Math.abs(t.freq() - freq) < 0.33f) {
+                        if (Math.abs(t.conf() - conf) < 0.33f) {
 
-                        String[] result = {null};
+                            String[] result = {null};
 
-                        var u = new Unify(VAR_PATTERN, terminal.random(), NAL.unify.UNIFICATION_STACK_CAPACITY, terminal.deriveBranchTTL.intValue()) {
+                            var u = new Unify(VAR_PATTERN, terminal.random(), NAL.unify.UNIFICATION_STACK_CAPACITY, terminal.deriveBranchTTL.intValue()) {
 
-                            @Override
-                            public boolean match() {
+                                @Override
+                                public boolean match() {
 
 
-                                String[] r = {natural};
-                                for (Map.Entry<Variable, Term> entry : xy.entrySet()) {
-                                    Variable x = entry.getKey();
-                                    Term y = entry.getValue();
-                                    String var = x.toString();
-                                    if (!var.startsWith("%"))
-                                        continue;
-                                    var = String.valueOf(((char) ((int) var.charAt(1) - (int) '1' + (int) 'A')));
-                                    r[0] = r[0].replace(var, y.toString());
+                                    String[] r = {natural};
+                                    for (Map.Entry<Variable, Term> entry : xy.entrySet()) {
+                                        Variable x = entry.getKey();
+                                        Term y = entry.getValue();
+                                        String var = x.toString();
+                                        if (!var.startsWith("%"))
+                                            continue;
+                                        var = String.valueOf(((char) ((int) var.charAt(1) - (int) '1' + (int) 'A')));
+                                        r[0] = r[0].replace(var, y.toString());
+                                    }
+
+                                    result[0] = r[0];
+                                    return false;
                                 }
+                            };
 
-                                result[0] = r[0];
-                                return false;
-                            }
-                        };
+                            u.unify(pattern, tt);
 
-                        u.unify(pattern, tt);
+                            if (result[0] != null)
+                                return result[0];
 
-                        if (result[0]!=null)
-                            return result[0];
-
+                        }
                     }
                 }
+                return null;
             }
-            return null;
         });
     }
 

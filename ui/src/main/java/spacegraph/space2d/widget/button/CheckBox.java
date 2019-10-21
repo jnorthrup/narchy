@@ -23,12 +23,22 @@ public class CheckBox extends ToggleButton {
     }
 
     public CheckBox(String text, Runnable r) {
-        this(text, b -> { if (b) r.run(); } );
+        this(text, new BooleanProcedure() {
+            @Override
+            public void value(boolean b) {
+                if (b) r.run();
+            }
+        });
     }
 
     public CheckBox(String text, BooleanProcedure b) {
         this(text);
-        on((a, e) -> b.value(e));
+        on(new ObjectBooleanProcedure<ToggleButton>() {
+            @Override
+            public void value(ToggleButton a, boolean e) {
+                b.value(e);
+            }
+        });
     }
 
     public CheckBox(String text, ObjectBooleanProcedure<ToggleButton> on) {
@@ -38,7 +48,12 @@ public class CheckBox extends ToggleButton {
 
     public CheckBox(String text, AtomicBoolean b) {
         this(text, b.get());
-        on((button, value) -> b.set(value));
+        on(new ObjectBooleanProcedure<ToggleButton>() {
+            @Override
+            public void value(ToggleButton button, boolean value) {
+                b.set(value);
+            }
+        });
     }
 
 

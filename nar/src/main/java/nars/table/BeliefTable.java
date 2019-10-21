@@ -10,6 +10,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
 import java.util.Arrays;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 /**
@@ -62,7 +63,12 @@ public interface BeliefTable extends TaskTable {
     }
 
     default void print(/*@NotNull*/ PrintStream out) {
-        this.forEachTask(t -> out.println(t + " " + Arrays.toString(t.stamp())));
+        this.forEachTask(new Consumer<Task>() {
+            @Override
+            public void accept(Task t) {
+                out.println(t + " " + Arrays.toString(t.stamp()));
+            }
+        });
     }
 
     default void print() {

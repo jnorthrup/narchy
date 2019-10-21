@@ -66,14 +66,17 @@ public abstract class DurLoop extends NARPart {
         assert (min < max);
         FloatRange r = new FloatRange((min + max) / 2.0F, min, max);
         //r.set(Float.NaN);
-        DurLoop d = n.onDur(() -> {
-            float x = o.asFloat();
-            if (x == x) {
-                r.set(
-                        Util.clampSafe(x, min, max)
-                );
-            } else {
-                //r.set(Float.NaN);
+        DurLoop d = n.onDur(new Runnable() {
+            @Override
+            public void run() {
+                float x = o.asFloat();
+                if (x == x) {
+                    r.set(
+                            Util.clampSafe(x, min, max)
+                    );
+                } else {
+                    //r.set(Float.NaN);
+                }
             }
         });
         d.durs(durPeriod);

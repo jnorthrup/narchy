@@ -2,15 +2,19 @@ package nars.experiment;
 
 import com.jogamp.opengl.GL2;
 import jcog.math.FloatAveragedWindow;
+import jcog.math.FloatSupplier;
 import jcog.signal.wave2d.ScaledBitmap2D;
 import nars.$;
 import nars.GameX;
 import nars.NAR;
+import nars.Task;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.game.Game;
 import nars.game.GameTime;
 import nars.game.Reward;
+import nars.game.action.ActionSignal;
+import nars.game.action.GoalActionConcept;
 import nars.gui.BeliefTableChart;
 import nars.gui.sensor.VectorSensorChart;
 import nars.sensor.Bitmap2DSensor;
@@ -18,6 +22,7 @@ import nars.term.Term;
 import nars.term.Termed;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
+import org.jetbrains.annotations.Nullable;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
@@ -32,7 +37,10 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.IntFunction;
+import java.util.function.Supplier;
 import java.util.stream.IntStream;
 
 import static jcog.Util.compose;
@@ -87,12 +95,20 @@ public class Recog2D extends GameX {
 
 
                 ,
-                /*new Blink*/(new ScaledBitmap2D(() -> canvas, sw, sh)/*, 0.8f*/));
+                /*new Blink*/(new ScaledBitmap2D(new Supplier<BufferedImage>() {
+                    @Override
+                    public BufferedImage get() {
+                        return canvas;
+                    }
+                }, sw, sh)/*, 0.8f*/));
 
 
-        outs = new BeliefVector(this, maxImages, ii ->
-                //$.inst($.the( ii), $.the("x"))
-                $.inh(id,$.the(ii))
+        outs = new BeliefVector(this, maxImages, new IntFunction<Term>() {
+            @Override
+            public Term apply(int ii) {
+                return $.inh(id, $.the(ii));
+            }
+        }
         );
 //        train = new Training(
 //                sp.src instanceof PixelBag ?
@@ -100,25 +116,31 @@ public class Recog2D extends GameX {
 //                outs, nar);
 //        train = null;
 
-        Reward r = rewardNormalized("correct", -1.0F, (float) +1, compose(() -> {
-            double error = (double) 0;
-            double pcSum = (double) 0;
-            for (int i = 0; i < maxImages; i++) {
-                BeliefVector.Neuron ni = this.outs.neurons[i];
-                ni.update();
-                float pc = ni.predictedConf;
-                pcSum = pcSum + (double) pc;
-                error = error + (double) ni.error * pc;
-            }
+        Reward r = rewardNormalized("correct", -1.0F, (float) +1, compose(new FloatSupplier() {
+            @Override
+            public float asFloat() {
+                double error = (double) 0;
+                double pcSum = (double) 0;
+                for (int i = 0; i < maxImages; i++) {
+                    BeliefVector.Neuron ni = Recog2D.this.outs.neurons[i];
+                    ni.update();
+                    float pc = ni.predictedConf;
+                    pcSum = pcSum + (double) pc;
+                    error = error + (double) ni.error * pc;
+                }
 
-            return (float)((1.0/(1.0 +(error/pcSum)))-0.5)* 2.0F;
-            //return Util.clamp(2 * -(error / maxImages - 0.5f), -1, +1);
+                return (float) ((1.0 / (1.0 + (error / pcSum))) - 0.5) * 2.0F;
+                //return Util.clamp(2 * -(error / maxImages - 0.5f), -1, +1);
+            }
         }, new FloatAveragedWindow(16, 0.1f)));
 
 //        Param.DEBUG = true;
-        nar.onTask((t)->{
-            if (!t.isEternal() && t.term().equals(r.term())) {
-                System.out.println(t.proof());
+        nar.onTask(new Consumer<Task>() {
+            @Override
+            public void accept(Task t) {
+                if (!t.isEternal() && t.term().equals(r.term())) {
+                    System.out.println(t.proof());
+                }
             }
         }, GOAL);
 
@@ -198,24 +220,27 @@ public class Recog2D extends GameX {
                 new Gridding(list.toArray(new Surface[0])));
 
         int[] frames = {0};
-        onFrame(() -> {
+        onFrame(new Runnable() {
+            @Override
+            public void run() {
 
-            if (frames[0]++ % imagePeriod == 0) {
-                nextImage();
-            }
+                if (frames[0]++ % imagePeriod == 0) {
+                    Recog2D.this.nextImage();
+                }
 
-            redraw();
+                Recog2D.this.redraw();
 
 
-            outs.expect(image);
+                outs.expect(image);
 
 
 //            if (neural.get()) {
 //                train.update(mlpLearn, mlpSupport);
 //            }
 
-            //p.update();
+                //p.update();
 
+            }
         });
 
         return g;
@@ -224,10 +249,13 @@ public class Recog2D extends GameX {
     @Deprecated
     public List<Surface> beliefTableCharts(NAR nar, Collection<? extends Termed> terms, long window) {
         long[] btRange = new long[2];
-        onFrame(() -> {
-            long now = nar.time();
-            btRange[0] = now - window;
-            btRange[1] = now + window;
+        onFrame(new Runnable() {
+            @Override
+            public void run() {
+                long now = nar.time();
+                btRange[0] = now - window;
+                btRange[1] = now + window;
+            }
         });
         List<Surface> list = new ArrayList<>();
         for (Termed c : terms) {
@@ -260,14 +288,17 @@ public class Recog2D extends GameX {
     public static void main(String[] arg) {
 
 
-        GameX.Companion.initFn((float) (FPS * 2), (n) -> {
+        GameX.Companion.initFn((float) (FPS * 2), new Function<NAR, Game>() {
+            @Override
+            public Game apply(NAR n) {
 
-            Recog2D a = new Recog2D(n);
-            n.add(a);
-            SpaceGraph.window(a.conceptTraining(a.outs, n), 800, 600);
+                Recog2D a = new Recog2D(n);
+                n.add(a);
+                SpaceGraph.window(a.conceptTraining(a.outs, n), 800, 600);
 
-            return a;
+                return a;
 
+            }
         });
     }
 
@@ -427,26 +458,32 @@ public class Recog2D extends GameX {
 
             this.states = maxStates;
             this.neurons = new Neuron[maxStates];
-            this.concepts = IntStream.range(0, maxStates).mapToObj(i -> {
-                Term tt = namer.apply(i);
+            this.concepts = IntStream.range(0, maxStates).mapToObj(new IntFunction<GoalActionConcept>() {
+                                                                       @Override
+                                                                       public GoalActionConcept apply(int i) {
+                                                                           Term tt = namer.apply(i);
 
-                Neuron n = neurons[i] = new Neuron();
+                                                                           Neuron n = neurons[i] = new Neuron();
 
-                        return a.action(tt, (bb, x) -> {
-
-
-                            float predictedFreq = x != null ? x.freq() : 0.5f;
-
-
-                            n.actual(predictedFreq, x != null ? x.conf() : (float) 0);
+                                                                           return a.action(tt, new GoalActionConcept.MotorFunction() {
+                                                                               @Override
+                                                                               public @Nullable Truth apply(@Nullable Truth bb, @Nullable Truth x) {
 
 
-                            //return x;
-                            return x!=null ? $.t(x.freq(), nar.beliefConfDefault.floatValue()) : null;
-                        });
+                                                                                   float predictedFreq = x != null ? x.freq() : 0.5f;
 
 
-                    }
+                                                                                   n.actual(predictedFreq, x != null ? x.conf() : (float) 0);
+
+
+                                                                                   //return x;
+                                                                                   return x != null ? $.t(x.freq(), nar.beliefConfDefault.floatValue()) : null;
+                                                                               }
+                                                                           });
+
+
+                                                                       }
+                                                                   }
 
 
             ).toArray(TaskConcept[]::new);
@@ -475,7 +512,12 @@ public class Recog2D extends GameX {
                     0f;
 
 
-            expect(ii -> ii == onlyStateToBeOn ? 1f : offValue);
+            expect(new IntToFloatFunction() {
+                @Override
+                public float valueOf(int ii) {
+                    return ii == onlyStateToBeOn ? 1f : offValue;
+                }
+            });
         }
 
 

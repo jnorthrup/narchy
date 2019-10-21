@@ -31,6 +31,7 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.IntUnaryOperator;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -54,7 +55,12 @@ public class RTree<X> implements Space<X> {
     public final Spatialization<X> model;
 
     public RTree(int max, Split<X> splitType) {
-        this((x-> (HyperRegion) x), max, splitType);
+        this((new Function<X, HyperRegion>() {
+            @Override
+            public HyperRegion apply(X x) {
+                return (HyperRegion) x;
+            }
+        }), max, splitType);
     }
 
     public RTree(@Nullable Function<X, HyperRegion> spatialize, int mMax, Split<X> splitType) {
@@ -78,10 +84,13 @@ public class RTree<X> implements Space<X> {
 
     @Override
     public void clear() {
-        SIZE.updateAndGet(this, (sizeBeforeClear) -> {
-            if (sizeBeforeClear > 0 || root == null)
-                this.root = model.newLeaf();
-            return 0;
+        SIZE.updateAndGet(this, new IntUnaryOperator() {
+            @Override
+            public int applyAsInt(int sizeBeforeClear) {
+                if (sizeBeforeClear > 0 || root == null)
+                    RTree.this.root = model.newLeaf();
+                return 0;
+            }
         });
     }
 
@@ -207,9 +216,12 @@ public class RTree<X> implements Space<X> {
     @Override
     @Deprecated public int containedToArray(HyperRegion rect, X[] t) {
         int[] i = {0};
-        root.containing(rect, (x) -> {
-            t[i[0]++] = x;
-            return i[0] < t.length;
+        root.containing(rect, new Predicate<X>() {
+            @Override
+            public boolean test(X x) {
+                t[i[0]++] = x;
+                return i[0] < t.length;
+            }
         }, model);
         return i[0];
     }
@@ -217,9 +229,12 @@ public class RTree<X> implements Space<X> {
     @Deprecated public Set<X> containedToSet(HyperRegion rect) {
         int s = size();
         Set<X> t = new HashSet(s);
-        root.containing(rect, x -> {
-            t.add(x);
-            return true;
+        root.containing(rect, new Predicate<X>() {
+            @Override
+            public boolean test(X x) {
+                t.add(x);
+                return true;
+            }
         }, model);
         return t;
     }

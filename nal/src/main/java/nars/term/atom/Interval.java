@@ -15,6 +15,8 @@ import org.eclipse.collections.api.tuple.primitive.ObjectIntPair;
 import java.io.DataInput;
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.function.Function;
+import java.util.function.IntFunction;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -86,11 +88,21 @@ public final class Interval extends AbstractAtomic implements /*The, */Iterable<
     public final int size() { return key.length; }
 
     public Stream<ByteIntPair> stream() {
-        return IntStream.range(0,size()).mapToObj(i->pair(key[i], value[i]));
+        return IntStream.range(0,size()).mapToObj(new IntFunction<ByteIntPair>() {
+            @Override
+            public ByteIntPair apply(int i) {
+                return pair(key[i], value[i]);
+            }
+        });
     }
 
     public Stream<ObjectIntPair<Term>> stream(Subterms s) {
-        return stream().map(p -> pair(s.sub((int) p.getOne()), p.getTwo()));
+        return stream().map(new Function<ByteIntPair, ObjectIntPair<Term>>() {
+            @Override
+            public ObjectIntPair<Term> apply(ByteIntPair p) {
+                return pair(s.sub((int) p.getOne()), p.getTwo());
+            }
+        });
     }
 
     @Override public Iterator<ByteIntPair> iterator() {
@@ -112,7 +124,12 @@ public final class Interval extends AbstractAtomic implements /*The, */Iterable<
     }
 
     public boolean OR(Subterms s, ObjectIntPredicate<Term> each) {
-        return !AND(s, (ss,v) -> !each.accept(ss,v));
+        return !AND(s, new ObjectIntPredicate<Term>() {
+            @Override
+            public boolean accept(Term ss, int v) {
+                return !each.accept(ss, v);
+            }
+        });
     }
 
     @Override

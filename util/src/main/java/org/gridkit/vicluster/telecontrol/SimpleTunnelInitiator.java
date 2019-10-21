@@ -70,15 +70,18 @@ public class SimpleTunnelInitiator implements TunnellerInitiator {
                 LineLoggerOutputStream log = new LineLoggerOutputStream("", SimpleTunnelInitiator.this.logger.getLogger("console").warn());
                 LineLoggerOutputStream dlog = new LineLoggerOutputStream("", SimpleTunnelInitiator.this.logger.getLogger("tunneller").info());
                 this.diag = SimpleTunnelInitiator.this.streamCopyService.link(stdErr, log, true);
-                Thread thread = new Thread(() -> {
-                    try {
-                        TunnellerConnection tcon = new TunnellerConnection("tunneller", stdOut, stdIn, new PrintStream(dlog), connTimeout, TimeUnit.SECONDS);
-                        tc.setData(tcon);
-                    } catch (IOException | InterruptedException | TimeoutException var2) {
-                        tc.setError(var2);
-                    }
+                Thread thread = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            TunnellerConnection tcon = new TunnellerConnection("tunneller", stdOut, stdIn, new PrintStream(dlog), connTimeout, TimeUnit.SECONDS);
+                            tc.setData(tcon);
+                        } catch (IOException | InterruptedException | TimeoutException var2) {
+                            tc.setError(var2);
+                        }
 
-                    diag.flush();
+                        diag.flush();
+                    }
                 });
                 thread.setName("Tunnel initializer");
                 thread.start();

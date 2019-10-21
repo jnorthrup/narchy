@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.Consumer;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -181,7 +182,12 @@ class MemoryTest {
 
         NAR d = NARS.shell();
         Set<Term> t = new TreeSet();
-        d.memory.forEach(x -> t.add(x.term()));
+        d.memory.forEach(new Consumer<Concept>() {
+            @Override
+            public void accept(Concept x) {
+                t.add(x.term());
+            }
+        });
 
         assertTrue(t.size() > 100);
 

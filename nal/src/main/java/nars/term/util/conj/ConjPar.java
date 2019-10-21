@@ -10,10 +10,13 @@ import nars.term.Terms;
 import nars.term.atom.IdempotentBool;
 import nars.term.compound.Sequence;
 import nars.term.util.builder.TermBuilder;
+import org.eclipse.collections.api.block.function.primitive.ByteToByteFunction;
+import org.eclipse.collections.api.block.predicate.primitive.BytePredicate;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectByteHashMap;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Set;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 import static nars.Op.CONJ;
@@ -107,7 +110,12 @@ public enum ConjPar {
             Term[] y = ArrayUtil.remove(xx, lastXternal);
             Term Y = the(B, dt, true, y);
             if (Y == True) return x;
-            return B.conj(XTERNAL, Util.map(xxx -> B.conj(dt, xxx, Y),
+            return B.conj(XTERNAL, Util.map(new Function<Term, Term>() {
+                                                @Override
+                                                public Term apply(Term xxx) {
+                                                    return B.conj(dt, xxx, Y);
+                                                }
+                                            },
                     new Term[x.subs()],
                     x.subterms().arrayShared()));
         }
@@ -254,14 +262,24 @@ public enum ConjPar {
                         i.put(ct, Byte.MIN_VALUE);
                         i.put(ctn, Byte.MIN_VALUE);
                     } else {
-                        byte z = i.updateValue(ct, (byte) 0, (v) -> ((int) v >= 0) ? (byte) ((int) v + 1) : v);
+                        byte z = i.updateValue(ct, (byte) 0, new ByteToByteFunction() {
+                            @Override
+                            public byte valueOf(byte v) {
+                                return ((int) v >= 0) ? (byte) ((int) v + 1) : v;
+                            }
+                        });
                         anyFull |= ((int) z == d);
                     }
                 }
 
             }
             if (anyFull) {
-                i.values().removeIf(b -> (int) b < d);
+                i.values().removeIf(new BytePredicate() {
+                    @Override
+                    public boolean accept(byte b) {
+                        return (int) b < d;
+                    }
+                });
                 if (!i.isEmpty()) {
                     Set<Term> common = i.keySet();
                     Term factor = B.conj(common.toArray(Op.EmptyTermArray));
@@ -272,7 +290,12 @@ public enum ConjPar {
                     xx = xx.clone(); //dont modify input array
                     j = -1;
 
-                    Predicate<Term> commonDoesntContain = s -> !common.contains(s);
+                    Predicate<Term> commonDoesntContain = new Predicate<Term>() {
+                        @Override
+                        public boolean test(Term s) {
+                            return !common.contains(s);
+                        }
+                    };
 
                     for (int k = 0; k < d; k++) {
                         j = cond.next(true, j + 1, n);

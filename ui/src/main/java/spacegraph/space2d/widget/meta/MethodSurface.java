@@ -29,7 +29,12 @@ public class MethodSurface extends Gridding {
             edit(c, defaults);
             if (parameterSuppliers.size()!=i+1) {
                 System.err.println("warning: edit for " + c+ " was not constructed"); //TODO logger
-                parameterSuppliers.add(() -> null);
+                parameterSuppliers.add(new Supplier<Object>() {
+                    @Override
+                    public Object get() {
+                        return null;
+                    }
+                });
             }
         }
     }

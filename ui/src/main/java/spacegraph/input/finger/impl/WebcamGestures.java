@@ -29,6 +29,7 @@ import spacegraph.space2d.widget.meta.LazySurface;
 import spacegraph.video.*;
 
 import java.awt.image.BufferedImage;
+import java.util.function.Supplier;
 
 import static spacegraph.SpaceGraph.window;
 
@@ -47,11 +48,13 @@ public class WebcamGestures extends Finger {
 
         VideoSource in = WebCam.the();
 
-        OrthoSurfaceGraph g = window(new LazySurface(() -> {
+        OrthoSurfaceGraph g = window(new LazySurface(new Supplier<Surface>() {
+            @Override
+            public Surface get() {
 
-            VideoSource in2 = new VideoEqualizer(in);
+                VideoSource in2 = new VideoEqualizer(in);
 
-            VideoSource in3 = new VideoBackgroundRemoval(in2);
+                VideoSource in3 = new VideoBackgroundRemoval(in2);
 
 //            VideoSource in4 = VideoTransform.the(in, new Function<>() {
 //
@@ -97,11 +100,12 @@ public class WebcamGestures extends Finger {
 //                }
 //            });
 
-            return new Gridding(
-                    new VideoSurface(in),
-                    new VideoSurface(in2),
-                    new VideoSurface(in3)
-            );
+                return new Gridding(
+                        new VideoSurface(in),
+                        new VideoSurface(in2),
+                        new VideoSurface(in3)
+                );
+            }
         }), 1400, 800);
 
 //        Finger f = g.fingers.get(0);

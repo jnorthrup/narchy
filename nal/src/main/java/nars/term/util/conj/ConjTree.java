@@ -14,6 +14,8 @@ import nars.term.util.TermException;
 import nars.term.util.TermTransformException;
 import nars.term.util.builder.TermBuilder;
 import nars.time.Tense;
+import org.eclipse.collections.api.block.function.Function0;
+import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 import org.eclipse.collections.api.iterator.LongIterator;
 import org.eclipse.collections.api.tuple.primitive.IntObjectPair;
 import org.eclipse.collections.impl.map.mutable.primitive.IntObjectHashMap;
@@ -24,6 +26,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.function.Predicate;
 
 import static nars.Op.CONJ;
 import static nars.Op.NEG;
@@ -114,8 +117,12 @@ public class ConjTree implements ConjBuilder {
         }
 
         return !(!neg.isEmpty() || (conj.hasAny(NEG) && !pos.isEmpty())) ||
-                conj.eventsAND((when, what) ->
-                    what instanceof Neg ? !pos.contains(what.unneg()) : !neg.contains(what),
+                conj.eventsAND(new LongObjectPredicate<Term>() {
+                                   @Override
+                                   public boolean accept(long when, Term what) {
+                                       return what instanceof Neg ? !pos.contains(what.unneg()) : !neg.contains(what);
+                                   }
+                               },
                         0L, true, true);
     }
 
@@ -449,9 +456,12 @@ public class ConjTree implements ConjBuilder {
 
         if (seq == null) seq = new IntObjectHashMap<>(2);
 
-        return result(seq.getIfAbsentPut(Tense.occToDT(at), () -> {
-            shift = TIMELESS; //invalidate
-            return new ConjTree();
+        return result(seq.getIfAbsentPut(Tense.occToDT(at), new Function0<ConjTree>() {
+            @Override
+            public ConjTree value() {
+                shift = TIMELESS; //invalidate
+                return new ConjTree();
+            }
         }).addParallel(x));
     }
 
@@ -656,20 +666,23 @@ public class ConjTree implements ConjBuilder {
                                 if (y != x && y.volume() < xv && x.hasAll(y.unneg().structure())) {
                                     //TODO test for disjunctive sequence contradictions
                                     boolean[] fail = {false};
-                                    simple = !x.eventsOR((when,xx) -> {
-                                        if (xx.equalsNeg(y)) {
-                                            fail[0] = true;
-                                            return true;
-                                        }
-                                        if (xx.equals(y))
-                                            return true;
-                                        if (xx instanceof Neg) {
-                                            Term xu = xx.unneg();
-                                            if (xu instanceof Compound && xu.op() == CONJ) {
-                                                return Conj.eventOf(xu, y, +1) || Conj.eventOf(xu, y, -1);
+                                    simple = !x.eventsOR(new LongObjectPredicate<Term>() {
+                                        @Override
+                                        public boolean accept(long when, Term xx) {
+                                            if (xx.equalsNeg(y)) {
+                                                fail[0] = true;
+                                                return true;
                                             }
+                                            if (xx.equals(y))
+                                                return true;
+                                            if (xx instanceof Neg) {
+                                                Term xu = xx.unneg();
+                                                if (xu instanceof Compound && xu.op() == CONJ) {
+                                                    return Conj.eventOf(xu, y, +1) || Conj.eventOf(xu, y, -1);
+                                                }
+                                            }
+                                            return false;
                                         }
-                                        return false;
                                     }, ETERNAL, true, true);
                                     if (fail[0])
                                         return False; //conflict in sequence avoided
@@ -692,7 +705,12 @@ public class ConjTree implements ConjBuilder {
                 }
 
 
-                if (!simple && Util.or(qq -> qq.op()==CONJ && qq.dt()==XTERNAL, q)) {
+                if (!simple && Util.or(new Predicate<Term>() {
+                    @Override
+                    public boolean test(Term qq) {
+                        return qq.op() == CONJ && qq.dt() == XTERNAL;
+                    }
+                }, q)) {
                     simple = true; //TODO refine
                 }
 
@@ -705,7 +723,12 @@ public class ConjTree implements ConjBuilder {
                     if (y.op()==CONJ && (y.subStructure()&CONJ.bit)!=0) {
                         //test factorization exhaustively
                         try {
-                            y.eventsAND((when, whta) -> true, 0L, false, true);
+                            y.eventsAND(new LongObjectPredicate<Term>() {
+                                @Override
+                                public boolean accept(long when, Term whta) {
+                                    return true;
+                                }
+                            }, 0L, false, true);
                         } catch (TermTransformException tte) {
                             if (NAL.DEBUG)
                                 throw tte;

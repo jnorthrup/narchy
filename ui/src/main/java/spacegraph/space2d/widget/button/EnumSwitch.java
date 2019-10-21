@@ -1,6 +1,7 @@
 package spacegraph.space2d.widget.button;
 
 import jcog.math.MutableEnum;
+import org.eclipse.collections.api.block.procedure.primitive.ObjectBooleanProcedure;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.widget.text.LabeledPane;
 
@@ -32,9 +33,12 @@ public enum EnumSwitch { ;
         int i = 0;
         for (C xx : s) {
             CheckBox tb = new CheckBox(xx.name());
-            tb.on((c, enabled) -> {
-                if (enabled)
-                    x.set(xx);
+            tb.on(new ObjectBooleanProcedure<ToggleButton>() {
+                @Override
+                public void value(ToggleButton c, boolean enabled) {
+                    if (enabled)
+                        x.set(xx);
+                }
             });
             if (xx == initialValue)
                 initialButton = i;

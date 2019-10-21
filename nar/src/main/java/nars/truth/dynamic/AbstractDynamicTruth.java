@@ -17,6 +17,7 @@ import nars.truth.proj.TruthProjection;
 import org.eclipse.collections.api.block.function.primitive.ObjectBooleanToObjectFunction;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 import static nars.NAL.STAMP_CAPACITY;
@@ -78,8 +79,17 @@ public abstract class AbstractDynamicTruth {
 	}
 
 	public static ObjectBooleanToObjectFunction<Term, BeliefTable[]> table(AbstractDynamicTruth... models) {
-		return (t, beliefOrGoal) ->
-			Util.map(m -> new DynamicTruthTable(t, m, beliefOrGoal), new BeliefTable[models.length], models);
+		return new ObjectBooleanToObjectFunction<Term, BeliefTable[]>() {
+            @Override
+            public BeliefTable[] valueOf(Term t, boolean beliefOrGoal) {
+                return Util.map(new Function<AbstractDynamicTruth, BeliefTable>() {
+                    @Override
+                    public BeliefTable apply(AbstractDynamicTruth m) {
+                        return new DynamicTruthTable(t, m, beliefOrGoal);
+                    }
+                }, new BeliefTable[models.length], models);
+            }
+        };
 	}
 
 

@@ -42,21 +42,25 @@ public class PaintUpdateMatrixView extends BitmapMatrixView {
 
         double[] xx = new double[window];
         AtomicCycle.AtomicCycleN i = new AtomicCycle.AtomicCycleN(max);
-        return new PaintUpdateMatrixView(()->{
-            int start = i.addAndGet(step);
-            int over;
-            int end = start + window;
-            if (end >= max) {
-                over = (end-max); end = max;
-            } else
-                over= 0;
-            System.arraycopy(x, start, xx, 0, (end-start));
-            if (over > 0)
-                System.arraycopy(x, 0, xx, (end-start), over);
+        return new PaintUpdateMatrixView(new Supplier<double[]>() {
+            @Override
+            public double[] get() {
+                int start = i.addAndGet(step);
+                int over;
+                int end = start + window;
+                if (end >= max) {
+                    over = (end - max);
+                    end = max;
+                } else
+                    over = 0;
+                System.arraycopy(x, start, xx, 0, (end - start));
+                if (over > 0)
+                    System.arraycopy(x, 0, xx, (end - start), over);
 
-            if(normalize)
-                Util.normalize(xx);
-            return xx;
+                if (normalize)
+                    Util.normalize(xx);
+                return xx;
+            }
         }, window, step);
     }
 }

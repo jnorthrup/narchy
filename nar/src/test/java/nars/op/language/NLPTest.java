@@ -4,8 +4,11 @@ import com.google.common.base.Joiner;
 import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
+import nars.subterm.Subterms;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+
+import java.util.function.BiConsumer;
 
 /**
  * Created by me on 2/18/17.
@@ -28,7 +31,12 @@ class NLPTest {
         
         n.freqResolution.set(0.1f);
 
-        n.addOpN("say", (args, nn) -> System.err.println(Joiner.on(" ").join(args)));
+        n.addOpN("say", new BiConsumer<Subterms, NAR>() {
+            @Override
+            public void accept(Subterms args, NAR nn) {
+                System.err.println(Joiner.on(" ").join(args));
+            }
+        });
 
         
         

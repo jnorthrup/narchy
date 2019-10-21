@@ -21,6 +21,8 @@ import jcog.constraint.discrete.trail.Trail;
 import jcog.constraint.discrete.trail.TrailedInt;
 import jcog.data.list.FasterList;
 
+import java.util.function.IntUnaryOperator;
+
 /**
  * A sparse set based implementation of IntVar
  * <p>
@@ -60,8 +62,18 @@ public class IntVarImpl extends IntVar {
         this.maxT = new TrailedInt(trail, initMax);
         int size = initMax - initMin + 1;
         this.sizeT = new TrailedInt(trail, size);
-        this.values = makeInt(size, i -> i + initMin);
-        this.positions = makeInt(size, i -> i);
+        this.values = makeInt(size, new IntUnaryOperator() {
+            @Override
+            public int applyAsInt(int i) {
+                return i + initMin;
+            }
+        });
+        this.positions = makeInt(size, new IntUnaryOperator() {
+            @Override
+            public int applyAsInt(int i) {
+                return i;
+            }
+        });
     }
 
     public IntVarImpl(PropagationQueue pQueue, Trail trail, int[] values) {
@@ -84,7 +96,12 @@ public class IntVarImpl extends IntVar {
 
 
         int range = max - min + 1;
-        this.positions = makeInt(range, i -> range);
+        this.positions = makeInt(range, new IntUnaryOperator() {
+            @Override
+            public int applyAsInt(int i) {
+                return range;
+            }
+        });
         for (int i = 0; i < values.length; i++) {
             this.positions[values[i] - initMin] = i;
         }

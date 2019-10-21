@@ -13,8 +13,12 @@ import nars.nal.nal7.NAL7Test;
 import nars.test.TestNARSuite;
 import nars.test.impl.DeductiveMeshTest;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
+import org.eclipse.collections.api.block.procedure.primitive.ObjectIntProcedure;
 
 import java.io.File;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 class NARTestOptimize {
 
@@ -39,16 +43,24 @@ class NARTestOptimize {
 //                    NAL8Test.class,
             };
 
-            Lab<NAR> l = new Lab<>(() -> {
-                NAR n = NARS.tmp();
-                n.random();
-                return n;
+            Lab<NAR> l = new Lab<>(new Supplier<NAR>() {
+                @Override
+                public NAR get() {
+                    NAR n = NARS.tmp();
+                    n.random();
+                    return n;
+                }
             })
 //                .var("attnCapacity", 4, 128, 8,
 //                        (NAR n, int i) -> n.attn.links.setCapacity(i))
 
                 .var("ttlMax", 4, 32, 3,
-                        (NAR n, int i) -> n.deriveBranchTTL.set(i))
+                        new ObjectIntProcedure<NAR>() {
+                            @Override
+                            public void value(NAR n, int i) {
+                                n.deriveBranchTTL.set(i);
+                            }
+                        })
 //                .var("linkFanOut", 1, 16, 1,
 //                        (NAR n, int f) -> Param.LinkFanoutMax = f)
 //                .var("conceptActivation", ScalarValue.EPSILONsqrt, 1f, 0.1f,
@@ -82,9 +94,18 @@ class NARTestOptimize {
 
 
             int suiteIterations = 2;
-            Optilive<NAR, TestNARSuite> o = l.optilive(s ->
-                            new TestNARSuite(s, testClasses).run(parallel, suiteIterations),
-                    (FloatFunction<TestNARSuite>) t -> (float) t.score());
+            Optilive<NAR, TestNARSuite> o = l.optilive(new Function<Supplier<NAR>, TestNARSuite>() {
+                                                           @Override
+                                                           public TestNARSuite apply(Supplier<NAR> s) {
+                                                               return new TestNARSuite(s, testClasses).run(parallel, suiteIterations);
+                                                           }
+                                                       },
+                    new FloatFunction<TestNARSuite>() {
+                        @Override
+                        public float floatValueOf(TestNARSuite t) {
+                            return (float) t.score();
+                        }
+                    });
 
 //            o
 ////            .sense("numConcepts",
@@ -111,16 +132,31 @@ class NARTestOptimize {
 
     static class DeductiveMeshOptimize {
         public static void main(String[] args) {
-            Lab<DeductiveMeshTest> l = new Lab<>(() ->
-            {
-                DeductiveMeshTest d = new DeductiveMeshTest(NARS.tmp(), new int[]{4, 3}, 2000);
-                return d;
-            }).var("ttlMax", 6, 100, 20, (DeductiveMeshTest t, int i) -> t.test.nar.deriveBranchTTL.set(i));
+            Lab<DeductiveMeshTest> l = new Lab<>(new Supplier<DeductiveMeshTest>() {
+                @Override
+                public DeductiveMeshTest get() {
+                    DeductiveMeshTest d = new DeductiveMeshTest(NARS.tmp(), new int[]{4, 3}, 2000);
+                    return d;
+                }
+            }).var("ttlMax", 6, 100, 20, new ObjectIntProcedure<DeductiveMeshTest>() {
+                @Override
+                public void value(DeductiveMeshTest t, int i) {
+                    t.test.nar.deriveBranchTTL.set(i);
+                }
+            });
 
 
-            Opti<DeductiveMeshTest> o = l.optimize(d -> {
-                d.test.test();
-            }, d -> d.test.score);
+            Opti<DeductiveMeshTest> o = l.optimize(new Consumer<DeductiveMeshTest>() {
+                @Override
+                public void accept(DeductiveMeshTest d) {
+                    d.test.test();
+                }
+            }, new FloatFunction<DeductiveMeshTest>() {
+                @Override
+                public float floatValueOf(DeductiveMeshTest d) {
+                    return d.test.score;
+                }
+            });
             o.run(64);
             o.print();
             o.tree(4, 6).print();

@@ -15,6 +15,9 @@ import nars.exe.Exec;
 import nars.exe.NARLoop;
 import nars.exe.impl.ThreadedExec;
 import nars.time.clock.RealTime;
+import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
+import org.eclipse.collections.api.block.procedure.primitive.FloatProcedure;
+import org.eclipse.collections.api.block.procedure.primitive.ObjectFloatProcedure;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.container.grid.Gridding;
@@ -33,6 +36,7 @@ import spacegraph.video.Draw;
 
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.IntFunction;
 import java.util.stream.IntStream;
 
 import static jcog.Util.lerpSafe;
@@ -55,9 +59,12 @@ public class ExeCharts {
 //            //)
 //            , s, Draw::colorBipolar);
 
-        return DurSurface.get(g, nar, ()->{
-            for (WhySurface control : controls) {
-                control.update();
+        return DurSurface.get(g, nar, new Runnable() {
+            @Override
+            public void run() {
+                for (WhySurface control : controls) {
+                    control.update();
+                }
             }
         });
     }
@@ -91,9 +98,12 @@ public class ExeCharts {
 
         FloatRange gain = new FloatRange(1f, 0f, 100f);
 
-        BitmapMatrixView bmp = new BitmapMatrixView(i ->
-                //Util.tanhFast(
-                    gain.floatValue() * nar.control.why.get(i).pri()
+        BitmapMatrixView bmp = new BitmapMatrixView(new IntToFloatFunction() {
+            @Override
+            public float valueOf(int i) {
+                return gain.floatValue() * nar.control.why.get(i).pri();
+            }
+        }
                 //)
                 , s, Draw::colorBipolar);
 
@@ -110,22 +120,30 @@ public class ExeCharts {
         float[] want = n.emotion.want;
         //return DurSurface.get(
          return grid( IntStream.range(0, want.length).mapToObj(
-                        w -> new FloatSlider(want[w], min, max) {
+                 new IntFunction<Surface>() {
+                     @Override
+                     public Surface apply(int w) {
+                         return new FloatSlider(want[w], min, max) {
 
-                            @Override
-                            protected void paintWidget(RectFloat bounds, GL2 gl) {
-                                if (auto.on()) {
-                                    set(want[w]);
-                                }
+                             @Override
+                             protected void paintWidget(RectFloat bounds, GL2 gl) {
+                                 if (auto.on()) {
+                                     set(want[w]);
+                                 }
 
-                            }
-                        }
-                    .text(MetaGoal.values()[w].name())
-                    .type(SliderModel.KnobHoriz)
-                    .on((s, v) -> {
-                        if (!auto.on())
-                            want[w] = v;
-                    })
+                             }
+                         }
+                                 .text(MetaGoal.values()[w].name())
+                                 .type(SliderModel.KnobHoriz)
+                                 .on(new ObjectFloatProcedure<SliderModel>() {
+                                     @Override
+                                     public void value(SliderModel s, float v) {
+                                         if (!auto.on())
+                                             want[w] = v;
+                                     }
+                                 });
+                     }
+                 }
                 ));
     }
 
@@ -144,11 +162,14 @@ public class ExeCharts {
         Gridding g = grid(exeQueue, busy);
         DurSurface d = DurSurface.get(g, n, new Consumer<>() {
 
-            final Off c = n.onCycle((nn) -> {
-                busyBuffer.offer(nn.emotion.busyVol.asFloat());
-                Exec nexe = n.exe;
-                if (nexe instanceof ThreadedExec)
-                    queueSize.offer((float)((ThreadedExec) nexe).queueSize());
+            final Off c = n.onCycle(new Consumer<NAR>() {
+                @Override
+                public void accept(NAR nn) {
+                    busyBuffer.offer(nn.emotion.busyVol.asFloat());
+                    Exec nexe = n.exe;
+                    if (nexe instanceof ThreadedExec)
+                        queueSize.offer((float) ((ThreadedExec) nexe).queueSize());
+                }
             });
 
             @Override
@@ -286,7 +307,12 @@ public class ExeCharts {
                 time = ((RealTime) nar.time);
                 add(
                         new IntSlider("Dur(ms)", durMS)
-                                .on(durMS->nar.time.dur((float) Math.max((int) Math.round(durMS), 1))),
+                                .on(new FloatProcedure() {
+                                    @Override
+                                    public void value(float durMS) {
+                                        nar.time.dur((float) Math.max((int) Math.round(durMS), 1));
+                                    }
+                                }),
                         new FloatSlider(loop.throttle, "Throttle")
                 );
             } else {

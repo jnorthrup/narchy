@@ -15,9 +15,13 @@ import nars.term.buffer.Termerator;
 import nars.term.functor.BinaryBidiFunctor;
 import nars.term.functor.UnaryBidiFunctor;
 import nars.term.util.conj.Conj;
+import org.eclipse.collections.api.block.predicate.primitive.IntObjectPredicate;
+import org.eclipse.collections.api.block.predicate.primitive.ObjectIntPredicate;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 import static nars.Op.INT;
@@ -91,8 +95,18 @@ public enum ListFunc {
                     for (int i = -1; i < l; i++) {
                         int finalI = i;
                         Predicate<Termerator> assign = Termerator.assign(
-                                x, $.pFast(xys.terms((xyi, ii) -> xyi <= finalI)),
-                                y, $.pFast(xys.terms((xyi, ii) -> xyi > finalI)));
+                                x, $.pFast(xys.terms(new IntObjectPredicate<Term>() {
+                                    @Override
+                                    public boolean accept(int xyi, Term ii) {
+                                        return xyi <= finalI;
+                                    }
+                                })),
+                                y, $.pFast(xys.terms(new IntObjectPredicate<Term>() {
+                                    @Override
+                                    public boolean accept(int xyi, Term ii) {
+                                        return xyi > finalI;
+                                    }
+                                })));
                         list.add(assign);
                     }
                     e.canBe(list);
@@ -111,11 +125,21 @@ public enum ListFunc {
 
             int remainderLength = xy.subs() - ys;
             if (remainderLength >= 0)
-                if (yy.subterms().ANDi((yi, yii) -> xy.sub(remainderLength + yii).equals(yi)))
+                if (yy.subterms().ANDi(new ObjectIntPredicate<Term>() {
+                    @Override
+                    public boolean accept(Term yi, int yii) {
+                        return xy.sub(remainderLength + yii).equals(yi);
+                    }
+                }))
                     return e.is(x, remainderLength == 0 ?
                             Op.EmptyProduct
                             :
-                            $.pFast(xy.subterms().terms((i, ii) -> i < ys)))
+                            $.pFast(xy.subterms().terms(new IntObjectPredicate<Term>() {
+                                @Override
+                                public boolean accept(int i, Term ii) {
+                                    return i < ys;
+                                }
+                            })))
                                 ? null : IdempotentBool.Null;
 
 
@@ -130,8 +154,18 @@ public enum ListFunc {
             int xs = xx.subs();
             int remainderLength = xy.subs() - xs;
             if (remainderLength >= 0)
-                if (xx.subterms().ANDi((xi, xii) -> xy.sub(xii).equals(xi)))
-                    return e.is(y, (remainderLength == 0) ? Op.EmptyProduct : $.pFast(xy.subterms().terms((i, ii) -> i >= xs))) ? null : IdempotentBool.Null;
+                if (xx.subterms().ANDi(new ObjectIntPredicate<Term>() {
+                    @Override
+                    public boolean accept(Term xi, int xii) {
+                        return xy.sub(xii).equals(xi);
+                    }
+                }))
+                    return e.is(y, (remainderLength == 0) ? Op.EmptyProduct : $.pFast(xy.subterms().terms(new IntObjectPredicate<Term>() {
+                        @Override
+                        public boolean accept(int i, Term ii) {
+                            return i >= xs;
+                        }
+                    }))) ? null : IdempotentBool.Null;
 
             return x.hasAny(Op.Variable) || xy.hasAny(Op.Variable) ? null : IdempotentBool.Null;
         }
@@ -167,21 +201,29 @@ public enum ListFunc {
     };
 
     public static final Functor sub = Functor.f2("sub",
-            (x, n) -> n.op() == INT ? x.sub(((IdempotInt) n).i, IdempotentBool.Null) : null);
+            new BiFunction<Term, Term, Term>() {
+                @Override
+                public Term apply(Term x, Term n) {
+                    return n.op() == INT ? x.sub(((IdempotInt) n).i, IdempotentBool.Null) : null;
+                }
+            });
 
-    public static final Functor subs = Functor.f2Or3("subs", args -> {
-        if (args.subs() == 2) {
-            Term n = args.sub(1);
-            if (n.op() == INT) {
-                int nn = ((IdempotInt) n).i;
-                Subterms xx = args.sub(0).subterms();
-                int m = xx.subs();
-                return nn < m ? PROD.the(xx.subRangeArray(nn, m)) : IdempotentBool.Null;
+    public static final Functor subs = Functor.f2Or3("subs", new Function<Subterms, Term>() {
+        @Override
+        public Term apply(Subterms args) {
+            if (args.subs() == 2) {
+                Term n = args.sub(1);
+                if (n.op() == INT) {
+                    int nn = ((IdempotInt) n).i;
+                    Subterms xx = args.sub(0).subterms();
+                    int m = xx.subs();
+                    return nn < m ? PROD.the(xx.subRangeArray(nn, m)) : IdempotentBool.Null;
+                } else {
+                    return null;
+                }
             } else {
-                return null;
+                throw new TODO();
             }
-        } else {
-            throw new TODO();
         }
     });
 }

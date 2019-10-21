@@ -6,6 +6,7 @@ import jcog.pri.ScalarValue;
 import jcog.signal.meter.event.CSVOutput;
 import jcog.sort.FloatRank;
 import jcog.tree.rtree.HyperIterator;
+import jcog.tree.rtree.RTree;
 import nars.*;
 import nars.concept.TaskConcept;
 import nars.control.op.Remember;
@@ -20,11 +21,15 @@ import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Atomic;
 import nars.truth.Truth;
+import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.eclipse.collections.api.block.function.primitive.LongToFloatFunction;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 import static java.util.stream.Collectors.toList;
 import static jcog.Texts.n4;
@@ -35,7 +40,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class RTreeBeliefTableTest {
 
-    private static final LongToFloatFunction stepFunction = (t) -> (Math.sin(t) / 2f + 0.5f) >= 0.5 ? 1f : 0f;
+    private static final LongToFloatFunction stepFunction = new LongToFloatFunction() {
+        @Override
+        public float valueOf(long t) {
+            return (Math.sin(t) / 2f + 0.5f) >= 0.5 ? 1f : 0f;
+        }
+    };
 
     private static Task add(BeliefTable r, Termed x, float freq, float conf, long start, long end, NAR n) {
         return add(r, x, freq, conf, start, end, n.evidence()[0], n);
@@ -81,11 +91,26 @@ class RTreeBeliefTableTest {
 
         MultiStatistics<Task> m = new MultiStatistics<Task>()
                 .classify("input", Task::isInput)
-                .classify("derived", (t) -> t instanceof DerivedTask)
+                .classify("derived", new Predicate<Task>() {
+                    @Override
+                    public boolean test(Task t) {
+                        return t instanceof DerivedTask;
+                    }
+                })
 
                 .value("pri", ScalarValue::pri)
-                .value2D("truth", (t) -> new float[]{t.freq(), t.conf()})
-                .value("freqErr", (t) -> Math.abs(((t.freq() - 0.5f) * 2f) - func.valueOf(t.mid())))
+                .value2D("truth", new Function<Task, float[]>() {
+                    @Override
+                    public float[] apply(Task t) {
+                        return new float[]{t.freq(), t.conf()};
+                    }
+                })
+                .value("freqErr", new FloatFunction<Task>() {
+                    @Override
+                    public float floatValueOf(Task t) {
+                        return Math.abs(((t.freq() - 0.5f) * 2f) - func.valueOf(t.mid()));
+                    }
+                })
                 .add(c.beliefs().taskStream().collect(toList()));
 
         System.out.println();
@@ -204,23 +229,43 @@ class RTreeBeliefTableTest {
     @Test
     void testAccuracyFlat() {
 
-        testAccuracy(1, 1, 20, 8, (t) -> 0.5f);
+        testAccuracy(1, 1, 20, 8, new LongToFloatFunction() {
+            @Override
+            public float valueOf(long t) {
+                return 0.5f;
+            }
+        });
     }
 
     @Test
     void testAccuracySineDur1() {
 
-        testAccuracy(1, 1, 20, 8, (t) -> (float) (Math.sin(t / 5f) / 2f + 0.5f));
+        testAccuracy(1, 1, 20, 8, new LongToFloatFunction() {
+            @Override
+            public float valueOf(long t) {
+                return (float) (Math.sin(t / 5f) / 2f + 0.5f);
+            }
+        });
     }
 
     @Test
     void testAccuracySineDur1Ext() {
-        testAccuracy(1, 1, 50, 8, (t) -> (float) (Math.sin(t / 1f) / 2f + 0.5f));
+        testAccuracy(1, 1, 50, 8, new LongToFloatFunction() {
+            @Override
+            public float valueOf(long t) {
+                return (float) (Math.sin(t / 1f) / 2f + 0.5f);
+            }
+        });
     }
 
     @Test
     void testAccuracySineDur() {
-        testAccuracy(2, 2, 50, 8, (t) -> (float) (Math.sin(t / 5f) / 2f + 0.5f));
+        testAccuracy(2, 2, 50, 8, new LongToFloatFunction() {
+            @Override
+            public float valueOf(long t) {
+                return (float) (Math.sin(t / 5f) / 2f + 0.5f);
+            }
+        });
     }
 
     @Test
@@ -276,12 +321,15 @@ class RTreeBeliefTableTest {
         int c = table.capacity();
         List<TaskRegion> seq = new FasterList(c);
         double dur = table.tableDur((s+e)/2);
-        table.read(t -> {
-            HyperIterator<TaskRegion> h = new HyperIterator(t.model,
-                    new TaskRegion[Math.min(c, 32)],
-                    FloatRank.the(Answer.beliefStrength(s, e)));
-            while (h.hasNext()) {
-                seq.add(h.next());
+        table.read(new Consumer<RTree<TaskRegion>>() {
+            @Override
+            public void accept(RTree<TaskRegion> t) {
+                HyperIterator<TaskRegion> h = new HyperIterator(t.model,
+                        new TaskRegion[Math.min(c, 32)],
+                        FloatRank.the(Answer.beliefStrength(s, e)));
+                while (h.hasNext()) {
+                    seq.add(h.next());
+                }
             }
         });
         return seq;
@@ -323,7 +371,12 @@ class RTreeBeliefTableTest {
         }
         table.print();
 
-        table.read(t -> t.root().streamNodesRecursively().forEach(System.out::println));
+        table.read(new Consumer<RTree<TaskRegion>>() {
+            @Override
+            public void accept(RTree<TaskRegion> t) {
+                t.root().streamNodesRecursively().forEach(System.out::println);
+            }
+        });
     }
 
     @Test

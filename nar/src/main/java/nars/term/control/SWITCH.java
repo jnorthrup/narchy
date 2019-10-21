@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.EnumMap;
 import java.util.Map;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import static nars.derive.util.DerivationFunctors.Belief;
@@ -42,7 +43,12 @@ public final class SWITCH<D extends PreDerivation> extends AbstractPred<D> {
 
     public SWITCH(boolean taskOrBelief, EnumMap<Op, PREDICATE<D>> cases) {
         super(/*$.impl*/ $.func("op", taskOrBelief ? Task  : Belief,
-                $.p(cases.entrySet().stream().map(e -> $.p($.quote(e.getKey().toString()), e.getValue())).toArray(Term[]::new))));
+                $.p(cases.entrySet().stream().map(new Function<Map.Entry<Op, PREDICATE<D>>, Term>() {
+                    @Override
+                    public Term apply(Map.Entry<Op, PREDICATE<D>> e) {
+                        return $.p($.quote(e.getKey().toString()), e.getValue());
+                    }
+                }).toArray(Term[]::new))));
 
         swtch = new PREDICATE[24];
         for (Map.Entry<Op, PREDICATE<D>> entry : cases.entrySet()) {
@@ -58,11 +64,14 @@ public final class SWITCH<D extends PreDerivation> extends AbstractPred<D> {
     public PREDICATE<D> transform(Function<PREDICATE<D>, PREDICATE<D>> f) {
         EnumMap<Op, PREDICATE<D>> e2 = cases.clone();
         boolean[] changed = {false};
-        e2.replaceAll(((k, x) -> {
-            PREDICATE<D> y = x.transform(f);
-            if (y != x)
-                changed[0] = true;
-            return y;
+        e2.replaceAll((new BiFunction<Op, PREDICATE<D>, PREDICATE<D>>() {
+            @Override
+            public PREDICATE<D> apply(Op k, PREDICATE<D> x) {
+                PREDICATE<D> y = x.transform(f);
+                if (y != x)
+                    changed[0] = true;
+                return y;
+            }
         }));
 		return !changed[0] ? this : new SWITCH(taskOrBelief, e2);
     }

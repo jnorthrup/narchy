@@ -12,6 +12,8 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import static nars.$.*;
 import static nars.Op.BELIEF;
@@ -64,7 +66,12 @@ public class TaskTest {
                 /*"((a) &&+1 (a))",*/
         }) {
             Term t = $(x);
-            assertTrue(t instanceof Compound, () -> x + " :: " + t);
+            assertTrue(t instanceof Compound, new Supplier<String>() {
+                @Override
+                public String get() {
+                    return x + " :: " + t;
+                }
+            });
             assertTrue(t.dt() != DTERNAL);
 
             Task y = TaskTest.task(t, Op.BELIEF, t(1f, 0.9f)).apply(n);
@@ -181,14 +188,22 @@ public class TaskTest {
         d.input("<a --> b>.", "<b --> c>.");
 
         long[] ev = {1, 2};
-        d.eventTask().on(t -> {
+        d.eventTask().on(new Consumer<Task>() {
+            @Override
+            public void accept(Task t) {
 
-            if (t instanceof DerivedTask && ((DerivedTask)t).parentBelief()!=null && !t.isCyclic())
-                assertArrayEquals(ev, t.stamp(), () -> "all double-premise derived terms have this evidence: "
-                        + t + ": " + Arrays.toString(ev) + "!=" + Arrays.toString(t.stamp()));
+                if (t instanceof DerivedTask && ((DerivedTask) t).parentBelief() != null && !t.isCyclic())
+                    assertArrayEquals(ev, t.stamp(), new Supplier<String>() {
+                        @Override
+                        public String get() {
+                            return "all double-premise derived terms have this evidence: "
+                                    + t + ": " + Arrays.toString(ev) + "!=" + Arrays.toString(t.stamp());
+                        }
+                    });
 
-            System.out.println(t.proof());
+                System.out.println(t.proof());
 
+            }
         });
 
         d.run(256);

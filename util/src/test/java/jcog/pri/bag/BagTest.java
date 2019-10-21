@@ -17,6 +17,8 @@ import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static jcog.Texts.n4;
@@ -117,11 +119,14 @@ public class BagTest {
         float min = b.priMin(), max = b.priMax(), range = max-min;
         Set<String> hit = new TreeSet();
         for (int i = 0; i < batches; i++) {
-            b.sample(rng, batchSize, x -> {
-                f.data[Util.bin(b.pri(x), bins)]++;
-                String s = x.get();
-                hits.addValue(s);
-                hit.add(s);
+            b.sample(rng, batchSize, new Consumer<PLink<String>>() {
+                @Override
+                public void accept(PLink<String> x) {
+                    f.data[Util.bin(b.pri(x), bins)]++;
+                    String s = x.get();
+                    hits.addValue(s);
+                    hit.add(s);
+                }
             });
         }
 
@@ -167,12 +172,22 @@ public class BagTest {
     }
 
     static void testBagSamplingDistributionSquashed(Bag<PLink<String>, PLink<String>> bag, float batchSizeProp) {
-        fill(bag, bag.capacity(), (x)-> (x/2f) + 0.5f);
+        fill(bag, bag.capacity(), new FloatToFloatFunction() {
+            @Override
+            public float valueOf(float x) {
+                return (x / 2f) + 0.5f;
+            }
+        });
         testBagSamplingDistribution(bag, batchSizeProp);
     }
 
     static void testBagSamplingDistributionCurved(Bag<PLink<String>, PLink<String>> bag, float batchSizeProp) {
-        fill(bag, bag.capacity(), (x)-> 1-(1-x)*(1-x));
+        fill(bag, bag.capacity(), new FloatToFloatFunction() {
+            @Override
+            public float valueOf(float x) {
+                return 1 - (1 - x) * (1 - x);
+            }
+        });
         testBagSamplingDistribution(bag, batchSizeProp);
     }
 
@@ -219,7 +234,12 @@ public class BagTest {
                 boolean unordered = diff > orderThresh;
                 if (unordered) {
 //                    bag.print();
-                    fail(() -> "sampling distribution not ordered. contents=" + bag);
+                    fail(new Supplier<String>() {
+                        @Override
+                        public String get() {
+                            return "sampling distribution not ordered. contents=" + bag;
+                        }
+                    });
                 }
             }
         }
@@ -232,7 +252,12 @@ public class BagTest {
                     float maxMinRatio = ff[highs] / ff[lows];
                     assertTrue(
                             maxMinRatio > MIN_RATIO,
-                            () -> maxMinRatio + " ratio between max and min"
+                            new Supplier<String>() {
+                                @Override
+                                public String get() {
+                                    return maxMinRatio + " ratio between max and min";
+                                }
+                            }
                     );
                 }
             }
@@ -339,7 +364,12 @@ public class BagTest {
      * fill it exactly to capacity
      */
     public static void fillLinear(Bag<PLink<String>, PLink<String>> bag, int c) {
-        fill(bag, c, (x)->x);
+        fill(bag, c, new FloatToFloatFunction() {
+            @Override
+            public float valueOf(float x) {
+                return x;
+            }
+        });
         assertEquals(1f / (c+1), bag.priMin(), 0.03f);
         assertEquals(1 - 1f/(c+1), bag.priMax(), 0.03f);
     }

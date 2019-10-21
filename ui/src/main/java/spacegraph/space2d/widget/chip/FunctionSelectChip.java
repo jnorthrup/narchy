@@ -14,7 +14,12 @@ public class FunctionSelectChip<X,Y> extends AbstractFunctionChip<X,Y> {
 
     final Map<String, Function<X, Y>> ff = new TreeMap();
 
-    private volatile Function<X, Y> f = (x) -> null;
+    private volatile Function<X, Y> f = new Function<X, Y>() {
+        @Override
+        public Y apply(X x) {
+            return null;
+        }
+    };
 
     public FunctionSelectChip(Class<? super X> x, Class<? super Y> y, Map<String,Function<X,Y>> m) {
         super(x, y);
@@ -26,7 +31,12 @@ public class FunctionSelectChip<X,Y> extends AbstractFunctionChip<X,Y> {
         for (Map.Entry<String, Function<X, Y>> entry : ff.entrySet()) {
             String n = entry.getKey();
             Function<X, Y> value = entry.getValue();
-            fb.add(new CheckBox(n).on(() -> FunctionSelectChip.this.f = value));
+            fb.add(new CheckBox(n).on(new Runnable() {
+                @Override
+                public void run() {
+                    FunctionSelectChip.this.f = value;
+                }
+            }));
         }
 
         ButtonSet selector = new ButtonSet(ButtonSet.Mode.One, fb);

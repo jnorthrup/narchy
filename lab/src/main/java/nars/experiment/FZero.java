@@ -3,10 +3,12 @@ package nars.experiment;
 import jcog.Util;
 import jcog.learn.pid.MiniPID;
 import jcog.math.FloatAveragedWindow;
+import jcog.math.FloatSupplier;
 import jcog.signal.wave2d.ScaledBitmap2D;
 import nars.$;
 import nars.GameX;
 import nars.NAR;
+import nars.game.Game;
 import nars.game.Reward;
 import nars.game.action.BiPolarAction;
 import nars.game.action.GoalActionConcept;
@@ -19,6 +21,7 @@ import nars.term.atom.Atomic;
 import nars.time.Tense;
 import nars.truth.PreciseTruth;
 import nars.video.AutoclassifiedBitmap;
+import org.eclipse.collections.api.block.function.primitive.BooleanToObjectFunction;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;
 import spacegraph.space2d.widget.meter.BitmapMatrixView;
@@ -27,6 +30,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
+import java.util.function.Function;
+import java.util.function.IntFunction;
+import java.util.function.IntPredicate;
+import java.util.function.Supplier;
 
 import static nars.$.$$;
 import static nars.Op.INH;
@@ -50,14 +57,17 @@ public class FZero extends GameX {
     static float fps = 20f;
 
     public static void main(String[] args) {
-        GameX.Companion.initFn(fps* 2.0F, n -> {
+        GameX.Companion.initFn(fps* 2.0F, new Function<NAR, Game>() {
+            @Override
+            public Game apply(NAR n) {
 
 
-            FZero f = new FZero($.the("fz"), n);
-            n.add(f);
-            return f;
+                FZero f = new FZero($.the("fz"), n);
+                n.add(f);
+                return f;
 
 
+            }
         });
 
 //        int instances = 2;
@@ -85,7 +95,12 @@ public class FZero extends GameX {
 //        Param.DEBUG_EXTRA = true;
 
 
-        ScaledBitmap2D vision = new ScaledBitmap2D(()->fz.image,
+        ScaledBitmap2D vision = new ScaledBitmap2D(new Supplier<BufferedImage>() {
+            @Override
+            public BufferedImage get() {
+                return fz.image;
+            }
+        },
                 24, 20
         ).crop((float) 0, 0.23f, 1f, 1f);
 
@@ -107,7 +122,12 @@ public class FZero extends GameX {
         //        {
         int nx = 4;
         AutoclassifiedBitmap camAE = new AutoclassifiedBitmap(
-                    $.p(id,$.the("cam")), vision, nx, nx, (subX, subY) -> new float[]{/*cc.X, cc.Y*/}, 12, this);
+                    $.p(id,$.the("cam")), vision, nx, nx, new AutoclassifiedBitmap.MetaBits() {
+            @Override
+            public float[] get(int subX, int subY) {
+                return new float[]{/*cc.X, cc.Y*/};
+            }
+        }, 12, this);
             camAE.alpha(0.01f);
             camAE.noise.set(0.0f);
 
@@ -156,16 +176,46 @@ public class FZero extends GameX {
 
 
         float r = 0.02f;
-        senseNumberBi($.funcImg("vel", $$("x")), () -> (float) fz.vehicleMetrics[0][7]).resolution(r);
-        senseNumberBi($.funcImg("vel", $$("y")), () -> (float) fz.vehicleMetrics[0][8]).resolution(r);
+        senseNumberBi($.funcImg("vel", $$("x")), new FloatSupplier() {
+            @Override
+            public float asFloat() {
+                return (float) fz.vehicleMetrics[0][7];
+            }
+        }).resolution(r);
+        senseNumberBi($.funcImg("vel", $$("y")), new FloatSupplier() {
+            @Override
+            public float asFloat() {
+                return (float) fz.vehicleMetrics[0][8];
+            }
+        }).resolution(r);
 
-        senseNumberDifferenceBi($.p(id,$.the("d"), $.the("vel")), () -> (float) fz.vehicleMetrics[0][6]).resolution(r);
-        senseNumberDifferenceBi($.p(id,$.the("d"), $.the("ang")), () -> (float) fz.playerAngle).resolution(r);
+        senseNumberDifferenceBi($.p(id,$.the("d"), $.the("vel")), new FloatSupplier() {
+            @Override
+            public float asFloat() {
+                return (float) fz.vehicleMetrics[0][6];
+            }
+        }).resolution(r);
+        senseNumberDifferenceBi($.p(id,$.the("d"), $.the("ang")), new FloatSupplier() {
+            @Override
+            public float asFloat() {
+                return (float) fz.playerAngle;
+            }
+        }).resolution(r);
 
 
         int angles = 8;
-        DigitizedScalar ang = senseAngle(angles, Atomic.the("ang"), ()->(float)fz.playerAngle,
-                a->$.inh(id, $.p($.the("ang"), $.the(a))));
+        DigitizedScalar ang = senseAngle(angles, Atomic.the("ang"), new FloatSupplier() {
+                    @Override
+                    public float asFloat() {
+                        return (float) fz.playerAngle;
+                    }
+                },
+                new IntFunction<Term>() {
+                    @Override
+                    public Term apply(int a) {
+                        return $.inh(id, $.p($.the("ang"), $.the(a)));
+                    }
+                });
         ang.resolution(r);
 //        window(new VectorSensorView(ang,1, angles, this).withControls(), 400, 400);
 
@@ -198,27 +248,30 @@ public class FZero extends GameX {
         //auto-restore health
 //        FloatAveragedWindow progressFilter = new FloatAveragedWindow(8, 0.8f);
 
-        onFrame(()-> {
+        onFrame(new Runnable() {
+            @Override
+            public void run() {
 
-            double distance = fz.vehicleMetrics[0][1];
-            double deltaDistance = (distance - lastDistance);
+                double distance = fz.vehicleMetrics[0][1];
+                double deltaDistance = (distance - lastDistance);
 
 
-            lastDistance = distance;
+                lastDistance = distance;
 
-            fz.update();
+                fz.update();
 
-            progress = /*progressFilter.valueOf*/(
-                    ((float)
-                            //-(FZeroGame.FULL_POWER - ((float) fz.power)) / FZeroGame.FULL_POWER +
-                            deltaDistance / (fps * 0.5f))
-            );
+                progress = /*progressFilter.valueOf*/(
+                        ((float)
+                                //-(FZeroGame.FULL_POWER - ((float) fz.power)) / FZeroGame.FULL_POWER +
+                                deltaDistance / (fps * 0.5f))
+                );
 
 //        float r = (deltaDistance > 0) ? (float) (deltaDistance / (fps * 0.2)) : -1f;
 
-            float damage = (float) ((double) FZeroGame.FULL_POWER - fz.power) / (float) FZeroGame.FULL_POWER;
-            fz.power = Math.max((double) (FZeroGame.FULL_POWER * 0.5f), Math.min((double) FZeroGame.FULL_POWER, fz.power * 1.15));
+                float damage = (float) ((double) FZeroGame.FULL_POWER - fz.power) / (float) FZeroGame.FULL_POWER;
+                fz.power = Math.max((double) (FZeroGame.FULL_POWER * 0.5f), Math.min((double) FZeroGame.FULL_POWER, fz.power * 1.15));
 
+            }
         });
 
         //reward(new BeliefReward($$("((#w-->fz) &| ((#x~#y)-->ang)))"), this));
@@ -230,11 +283,21 @@ public class FZero extends GameX {
 //            //return Util.equals(damage, 0, 0.01f) ? Float.NaN : 0; //Math.max(0, 1 - damage);
 //            return Util.equals(damage, 0, 0.01f) ? 1 : 0;
 //        });
-        Reward race = rewardNormalized("race", -1.0F, (float) +1, (() -> Util.clamp(progress * 0.5f, -1.0F, (float) +1)));
+        Reward race = rewardNormalized("race", -1.0F, (float) +1, (new FloatSupplier() {
+            @Override
+            public float asFloat() {
+                return Util.clamp(progress * 0.5f, -1.0F, (float) +1);
+            }
+        }));
         //race.resolution().set(0.1f);
 
         FloatAveragedWindow f = new FloatAveragedWindow(64, 0.25f, (float) 0).mode(FloatAveragedWindow.Mode.Mean);
-        Reward race2 = rewardNormalized("RaceRace", -1.0F, (float) +1, (() -> f.valueOf(Util.clamp(progress * 0.5f, -1.0F, (float) +1))));
+        Reward race2 = rewardNormalized("RaceRace", -1.0F, (float) +1, (new FloatSupplier() {
+            @Override
+            public float asFloat() {
+                return f.valueOf(Util.clamp(progress * 0.5f, -1.0F, (float) +1));
+            }
+        }));
         //race2.resolution().set(0.1f);
 
 //        rewardNormalized("efficient", 0, +1, (() -> {
@@ -258,49 +321,52 @@ public class FZero extends GameX {
 
 
     private void actionSwitch() {
-        SwitchAction s = new SwitchAction(nar, (a) -> {
+        SwitchAction s = new SwitchAction(nar, new IntPredicate() {
+            @Override
+            public boolean test(int a) {
 
 
-            fz.rotVel = 0.1;
+                fz.rotVel = 0.1;
 
-            float conf = 0.05f;
-            switch (a) {
-                case 0: {
-                    fz.thrust = true;
-                    nar.want(INH.the($.the("fwd"), id), Tense.Present, 1f, conf);
-                    nar.want(INH.the($.the("brake"), id), Tense.Present, 0f, conf);
-                    break;
+                float conf = 0.05f;
+                switch (a) {
+                    case 0: {
+                        fz.thrust = true;
+                        nar.want(INH.the($.the("fwd"), id), Tense.Present, 1f, conf);
+                        nar.want(INH.the($.the("brake"), id), Tense.Present, 0f, conf);
+                        break;
+                    }
+                    case 1: {
+                        fz.thrust = false;
+                        fz.left = fz.right = false;
+                        nar.want(INH.the($.the("brake"), id), Tense.Present, 1f, conf);
+                        nar.want(INH.the($.the("fwd"), id), Tense.Present, 0f, conf);
+                        nar.want(INH.the($.the("left"), id), Tense.Present, 0f, conf);
+                        nar.want(INH.the($.the("right"), id), Tense.Present, 0f, conf);
+                        break;
+                    }
+                    case 2: {
+                        fz.left = true;
+                        fz.right = false;
+                        nar.want(INH.the($.the("left"), id), Tense.Present, 1f, conf);
+
+                        nar.want(INH.the($.the("brake"), id), Tense.Present, 0f, conf);
+                        nar.want(INH.the($.the("right"), id), Tense.Present, 0f, conf);
+                        break;
+                    }
+                    case 3: {
+                        fz.right = true;
+                        fz.left = false;
+                        nar.want(INH.the($.the("right"), id), Tense.Present, 1f, conf);
+                        nar.want(INH.the($.the("left"), id), Tense.Present, 0f, conf);
+                        nar.want(INH.the($.the("brake"), id), Tense.Present, 0f, conf);
+                        break;
+                    }
+
+
                 }
-                case 1: {
-                    fz.thrust = false;
-                    fz.left = fz.right = false;
-                    nar.want(INH.the($.the("brake"), id), Tense.Present, 1f, conf);
-                    nar.want(INH.the($.the("fwd"), id), Tense.Present, 0f, conf);
-                    nar.want(INH.the($.the("left"), id), Tense.Present, 0f, conf);
-                    nar.want(INH.the($.the("right"), id), Tense.Present, 0f, conf);
-                    break;
-                }
-                case 2: {
-                    fz.left = true;
-                    fz.right = false;
-                    nar.want(INH.the($.the("left"), id), Tense.Present, 1f, conf);
-
-                    nar.want(INH.the($.the("brake"), id), Tense.Present, 0f, conf);
-                    nar.want(INH.the($.the("right"), id), Tense.Present, 0f, conf);
-                    break;
-                }
-                case 3: {
-                    fz.right = true;
-                    fz.left = false;
-                    nar.want(INH.the($.the("right"), id), Tense.Present, 1f, conf);
-                    nar.want(INH.the($.the("left"), id), Tense.Present, 0f, conf);
-                    nar.want(INH.the($.the("brake"), id), Tense.Present, 0f, conf);
-                    break;
-                }
-
-
+                return true;
             }
-            return true;
         }, INH.the($.the("fwd"), id),
                 INH.the($.the("brake"), id),
                 INH.the($.the("left"), id),
@@ -315,10 +381,18 @@ public class FZero extends GameX {
     private void initForwardStopPushButtonMutex() {
         this.actionPushButtonMutex(
                 $.inh(id,$$("fwd")), $.inh(id,$$("stop")),
-                f -> fz.thrust = f,
-                b -> {
-                    if (b) {
-                        fz.vehicleMetrics[0][6] *= 0.9;
+                new BooleanProcedure() {
+                    @Override
+                    public void value(boolean f) {
+                        fz.thrust = f;
+                    }
+                },
+                new BooleanProcedure() {
+                    @Override
+                    public void value(boolean b) {
+                        if (b) {
+                            fz.vehicleMetrics[0][6] *= 0.9;
+                        }
                     }
                 }
         );
@@ -327,33 +401,52 @@ public class FZero extends GameX {
 
         this.actionPushButtonMutex(
                 $.inh(id,$$("left")), $.inh(id,$$("right")),
-                ((BooleanProcedure) l -> fz.left = l), r -> fz.right = r
+                (new BooleanProcedure() {
+                    @Override
+                    public void value(boolean l) {
+                        fz.left = l;
+                    }
+                }), new BooleanProcedure() {
+                    @Override
+                    public void value(boolean r) {
+                        fz.right = r;
+                    }
+                }
         );
     }
 
     private void initPushButtonTank() {
 
-        actionPushButton($.inh(id, "left"), (b) -> {
-            fz.left = b;
-            fz.thrust = fz.left && fz.right;
+        actionPushButton($.inh(id, "left"), new BooleanProcedure() {
+            @Override
+            public void value(boolean b) {
+                fz.left = b;
+                fz.thrust = fz.left && fz.right;
+            }
         });
-        actionPushButton($.inh(id, "right"), (b) -> {
-            fz.right = b;
-            fz.thrust = fz.left && fz.right;
+        actionPushButton($.inh(id, "right"), new BooleanProcedure() {
+            @Override
+            public void value(boolean b) {
+                fz.right = b;
+                fz.thrust = fz.left && fz.right;
+            }
         });
 
     }
 
     private void addBrake() {
         PreciseTruth bias = $.t((float) 0, 0.001f);
-        GoalActionConcept slow = actionUnipolar($.inh(id, "slow"), (x) -> {
-            if (x >= 0.5f) {
-                float decay = 1.0F - ((x - 0.5f) * 2.0F);
-                fz.vehicleMetrics[0][6] = fz.vehicleMetrics[0][6] * (double) decay;
-                fz.rotVel = fz.rotVel * (double) decay;
-                return x;
-            } else {
-                return (float) 0; //no brake
+        GoalActionConcept slow = actionUnipolar($.inh(id, "slow"), new FloatToFloatFunction() {
+            @Override
+            public float valueOf(float x) {
+                if (x >= 0.5f) {
+                    float decay = 1.0F - ((x - 0.5f) * 2.0F);
+                    fz.vehicleMetrics[0][6] = fz.vehicleMetrics[0][6] * (double) decay;
+                    fz.rotVel = fz.rotVel * (double) decay;
+                    return x;
+                } else {
+                    return (float) 0; //no brake
+                }
             }
         });
 //        slow.goalDefault(bias, nar);
@@ -372,27 +465,37 @@ public class FZero extends GameX {
         Atom TANK = Atomic.atom("tank");
 
 
-        GoalActionConcept l = actionUnipolar($.inh(id, $.p(TANK,NEG)), (_x) -> {
-            float x = _x;
-            if (x!=x || x < 0.5f) return (float) 0;  x -= 0.5f; x*= 2.0F;
-            float power = x * powerScale;
-            left[0] = power;
-            //noinspection NonAtomicOperationOnVolatileField
-            fz.playerAngle = fz.playerAngle + (double) power * rotSpeed;
-            fz.vehicleMetrics[0][6] = fz.vehicleMetrics[0][6] + (double) (left[0] + right[0]) * fwdSpeed;
-            //if (x <= 0.5f) return 0;
-            return _x;
+        GoalActionConcept l = actionUnipolar($.inh(id, $.p(TANK,NEG)), new FloatToFloatFunction() {
+            @Override
+            public float valueOf(float _x) {
+                float x = _x;
+                if (x != x || x < 0.5f) return (float) 0;
+                x -= 0.5f;
+                x *= 2.0F;
+                float power = x * powerScale;
+                left[0] = power;
+                //noinspection NonAtomicOperationOnVolatileField
+                fz.playerAngle = fz.playerAngle + (double) power * rotSpeed;
+                fz.vehicleMetrics[0][6] = fz.vehicleMetrics[0][6] + (double) (left[0] + right[0]) * fwdSpeed;
+                //if (x <= 0.5f) return 0;
+                return _x;
+            }
         });
 
-        GoalActionConcept r = actionUnipolar($.inh(id, $.p(TANK,POS)), (_x) -> {
-            float x = _x;
-            if (x!=x || x < 0.5f) return (float) 0;  x -= 0.5f; x*= 2.0F;
-            float power = x * powerScale;
-            right[0] = power;
-            fz.playerAngle = fz.playerAngle + (double) -power * rotSpeed;
-            fz.vehicleMetrics[0][6] = fz.vehicleMetrics[0][6] + (double) (left[0] + right[0]) * fwdSpeed;
-            //if (x <= 0.5f) return 0;
-            return _x;
+        GoalActionConcept r = actionUnipolar($.inh(id, $.p(TANK,POS)), new FloatToFloatFunction() {
+            @Override
+            public float valueOf(float _x) {
+                float x = _x;
+                if (x != x || x < 0.5f) return (float) 0;
+                x -= 0.5f;
+                x *= 2.0F;
+                float power = x * powerScale;
+                right[0] = power;
+                fz.playerAngle = fz.playerAngle + (double) -power * rotSpeed;
+                fz.vehicleMetrics[0][6] = fz.vehicleMetrics[0][6] + (double) (left[0] + right[0]) * fwdSpeed;
+                //if (x <= 0.5f) return 0;
+                return _x;
+            }
         });
 
 //        PreciseTruth bias = $.t(0, 0.001f);
@@ -408,15 +511,18 @@ public class FZero extends GameX {
         float rotSpeed = 0.25f * rotFactor;
 //        final float[] _r = {0};
         //final MiniPID rotFilter = new MiniPID(0.35f, 0.3, 0.2f);
-        return actionBipolarFrequencyDifferential((Term)$.inh(id, $.p("turn", $.varQuery(1))), fair, (r0) -> {
+        return actionBipolarFrequencyDifferential((Term)$.inh(id, $.p("turn", $.varQuery(1))), fair, new FloatToFloatFunction() {
+            @Override
+            public float valueOf(float r0) {
 
-            //float r = _r[0] = (float) rotFilter.out(_r[0], r0);
+                //float r = _r[0] = (float) rotFilter.out(_r[0], r0);
 //            float r = r0;
 
-            fz.playerAngle = fz.playerAngle + (double) r0 * rotSpeed;
+                fz.playerAngle = fz.playerAngle + (double) r0 * rotSpeed;
 //            fz.playerAngle = rotFilter.out(fz.playerAngle, fz.playerAngle + r0 * rotSpeed * rotFactor);
-            //return r0;
-            return r0;
+                //return r0;
+                return r0;
+            }
         }).resolution(0.1f);
     }
 
@@ -431,21 +537,29 @@ public class FZero extends GameX {
         //3;
 
 
-        FloatToFloatFunction d = (dHeading) -> {
+        FloatToFloatFunction d = new FloatToFloatFunction() {
+            @Override
+            public float valueOf(float dHeading) {
 
-            if (Math.abs(dHeading) < nar.freqResolution.floatValue()* 1.0F)
-                return Float.NaN;
-            //float ddHeading = Math.abs(dHeading) >= inputThresh ? lp.valueOf(dHeading) : 0;
+                if (Math.abs(dHeading) < nar.freqResolution.floatValue() * 1.0F)
+                    return Float.NaN;
+                //float ddHeading = Math.abs(dHeading) >= inputThresh ? lp.valueOf(dHeading) : 0;
 
-            fz.playerAngle = /*lp.valueOf*/(double) ((float) (fz.playerAngle + Math.pow((double) (dHeading), (double) curve) * (double) rotFactor)); //bipolar
+                fz.playerAngle = /*lp.valueOf*/(double) ((float) (fz.playerAngle + Math.pow((double) (dHeading), (double) curve) * (double) rotFactor)); //bipolar
 
-            return dHeading;
+                return dHeading;
+            }
         };
         BiPolarAction A = actionBipolarFrequencyDifferential(
                 //$.func("rotate", id),
                 //pn -> CONJ.the(XTERNAL, $.the("rotate"), $.func("rotate", id).negIf(!pn) ),
                 //pn -> CONJ.the(XTERNAL, $.func("rotate", id),
-                fair, pn -> $.inh(pn ? "left" : "right", id)
+                fair, new BooleanToObjectFunction<Term>() {
+                    @Override
+                    public Term valueOf(boolean pn) {
+                        return $.inh(pn ? "left" : "right", id);
+                    }
+                }
                 //)
                 , d);
 
@@ -460,11 +574,14 @@ public class FZero extends GameX {
     public void initBipolarRotateAbsolute(boolean fair) {
 
         MiniPID rotFilter = new MiniPID(0.1, 0.1, 0.1); //LP filter
-        FloatToFloatFunction x = (heading) -> {
+        FloatToFloatFunction x = new FloatToFloatFunction() {
+            @Override
+            public float valueOf(float heading) {
 
-            fz.playerAngle = (double) (float) rotFilter.out(fz.playerAngle, (double) heading * Math.PI * 2.0);
+                fz.playerAngle = (double) (float) rotFilter.out(fz.playerAngle, (double) heading * Math.PI * 2.0);
 
-            return heading;
+                return heading;
+            }
         };
         actionBipolarFrequencyDifferential($.p(/*id, */$.the("heading")), fair, x);
 
@@ -476,24 +593,32 @@ public class FZero extends GameX {
         float fwdSpeed = 7.0F;
 
         //return actionHemipolar($.inh(id,$$("fwd")) /* $.func("vel", id, $.the("move"))*/, (a0) -> {
-        actionUnipolar($.inh(id,$$("fwd")) /* $.func("vel", id, $.the("move"))*/, true, (x) -> Float.NaN /*0.5f*/, (a0) -> {
-            float a =
-                    //_a[0] = (float) fwdFilter.out(_a[0], a0);
-                    a0;
-
-            float thresh = nar.freqResolution.floatValue();
-            if (a > 0.5f + thresh) {
-                //float thrust = /*+=*/ (2 * (a - 0.5f)) * (fwdFactor * fwdSpeed);
-                float thrust = fwdFactor * fwdSpeed;
-                fz.vehicleMetrics[0][6] = (double) thrust;
-                return a0;
-            } else if (a < 0.5f - thresh) {
-                //fz.vehicleMetrics[0][6] *= Util.unitize(Math.min(0.5f, (1f - (0.5f - a) * 2f)));
-                return a0;
-            } else
+        actionUnipolar($.inh(id,$$("fwd")) /* $.func("vel", id, $.the("move"))*/, true, new FloatToFloatFunction() {
+            @Override
+            public float valueOf(float x) {
                 return Float.NaN;
+            }
+        } /*0.5f*/, new FloatToFloatFunction() {
+            @Override
+            public float valueOf(float a0) {
+                float a =
+                        //_a[0] = (float) fwdFilter.out(_a[0], a0);
+                        a0;
+
+                float thresh = nar.freqResolution.floatValue();
+                if (a > 0.5f + thresh) {
+                    //float thrust = /*+=*/ (2 * (a - 0.5f)) * (fwdFactor * fwdSpeed);
+                    float thrust = fwdFactor * fwdSpeed;
+                    fz.vehicleMetrics[0][6] = (double) thrust;
+                    return a0;
+                } else if (a < 0.5f - thresh) {
+                    //fz.vehicleMetrics[0][6] *= Util.unitize(Math.min(0.5f, (1f - (0.5f - a) * 2f)));
+                    return a0;
+                } else
+                    return Float.NaN;
 
 
+            }
         }).resolution(0.1f);
     }
 

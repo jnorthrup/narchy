@@ -35,18 +35,31 @@ public class ObjectSurface2 extends MutableUnitContainer {
         DefaultBuilder.addEdge(from, builder, Surface.class);
     }
     {
-        build(List.class, (List<Object> x) -> {
-            List<Surface> list = new ArrayList<>();
-            for (Object o : x) {
-                Surface build = build(o);
-                list.add(build);
+        build(List.class, new Function<List<Object>, Surface>() {
+            @Override
+            public Surface apply(List<Object> x) {
+                List<Surface> list = new ArrayList<>();
+                for (Object o : x) {
+                    Surface build = ObjectSurface2.this.build(o);
+                    list.add(build);
+                }
+                return new Gridding(list.toArray(new Surface[0]));
             }
-            return new Gridding(list.toArray(new Surface[0]));
         });
         build(String.class, VectorLabel::new);
         build(FloatRange.class, FloatRangePort::new);
-        build(FloatRange.class, x -> new VectorLabel(x.toString()));
-        build(AnyOf.class, x -> new TextEdit(x.toString()));
+        build(FloatRange.class, new Function<FloatRange, Surface>() {
+            @Override
+            public Surface apply(FloatRange x) {
+                return new VectorLabel(x.toString());
+            }
+        });
+        build(AnyOf.class, new Function<AnyOf, Surface>() {
+            @Override
+            public Surface apply(AnyOf x) {
+                return new TextEdit(x.toString());
+            }
+        });
     }
 
 

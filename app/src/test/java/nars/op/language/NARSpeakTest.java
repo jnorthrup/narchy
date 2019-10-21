@@ -5,8 +5,11 @@ import nars.$;
 import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
+import nars.term.Term;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+
+import java.util.function.Consumer;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -16,7 +19,12 @@ public class NARSpeakTest {
     public void testVocalization1() {
         NAR n = NARS.tmp();
         StringBuilder b = new StringBuilder();
-        Vocalization s = new Vocalization(n, 1f, (w) -> b.append(n.time() + ":" + w + ' '));
+        Vocalization s = new Vocalization(n, 1f, new Consumer<Term>() {
+            @Override
+            public void accept(Term w) {
+                b.append(n.time() + ":" + w + ' ');
+            }
+        });
 
         n.synch(); 
 

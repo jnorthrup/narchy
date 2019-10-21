@@ -2,11 +2,13 @@ package nars.derive;
 
 import jcog.memoize.Memoizers;
 import jcog.memoize.byt.ByteHijackMemoize;
+import nars.concept.Concept;
 import nars.concept.snapshot.Snapshot;
 import nars.derive.util.PremiseKey;
 import nars.link.TaskLink;
 import nars.term.util.builder.InterningTermBuilder;
 
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import static jcog.memoize.Memoizers.DEFAULT_HIJACK_REPROBES;
@@ -16,7 +18,12 @@ import static jcog.memoize.Memoizers.DEFAULT_HIJACK_REPROBES;
 @FunctionalInterface public interface PreDeriver extends Function<PreDerivation,short[]> {
 
     /** memory-less, evaluated exhaustively each (can re-use the array result) */
-    PreDeriver DIRECT_DERIVATION_RUNNER = p -> p.preDerive().toArray();
+    PreDeriver DIRECT_DERIVATION_RUNNER = new PreDeriver() {
+        @Override
+        public short[] apply(PreDerivation p) {
+            return p.preDerive().toArray();
+        }
+    };
 
     /** runs, and clones so no possibilty of sharing array result */
     static short[] run(PreDerivation d) {
@@ -58,23 +65,29 @@ import static jcog.memoize.Memoizers.DEFAULT_HIJACK_REPROBES;
      *  this is likely wasteful even though it attempts to use Soft ref's
      *  TODO use Concept Snapshot API
      *  */
-    PreDeriver SnapshotMemoizer = preDerivation -> {
-        Derivation d = (Derivation) preDerivation;
+    PreDeriver SnapshotMemoizer = new PreDeriver() {
+        @Override
+        public short[] apply(PreDerivation preDerivation) {
+            Derivation d = (Derivation) preDerivation;
 
-        ByteHijackMemoize<PremiseKey, short[]> whats = Snapshot.get(preDerivation.taskTerm, d.nar,
-            "ConceptMetaMemoizer_" + System.identityHashCode(d.deriver), d.time, -1, (c, w) -> {
-                    ByteHijackMemoize<PremiseKey, short[]> w1 = w;
-                    if (w1 == null) {
-                        int capacity = 512;
-                w1 = new ByteHijackMemoize<>(PreDeriver::run,
-                    capacity,
-                    DEFAULT_HIJACK_REPROBES, false);
-            }
-            return w1;
-        } );
+            ByteHijackMemoize<PremiseKey, short[]> whats = Snapshot.get(preDerivation.taskTerm, d.nar,
+                    "ConceptMetaMemoizer_" + System.identityHashCode(d.deriver), d.time, -1, new BiFunction<Concept, ByteHijackMemoize<PremiseKey, short[]>, ByteHijackMemoize<PremiseKey, short[]>>() {
+                        @Override
+                        public ByteHijackMemoize<PremiseKey, short[]> apply(Concept c, ByteHijackMemoize<PremiseKey, short[]> w) {
+                            ByteHijackMemoize<PremiseKey, short[]> w1 = w;
+                            if (w1 == null) {
+                                int capacity = 512;
+                                w1 = new ByteHijackMemoize<>(PreDeriver::run,
+                                        capacity,
+                                        DEFAULT_HIJACK_REPROBES, false);
+                            }
+                            return w1;
+                        }
+                    });
 
-        //failsafe
-        return whats != null ? whats.apply(new PremiseKey(d)) : run(preDerivation);
+            //failsafe
+            return whats != null ? whats.apply(new PremiseKey(d)) : run(preDerivation);
+        }
     };
 
 }

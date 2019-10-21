@@ -1,6 +1,7 @@
 package nars.term;
 
 import jcog.bloom.StableBloomFilter;
+import jcog.data.array.IntComparator;
 import jcog.data.bit.MetalBitSet;
 import jcog.data.set.MetalTreeSet;
 import jcog.sort.QuickSort;
@@ -16,16 +17,16 @@ import nars.term.util.TermHasher;
 import nars.term.util.conj.Conj;
 import nars.term.var.ellipsis.Ellipsislike;
 import org.eclipse.collections.api.LazyIterable;
+import org.eclipse.collections.api.block.procedure.primitive.IntIntProcedure;
 import org.eclipse.collections.api.iterator.MutableIntIterator;
+import org.eclipse.collections.api.list.primitive.ByteList;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectIntHashMap;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
 import java.util.*;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
-import java.util.function.ToIntFunction;
+import java.util.function.*;
 import java.util.stream.IntStream;
 
 import static nars.Op.CONJ;
@@ -131,8 +132,18 @@ public enum Terms {
 
             int n = y.length;
 			QuickSort.quickSort(0, n,
-				(a, b) -> Integer.compare((int) volumes[b], (int) volumes[a]),
-				(a, b) -> ArrayUtil.swapObjShort(y, volumes, a, b));
+                    new IntComparator() {
+                        @Override
+                        public int compare(int a, int b) {
+                            return Integer.compare((int) volumes[b], (int) volumes[a]);
+                        }
+                    },
+                    new IntIntProcedure() {
+                        @Override
+                        public void value(int a, int b) {
+                            ArrayUtil.swapObjShort(y, volumes, a, b);
+                        }
+                    });
 
 			int vs = (int) volumes[0];
 			nulls = 0;
@@ -311,7 +322,12 @@ public enum Terms {
 
 
 	public static boolean allNegated(Subterms subterms) {
-		return subterms.hasAny(NEG) && subterms.AND(t -> t instanceof Neg);
+		return subterms.hasAny(NEG) && subterms.AND(new Predicate<Term>() {
+            @Override
+            public boolean test(Term t) {
+                return t instanceof Neg;
+            }
+        });
 	}
 
 //	public static int countNegated(Subterms subterms) {
@@ -354,18 +370,26 @@ public enum Terms {
 		ObjectIntHashMap<Term> uniques = new ObjectIntHashMap(8); //c.volume());
 
 
-		c.recurseTermsOrdered(z -> true, subterm -> {
+		c.recurseTermsOrdered(new Predicate<Term>() {
+            @Override
+            public boolean test(Term z) {
+                return true;
+            }
+        }, new Predicate<Term>() {
+            @Override
+            public boolean test(Term subterm) {
 
 
-			//c.forEach(cc ->
-			//cc.recurseTermsOrdered(z -> true, (subterm) -> {
-            int s = score.applyAsInt(subterm);
-			if (s > 0)
-				uniques.addToValue(subterm, s);
-			return true;
-			//}, null);
-			//});
-		}, null);
+                //c.forEach(cc ->
+                //cc.recurseTermsOrdered(z -> true, (subterm) -> {
+                int s = score.applyAsInt(subterm);
+                if (s > 0)
+                    uniques.addToValue(subterm, s);
+                return true;
+                //}, null);
+                //});
+            }
+        }, null);
 
         int total = uniques.size();
 		if (total == 0) return null;
@@ -453,13 +477,16 @@ public enum Terms {
 
 			Terms::canExtractFixedPath,
 
-			(path, xx) -> {
-				if (p[0] == null || p[0].length > path.size()) {
-					//found first or shorter
-					p[0] = path.isEmpty() ? ArrayUtil.EMPTY_BYTE_ARRAY : path.toArray();
-				}
-				return true; //continue
-			});
+                new BiPredicate<ByteList, Term>() {
+                    @Override
+                    public boolean test(ByteList path, Term xx) {
+                        if (p[0] == null || p[0].length > path.size()) {
+                            //found first or shorter
+                            p[0] = path.isEmpty() ? ArrayUtil.EMPTY_BYTE_ARRAY : path.toArray();
+                        }
+                        return true; //continue
+                    }
+                });
 		return p[0];
 	}
 
@@ -519,7 +546,22 @@ public enum Terms {
 
 		if (!xo.commutative) {
             //reverse since smallest terms are last
-            return IntStream.iterate(n - 1, i -> i >= 0, i -> i - 1).allMatch(i -> possiblyUnifiable(xx.sub(i), yy.sub(i), false, var));
+            return IntStream.iterate(n - 1, new IntPredicate() {
+                @Override
+                public boolean test(int i) {
+                    return i >= 0;
+                }
+            }, new IntUnaryOperator() {
+                @Override
+                public int applyAsInt(int i) {
+                    return i - 1;
+                }
+            }).allMatch(new IntPredicate() {
+                @Override
+                public boolean test(int i) {
+                    return possiblyUnifiable(xx.sub(i), yy.sub(i), false, var);
+                }
+            });
 		}
 
 		return true;
@@ -579,11 +621,21 @@ public enum Terms {
 	}
 
 	public static boolean hasEllipsisRecurse(Term x) {
-		return x instanceof Compound && x.hasVarPattern() && ((Compound) x).ORrecurse(t -> t instanceof Ellipsislike);
+		return x instanceof Compound && x.hasVarPattern() && ((Compound) x).ORrecurse(new Predicate<Term>() {
+            @Override
+            public boolean test(Term t) {
+                return t instanceof Ellipsislike;
+            }
+        });
 	}
 
 	public static boolean hasEllipsis(Term x, int xs) {
-		return x instanceof Compound && ((xs & Op.VAR_PATTERN.bit) != 0) && ((Compound) x).OR(t -> t instanceof Ellipsislike);
+		return x instanceof Compound && ((xs & Op.VAR_PATTERN.bit) != 0) && ((Compound) x).OR(new Predicate<Term>() {
+            @Override
+            public boolean test(Term t) {
+                return t instanceof Ellipsislike;
+            }
+        });
 	}
 
 	public static Term intersect(/*@NotNull*/ Op o, Subterms a, Subterms b) {

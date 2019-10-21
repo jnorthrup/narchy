@@ -5,6 +5,8 @@ import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.space2d.ReSurface;
 import spacegraph.video.Draw;
 
+import java.util.function.Consumer;
+
 public class ColorToggle extends ToggleButton {
     public float r;
     public float g;
@@ -28,11 +30,14 @@ public class ColorToggle extends ToggleButton {
         if (on.get()) {
             
 
-            r.on((gl)-> {
+            r.on(new Consumer<GL2>() {
+                @Override
+                public void accept(GL2 gl) {
 
-                gl.glColor3f(1.0F, 1.0F, 1.0F);
-                gl.glLineWidth(3f);
-                Draw.rectStroke(bounds, gl);
+                    gl.glColor3f(1.0F, 1.0F, 1.0F);
+                    gl.glLineWidth(3f);
+                    Draw.rectStroke(bounds, gl);
+                }
             });
         }
     }

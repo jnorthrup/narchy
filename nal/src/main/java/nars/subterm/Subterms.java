@@ -22,6 +22,8 @@ import nars.term.var.ellipsis.Fragment;
 import nars.unify.Unify;
 import nars.unify.mutate.CommutivePermutations;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
+import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
+import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 import org.eclipse.collections.api.block.predicate.primitive.IntObjectPredicate;
 import org.eclipse.collections.api.block.predicate.primitive.ObjectIntPredicate;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectIntProcedure;
@@ -230,7 +232,12 @@ public interface Subterms extends Termlike, Iterable<Term> {
 				if (m.get(i))
 					c[k++] = i;
 			}
-			QuickSort.sort(c, cc -> (float) -(x.sub(cc).volume() + y.sub(cc).volume())); //sorts descending
+			QuickSort.sort(c, new IntToFloatFunction() {
+                @Override
+                public float valueOf(int cc) {
+                    return (float) -(x.sub(cc).volume() + y.sub(cc).volume());
+                }
+            }); //sorts descending
 			for (int cc : c) {
 				if (!x.sub(cc).unify(y.sub(cc), u)) {
 					return false;
@@ -451,7 +458,12 @@ public interface Subterms extends Termlike, Iterable<Term> {
 	default Predicate<Term> containing() {
 		switch (subs()) {
 			case 0:
-				return (x) -> false;
+				return new Predicate<Term>() {
+                    @Override
+                    public boolean test(Term x) {
+                        return false;
+                    }
+                };
 			case 1:
 				return sub(0)::equals;
 			default:
@@ -481,7 +493,12 @@ public interface Subterms extends Termlike, Iterable<Term> {
 //    }
 
 	default boolean containsInstance(Term t) {
-		return ORwith((i, T) -> i == T, t);
+		return ORwith(new BiPredicate<Term, Term>() {
+            @Override
+            public boolean test(Term i, Term T) {
+                return i == T;
+            }
+        }, t);
 	}
 
 	default @Nullable Term subSub(byte[] path) {
@@ -553,7 +570,12 @@ public interface Subterms extends Termlike, Iterable<Term> {
 			case 1:
 				return sub(0);
 			default:
-				return sub(Roulette.selectRoulette(s, i -> subValue.floatValueOf(sub(i)), rng));
+				return sub(Roulette.selectRoulette(s, new IntToFloatFunction() {
+                    @Override
+                    public float valueOf(int i) {
+                        return subValue.floatValueOf(sub(i));
+                    }
+                }, rng));
 		}
 	}
 
@@ -576,7 +598,12 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
 	@Override
 	default int structure() {
-		return intifyShallow(0, (s, x) -> s | x.structure());
+		return intifyShallow(0, new IntObjectToIntFunction<Term>() {
+            @Override
+            public int intValueOf(int s, Term x) {
+                return s | x.structure();
+            }
+        });
 	}
 
 	default void forEachI(ObjectIntProcedure<Term> t) {
@@ -806,36 +833,57 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
 
 		recurseTerms(
-			tt -> tt.hasAny(onlyType),
-			tt -> {
-				if (tt.opBit() == onlyType)
-					t.add(tt);
-				return true;
-			}, null);
+                new Predicate<Term>() {
+                    @Override
+                    public boolean test(Term tt) {
+                        return tt.hasAny(onlyType);
+                    }
+                },
+                new Predicate<Term>() {
+                    @Override
+                    public boolean test(Term tt) {
+                        if (tt.opBit() == onlyType)
+                            t.add(tt);
+                        return true;
+                    }
+                }, null);
 		return t;
 	}
 
 	/*@NotNull*/
 	default boolean recurseSubtermsToSet(int inStructure, /*@NotNull*/ Collection<Term> t, boolean untilAddedORwhileNotRemoved) {
 		boolean[] r = {false};
-		Predicate<Term> selector = s -> {
+		Predicate<Term> selector = new Predicate<Term>() {
+            @Override
+            public boolean test(Term s) {
 
-			if (!untilAddedORwhileNotRemoved && r[0])
-				return false;
+                if (!untilAddedORwhileNotRemoved && r[0])
+                    return false;
 
-			if (s.hasAny(inStructure)) {
-				r[0] |= (untilAddedORwhileNotRemoved) ? t.add(s) : t.remove(s);
-			}
+                if (s.hasAny(inStructure)) {
+                    r[0] |= (untilAddedORwhileNotRemoved) ? t.add(s) : t.remove(s);
+                }
 
-			return true;
-		};
+                return true;
+            }
+        };
 
 
 		recurseTerms(
 			(inStructure != -1) ?
-				p -> p.hasAny(inStructure)
+                    new Predicate<Term>() {
+                        @Override
+                        public boolean test(Term p) {
+                            return p.hasAny(inStructure);
+                        }
+                    }
 				:
-				any -> true,
+                    new Predicate<Term>() {
+                        @Override
+                        public boolean test(Term any) {
+                            return true;
+                        }
+                    },
 			selector, null);
 
 
@@ -876,7 +924,12 @@ public interface Subterms extends Termlike, Iterable<Term> {
         int s = subs();
 		if (s != c.length)
 			return false;
-		return ANDi((x,i) -> x.equals(c[i]));
+		return ANDi(new ObjectIntPredicate<Term>() {
+            @Override
+            public boolean accept(Term x, int i) {
+                return x.equals(c[i]);
+            }
+        });
 	}
 
 	default void addAllTo(Collection target) {
@@ -938,7 +991,12 @@ public interface Subterms extends Termlike, Iterable<Term> {
 	 * counts subterms matching the predicate
 	 */
 	default int count(Predicate<Term> match) {
-		return intifyShallow(0, (c, sub) -> match.test(sub) ? c + 1 : c);
+		return intifyShallow(0, new IntObjectToIntFunction<Term>() {
+            @Override
+            public int intValueOf(int c, Term sub) {
+                return match.test(sub) ? c + 1 : c;
+            }
+        });
 	}
 
 	default boolean countEquals(Predicate<Term> match, int n) {
@@ -960,7 +1018,12 @@ public interface Subterms extends Termlike, Iterable<Term> {
 	 */
 	default int count(Op matchingOp) {
 		int matchingOpID = (int) matchingOp.id;
-		return count(x -> x.opID() == matchingOpID);
+		return count(new Predicate<Term>() {
+            @Override
+            public boolean test(Term x) {
+                return x.opID() == matchingOpID;
+            }
+        });
 	}
 
 	/**
@@ -1352,21 +1415,36 @@ public interface Subterms extends Termlike, Iterable<Term> {
 	 */
 	@Override
 	default boolean recurseTerms(Predicate<Term> inSuperCompound, Predicate<Term> whileTrue, Compound parent) {
-		return AND(s -> s.recurseTerms(inSuperCompound, whileTrue, parent));
+		return AND(new Predicate<Term>() {
+            @Override
+            public boolean test(Term s) {
+                return s.recurseTerms(inSuperCompound, whileTrue, parent);
+            }
+        });
 	}
 
 	/**
 	 * must be overriden by any Compound subclasses
 	 */
 	default boolean recurseTerms(Predicate<Compound> aSuperCompoundMust, BiPredicate<Term, Compound> whileTrue, Compound parent) {
-		return AND(s -> s.recurseTerms(aSuperCompoundMust, whileTrue, parent));
+		return AND(new Predicate<Term>() {
+            @Override
+            public boolean test(Term s) {
+                return s.recurseTerms(aSuperCompoundMust, whileTrue, parent);
+            }
+        });
 	}
 
 	/**
 	 * incl repeats
 	 */
 	default boolean recurseTermsOrdered(Predicate<Term> inSuperCompound, Predicate<Term> whileTrue, Compound parent) {
-		return AND(i -> i.recurseTermsOrdered(inSuperCompound, whileTrue, parent));
+		return AND(new Predicate<Term>() {
+            @Override
+            public boolean test(Term i) {
+                return i.recurseTermsOrdered(inSuperCompound, whileTrue, parent);
+            }
+        });
 	}
 
 	default Subterms reversed() {
@@ -1493,7 +1571,12 @@ public interface Subterms extends Termlike, Iterable<Term> {
 	default boolean containsNeg(Term x) {
 		return x instanceof Neg ? contains(x.unneg()) : hasAny(NEG) && !impossibleSubTerm(x.structure() | NEG.bit, x.volume() + 1)
 			&&
-			ORwith((z, xx) -> z instanceof Neg && xx.equals(z.unneg()), x);
+			ORwith(new BiPredicate<Term, Term>() {
+                @Override
+                public boolean test(Term z, Term xx) {
+                    return z instanceof Neg && xx.equals(z.unneg());
+                }
+            }, x);
 	}
 
 	/**

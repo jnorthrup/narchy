@@ -52,7 +52,12 @@ public class PushButton extends AbstractButton  {
     }
 
     public PushButton clicked(@Nullable Runnable onClick) {
-        return clicked((cb)->onClick.run());
+        return clicked(new Consumer<PushButton>() {
+            @Override
+            public void accept(PushButton cb) {
+                onClick.run();
+            }
+        });
     }
 
     public PushButton clicked(@Nullable Consumer<PushButton> onClick) {

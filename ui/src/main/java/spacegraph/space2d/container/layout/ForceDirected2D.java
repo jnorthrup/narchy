@@ -13,6 +13,7 @@ import spacegraph.space2d.container.graph.NodeVis;
 import spacegraph.util.MutableRectFloat;
 
 import java.util.Random;
+import java.util.function.Consumer;
 
 public class ForceDirected2D<X> extends DynamicLayout2D<X> {
 
@@ -129,29 +130,31 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X> {
         double[] dx = {(double) 0};
         double[] dy = {(double) 0};
 
-        read.forEachValue(edge -> {
-            if (edge == null)
-                return; //wtf
+        read.forEachValue(new Consumer<EdgeVis<X>>() {
+            @Override
+            public void accept(EdgeVis<X> edge) {
+                if (edge == null)
+                    return; //wtf
 
-            NodeVis<X> who = edge.to;
-            if (who == null)
-                return;
+                NodeVis<X> who = edge.to;
+                if (who == null)
+                    return;
 
-            MutableRectFloat b = who.mover;
-            if (b == null)
-                return;
+                MutableRectFloat b = who.mover;
+                if (b == null)
+                    return;
 
-            float idealLen = (aRad + b.radius()) * equilibriumDistFactor;
+                float idealLen = (aRad + b.radius()) * equilibriumDistFactor;
 
-            v2 delta = new v2(b.cx() - px, b.cy() - py);
-            float len = delta.normalize();
+                v2 delta = new v2(b.cx() - px, b.cy() - py);
+                float len = delta.normalize();
 //            if (len > idealLen) {
 //            len = len * (1+Util.tanhFast(len - (scale)))/2;
 
 
                 //attractSpeed/=neighbors;
 
-            float s = (len - idealLen) * attractSpeed * weightToVelocity(edge.weight);
+                float s = (len - idealLen) * attractSpeed * weightToVelocity(edge.weight);
 
                 //s = Util.tanhFast(s);...
                 //s = (float) Math.sqrt(s);
@@ -163,6 +166,7 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X> {
 //                    b.move(-delta.x, -delta.y);
                 }
 //            }
+            }
         });
 
         a.move((float) dx[0], (float) dy[0]);

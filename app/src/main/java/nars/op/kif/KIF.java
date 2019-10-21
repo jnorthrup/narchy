@@ -33,6 +33,8 @@ import nars.term.Term;
 import nars.term.atom.IdempotentBool;
 import nars.term.atom.IdempotInt;
 import org.eclipse.collections.api.block.function.Function;
+import org.eclipse.collections.api.block.function.Function0;
+import org.eclipse.collections.api.block.procedure.Procedure;
 import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.impl.map.mutable.primitive.IntObjectHashMap;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
@@ -45,6 +47,8 @@ import java.io.InputStream;
 import java.io.StringReader;
 import java.util.Set;
 import java.util.*;
+import java.util.function.IntFunction;
+import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 
@@ -117,11 +121,14 @@ public class KIF implements Iterable<Task> {
     }
 
     private static UnaryOperator<Term> domainRangeMerger(Term type) {
-        return (existing) -> {
-            if (existing.equals(type))
-                return existing;
-            else
-                return SETi.the(List.of(existing, type));
+        return new UnaryOperator<Term>() {
+            @Override
+            public Term apply(Term existing) {
+                if (existing.equals(type))
+                    return existing;
+                else
+                    return SETi.the(List.of(existing, type));
+            }
         };
     }
 
@@ -166,14 +173,17 @@ public class KIF implements Iterable<Task> {
 
         MutableSet<Term> common = _aVars.intersect(_bVars);
         if (!common.isEmpty()) {
-            common.forEach(t -> {
-                nars.term.Variable u = $.v(
-                        Op.VAR_INDEP,
+            common.forEach(new Procedure<Term>() {
+                @Override
+                public void value(Term t) {
+                    nars.term.Variable u = $.v(
+                            Op.VAR_INDEP,
 
 
-                        t.toString().substring(1));
-                if (!t.equals(u) && !remap.containsKey(u))
-                    remap.put(t, u);
+                            t.toString().substring(1));
+                    if (!t.equals(u) && !remap.containsKey(u))
+                        remap.put(t, u);
+                }
             });
         }
         for (MutableSet<Term> ab : new MutableSet[]{_aVars, _bVars}) {
@@ -235,16 +245,30 @@ public class KIF implements Iterable<Task> {
             Term f = entry.getKey();
             FnDef s = entry.getValue();
             int ds = s.domain.isEmpty() ? 0 : s.domain.keySet().max();
-            Term[] vt = Util.map(0, ds, Term[]::new, i -> $.varDep(1 + i));
+            Term[] vt = Util.map(0, ds, Term[]::new, new IntFunction<Term>() {
+                @Override
+                public Term apply(int i) {
+                    return $.varDep(1 + i);
+                }
+            });
             Term v = null;
             if (s.range != null) {
                 v = $.varDep("R");
                 vt = ArrayUtil.add(vt, v);
             }
             int[] k = {1};
-            Term[] typeConds = Util.map(0, ds, Term[]::new, i ->
-                    INH.the($.varDep(1 + i),
-                            s.domain.getIfAbsent(1 + i, () -> $.varDep(k[0]++))));
+            Term[] typeConds = Util.map(0, ds, Term[]::new, new IntFunction<Term>() {
+                @Override
+                public Term apply(int i) {
+                    return INH.the($.varDep(1 + i),
+                            s.domain.getIfAbsent(1 + i, new Function0<Term>() {
+                                @Override
+                                public Term value() {
+                                    return $.varDep(k[0]++);
+                                }
+                            }));
+                }
+            });
             if (s.range != null) {
                 typeConds = ArrayUtil.add(typeConds, INH.the(v, s.range));
             }
@@ -264,38 +288,44 @@ public class KIF implements Iterable<Task> {
 
         if (symmetricRelations.size() > 1 /*SymmetricRelation exists in the set initially */) {
 
-            assertions.removeIf(belief -> {
-                if (belief.op() == INH) {
-                    Term fn = belief.sub(1);
-                    if (symmetricRelations.contains(fn)) {
+            assertions.removeIf(new Predicate<Term>() {
+                @Override
+                public boolean test(Term belief) {
+                    if (belief.op() == INH) {
+                        Term fn = belief.sub(1);
+                        if (symmetricRelations.contains(fn)) {
 
-                        Term ab = belief.sub(0);
-                        if (ab.op() != PROD) {
-                            return false;
+                            Term ab = belief.sub(0);
+                            if (ab.op() != PROD) {
+                                return false;
+                            }
+                            assert (ab.subs() == 2);
+                            Term a = ab.sub(0);
+                            Term b = ab.sub(1);
+                            Term symmetric = INH.the(CONJ.the(PROD.the(a, b), PROD.the(b, a)), fn);
+
+                            assertions.add(symmetric);
+                            return true;
                         }
-                        assert (ab.subs() == 2);
-                        Term a = ab.sub(0);
-                        Term b = ab.sub(1);
-                        Term symmetric = INH.the(CONJ.the(PROD.the(a, b), PROD.the(b, a)), fn);
-
-                        assertions.add(symmetric);
-                        return true;
                     }
+                    return false;
                 }
-                return false;
             });
         }
 
-        assertions.removeIf(b -> {
-            if (b.hasAny(BOOL)) {
-                return true;
+        assertions.removeIf(new Predicate<Term>() {
+            @Override
+            public boolean test(Term b) {
+                if (b.hasAny(BOOL)) {
+                    return true;
+                }
+                Term bb = b.unneg().normalize();
+                if (!Task.validTaskTerm(bb.unneg(), BELIEF, true)) {
+                    logger.error("invalid task target: {}\n\t{}", b, bb);
+                    return true;
+                }
+                return false;
             }
-            Term bb = b.unneg().normalize();
-            if (!Task.validTaskTerm(bb.unneg(), BELIEF, true)) {
-                logger.error("invalid task target: {}\n\t{}", b, bb);
-                return true;
-            }
-            return false;
         });
     }
 
@@ -488,9 +518,19 @@ public class KIF implements Iterable<Task> {
                                         finished = true;
                                         break;
                                     }
-                                    FnDef d = fn.computeIfAbsent(subj, (s) -> new FnDef());
+                                    FnDef d = fn.computeIfAbsent(subj, new java.util.function.Function<Term, FnDef>() {
+                                        @Override
+                                        public FnDef apply(Term s) {
+                                            return new FnDef();
+                                        }
+                                    });
 
-                                    d.domain.updateValue(((IdempotInt) arg).i, () -> type, (Function<? super Term, ? extends Term>) domainRangeMerger(type));
+                                    d.domain.updateValue(((IdempotInt) arg).i, new Function0<Term>() {
+                                        @Override
+                                        public Term value() {
+                                            return type;
+                                        }
+                                    }, (Function<? super Term, ? extends Term>) domainRangeMerger(type));
 
                                 } else {
                                     throw new UnsupportedOperationException("unrecognized domain spec");
@@ -508,7 +548,12 @@ public class KIF implements Iterable<Task> {
                                         finished = true;
                                         break;
                                     }
-                                    FnDef d = fn.computeIfAbsent(subj, (s) -> new FnDef());
+                                    FnDef d = fn.computeIfAbsent(subj, new java.util.function.Function<Term, FnDef>() {
+                                        @Override
+                                        public FnDef apply(Term s) {
+                                            return new FnDef();
+                                        }
+                                    });
                                     d.range = range;
                                 } else {
                                     throw new UnsupportedOperationException("unrecognized range spec");

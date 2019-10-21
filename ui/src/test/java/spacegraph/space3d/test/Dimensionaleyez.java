@@ -15,6 +15,7 @@ import spacegraph.video.Draw;
 
 import java.util.List;
 import java.util.Queue;
+import java.util.function.Consumer;
 
 import static spacegraph.SpaceGraph.window;
 
@@ -81,34 +82,37 @@ public class Dimensionaleyez extends SimpleSpatial {
     public void renderRelative(GL2 gl, Collidable body, float dtS) {
 
         float s = scale.floatValue();
-        n.forEachNode(n -> {
-            float[] d = n.center();
-            if (d == null)
-                return;
+        n.forEachNode(new Consumer<NeuralGasMap.AECentroid>() {
+            @Override
+            public void accept(NeuralGasMap.AECentroid n) {
+                float[] d = n.center();
+                if (d == null)
+                    return;
 
-            float d0 = d[0];
-            if (d0 != d0) {
-                
-                return;
+                float d0 = d[0];
+                if (d0 != d0) {
+
+                    return;
+                }
+                float y = d[1] * s;
+                float z = d.length > 2 ? d[2] * s : 0;
+
+                float last = ((float) n.getEntry(n.getDimension() - 1) + 1f) / 2f;
+
+                gl.glPushMatrix();
+                float x = d0 * s;
+                gl.glTranslatef(x, y, z);
+                float p = 0.3f + (float) (0.7f / (1f + n.localDistance()));
+
+                float sat = 0.5f;
+                float hue = (n.id % 10) / 10f;
+                float bri = 0.5f;
+
+                Draw.hsb(gl, hue, sat, p, bri);
+                float size = last;
+                Draw.glut.glutSolidCube(1f * size);
+                gl.glPopMatrix();
             }
-            float y = d[1] * s;
-            float z = d.length > 2 ? d[2] * s : 0;
-
-            float last = ((float) n.getEntry(n.getDimension() - 1) + 1f) / 2f;
-
-            gl.glPushMatrix();
-            float x = d0 * s;
-            gl.glTranslatef(x, y, z);
-            float p = 0.3f + (float) (0.7f / (1f + n.localDistance()));
-
-            float sat = 0.5f;
-            float hue = (n.id %10)/10f;
-            float bri = 0.5f;
-
-            Draw.hsb(gl, hue, sat, p, bri);
-            float size = last;
-            Draw.glut.glutSolidCube(1f * size);
-            gl.glPopMatrix();
         });
     }
 

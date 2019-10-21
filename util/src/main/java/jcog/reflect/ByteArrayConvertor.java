@@ -119,23 +119,29 @@ public class ByteArrayConvertor {
         return data;
     }
 
-    static final Function<Object, String> toString = (srcData) -> {
-        if ((srcData instanceof byte[])) {
-            byte[] bytes = (byte[]) srcData;
-            return encodeHex(bytes);
-        } else {
-            return null;
-        }
-        // TODO use proj text
+    static final Function<Object, String> toString = new Function<Object, String>() {
+        @Override
+        public String apply(Object srcData) {
+            if ((srcData instanceof byte[])) {
+                byte[] bytes = (byte[]) srcData;
+                return encodeHex(bytes);
+            } else {
+                return null;
+            }
+            // TODO use proj text
 //        throw new Error("not implemented");
+        }
     };
 
-    static final jcog.reflect.ToValueConvertor toValue = (text) -> {
-        if (text != null) {
-            return decodeHex(text);
-        }
-        return null;
-        // TODO use proj text
+    static final jcog.reflect.ToValueConvertor toValue = new ToValueConvertor() {
+        @Override
+        public Object apply(String text) {
+            if (text != null) {
+                return decodeHex(text);
+            }
+            return null;
+            // TODO use proj text
 //        throw new Error("not implemented");
+        }
     };
 }

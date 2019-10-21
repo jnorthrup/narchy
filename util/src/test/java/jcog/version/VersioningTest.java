@@ -95,7 +95,12 @@ class VersioningTest {
 
         sequence1(v);
 
-        Supplier<String> s = () -> a + " " + b;
+        Supplier<String> s = new Supplier<String>() {
+            @Override
+            public String get() {
+                return a + " " + b;
+            }
+        };
 
         System.out.println(v);
         assertEquals(6, v.size); assertEquals("a3 b1", s.get());
@@ -132,7 +137,12 @@ class VersioningTest {
         Versioning v = new Versioning(10, 10);
         sequence1(v);
 
-        Supplier<String> s = () -> a + " " + b;
+        Supplier<String> s = new Supplier<String>() {
+            @Override
+            public String get() {
+                return a + " " + b;
+            }
+        };
 
         System.out.println(v);
         assertEquals(6, v.size); assertEquals("a3 b1", s.get());

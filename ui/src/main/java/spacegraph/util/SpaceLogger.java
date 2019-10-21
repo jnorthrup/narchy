@@ -29,13 +29,23 @@ public interface SpaceLogger {
         log(key, duration, Level.DEBUG, x::toString);
     }
     default void debug(@Nullable Object key, float duration /* seconds */, String message) {
-        log(key, duration, Level.DEBUG, ()->message);
+        log(key, duration, Level.DEBUG, new Supplier<String>() {
+            @Override
+            public String get() {
+                return message;
+            }
+        });
     }
     default void info(@Nullable Object key, float duration /* seconds */, Supplier<String> message) {
         log(key, duration, Level.INFO, message);
     }
     default void info(@Nullable Object key, float duration /* seconds */, String message) {
-        log(key, duration, Level.INFO, ()->message);
+        log(key, duration, Level.INFO, new Supplier<String>() {
+            @Override
+            public String get() {
+                return message;
+            }
+        });
     }
 
     default void error(@Nullable Object key, float duration /* seconds */, Throwable error) {
@@ -46,7 +56,12 @@ public interface SpaceLogger {
         log(key, duration, Level.ERROR, message);
     }
     default void error(@Nullable Object key, float duration /* seconds */, String message) {
-        log(key, duration, Level.ERROR, ()->message);
+        log(key, duration, Level.ERROR, new Supplier<String>() {
+            @Override
+            public String get() {
+                return message;
+            }
+        });
     }
 
 }

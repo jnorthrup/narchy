@@ -6,6 +6,7 @@ import jcog.data.iterator.ArrayIterator;
 
 import java.io.*;
 import java.util.StringJoiner;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -22,7 +23,12 @@ public class CSVOutput extends PrintStream {
 
     public CSVOutput(OutputStream out, String... headers) {
         super(out);
-        println(Joiner.on(',').join(StreamSupport.stream(new ArrayIterator<>(headers).spliterator(), false).map(col -> '"' + col + '"').collect(Collectors.toList())
+        println(Joiner.on(',').join(StreamSupport.stream(new ArrayIterator<>(headers).spliterator(), false).map(new Function<String, String>() {
+                    @Override
+                    public String apply(String col) {
+                        return '"' + col + '"';
+                    }
+                }).collect(Collectors.toList())
         ));
     }
 

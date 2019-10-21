@@ -48,14 +48,17 @@ public class MutableMapContainer<K, V> extends AbstractMutableContainer<Surface>
 
     @Override
     public void forEach(Consumer<Surface> each) {
-        cells.map.forEachValueWith((e, EACH) -> {
-            Surface s = ((SurfaceCacheCell) e).surface;
-            if (s == null) {
-                if (e.value instanceof Surface)
-                    s = (Surface) e.value; //HACK
+        cells.map.forEachValueWith(new BiConsumer<CellMap.CacheCell<K, V>, Consumer<Surface>>() {
+            @Override
+            public void accept(CellMap.CacheCell<K, V> e, Consumer<Surface> EACH) {
+                Surface s = ((SurfaceCacheCell) e).surface;
+                if (s == null) {
+                    if (e.value instanceof Surface)
+                        s = (Surface) e.value; //HACK
+                }
+                if (s != null)
+                    EACH.accept(s);
             }
-            if (s != null)
-                EACH.accept(s);
         }, each);
     }
 
@@ -116,7 +119,12 @@ public class MutableMapContainer<K, V> extends AbstractMutableContainer<Surface>
 
     protected CellMap.CacheCell<K, V> put(K key, V nextValue, BiFunction<K, V, Surface> renderer) {
 
-        CellMap.CacheCell<K, V> entry = cells.map.computeIfAbsent(key, k -> cells.cellPool.get());
+        CellMap.CacheCell<K, V> entry = cells.map.computeIfAbsent(key, new Function<K, CellMap.CacheCell<K, V>>() {
+            @Override
+            public CellMap.CacheCell<K, V> apply(K k) {
+                return cells.cellPool.get();
+            }
+        });
 
         ((SurfaceCacheCell<K,V>) entry).update(key, nextValue, renderer, this::hide);
 
@@ -152,17 +160,23 @@ public class MutableMapContainer<K, V> extends AbstractMutableContainer<Surface>
 
     @Override
     public boolean whileEach(Predicate<Surface> o) {
-        return cells.whileEach(e -> {
-            Surface s = ((SurfaceCacheCell) e).surface;
-            return s == null || o.test(s);
+        return cells.whileEach(new Predicate<CellMap.CacheCell<K, V>>() {
+            @Override
+            public boolean test(CellMap.CacheCell<K, V> e) {
+                Surface s = ((SurfaceCacheCell) e).surface;
+                return s == null || o.test(s);
+            }
         });
     }
 
     @Override
     public boolean whileEachReverse(Predicate<Surface> o) {
-        return cells.whileEachReverse(e -> {
-            Surface s = ((SurfaceCacheCell) e).surface;
-            return s == null || o.test(s);
+        return cells.whileEachReverse(new Predicate<CellMap.CacheCell<K, V>>() {
+            @Override
+            public boolean test(CellMap.CacheCell<K, V> e) {
+                Surface s = ((SurfaceCacheCell) e).surface;
+                return s == null || o.test(s);
+            }
         });
     }
 

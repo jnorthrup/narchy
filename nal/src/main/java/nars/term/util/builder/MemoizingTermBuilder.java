@@ -23,9 +23,19 @@ public class MemoizingTermBuilder extends InterningTermBuilder {
         super(id, cacheSizePerOp, volInternedMax, deep);
 
 
-        root = newOpCache("root", cacheSizePerOp, j -> _root((Compound) j.term));
+        root = newOpCache("root", cacheSizePerOp, new Function<InternedCompoundTransform, Term>() {
+            @Override
+            public Term apply(InternedCompoundTransform j) {
+                return _root((Compound) j.term);
+            }
+        });
 
-        normalize = newOpCache("normalize", cacheSizePerOp, j -> super.normalize((Compound) j.term, (byte) 0));
+        normalize = newOpCache("normalize", cacheSizePerOp, new Function<InternedCompoundTransform, Term>() {
+            @Override
+            public Term apply(InternedCompoundTransform j) {
+                return MemoizingTermBuilder.super.normalize((Compound) j.term, (byte) 0);
+            }
+        });
 
 //        concept = newOpCache("concept", j -> super.concept((Compound) j.sub0()), cacheSizePerOp);
 

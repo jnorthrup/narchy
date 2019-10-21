@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.function.IntFunction;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -44,8 +45,18 @@ class DecisionTreeGetLabelTest {
     @Test
     void testGetLabelOn95vs5() {
         DecisionTree tree = new DecisionTree();
-        List<UnaryOperator > data = IntStream.range(0, 95).mapToObj(i1 -> new TestValue(TRUE_LABEL)).collect(Collectors.toList());
-        IntStream.range(0, 5).mapToObj(i -> new TestValue(FALSE_LABEL)).forEachOrdered(data::add);
+        List<UnaryOperator > data = IntStream.range(0, 95).mapToObj(new IntFunction<TestValue>() {
+            @Override
+            public TestValue apply(int i1) {
+                return new TestValue(TRUE_LABEL);
+            }
+        }).collect(Collectors.toList());
+        IntStream.range(0, 5).mapToObj(new IntFunction<TestValue>() {
+            @Override
+            public TestValue apply(int i) {
+                return new TestValue(FALSE_LABEL);
+            }
+        }).forEachOrdered(data::add);
         assertEquals("true", DecisionTree.label(obj, 0.9f,(Stream ) data.stream()).toString());
     }
 
@@ -62,7 +73,12 @@ class DecisionTreeGetLabelTest {
     }
 
     private static List<UnaryOperator<Object>> buildSample(int a, int b) {
-        List<UnaryOperator<Object>> homogenous = IntStream.range(0, a).mapToObj(i1 -> new TestValue(TRUE_LABEL)).collect(Collectors.toList());
+        List<UnaryOperator<Object>> homogenous = IntStream.range(0, a).mapToObj(new IntFunction<TestValue>() {
+            @Override
+            public TestValue apply(int i1) {
+                return new TestValue(TRUE_LABEL);
+            }
+        }).collect(Collectors.toList());
         for (int i = 0; i < b; i++)
             homogenous.add(new TestValue(FALSE_LABEL));
         return homogenous;

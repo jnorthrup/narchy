@@ -13,6 +13,8 @@ import nars.term.Termed;
 import nars.time.event.WhenInternal;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.function.Predicate;
+
 /**
  *
  */
@@ -56,9 +58,12 @@ public abstract class NARPart extends Parts<NAR> implements Termed, OffOn, SubPa
         logger.info("delete {}", term());
 
 
-        local.removeIf((p) -> {
-            ((NARPart)p).delete();
-            return true;
+        local.removeIf(new Predicate<SubPart<NAR>>() {
+            @Override
+            public boolean test(SubPart<NAR> p) {
+                ((NARPart) p).delete();
+                return true;
+            }
         });
         whenDeleted.close();
 
@@ -207,20 +212,26 @@ public abstract class NARPart extends Parts<NAR> implements Termed, OffOn, SubPa
         if (n != null) {
             if (n.stop(this)) {
                 logger.info("pause {}", this);
-                return () -> {
-                    NAR nn = this.nar;
-                    if (nn == null) {
-                        //deleted or unstarted
-                    } else {
-                        if (nn.add(this)) {
-                            logger.info("resume {}", this);
+                return new Runnable() {
+                    @Override
+                    public void run() {
+                        NAR nn = NARPart.this.nar;
+                        if (nn == null) {
+                            //deleted or unstarted
+                        } else {
+                            if (nn.add(NARPart.this)) {
+                                logger.info("resume {}", NARPart.this);
+                            }
                         }
                     }
                 };
             }
         }
         //return new SelfDestructAfterRunningOnlyOnce(nn);
-        return () -> {
+        return new Runnable() {
+            @Override
+            public void run() {
+            }
         };
     }
 

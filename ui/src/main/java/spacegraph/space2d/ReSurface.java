@@ -43,7 +43,12 @@ public class ReSurface extends SurfaceCamera {
 
 
     @Deprecated public final void on(Consumer<GL2> renderable) {
-        on((gl, rr)->renderable.accept(this.gl));
+        on(new BiConsumer<GL2, ReSurface>() {
+            @Override
+            public void accept(GL2 gl, ReSurface rr) {
+                renderable.accept(ReSurface.this.gl);
+            }
+        });
     }
 
     @Deprecated public final void on(BiConsumer<GL2, ReSurface> renderable) {

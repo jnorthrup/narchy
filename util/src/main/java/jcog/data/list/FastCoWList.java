@@ -33,7 +33,12 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
 
 
     public FastCoWList(Class<X> x) {
-        this((i)->(X[])Array.newInstance(x, i));
+        this(new IntFunction<X[]>() {
+            @Override
+            public X[] apply(int i) {
+                return (X[]) Array.newInstance(x, i);
+            }
+        });
     }
 
     public FastCoWList(IntFunction<X[]> arrayBuilder) {
@@ -218,7 +223,12 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
 
     @Override
     public final X[] apply(X[] current) {
-        return Objects.requireNonNullElseGet(current, () -> list.fillArray(arrayBuilder.apply(list.size()), false));
+        return Objects.requireNonNullElseGet(current, new Supplier<X[]>() {
+            @Override
+            public X[] get() {
+                return list.fillArray(arrayBuilder.apply(list.size()), false);
+            }
+        });
     }
 
     //@Override
@@ -338,11 +348,14 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
         if (newValues.length == 0)
              clear();
         else {
-            copy.accumulateAndGet(newValues, (p, v) -> {
-                synchronized(list) {
-                    list.setArray(v);
+            copy.accumulateAndGet(newValues, new BinaryOperator<X[]>() {
+                @Override
+                public X[] apply(X[] p, X[] v) {
+                    synchronized (list) {
+                        list.setArray(v);
+                    }
+                    return v;
                 }
-                return v;
             });
         }
 //        synchronized (list) {
@@ -384,7 +397,27 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
     }
     public boolean whileEachReverse(Predicate<X> o) {
         @Nullable X[] xx = this.array();
-        return IntStream.iterate(xx.length - 1, i -> i >= 0, i -> i - 1).mapToObj(i -> xx[i]).noneMatch(x -> x != null && !o.test(x));
+        return IntStream.iterate(xx.length - 1, new IntPredicate() {
+            @Override
+            public boolean test(int i) {
+                return i >= 0;
+            }
+        }, new IntUnaryOperator() {
+            @Override
+            public int applyAsInt(int i) {
+                return i - 1;
+            }
+        }).mapToObj(new IntFunction<X>() {
+            @Override
+            public X apply(int i) {
+                return xx[i];
+            }
+        }).noneMatch(new Predicate<X>() {
+            @Override
+            public boolean test(X x) {
+                return x != null && !o.test(x);
+            }
+        });
     }
 
     public double sumBy(FloatFunction<X> each) {
@@ -453,9 +486,12 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
     }
 
     public void clear(Consumer<? super X> each) {
-        removeIf((x)->{
-            each.accept(x);
-            return true;
+        removeIf(new Predicate<X>() {
+            @Override
+            public boolean test(X x) {
+                each.accept(x);
+                return true;
+            }
         });
     }
 

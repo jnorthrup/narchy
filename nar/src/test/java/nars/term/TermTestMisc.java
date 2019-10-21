@@ -15,9 +15,12 @@ import nars.util.Timed;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 
 import java.util.List;
 import java.util.TreeSet;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import static java.lang.Long.toBinaryString;
@@ -81,33 +84,111 @@ public class TermTestMisc {
         Atomic X = Atomic.the("x");
         Atomic Y = Atomic.the("y");
         Atomic Z = Atomic.the("z");
-        Op.all().filter(x -> x.commutative).forEach(o -> {
-            if (o.minSubs < 2)
-                assertFalse(o.the(X).isCommutative());
+        Op.all().filter(new Predicate<Op>() {
+            @Override
+            public boolean test(Op x) {
+                return x.commutative;
+            }
+        }).forEach(new Consumer<Op>() {
+            @Override
+            public void accept(Op o) {
+                if (o.minSubs < 2)
+                    assertFalse(o.the(X).isCommutative());
 
-            Term xy = o.the(X, Y);
-            assertTrue(xy.isCommutative());
-            assertEquals(xy, o.the(Y, X), () -> "commutivity failed for " + xy);
-            assertEquals(xy, o.the(List.of(Y, X)), () -> "commutivity failed for " + xy);
-            assertEquals(xy, o.the(java.util.Set.of(Y, X)), () -> "commutivity failed for " + xy);
-
-            if (o.maxSubs > 2) {
-                Term xyz = o.the(X, Y, Z);
+                Term xy = o.the(X, Y);
                 assertTrue(xy.isCommutative());
-                assertEquals(xyz, o.the(Y, X, Z), () -> "commutivity failed for " + xyz);
-                assertEquals(xyz, o.the(List.of(Y, X, Z)), () -> "commutivity failed for " + xyz);
-                assertEquals(xyz, o.the(java.util.Set.of(Y, X, Z)), () -> "commutivity failed for " + xyz);
-                assertEquals(xyz, o.the(X, Z, Y), () -> "commutivity failed for " + xyz);
-                assertEquals(xyz, o.the(X, Y, Z), () -> "commutivity failed for " + xyz);
-                assertEquals(xyz, o.the(Z, Y, X), () -> "commutivity failed for " + xyz);
-                assertEquals(xyz, o.the(Z, X, Y), () -> "commutivity failed for " + xyz);
-                assertEquals(xyz, o.the(Y, Z, X), () -> "commutivity failed for " + xyz);
+                assertEquals(xy, o.the(Y, X), new Supplier<String>() {
+                    @Override
+                    public String get() {
+                        return "commutivity failed for " + xy;
+                    }
+                });
+                assertEquals(xy, o.the(List.of(Y, X)), new Supplier<String>() {
+                    @Override
+                    public String get() {
+                        return "commutivity failed for " + xy;
+                    }
+                });
+                assertEquals(xy, o.the(java.util.Set.of(Y, X)), new Supplier<String>() {
+                    @Override
+                    public String get() {
+                        return "commutivity failed for " + xy;
+                    }
+                });
 
-                Term wxyz = o.the(W, X, Y, Z);
-                assertEquals(wxyz, o.the(Y, W, X, Z), () -> "commutivity failed for " + wxyz);
-                assertEquals(wxyz, o.the(List.of(Y, W, X, Z)), () -> "commutivity failed for " + wxyz);
-                assertEquals(wxyz, o.the(java.util.Set.of(Y, W, X, Z)), () -> "commutivity failed for " + wxyz);
-                //TODO other permutes
+                if (o.maxSubs > 2) {
+                    Term xyz = o.the(X, Y, Z);
+                    assertTrue(xy.isCommutative());
+                    assertEquals(xyz, o.the(Y, X, Z), new Supplier<String>() {
+                        @Override
+                        public String get() {
+                            return "commutivity failed for " + xyz;
+                        }
+                    });
+                    assertEquals(xyz, o.the(List.of(Y, X, Z)), new Supplier<String>() {
+                        @Override
+                        public String get() {
+                            return "commutivity failed for " + xyz;
+                        }
+                    });
+                    assertEquals(xyz, o.the(java.util.Set.of(Y, X, Z)), new Supplier<String>() {
+                        @Override
+                        public String get() {
+                            return "commutivity failed for " + xyz;
+                        }
+                    });
+                    assertEquals(xyz, o.the(X, Z, Y), new Supplier<String>() {
+                        @Override
+                        public String get() {
+                            return "commutivity failed for " + xyz;
+                        }
+                    });
+                    assertEquals(xyz, o.the(X, Y, Z), new Supplier<String>() {
+                        @Override
+                        public String get() {
+                            return "commutivity failed for " + xyz;
+                        }
+                    });
+                    assertEquals(xyz, o.the(Z, Y, X), new Supplier<String>() {
+                        @Override
+                        public String get() {
+                            return "commutivity failed for " + xyz;
+                        }
+                    });
+                    assertEquals(xyz, o.the(Z, X, Y), new Supplier<String>() {
+                        @Override
+                        public String get() {
+                            return "commutivity failed for " + xyz;
+                        }
+                    });
+                    assertEquals(xyz, o.the(Y, Z, X), new Supplier<String>() {
+                        @Override
+                        public String get() {
+                            return "commutivity failed for " + xyz;
+                        }
+                    });
+
+                    Term wxyz = o.the(W, X, Y, Z);
+                    assertEquals(wxyz, o.the(Y, W, X, Z), new Supplier<String>() {
+                        @Override
+                        public String get() {
+                            return "commutivity failed for " + wxyz;
+                        }
+                    });
+                    assertEquals(wxyz, o.the(List.of(Y, W, X, Z)), new Supplier<String>() {
+                        @Override
+                        public String get() {
+                            return "commutivity failed for " + wxyz;
+                        }
+                    });
+                    assertEquals(wxyz, o.the(java.util.Set.of(Y, W, X, Z)), new Supplier<String>() {
+                        @Override
+                        public String get() {
+                            return "commutivity failed for " + wxyz;
+                        }
+                    });
+                    //TODO other permutes
+                }
             }
         });
     }
@@ -228,7 +309,12 @@ public class TermTestMisc {
         try {
             String t = "($1-->({place4}~$1))";
             Task x = n.inputTask(t + '.');
-            fail(() -> t + " is invalid compound target");
+            fail(new Supplier<String>() {
+                @Override
+                public String get() {
+                    return t + " is invalid compound target";
+                }
+            });
         } catch (Throwable tt) {
             assertTrue(true);
         }
@@ -344,7 +430,12 @@ public class TermTestMisc {
 
         if (conceptualize) {
             Concept n2a = n2.conceptualize(a);
-            assertNotNull(n2a, () -> a + " should conceptualize");
+            assertNotNull(n2a, new Supplier<String>() {
+                @Override
+                public String get() {
+                    return a + " should conceptualize";
+                }
+            });
             assertNotNull(b);
             assertEquals(n2a.toString(), b.toString());
             assertEquals(n2a.hashCode(), b.hashCode());
@@ -448,7 +539,12 @@ public class TermTestMisc {
 
         assertNotEquals(ta, tb);
         assertNotEquals(ta.hashCode(),
-                tb.hashCode(), () -> ta + " vs. " + tb);
+                tb.hashCode(), new Supplier<String>() {
+                    @Override
+                    public String get() {
+                        return ta + " vs. " + tb;
+                    }
+                });
 
 
     }
@@ -468,7 +564,12 @@ public class TermTestMisc {
     void testHashDistribution() {
         int ah = new UniSubterm($.the("x")).hashCode();
         int bh = new UniSubterm($.the("y")).hashCode();
-        assertTrue(Math.abs(ah - bh) > 1, () -> ah + " vs " + bh);
+        assertTrue(Math.abs(ah - bh) > 1, new Supplier<String>() {
+            @Override
+            public String get() {
+                return ah + " vs " + bh;
+            }
+        });
     }
 
     @Test
@@ -540,7 +641,12 @@ public class TermTestMisc {
             NAR t = NARS.shell();
             t.believe(x);
 
-            fail(() -> x + " should not have been allowed as a task content");
+            fail(new Supplier<String>() {
+                @Override
+                public String get() {
+                    return x + " should not have been allowed as a task content";
+                }
+            });
 
 
         } catch (Exception e) {
@@ -550,7 +656,12 @@ public class TermTestMisc {
 
 
     public static void assertValidTermValidConceptInvalidTaskContent(String o) {
-        assertThrows(TaskException.class, () -> NARS.shell().input(o));
+        assertThrows(TaskException.class, new Executable() {
+            @Override
+            public void execute() throws Throwable {
+                NARS.shell().input(o);
+            }
+        });
     }
 
 
@@ -617,7 +728,12 @@ public class TermTestMisc {
 
 
     static void assertInvalid(@NotNull String o) {
-        assertThrows(TermException.class, () -> $(o));
+        assertThrows(TermException.class, new Executable() {
+            @Override
+            public void execute() throws Throwable {
+                $(o);
+            }
+        });
     }
 
     @Test
@@ -627,7 +743,12 @@ public class TermTestMisc {
             Term a = x.subPath((byte) 0, (byte) 0);
             Term b = x.subPath((byte) 1, (byte) 0);
             assertNotEquals(a, x.subPath((byte) 0, (byte) 1));
-            assertEquals(a, b, () -> x + " subterms (0,0)==(1,0)");
+            assertEquals(a, b, new Supplier<String>() {
+                @Override
+                public String get() {
+                    return x + " subterms (0,0)==(1,0)";
+                }
+            });
             assertSame(a, b);
         }
     }

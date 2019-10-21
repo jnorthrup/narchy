@@ -36,13 +36,16 @@ public class CharConvertor implements ToValueConvertor {
     /* (non-javadoc)
      * @see org.gocha.text.simpletypes.ToStringConvertor#convertToString
      */
-    public static final Function<Object,String> toString = srcData -> {
-        if (srcData == null) {
-            throw new IllegalArgumentException("srcData == null");
+    public static final Function<Object,String> toString = new Function<Object, String>() {
+        @Override
+        public String apply(Object srcData) {
+            if (srcData == null) {
+                throw new IllegalArgumentException("srcData == null");
+            }
+            String c = srcData.toString();
+            if (!c.isEmpty()) return String.valueOf(c.charAt(0));
+            return null;
         }
-        String c = srcData.toString();
-        if (!c.isEmpty()) return String.valueOf(c.charAt(0));
-        return null;
     };
 
     /* (non-javadoc)

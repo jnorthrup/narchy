@@ -4,6 +4,9 @@ import com.google.common.base.Joiner;
 import nars.NAL;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.function.Function;
+import java.util.stream.Stream;
+
 /**
  * Created by me on 10/30/16.
  */
@@ -25,7 +28,12 @@ public class SoftException extends RuntimeException {
     public final synchronized Throwable fillInStackTrace() {
         if (NAL.DEBUG) {
             stack = StackWalker.getInstance().walk(
-                s -> s.skip(5L).limit((long) depth).toArray(StackWalker.StackFrame[]::new)
+                    new Function<Stream<StackWalker.StackFrame>, StackWalker.StackFrame[]>() {
+                        @Override
+                        public StackWalker.StackFrame[] apply(Stream<StackWalker.StackFrame> s) {
+                            return s.skip(5L).limit((long) depth).toArray(StackWalker.StackFrame[]::new);
+                        }
+                    }
             );
         }
         return this;

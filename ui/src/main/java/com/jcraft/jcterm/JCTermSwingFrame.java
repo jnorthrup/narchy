@@ -584,7 +584,12 @@ public class JCTermSwingFrame extends JFrame implements ActionListener, Runnable
         m.add(mi);
 
         JMenu mcolor = new JMenu("Color");
-        ActionListener mcolor_action = e -> setFgBg(e.getActionCommand());
+        ActionListener mcolor_action = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JCTermSwingFrame.this.setFgBg(e.getActionCommand());
+            }
+        };
         mcolor.addMenuListener(new MenuListener() {
             public void menuSelected(MenuEvent me) {
                 JMenu jm = (JMenu) me.getSource();
@@ -611,11 +616,14 @@ public class JCTermSwingFrame extends JFrame implements ActionListener, Runnable
         m.add(mcolor);
 
         JMenu mfsize = new JMenu("Font size");
-        ActionListener mfsize_action = e -> {
-            String _font_size = e.getActionCommand();
-            try {
-                setFontSize(Integer.parseInt(_font_size));
-            } catch (NumberFormatException nfe) {
+        ActionListener mfsize_action = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String _font_size = e.getActionCommand();
+                try {
+                    JCTermSwingFrame.this.setFontSize(Integer.parseInt(_font_size));
+                } catch (NumberFormatException nfe) {
+                }
             }
         };
         mfsize.addMenuListener(new MenuListener() {

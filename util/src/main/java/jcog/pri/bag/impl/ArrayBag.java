@@ -16,6 +16,7 @@ import jcog.pri.op.PriReturn;
 import jcog.signal.wave1d.ArrayHistogram;
 import jcog.sort.SortedArray;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
+import org.eclipse.collections.api.block.function.primitive.IntToObjectFunction;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -120,8 +121,18 @@ public abstract class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
         else {
             Object[] x = items();
             return ArrayIterator.stream(x).filter(Objects::nonNull)
-                    .map(o -> (Y) o)
-                    .filter(y -> !y.isDeleted());
+                    .map(new Function<Object, Y>() {
+                        @Override
+                        public Y apply(Object o) {
+                            return (Y) o;
+                        }
+                    })
+                    .filter(new Predicate<Y>() {
+                        @Override
+                        public boolean test(Y y) {
+                            return !y.isDeleted();
+                        }
+                    });
         }
     }
 
@@ -984,7 +995,12 @@ public abstract class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
                 if (toRemove > 0) {
 
                     Consumer<Y> each = popped != null ?
-                            e -> popped.accept(removeFromMap(e))
+                            new Consumer<Y>() {
+                                @Override
+                                public void accept(Y e) {
+                                    popped.accept(ArrayBag.this.removeFromMap(e));
+                                }
+                            }
                             :
                             ArrayBag.this::removeFromMap;
 
@@ -1054,7 +1070,12 @@ public abstract class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
         if (s > 0) {
             Y[] ii = table.items.items;
             int c = Math.min(s, ii.length);
-            Bag.forEach(i -> ii[i], c, max, action);
+            Bag.forEach(new IntToObjectFunction<Y>() {
+                @Override
+                public Y valueOf(int i) {
+                    return ii[i];
+                }
+            }, c, max, action);
         }
     }
 

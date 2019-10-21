@@ -59,9 +59,12 @@ public class Thermostat {
     }
 
     static Consumer<Thermostat> change(boolean isHot, boolean shouldHot) {
-        return x -> {
-            x.is(isHot ? hot : cold);
-            x.should(shouldHot ? hot : cold);
+        return new Consumer<Thermostat>() {
+            @Override
+            public void accept(Thermostat x) {
+                x.is(isHot ? hot : cold);
+                x.should(shouldHot ? hot : cold);
+            }
         };
     }
 }

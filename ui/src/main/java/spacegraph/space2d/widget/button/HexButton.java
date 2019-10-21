@@ -3,6 +3,7 @@ package spacegraph.space2d.widget.button;
 import com.jogamp.opengl.GL2;
 import jcog.Util;
 import jcog.tree.rtree.rect.RectFloat;
+import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 import spacegraph.video.Draw;
 import spacegraph.video.ImageTexture;
 
@@ -22,7 +23,12 @@ public class HexButton extends PushButton {
         //copied from: Widget.java paintWidget
         float dim = 1f - (dz /* + if disabled, dim further */) / 3f;
         float bri = 0.25f * dim;
-        color.set( rgb-> Util.or(rgb,bri,pri/ 4.0F), gl);
+        color.set(new FloatToFloatFunction() {
+            @Override
+            public float valueOf(float rgb) {
+                return Util.or(rgb, bri, pri / 4.0F);
+            }
+        }, gl);
 
         float rad =
                 Math.min(w(), h())/ 2.0F;

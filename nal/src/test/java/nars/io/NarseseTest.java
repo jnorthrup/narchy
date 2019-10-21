@@ -9,6 +9,7 @@ import nars.term.Compound;
 import nars.term.Term;
 import nars.truth.Truth;
 import org.jetbrains.annotations.NotNull;
+import org.junit.jupiter.api.function.Executable;
 
 import java.util.List;
 import java.util.function.Supplier;
@@ -26,7 +27,12 @@ public abstract class NarseseTest {
 
 
     static void testProductABC(@NotNull Compound p) {
-        assertEquals(3, p.subs(), () -> p + " should have 3 sub-terms");
+        assertEquals(3, p.subs(), new Supplier<String>() {
+            @Override
+            public String get() {
+                return p + " should have 3 sub-terms";
+            }
+        });
         assertEquals("a", p.sub(0).toString());
         assertEquals("b", p.sub(1).toString());
         assertEquals("c", p.sub(2).toString());
@@ -67,8 +73,11 @@ public abstract class NarseseTest {
 
     public static void assertInvalidTasks(@NotNull String... inputs) {
         for (String s : inputs) {
-            assertThrows(Exception.class, () -> {
-                Task e = task(s);
+            assertThrows(Exception.class, new Executable() {
+                @Override
+                public void execute() throws Throwable {
+                    Task e = task(s);
+                }
             });
         }
     }

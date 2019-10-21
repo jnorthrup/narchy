@@ -591,14 +591,19 @@ public enum OsmSpace  { ;
             float[] coord = vbuf.toArray();
             vbuf.clear();
             int myNextType = nextType;
-            dbuf.add((gl)->{
-                gl.glBegin(myNextType);
-                int ii = 0;
-                for (int i = 0; i < coord.length / 7; i++) {
-                    gl.glColor4fv(coord, ii); ii+=4;
-                    gl.glVertex3fv(coord, ii); ii+=3;
+            dbuf.add(new Consumer<GL2>() {
+                @Override
+                public void accept(GL2 gl) {
+                    gl.glBegin(myNextType);
+                    int ii = 0;
+                    for (int i = 0; i < coord.length / 7; i++) {
+                        gl.glColor4fv(coord, ii);
+                        ii += 4;
+                        gl.glVertex3fv(coord, ii);
+                        ii += 3;
+                    }
+                    gl.glEnd();
                 }
-                gl.glEnd();
             });
             //gl.glEnd();
         }
@@ -806,9 +811,12 @@ public enum OsmSpace  { ;
             if (draws.length == 1)
                 this.draw = draws[0];
             else {
-                this.draw = G ->{
-                    for (Consumer<GL2> d : draws)
-                        d.accept(G);
+                this.draw = new Consumer<GL2>() {
+                    @Override
+                    public void accept(GL2 G) {
+                        for (Consumer<GL2> d : draws)
+                            d.accept(G);
+                    }
                 };
             }
 

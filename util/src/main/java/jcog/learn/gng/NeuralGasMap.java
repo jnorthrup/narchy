@@ -5,6 +5,8 @@ import jcog.learn.Autoencoder;
 import jcog.learn.gng.impl.Centroid;
 import jcog.random.XorShift128PlusRandom;
 
+import java.util.function.Consumer;
+
 import static java.lang.System.arraycopy;
 
 /**
@@ -20,20 +22,20 @@ public class NeuralGasMap extends NeuralGasNet<NeuralGasMap.AECentroid> {
 
         enc.forget(0.001f);
 
-        forEachNode(n -> {
+        forEachNode(new Consumer<AECentroid>() {
+            @Override
+            public void accept(AECentroid n) {
 
-            if (n.center==null)
-                n.center = new float[outs];
+                if (n.center == null)
+                    n.center = new float[outs];
 
-            float[] x1 = Util.toFloat(n.getDataRef());
-            if (x1[0] == x1[0]) {
-                enc.put(x1, 0.02f, 0.001f, 0.0f, false, false, true);
-                arraycopy(enc.output(), 0, n.center, 0, outs);
-
-
+                float[] x1 = Util.toFloat(n.getDataRef());
+                if (x1[0] == x1[0]) {
+                    enc.put(x1, 0.02f, 0.001f, 0.0f, false, false, true);
+                    arraycopy(enc.output(), 0, n.center, 0, outs);
 
 
-                
+                }
             }
         });
     }

@@ -53,9 +53,12 @@ public interface TaskTable {
             forEachTask(x);
         } else {
             assert(minT!=TIMELESS);
-            forEachTask(t -> {
-                if (t.intersectsRaw(minT, maxT))
-                    x.accept(t);
+            forEachTask(new Consumer<Task>() {
+                @Override
+                public void accept(Task t) {
+                    if (t.intersectsRaw(minT, maxT))
+                        x.accept(t);
+                }
             });
         }
     }

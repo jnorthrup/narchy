@@ -21,6 +21,7 @@ import javax.xml.namespace.QName;
 import java.io.*;
 import java.util.Set;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -103,19 +104,22 @@ public abstract class NQuadsRDF {
 
     public static Stream<Task> stream(@NotNull NAR nar, @NotNull Stream<Node[]> nxp) {
 
-        return nxp.map(nx -> {
-            if (nx.length >= 3) {
-                
+        return nxp.map(new Function<Node[], Task>() {
+            @Override
+            public Task apply(Node[] nx) {
+                if (nx.length >= 3) {
 
-                return inputNALlike(
-                        nar,
-                        resource(nx[0]),
-                        resource(nx[1]),
-                        resource(nx[2])
-                );
 
+                    return inputNALlike(
+                            nar,
+                            resource(nx[0]),
+                            resource(nx[1]),
+                            resource(nx[2])
+                    );
+
+                }
+                return null;
             }
-            return null;
         }).filter(Objects::nonNull);
     }
 

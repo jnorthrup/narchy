@@ -7,6 +7,7 @@ import nars.Task;
 import nars.control.op.Remember;
 import nars.task.util.Answer;
 
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -36,9 +37,12 @@ public class MRUMapQuestionTable extends MRUMap<Task, Task> implements QuestionT
     public void remember(/*@NotNull*/ Remember r) {
         Task t = r.input;
         synchronized (this) {
-            Task u = merge(t, t, (prev, next) -> {
-                r.merge(prev);
-                return next;
+            Task u = merge(t, t, new BiFunction<Task, Task, Task>() {
+                @Override
+                public Task apply(Task prev, Task next) {
+                    r.merge(prev);
+                    return next;
+                }
             });
         }
 

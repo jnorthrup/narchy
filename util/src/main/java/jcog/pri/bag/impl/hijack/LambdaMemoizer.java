@@ -36,17 +36,25 @@ public class LambdaMemoizer {
 
             int methodID = serial.getAndIncrement();
 
-            Function<ArgKey, V> compute = x -> {
-                try {
-                    return (V)(h.invoke(x.args));
-                } catch (Throwable throwable) {
-                    throw new RuntimeException(throwable);
+            Function<ArgKey, V> compute = new Function<ArgKey, V>() {
+                @Override
+                public V apply(ArgKey x) {
+                    try {
+                        return (V) (h.invoke(x.args));
+                    } catch (Throwable throwable) {
+                        throw new RuntimeException(throwable);
+                    }
                 }
             };
 
             Memoize<ArgKey, V> memoizedCalls = m.apply(compute);
 
-            return args -> memoizedCalls.apply(new ArgKey(methodID, args));
+            return new Function<Object[], V>() {
+                @Override
+                public V apply(Object[] args) {
+                    return memoizedCalls.apply(new ArgKey(methodID, args));
+                }
+            };
 
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);

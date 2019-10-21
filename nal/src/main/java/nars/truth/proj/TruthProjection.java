@@ -25,6 +25,7 @@ import nars.time.Tense;
 import nars.truth.MutableTruth;
 import nars.truth.Stamp;
 import nars.truth.Truth;
+import org.eclipse.collections.api.block.procedure.Procedure;
 import org.eclipse.collections.api.block.procedure.primitive.IntIntProcedure;
 import org.eclipse.collections.impl.list.mutable.primitive.LongArrayList;
 import org.jetbrains.annotations.Nullable;
@@ -645,7 +646,12 @@ public abstract class TruthProjection extends TaskList {
 		return indexOf(after,
 			evi != null ?
 				(IntPredicate) (this::valid) :
-				(IntPredicate) (i -> items[i] != null) /* first non-null */);
+				(IntPredicate) (new IntPredicate() {
+                    @Override
+                    public boolean test(int i) {
+                        return items[i] != null;
+                    }
+                }) /* first non-null */);
 	}
 
 
@@ -1026,7 +1032,12 @@ public abstract class TruthProjection extends TaskList {
 
 
 	public void print() {
-		forEach(t -> System.out.println(t.proof()));
+		forEach(new Procedure<Task>() {
+            @Override
+            public void value(Task t) {
+                System.out.println(t.proof());
+            }
+        });
 	}
 
 	public final long start() {
@@ -1191,7 +1202,12 @@ public abstract class TruthProjection extends TaskList {
 				only :
 				SpecialTruthAndOccurrenceTask.the(only, tt, start, end);
 		} else {
-			return merge(this::arrayCommit, term, tt, () -> stampSample(STAMP_CAPACITY, n.random()), beliefOrGoal, start, end, n);
+			return merge(this::arrayCommit, term, tt, new Supplier<long[]>() {
+                @Override
+                public long[] get() {
+                    return TruthProjection.this.stampSample(STAMP_CAPACITY, n.random());
+                }
+            }, beliefOrGoal, start, end, n);
 		}
 	}
 

@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.function.BiConsumer;
 
 /**
  * Java port of tss.js -- Tiny Speech Synthesizer in JavaScript
@@ -105,7 +106,12 @@ public class TinySpeech {
         g_phonemes_json = g;
 
         ByteObjectHashMap gg = new ByteObjectHashMap(g_phonemes_json.size());
-        g_phonemes_json.forEach((c, p)-> gg.put((byte) ((String)c).charAt(0), new Phoneme((Map)p)));
+        g_phonemes_json.forEach(new BiConsumer() {
+            @Override
+            public void accept(Object c, Object p) {
+                gg.put((byte) ((String) c).charAt(0), new Phoneme((Map) p));
+            }
+        });
         g_phonemes = gg.toImmutable();
     }
 

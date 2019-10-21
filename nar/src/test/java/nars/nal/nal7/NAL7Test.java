@@ -1,20 +1,21 @@
 package nars.nal.nal7;
 
-import nars.$;
-import nars.NAR;
-import nars.NARS;
-import nars.Narsese;
+import nars.*;
 import nars.task.TaskTest;
 import nars.term.Term;
 import nars.test.NALTest;
 import nars.test.TestNAR;
 import nars.time.Tense;
+import org.eclipse.collections.api.block.predicate.primitive.LongLongPredicate;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+
+import java.util.function.LongPredicate;
+import java.util.function.Predicate;
 
 import static nars.$.$;
 import static nars.Op.*;
@@ -57,7 +58,12 @@ public class NAL7Test extends NALTest {
                 .mustBelieve(cycles, "((--,x:after) ==>-1 x:before)", 1.00f, 0.45f /*inductionConf*/, 1)
                 .mustBelieve(cycles, "(x:before &&+1 (--,x:after))", 1.00f, 0.81f /*intersectionConf*/, 0)
                 .mustNotOutput(cycles, "(x:before &&-1 (--,x:after))", BELIEF,
-                        (t -> t == 0 || t == 1));
+                        (new LongPredicate() {
+                            @Override
+                            public boolean test(long t) {
+                                return t == 0 || t == 1;
+                            }
+                        }));
     }
 
     @Test
@@ -95,7 +101,12 @@ public class NAL7Test extends NALTest {
 
         test.nar.believe("<gull <-> swan>", 1f, 0.9f, 0, 1);
         test.nar.believe("<swan --> swimmer>", 1f, 0.9f, 4, 5);
-        test.mustBelieve(cycles, "<gull --> swimmer>", 1.0f, /*<*/0.45f, (s, e) -> s == 4 && e == 5);
+        test.mustBelieve(cycles, "<gull --> swimmer>", 1.0f, /*<*/0.45f, new LongLongPredicate() {
+            @Override
+            public boolean accept(long s, long e) {
+                return s == 4 && e == 5;
+            }
+        });
     }
 
     @Test
@@ -126,7 +137,12 @@ public class NAL7Test extends NALTest {
                 .mustBelieve(cycles, "a", 1.00f, 0.81f, 1)
                 .mustBelieve(cycles, "b", 1.00f, 0.81f, 6)
 
-                .mustNotOutput(cycles, "((a&&b) &&+5 (b && #1))", BELIEF, t -> true)
+                .mustNotOutput(cycles, "((a&&b) &&+5 (b && #1))", BELIEF, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return true;
+                    }
+                })
         ;
     }
 
@@ -171,7 +187,12 @@ public class NAL7Test extends NALTest {
         test
                 .inputAt(1, "(a &&+1 b)! :|:")
                 .mustGoal(cycles, "a", 1.00f, 0.81f, 1)
-                .mustNotOutput(cycles, "b", GOAL, t -> true)
+                .mustNotOutput(cycles, "b", GOAL, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return true;
+                    }
+                })
         ;
     }
 
@@ -191,21 +212,81 @@ public class NAL7Test extends NALTest {
                 .termVolMax(5)
                 .confMin(0.5f)
                 .inputAt(1, "a. |")
-                .mustNotOutput(cycles, "a", BELIEF, (t) -> t != 1)
+                .mustNotOutput(cycles, "a", BELIEF, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return t != 1;
+                    }
+                })
                 .inputAt(5, "b. |")
-                .mustNotOutput(cycles, "b", BELIEF, (t) -> t != 5)
+                .mustNotOutput(cycles, "b", BELIEF, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return t != 5;
+                    }
+                })
                 .inputAt(10, "c. |")
-                .mustNotOutput(cycles, "c", BELIEF, (t) -> t != 10)
-                .mustBelieve(cycles * 2, "(a &&+9 c)", 1.00f, 0.81f, (t) -> t == 1)
-                .mustNotOutput(cycles * 2, "(a &&+9 c)", BELIEF, 0, 1.00f, 0, 1, (t) -> t != 1)
-                .mustBelieve(cycles * 2, "((a &&+4 b) &&+5 c)", 1.00f, 0.73f, (t) -> t == 1)
-                .mustNotOutput(cycles * 2, "((a &&+4 b) &&+5 c)", BELIEF, (t) -> t != 1)
-                .mustBelieve(cycles, "(b &&+5 c)", 1.00f, 0.81f, (t) -> t == 5)
-                .mustNotOutput(cycles, "(b &&+5 c)", BELIEF, (t) -> t != 5)
-                .mustBelieve(cycles, "(a &&+4 b)", 1.00f, 0.81f, (t) -> t == 1)
-                .mustNotOutput(cycles, "(a &&+4 b)", BELIEF, (t) -> t != 1)
+                .mustNotOutput(cycles, "c", BELIEF, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return t != 10;
+                    }
+                })
+                .mustBelieve(cycles * 2, "(a &&+9 c)", 1.00f, 0.81f, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return t == 1;
+                    }
+                })
+                .mustNotOutput(cycles * 2, "(a &&+9 c)", BELIEF, 0, 1.00f, 0, 1, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return t != 1;
+                    }
+                })
+                .mustBelieve(cycles * 2, "((a &&+4 b) &&+5 c)", 1.00f, 0.73f, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return t == 1;
+                    }
+                })
+                .mustNotOutput(cycles * 2, "((a &&+4 b) &&+5 c)", BELIEF, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return t != 1;
+                    }
+                })
+                .mustBelieve(cycles, "(b &&+5 c)", 1.00f, 0.81f, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return t == 5;
+                    }
+                })
+                .mustNotOutput(cycles, "(b &&+5 c)", BELIEF, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return t != 5;
+                    }
+                })
+                .mustBelieve(cycles, "(a &&+4 b)", 1.00f, 0.81f, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return t == 1;
+                    }
+                })
+                .mustNotOutput(cycles, "(a &&+4 b)", BELIEF, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return t != 1;
+                    }
+                })
                 .mustNot(BELIEF,
-                        t -> !t.hasVars() && (t.start() < 0 || t.start() > 10 || t.end() < 0 || t.end() > 10));
+                        new Predicate<Task>() {
+                            @Override
+                            public boolean test(Task t) {
+                                return !t.hasVars() && (t.start() < 0 || t.start() > 10 || t.end() < 0 || t.end() > 10);
+                            }
+                        });
         ;
     }
 
@@ -233,10 +314,30 @@ public class NAL7Test extends NALTest {
                 .mustBelieve(cycles, "x", 1, 0.73f, 1)
                 .mustBelieve(cycles, "y", 1, 0.73f, 2)
 //                .must(BELIEF, x -> x.start() >= 1 && x.end() <= 3)
-                .mustNotOutput(cycles, "(x &&+1 y)", BELIEF, (t) -> t != 1)
-                .mustNotOutput(cycles, "x", BELIEF, (t) -> t != 1)
-                .mustNotOutput(cycles, "y", BELIEF, (t) -> t != 2)
-                .mustNotOutput(cycles, "z", BELIEF, (t) -> t != 3)
+                .mustNotOutput(cycles, "(x &&+1 y)", BELIEF, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return t != 1;
+                    }
+                })
+                .mustNotOutput(cycles, "x", BELIEF, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return t != 1;
+                    }
+                })
+                .mustNotOutput(cycles, "y", BELIEF, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return t != 2;
+                    }
+                })
+                .mustNotOutput(cycles, "z", BELIEF, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return t != 3;
+                    }
+                })
         ;
     }
 
@@ -267,7 +368,12 @@ public class NAL7Test extends NALTest {
         test
                 .inputAt(1, "((happy &&+4120 i) &&+1232 --i). :|:")
                 .mustBelieve(cycles, "(happy &&+4120 i)", 1f, 0.81f, 1)
-                .mustNotOutput(cycles, "(happy &&+4120 i)", BELIEF, t -> t != 1)
+                .mustNotOutput(cycles, "(happy &&+4120 i)", BELIEF, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return t != 1;
+                    }
+                })
                 .mustNotOutput(cycles, "(i && happy)", BELIEF, 1)
         ;
     }
@@ -335,8 +441,18 @@ public class NAL7Test extends NALTest {
                 .inputAt(6, "(b &&+5 c). :|: %1.0;0.66%")
                 .inputAt(6, "(b &&+5 c). :|: %1.0;0.90%")
 
-                .mustNotOutput(cycles, "((b &&+5 c) &&+5 (b &&+5 c))", BELIEF, x -> true)
-                .mustNotOutput(cycles, "((b &&+5 c) &&+5 b)", BELIEF, x -> true);
+                .mustNotOutput(cycles, "((b &&+5 c) &&+5 (b &&+5 c))", BELIEF, new LongPredicate() {
+                    @Override
+                    public boolean test(long x) {
+                        return true;
+                    }
+                })
+                .mustNotOutput(cycles, "((b &&+5 c) &&+5 b)", BELIEF, new LongPredicate() {
+                    @Override
+                    public boolean test(long x) {
+                        return true;
+                    }
+                });
 
     }
 
@@ -566,8 +682,18 @@ public class NAL7Test extends NALTest {
                     .inputAt(1, "--a. :|:")
                     .inputAt(2, "--b. :|:")
                     .mustBelieve(cycles, "(--a &&+1 --b)", 1.00f, 0.81f, 1)
-                    .mustBelieve(cycles, "(--a ==>+1 b)", 0.00f, 0.45f, t -> t == 1)
-                    .mustBelieve(cycles, "(--b ==>-1 a)", 0.00f, 0.45f, t -> t == 2);
+                    .mustBelieve(cycles, "(--a ==>+1 b)", 0.00f, 0.45f, new LongPredicate() {
+                        @Override
+                        public boolean test(long t) {
+                            return t == 1;
+                        }
+                    })
+                    .mustBelieve(cycles, "(--b ==>-1 a)", 0.00f, 0.45f, new LongPredicate() {
+                        @Override
+                        public boolean test(long t) {
+                            return t == 2;
+                        }
+                    });
         }
 
 
@@ -581,7 +707,12 @@ public class NAL7Test extends NALTest {
                         1.00f, 0.81f, 0
                 )
                 .mustNotOutput(cycles,
-                        "(enter(#1,room) &&+2 open(#1,door))", BELIEF, (t) -> true
+                        "(enter(#1,room) &&+2 open(#1,door))", BELIEF, new LongPredicate() {
+                            @Override
+                            public boolean test(long t) {
+                                return true;
+                            }
+                        }
                 )
         ;
     }
@@ -882,7 +1013,12 @@ public class NAL7Test extends NALTest {
                 .input("a:x.")
                 .input("a:y. |")
                 .mustBelieve(cycles, "(a:x ==> a:y)", 1f, 0.45f, 0)
-                .mustNotOutput(cycles, "(a:x ==> a:y)", BELIEF, 0f, 1, 0f, 1, (t) -> t!=0);
+                .mustNotOutput(cycles, "(a:x ==> a:y)", BELIEF, 0f, 1, 0f, 1, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return t != 0;
+                    }
+                });
     }
 
     @Test
@@ -946,9 +1082,24 @@ public class NAL7Test extends NALTest {
 
         test
                 .input("(z &&+1 (x &&+1 y)). :|:")
-                .mustBelieve(cycles, "(x &&+1 y)", 1f, 0.81f, t -> t == 1)
-                .mustBelieve(cycles, "(z &&+2 y)", 1f, 0.81f, t -> t == 0)
-                .mustBelieve(cycles, "(z &&+1 x)", 1f, 0.81f, t -> t == 0);
+                .mustBelieve(cycles, "(x &&+1 y)", 1f, 0.81f, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return t == 1;
+                    }
+                })
+                .mustBelieve(cycles, "(z &&+2 y)", 1f, 0.81f, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return t == 0;
+                    }
+                })
+                .mustBelieve(cycles, "(z &&+1 x)", 1f, 0.81f, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return t == 0;
+                    }
+                });
     }
 
     @Test
@@ -1032,7 +1183,12 @@ public class NAL7Test extends NALTest {
                 .mustBelieve(cycles, "(x && y)", 1f, 0.81f, 3)
                 .mustBelieve(cycles, "(y && z)", 1f, 0.81f, 3)
                 .mustBelieve(cycles, "(x && z)", 1f, 0.81f, 3)
-                .mustNotOutput(cycles, "(x && z)", BELIEF, t -> t != 3);
+                .mustNotOutput(cycles, "(x && z)", BELIEF, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return t != 3;
+                    }
+                });
 
     }
 
@@ -1057,7 +1213,12 @@ public class NAL7Test extends NALTest {
                 .inputAt(0, "(x --> a). :|:")
                 .inputAt(3, "(y --> a). :|:")
                 .mustNotOutput(cycles, "((x&y)-->a)", BELIEF,
-                        t -> !((t >= 0) && (t <= 3)))
+                        new LongPredicate() {
+                            @Override
+                            public boolean test(long t) {
+                                return !((t >= 0) && (t <= 3));
+                            }
+                        })
         ;
     }
 
@@ -1093,7 +1254,12 @@ public class NAL7Test extends NALTest {
 
         int xx = x;
         t.mustBelieve(x - 1, "y", 1f, 0.73f,
-                y -> y >= xx && y <= (xx + eventDT));
+                new LongPredicate() {
+                    @Override
+                    public boolean test(long y) {
+                        return y >= xx && y <= (xx + eventDT);
+                    }
+                });
     }
 
     @Test
@@ -1160,9 +1326,24 @@ public class NAL7Test extends NALTest {
                 .input("(x ==>+2 a). |")
                 .input("(y ==>+3 a). |")
                 .mustBelieve(cycles, "((y &&+1 x) ==>+2 a)", 1.00f, 0.81f, 0)
-                .mustNotOutput(cycles, "((x &&+1 y) ==>+2 a)", BELIEF, (t) -> t == 0 || t == ETERNAL)
-                .mustNotOutput(cycles, "((x && y) ==>+2 a)", BELIEF, (t) -> t == 0 || t == ETERNAL)
-                .mustNotOutput(cycles, "((x && y) ==>+3 a)", BELIEF, (t) -> t == 0 || t == ETERNAL);
+                .mustNotOutput(cycles, "((x &&+1 y) ==>+2 a)", BELIEF, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return t == 0 || t == ETERNAL;
+                    }
+                })
+                .mustNotOutput(cycles, "((x && y) ==>+2 a)", BELIEF, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return t == 0 || t == ETERNAL;
+                    }
+                })
+                .mustNotOutput(cycles, "((x && y) ==>+3 a)", BELIEF, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return t == 0 || t == ETERNAL;
+                    }
+                });
     }
 
     @Test
@@ -1173,9 +1354,24 @@ public class NAL7Test extends NALTest {
                 .input("(a ==>+2 x). |")
                 .input("(a ==>+3 y). |")
                 .mustBelieve(cycles, "(a ==>+2 (x &&+1 y))", 1.00f, 0.81f, 0)
-                .mustNotOutput(cycles, "(a ==>+2 (y &&+1 x))", BELIEF, (t) -> t == 0 || t == ETERNAL)
-                .mustNotOutput(cycles, "(a ==>+2 (x && y))", BELIEF, (t) -> t == 0 || t == ETERNAL)
-                .mustNotOutput(cycles, "(a ==>+3 (x && y))", BELIEF, (t) -> t == 0 || t == ETERNAL);
+                .mustNotOutput(cycles, "(a ==>+2 (y &&+1 x))", BELIEF, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return t == 0 || t == ETERNAL;
+                    }
+                })
+                .mustNotOutput(cycles, "(a ==>+2 (x && y))", BELIEF, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return t == 0 || t == ETERNAL;
+                    }
+                })
+                .mustNotOutput(cycles, "(a ==>+3 (x && y))", BELIEF, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return t == 0 || t == ETERNAL;
+                    }
+                });
     }
 
     @Test
@@ -1213,8 +1409,18 @@ public class NAL7Test extends NALTest {
                 .mustBelieve(cycles, "( y ==> x)", 1f, 0.81f)
 //                .mustQuestion(cycles, "( (x-y) ==>+5 z)")
 //                .mustQuestion(cycles, "( (y-x) ==>+5 z)")
-                .mustNotOutput(cycles, "( (x && y) ==> z)", BELIEF, 0, 1f, 0, 0.81f, t -> true)
-                .mustNotOutput(cycles, "( (x && y) ==> z)", BELIEF, 0, 1f, 0, 0.81f, t -> true)
+                .mustNotOutput(cycles, "( (x && y) ==> z)", BELIEF, 0, 1f, 0, 0.81f, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return true;
+                    }
+                })
+                .mustNotOutput(cycles, "( (x && y) ==> z)", BELIEF, 0, 1f, 0, 0.81f, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return true;
+                    }
+                })
         //.mustBelieve(cycles, "( --(--x &| --y) ==>+5 z)", 1f, 0.81f)
         ;
     }
@@ -1228,8 +1434,18 @@ public class NAL7Test extends NALTest {
                 .believe("(z ==>+5 y)")
                 .mustBelieve(cycles, "( z ==>+5 (x && y))", 1f, 0.81f)
 //                .mustBelieve(cycles, "( z ==>+5 --(--x &| --y))", 1f, 0.81f)
-                .mustNotOutput(cycles, "( z ==> x )", BELIEF, t -> true) //lost timing
-                .mustNotOutput(cycles, "( z ==> y )", BELIEF, t -> true) //lost timing
+                .mustNotOutput(cycles, "( z ==> x )", BELIEF, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return true;
+                    }
+                }) //lost timing
+                .mustNotOutput(cycles, "( z ==> y )", BELIEF, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return true;
+                    }
+                }) //lost timing
         ;
     }
 
@@ -1311,7 +1527,12 @@ public class NAL7Test extends NALTest {
                 .inputAt(1, "((a-->b) &&+4 (c-->d)). :|:")
                 .inputAt(10, "(d-->e). :|:")
                 .mustBelieve(cycles, "(((a-->b) &&+4 (c-->#1)) &&+5 (#1-->e))", 1f, 0.81f, 1)
-                .mustNotOutput(cycles, "(((a-->b) &&+4 (c-->#1)) &&+9 (#1-->e))", BELIEF, t -> t == ETERNAL || t == 1);
+                .mustNotOutput(cycles, "(((a-->b) &&+4 (c-->#1)) &&+9 (#1-->e))", BELIEF, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return t == ETERNAL || t == 1;
+                    }
+                });
 
     }
 
@@ -1345,7 +1566,12 @@ public class NAL7Test extends NALTest {
             .mustBelieveAtOnly(cycles, "(a &&+4 c)", 1f, 0.81f, 1)
             .mustBelieveAtOnly(cycles, "(b &&+2 c)", 1f, 0.81f, 3)
             .mustBelieveAtOnly(cycles, "((a &&+2 b) &&+2 c)", 1f, 0.81f, 1)
-            .mustNotBelieve(cycles, "(b &&+3 (a &&+4 c))",  (t,e) -> t == 1 || t == ETERNAL);
+            .mustNotBelieve(cycles, "(b &&+3 (a &&+4 c))", new LongLongPredicate() {
+                @Override
+                public boolean accept(long t, long e) {
+                    return t == 1 || t == ETERNAL;
+                }
+            });
     }
 
     @Test
@@ -1393,7 +1619,12 @@ public class NAL7Test extends NALTest {
                 .mustBelieve(cycles,
                         "(((--,(a &&+3 (--,c))) &&+3 b) &&+1 (e))",
                         1f, 0.81f, 1)
-                .mustNotOutput(cycles, "(((--,(a &&+3 (--,c))) &&+3 b) &&+4 (e))", BELIEF, t -> t == ETERNAL || t == 1);
+                .mustNotOutput(cycles, "(((--,(a &&+3 (--,c))) &&+3 b) &&+4 (e))", BELIEF, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return t == ETERNAL || t == 1;
+                    }
+                });
 
     }
 
@@ -1409,7 +1640,12 @@ public class NAL7Test extends NALTest {
                 .input("(((a-->b) &&+1 (b-->c)) &&+1 (d-->e)). :|:")
                 .input("((a-->b) &&+1 (b-->c)). :|:")
                 .mustBelieve(cycles, "(d-->e)", 1f, 0.73f, 2)
-                .mustNotOutput(cycles, "d", BELIEF, 0, 1, 0, 1, t -> true)
+                .mustNotOutput(cycles, "d", BELIEF, 0, 1, 0, 1, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return true;
+                    }
+                })
         ;
     }
 
@@ -1417,7 +1653,12 @@ public class NAL7Test extends NALTest {
     void testDecomposeTaskDontDecomposeNonEvent() {
         test
                 .input("((a-->b) &&+1 (b-->c)). |")
-                .mustNotOutput(cycles, "d", BELIEF, 0, 1, 0, 1, t -> true)
+                .mustNotOutput(cycles, "d", BELIEF, 0, 1, 0, 1, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return true;
+                    }
+                })
         ;
     }
 
@@ -1426,7 +1667,12 @@ public class NAL7Test extends NALTest {
 
         test
                 .input("((a-->b) &&+1 (b-->c)). | %0.25%")
-                .mustNotOutput(cycles, "d", BELIEF, 0, 1, 0, 1, t -> true)
+                .mustNotOutput(cycles, "d", BELIEF, 0, 1, 0, 1, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return true;
+                    }
+                })
         ;
     }
 
@@ -1448,7 +1694,12 @@ public class NAL7Test extends NALTest {
 
                 .mustBelieve(cycles, "(($1-->[heated]) ==>+20 ($1-->[hardened]))", 1f, 0.73f, ETERNAL)
                 .mustNotOutput(cycles, "(($1-->[heated]) ==>-20 ($1-->[hardened]))", BELIEF,
-                        (t -> t == ETERNAL || t == 10 || t == 20 || t == 0));
+                        (new LongPredicate() {
+                            @Override
+                            public boolean test(long t) {
+                                return t == ETERNAL || t == 10 || t == 20 || t == 0;
+                            }
+                        }));
     }
 
     @Test
@@ -1516,9 +1767,19 @@ public class NAL7Test extends NALTest {
         test.termVolMax(7);
         test.inputAt(1, "(x &&+5 y). |");
         test.inputAt(1, "((x &&+5 y)==>(b &&+5 c)). |");
-        test.mustBelieve(cycles, "(b &&+5 c)", 1.00f, 0.45f, (t) -> t == 6);
+        test.mustBelieve(cycles, "(b &&+5 c)", 1.00f, 0.45f, new LongPredicate() {
+            @Override
+            public boolean test(long t) {
+                return t == 6;
+            }
+        });
         test.mustNotOutput(cycles, "(b &&+5 c)", BELIEF, 0f, 1f, 0.5f, 1f,
-                (t) -> t != 6);
+                new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return t != 6;
+                    }
+                });
     }
 
     @Test
@@ -1527,7 +1788,12 @@ public class NAL7Test extends NALTest {
         test.nar.termVolMax.set(12);
         test.inputAt(1, "(a &&+5 (--,a)). |");
         test.inputAt(1, "((a &&+5 (--,a))==>(b &&+3 (--,b))). |");
-        test.mustBelieve(cycles, "(b &&+3 --b)", 1.00f, 0.45f, (t) -> t == 6);
+        test.mustBelieve(cycles, "(b &&+3 --b)", 1.00f, 0.45f, new LongPredicate() {
+            @Override
+            public boolean test(long t) {
+                return t == 6;
+            }
+        });
 //        test.mustNotOutput(cycles , "(b &&+3 --b)", BELIEF, 0f, 1f, 0f, 1f,
 //                (t) -> t!=6);
     }
@@ -1557,7 +1823,17 @@ public class NAL7Test extends NALTest {
         test
                 .inputAt(1, "(a-->c). |")
                 .inputAt(2, "(($1-->c) ==> ((a-->$1) &&+4 (c-->d))). |")
-                .mustBelieve(cycles, "(c-->d)", 1f, 0.5f, t -> t == 5)
-                .mustNotOutput(cycles, "(c-->d)", BELIEF, 0f, 1f, 0f, 1f, t -> t < 2);
+                .mustBelieve(cycles, "(c-->d)", 1f, 0.5f, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return t == 5;
+                    }
+                })
+                .mustNotOutput(cycles, "(c-->d)", BELIEF, 0f, 1f, 0f, 1f, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return t < 2;
+                    }
+                });
     }
 }

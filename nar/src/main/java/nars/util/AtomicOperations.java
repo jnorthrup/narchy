@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
+import java.util.function.UnaryOperator;
 
 /**
  * debounced and atomically/asynchronously executable operation
@@ -153,7 +154,12 @@ public class AtomicOperations implements BiFunction<Task, NAR, Task> {
     protected void enable(NAR n) {
         DurLoop d = onCycle.getOpaque();
         if (d == null) {
-            onCycle.updateAndGet((x)-> x == null ? n.onDur(this::update) : x);
+            onCycle.updateAndGet(new UnaryOperator<DurLoop>() {
+                @Override
+                public DurLoop apply(DurLoop x) {
+                    return x == null ? n.onDur(AtomicOperations.this::update) : x;
+                }
+            });
         } else {
             n.add(d);
         }

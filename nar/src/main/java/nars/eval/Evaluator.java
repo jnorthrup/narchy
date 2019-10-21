@@ -15,6 +15,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Comparator;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.UnaryOperator;
 
 import static nars.term.atom.IdempotentBool.Null;
 
@@ -52,38 +53,49 @@ public class Evaluator extends HeapTermTransform {
     }
 
     public @Nullable ArrayHashSet<Term> clauseFind(Compound x, ArrayHashSet<Term> clauses) {
-        x.recurseTerms(s -> s instanceof Compound && s.hasAll(Op.FuncBits), X -> {
-            if (Functor.isFunc(X)) {
+        x.recurseTerms(new Predicate<Term>() {
+            @Override
+            public boolean test(Term s) {
+                return s instanceof Compound && s.hasAll(Op.FuncBits);
+            }
+        }, new Predicate<Term>() {
+            @Override
+            public boolean test(Term X) {
+                if (Functor.isFunc(X)) {
 //                if (clauses.contains(X))
 //                    return true;
-                compoundBuilder.clear(); //true, compoundBuilder.sub.termCount() >= 64 /* HACK */);
+                    compoundBuilder.clear(); //true, compoundBuilder.sub.termCount() >= 64 /* HACK */);
 
-                compoundBuilder.volRemain = Integer.MAX_VALUE; //HACK
-                TermBuffer y = compoundBuilder.append(X);
-                int[] functors = {0};
-                y.updateMap(g -> {
-                    if (g instanceof Functor)
-                        functors[0]++;
-                    else if (g instanceof Atom) {
-                        Functor h = funcResolver.apply((Atom) g);
-                        if (h != null) {
-                            functors[0]++;
-                            return h;
+                    compoundBuilder.volRemain = Integer.MAX_VALUE; //HACK
+                    TermBuffer y = compoundBuilder.append(X);
+                    int[] functors = {0};
+                    y.updateMap(new UnaryOperator<Term>() {
+                        @Override
+                        public Term apply(Term g) {
+                            if (g instanceof Functor)
+                                functors[0]++;
+                            else if (g instanceof Atom) {
+                                Functor h = funcResolver.apply((Atom) g);
+                                if (h != null) {
+                                    functors[0]++;
+                                    return h;
+                                }
+                            }
+                            return g;
+                        }
+                    });
+
+                    if (functors[0] > 0) {
+
+                        Term yy = y.term();
+                        if (yy.sub(1) instanceof Functor) {
+                            clauses.add(yy);
                         }
                     }
-                    return g;
-                });
 
-                if (functors[0] > 0) {
-
-                    Term yy = y.term();
-                    if (yy.sub(1) instanceof Functor) {
-                        clauses.add(yy);
-                    }
                 }
-
+                return true;
             }
-            return true;
         }, null);
 
         switch (clauses.size()) {
@@ -99,18 +111,20 @@ public class Evaluator extends HeapTermTransform {
         return a;
     }
 
-    private static final Comparator<? super Term> complexitySort = (a,b)->{
+    private static final Comparator<? super Term> complexitySort = new Comparator<Term>() {
+        @Override
+        public int compare(Term a, Term b) {
 
-        int vol = Integer.compare(a.volume(), b.volume());
-        if (vol!=0)
-            return vol;
-        int vars = Integer.compare(a.vars(), b.vars());
-        if (vars!=0)
-            return vars;
+            int vol = Integer.compare(a.volume(), b.volume());
+            if (vol != 0)
+                return vol;
+            int vars = Integer.compare(a.vars(), b.vars());
+            if (vars != 0)
+                return vars;
 
 
-
-        return a.compareTo(b);
+            return a.compareTo(b);
+        }
     };
 
     @Override

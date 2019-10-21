@@ -3,6 +3,8 @@ package jcog.data.bit;
 import jcog.TODO;
 import jcog.data.atomic.MetalAtomicIntegerFieldUpdater;
 
+import java.util.function.IntBinaryOperator;
+
 /** atomic integer metal bitset, cap = 32 */
 public class AtomicMetalBitSet extends MetalBitSet {
 
@@ -40,14 +42,17 @@ public class AtomicMetalBitSet extends MetalBitSet {
     public boolean compareAndSet(int i, boolean expect, boolean set) {
         int mask = 1 << i;
         boolean[] got = {false};
-        X.accumulateAndGet(this, mask, (v,m)->{
-            if (((v & m) != 0)==expect) {
-                
-                got[0] = true;
-                return set ? v|m : v&(~m);
-            } else {
-                
-                return v;
+        X.accumulateAndGet(this, mask, new IntBinaryOperator() {
+            @Override
+            public int applyAsInt(int v, int m) {
+                if (((v & m) != 0) == expect) {
+
+                    got[0] = true;
+                    return set ? v | m : v & (~m);
+                } else {
+
+                    return v;
+                }
             }
         });
         return got[0];
@@ -57,14 +62,24 @@ public class AtomicMetalBitSet extends MetalBitSet {
     public void set(int i) {
         assert(i < 32);
         int mask = 1<<i;
-        X.accumulateAndGet(this, mask, (v,m)-> v|m);
+        X.accumulateAndGet(this, mask, new IntBinaryOperator() {
+            @Override
+            public int applyAsInt(int v, int m) {
+                return v | m;
+            }
+        });
         //X.getAndUpdate(this, v-> v|(mask) );
     }
 
     public boolean getAndSet(int i) {
         assert(i < 32);
         int mask = 1<<i;
-        return ((X.getAndAccumulate(this, mask, (v,m) -> v|m)) & mask) != 0;
+        return ((X.getAndAccumulate(this, mask, new IntBinaryOperator() {
+            @Override
+            public int applyAsInt(int v, int m) {
+                return v | m;
+            }
+        })) & mask) != 0;
         //return (X.getAndUpdate(this, v-> v|(mask) ) & mask) != 0;
     }
 
@@ -72,14 +87,24 @@ public class AtomicMetalBitSet extends MetalBitSet {
     public void clear(int i) {
         assert(i < 32);
         int antimask = ~(1<<i);
-        X.accumulateAndGet(this, antimask, (v,am)-> v&(am) );
+        X.accumulateAndGet(this, antimask, new IntBinaryOperator() {
+            @Override
+            public int applyAsInt(int v, int am) {
+                return v & (am);
+            }
+        });
     }
 
     public boolean getAndClear(int i) {
         assert(i < 32);
         int mask = (1<<i);
         int antimask = ~mask;
-        return (X.accumulateAndGet(this, antimask, (v,am)-> v&(am) ) & mask) != 0;
+        return (X.accumulateAndGet(this, antimask, new IntBinaryOperator() {
+            @Override
+            public int applyAsInt(int v, int am) {
+                return v & (am);
+            }
+        }) & mask) != 0;
     }
 
     @Override

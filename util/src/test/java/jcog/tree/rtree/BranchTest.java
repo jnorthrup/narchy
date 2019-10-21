@@ -23,6 +23,8 @@ package jcog.tree.rtree;
 import jcog.tree.rtree.rect.RectDouble;
 import org.junit.jupiter.api.Test;
 
+import java.util.function.Supplier;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -46,25 +48,45 @@ class BranchTest {
             while (i < 8) {
                 rTree.add(rects[i++]);
             }
-            assertEquals(0, rTree.stats().getBranchCount(), () -> "[" + type + "] Expected 0 branches at this time");
+            assertEquals(0, rTree.stats().getBranchCount(), new Supplier<String>() {
+                @Override
+                public String get() {
+                    return "[" + type + "] Expected 0 branches at this time";
+                }
+            });
 
             
             rTree.add(rects[i++]);
-            assertEquals(1, rTree.stats().getBranchCount(), () -> "[" + type + "] Expected 1 branch at this time");
+            assertEquals(1, rTree.stats().getBranchCount(), new Supplier<String>() {
+                @Override
+                public String get() {
+                    return "[" + type + "] Expected 1 branch at this time";
+                }
+            });
 
             
             while (i < 10) {
                 rTree.add(rects[i++]);
                 assertEquals(i, rTree.size());
             }
-            assertEquals(1, rTree.stats().getBranchCount(), () -> "[" + type + "] Expected 1 branch at this time:\n" + rTree.stats());
+            assertEquals(1, rTree.stats().getBranchCount(), new Supplier<String>() {
+                @Override
+                public String get() {
+                    return "[" + type + "] Expected 1 branch at this time:\n" + rTree.stats();
+                }
+            });
 
             
             while (i < 80) {
                 rTree.add(rects[i++]);
                 assertEquals(i, rTree.size());
             }
-            assertTrue(3 <= rTree.stats().getBranchCount(), () -> "[" + type + "] Expected branches at this time");
+            assertTrue(3 <= rTree.stats().getBranchCount(), new Supplier<String>() {
+                @Override
+                public String get() {
+                    return "[" + type + "] Expected branches at this time";
+                }
+            });
         }
     }
 }

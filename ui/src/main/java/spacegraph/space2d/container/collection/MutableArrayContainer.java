@@ -6,9 +6,7 @@ import spacegraph.space2d.Surfacelike;
 import spacegraph.space2d.widget.textedit.TextEdit;
 
 import java.util.Objects;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
+import java.util.function.*;
 import java.util.stream.IntStream;
 
 /** TODO support resizing */
@@ -138,7 +136,17 @@ public abstract class MutableArrayContainer<S extends Surface> extends AbstractM
 
     @Override
     public boolean whileEachReverse(Predicate<Surface> o) {
-        return IntStream.iterate(length - 1, i -> i >= 0, i -> i - 1).mapToObj(children::getFast).filter(Objects::nonNull).allMatch(o);
+        return IntStream.iterate(length - 1, new IntPredicate() {
+            @Override
+            public boolean test(int i) {
+                return i >= 0;
+            }
+        }, new IntUnaryOperator() {
+            @Override
+            public int applyAsInt(int i) {
+                return i - 1;
+            }
+        }).mapToObj(children::getFast).filter(Objects::nonNull).allMatch(o);
     }
     @Override
     public void add(Surface... s) {

@@ -1,5 +1,6 @@
 package jcog.data.set;
 
+import com.google.common.base.Function;
 import com.google.common.collect.Iterators;
 import jcog.Util;
 import jcog.pri.NLink;
@@ -7,6 +8,7 @@ import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.AbstractQueue;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.PriorityQueue;
 
@@ -22,9 +24,14 @@ public class CachedPriorityQueue<X> extends AbstractQueue<X> {
 	}
 
 	public CachedPriorityQueue(FloatFunction<X> rank) {
-		queue = new PriorityQueue<>((a, b)-> a!=b ?
-			compare(b.priElse(rank), a.priElse(rank))
-			: 0);
+		queue = new PriorityQueue<>(new Comparator<NLink<X>>() {
+            @Override
+            public int compare(NLink<X> a, NLink<X> b) {
+                return a != b ?
+                        compare(b.priElse(rank), a.priElse(rank))
+                        : 0;
+            }
+        });
 	}
 
 	@Override
@@ -56,7 +63,12 @@ public class CachedPriorityQueue<X> extends AbstractQueue<X> {
 		switch (queue.size()) {
 			case 0: return Util.emptyIterator;
 			case 1: return Iterators.singletonIterator(queue.peek().id);
-			default: return Iterators.transform(queue.iterator(), x -> x.id);
+			default: return Iterators.transform(queue.iterator(), new Function<NLink<X>, X>() {
+                @Override
+                public @org.checkerframework.checker.nullness.qual.Nullable X apply(@org.checkerframework.checker.nullness.qual.Nullable NLink<X> x) {
+                    return x.id;
+                }
+            });
 		}
 	}
 

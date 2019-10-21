@@ -28,6 +28,7 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -1553,7 +1554,12 @@ public class StringUtil {
                  * it returns null only for the END of the stream.
                  * it returns an empty String if two newlines appear in a row.
                  */
-                contents = input.lines().map(line -> line + System.getProperty("line.separator")).collect(Collectors.joining());
+                contents = input.lines().map(new Function<String, String>() {
+                    @Override
+                    public String apply(String line) {
+                        return line + System.getProperty("line.separator");
+                    }
+                }).collect(Collectors.joining());
             }
         }
         catch (IOException ex){

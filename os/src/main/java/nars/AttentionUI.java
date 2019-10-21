@@ -13,11 +13,14 @@ import nars.gui.DurSurface;
 import nars.gui.NARui;
 import nars.gui.concept.ConceptSurface;
 import nars.gui.sensor.VectorSensorChart;
+import org.eclipse.collections.api.block.procedure.primitive.FloatProcedure;
+import org.jetbrains.annotations.NotNull;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.Bordering;
 import spacegraph.space2d.container.graph.EdgeVis;
 import spacegraph.space2d.container.graph.Graph2D;
 import spacegraph.space2d.container.graph.GraphEdit2D;
+import spacegraph.space2d.container.graph.NodeVis;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.container.layout.ForceDirected2D;
 import spacegraph.space2d.container.unit.Scale;
@@ -29,9 +32,12 @@ import spacegraph.space2d.widget.text.LabeledPane;
 import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.util.MutableRectFloat;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
@@ -67,51 +73,81 @@ public class AttentionUI {
 		g.resize(800.0F, 800.0F);
 		//g.windoSizeMinRel(0.02f, 0.02f);
 
-		Exe.runLater(() -> {
+		Exe.runLater(new Runnable() {
+            @Override
+            public void run() {
 //		g.add(NARui.game(a)).posRel(0.5f, 0.5f, 0.4f, 0.3f);
-			//g.add(NARui.top(n)).posRel(0.5f, 0.5f, 0.2f, 0.1f);
-			g.add(NARui.attentionUI(n)).resize(400.25f, 400.25f);
-		});
+                //g.add(NARui.top(n)).posRel(0.5f, 0.5f, 0.2f, 0.1f);
+                g.add(NARui.attentionUI(n)).resize(400.25f, 400.25f);
+            }
+        });
 		return g;
 	}
 
 	@Deprecated
 	public static Surface objectGraphs(NAR n) {
-        ObjectGraphs g = new ObjectGraphs(()->
-			//n.partStream()
-			Stream.concat(Streams.stream(n.control.graph.nodeIDs()), n.partStream())
-				.iterator()
+        ObjectGraphs g = new ObjectGraphs(new Iterable() {
+            @NotNull
+            @Override
+            public Iterator iterator() {
+                return Stream.concat(Streams.stream(n.control.graph.nodeIDs()), n.partStream())
+                        .iterator();
+            }
+        }
 			,
 			Map.of(
-				NAR.class, (NAR nn, Object relation) -> new VectorLabel(nn.self().toString()),
-				VectorSensor.class, (VectorSensor v, Object relation) -> new VectorSensorChart(v, n),
+				NAR.class, new BiFunction<NAR, Object, Surface>() {
+                        @Override
+                        public Surface apply(NAR nn, Object relation) {
+                            return new VectorLabel(nn.self().toString());
+                        }
+                    },
+				VectorSensor.class, new BiFunction<VectorSensor, Object, Surface>() {
+                        @Override
+                        public Surface apply(VectorSensor v, Object relation) {
+                            return new VectorSensorChart(v, n);
+                        }
+                    },
 				//GameLoop.class, (GameLoop g, Object relation) -> g.components()
-				DurSurface.class, (x,y)-> null,
-				Concept.class, (Concept c, Object relation) -> new ConceptSurface(c, n)
+				DurSurface.class, new BiFunction<Object, Object, Surface>() {
+                        @Override
+                        public Surface apply(Object x, Object y) {
+                            return null;
+                        }
+                    },
+				Concept.class, new BiFunction<Concept, Object, Surface>() {
+                        @Override
+                        public Surface apply(Concept c, Object relation) {
+                            return new ConceptSurface(c, n);
+                        }
+                    }
 				//PriNode.class, (PriNode v, Object relation)-> ...
 
 				//TODO nars specific renderers
-			), (xx, graph) -> {
+			), new Graph2D.Graph2DRenderer<Object>() {
+            @Override
+            public void node(NodeVis<Object> xx, Graph2D.GraphEditing<Object> graph) {
 //
 //				if (xx.id instanceof PriNode) {
 //					EdgeVis<Object> eID = graph.edge(xx, ((PriNode)(xx.id)).id);
 //					if (eID!=null)
 //						eID.weight(1f).color(0.2f, 0.2f, 0.5f);
 //				}
-            Node<PriNode, Object> nn = n.control.graph.node(xx.id);
-				if (nn != null) {
-					//to identity object
+                Node<PriNode, Object> nn = n.control.graph.node(xx.id);
+                if (nn != null) {
+                    //to identity object
 
 
-					for (Node<PriNode, Object> c : nn.nodes(false, true)) {
+                    for (Node<PriNode, Object> c : nn.nodes(false, true)) {
                         EdgeVis<Object> e = graph.edge(xx, c.id());
-						if (e != null) {
-							e.weight(1f).color(0.5f, 0.5f, 0.5f);
-						}
-					}
+                        if (e != null) {
+                            e.weight(1f).color(0.5f, 0.5f, 0.5f);
+                        }
+                    }
 
-				}
-		});
+                }
+            }
+        });
 
 
 
@@ -120,18 +156,21 @@ public class AttentionUI {
 
 	public static Graph2D objectGraph(Graph2D.Graph2DRenderer<Object> renderer) {
 		return new Graph2D<>()
-			.render((xx, graph) -> {
-                Object x = xx.id;
-				if (x instanceof Prioritized) {
-                    Prioritized node = (Prioritized) x;
-                    float s = node.priElseZero();
-					xx.pri = s;
-					//((Widget)xx.the()).color.set(Math.min(s, 1), Math.min(s, 1), 0, 1);
-				} else {
-					//..infer priority of unprioitized items, ex: by graph metrics in relation to prioritized
-				}
+			.render(new Graph2D.Graph2DRenderer<Object>() {
+                @Override
+                public void node(NodeVis<Object> xx, Graph2D.GraphEditing<Object> graph) {
+                    Object x = xx.id;
+                    if (x instanceof Prioritized) {
+                        Prioritized node = (Prioritized) x;
+                        float s = node.priElseZero();
+                        xx.pri = s;
+                        //((Widget)xx.the()).color.set(Math.min(s, 1), Math.min(s, 1), 0, 1);
+                    } else {
+                        //..infer priority of unprioitized items, ex: by graph metrics in relation to prioritized
+                    }
 
-			}, renderer)
+                }
+            }, renderer)
 			.update(new ForceDirected2D<>() {
 				@Override
 				protected void size(MutableRectFloat m, float a) {
@@ -179,15 +218,22 @@ public class AttentionUI {
 //		}
 
 		private Graph2D<Object> graph(Graph2D<Object> g) {
-			g.build(x -> {
-                        Object xid = x.id;
-                        String label = xid.toString();
+			g.build(new Consumer<NodeVis<Object>>() {
+                        @Override
+                        public void accept(NodeVis<Object> x) {
+                            Object xid = x.id;
+                            String label = xid.toString();
 
-                        boolean lazy = true;
-					x.set(lazy ? Surplier.button(label, () -> icon(xid, label)) : icon(xid,label));
+                            boolean lazy = true;
+                            x.set(lazy ? Surplier.button(label, new Supplier<Surface>() {
+                                @Override
+                                public Surface get() {
+                                    return ObjectGraphs.this.icon(xid, label);
+                                }
+                            }) : ObjectGraphs.this.icon(xid, label));
 
 
-					//new CheckBox(xid.toString()).on((boolean v) -> {
+                            //new CheckBox(xid.toString()).on((boolean v) -> {
 //if (v) {
 //							Surface o = new ObjectSurface(x, new AutoBuilder<Object, Surface>(
 //								2, ObjectSurface.DefaultObjectSurfaceBuilder,
@@ -213,7 +259,8 @@ public class AttentionUI {
 //							layer(xid, null);
 
 
-				}
+                        }
+                    }
 			);
 			return g;
 		}
@@ -264,11 +311,14 @@ public class AttentionUI {
 		}
 
 		void commit() {
-			forEachRecursively(x -> {
-				if (x instanceof WhatPri) {
-					((WhatPri) x).commit();
-				}
-			});
+			forEachRecursively(new Consumer<Surface>() {
+                @Override
+                public void accept(Surface x) {
+                    if (x instanceof WhatPri) {
+                        ((WhatPri) x).commit();
+                    }
+                }
+            });
 		}
 
 		@Override
@@ -286,7 +336,12 @@ public class AttentionUI {
 			public WhatPri(What p) {
 				super(p.pri(), (float) 0, 1.0F);
 				this.p = p;
-				on((n) -> next = n);
+				on(new FloatProcedure() {
+                    @Override
+                    public void value(float n) {
+                        next = n;
+                    }
+                });
 			}
 
 			public void commit() {

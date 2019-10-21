@@ -10,6 +10,7 @@ import nars.Task;
 import nars.derive.premise.Premise;
 import nars.task.CommandTask;
 import nars.term.Term;
+import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Random;
@@ -62,7 +63,12 @@ public interface TaskLink extends UnitPrioritizable, FromTo<Term, TaskLink>, Com
      * returns 0 for none
      */
     default byte priPunc(Random rng) {
-        int i = Roulette.selectRouletteCached(4, j -> priIndex((byte)j), rng);
+        int i = Roulette.selectRouletteCached(4, new IntToFloatFunction() {
+            @Override
+            public float valueOf(int j) {
+                return TaskLink.this.priIndex((byte) j);
+            }
+        }, rng);
         return i != -1 ? p(i) : (byte) 0;
     }
 

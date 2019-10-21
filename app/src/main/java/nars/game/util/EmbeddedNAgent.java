@@ -1,6 +1,7 @@
 package nars.game.util;
 
 import jcog.learn.Agent;
+import jcog.math.FloatSupplier;
 import nars.$;
 import nars.NAR;
 import nars.NARS;
@@ -12,6 +13,7 @@ import nars.term.Term;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.IntPredicate;
 
 import static java.lang.System.arraycopy;
 
@@ -49,7 +51,12 @@ public class EmbeddedNAgent extends Agent {
         final List<Signal> result = new ArrayList<>();
         for (int j = 0; j < inputs; j++) {
             final int i1 = j;
-            final Signal signal = env.sense($.inh($.the(i1), env.id), () -> senseValue[i1]);
+            final Signal signal = env.sense($.inh($.the(i1), env.id), new FloatSupplier() {
+                @Override
+                public float asFloat() {
+                    return senseValue[i1];
+                }
+            });
             result.add(signal);
         }
         final GameLoop[] sense = result.toArray(new GameLoop[0]);
@@ -60,13 +67,21 @@ public class EmbeddedNAgent extends Agent {
             list.add(inh);
         }
         final SwitchAction act;
-        this.env.addSensor(act = new SwitchAction(n, (a) -> {
-                nextAction = a;
-                return true;
-            }, list.toArray(new Term[0]))
+        this.env.addSensor(act = new SwitchAction(n, new IntPredicate() {
+                    @Override
+                    public boolean test(int a) {
+                        nextAction = a;
+                        return true;
+                    }
+                }, list.toArray(new Term[0]))
         );
 
-        this.env.reward(()->nextReward);
+        this.env.reward(new FloatSupplier() {
+            @Override
+            public float asFloat() {
+                return nextReward;
+            }
+        });
 
     }
 

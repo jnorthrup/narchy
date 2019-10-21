@@ -6,9 +6,12 @@ import jcog.event.Topic;
 import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
+import nars.Task;
 import nars.derive.Deriver;
 import nars.derive.Derivers;
 import nars.op.java.Opjects;
+
+import java.util.function.Consumer;
 
 /**
  * TODO make extend NARService and support start/re-start
@@ -151,9 +154,12 @@ public class NARSpeak {
 
         //n.log();
 
-        n.onTask(x -> {
-           if (x.isGoal() && !x.isInput())
-               System.out.println(x.proof());
+        n.onTask(new Consumer<Task>() {
+            @Override
+            public void accept(Task x) {
+                if (x.isGoal() && !x.isInput())
+                    System.out.println(x.proof());
+            }
         });
 
         n.input("say(abc)! :|:");

@@ -11,6 +11,8 @@ import java.awt.event.ActionListener;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.IntPredicate;
+import java.util.function.IntUnaryOperator;
 import java.util.stream.IntStream;
 
 import static nars.experiment.connect4.C4.dropConcept;
@@ -149,7 +151,22 @@ public class ConnectFour {
          * if the column is full.
          */
         private int freeRow(int col) {
-            return IntStream.iterate(rows - 1, row -> row >= 0, row -> row - 1).filter(row -> get(row, col) == 0).findFirst().orElse(-1);
+            return IntStream.iterate(rows - 1, new IntPredicate() {
+                @Override
+                public boolean test(int row) {
+                    return row >= 0;
+                }
+            }, new IntUnaryOperator() {
+                @Override
+                public int applyAsInt(int row) {
+                    return row - 1;
+                }
+            }).filter(new IntPredicate() {
+                @Override
+                public boolean test(int row) {
+                    return ConnectFourState.this.get(row, col) == 0;
+                }
+            }).findFirst().orElse(-1);
         }
 
         public boolean isWinMoveFor(int col, int playerNum) {

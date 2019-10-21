@@ -11,6 +11,8 @@ import nars.term.util.conj.ConjTree;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.junit.jupiter.api.Test;
 
+import java.util.function.Supplier;
+
 import static nars.$.*;
 import static nars.Op.CONJ;
 import static nars.term.atom.IdempotentBool.False;
@@ -224,7 +226,12 @@ public class ConjTest2 {
             c.add(t, $$("--(x &&+50 x)"));
             c.add(t, $$("x"));
             Term cc = c.term();
-            assertEquals(t == ETERNAL ? False : $$("(x &&+50 (--,x))"), cc, () -> t + " = " + cc);
+            assertEquals(t == ETERNAL ? False : $$("(x &&+50 (--,x))"), cc, new Supplier<String>() {
+                @Override
+                public String get() {
+                    return t + " = " + cc;
+                }
+            });
         }
     }
 

@@ -9,7 +9,12 @@ public class PortVector extends Gridding {
     public final Port[] out;
 
     public PortVector(int size) {
-        this(size, (x)->x);
+        this(size, new Function<Port, Surface>() {
+            @Override
+            public Surface apply(Port x) {
+                return x;
+            }
+        });
     }
 
     public PortVector(int size, Function<Port, Surface> portRenderer) {

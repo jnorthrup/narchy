@@ -45,7 +45,17 @@ public class DiscreteConstraintSolver {
     }
 
     public static BooleanFunction<List<BooleanSupplier>> binaryFirstFail(IntVar[] vars) {
-        return new BinaryVarVal(vars, i -> vars[i].size(), i -> vars[i].min());
+        return new BinaryVarVal(vars, new IntUnaryOperator() {
+            @Override
+            public int applyAsInt(int i) {
+                return vars[i].size();
+            }
+        }, new IntUnaryOperator() {
+            @Override
+            public int applyAsInt(int i) {
+                return vars[i].min();
+            }
+        });
     }
 
     public static BooleanFunction<List<BooleanSupplier>> binary(IntVar[] vars, IntUnaryOperator varCost,
@@ -74,7 +84,12 @@ public class DiscreteConstraintSolver {
     }
 
     public SearchStats solve(BooleanFunction<List<BooleanSupplier>> heuristic) {
-        return solve(heuristic, s -> false);
+        return solve(heuristic, new Predicate<SearchStats>() {
+            @Override
+            public boolean test(SearchStats s) {
+                return false;
+            }
+        });
     }
 
     public IntVar intVar(int min, int max) {

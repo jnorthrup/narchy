@@ -3,11 +3,15 @@ package nars.nal.nal8;
 import jcog.Util;
 import nars.NAR;
 import nars.NARS;
+import nars.Task;
 import nars.test.NALTest;
 import nars.time.Tense;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+
+import java.util.function.LongPredicate;
+import java.util.function.Predicate;
 
 import static nars.Op.BELIEF;
 import static nars.Op.GOAL;
@@ -54,12 +58,15 @@ public abstract class NAL8DecomposeTest extends NALTest {
                     .input("(a && b). %0.75;0.9%")
                     .input("a. %0.80;0.9%")
                     .mustBelieve(cycles, "b", 0.60f, 0.49f)
-                    .must(BELIEF, true, (t)->{
-                        if ("b".equals(t.term().toString())) {
-                            float f = t.freq();
-                            return !Util.equals(f, 0.60f, 0.05f) || t.conf() < 0.2f;
+                    .must(BELIEF, true, new Predicate<Task>() {
+                        @Override
+                        public boolean test(Task t) {
+                            if ("b".equals(t.term().toString())) {
+                                float f = t.freq();
+                                return !Util.equals(f, 0.60f, 0.05f) || t.conf() < 0.2f;
+                            }
+                            return true;
                         }
-                        return true;
                     });
         }
 
@@ -71,12 +78,15 @@ public abstract class NAL8DecomposeTest extends NALTest {
                     .input("(--a && b). %0.75;0.9%")
                     .input("a. %0.20;0.9%")
                     .mustBelieve(cycles, "b", 0.60f, 0.49f)
-                    .must(BELIEF, true, (t)->{
-                        if ("b".equals(t.term().toString())) {
-                            float f = t.freq();
-                            return !Util.equals(f, 0.60f, 0.05f) || t.conf() < 0.2f;
+                    .must(BELIEF, true, new Predicate<Task>() {
+                        @Override
+                        public boolean test(Task t) {
+                            if ("b".equals(t.term().toString())) {
+                                float f = t.freq();
+                                return !Util.equals(f, 0.60f, 0.05f) || t.conf() < 0.2f;
+                            }
+                            return true;
                         }
-                        return true;
                     });
         }
     }
@@ -167,7 +177,12 @@ public abstract class NAL8DecomposeTest extends NALTest {
                     .termVolMax(4)
                     .input("(||,a,--b)!")
                     .input("a.")
-                    .mustNotOutput(cycles, "b", GOAL, 0f, 1f, 0f, 1f, t -> true)
+                    .mustNotOutput(cycles, "b", GOAL, 0f, 1f, 0f, 1f, new LongPredicate() {
+                        @Override
+                        public boolean test(long t) {
+                            return true;
+                        }
+                    })
             ;
         }
 
@@ -178,7 +193,12 @@ public abstract class NAL8DecomposeTest extends NALTest {
                     .input("(||,a,--b)!")
                     .input("--a.")
                     .mustGoal(cycles, "b", 0f, 0.81f)
-                    .mustNotOutput(cycles, "b", GOAL, 0.5f, 1f, 0f, 1f, t -> true)
+                    .mustNotOutput(cycles, "b", GOAL, 0.5f, 1f, 0f, 1f, new LongPredicate() {
+                        @Override
+                        public boolean test(long t) {
+                            return true;
+                        }
+                    })
 
             ;
         }

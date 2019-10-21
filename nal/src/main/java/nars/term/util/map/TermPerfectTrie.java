@@ -13,6 +13,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
 import java.util.List;
+import java.util.function.Consumer;
 
 
 /**
@@ -40,21 +41,24 @@ public class TermPerfectTrie<K extends Term, V> extends Trie<List<K>, V> impleme
 
     private static <A, B> void printSummary(TrieNode<List<A>, B> node, PrintStream out) {
 
-        node.forEach(n -> {
-            List<A> seq = n.seq();
+        node.forEach(new Consumer<TrieNode<List<A>, B>>() {
+            @Override
+            public void accept(TrieNode<List<A>, B> n) {
+                List<A> seq = n.seq();
 
-            int from = n.start();
+                int from = n.start();
 
-            out.print(n.childCount() + "|" + n.getSize() + "  ");
+                out.print(n.childCount() + "|" + n.getSize() + "  ");
 
-            Texts.indent(from * 4);
+                Texts.indent(from * 4);
 
-            out.println(Joiner.on(" , ").join(seq.subList(from, n.end())
-                    
-                    
-            ));
+                out.println(Joiner.on(" , ").join(seq.subList(from, n.end())
 
-            printSummary(n, out);
+
+                ));
+
+                printSummary(n, out);
+            }
         });
 
 
@@ -92,27 +96,30 @@ public class TermPerfectTrie<K extends Term, V> extends Trie<List<K>, V> impleme
         if (nc > 0)
             branchFanOut.addValue((double) nc);
 
-        root.forEach(n -> {
-            List<K> seq = n.seq();
+        root.forEach(new Consumer<TrieNode<List<K>, V>>() {
+            @Override
+            public void accept(TrieNode<List<K>, V> n) {
+                List<K> seq = n.seq();
 
-            int from = n.start();
+                int from = n.start();
 
 
-            int to = n.end();
-            sequenceLength.addValue((double) (to - from));
+                int to = n.end();
+                sequenceLength.addValue((double) (to - from));
 
-            for (int i = from; i < to; i++) {
-                termCost.addValue((double) costFn.floatValueOf(seq.get(i)));
+                for (int i = from; i < to; i++) {
+                    termCost.addValue((double) costFn.floatValueOf(seq.get(i)));
+                }
+
+
+                currentDepth[0]++;
+
+                costAnalyze(costFn, termCost, sequenceLength, branchFanOut, endDepth, currentDepth, n);
+
+                currentDepth[0]--;
+
+                endDepth.addValue((double) currentDepth[0]);
             }
-
-            
-            currentDepth[0]++;
-
-            costAnalyze(costFn, termCost, sequenceLength, branchFanOut, endDepth, currentDepth, n);
-
-            currentDepth[0]--;
-
-            endDepth.addValue((double) currentDepth[0]);
         });
     }
 

@@ -1,5 +1,6 @@
 package nars.term.buffer;
 
+import com.google.common.base.Function;
 import com.google.common.collect.Iterators;
 import jcog.TODO;
 import jcog.data.iterator.ArrayIterator;
@@ -14,8 +15,10 @@ import nars.term.Term;
 import nars.term.Termlike;
 import nars.term.util.TermException;
 import nars.term.util.transform.TermTransform;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.*;
+import java.util.function.BiFunction;
 import java.util.function.Predicate;
 
 import static nars.term.atom.IdempotentBool.Null;
@@ -58,13 +61,23 @@ public class Termerator extends EvalTermBuffer implements Iterable<Term> {
         if (y.equals(yy))
             throw new TermException("assign cycle", y);
 
-        return m -> m.is(x, xx) && m.is(y, yy);
+        return new Predicate<Termerator>() {
+            @Override
+            public boolean test(Termerator m) {
+                return m.is(x, xx) && m.is(y, yy);
+            }
+        };
     }
 
     protected static Predicate<Termerator> assign(Term x, Term y) {
         if (x.equals(y))
             throw new TermException("assign cycle", x);
-        return (subst) -> subst.is(x, y);
+        return new Predicate<Termerator>() {
+            @Override
+            public boolean test(Termerator subst) {
+                return subst.is(x, y);
+            }
+        };
     }
 
     public static boolean evalable(Termlike x) {
@@ -138,7 +151,12 @@ public class Termerator extends EvalTermBuffer implements Iterable<Term> {
 
         if (!empty) {
             //replace existing subs
-            if (!subs.replace((sx, sy)-> !x.equals(sx) ? sy.replace(x, y) : sy))
+            if (!subs.replace(new BiFunction<Term, Term, Term>() {
+                @Override
+                public Term apply(Term sx, Term sy) {
+                    return !x.equals(sx) ? sy.replace(x, y) : sy;
+                }
+            }))
                 return false;
 
         } else {
@@ -190,13 +208,16 @@ public class Termerator extends EvalTermBuffer implements Iterable<Term> {
     }
 
     public void canBePairs(List<Term> y) {
-        canBe(e -> {
-            int n = y.size();
-            for (int i = 0; i < n; ) {
-                if (!e.is(y.get(i++), y.get(i++)))
-                    return false;
+        canBe(new Predicate<Termerator>() {
+            @Override
+            public boolean test(Termerator e) {
+                int n = y.size();
+                for (int i = 0; i < n; ) {
+                    if (!e.is(y.get(i++), y.get(i++)))
+                        return false;
+                }
+                return true;
             }
-            return true;
         });
     }
 
@@ -226,36 +247,49 @@ public class Termerator extends EvalTermBuffer implements Iterable<Term> {
             int before = v.size();
 
             if (nt == 1) {
-                return Iterators.filter(Iterators.transform(termutes.remove(0).iterator(), tt -> {
-                    Term y;
-                    if (tt.test(this)) {
-                        int during = v.size();
-                        y = term();
-                        if (v.size() != during) {
-                            throw new TODO("recurse");
-                        }
-                    } else
-                        y = null;
-                    v.revert(before);
-                    return y;
+                return Iterators.filter(Iterators.transform(termutes.remove(0).iterator(), new Function<Predicate<Termerator>, Term>() {
+                    @Nullable
+                    @Override
+                    public Term apply(@Nullable Predicate<Termerator> tt) {
+                        Term y;
+                        if (tt.test(Termerator.this)) {
+                            int during = v.size();
+                            y = Termerator.this.term();
+                            if (v.size() != during) {
+                                throw new TODO("recurse");
+                            }
+                        } else
+                            y = null;
+                        v.revert(before);
+                        return y;
+                    }
                 }), Objects::nonNull);
             } else {
                 CartesianIterator<Predicate>/*<VersionMap<Term,Term>>>*/ ci =
                         new CartesianIterator(Predicate[]::new, termutes.toArrayRecycled(Iterable[]::new));
                 termutes.clear();
-                return Iterators.filter(Iterators.transform(ci, tt -> {
-                    Term y;
-                    boolean fail = Arrays.stream(tt).anyMatch(p -> !p.test(this));
-                    if (!fail) {
-                        int during = v.size();
-                        y = term();
-                        if (v.size() != during) {
-                            throw new TODO("recurse");
-                        }
-                    } else
-                        y = null;
-                    v.revert(before);
-                    return y;
+                return Iterators.filter(Iterators.transform(ci, new Function<Predicate[], Term>() {
+                    @Nullable
+                    @Override
+                    public Term apply(@Nullable Predicate[] tt) {
+                        Term y;
+                        boolean fail = Arrays.stream(tt).anyMatch(new Predicate<Predicate>() {
+                            @Override
+                            public boolean test(Predicate p) {
+                                return !p.test(Termerator.this);
+                            }
+                        });
+                        if (!fail) {
+                            int during = v.size();
+                            y = Termerator.this.term();
+                            if (v.size() != during) {
+                                throw new TODO("recurse");
+                            }
+                        } else
+                            y = null;
+                        v.revert(before);
+                        return y;
+                    }
                 }), Objects::nonNull);
             }
         }

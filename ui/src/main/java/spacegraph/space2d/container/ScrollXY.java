@@ -5,6 +5,8 @@ import jcog.Util;
 import jcog.math.FloatSupplier;
 import jcog.math.v2;
 import jcog.tree.rtree.rect.RectFloat;
+import org.eclipse.collections.api.block.procedure.primitive.FloatFloatProcedure;
+import org.eclipse.collections.api.block.procedure.primitive.ObjectFloatProcedure;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.grid.DynGrid;
@@ -13,6 +15,7 @@ import spacegraph.space2d.container.grid.GridRenderer;
 import spacegraph.space2d.container.grid.ListModel;
 import spacegraph.space2d.container.unit.Clipped;
 import spacegraph.space2d.widget.slider.FloatSlider;
+import spacegraph.space2d.widget.slider.SliderModel;
 import spacegraph.space2d.widget.slider.XYSlider;
 
 import java.util.List;
@@ -66,17 +69,62 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
         super();
 
         this.scale = new XYSlider();
-        this.scrollX = new FloatProportionalSlider("X", () -> (float) 0, () -> view.w / viewMax.x, () -> viewMax.x - view.w, true);
-        this.scrollY = new FloatProportionalSlider("Y", () -> (float) 0, () -> view.h / viewMax.y, () -> viewMax.y - view.h, false);
+        this.scrollX = new FloatProportionalSlider("X", new FloatSupplier() {
+            @Override
+            public float asFloat() {
+                return (float) 0;
+            }
+        }, new FloatSupplier() {
+            @Override
+            public float asFloat() {
+                return view.w / viewMax.x;
+            }
+        }, new FloatSupplier() {
+            @Override
+            public float asFloat() {
+                return viewMax.x - view.w;
+            }
+        }, true);
+        this.scrollY = new FloatProportionalSlider("Y", new FloatSupplier() {
+            @Override
+            public float asFloat() {
+                return (float) 0;
+            }
+        }, new FloatSupplier() {
+            @Override
+            public float asFloat() {
+                return view.h / viewMax.y;
+            }
+        }, new FloatSupplier() {
+            @Override
+            public float asFloat() {
+                return viewMax.y - view.h;
+            }
+        }, false);
 
         set(E,scrollY);
         set(S,scrollX);
         set(SE, scale);
 
-        scrollX.on((sx, x) -> scroll(x, view.y, view.w, view.h));
-        scrollY.on((sy, y) -> scroll(view.x, y, view.w, view.h));
+        scrollX.on(new ObjectFloatProcedure<SliderModel>() {
+            @Override
+            public void value(SliderModel sx, float x) {
+                ScrollXY.this.scroll(x, view.y, view.w, view.h);
+            }
+        });
+        scrollY.on(new ObjectFloatProcedure<SliderModel>() {
+            @Override
+            public void value(SliderModel sy, float y) {
+                ScrollXY.this.scroll(view.x, y, view.w, view.h);
+            }
+        });
         scale.set(1.0F, 1.0F);
-        scale.on((w, h)-> scroll(view.x, view.y, lerp(w, viewMin.x, viewMax.x), lerp(h, viewMin.y, viewMax.y)));
+        scale.on(new FloatFloatProcedure() {
+            @Override
+            public void value(float w, float h) {
+                ScrollXY.this.scroll(view.x, view.y, lerp(w, viewMin.x, viewMax.x), lerp(h, viewMin.y, viewMax.y));
+            }
+        });
 
 
     }

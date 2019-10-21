@@ -5,6 +5,7 @@ import jcog.TODO;
 import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.data.map.ConcurrentFastIteratingHashMap;
+import jcog.event.Off;
 import jcog.math.v2;
 import jcog.tree.rtree.rect.RectFloat;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectLongProcedure;
@@ -36,6 +37,8 @@ import spacegraph.space2d.widget.windo.Windo;
 import spacegraph.video.Draw;
 
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.ObjLongConsumer;
 
 import static spacegraph.space2d.container.Bordering.E;
@@ -82,7 +85,12 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
 
                 prw = nrw;
                 prh = nrh;
-                body.updateFixtures((f) -> f.setShape(shape.setAsBox(nrw / 2.0F / scaling, nrh / 2.0F / scaling)));
+                body.updateFixtures(new Consumer<Fixture>() {
+                    @Override
+                    public void accept(Fixture f) {
+                        f.setShape(shape.setAsBox(nrw / 2.0F / scaling, nrh / 2.0F / scaling));
+                    }
+                });
                 resized = true;
             }
 
@@ -122,45 +130,51 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
 
     @Override
     public PhySurface add(Surface w) {
-        return this.w.computeIfAbsent(w, (ww->{
-            Body2D body = new Body2D(BodyType.DYNAMIC, physics);
-            PhySurface<?> wd = ww instanceof Windo ?
-                    new PhySurface(ww, body)
-                    :
-                    new PhyWindo((Windo) ww, body);
-            physics.addBody(wd.body);
-            return wd;
+        return this.w.computeIfAbsent(w, (new Function<Surface, PhySurface>() {
+            @Override
+            public PhySurface apply(Surface ww) {
+                Body2D body = new Body2D(BodyType.DYNAMIC, physics);
+                PhySurface<?> wd = ww instanceof Windo ?
+                        new PhySurface(ww, body)
+                        :
+                        new PhyWindo((Windo) ww, body);
+                physics.addBody(wd.body);
+                return wd;
+            }
         }));
     }
     protected PhySurface shadow(Surface w) {
-        return this.w.computeIfAbsent(w, (ww->{
-            var body = new Body2D(BodyType.DYNAMIC, physics) {
+        return this.w.computeIfAbsent(w, (new Function<Surface, PhySurface>() {
+            @Override
+            public PhySurface apply(Surface ww) {
+                var body = new Body2D(BodyType.DYNAMIC, physics) {
 
-                @Override
-                public boolean preUpdate() {
+                    @Override
+                    public boolean preUpdate() {
 
-                    //prevent collisions HACK
-                    Fixture f = this.fixtures;
-                    if (f!=null) {
-                        Fixture fn = f.next;
-                        if (fn!=null) {
-                            Filter fnf = fn.filter;
-                            if (fnf!=null) {
-                                fnf.groupIndex = -1;
+                        //prevent collisions HACK
+                        Fixture f = this.fixtures;
+                        if (f != null) {
+                            Fixture fn = f.next;
+                            if (fn != null) {
+                                Filter fnf = fn.filter;
+                                if (fnf != null) {
+                                    fnf.groupIndex = -1;
+                                }
                             }
                         }
+                        return super.preUpdate();
                     }
-                    return super.preUpdate();
-                }
 
-                @Override
-                public boolean colllide(Body2D other) {
-                    return false;
-                }
-            };
-            PhySurface<?> wd = new PhySurface(ww, body);
-            physics.addBody(wd.body);
-            return wd;
+                    @Override
+                    public boolean colllide(Body2D other) {
+                        return false;
+                    }
+                };
+                PhySurface<?> wd = new PhySurface(ww, body);
+                physics.addBody(wd.body);
+                return wd;
+            }
         }));
     }
 
@@ -213,14 +227,24 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
         clamp = g.bounds;
             //.scale(0.5f);
 
-        w.forEachValue(ww -> ww.pre(physics, ww.surface.bounds.clamp(clamp)));
+        w.forEachValue(new Consumer<PhySurface>() {
+            @Override
+            public void accept(PhySurface ww) {
+                ww.pre(physics, ww.surface.bounds.clamp(clamp));
+            }
+        });
 
         float timeScale = 1f;
         int posIter = 2;
         int velIter = 2;
         physics.step(dt * timeScale, velIter, posIter);
 
-        w.forEachValue(ww -> ww.post(physics, clamp));
+        w.forEachValue(new Consumer<PhySurface>() {
+            @Override
+            public void accept(PhySurface ww) {
+                ww.post(physics, clamp);
+            }
+        });
     }
 
     /** apply any preprocessing of bounds before entry to the physics engine (and affecting its possible feedback after it finishes)
@@ -374,10 +398,13 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
 
             w.addJoint(joint);
 
-            on(() -> {
-                Dynamics2D ww = world();
-                if (ww != null)
-                    ww.removeJoint(joint);
+            on(new Off() {
+                @Override
+                public void close() {
+                    Dynamics2D ww = GlueLink.this.world();
+                    if (ww != null)
+                        ww.removeJoint(joint);
+                }
             });
         }
 
@@ -436,7 +463,12 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
             Bordering l = new Bordering<>(
                     new PushButton("X").clicked((@Nullable Runnable) this::remove)
             );
-            l.set(E, new PushButton("Tap").clicked(() -> splice(new CopyPort()))); //as in wire-tap, aka splice
+            l.set(E, new PushButton("Tap").clicked(new Runnable() {
+                @Override
+                public void run() {
+                    SnakeLink.this.splice(new CopyPort());
+                }
+            })); //as in wire-tap, aka splice
             l.set(S, new PushButton("Split"));
 
             linkPanel = graph.add(l);
@@ -616,12 +648,15 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
 
             }
 
-            w.invoke(() -> {
-                for (Body2D b : bodies) {
-                    w.addBody(b);
-                }
-                for (Joint joint : joints) {
-                    w.addJoint(joint);
+            w.invoke(new Runnable() {
+                @Override
+                public void run() {
+                    for (Body2D b : bodies) {
+                        w.addBody(b);
+                    }
+                    for (Joint joint : joints) {
+                        w.addJoint(joint);
+                    }
                 }
             });
         }
@@ -632,10 +667,13 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
          */
         public void attach(Body2D b, int segment) {
             RevoluteJointDef rr = new RevoluteJointDef(bodies.get(segment), b);
-            world().invoke(() -> {
-                RevoluteJoint w = (RevoluteJoint) b.W.addJoint(rr);
-                attachments.add(b);
-                joints.add(w);
+            world().invoke(new Runnable() {
+                @Override
+                public void run() {
+                    RevoluteJoint w = (RevoluteJoint) b.W.addJoint(rr);
+                    attachments.add(b);
+                    joints.add(w);
+                }
             });
         }
 
@@ -646,18 +684,21 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
         public void remove() {
 
             Dynamics2D world = world();
-            world.invoke(() -> {
+            world.invoke(new Runnable() {
+                @Override
+                public void run() {
 
 
-                for (Body2D attachment : attachments) {
-                    attachment.remove();
+                    for (Body2D attachment : attachments) {
+                        attachment.remove();
+                    }
+                    attachments.clear();
+
+                    for (Body2D body : bodies) {
+                        body.remove();
+                    }
+                    bodies.clear();
                 }
-                attachments.clear();
-
-                for (Body2D body : bodies) {
-                    body.remove();
-                }
-                bodies.clear();
             });
         }
 
@@ -992,11 +1033,21 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
             Dynamics2D w = physics;
 
             if (drawJoints) {
-                w.joints(j -> drawJoint(j, gl, reSurface.frameNS));
+                w.joints(new Consumer<Joint>() {
+                    @Override
+                    public void accept(Joint j) {
+                        Dyn2DRenderer.this.drawJoint(j, gl, reSurface.frameNS);
+                    }
+                });
             }
 
             if (drawBodies) {
-                w.bodies(b -> drawBody(b, gl));
+                w.bodies(new Consumer<Body2D>() {
+                    @Override
+                    public void accept(Body2D b) {
+                        Dyn2DRenderer.this.drawBody(b, gl);
+                    }
+                });
             }
 
             if (drawParticles) {

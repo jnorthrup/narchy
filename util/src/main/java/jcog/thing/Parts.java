@@ -6,6 +6,8 @@ import jcog.event.Off;
 import jcog.event.RunThese;
 import org.slf4j.Logger;
 
+import java.util.function.BiConsumer;
+
 /** a part of a Thing, which also manages a collection of locally contained SubParts */
 public abstract class Parts<T extends Thing<T, ?>> extends Part<T>  {
 
@@ -33,11 +35,21 @@ public abstract class Parts<T extends Thing<T, ?>> extends Part<T>  {
     }
 
     protected final void startLocal(T t) {
-        this.local.forEachWith((c, T) -> c.startIn(T, this), t);
+        this.local.forEachWith(new BiConsumer<SubPart<T>, T>() {
+            @Override
+            public void accept(SubPart<T> c, T T) {
+                c.startIn(T, Parts.this);
+            }
+        }, t);
     }
 
     protected final void stopLocal(T t) {
-        this.local.forEachWith((c, T) -> c.stopIn(T, this), t);
+        this.local.forEachWith(new BiConsumer<SubPart<T>, T>() {
+            @Override
+            public void accept(SubPart<T> c, T T) {
+                c.stopIn(T, Parts.this);
+            }
+        }, t);
     }
 
     @SafeVarargs

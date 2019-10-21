@@ -140,8 +140,18 @@ public abstract class ConceptBuilder implements BiFunction<Term, Concept, Concep
             Term n = Image.imageNormalize(i);
             if (!i.equals(n) && !(n instanceof IdempotentBool)) {
                 return s == null ?
-                    ((t, bOrG) -> new BeliefTable[]{new ImageBeliefTable(t, bOrG)}) :
-                    ((t, bOrG) -> ArrayUtil.add(s.valueOf(t, bOrG), new ImageBeliefTable(t, bOrG)));
+                    (new ObjectBooleanToObjectFunction<Term, BeliefTable[]>() {
+                        @Override
+                        public BeliefTable[] valueOf(Term t, boolean bOrG) {
+                            return new BeliefTable[]{new ImageBeliefTable(t, bOrG)};
+                        }
+                    }) :
+                    (new ObjectBooleanToObjectFunction<Term, BeliefTable[]>() {
+                        @Override
+                        public BeliefTable[] valueOf(Term t, boolean bOrG) {
+                            return ArrayUtil.add(s.valueOf(t, bOrG), new ImageBeliefTable(t, bOrG));
+                        }
+                    });
             }
         }
 

@@ -1,6 +1,7 @@
 package nars.nal.nal1;
 
 import nars.*;
+import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.atom.IdempotentBool;
 import nars.test.TestNAR;
@@ -12,8 +13,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.DoubleSummaryStatistics;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.BiFunction;
-import java.util.function.IntFunction;
+import java.util.function.*;
 
 import static nars.$.$$$;
 import static nars.Op.BELIEF;
@@ -58,9 +58,12 @@ class QuestionTest {
 
         NAR nar = NARS.tmp(1);
 
-        nar.onTask(a -> {
-            if (a.punc() == BELIEF && a.term().equals(expectedSolutionTerm))
-                ok.incrementAndGet();
+        nar.onTask(new Consumer<Task>() {
+            @Override
+            public void accept(Task a) {
+                if (a.punc() == BELIEF && a.term().equals(expectedSolutionTerm))
+                    ok.incrementAndGet();
+            }
         });
 
         nar
@@ -92,31 +95,37 @@ class QuestionTest {
         DoubleSummaryStatistics withTime = new DoubleSummaryStatistics();
         DoubleSummaryStatistics withOutTime = new DoubleSummaryStatistics();
 
-        IntFunction<NAR> narProvider = (seed) -> {
-            NAR d = NARS.tmp(1);
-            //d.random().setSeed(seed);
-            d.termVolMax.set(7);
-            d.freqResolution.set(0.25f);
-            return d;
+        IntFunction<NAR> narProvider = new IntFunction<NAR>() {
+            @Override
+            public NAR apply(int seed) {
+                NAR d = NARS.tmp(1);
+                //d.random().setSeed(seed);
+                d.termVolMax.set(7);
+                d.freqResolution.set(0.25f);
+                return d;
+            }
         };
 
-        BiFunction<Integer, Integer, TestNAR> testProvider = (seed, variation) -> {
-            NAR n = narProvider.apply(seed);
-            TestNAR t = new TestNAR(n);
-            switch (variation) {
-                case 0:
-                    new DeductiveMeshTest(t, dims, timelimit);
-                    break;
-                case 1:
-                    new DeductiveMeshTest(t, dims, timelimit) {
-                        @Override
-                        public void ask(TestNAR n, Term term) {
+        BiFunction<Integer, Integer, TestNAR> testProvider = new BiFunction<Integer, Integer, TestNAR>() {
+            @Override
+            public TestNAR apply(Integer seed, Integer variation) {
+                NAR n = narProvider.apply(seed);
+                TestNAR t = new TestNAR(n);
+                switch (variation) {
+                    case 0:
+                        new DeductiveMeshTest(t, dims, timelimit);
+                        break;
+                    case 1:
+                        new DeductiveMeshTest(t, dims, timelimit) {
+                            @Override
+                            public void ask(TestNAR n, Term term) {
 
-                        }
-                    };
-                    break;
+                            }
+                        };
+                        break;
+                }
+                return t;
             }
-            return t;
         };
 
         for (int i = 0; i < 1 /* seed doesnt do anything right now 10 */; i++) {
@@ -150,15 +159,18 @@ class QuestionTest {
         NAR n = NARS.tmp(1);
 
 
-        n.add(f("odd", a -> {
-            if (a.subs() == 1 && a.sub(0).op() == Op.ATOM) {
-                try {
-                    return $.intValue(a.sub(0)) % 2 == 0 ? IdempotentBool.False : IdempotentBool.True;
-                } catch (NumberFormatException ignored) {
+        n.add(f("odd", new Function<Subterms, Term>() {
+            @Override
+            public Term apply(Subterms a) {
+                if (a.subs() == 1 && a.sub(0).op() == Op.ATOM) {
+                    try {
+                        return $.intValue(a.sub(0)) % 2 == 0 ? IdempotentBool.False : IdempotentBool.True;
+                    } catch (NumberFormatException ignored) {
 
+                    }
                 }
+                return null;
             }
-            return null;
         }));
         n.termVolMax.set(24);
         n.input(
@@ -201,7 +213,12 @@ class QuestionTest {
                 .inputAt(7, "x. | %0.00;0.90%")
                 .inputAt(8, "$1.0 x?")
                 .mustBelieve(64, "x", 0.5f, 0.73f /*ETERNAL*/)
-                .mustBelieve(64, "x", 0.5f, 0.9f, t -> t == 4 /*temporal*/)
+                .mustBelieve(64, "x", 0.5f, 0.9f, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return t == 4;
+                    }
+                } /*temporal*/)
                 .test();
     }
 
@@ -215,8 +232,18 @@ class QuestionTest {
                 .inputAt(1, "$1.0 (x &&+3 y)?")
 
 
-                .mustBelieve(64, "(x &&+3 y)", 1f, 0.45f, t -> t == ETERNAL)
-                .mustBelieve(64, "(x &&+3 y)", 1f, 0.81f, t -> t == 1)
+                .mustBelieve(64, "(x &&+3 y)", 1f, 0.45f, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return t == ETERNAL;
+                    }
+                })
+                .mustBelieve(64, "(x &&+3 y)", 1f, 0.81f, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return t == 1;
+                    }
+                })
                 .test();
     }
 

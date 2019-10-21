@@ -32,7 +32,12 @@ public class CycleView implements Runnable {
 
         run = new AtomicBoolean(false);
 
-        step = ()->nar.run(1);
+        step = new Runnable() {
+            @Override
+            public void run() {
+                nar.run(1);
+            }
+        };
 
         time = new VectorLabel("");
 

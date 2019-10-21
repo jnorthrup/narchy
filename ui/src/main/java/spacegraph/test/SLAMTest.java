@@ -41,6 +41,7 @@ import georegression.struct.point.Point2D_F64;
 import georegression.struct.se.Se3_F64;
 import jcog.data.list.MetalConcurrentQueue;
 import jcog.exe.Exe;
+import jcog.signal.wave2d.RGBBufImgBitmap2D;
 import org.ddogleg.struct.FastQueue;
 import org.eclipse.collections.api.tuple.Pair;
 import org.ejml.data.DMatrixRMaj;
@@ -56,6 +57,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Consumer;
 
 import static java.awt.image.BufferedImage.TYPE_INT_RGB;
 import static org.eclipse.collections.impl.tuple.Tuples.pair;
@@ -196,46 +198,52 @@ public class SLAMTest extends JPanel {
 
         Runnable[] running = {null};
         MetalConcurrentQueue<BufferedImage> frames = new MetalConcurrentQueue<BufferedImage>(4);
-        wc.tensor.on((r) -> {
-            if (r.img == null)
-                return;
+        wc.tensor.on(new Consumer<RGBBufImgBitmap2D>() {
+            @Override
+            public void accept(RGBBufImgBitmap2D r) {
+                if (r.img == null)
+                    return;
 
-            while (frames.size() + 1 > frames.capacity())
-                frames.poll();
-            frames.push(r.img);
+                while (frames.size() + 1 > frames.capacity())
+                    frames.poll();
+                frames.push(r.img);
 
-            synchronized (app) {
-                if (running[0] == null && frames.size() > 2) {
-                    BufferedImage a = frames.last();
-                    BufferedImage b = frames.last(1);
-                    assert (a != b);
-                    BufferedImage c = frames.last(2);
-                    assert (b != c);
-                    assert (a != c);
+                synchronized (app) {
+                    if (running[0] == null && frames.size() > 2) {
+                        BufferedImage a = frames.last();
+                        BufferedImage b = frames.last(1);
+                        assert (a != b);
+                        BufferedImage c = frames.last(2);
+                        assert (b != c);
+                        assert (a != c);
 
-                    running[0] = () -> {
-                        try {
-                            Pair<GrayF32, DisparityToColorPointCloud> disparityD2c = app.processImage(ImageType.single(ImageDataType.U8), 0L, a, b, c);
-                            if (disparityD2c!=null) {
-                                DisparityToColorPointCloud d2c = disparityD2c.getTwo();
-                                GrayF32 d = disparityD2c.getOne();
-                                pcv.setCameraHFov(PerspectiveOps.computeHFov(PerspectiveOps.matrixToPinhole(
-                                        app.rectifiedK, d.width, d.height, null)));
-                                pcv.setCameraToWorld(new Se3_F64());
-                                //pcv.setTranslationStep(d2c.baseline / 3);
-                                pcv.clearPoints();
-                                pcv.addCloud(d2c.getCloud(), d2c.getCloudColor());
-                                pcv.setDotSize(1);
-                                //pcv.setTranslationStep(baseline / 10);
+                        running[0] = new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    Pair<GrayF32, DisparityToColorPointCloud> disparityD2c = app.processImage(ImageType.single(ImageDataType.U8), 0L, a, b, c);
+                                    if (disparityD2c != null) {
+                                        DisparityToColorPointCloud d2c = disparityD2c.getTwo();
+                                        GrayF32 d = disparityD2c.getOne();
+                                        pcv.setCameraHFov(PerspectiveOps.computeHFov(PerspectiveOps.matrixToPinhole(
+                                                app.rectifiedK, d.width, d.height, null)));
+                                        pcv.setCameraToWorld(new Se3_F64());
+                                        //pcv.setTranslationStep(d2c.baseline / 3);
+                                        pcv.clearPoints();
+                                        pcv.addCloud(d2c.getCloud(), d2c.getCloudColor());
+                                        pcv.setDotSize(1);
+                                        //pcv.setTranslationStep(baseline / 10);
+                                    }
+
+                                } catch (Throwable t) {
+                                    t.printStackTrace();
+                                }
+                                frames.clear();
+                                running[0] = null;
                             }
-
-                        } catch (Throwable t) {
-                            t.printStackTrace();
-                        }
-                        frames.clear();
-                        running[0] = null;
-                    };
-                    Exe.runLater(running[0]);
+                        };
+                        Exe.runLater(running[0]);
+                    }
                 }
             }
         });

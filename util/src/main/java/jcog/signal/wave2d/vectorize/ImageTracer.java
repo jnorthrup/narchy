@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 import static jcog.signal.wave2d.vectorize.SVGUtils.svgpathstring;
 import static jcog.signal.wave2d.vectorize.SVGUtils.tosvgcolorstr;
@@ -143,7 +144,12 @@ public class ImageTracer {
                     int finalPcnt = pcnt;
                     int finalK = k;
                     
-                    zindex.computeIfAbsent(label, (l)-> new int[] {finalK, finalPcnt} );
+                    zindex.computeIfAbsent(label, new Function<Double, int[]>() {
+                        @Override
+                        public int[] apply(Double l) {
+                            return new int[]{finalK, finalPcnt};
+                        }
+                    });
                 }
 
             }
@@ -172,11 +178,16 @@ public class ImageTracer {
             }
             svgstr.append('>');
 
-            render(options, w, h, (path, color)-> svgpathstring(svgstr,
-                    "",
-                    path,
-                    tosvgcolorstr(color),
-                    options));
+            render(options, w, h, new BiConsumer<ArrayList<Double[]>, byte[]>() {
+                @Override
+                public void accept(ArrayList<Double[]> path, byte[] color) {
+                    svgpathstring(svgstr,
+                            "",
+                            path,
+                            tosvgcolorstr(color),
+                            options);
+                }
+            });
 
 
 

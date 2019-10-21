@@ -10,6 +10,8 @@ import nars.test.analyze.BeliefContradictionDetector;
 import nars.truth.Truth;
 import org.junit.jupiter.api.Test;
 
+import java.util.function.Consumer;
+
 import static nars.Op.IMPL;
 import static nars.time.Tense.ETERNAL;
 import static org.junit.jupiter.api.Assertions.*;
@@ -162,7 +164,12 @@ class ImplicationNetworkTest {
 
         aa.print();
         
-        bb.forEachTask(x -> System.out.println(x.proof()));
+        bb.forEachTask(new Consumer<Task>() {
+            @Override
+            public void accept(Task x) {
+                System.out.println(x.proof());
+            }
+        });
 
         Truth bBelief = bb.truth(ETERNAL, n);
 
@@ -187,7 +194,12 @@ class ImplicationNetworkTest {
         aa.print();
         bb.print();
         
-        cc.forEachTask(x -> System.out.println(x.proof()));
+        cc.forEachTask(new Consumer<Task>() {
+            @Override
+            public void accept(Task x) {
+                System.out.println(x.proof());
+            }
+        });
 
         Truth bBelief = bb.truth(ETERNAL, n);
         assertEquals("%1.0;.81%" ,bBelief.toString());

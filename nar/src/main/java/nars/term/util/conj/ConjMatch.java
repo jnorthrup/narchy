@@ -10,6 +10,7 @@ import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.util.Image;
 import nars.unify.UnifyTransform;
+import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -100,10 +101,20 @@ public enum ConjMatch { ;
             seq.removeAll(matches);
 
         if (!includeBefore)
-            seq.removeIf((w,x)-> w < matchEnd);
+            seq.removeIf(new LongObjectPredicate<Term>() {
+                @Override
+                public boolean accept(long w, Term x) {
+                    return w < matchEnd;
+                }
+            });
 
         if (!includeAfter)
-            seq.removeIf((w,x)-> w > matchStart);
+            seq.removeIf(new LongObjectPredicate<Term>() {
+                @Override
+                public boolean accept(long w, Term x) {
+                    return w > matchStart;
+                }
+            });
 
 
         Term ss = seq.term();

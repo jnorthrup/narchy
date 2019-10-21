@@ -10,6 +10,7 @@ import nars.derive.premise.PatternTermBuilder;
 import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
+import nars.term.Variable;
 import nars.term.anon.Anon;
 import nars.unify.Unify;
 import nars.unify.UnifyAny;
@@ -18,6 +19,8 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.BiPredicate;
+import java.util.function.Supplier;
 
 import static nars.$.$$;
 import static nars.Op.SETe;
@@ -125,12 +128,15 @@ public class UnifyTest {
 
                 if (shouldSub) {
                     int[] matched = {0};
-                    this.xy.forEachVersioned((k, v) -> {
-                        if (var(k.op())) {
-                            assertNotNull(v);
-                            matched[0]++;
+                    this.xy.forEachVersioned(new BiPredicate<Variable, Term>() {
+                        @Override
+                        public boolean test(Variable k, Term v) {
+                            if (var(k.op())) {
+                                assertNotNull(v);
+                                matched[0]++;
+                            }
+                            return true;
                         }
-                        return true;
                     });
 
                     if (matched[0] == n1) {
@@ -143,7 +149,12 @@ public class UnifyTest {
 
                 } else {
 
-                    assertTrue(n1 > xy.size(), () -> "why matched?: " + xy);
+                    assertTrue(n1 > xy.size(), new Supplier<String>() {
+                        @Override
+                        public String get() {
+                            return "why matched?: " + xy;
+                        }
+                    });
 
                 }
 

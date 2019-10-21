@@ -145,9 +145,19 @@ public enum Conj {
 
             return conj.eventsOR(
                     when == ETERNAL ?
-                            (w, cc) -> x.equals(cc) || (cc.opID() == (int) CONJ.id && _eventOf(cc, x, ETERNAL))
+                            new LongObjectPredicate<Term>() {
+                                @Override
+                                public boolean accept(long w, Term cc) {
+                                    return x.equals(cc) || (cc.opID() == (int) CONJ.id && _eventOf(cc, x, ETERNAL));
+                                }
+                            }
                             :
-                            (w, cc) -> w == when && (x.equals(cc) || (cc.opID() == (int) CONJ.id && _eventOf(cc, x, 0L)))
+                            new LongObjectPredicate<Term>() {
+                                @Override
+                                public boolean accept(long w, Term cc) {
+                                    return w == when && (x.equals(cc) || (cc.opID() == (int) CONJ.id && _eventOf(cc, x, 0L)));
+                                }
+                            }
                     //    !(w == when && x.equals(cc))
                     , when, true, conj.dt() == XTERNAL);
         }
@@ -157,10 +167,13 @@ public enum Conj {
             Term> valid) {
 
         FasterList<Term> candidates = new FasterList();
-        conj.eventsAND((when, what) -> {
-            if (valid.accept(when, what))
-                candidates.add(what);
-            return true;
+        conj.eventsAND(new LongObjectPredicate<Term>() {
+            @Override
+            public boolean accept(long when, Term what) {
+                if (valid.accept(when, what))
+                    candidates.add(what);
+                return true;
+            }
         }, 0L, decomposeParallel, true);
 
         return candidates.isEmpty() ? Null : candidates.get(random);
@@ -476,15 +489,21 @@ public enum Conj {
             boolean[] removedSomething = {false};
             exclude.eventsAND(
                 !pn ?
-                    (when, what) -> {
-                        removedSomething[0] |= ii.removeAll(what);
-                        return true;
-                    }
+                        new LongObjectPredicate<Term>() {
+                            @Override
+                            public boolean accept(long when, Term what) {
+                                removedSomething[0] |= ii.removeAll(what);
+                                return true;
+                            }
+                        }
                     :
-                    (when, what) -> {
-                        removedSomething[0] |= ii.removeIf(what::equalsPosOrNeg);
-                        return true;
-                    }
+                        new LongObjectPredicate<Term>() {
+                            @Override
+                            public boolean accept(long when, Term what) {
+                                removedSomething[0] |= ii.removeIf(what::equalsPosOrNeg);
+                                return true;
+                            }
+                        }
             , ETERNAL, true, false /*exclude.dt() == XTERNAL*/);
 
 //            //remove components from disjunctions (TODO optional)
@@ -524,14 +543,34 @@ public enum Conj {
                 assert (exclude.dt() == DTERNAL);
                 Subterms excludeSubs = exclude.subterms();
                 p = pn ?
-                    t -> !excludeSubs.containsPosOrNeg(t)
+                        new Predicate<Term>() {
+                            @Override
+                            public boolean test(Term t) {
+                                return !excludeSubs.containsPosOrNeg(t);
+                            }
+                        }
                     :
-                    t -> !excludeSubs.contains(t);
+                        new Predicate<Term>() {
+                            @Override
+                            public boolean test(Term t) {
+                                return !excludeSubs.contains(t);
+                            }
+                        };
             } else {
                 p = pn ?
-                    t -> !t.equalsPosOrNeg(exclude)
+                        new Predicate<Term>() {
+                            @Override
+                            public boolean test(Term t) {
+                                return !t.equalsPosOrNeg(exclude);
+                            }
+                        }
                     :
-                    t -> !t.equals(exclude);
+                        new Predicate<Term>() {
+                            @Override
+                            public boolean test(Term t) {
+                                return !t.equals(exclude);
+                            }
+                        };
             }
             MetalBitSet y = incSubs.indicesOfBits(p);
             int yCardinality = y.cardinality();

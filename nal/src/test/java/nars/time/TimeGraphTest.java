@@ -399,7 +399,12 @@ class TimeGraphTest {
             TimeGraph C = newTimeGraph(1);
             String i = "(b" + inner + "(a&&x))";
             Term ii = $(i);
-            assertTrue(ii.op().eventable, ()->i);
+            assertTrue(ii.op().eventable, new Supplier<String>() {
+                @Override
+                public String get() {
+                    return i;
+                }
+            });
             C.know(ii, 1);
             C.print();
             assertSolved("(b ==>+- a)", C, "(b" + inner + "a)");
@@ -562,16 +567,23 @@ class TimeGraphTest {
         ExpectSolutions(TimeGraph time, boolean equalsOrContains, String... solutions) {
             this.time = time;
             this.solutions = solutions;
-            errorMsg = () ->
-                    "expect: " + Arrays.toString(solutions) + "\n   got: " + this;
+            errorMsg = new Supplier<String>() {
+                @Override
+                public String get() {
+                    return "expect: " + Arrays.toString(solutions) + "\n   got: " + ExpectSolutions.this;
+                }
+            };
 
             TreeSet<String> solutionSet = Sets.newTreeSet(List.of(solutions));
 
-            afterEach.add(() -> {
-                if (equalsOrContains)
-                    assertEquals(solutionSet, this, errorMsg);
-                else
-                    assertTrue(containsAll(solutionSet), errorMsg);
+            afterEach.add(new Runnable() {
+                @Override
+                public void run() {
+                    if (equalsOrContains)
+                        assertEquals(solutionSet, ExpectSolutions.this, errorMsg);
+                    else
+                        assertTrue(ExpectSolutions.this.containsAll(solutionSet), errorMsg);
+                }
             });
         }
 
@@ -604,14 +616,17 @@ class TimeGraphTest {
 
                     IntHashSet d = dt[xx][yy] = new IntHashSet(2);
                     Term between = CONJ.the(x, XTERNAL, y);
-                    time.solve(between, (each) -> {
-                        if (each.id.equalsRoot(between)) {
-                            int xydt = each.id.dt();
-                            if (xydt != DTERNAL && xydt != XTERNAL) {
-                                d.add(xydt);
+                    time.solve(between, new Predicate<TimeGraph.Event>() {
+                        @Override
+                        public boolean test(TimeGraph.Event each) {
+                            if (each.id.equalsRoot(between)) {
+                                int xydt = each.id.dt();
+                                if (xydt != DTERNAL && xydt != XTERNAL) {
+                                    d.add(xydt);
+                                }
                             }
+                            return true;
                         }
-                        return true;
                     });
                 }
             }
@@ -652,13 +667,16 @@ class TimeGraphTest {
 
             @Override
             public boolean solve(Term x, Predicate<Event> target) {
-                return super.solve(x, (y)->{
-                    if (trace) {
-                        System.err.println("SOLUTION: " + y);
-                        Thread.dumpStack();
-                        System.out.println();
+                return super.solve(x, new Predicate<Event>() {
+                    @Override
+                    public boolean test(Event y) {
+                        if (trace) {
+                            System.err.println("SOLUTION: " + y);
+                            Thread.dumpStack();
+                            System.out.println();
+                        }
+                        return target.test(y);
                     }
-                    return target.test(y);
                 });
             }
         };

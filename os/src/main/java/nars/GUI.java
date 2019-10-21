@@ -11,6 +11,8 @@ import org.slf4j.LoggerFactory;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.widget.chip.ReplChip;
 
+import java.util.function.Consumer;
+
 import static nars.$.$$;
 import static spacegraph.SpaceGraph.window;
 
@@ -38,11 +40,14 @@ public class GUI {
         //window(new TaskListView(n.what(), 32), 1200, 800);
         //window(new ConceptListView(n.what(), 32), 1200, 800);
 
-        window(new ReplChip((cmd, receive) -> {
-            try {
-                n.input(cmd);
-            } catch (Narsese.NarseseException e) {
-                receive.accept(e.toString());
+        window(new ReplChip(new ReplChip.ReplModel() {
+            @Override
+            public void input(String cmd, Consumer<String> receive) {
+                try {
+                    n.input(cmd);
+                } catch (Narsese.NarseseException e) {
+                    receive.accept(e.toString());
+                }
             }
         }), 800, 200);
     }

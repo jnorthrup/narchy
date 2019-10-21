@@ -31,6 +31,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 
 /**
  * A WeakHashMap-like data structure that uses a pair of weakly-referenced keys
@@ -161,7 +162,12 @@ final class WeakPairMap<K1, K2, V> {
         try {
             return map.computeIfAbsent(
                 Pair.weak(k1, k2, queue),
-                pair -> mappingFunction.apply(pair.first(), pair.second()));
+                    new Function<Pair<K1, K2>, V>() {
+                        @Override
+                        public V apply(Pair<K1, K2> pair) {
+                            return mappingFunction.apply(pair.first(), pair.second());
+                        }
+                    });
         } finally {
             Reference.reachabilityFence(k1);
             Reference.reachabilityFence(k2);

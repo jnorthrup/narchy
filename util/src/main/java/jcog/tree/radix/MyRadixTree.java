@@ -6,6 +6,7 @@ import jcog.data.byt.ProxyBytes;
 import jcog.data.list.FasterList;
 import jcog.sort.SortedArray;
 import org.eclipse.collections.api.tuple.Pair;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
@@ -286,15 +287,24 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
     public final X put(AbstractBytes key, X value) {
 
 
-        return compute(key, value, (k, r, existing, v) -> v);
+        return compute(key, value, new QuadFunction<AbstractBytes, SearchResult, X, X, X>() {
+            @Override
+            public X apply(AbstractBytes k, SearchResult r, X existing, X v) {
+                return v;
+            }
+        });
     }
 
     /**
      * {@inheritDoc}
      */
     public final X putIfAbsent(AbstractBytes key, X newValue) {
-        return compute(key, newValue, (k, r, existing, v) ->
-                existing != null ? existing : v
+        return compute(key, newValue, new QuadFunction<AbstractBytes, SearchResult, X, X, X>() {
+                    @Override
+                    public X apply(AbstractBytes k, SearchResult r, X existing, X v) {
+                        return existing != null ? existing : v;
+                    }
+                }
         );
     }
 
@@ -303,8 +313,12 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
     }
 
     public final X putIfAbsent(AbstractBytes key, Supplier<X> newValue) {
-        return compute(key, newValue, (k, r, existing, v) ->
-                existing != null ? existing : v.get()
+        return compute(key, newValue, new QuadFunction<AbstractBytes, SearchResult, X, Supplier<X>, X>() {
+                    @Override
+                    public X apply(AbstractBytes k, SearchResult r, X existing, Supplier<X> v) {
+                        return existing != null ? existing : v.get();
+                    }
+                }
         );
     }
 
@@ -507,10 +521,13 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
                         }
                     } else {
 
-                        forEach(found, (k, f) -> {
-                            boolean removed = tryRemove(f);
-                            if (!removed) {
-                                reinsertions.add(f);
+                        forEach(found, new BiConsumer<AbstractBytes, X>() {
+                            @Override
+                            public void accept(AbstractBytes k, X f) {
+                                boolean removed = MyRadixTree.this.tryRemove(f);
+                                if (!removed) {
+                                    reinsertions.add(f);
+                                }
                             }
                         });
                         numChildren = 0;
@@ -972,25 +989,31 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
      */
     @SuppressWarnings("JavaDoc")
     private static <O> Iterable<O> getDescendantValues(AbstractBytes startKey, Node startNode) {
-        return () -> new LazyIterator<>() {
-
-            Iterator<NodeKeyPair> descendantNodes = null;
-
+        return new Iterable<O>() {
+            @NotNull
             @Override
-            protected O computeNext() {
-                if (descendantNodes == null) {
-                    descendantNodes = lazyTraverseDescendants(startKey, startNode).iterator();
-                }
+            public Iterator<O> iterator() {
+                return new LazyIterator<>() {
 
-                while (descendantNodes.hasNext()) {
-                    NodeKeyPair nodeKeyPair = descendantNodes.next();
-                    Object value = nodeKeyPair.node.getValue();
-                    if (value != null) {
-                        return (O) value;
+                    Iterator<NodeKeyPair> descendantNodes = null;
+
+                    @Override
+                    protected O computeNext() {
+                        if (descendantNodes == null) {
+                            descendantNodes = lazyTraverseDescendants(startKey, startNode).iterator();
+                        }
+
+                        while (descendantNodes.hasNext()) {
+                            NodeKeyPair nodeKeyPair = descendantNodes.next();
+                            Object value = nodeKeyPair.node.getValue();
+                            if (value != null) {
+                                return (O) value;
+                            }
+                        }
+
+                        return endOfData();
                     }
-                }
-
-                return endOfData();
+                };
             }
         };
     }
@@ -1005,26 +1028,32 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
      */
     @SuppressWarnings("JavaDoc")
     private static <O> Iterable<Pair<AbstractBytes, O>> getDescendantKeyValuePairs(AbstractBytes startKey, Node startNode) {
-        return () -> new LazyIterator<>() {
-            Iterator<NodeKeyPair> descendantNodes = null;
-
+        return new Iterable<Pair<AbstractBytes, O>>() {
+            @NotNull
             @Override
-            protected Pair<AbstractBytes, O> computeNext() {
+            public Iterator<Pair<AbstractBytes, O>> iterator() {
+                return new LazyIterator<>() {
+                    Iterator<NodeKeyPair> descendantNodes = null;
 
-                if (descendantNodes == null)
-                    descendantNodes = lazyTraverseDescendants(startKey, startNode).iterator();
+                    @Override
+                    protected Pair<AbstractBytes, O> computeNext() {
 
-                while (descendantNodes.hasNext()) {
-                    NodeKeyPair nodeKeyPair = descendantNodes.next();
-                    Object value = nodeKeyPair.node.getValue();
-                    if (value != null) {
+                        if (descendantNodes == null)
+                            descendantNodes = lazyTraverseDescendants(startKey, startNode).iterator();
+
+                        while (descendantNodes.hasNext()) {
+                            NodeKeyPair nodeKeyPair = descendantNodes.next();
+                            Object value = nodeKeyPair.node.getValue();
+                            if (value != null) {
 
 
-                        return pair(transformKeyForResult(nodeKeyPair.key), (O) value);
+                                return pair(transformKeyForResult(nodeKeyPair.key), (O) value);
+                            }
+                        }
+
+                        return endOfData();
                     }
-                }
-
-                return endOfData();
+                };
             }
         };
     }
@@ -1047,25 +1076,31 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
     private static Iterable<NodeKeyPair> lazyTraverseDescendants(AbstractBytes startKey, Node startNode) {
         Deque<NodeKeyPair> stack = new ArrayDeque();
         stack.push(new NodeKeyPair(startNode, startKey));
-        return () -> new LazyIterator<>() {
-
+        return new Iterable<NodeKeyPair>() {
+            @NotNull
             @Override
-            protected NodeKeyPair computeNext() {
+            public Iterator<NodeKeyPair> iterator() {
+                return new LazyIterator<>() {
 
-                if (stack.isEmpty()) {
-                    return endOfData();
-                }
-                NodeKeyPair current = stack.pop();
-                List<Node> childNodes = current.node.getOutgoingEdges();
+                    @Override
+                    protected NodeKeyPair computeNext() {
+
+                        if (stack.isEmpty()) {
+                            return endOfData();
+                        }
+                        NodeKeyPair current = stack.pop();
+                        List<Node> childNodes = current.node.getOutgoingEdges();
 
 
-                for (int i = childNodes.size() - 1; i >= 0; i--) {
-                    Node child = childNodes.get(i);
-                    stack.push(new NodeKeyPair(child,
-                            concatenate(current.key, child.getIncomingEdge())
-                    ));
-                }
-                return current;
+                        for (int i = childNodes.size() - 1; i >= 0; i--) {
+                            Node child = childNodes.get(i);
+                            stack.push(new NodeKeyPair(child,
+                                    concatenate(current.key, child.getIncomingEdge())
+                            ));
+                        }
+                        return current;
+                    }
+                };
             }
         };
     }

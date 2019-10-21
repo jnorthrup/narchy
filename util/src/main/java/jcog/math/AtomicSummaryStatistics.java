@@ -7,6 +7,7 @@ import org.eclipse.collections.api.block.procedure.primitive.FloatProcedure;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.DoubleAccumulator;
 import java.util.function.Consumer;
+import java.util.function.DoubleBinaryOperator;
 
 /** see also: https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/util/StatCounter.scala */
 public class AtomicSummaryStatistics implements FloatProcedure, DoubleProcedure, StatisticalSummary {
@@ -22,31 +23,34 @@ public class AtomicSummaryStatistics implements FloatProcedure, DoubleProcedure,
     /**
      * NaN triggers reset
      */
-    final DoubleAccumulator update = new DoubleAccumulator((ss, v) -> {
-        if (v == v) {
-            
-
-            sum += v;
-            if (min > v) min = v;
-            if (max < v) max = v;
+    final DoubleAccumulator update = new DoubleAccumulator(new DoubleBinaryOperator() {
+        @Override
+        public double applyAsDouble(double ss, double v) {
+            if (v == v) {
 
 
-            double tmpMean = mean;
+                sum += v;
+                if (min > v) min = v;
+                if (max < v) max = v;
 
-            double delta = v - tmpMean;
-            mean += delta / (double) ++count;
-            return ss + delta * (v - mean);
-        } else {
-            if (onCommit!=null) {
-                for (Consumer<AtomicSummaryStatistics> c : onCommit)
-                    c.accept(this);
+
+                double tmpMean = mean;
+
+                double delta = v - tmpMean;
+                mean += delta / (double) ++count;
+                return ss + delta * (v - mean);
+            } else {
+                if (onCommit != null) {
+                    for (Consumer<AtomicSummaryStatistics> c : onCommit)
+                        c.accept(AtomicSummaryStatistics.this);
+                }
+                count = 0L;
+                mean = (double) 0;
+                sum = (double) 0;
+                min = Double.POSITIVE_INFINITY;
+                max = Double.NEGATIVE_INFINITY;
+                return (double) 0;
             }
-            count = 0L;
-            mean = (double) 0;
-            sum = (double) 0;
-            min = Double.POSITIVE_INFINITY;
-            max = Double.NEGATIVE_INFINITY;
-            return (double) 0;
         }
     }, (double) 0);
 
@@ -227,7 +231,12 @@ public class AtomicSummaryStatistics implements FloatProcedure, DoubleProcedure,
     /** asynchronous sum integrator */
     public AtomicSummaryStatistics sumIntegrator() {
         AtomicSummaryStatistics i = new AtomicSummaryStatistics();
-        on((x) -> i.accept(x.sum));
+        on(new Consumer<AtomicSummaryStatistics>() {
+            @Override
+            public void accept(AtomicSummaryStatistics x) {
+                i.accept(x.sum);
+            }
+        });
         return i;
     }
 

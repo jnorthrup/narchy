@@ -6,6 +6,7 @@ import nars.table.BeliefTable;
 import nars.table.BeliefTables;
 import nars.table.TaskTable;
 import nars.table.eternal.EternalTable;
+import org.eclipse.collections.api.block.procedure.Procedure2;
 
 import java.util.function.Consumer;
 import java.util.function.ToIntFunction;
@@ -86,7 +87,12 @@ public final class ConceptAllocator implements Consumer<Concept> {
 
     private void setTaskCapacity(TaskConcept c, BeliefTable x, boolean beliefOrGoal) {
         if (x instanceof BeliefTables)
-            ((BeliefTables)x).forEachWith((xx, C) -> _setTaskCapacity(C, xx, false), c);
+            ((BeliefTables)x).forEachWith(new Procedure2<BeliefTable, TaskConcept>() {
+                @Override
+                public void value(BeliefTable xx, TaskConcept C) {
+                    ConceptAllocator.this._setTaskCapacity(C, xx, false);
+                }
+            }, c);
         else
             _setTaskCapacity(c, x, false);
     }

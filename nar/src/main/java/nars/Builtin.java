@@ -1,9 +1,13 @@
 package nars;
 
 import jcog.Texts;
+import jcog.func.TriConsumer;
+import jcog.func.TriFunction;
+import nars.concept.Concept;
 import nars.op.*;
 import nars.op.data.flat;
 import nars.op.data.reflect;
+import nars.subterm.Subterms;
 import nars.task.NALTask;
 import nars.term.Variable;
 import nars.term.*;
@@ -17,13 +21,19 @@ import nars.term.obj.QuantityTerm;
 import nars.term.util.Image;
 import nars.term.util.conj.Conj;
 import nars.time.Tense;
+import nars.truth.Truth;
 import nars.util.var.DepIndepVarIntroduction;
+import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 import org.eclipse.collections.api.map.ImmutableMap;
 import org.eclipse.collections.api.map.MutableMap;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 import static nars.Op.*;
 import static nars.io.NarseseParser.termDynamic;
@@ -118,107 +128,138 @@ public enum Builtin {
 
 
             /** applies the changes in structurally similar terms "from" and "to" to the target target */
-            Functor.f3((Atom) $.the("substDiff"), (target, from, to) -> {
-                if (from.equals(to))
-                    return Null;
+            Functor.f3((Atom) $.the("substDiff"), new TriFunction<Term, Term, Term, Term>() {
+                @Override
+                public Term apply(Term target, Term from, Term to) {
+                    if (from.equals(to))
+                        return Null;
 
-                int n;
-                if (from.opID() == to.opID() && (n = from.subs()) == to.subs()) {
+                    int n;
+                    if (from.opID() == to.opID() && (n = from.subs()) == to.subs()) {
 
-                    Map<Term, Term> m = null;
-                    for (int i = 0; i < n; i++) {
-                        Term f = from.sub(i);
-                        Term t = to.sub(i);
-                        if (!f.equals(t)) {
-                            if (m == null) m = new UnifiedMap<>(1);
-                            m.put(f, t);
+                        Map<Term, Term> m = null;
+                        for (int i = 0; i < n; i++) {
+                            Term f = from.sub(i);
+                            Term t = to.sub(i);
+                            if (!f.equals(t)) {
+                                if (m == null) m = new UnifiedMap<>(1);
+                                m.put(f, t);
+                            }
+                        }
+                        if (m != null) {
+                            Term y = target.replace(m);
+                            if (y != null && !y.equals(target))
+                                return y;
                         }
                     }
-                    if (m != null) {
-                        Term y = target.replace(m);
-                        if (y != null && !y.equals(target))
-                            return y;
-                    }
+                    return Null;
                 }
-                return Null;
             }),
 
             /** similar to C/Java "indexOf" but returns a set of all numeric indices where the 2nd argument occurrs as a subterm of the first
              *  if not present, returns Null
              * */
 
-            Functor.f2("indicesOf", (x, y) -> {
+            Functor.f2("indicesOf", new BiFunction<Term, Term, Term>() {
+                @Override
+                public Term apply(Term x, Term y) {
 
 
-                int s = x.subs();
-                if (s > 0) {
-                    TreeSet<Term> indices = null;
-                    for (int i = 0; i < s; i++) {
-                        if (x.sub(i).equals(y)) {
-                            if (indices == null) indices = new TreeSet();
-                            indices.add(IdempotInt.the(i));
+                    int s = x.subs();
+                    if (s > 0) {
+                        TreeSet<Term> indices = null;
+                        for (int i = 0; i < s; i++) {
+                            if (x.sub(i).equals(y)) {
+                                if (indices == null) indices = new TreeSet();
+                                indices.add(IdempotInt.the(i));
+                            }
                         }
+                        return indices == null ? Null : SETe.the(indices);
                     }
-                    return indices == null ? Null : SETe.the(indices);
+                    return Null;
                 }
-                return Null;
             }),
-            Functor.f2("keyValues", (x, y) -> {
+            Functor.f2("keyValues", new BiFunction<Term, Term, Term>() {
+                @Override
+                public Term apply(Term x, Term y) {
 
 
-                int s = x.subs();
-                if (s > 0) {
-                    TreeSet<Term> indices = null;
-                    for (int i = 0; i < s; i++) {
-                        if (x.sub(i).equals(y)) {
-                            if (indices == null) indices = new TreeSet();
-                            indices.add($.p(y, IdempotInt.the(i)));
+                    int s = x.subs();
+                    if (s > 0) {
+                        TreeSet<Term> indices = null;
+                        for (int i = 0; i < s; i++) {
+                            if (x.sub(i).equals(y)) {
+                                if (indices == null) indices = new TreeSet();
+                                indices.add($.p(y, IdempotInt.the(i)));
+                            }
+                        }
+                        if (indices == null)
+                            return Null;
+                        else {
+                            switch (indices.size()) {
+                                case 0:
+                                    return Null;
+                                case 1:
+                                    return indices.first();
+                                default:
+
+                                    return SETe.the(indices);
+                            }
                         }
                     }
-                    if (indices == null)
-                        return Null;
-                    else {
-                        switch (indices.size()) {
-                            case 0:
-                                return Null;
-                            case 1:
-                                return indices.first();
-                            default:
-
-                                return SETe.the(indices);
-                        }
-                    }
+                    return Null;
                 }
-                return Null;
             }),
 
-            Functor.f2("varMask", (x, y) -> {
-                int s = x.subs();
-                if (s > 0) {
-                    List<Term> list = new ArrayList<>();
-                    for (int i = 0; i < s; i++) {
-                        Term term = x.sub(i).equals(y) ? y : $.varDep("z" + i);
-                        list.add(term);
+            Functor.f2("varMask", new BiFunction<Term, Term, Term>() {
+                @Override
+                public Term apply(Term x, Term y) {
+                    int s = x.subs();
+                    if (s > 0) {
+                        List<Term> list = new ArrayList<>();
+                        for (int i = 0; i < s; i++) {
+                            Term term = x.sub(i).equals(y) ? y : $.varDep("z" + i);
+                            list.add(term);
+                        }
+                        Term[] t = list.toArray(new Term[0]);
+                        return $.p(t);
                     }
-                    Term[] t = list.toArray(new Term[0]);
-                    return $.p(t);
+                    return Null;
                 }
-                return Null;
             }),
 
 
             Functor.f1Const("reflect", reflect::reflect),
 
 
-            Functor.f1Const("toString", x -> $.quote(x.toString())),
-            Functor.f1Const("toChars", x -> $.p(x.toString().toCharArray(), $::the)),
-            Functor.f1Const("complexity", x -> $.the(x.complexity())),
+            Functor.f1Const("toString", new Function<Term, Term>() {
+                @Override
+                public Term apply(Term x) {
+                    return $.quote(x.toString());
+                }
+            }),
+            Functor.f1Const("toChars", new Function<Term, Term>() {
+                @Override
+                public Term apply(Term x) {
+                    return $.p(x.toString().toCharArray(), $::the);
+                }
+            }),
+            Functor.f1Const("complexity", new Function<Term, Term>() {
+                @Override
+                public Term apply(Term x) {
+                    return $.the(x.complexity());
+                }
+            }),
 
             flat.flatProduct,
 
-            Functor.f2("similaritree", (a, b) ->
-                    ((a instanceof Variable) || (b instanceof Variable)) ? null :
-                            $.the(Texts.levenshteinDistance(a.toString(), b.toString()))
+            Functor.f2("similaritree", new BiFunction<Term, Term, Term>() {
+                        @Override
+                        public Term apply(Term a, Term b) {
+                            return ((a instanceof Variable) || (b instanceof Variable)) ? null :
+                                    $.the(Texts.levenshteinDistance(a.toString(), b.toString()));
+                        }
+                    }
             ),
 
             new UnaryBidiFunctor("anon") {
@@ -230,55 +271,76 @@ public enum Builtin {
             },
 
 
-            Functor.f2("ifThen", (condition, conseq) -> {
-                if (!condition.equals(True)) {
-                    if (condition== Null)
-                        return Null;
-                    return null;
-                } else
-                    return conseq;
-            }),
-
-            Functor.f3("ifThenElse", (condition, ifTrue, ifFalse) -> {
-                if (!(condition instanceof IdempotentBool))
-                    return null;
-                else {
-                    if (condition == True)
-                        return ifTrue;
-                    else if (condition == False)
-                        return ifFalse;
-                    else
-                        return Null;
+            Functor.f2("ifThen", new BiFunction<Term, Term, Term>() {
+                @Override
+                public Term apply(Term condition, Term conseq) {
+                    if (!condition.equals(True)) {
+                        if (condition == Null)
+                            return Null;
+                        return null;
+                    } else
+                        return conseq;
                 }
             }),
 
-            Functor.f3("ifOrElse", (condition, conseqTrue, conseqFalse) -> {
-                if (condition.hasVars()) return null;
-                else {
-                    if (condition.equals(True))
-                        return conseqTrue;
-                    else if (condition.equals(False))
-                        return conseqFalse;
+            Functor.f3("ifThenElse", new TriFunction<Term, Term, Term, Term>() {
+                @Override
+                public Term apply(Term condition, Term ifTrue, Term ifFalse) {
+                    if (!(condition instanceof IdempotentBool))
+                        return null;
+                    else {
+                        if (condition == True)
+                            return ifTrue;
+                        else if (condition == False)
+                            return ifFalse;
+                        else
+                            return Null;
+                    }
                 }
-                return Null;
             }),
 
-            Functor.f2("ifNeqRoot", (returned, compareTo) ->
-                    !returned.equalsRoot(compareTo) ? returned : Null
+            Functor.f3("ifOrElse", new TriFunction<Term, Term, Term, Term>() {
+                @Override
+                public Term apply(Term condition, Term conseqTrue, Term conseqFalse) {
+                    if (condition.hasVars()) return null;
+                    else {
+                        if (condition.equals(True))
+                            return conseqTrue;
+                        else if (condition.equals(False))
+                            return conseqFalse;
+                    }
+                    return Null;
+                }
+            }),
+
+            Functor.f2("ifNeqRoot", new BiFunction<Term, Term, Term>() {
+                        @Override
+                        public Term apply(Term returned, Term compareTo) {
+                            return !returned.equalsRoot(compareTo) ? returned : Null;
+                        }
+                    }
             ),
 
 
-            Functor.f2("subterm", (x, index) -> {
-                try {
-                    if (index instanceof IdempotInt && index.op() == INT) {
-                        return x.sub($.intValue(index));
+            Functor.f2("subterm", new BiFunction<Term, Term, Term>() {
+                @Override
+                public Term apply(Term x, Term index) {
+                    try {
+                        if (index instanceof IdempotInt && index.op() == INT) {
+                            return x.sub($.intValue(index));
+                        }
+                    } catch (NumberFormatException ignored) {
                     }
-                } catch (NumberFormatException ignored) {
+                    return null;
                 }
-                return null;
             }),
 
-            Functor.f1("quote", x -> x)
+            Functor.f1("quote", new UnaryOperator<Term>() {
+                @Override
+                public Term apply(Term x) {
+                    return x;
+                }
+            })
     };
 
     private static final ImmutableMap<Term, Functor> statiks;
@@ -302,59 +364,68 @@ public enum Builtin {
         nar.add(SetFunc.sort(nar));
 
         /** dynamic target builder - useful for NAR specific contexts like clock etc.. */
-        nar.add(Functor.f(termDynamic, s -> {
-            Op o = Op.stringToOperator.get($.unquote(s.sub(0)));
-            Term[] args = s.sub(1).subterms().arrayShared();
-            if (args.length == 2) {
-                if (o.temporal) {
+        nar.add(Functor.f(termDynamic, new Function<Subterms, Term>() {
+            @Override
+            public Term apply(Subterms s) {
+                Op o = Op.stringToOperator.get($.unquote(s.sub(0)));
+                Term[] args = s.sub(1).subterms().arrayShared();
+                if (args.length == 2) {
+                    if (o.temporal) {
 
-                    Term dtTerm = s.sub(2);
-                    if (!(dtTerm instanceof QuantityTerm))
-                        dtTerm = QuantityTerm.the(dtTerm);
+                        Term dtTerm = s.sub(2);
+                        if (!(dtTerm instanceof QuantityTerm))
+                            dtTerm = QuantityTerm.the(dtTerm);
 
-                    int dt = Tense.occToDT(nar.time.toCycles(((QuantityTerm) dtTerm).quant));
-                    return o.the(dt, args);
+                        int dt = Tense.occToDT(nar.time.toCycles(((QuantityTerm) dtTerm).quant));
+                        return o.the(dt, args);
+                    }
+
+                    throw new UnsupportedOperationException("unrecognized modifier argument: " + s);
                 }
 
-                throw new UnsupportedOperationException("unrecognized modifier argument: " + s);
+                return o.the(args);
+
             }
-
-            return o.the(args);
-
         }));
 
         /** applies # dep and $ indep variable introduction if possible. returns the input term otherwise  */
-        nar.add(Functor.f1Inline("varIntro", x -> {
-            if (!(x instanceof Compound)) return Null;
-            Term result = DepIndepVarIntroduction.the.apply((Compound)x, nar.random(), null);
-            return result != null ? result : Null;
+        nar.add(Functor.f1Inline("varIntro", new UnaryOperator<Term>() {
+            @Override
+            public Term apply(Term x) {
+                if (!(x instanceof Compound)) return Null;
+                Term result = DepIndepVarIntroduction.the.apply((Compound) x, nar.random(), null);
+                return result != null ? result : Null;
+            }
         }));
 
         /** subterm, but specifically inside an ellipsis. otherwise pass through */
-        nar.add(Functor.f("esubterm", c -> {
+        nar.add(Functor.f("esubterm", new Function<Subterms, Term>() {
+            @Override
+            public Term apply(Subterms c) {
 
 
-            Term x = c.sub(0, null);
-            if (x == null)
-                return Null;
-
-            Term index = c.sub(1, Null);
-            if (index == Null)
-                return Null;
-
-            int which;
-            if (index != null) {
-                if (index instanceof Variable)
+                Term x = c.sub(0, null);
+                if (x == null)
                     return Null;
 
-                which = $.intValue(index, -1);
-                if (which < 0)
+                Term index = c.sub(1, Null);
+                if (index == Null)
                     return Null;
 
-            } else
-                which = nar.random().nextInt(x.subs());
+                int which;
+                if (index != null) {
+                    if (index instanceof Variable)
+                        return Null;
 
-            return x.sub(which);
+                    which = $.intValue(index, -1);
+                    if (which < 0)
+                        return Null;
+
+                } else
+                    which = nar.random().nextInt(x.subs());
+
+                return x.sub(which);
+            }
         }));
 
         nar.add(new AbstractInlineFunctor1("negateEvents") {
@@ -459,7 +530,12 @@ public enum Builtin {
         protected Term apply1(Term conj) {
             return Conj.chooseEvent(conj, nar.random(),
                     true,
-                    (when, what)->true);
+                    new LongObjectPredicate<Term>() {
+                        @Override
+                        public boolean accept(long when, Term what) {
+                            return true;
+                        }
+                    });
         }
     });
 
@@ -482,96 +558,128 @@ public enum Builtin {
                return Conj.chooseEvent(conj, nar.random(),
                        //(!econj || edt!=DTERNAL), (!econj || edt!=0),
                        true,
-                       (when, what)-> (!requireVars || what.hasVars())
-                               && Terms.possiblyUnifiable(event, what, true, Op.Variable));
+                       new LongObjectPredicate<Term>() {
+                           @Override
+                           public boolean accept(long when, Term what) {
+                               return (!requireVars || what.hasVars())
+                                       && Terms.possiblyUnifiable(event, what, true, Op.Variable);
+                           }
+                       });
            }
        });
 
 
-        nar.add(Functor.f1Concept("beliefTruth", nar, (c, n) -> $.quote(n.belief(c, n.time()))));
+        nar.add(Functor.f1Concept("beliefTruth", nar, new BiFunction<Concept, NAR, Term>() {
+            @Override
+            public Term apply(Concept c, NAR n) {
+                return $.quote(n.belief(c, n.time()));
+            }
+        }));
 //        nar.on(Functor.f1Concept("goalTruth", nar, (c, n) -> $.quote(n.goal(c, n.time()))));
 
         nar.add(f0("self", nar::self));
 
-        nar.add(Functor.f1("the", what -> {
+        nar.add(Functor.f1("the", new UnaryOperator<Term>() {
+            @Override
+            public Term apply(Term what) {
 
 
-            if (what instanceof Atom) {
-                switch (what.toString()) {
-                    case "sys":
-                        return $.p(
-                                $.quote(nar.emotion.summary()),
-                                $.quote(nar.memory.summary()),
-                                $.quote(nar.emotion.summary()),
-                                $.quote(nar.exe.toString())
-                        );
+                if (what instanceof Atom) {
+                    switch (what.toString()) {
+                        case "sys":
+                            return $.p(
+                                    $.quote(nar.emotion.summary()),
+                                    $.quote(nar.memory.summary()),
+                                    $.quote(nar.emotion.summary()),
+                                    $.quote(nar.exe.toString())
+                            );
+                    }
                 }
+
+                Object x = nar.concept(what);
+                if (x == null)
+                    x = what;
+
+                return $.quote($.p($.quote(x.getClass().toString()), $.quote(x.toString())));
             }
-
-            Object x = nar.concept(what);
-            if (x == null)
-                x = what;
-
-            return $.quote($.p($.quote(x.getClass().toString()), $.quote(x.toString())));
         }));
 
 
-        nar.add(Functor.f("slice", (args) -> {
-            if (args.subs() == 2) {
-                Term x = args.sub(0);
-                if (x.subs() > 0) {
-                    int len = x.subs();
+        nar.add(Functor.f("slice", new Function<Subterms, Term>() {
+            @Override
+            public Term apply(Subterms args) {
+                if (args.subs() == 2) {
+                    Term x = args.sub(0);
+                    if (x.subs() > 0) {
+                        int len = x.subs();
 
-                    Term index = args.sub(1);
-                    Op o = index.op();
-                    if (o == INT) {
+                        Term index = args.sub(1);
+                        Op o = index.op();
+                        if (o == INT) {
 
-                        int i = ((IdempotInt) index).i;
-                        return i >= 0 && i < len ? x.sub(i) : False;
+                            int i = ((IdempotInt) index).i;
+                            return i >= 0 && i < len ? x.sub(i) : False;
 
-                    } else if (o == PROD && index.subs() == 2) {
-                        Term start = (index).sub(0);
-                        if (start.op() == INT) {
-                            Term end = (index).sub(1);
-                            if (end.op() == INT) {
-                                int si = ((IdempotInt) start).i;
-                                if (si >= 0 && si < len) {
-                                    int ei = ((IdempotInt) end).i;
-                                    if (ei >= 0 && ei <= len) {
-                                        if (si == ei)
-                                            return Op.EmptyProduct;
-                                        if (si < ei) {
-                                            return $.p(Arrays.copyOfRange(x.subterms().arrayClone(), si, ei));
+                        } else if (o == PROD && index.subs() == 2) {
+                            Term start = (index).sub(0);
+                            if (start.op() == INT) {
+                                Term end = (index).sub(1);
+                                if (end.op() == INT) {
+                                    int si = ((IdempotInt) start).i;
+                                    if (si >= 0 && si < len) {
+                                        int ei = ((IdempotInt) end).i;
+                                        if (ei >= 0 && ei <= len) {
+                                            if (si == ei)
+                                                return Op.EmptyProduct;
+                                            if (si < ei) {
+                                                return $.p(Arrays.copyOfRange(x.subterms().arrayClone(), si, ei));
+                                            }
                                         }
                                     }
+
+                                    return False;
                                 }
-
-                                return False;
                             }
-                        }
 
+                        }
                     }
                 }
+                return null;
             }
-            return null;
         }));
     }
 
     private static void registerOperators(NAR nar) {
 
 
-        nar.setOp(Task.BeliefAtom, (x, nn) -> Task.tryTask(x.term().sub(0).sub(0), BELIEF, $.t(1f, nn.confDefault(BELIEF)), (term, truth) -> ((Task) NALTask.the(term, BELIEF, truth, nn.time(), ETERNAL, ETERNAL, nn.evidence())).pri(nn.priDefault(BELIEF)))
+        nar.setOp(Task.BeliefAtom, new BiFunction<Task, NAR, Task>() {
+                    @Override
+                    public Task apply(Task x, NAR nn) {
+                        return Task.tryTask(x.term().sub(0).sub(0), BELIEF, $.t(1f, nn.confDefault(BELIEF)), new BiFunction<Term, Truth, Task>() {
+                            @Override
+                            public Task apply(Term term, Truth truth) {
+                                return ((Task) NALTask.the(term, BELIEF, truth, nn.time(), ETERNAL, ETERNAL, nn.evidence())).pri(nn.priDefault(BELIEF));
+                            }
+                        });
+                    }
+                }
         );
 
 
-        nar.addOp1("assertTrue", (x, nn) -> {
-            if (!x.op().var)
-                assertSame(True, x);
+        nar.addOp1("assertTrue", new BiConsumer<Term, NAR>() {
+            @Override
+            public void accept(Term x, NAR nn) {
+                if (!x.op().var)
+                    assertSame(True, x);
+            }
         });
 
-        nar.addOp2("assertEquals", (x, y, nn) -> {
-            if (!/*x.hasVars*/x.op().var && !y.op().var)
-                assertEquals(/*msg,*/ x, y);
+        nar.addOp2("assertEquals", new TriConsumer<Term, Term, NAR>() {
+            @Override
+            public void accept(Term x, Term y, NAR nn) {
+                if (!/*x.hasVars*/x.op().var && !y.op().var)
+                    assertEquals(/*msg,*/ x, y);
+            }
         });
 
 //        nar.onOp1("js", (code, nn) -> {

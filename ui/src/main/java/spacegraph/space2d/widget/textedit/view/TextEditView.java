@@ -6,6 +6,9 @@ import jcog.tree.rtree.rect.RectFloat;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.widget.textedit.buffer.*;
 
+import java.util.function.Consumer;
+import java.util.function.Predicate;
+
 public class TextEditView implements BufferListener {
 
     private final Buffer document;
@@ -96,22 +99,45 @@ public class TextEditView implements BufferListener {
 
     @Override
     public void removeLine(BufferLine bufferLine) {
-        if (lines.removeIf(lineView -> lineView.getBufferLine() == bufferLine))
+        if (lines.removeIf(new Predicate<LineView>() {
+            @Override
+            public boolean test(LineView lineView) {
+                return lineView.getBufferLine() == bufferLine;
+            }
+        }))
             updateY();
     }
 
     @Override
     public void moveChar(BufferLine fromLine, BufferLine toLine, BufferChar c) {
         int[] k = {0};
-        lines.stream().filter(l -> l.getBufferLine() == fromLine).findFirst().ifPresent(
-                (from) -> lines.stream().filter(l -> l.getBufferLine() == toLine).
-                        findFirst().ifPresent((to) -> {
-                    float fromY = from.position.y, toY = to.position.y;
-                    CharView leaveChar = from.leaveChar(c);
-                    leaveChar.position.y = -(toY - fromY);
-                    to.addChar(leaveChar, k[0]++);
-                    to.update();
-                }));
+        lines.stream().filter(new Predicate<LineView>() {
+            @Override
+            public boolean test(LineView l) {
+                return l.getBufferLine() == fromLine;
+            }
+        }).findFirst().ifPresent(
+                new Consumer<LineView>() {
+                    @Override
+                    public void accept(LineView from) {
+                        lines.stream().filter(new Predicate<LineView>() {
+                            @Override
+                            public boolean test(LineView l) {
+                                return l.getBufferLine() == toLine;
+                            }
+                        }).
+                                findFirst().ifPresent(new Consumer<LineView>() {
+                            @Override
+                            public void accept(LineView to) {
+                                float fromY = from.position.y, toY = to.position.y;
+                                CharView leaveChar = from.leaveChar(c);
+                                leaveChar.position.y = -(toY - fromY);
+                                to.addChar(leaveChar, k[0]++);
+                                to.update();
+                            }
+                        });
+                    }
+                });
     }
 
     /**

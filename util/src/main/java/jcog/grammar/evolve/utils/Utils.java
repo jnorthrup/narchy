@@ -21,6 +21,7 @@ import jcog.grammar.evolve.inputs.DataSet;
 import jcog.grammar.evolve.objective.Ranking;
 import jcog.grammar.evolve.tree.Node;
 import jcog.grammar.evolve.tree.RegexRange;
+import org.eclipse.collections.api.block.procedure.Procedure2;
 import org.eclipse.collections.api.map.MutableMap;
 import org.eclipse.collections.api.set.primitive.CharSet;
 import org.eclipse.collections.impl.list.mutable.FastList;
@@ -31,6 +32,7 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -141,16 +143,22 @@ public class Utils {
 
         List<Node> toRemove = new FastList(0);
 
-        r.forEachKeyValue((n1,f1) -> {
+        r.forEachKeyValue(new Procedure2<Node, double[]>() {
+            @Override
+            public void value(Node n1, double[] f1) {
 
-            if (r.anySatisfy(f2 -> {
-                if (Arrays.equals(f1, f2))
-                    return false;
+                if (r.anySatisfy(new org.eclipse.collections.api.block.predicate.Predicate<double[]>() {
+                    @Override
+                    public boolean accept(double[] f2) {
+                        if (Arrays.equals(f1, f2))
+                            return false;
 
-                return Utils.isAParetoDominateByB(f1, f2);
-            })) {
-                
-                toRemove.add(n1);
+                        return Utils.isAParetoDominateByB(f1, f2);
+                    }
+                })) {
+
+                    toRemove.add(n1);
+                }
             }
         });
 
@@ -192,7 +200,12 @@ public class Utils {
 
     
     public static void removeEmptyExtractions(List<DataSet.Bounds> extractions) {
-		extractions.removeIf(bounds -> bounds.size() == 0);
+		extractions.removeIf(new Predicate<DataSet.Bounds>() {
+            @Override
+            public boolean test(DataSet.Bounds bounds) {
+                return bounds.size() == 0;
+            }
+        });
     }
 
     public static void saveFile(String text, String pathOfFile) {

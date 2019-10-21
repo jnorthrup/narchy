@@ -44,9 +44,12 @@ public abstract class ContainerSurface extends Surface {
     public void print(PrintStream out, int indent) {
         super.print(out, indent);
 
-        forEach(c -> {
-            out.print(Texts.repeat("  ", indent + 1));
-            c.print(out, indent + 1);
+        forEach(new Consumer<Surface>() {
+            @Override
+            public void accept(Surface c) {
+                out.print(Texts.repeat("  ", indent + 1));
+                c.print(out, indent + 1);
+            }
         });
     }
 
@@ -87,7 +90,12 @@ public abstract class ContainerSurface extends Surface {
         //
 
         if (layout) {
-            forEachOrphan(c -> c.start(this));
+            forEachOrphan(new Consumer<Surface>() {
+                @Override
+                public void accept(Surface c) {
+                    c.start(ContainerSurface.this);
+                }
+            });
             doLayout(r.dtS());
         }
 
@@ -103,7 +111,12 @@ public abstract class ContainerSurface extends Surface {
         if (wasShown!=s) {
             showing = s;
             if (!s)
-                forEach(c -> c.showing(false));
+                forEach(new Consumer<Surface>() {
+                    @Override
+                    public void accept(Surface c) {
+                        c.showing(false);
+                    }
+                });
         }
     }
 
@@ -120,16 +133,19 @@ public abstract class ContainerSurface extends Surface {
 
         if (showing() && childrenCount() > 0 && (!clipBounds || finger.intersects(bounds))) {
             Surface[] found = new Surface[1];
-            whileEachReverse(c -> {
+            whileEachReverse(new Predicate<Surface>() {
+                @Override
+                public boolean test(Surface c) {
 
-                Surface s = c.finger(finger);
-                if (s != null) {
-                    found[0] = s;
-                    return false;
+                    Surface s = c.finger(finger);
+                    if (s != null) {
+                        found[0] = s;
+                        return false;
+                    }
+
+                    return true;
+
                 }
-
-                return true;
-
             });
             return found[0];
         }
@@ -142,7 +158,12 @@ public abstract class ContainerSurface extends Surface {
 
     @Override
     protected void starting() {
-        forEachOrphan(s -> s.start(this));
+        forEachOrphan(new Consumer<Surface>() {
+            @Override
+            public void accept(Surface s) {
+                s.start(ContainerSurface.this);
+            }
+        });
         layout();
     }
 
@@ -156,13 +177,21 @@ public abstract class ContainerSurface extends Surface {
     public abstract void forEach(Consumer<Surface> o);
 
     public <X> void forEachWith(BiConsumer<Surface,X> o, X x) {
-        forEach(c -> o.accept(c, x));
+        forEach(new Consumer<Surface>() {
+            @Override
+            public void accept(Surface c) {
+                o.accept(c, x);
+            }
+        });
     }
 
     public final void forEachOrphan(Consumer<Surface> S) {
-        forEachWith((c,s) -> {
-            if (c.parent == null)
-                s.accept(c);
+        forEachWith(new BiConsumer<Surface, Consumer<Surface>>() {
+            @Override
+            public void accept(Surface c, Consumer<Surface> s) {
+                if (c.parent == null)
+                    s.accept(c);
+            }
         }, S);
     }
 
@@ -170,11 +199,14 @@ public abstract class ContainerSurface extends Surface {
 
         O.accept(this);
 
-        forEachWith((z,o) -> {
-            if (z instanceof ContainerSurface)
-                ((ContainerSurface) z).forEachRecursively(o);
-            else
-                o.accept(z);
+        forEachWith(new BiConsumer<Surface, Consumer<Surface>>() {
+            @Override
+            public void accept(Surface z, Consumer<Surface> o) {
+                if (z instanceof ContainerSurface)
+                    ((ContainerSurface) z).forEachRecursively(o);
+                else
+                    o.accept(z);
+            }
         }, O);
 
     }
@@ -187,12 +219,15 @@ public abstract class ContainerSurface extends Surface {
     /** default implementation */
     public <X extends Surface> X first(Class<? extends X> zoomedClass) {
         Surface[] found = {null};
-        whileEach(s -> {
-            if (zoomedClass.isInstance(s)) {
-                found[0] = s;
-                return false;
+        whileEach(new Predicate<Surface>() {
+            @Override
+            public boolean test(Surface s) {
+                if (zoomedClass.isInstance(s)) {
+                    found[0] = s;
+                    return false;
+                }
+                return true; //keep going
             }
-            return true; //keep going
         });
         return (X) found[0];
     }

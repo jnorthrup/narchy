@@ -19,6 +19,8 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 import static nars.$.$$;
 import static nars.Op.BELIEF;
@@ -63,19 +65,36 @@ class KIFTest {
         List.of(//"FinancialOntology", "Economy",
             "Merge","Mid-level-ontology"
         ).parallelStream()
-            .map(x -> "/home/me/sumo/" + x + ".kif")
-            .map(x -> {
-                try {
-                    KIF k = KIF.file(x);
-//                    k.tasks.forEach(System.out::println);
-                    return k;
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    return Collections.EMPTY_LIST;
+            .map(new Function<String, String>() {
+                @Override
+                public String apply(String x) {
+                    return "/home/me/sumo/" + x + ".kif";
                 }
+            })
+            .map(new Function<String, Iterable>() {
+                     @Override
+                     public Iterable apply(String x) {
+                         try {
+                             KIF k = KIF.file(x);
+//                    k.tasks.forEach(System.out::println);
+                             return k;
+                         } catch (IOException e) {
+                             e.printStackTrace();
+                             return Collections.EMPTY_LIST;
+                         }
+                     }
+                 }
+        ).forEach(new Consumer<Iterable>() {
+            @Override
+            public void accept(Iterable ww) {
+                ww.forEach(new Consumer() {
+                    @Override
+                    public void accept(Object x) {
+                        w.accept((Task) x);
+                    }
+                });
             }
-        ).forEach(ww ->
-            ww.forEach((x) -> w.accept((Task)x)));
+        });
 
         //System.out.println(Joiner.on("\n").join(n.stats().entrySet()));
 
@@ -86,9 +105,12 @@ class KIFTest {
         //n.input("$1.0 (#1-->ComputerDisplay)!");
         //n.clear();
         w.clear();
-        w.onTask(t-> {
-            if (!t.isQuestionOrQuest() && !t.isInput())
-                System.out.println(t.toString(true));
+        w.onTask(new Consumer<Task>() {
+            @Override
+            public void accept(Task t) {
+                if (!t.isQuestionOrQuest() && !t.isInput())
+                    System.out.println(t.toString(true));
+            }
         });
         //w.accept(new EternalTask($$("(#x --> Damaging)"), BELIEF, $.t(1, 0.9f), n).priSet(1));
         w.accept(((Task) new EternalTask($$("(patient(#p,#a) && ({#p}-->Organism))"), BELIEF, $.t(1, 0.9f), n)).pri(0.05f));

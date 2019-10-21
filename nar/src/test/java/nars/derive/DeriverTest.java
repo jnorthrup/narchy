@@ -9,6 +9,7 @@ import nars.derive.rule.PremiseRuleSet;
 import nars.test.TestNAR;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 
 import java.util.List;
 
@@ -90,9 +91,14 @@ class DeriverTest {
 
     @Test
     void testAmbiguousPunctuation() {
-        assertThrows(Throwable.class, () -> new PremiseRuleSet(NARS.shell(),
-                "Y, Y |- (?1 &| Y), ()"
-        ).compile());
+        assertThrows(Throwable.class, new Executable() {
+            @Override
+            public void execute() throws Throwable {
+                new PremiseRuleSet(NARS.shell(),
+                        "Y, Y |- (?1 &| Y), ()"
+                ).compile();
+            }
+        });
     }
 
     @Test

@@ -11,6 +11,8 @@ import org.eclipse.collections.api.block.procedure.primitive.FloatObjectProcedur
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 
 /** untested */
 public class HopfieldMap<X> {
@@ -97,12 +99,15 @@ public class HopfieldMap<X> {
             X a = x[p];
 
             float[] aOut = {(float) 0};
-            weight.neighborEdges(a, (b, w) -> {
-                float bIn = in.floatValueOf(b);
+            weight.neighborEdges(a, new BiFunction<X, Float, Float>() {
+                @Override
+                public Float apply(X b, Float w) {
+                    float bIn = in.floatValueOf(b);
 
-                aOut[0] += bIn * w;
+                    aOut[0] += bIn * w;
 
-                return Util.tanhFast(w + (alpha * aOut[0] * bIn)); 
+                    return Util.tanhFast(w + (alpha * aOut[0] * bIn));
+                }
             });
 
             this.out.value(out(aOut[0]), a);
@@ -117,10 +122,13 @@ public class HopfieldMap<X> {
 
             X a = x[i];
 
-            weight.neighborEdges(a, (b, w) -> {
-                float bIn = in.floatValueOf(b);
+            weight.neighborEdges(a, new BiConsumer<X, Float>() {
+                @Override
+                public void accept(X b, Float w) {
+                    float bIn = in.floatValueOf(b);
 
-                aOut[0] += bIn * w;
+                    aOut[0] += bIn * w;
+                }
             });
 
             this.out.value(out(aOut[0]), a);
@@ -151,7 +159,12 @@ public class HopfieldMap<X> {
         NumberX[] m = list.toArray(new NumberX[0]);
 
         HopfieldMap<NumberX> h = new HopfieldMap<NumberX>(NumberX::floatValue,
-                (v, x) -> x.set(v), m);
+                new FloatObjectProcedure<NumberX>() {
+                    @Override
+                    public void value(float v, NumberX x) {
+                        x.set(v);
+                    }
+                }, m);
         h.randomWeights(0.9f);
         for (int i = 0; i < 16; i++) {
             h.set((float) +1, (float) +1, (float) +1, (float) +1, -1.0F, -1.0F, -1.0F, -1.0F).learn(1);

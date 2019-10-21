@@ -15,6 +15,7 @@ import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.util.conj.Conj;
 import nars.unify.constraint.RelationConstraint;
+import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 
 import static nars.Op.*;
 import static nars.time.Tense.XTERNAL;
@@ -137,8 +138,12 @@ public enum Unifiable { ;
 
             //TODO
             //undecided
-            return x.opID() == (int) CONJ.id ? false : !conj.eventsOR((when, what) ->
-                    Terms.possiblyUnifiable(what, x, false, Variable), 0L,
+            return x.opID() == (int) CONJ.id ? false : !conj.eventsOR(new LongObjectPredicate<Term>() {
+                                                                          @Override
+                                                                          public boolean accept(long when, Term what) {
+                                                                              return Terms.possiblyUnifiable(what, x, false, Variable);
+                                                                          }
+                                                                      }, 0L,
                 true, conj.dt() == XTERNAL
             );
 

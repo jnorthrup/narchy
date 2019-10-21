@@ -34,7 +34,12 @@ public class BinaryVarVal implements BooleanFunction<List<BooleanSupplier>> {
 
     public BinaryVarVal(IntVar[] variables, IntUnaryOperator varCost, IntUnaryOperator valSelector) {
         this.variables = variables;
-        this.unassigned = IntVar.makeInt(variables.length, i -> i);
+        this.unassigned = IntVar.makeInt(variables.length, new IntUnaryOperator() {
+            @Override
+            public int applyAsInt(int i) {
+                return i;
+            }
+        });
         this.nUnassignedT = new TrailedInt(variables[0].trail(), variables.length);
         this.varCost = varCost;
         this.valSelector = valSelector;
@@ -48,8 +53,18 @@ public class BinaryVarVal implements BooleanFunction<List<BooleanSupplier>> {
         }
         IntVar variable = variables[varId];
         int value = valSelector.applyAsInt(varId);
-        decisions.add(() -> variable.remove(value));
-        decisions.add(() -> variable.assign(value));
+        decisions.add(new BooleanSupplier() {
+            @Override
+            public boolean getAsBoolean() {
+                return variable.remove(value);
+            }
+        });
+        decisions.add(new BooleanSupplier() {
+            @Override
+            public boolean getAsBoolean() {
+                return variable.assign(value);
+            }
+        });
         return false;
     }
 

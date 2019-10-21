@@ -4,12 +4,14 @@ import jcog.Util;
 import jcog.exe.InstrumentedLoop;
 import jcog.exe.Loop;
 import jcog.math.MutableInteger;
+import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.meter.Plot2D;
 import spacegraph.space2d.widget.slider.IntSpinner;
 
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.IntFunction;
 
 /**
  * control and view statistics of a loop
@@ -27,7 +29,12 @@ public class LoopPanel extends Gridding {
     public LoopPanel(Loop loop) {
         this.loop = loop;
         fps = new MutableInteger(Math.round(loop.getFPS()));
-        fpsLabel = new IntSpinner(fps, f -> f + "fps", 0, 100);
+        fpsLabel = new IntSpinner(fps, new IntFunction<String>() {
+            @Override
+            public String apply(int f) {
+                return f + "fps";
+            }
+        }, 0, 100);
 
         if (loop instanceof InstrumentedLoop) {
             InstrumentedLoop iloop = (InstrumentedLoop) loop;
@@ -62,19 +69,22 @@ public class LoopPanel extends Gridding {
 //                            }
 //                        })
 //                        ),
-                                new CheckBox("On").on(loop.isRunning()).on((o)->{
-                                    //synchronized(loop) {
-                                        //HACK maybe necessary
-                                        if (o) {
-                                            pause = false;
-                                            loop.setFPS((float) fps.intValue());
-                                        } else {
-                                            pause = true;
-                                            loop.stop();
-                                        }
-                                        update(); //HACK shouldnt be needed
-                                        //}
-                                }
+                                new CheckBox("On").on(loop.isRunning()).on(new BooleanProcedure() {
+                                                                               @Override
+                                                                               public void value(boolean o) {
+                                                                                   //synchronized(loop) {
+                                                                                   //HACK maybe necessary
+                                                                                   if (o) {
+                                                                                       pause = false;
+                                                                                       loop.setFPS((float) fps.intValue());
+                                                                                   } else {
+                                                                                       pause = true;
+                                                                                       loop.stop();
+                                                                                   }
+                                                                                   LoopPanel.this.update(); //HACK shouldnt be needed
+                                                                                   //}
+                                                                               }
+                                                                           }
                                 //)
                         ),
                         fpsLabel, 

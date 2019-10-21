@@ -204,7 +204,12 @@ public class RLDemo extends javax.swing.JFrame {
         domainMenu.addActionListener(menuAction);
         jMenuBar1.add(iterationsMenu);
 
-        iterationsMenu.addActionListener(e -> numIterationsPerLoop = (int) iterationsMenu.getObject());
+        iterationsMenu.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                numIterationsPerLoop = (int) iterationsMenu.getObject();
+            }
+        });
         iterationsMenu.notifyListeners();
 
         updateParameters();
@@ -370,7 +375,12 @@ public class RLDemo extends javax.swing.JFrame {
 
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new RLDemo().setVisible(true));
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                new RLDemo().setVisible(true);
+            }
+        });
     }
 
 

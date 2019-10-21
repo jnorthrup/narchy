@@ -3,6 +3,7 @@ package nars.op;
 import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
+import nars.Task;
 import nars.eval.Evaluation;
 import nars.term.Term;
 import nars.test.TestNAR;
@@ -10,6 +11,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.Set;
+import java.util.function.Consumer;
 
 import static nars.$.$$;
 import static nars.Op.BELIEF;
@@ -28,11 +30,14 @@ class FunctorTest {
         Term y = $$("[a,b]");
 
         boolean[] got = {false};
-        n.onTask(t -> {
-            if (t.isBelief() && t.term().equals(y))
-                got[0] = true;
-            //String s = t.toString();
-            //assertFalse(s.contains("union"));
+        n.onTask(new Consumer<Task>() {
+            @Override
+            public void accept(Task t) {
+                if (t.isBelief() && t.term().equals(y))
+                    got[0] = true;
+                //String s = t.toString();
+                //assertFalse(s.contains("union"));
+            }
         }, BELIEF);
         n.input("union([a],[b]).");
 

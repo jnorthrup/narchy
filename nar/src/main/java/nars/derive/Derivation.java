@@ -33,6 +33,7 @@ import nars.truth.MutableTruth;
 import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.unify.Unify;
+import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 import org.eclipse.collections.api.map.ImmutableMap;
 import org.eclipse.collections.impl.map.mutable.MapAdapter;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
@@ -688,7 +689,12 @@ public abstract class Derivation extends PreDerivation implements Caused, Predic
                 float[] pri = new float[valid];
                 for (int i = 0; i < valid; i++)
                     pri[i] = post[i].pri;
-                MutableRoulette.run(pri, random, wi -> (float) 0, this::test);
+                MutableRoulette.run(pri, random, new FloatToFloatFunction() {
+                    @Override
+                    public float valueOf(float wi) {
+                        return (float) 0;
+                    }
+                }, this::test);
 
                 //alternate roulette:
                 //  int j; do { j = Roulette.selectRoulette(valid, i -> post[i].pri, d.random);   } while (post[j].run());
@@ -739,10 +745,13 @@ public abstract class Derivation extends PreDerivation implements Caused, Predic
     }
 
 
-    private static final Comparator<? super PremiseRunnable> sortByPri = (a, b)->{
-        if (a==b) return 0;
-        int i = Float.compare(a.pri, b.pri);
-        return i != 0 ? -i : Integer.compare(System.identityHashCode(a), System.identityHashCode(b));
+    private static final Comparator<? super PremiseRunnable> sortByPri = new Comparator<PremiseRunnable>() {
+        @Override
+        public int compare(PremiseRunnable a, PremiseRunnable b) {
+            if (a == b) return 0;
+            int i = Float.compare(a.pri, b.pri);
+            return i != 0 ? -i : Integer.compare(System.identityHashCode(a), System.identityHashCode(b));
+        }
     };
 
     public boolean doubt(double ratio) {

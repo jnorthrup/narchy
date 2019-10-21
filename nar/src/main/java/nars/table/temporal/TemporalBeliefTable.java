@@ -11,7 +11,9 @@ import nars.control.Why;
 import nars.table.BeliefTable;
 import nars.task.AbstractTask;
 import nars.truth.proj.TruthProjection;
+import org.eclipse.collections.api.block.procedure.Procedure;
 
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 
@@ -33,8 +35,11 @@ public interface TemporalBeliefTable extends BeliefTable {
      * TODO contains/intersects parameter
      */
     default void whileEach(long minT, long maxT, Predicate<? super Task> each) {
-        whileEach(x -> {
-			return !x.isDeleted() && x.intersects(minT, maxT) ? each.test(x) : true;
+        whileEach(new Predicate<Task>() {
+            @Override
+            public boolean test(Task x) {
+                return !x.isDeleted() && x.intersects(minT, maxT) ? each.test(x) : true;
+            }
         });
     }
 
@@ -74,12 +79,20 @@ public interface TemporalBeliefTable extends BeliefTable {
 	default void removeIf(Predicate<Task> remove, long finalStart, long finalEnd) {
         FasterList<Task> deleteAfter = new FasterList<Task>(0);
 
-        forEachTask(finalStart, finalEnd, t->{
-            if (remove.test(t))
-                deleteAfter.add(t);
+        forEachTask(finalStart, finalEnd, new Consumer<Task>() {
+            @Override
+            public void accept(Task t) {
+                if (remove.test(t))
+                    deleteAfter.add(t);
+            }
         });
 
         if (!deleteAfter.isEmpty())
-            deleteAfter.forEach((t) -> removeTask(t, true));
+            deleteAfter.forEach(new Procedure<Task>() {
+                @Override
+                public void value(Task t) {
+                    TemporalBeliefTable.this.removeTask(t, true);
+                }
+            });
     }
 }

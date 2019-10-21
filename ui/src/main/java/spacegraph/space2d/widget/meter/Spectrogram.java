@@ -1,5 +1,6 @@
 package spacegraph.space2d.widget.meter;
 
+import com.jogamp.opengl.GL2;
 import jcog.math.IntRange;
 import jcog.tree.rtree.rect.RectFloat;
 import org.eclipse.collections.api.block.function.primitive.IntToIntFunction;
@@ -10,6 +11,7 @@ import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.video.Draw;
 
+import java.util.function.BiConsumer;
 import java.util.function.ToIntFunction;
 
 /** displays something resembling a "spectrogram" to represent the changing contents of a bag
@@ -24,9 +26,18 @@ public class Spectrogram extends RingContainer<BitmapMatrixView> implements Bitm
 
     public IntToIntFunction _color;
 
-    static final ToIntFunction HASHCODE = x ->
-            Draw.colorHSB((float) Math.abs(x.hashCode() % 1000) / 1000.0f, 0.5f, 0.5f);
-    static final IntToIntFunction BLACK = (i) -> 0;
+    static final ToIntFunction HASHCODE = new ToIntFunction() {
+        @Override
+        public int applyAsInt(Object x) {
+            return Draw.colorHSB((float) Math.abs(x.hashCode() % 1000) / 1000.0f, 0.5f, 0.5f);
+        }
+    };
+    static final IntToIntFunction BLACK = new IntToIntFunction() {
+        @Override
+        public int valueOf(int i) {
+            return 0;
+        }
+    };
 
     public Spectrogram(boolean leftOrDown, int T, int N) {
         super(new BitmapMatrixView[T]);
@@ -74,17 +85,23 @@ public class Spectrogram extends RingContainer<BitmapMatrixView> implements Bitm
     @Override
     public void renderContent(ReSurface r) {
 
-        r.on((gl,sr)->{
-            //float W = w(), H = h();
+        r.on(new BiConsumer<GL2, ReSurface>() {
+            @Override
+            public void accept(GL2 gl, ReSurface sr) {
+                //float W = w(), H = h();
 
-            forEach((z, b) ->{
-                if (!z.tex.ready()) {
-                    z.tex.commit(gl);
-                    z.show();
-                }
-                z.tex.paint(gl, b);
-            });
+                Spectrogram.this.forEach(new BiConsumer<BitmapMatrixView, RectFloat>() {
+                    @Override
+                    public void accept(BitmapMatrixView z, RectFloat b) {
+                        if (!z.tex.ready()) {
+                            z.tex.commit(gl);
+                            z.show();
+                        }
+                        z.tex.paint(gl, b);
+                    }
+                });
 
+            }
         });
     }
 

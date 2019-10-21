@@ -107,9 +107,12 @@ public abstract class RingContainer<X extends Surface> extends EmptyContainer {
 
     @Override
     protected void renderContent(ReSurface r) {
-        forEach((z, b)->{
-            z.pos(b);
-            z.renderIfVisible(r);
+        forEach(new BiConsumer<X, RectFloat>() {
+            @Override
+            public void accept(X z, RectFloat b) {
+                z.pos(b);
+                z.renderIfVisible(r);
+            }
         });
     }
 

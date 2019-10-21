@@ -5,6 +5,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 /** 'speechd' speech dispatcher - executes via command line */
 public class NativeSpeechDispatcher {
@@ -45,10 +47,18 @@ public class NativeSpeechDispatcher {
             Process p = new ProcessBuilder()
                             .command(command(s))
                             .start();
-                    p.onExit().handle((z, y) -> null).exceptionally(t->{
-                        logger.warn("speech error: {} {}", s, t);
+                    p.onExit().handle(new BiFunction<Process, Throwable, Object>() {
+                        @Override
+                        public Object apply(Process z, Throwable y) {
+                            return null;
+                        }
+                    }).exceptionally(new Function<Throwable, Object>() {
+                        @Override
+                        public Object apply(Throwable t) {
+                            logger.warn("speech error: {} {}", s, t);
 
-                        return null;
+                            return null;
+                        }
                     });
 
 

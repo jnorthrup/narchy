@@ -18,6 +18,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Iterator;
 import java.util.Random;
+import java.util.function.Supplier;
 
 import static jcog.pri.bag.BagTest.testBasicInsertionRemoval;
 import static jcog.pri.op.PriMerge.plus;
@@ -49,7 +50,12 @@ class ArrayBagTest {
 
         PriReference<String> agx = a.get("x");
         UnitPri expect = new UnitPri(0.2f);
-        assertTrue(Util.equals(expect.priElseNeg1(), agx.priElseNeg1(), 0.01f), () -> agx + "==?==" + expect);
+        assertTrue(Util.equals(expect.priElseNeg1(), agx.priElseNeg1(), 0.01f), new Supplier<String>() {
+            @Override
+            public String get() {
+                return agx + "==?==" + expect;
+            }
+        });
 
     }
 
@@ -160,7 +166,12 @@ class ArrayBagTest {
     }
 
     static void assertSorted(ArrayBag x) {
-        assertTrue(x.isSorted(), ()-> Joiner.on("\n").join(x));
+        assertTrue(x.isSorted(), new Supplier<String>() {
+            @Override
+            public String get() {
+                return Joiner.on("\n").join(x);
+            }
+        });
     }
 
     @Test

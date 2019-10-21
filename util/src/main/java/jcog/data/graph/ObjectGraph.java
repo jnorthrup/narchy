@@ -11,6 +11,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InaccessibleObjectException;
 import java.util.IdentityHashMap;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -74,36 +75,37 @@ public abstract class ObjectGraph extends MapNodeGraph<Object, ObjectGraph.Acces
 
         } else {
             
-            fields(x.getClass()).forEach(field -> {
+            fields(x.getClass()).forEach(new Consumer<Field>() {
+                @Override
+                public void accept(Field field) {
 
-                if (!includeField(field))   return;
+                    if (!ObjectGraph.this.includeField(field)) return;
 
-                Class<?> fieldType = field.getType();
+                    Class<?> fieldType = field.getType();
 
-                
-                
-                
-                if (!includeClass(fieldType)) return;
 
-                try {
+                    if (!ObjectGraph.this.includeClass(fieldType)) return;
+
                     try {
-                        field.setAccessible(true);
+                        try {
+                            field.setAccessible(true);
 
-                        Object value = field.get(x);
+                            Object value = field.get(x);
 
-                        if ((value != null ||  includeNull()) && includeValue(value)) {
-                            FieldAccessor axe = new FieldAccessor(field);
-                            access(root, n, clazz, value, axe, path, level);
+                            if ((value != null || includeNull()) && ObjectGraph.this.includeValue(value)) {
+                                FieldAccessor axe = new FieldAccessor(field);
+                                ObjectGraph.this.access(root, n, clazz, value, axe, path, level);
+                            }
+
+                        } catch (InaccessibleObjectException ioe) {
+                            logger.debug("inaccessible: {} {}", field, ioe);
                         }
 
-                    } catch (InaccessibleObjectException ioe) {
-                        logger.debug("inaccessible: {} {}", field, ioe );
+
+                    } catch (IllegalAccessException e) {
+
+                        logger.info("field access {}", e);
                     }
-
-
-                } catch (IllegalAccessException e) {
-                    
-                    logger.info("field access {}", e);
                 }
             });
         }
@@ -186,24 +188,30 @@ public abstract class ObjectGraph extends MapNodeGraph<Object, ObjectGraph.Acces
 
     /** creates a field setter from a path */
     public static <X,V> BiConsumer<X,V> setter(FastList<Pair<Class, Accessor>> path) {
-        return (root, val) -> {
-            Object current = root;
+        return new BiConsumer<X, V>() {
+            @Override
+            public void accept(X root, V val) {
+                Object current = root;
 
-            for (int i = 0, pathSize = path.size()-1; i < pathSize; i++)
-                current = path.get(i).getTwo().get(current);
+                for (int i = 0, pathSize = path.size() - 1; i < pathSize; i++)
+                    current = path.get(i).getTwo().get(current);
 
-            path.getLast().getTwo().set(current, val);
+                path.getLast().getTwo().set(current, val);
+            }
         };
     }
     /** creates a field getter from a path */
     public static <X,Y> Function<X,Y> getter(FastList<Pair<Class, Accessor>> path) {
-        return root -> {
-            Object current = root;
+        return new Function<X, Y>() {
+            @Override
+            public Y apply(X root) {
+                Object current = root;
 
-            for (int i = 0, pathSize = path.size()-1; i < pathSize; i++)
-                current = path.get(i).getTwo().get(current);
+                for (int i = 0, pathSize = path.size() - 1; i < pathSize; i++)
+                    current = path.get(i).getTwo().get(current);
 
-            return (Y) path.getLast().getTwo().get(current);
+                return (Y) path.getLast().getTwo().get(current);
+            }
         };
     }
     public abstract static class Accessor {

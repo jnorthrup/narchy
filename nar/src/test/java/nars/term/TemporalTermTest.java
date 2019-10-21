@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Comparator;
 import java.util.TreeSet;
+import java.util.function.Consumer;
 
 import static nars.$.$;
 import static nars.$.$$;
@@ -213,7 +214,12 @@ class TemporalTermTest {
         n.run(5);
 
         TreeSet d = new TreeSet(Comparator.comparing(Object::toString));
-        n.what().concepts().forEach(x -> d.add(x.term()));
+        n.what().concepts().forEach(new Consumer<Concept>() {
+            @Override
+            public void accept(Concept x) {
+                d.add(x.term());
+            }
+        });
 
 
         assertTrue(d.contains($("(x ==>+- y)")));

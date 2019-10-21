@@ -7,6 +7,8 @@ import nars.truth.PreciseTruth;
 import nars.truth.Truth;
 import org.junit.jupiter.api.Test;
 
+import java.util.function.Supplier;
+
 import static nars.$.$;
 import static nars.Op.BELIEF;
 import static nars.time.Tense.ETERNAL;
@@ -91,6 +93,11 @@ class DynamicSectTest {
     private void assertTruth(String tt, long now, float f, float c) throws Narsese.NarseseException {
         Truth t = n.beliefTruth(tt, now);
         PreciseTruth e = $.t(f, c);
-        assertTrue(e.equalTruth(t, 0.1f), ()->tt + " @ " + now + " => " + t + " , expected=" + e);
+        assertTrue(e.equalTruth(t, 0.1f), new Supplier<String>() {
+            @Override
+            public String get() {
+                return tt + " @ " + now + " => " + t + " , expected=" + e;
+            }
+        });
     }
 }

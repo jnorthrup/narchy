@@ -17,6 +17,7 @@ import nars.time.Tense;
 
 import java.util.Arrays;
 import java.util.TreeSet;
+import java.util.function.Predicate;
 
 import static nars.Op.CONJ;
 import static nars.Op.NEG;
@@ -116,7 +117,12 @@ public enum ConjSeq { ;
                 && (!xx.hasAny(NEG)
                         ||
                         /** TODO weird disjunctive seq cases */
-                        xx.countEquals(xxx -> xxx instanceof Neg && xxx.unneg().opID() == (int) CONJ.id, 0))
+                        xx.countEquals(new Predicate<Term>() {
+                            @Override
+                            public boolean test(Term xxx) {
+                                return xxx instanceof Neg && xxx.unneg().opID() == (int) CONJ.id;
+                            }
+                        }, 0))
                 ;
     }
 

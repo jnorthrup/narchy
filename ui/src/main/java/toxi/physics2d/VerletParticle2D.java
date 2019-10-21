@@ -29,6 +29,7 @@ package toxi.physics2d;
 
 import jcog.data.list.FasterList;
 import jcog.tree.rtree.rect.RectFloat;
+import org.eclipse.collections.api.block.procedure.Procedure;
 import org.jetbrains.annotations.Nullable;
 import toxi.geom.Polygon2D;
 import toxi.geom.ReadonlyVec2D;
@@ -417,7 +418,12 @@ public class VerletParticle2D extends Vec2D {
         }
 
         if (behaviorsGlobal!=null) {
-            behaviorsGlobal.forEach(x -> x.configure(subDT));
+            behaviorsGlobal.forEach(new Procedure<ParticleBehavior2D>() {
+                @Override
+                public void value(ParticleBehavior2D x) {
+                    x.configure(subDT);
+                }
+            });
             behaviorsGlobal.forEachWith(ParticleBehavior2D::applyGlobal, p);
         }
 

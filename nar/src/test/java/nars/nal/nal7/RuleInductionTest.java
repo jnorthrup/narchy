@@ -12,6 +12,9 @@ import nars.time.Tense;
 import nars.truth.Truth;
 import org.junit.jupiter.api.Test;
 
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+
 import static nars.$.$$;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.ETERNAL;
@@ -61,16 +64,19 @@ class RuleInductionTest {
 
 //        Histogram aConjB_dt = new Histogram(4);
 
-        n.onTask(t -> {
-            if (!t.isInput() && t.term().root().equals(aConjB_root)) {
-                long start = t.start();
-                int dt = Math.abs(t.dt());
+        n.onTask(new Consumer<Task>() {
+            @Override
+            public void accept(Task t) {
+                if (!t.isInput() && t.term().root().equals(aConjB_root)) {
+                    long start = t.start();
+                    int dt = Math.abs(t.dt());
 
 //                aConjB_dt.recordValue(dt); //cant accept -dt
 
-                assertEquals(start, t.end());
-                assertNotEquals(ETERNAL, start);
-                assertNotEquals(DTERNAL, dt);
+                    assertEquals(start, t.end());
+                    assertNotEquals(ETERNAL, start);
+                    assertNotEquals(DTERNAL, dt);
+                }
             }
         });
 
@@ -108,8 +114,18 @@ class RuleInductionTest {
 
         double aConjB_pearsonCorrelationCoeff = aConjB_exp.pearsonsCorrelationCoefficient();
         assertTrue(aConjB_pearsonCorrelationCoeff > 0.4f,
-                () -> aConjB + " confidence increases smoothly: correlation quality=" + aConjB_pearsonCorrelationCoeff);
-        assertTrue(aConjB_exp.leastSquaresFit().slope() > 0, () -> aConjB + " confidence increases");
+                new Supplier<String>() {
+                    @Override
+                    public String get() {
+                        return aConjB + " confidence increases smoothly: correlation quality=" + aConjB_pearsonCorrelationCoeff;
+                    }
+                });
+        assertTrue(aConjB_exp.leastSquaresFit().slope() > 0, new Supplier<String>() {
+            @Override
+            public String get() {
+                return aConjB + " confidence increases";
+            }
+        });
 
 
     }

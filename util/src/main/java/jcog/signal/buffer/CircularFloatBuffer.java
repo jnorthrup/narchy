@@ -25,6 +25,7 @@
 package jcog.signal.buffer;
 
 import jcog.Util;
+import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -326,7 +327,12 @@ public class CircularFloatBuffer extends CircularBuffer {
      * needs tested
      */
     public double sum(double sStart, double sEnd) {
-        return Util.interpSum((i)->data[i], capacity(), sStart, sEnd, true);
+        return Util.interpSum(new IntToFloatFunction() {
+            @Override
+            public float valueOf(int i) {
+                return data[i];
+            }
+        }, capacity(), sStart, sEnd, true);
     }
 
     public double mean(double sStart, double sEnd) {

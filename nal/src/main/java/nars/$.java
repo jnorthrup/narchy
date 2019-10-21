@@ -676,11 +676,21 @@ public enum $ { ;
     }
 
     public static <X> PREDICATE<X> AND(PREDICATE<X> a, PREDICATE<X> b) {
-        return new LambdaPred<>(CONJ.the(a, b), (X x) -> a.test(x) && b.test(x));
+        return new LambdaPred<>(CONJ.the(a, b), new Predicate<X>() {
+            @Override
+            public boolean test(X x) {
+                return a.test(x) && b.test(x);
+            }
+        });
     }
 
     public static <X> PREDICATE<X> OR(PREDICATE<X> a, PREDICATE<X> b) {
-        return new LambdaPred<>(DISJ(a, b), (X x) -> a.test(x) || b.test(x));
+        return new LambdaPred<>(DISJ(a, b), new Predicate<X>() {
+            @Override
+            public boolean test(X x) {
+                return a.test(x) || b.test(x);
+            }
+        });
     }
 
     public static int intValue(Term intTerm) throws NumberFormatException {
@@ -790,14 +800,17 @@ public enum $ { ;
 
 
     public static Term[] $(String[] s) {
-        return Util.map(x -> {
-            Term result;
-            try {
-                result = $.$(x);
-            } catch (Narsese.NarseseException e) {
-                throw new RuntimeException(e);
+        return Util.map(new Function<String, Term>() {
+            @Override
+            public Term apply(String x) {
+                Term result;
+                try {
+                    result = $.$(x);
+                } catch (Narsese.NarseseException e) {
+                    throw new RuntimeException(e);
+                }
+                return result;
             }
-            return result;
         }, Term[]::new, s);
     }
 

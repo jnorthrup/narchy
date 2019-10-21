@@ -11,6 +11,7 @@ import nars.unify.constraint.TermMatcher;
 
 import java.util.List;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 
 /**
@@ -54,7 +55,22 @@ public final class TermMatch<X extends Unify> extends AbstractTermMatchPred<X> {
         if (resolveCost == (float) 0)
             return false; //dont bother grouping root accessors
 
-        TermMatch other = p.stream().filter(x -> x != this && x instanceof TermMatch).map(x -> ((TermMatch) x)).filter(t -> resolve.equals(t.resolve)).findFirst().orElse(null);
+        TermMatch other = p.stream().filter(new Predicate<PREDICATE<X>>() {
+            @Override
+            public boolean test(PREDICATE<X> x) {
+                return x != TermMatch.this && x instanceof TermMatch;
+            }
+        }).map(new Function<PREDICATE<X>, TermMatch>() {
+            @Override
+            public TermMatch apply(PREDICATE<X> x) {
+                return ((TermMatch) x);
+            }
+        }).filter(new Predicate<TermMatch>() {
+            @Override
+            public boolean test(TermMatch t) {
+                return resolve.equals(t.resolve);
+            }
+        }).findFirst().orElse(null);
         if (other!=null) {
 
             int myIndex = ((FasterList)p).indexOfInstance(this);

@@ -7,6 +7,7 @@ import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
+import java.util.function.Supplier;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -122,7 +123,12 @@ class TermIDTest {
     }
 
     private static void areEqualAndIfNotWhy(@NotNull String a, @NotNull String b) {
-        assertEquals(a, b, () -> charComparison(a, b));
+        assertEquals(a, b, new Supplier<String>() {
+            @Override
+            public String get() {
+                return charComparison(a, b);
+            }
+        });
     }
 
     private static String charComparison(String a, String b) {

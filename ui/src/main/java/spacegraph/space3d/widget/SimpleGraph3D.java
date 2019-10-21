@@ -4,6 +4,7 @@ import com.google.common.graph.Graph;
 import com.google.common.graph.SuccessorsFunction;
 import jcog.data.graph.MapNodeGraph;
 import jcog.data.graph.Node;
+import jcog.data.graph.path.FromTo;
 import jcog.data.list.FasterList;
 import jcog.random.XoRoShiRo128PlusRandom;
 import spacegraph.space3d.SpaceGraph3D;
@@ -22,21 +23,24 @@ import java.util.stream.StreamSupport;
 public class SimpleGraph3D<X> extends DynamicListSpace<X> {
 
     /** default */
-    protected static final SpaceWidget.SimpleNodeVis<SpaceWidget<?>> defaultVis = w -> {
+    protected static final SpaceWidget.SimpleNodeVis<SpaceWidget<?>> defaultVis = new SpaceWidget.SimpleNodeVis<SpaceWidget<?>>() {
+        @Override
+        public void each(SpaceWidget<?> w) {
 
-        w.scale(16.0F, 16.0F, 2.0F);
+            w.scale(16.0F, 16.0F, 2.0F);
 
-        Draw.colorHash(w.id, w.shapeColor);
+            Draw.colorHash(w.id, w.shapeColor);
 
-        for (EDraw<?> x : w.edges()) {
-            x.r = 1.0F;
-            x.g = 0.5f;
-            x.b = (float) 0;
-            x.a = 1.0F;
-            x.width = x.pri() * 4.0F;
+            for (EDraw<?> x : w.edges()) {
+                x.r = 1.0F;
+                x.g = 0.5f;
+                x.b = (float) 0;
+                x.a = 1.0F;
+                x.width = x.pri() * 4.0F;
 
-            x.attraction = 0.1f;
-            x.attractionDist = 8.0F;
+                x.attraction = 0.1f;
+                x.attractionDist = 8.0F;
+            }
         }
     };
 
@@ -128,8 +132,18 @@ public class SimpleGraph3D<X> extends DynamicListSpace<X> {
         }
         return commit(
                 list,
-                x-> StreamSupport.stream(g.node(x).edges(false, true).spliterator(), false).map(zz -> zz.to().id())
-                        .collect(Collectors.toList()));
+                new Function<X, Iterable<X>>() {
+                    @Override
+                    public Iterable<X> apply(X x) {
+                        return StreamSupport.stream(g.node(x).edges(false, true).spliterator(), false).map(new Function<FromTo<Node<X, Object>, Object>, X>() {
+                            @Override
+                            public X apply(FromTo<Node<X, Object>, Object> zz) {
+                                return zz.to().id();
+                            }
+                        })
+                                .collect(Collectors.toList());
+                    }
+                });
     }
 
     private SimpleGraph3D<X> commit(Iterable<X> nodes, Function<X, Iterable<X>> edges) {

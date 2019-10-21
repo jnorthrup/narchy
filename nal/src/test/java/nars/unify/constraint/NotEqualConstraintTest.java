@@ -38,7 +38,12 @@ class NotEqualConstraintTest {
     static void assertEqRCom(String a, String b, boolean isTrue) {
         Term A = $$(a);
         Term B = $$(b);
-        Supplier<String> msg = () -> a + " " + b + " " + (isTrue ? "!eqRCom" : "eqRCom");
+        Supplier<String> msg = new Supplier<String>() {
+            @Override
+            public String get() {
+                return a + " " + b + " " + (isTrue ? "!eqRCom" : "eqRCom");
+            }
+        };
         assertTrue(isTrue==Terms.eqRCom(A, B), msg);
         assertTrue(isTrue==Terms.eqRCom(B, A), msg);
     }

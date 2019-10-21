@@ -44,18 +44,21 @@ class ScrollXYTest {
             };
 
             ScrollXY<DynGrid<String>> grid = new ScrollXY<>(new DynGrid<>(model,
-                    (x, y, s) -> {
-                        if (Math.random() < 0.5f) {
-                            Surface p = new PushButton(new VectorLabel(s)) {
-                                @Override
-                                protected void paintWidget(RectFloat bounds, GL2 gl) {
-                                    Draw.colorHash(gl, x ^ y, 0.2f, 0.3f, 0.85f);
-                                    Draw.rect(bounds, gl);
-                                }
-                            };
-                            return new Widget(p);
-                        } else {
-                            return new VectorLabel(s);
+                    new GridRenderer<String>() {
+                        @Override
+                        public Surface apply(int x, int y, String s) {
+                            if (Math.random() < 0.5f) {
+                                Surface p = new PushButton(new VectorLabel(s)) {
+                                    @Override
+                                    protected void paintWidget(RectFloat bounds, GL2 gl) {
+                                        Draw.colorHash(gl, x ^ y, 0.2f, 0.3f, 0.85f);
+                                        Draw.rect(bounds, gl);
+                                    }
+                                };
+                                return new Widget(p);
+                            } else {
+                                return new VectorLabel(s);
+                            }
                         }
                     })).scroll(0,0,8,4);
 
@@ -71,7 +74,12 @@ class ScrollXYTest {
 
             String[] list = {"a", "b", "c", "d", "e", "f"};
 
-            GridRenderer<String> builder = (x, y, n) -> new CheckBox(n);
+            GridRenderer<String> builder = new GridRenderer<String>() {
+                @Override
+                public Surface apply(int x, int y, String n) {
+                    return new CheckBox(n);
+                }
+            };
 
             SpaceGraph.window( ScrollXY.array(builder, list) , 800, 800);
         }
@@ -85,12 +93,16 @@ class ScrollXYTest {
                         new KeyValueGrid(
                             Map.of("wtf", "ok", "sdfj", "xcv", "sdf", "fdfs")
                         ),
-                        (x, y, n)->
-                            x == 0 ?
-                                new BitmapLabel(n.toString())
-                                //new VectorLabel(n.toString())
-                                //new CheckBox(n.toString())
-                                : new CheckBox(n.toString())))
+                        new GridRenderer<Object>() {
+                            @Override
+                            public Surface apply(int x, int y, Object n) {
+                                return x == 0 ?
+                                        new BitmapLabel(n.toString())
+                                        //new VectorLabel(n.toString())
+                                        //new CheckBox(n.toString())
+                                        : new CheckBox(n.toString());
+                            }
+                        }))
                 , 800, 800);
         }
 

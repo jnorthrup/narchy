@@ -11,6 +11,7 @@ import jcog.learn.ntm.memory.address.content.ContentAddressing;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 public class NTMMemory {
 
@@ -216,7 +217,12 @@ public class NTMMemory {
     }
 
     ContentAddressing[] getContentAddressing() {
-        return ContentAddressing.getVector(headNum(), i -> oldSimilar[i]);
+        return ContentAddressing.getVector(headNum(), new Function<Integer, BetaSimilarity[]>() {
+            @Override
+            public BetaSimilarity[] apply(Integer i) {
+                return oldSimilar[i];
+            }
+        });
     }
 
     public void updateWeights(IWeightUpdater weightUpdater) {

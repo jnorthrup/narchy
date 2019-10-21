@@ -3,6 +3,7 @@ package nars.truth.dynamic;
 import jcog.Util;
 import jcog.util.ObjectLongLongPredicate;
 import nars.Op;
+import nars.Task;
 import nars.subterm.Subterms;
 import nars.task.util.TaskRegion;
 import nars.term.Compound;
@@ -12,6 +13,9 @@ import nars.term.util.TermException;
 import nars.term.util.conj.ConjBuilder;
 import nars.term.util.conj.ConjList;
 import nars.time.Tense;
+
+import java.util.function.IntFunction;
+import java.util.function.Predicate;
 
 import static nars.Op.CONJ;
 import static nars.Op.IMPL;
@@ -143,7 +147,12 @@ public enum DynamicStatementTruth { ;
                 Term common = d.get(0).term().unneg().sub(subjOrPred ? 1 : 0);
                 int n = d.size();
                 if (d.anySatisfy(1, n,
-                    i -> !common.equals(i.term().unneg().sub(subjOrPred ? 1 : 0))
+                        new Predicate<Task>() {
+                            @Override
+                            public boolean test(Task i) {
+                                return !common.equals(i.term().unneg().sub(subjOrPred ? 1 : 0));
+                            }
+                        }
                 )) {
                     //HACK
                     //this seems to happen with Images and conjunction subterms that collapse
@@ -153,8 +162,12 @@ public enum DynamicStatementTruth { ;
                     //throw new TermException("can not dynamically reconstruct", d.get(0)); //return null; //differing passive component; TODO this can be detected earlier, before truth evaluation starts?
                 }
 
-                sect = superSect.op().the(Util.map(0, n, Term[]::new, i ->
-                        subSubjPredWithNegRewrap(!subjOrPred, d.get(i), d.componentPolarity.get(i))
+                sect = superSect.op().the(Util.map(0, n, Term[]::new, new IntFunction<Term>() {
+                            @Override
+                            public Term apply(int i) {
+                                return subSubjPredWithNegRewrap(!subjOrPred, d.get(i), d.componentPolarity.get(i));
+                            }
+                        }
                 ));
                 outerDT = DTERNAL;
             }
@@ -202,7 +215,12 @@ public enum DynamicStatementTruth { ;
             Op op = superterm.op();
 
             return decomposed.subterms().AND(
-                y -> each.accept(stmtDecomposeStructural(op, subjOrPred, y, common), start, end)
+                    new Predicate<Term>() {
+                        @Override
+                        public boolean test(Term y) {
+                            return each.accept(stmtDecomposeStructural(op, subjOrPred, y, common), start, end);
+                        }
+                    }
             );
 
         }

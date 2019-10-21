@@ -39,9 +39,17 @@ public class Shell {
 
 
 
-        this.reader = new StreamGobbler(proc.getInputStream(), s -> {
-            if (!s.isEmpty())
-                exe.execute(() -> readln(s));
+        this.reader = new StreamGobbler(proc.getInputStream(), new Consumer<String>() {
+            @Override
+            public void accept(String s) {
+                if (!s.isEmpty())
+                    exe.execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            Shell.this.readln(s);
+                        }
+                    });
+            }
         });
         reader.setName("read");
 

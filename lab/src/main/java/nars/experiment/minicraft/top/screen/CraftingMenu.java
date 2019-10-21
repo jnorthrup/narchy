@@ -11,6 +11,7 @@ import nars.experiment.minicraft.top.sound.Sound;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class CraftingMenu extends Menu {
@@ -27,10 +28,13 @@ public class CraftingMenu extends Menu {
             this.recipes.get(i).checkCanCraft(player);
         }
 
-        Collections.sort(this.recipes, (r1, r2) -> {
-            if (r1.canCraft && !r2.canCraft) return -1;
-            if (!r1.canCraft && r2.canCraft) return 1;
-            return 0;
+        Collections.sort(this.recipes, new Comparator<Recipe>() {
+            @Override
+            public int compare(Recipe r1, Recipe r2) {
+                if (r1.canCraft && !r2.canCraft) return -1;
+                if (!r1.canCraft && r2.canCraft) return 1;
+                return 0;
+            }
         });
     }
 

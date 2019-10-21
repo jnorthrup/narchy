@@ -8,6 +8,8 @@ import nars.term.atom.Atomic;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
 
 import static nars.Op.SETe;
 
@@ -40,13 +42,16 @@ public enum JsonTerm { ;
         } else if (j.isObject()) {
             Term[] s = new Term[j.size()];
             int[] i = {0};
-            j.fields().forEachRemaining(f -> {
-                Atomic k = $.quote(f.getKey());
-                Term v = the(f.getValue());
-                s[i[0]++] =
-                        $.inh(v, k);
-                        
+            j.fields().forEachRemaining(new Consumer<Map.Entry<String, JsonNode>>() {
+                @Override
+                public void accept(Map.Entry<String, JsonNode> f) {
+                    Atomic k = $.quote(f.getKey());
+                    Term v = the(f.getValue());
+                    s[i[0]++] =
+                            $.inh(v, k);
 
+
+                }
             });
             return SETe.the(s);
         } else {

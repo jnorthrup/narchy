@@ -27,6 +27,7 @@ import jcog.data.list.FasterList;
 import spacegraph.space3d.phys.math.MiscUtil;
 
 import java.util.Comparator;
+import java.util.function.ToIntFunction;
 
 /**
  * UnionFind calculates connected subsets. Implements weighted Quick Union with
@@ -163,6 +164,11 @@ public class UnionFind {
 		int sz;
 	}
 
-	private static final Comparator<Element> elementComparator = Comparator.comparingInt(o -> o.id);
+	private static final Comparator<Element> elementComparator = Comparator.comparingInt(new ToIntFunction<Element>() {
+        @Override
+        public int applyAsInt(Element o) {
+            return o.id;
+        }
+    });
 
 }

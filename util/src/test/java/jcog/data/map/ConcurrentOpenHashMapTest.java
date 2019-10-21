@@ -167,15 +167,18 @@ public class ConcurrentOpenHashMapTest {
         final int N = 100_000;
         String value = "value";
 
-        Collection<Future<?>> futures = IntStream.range(0, nThreads).mapToObj(threadIdx -> executor.submit(() -> {
-            Random random = new Random();
+        Collection<Future<?>> futures = IntStream.range(0, nThreads).mapToObj(threadIdx -> executor.submit(new Runnable() {
+            @Override
+            public void run() {
+                Random random = new Random();
 
-            for (int j = 0; j < N; j++) {
-                long key = random.nextLong();
-                // Ensure keys are uniques
-                key -= key % (threadIdx + 1);
+                for (int j = 0; j < N; j++) {
+                    long key = random.nextLong();
+                    // Ensure keys are uniques
+                    key -= key % (threadIdx + 1);
 
-                map.put(key, value);
+                    map.put(key, value);
+                }
             }
         })).collect(Collectors.toList());
 
@@ -203,15 +206,18 @@ public class ConcurrentOpenHashMapTest {
         final int N = 100_000;
         String value = "value";
 
-        Collection<Future<?>> futures = IntStream.range(0, nThreads).mapToObj(threadIdx -> executor.submit(() -> {
-            Random random = new Random();
+        Collection<Future<?>> futures = IntStream.range(0, nThreads).mapToObj(threadIdx -> executor.submit(new Runnable() {
+            @Override
+            public void run() {
+                Random random = new Random();
 
-            for (int j = 0; j < N; j++) {
-                long key = random.nextLong();
-                // Ensure keys are uniques
-                key -= key % (threadIdx + 1);
+                for (int j = 0; j < N; j++) {
+                    long key = random.nextLong();
+                    // Ensure keys are uniques
+                    key -= key % (threadIdx + 1);
 
-                map.put(key, value);
+                    map.put(key, value);
+                }
             }
         })).collect(Collectors.toList());
 
@@ -319,7 +325,12 @@ public class ConcurrentOpenHashMapTest {
     public void testComputeIfAbsent() {
         ConcurrentOpenHashMap<Integer, Integer> map = new ConcurrentOpenHashMap<>(16, 1);
         AtomicInteger counter = new AtomicInteger();
-        UnaryOperator<Integer> provider = key -> counter.getAndIncrement();
+        UnaryOperator<Integer> provider = new UnaryOperator<Integer>() {
+            @Override
+            public Integer apply(Integer key) {
+                return counter.getAndIncrement();
+            }
+        };
 
         assertEquals(0, map.computeIfAbsent(0, provider).intValue());
         assertEquals(0, map.get(0).intValue());

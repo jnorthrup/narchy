@@ -6,6 +6,7 @@ package net.beadsproject.beads.core;
 import jcog.data.list.FasterList;
 
 import java.util.List;
+import java.util.function.Predicate;
 
 /**
  * BeadArray represents an array of Beads (and is itself a subclass of Bead). Its purpose is to forward messages to its array members. A BeadArray detects whether or not its members are deleted, and removes them if they are. For this reason it should be used in any situations where a Bead needs to be automatically disposed of. Note, however, that a BeadArray does not forward {@link Auvent#stop()}, {@link Auvent#start()} and {@link Auvent#pause(boolean)} messages to its component Beads unless told to do so by setting {@link #setForwardKillCommand(boolean)} and {@link AuventArray#setForwardPauseCommand(boolean)} respectively.
@@ -102,12 +103,15 @@ public class AuventArray extends Auvent {
      */
     @Override
     public void on(Auvent message) {
-        beads.removeIf(bead -> {
-            if (bead.isDeleted()) {
-                return true;
-            } else {
-                bead.accept(message);
-                return false;
+        beads.removeIf(new Predicate<Auvent>() {
+            @Override
+            public boolean test(Auvent bead) {
+                if (bead.isDeleted()) {
+                    return true;
+                } else {
+                    bead.accept(message);
+                    return false;
+                }
             }
         });
     }
@@ -169,12 +173,15 @@ public class AuventArray extends Auvent {
     public void stop() {
         super.stop();
         if (forwardKillCommand) {
-            beads.removeIf(bead -> {
-                if (bead.isDeleted()) {
-                    return true;
-                } else {
-                    bead.stop();
-                    return false;
+            beads.removeIf(new Predicate<Auvent>() {
+                @Override
+                public boolean test(Auvent bead) {
+                    if (bead.isDeleted()) {
+                        return true;
+                    } else {
+                        bead.stop();
+                        return false;
+                    }
                 }
             });
         }
@@ -187,12 +194,15 @@ public class AuventArray extends Auvent {
     public void pause(boolean paused) {
         super.pause(paused);
         if (forwardPauseCommand) {
-            beads.removeIf(bead -> {
-                if (bead.isDeleted()) {
-                    return true;
-                } else {
-                    bead.pause(paused);
-                    return false;
+            beads.removeIf(new Predicate<Auvent>() {
+                @Override
+                public boolean test(Auvent bead) {
+                    if (bead.isDeleted()) {
+                        return true;
+                    } else {
+                        bead.pause(paused);
+                        return false;
+                    }
                 }
             });
         }
@@ -205,12 +215,15 @@ public class AuventArray extends Auvent {
     public void start() {
         super.start();
         if (forwardPauseCommand) {
-            beads.removeIf(bead -> {
-                if (bead.isDeleted()) {
-                    return true;
-                } else {
-                    bead.start();
-                    return false;
+            beads.removeIf(new Predicate<Auvent>() {
+                @Override
+                public boolean test(Auvent bead) {
+                    if (bead.isDeleted()) {
+                        return true;
+                    } else {
+                        bead.start();
+                        return false;
+                    }
                 }
             });
         }

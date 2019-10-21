@@ -17,6 +17,7 @@
  */
 package alice.tuprolog;
 
+import alice.tuprolog.event.OutputEvent;
 import alice.tuprolog.event.OutputListener;
 
 /**
@@ -33,7 +34,12 @@ public class PrologAgent extends Prolog {
     private String goalText;
     
   
-    private static final OutputListener defaultOutputListener = ev -> System.out.print(ev.msg);
+    private static final OutputListener defaultOutputListener = new OutputListener() {
+        @Override
+        public void onOutput(OutputEvent ev) {
+            System.out.print(ev.msg);
+        }
+    };
     
     
     /**

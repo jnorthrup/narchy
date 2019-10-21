@@ -19,6 +19,7 @@ import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.text.VectorLabel;
 
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 
 import static nars.Op.*;
 
@@ -44,16 +45,24 @@ public class ConceptGraph2D extends Graph2D<Term> {
         this.nar = n;
         this.source = Iterables.transform(source, Termed::term);
 
-        build(nn -> nn.set(
-                new Scale(
-                        new PushButton(new VectorLabel(nn.id.toString())).clicked(() -> {
-                            Term t = nn.id;
-                            if (t != null)
-                                NARui.conceptWindow(t, nar);
-                        }),
-                        0.8f
-                )
-        ));
+        build(new Consumer<NodeVis<Term>>() {
+            @Override
+            public void accept(NodeVis<Term> nn) {
+                nn.set(
+                        new Scale(
+                                new PushButton(new VectorLabel(nn.id.toString())).clicked(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Term t = nn.id;
+                                        if (t != null)
+                                            NARui.conceptWindow(t, nar);
+                                    }
+                                }),
+                                0.8f
+                        )
+                );
+            }
+        });
 
         this.update(getLayout())
 //        layout(new TreeMap2D<>() {

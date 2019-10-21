@@ -107,7 +107,12 @@ public class FasterList<X> extends FastList<X> {
     public FastList<X> sortThis() {
         if (size > 1) { //superclass doesnt test for this condition
             //super.sortThis();
-            SmoothSort.smoothSort(items, 0, size, (x,y)->((Comparable)x).compareTo(y)); //figure that repeated sorting will lead to a smoothsort advantage
+            SmoothSort.smoothSort(items, 0, size, new Comparator<X>() {
+                @Override
+                public int compare(X x, X y) {
+                    return ((Comparable) x).compareTo(y);
+                }
+            }); //figure that repeated sorting will lead to a smoothsort advantage
         }
         return this;
     }
@@ -445,7 +450,12 @@ public class FasterList<X> extends FastList<X> {
     }
 
     public long maxValue(ToLongFunction<? super X> function) {
-        return longify((max, x) -> Math.max(max, function.applyAsLong(x)), Long.MIN_VALUE);
+        return longify(new LongObjectToLongFunction<X>() {
+            @Override
+            public long longValueOf(long max, X x) {
+                return Math.max(max, function.applyAsLong(x));
+            }
+        }, Long.MIN_VALUE);
     }
 
 //    public X maxBy(float mustExceed, FloatFunction<? super X> function) {
@@ -927,7 +937,12 @@ public class FasterList<X> extends FastList<X> {
     }
 
     public boolean removeInstance(X x) {
-        return removeIf((Predicate)y -> x == y);
+        return removeIf(new Predicate() {
+            @Override
+            public boolean test(Object y) {
+                return x == y;
+            }
+        });
     }
 
     public boolean removeFirstInstance(X x) {

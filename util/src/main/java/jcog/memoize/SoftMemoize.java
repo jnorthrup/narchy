@@ -18,11 +18,14 @@ public class SoftMemoize<X, Y> extends CustomConcurrentHashMap<X, Object> implem
     }
     public SoftMemoize(Function<X, Y> g, int expSize, Strength keyStrength, Strength valueStrength) {
         super(keyStrength, EQUALS, valueStrength, EQUALS, expSize);
-        this.f = (x) -> {
-            Y y = g.apply(x);
-            return y == null ?
-                    NULL :
-                    y;
+        this.f = new Function<X, Object>() {
+            @Override
+            public Object apply(X x) {
+                Y y = g.apply(x);
+                return y == null ?
+                        NULL :
+                        y;
+            }
         };
     }
 

@@ -13,6 +13,7 @@ import nars.term.var.ellipsis.Ellipsislike;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
+import java.util.function.Predicate;
 
 import static nars.derive.util.DerivationFunctors.Belief;
 import static nars.derive.util.DerivationFunctors.Task;
@@ -41,27 +42,35 @@ public class CommutativeConstantPreFilter extends AbstractPred<PreDerivation> {
 
         if (commutiveContainer instanceof Compound /* && concPattern.hasAny(Op.commutative)*/) {
             //target.pathsTo((Term t)->true, (Term t)->true, (ByteList ss, Term x)-> {
-            commutiveContainer.recurseTerms(t -> true, x -> {
+            commutiveContainer.recurseTerms(new Predicate<Term>() {
+                @Override
+                public boolean test(Term t) {
+                    return true;
+                }
+            }, new Predicate<Term>() {
+                @Override
+                public boolean test(Term x) {
 
-                if (x!=commutiveContainer && x.op().commutative) {
-                //if (x instanceof PatternIndex.PremisePatternCompound.PremisePatternCompoundWithEllipsisCommutive) {
-                    @Nullable byte[] commPath = Terms.pathConstant(commutiveContainer, x);
-                    if (commPath != null) {
+                    if (x != commutiveContainer && x.op().commutative) {
+                        //if (x instanceof PatternIndex.PremisePatternCompound.PremisePatternCompoundWithEllipsisCommutive) {
+                        @Nullable byte[] commPath = Terms.pathConstant(commutiveContainer, x);
+                        if (commPath != null) {
 
-                        for (Term s : ((Compound)x).subtermsDirect()) {
-                            if (s instanceof Ellipsislike) continue; //skip ellipsis terms
+                            for (Term s : ((Compound) x).subtermsDirect()) {
+                                if (s instanceof Ellipsislike) continue; //skip ellipsis terms
 
-                            //s is constant:
-                            Term contentHolder = commInTaskOrBelief ? beliefPattern : taskPattern;
-                            @Nullable byte[] contentPath = Terms.pathConstant(contentHolder, s); //try the belief
-                            if (contentPath != null)
-                                pre.add(new CommutativeConstantPreFilter(
-                                        commPath, contentPath, commInTaskOrBelief)
-                                );
+                                //s is constant:
+                                Term contentHolder = commInTaskOrBelief ? beliefPattern : taskPattern;
+                                @Nullable byte[] contentPath = Terms.pathConstant(contentHolder, s); //try the belief
+                                if (contentPath != null)
+                                    pre.add(new CommutativeConstantPreFilter(
+                                            commPath, contentPath, commInTaskOrBelief)
+                                    );
+                            }
                         }
                     }
+                    return true;
                 }
-                return true;
             }, null);
         }
     }

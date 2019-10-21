@@ -35,16 +35,19 @@ public class AgentBuilder {
         return new Agenterator(controller, this.sensors, reward, actions, NOP_ACTION, act, history);
     }
 
-    final IntConsumer act = (rawAction) -> {
-        //deserialize the raw action id to the appropriate action group
-        // TODO do this with a stored skip count int[]
-        int rawAction1 = rawAction;
-        for (IntObjectPair<? extends IntConsumer> aa: actions) {
-            int bb = aa.getOne();
-            if (rawAction1 >= bb) {
-                rawAction1 -= bb;
-            } else if (rawAction1 >= 0) {
-                aa.getTwo().accept(rawAction1);
+    final IntConsumer act = new IntConsumer() {
+        @Override
+        public void accept(int rawAction) {
+            //deserialize the raw action id to the appropriate action group
+            // TODO do this with a stored skip count int[]
+            int rawAction1 = rawAction;
+            for (IntObjectPair<? extends IntConsumer> aa : actions) {
+                int bb = aa.getOne();
+                if (rawAction1 >= bb) {
+                    rawAction1 -= bb;
+                } else if (rawAction1 >= 0) {
+                    aa.getTwo().accept(rawAction1);
+                }
             }
         }
     };
@@ -65,7 +68,12 @@ public class AgentBuilder {
     }
 
     public AgentBuilder out(Runnable decision) {
-        actions.add(pair(1, (x) -> decision.run()));
+        actions.add(pair(1, new IntConsumer() {
+            @Override
+            public void accept(int x) {
+                decision.run();
+            }
+        }));
         return this;
     }
 

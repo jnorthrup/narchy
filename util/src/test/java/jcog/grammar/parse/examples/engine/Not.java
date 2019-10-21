@@ -9,6 +9,8 @@ package jcog.grammar.parse.examples.engine;
  */
 
 import java.util.Arrays;
+import java.util.function.Function;
+import java.util.function.IntPredicate;
 import java.util.stream.IntStream;
 
 /**
@@ -136,7 +138,12 @@ public class Not extends Structure {
 	 * @return a <code>ConsultingNot</code> counterpart that can prove itself
 	 */
 	public Term copyForProof(AxiomSource as, Scope scope) {
-		Term[] newTerms = Arrays.stream(terms).map(term -> term.copyForProof(as, scope)).toArray(Term[]::new);
+		Term[] newTerms = Arrays.stream(terms).map(new Function<Term, Term>() {
+            @Override
+            public Term apply(Term term) {
+                return term.copyForProof(as, scope);
+            }
+        }).toArray(Term[]::new);
         return new ConsultingNot(new ConsultingStructure(as, functor, newTerms));
 	}
 
@@ -157,7 +164,12 @@ public class Not extends Structure {
 			return false;
 		}
 		int bound = terms.length;
-		return IntStream.range(0, bound).allMatch(i -> terms[i].equals(n.terms[i]));
+		return IntStream.range(0, bound).allMatch(new IntPredicate() {
+            @Override
+            public boolean test(int i) {
+                return terms[i].equals(n.terms[i]);
+            }
+        });
 	}
 
 	/**

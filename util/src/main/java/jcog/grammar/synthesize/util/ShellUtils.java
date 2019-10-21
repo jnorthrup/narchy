@@ -19,6 +19,7 @@ import jcog.grammar.synthesize.util.OracleUtils.Oracle;
 
 import java.io.*;
 import java.util.concurrent.*;
+import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -45,7 +46,12 @@ public class ShellUtils {
     public static String read(InputStream input) {
         try {
             BufferedReader br = new BufferedReader(new InputStreamReader(input));
-            String result = br.lines().map(line -> line + '\n').collect(Collectors.joining());
+            String result = br.lines().map(new Function<String, String>() {
+                @Override
+                public String apply(String line) {
+                    return line + '\n';
+                }
+            }).collect(Collectors.joining());
             br.close();
             return result;
         } catch (IOException e) {
@@ -64,14 +70,17 @@ public class ShellUtils {
 
     public static String executeForStream(String command, boolean isError, long timeoutMillis) {
         Process process = executeNoWait(command);
-        Callable<String> exec = () -> {
-            String result = read(isError ? process.getErrorStream() : process.getInputStream());
-            try {
-                process.waitFor();
-            } catch (InterruptedException e) {
-                throw new RuntimeException("Error executing command: " + command, e);
+        Callable<String> exec = new Callable<String>() {
+            @Override
+            public String call() throws Exception {
+                String result = read(isError ? process.getErrorStream() : process.getInputStream());
+                try {
+                    process.waitFor();
+                } catch (InterruptedException e) {
+                    throw new RuntimeException("Error executing command: " + command, e);
+                }
+                return result;
             }
-            return result;
         };
         if (timeoutMillis == -1L) {
             try {

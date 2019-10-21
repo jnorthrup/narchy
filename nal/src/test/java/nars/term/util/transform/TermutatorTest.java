@@ -19,6 +19,7 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
+import java.util.function.IntFunction;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -105,9 +106,14 @@ class TermutatorTest {
     @Test
     void testChoose2_4() {
 
-        Set<String> series = IntStream.range(0, 5).mapToObj(i -> assertTermutatorProducesUniqueResults(
-                new Choose2(e1, p2p3, ((Compound) p("a", "b", "c", "d")).toSetSorted()
-                ), 12)).collect(Collectors.toSet());
+        Set<String> series = IntStream.range(0, 5).mapToObj(new IntFunction<String>() {
+            @Override
+            public String apply(int i) {
+                return TermutatorTest.this.assertTermutatorProducesUniqueResults(
+                        new Choose2(e1, p2p3, ((Compound) p("a", "b", "c", "d")).toSetSorted()
+                        ), 12);
+            }
+        }).collect(Collectors.toSet());
 
         assertTrue(series.size() > 1); 
     }
@@ -148,20 +154,23 @@ class TermutatorTest {
         int[] duplicates = {0};
         int[] actual = {0};
         Set<String> s = new LinkedHashSet();
-        t.mutate(new Termutator[] { t, (chain, current, u) -> {
-            TreeMap t1 = new TreeMap();
-            for (Map.Entry<Variable, Versioned<Term>> entry : u.xy.map.entrySet()) {
-                Variable key = entry.getKey();
-                Versioned<Term> value = entry.getValue();
-                t1.put(key, value);
-            }
+        t.mutate(new Termutator[] { t, new Termutator() {
+            @Override
+            public void mutate(Termutator[] chain, int current, Unify u) {
+                TreeMap t1 = new TreeMap();
+                for (Map.Entry<Variable, Versioned<Term>> entry : u.xy.map.entrySet()) {
+                    Variable key = entry.getKey();
+                    Versioned<Term> value = entry.getValue();
+                    t1.put(key, value);
+                }
 
-            if (s.add( t1.toString() )) {
-                actual[0]++;
-            } else {
-                duplicates[0]++;
-            }
+                if (s.add(t1.toString())) {
+                    actual[0]++;
+                } else {
+                    duplicates[0]++;
+                }
 
+            }
         }}, 0, unifier);
 
 

@@ -5,6 +5,7 @@ import jcog.decide.Roulette;
 import jcog.pri.ScalarValue;
 import jcog.random.XoRoShiRo128PlusRandom;
 import org.apache.commons.math3.stat.Frequency;
+import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -22,7 +23,12 @@ class RouletteTest {
 
         Frequency f = new Frequency();
         for (int i = 0; i < samples; i++)
-            f.addValue(Roulette.selectRoulette(uniques, (k) -> 0.5f, rng));
+            f.addValue(Roulette.selectRoulette(uniques, new IntToFloatFunction() {
+                @Override
+                public float valueOf(int k) {
+                    return 0.5f;
+                }
+            }, rng));
 
 
         System.out.println(f);
@@ -67,7 +73,12 @@ class RouletteTest {
     }
 
     private static void testMutableRoulette(Random rng, int uniques, int samples, float[] w) {
-        MutableRoulette m = new MutableRoulette(uniques, (i) -> w[i], rng);
+        MutableRoulette m = new MutableRoulette(uniques, new IntToFloatFunction() {
+            @Override
+            public float valueOf(int i) {
+                return w[i];
+            }
+        }, rng);
 
         Frequency f = new Frequency();
         for (int i = 0; i < samples; i++) {
@@ -92,7 +103,12 @@ class RouletteTest {
 
         Frequency f = new Frequency();
         for (int i = 0; i < samples; i++)
-            f.addValue(Roulette.selectRoulette(uniques, (k) -> (k + 1f) / (uniques), rng));
+            f.addValue(Roulette.selectRoulette(uniques, new IntToFloatFunction() {
+                @Override
+                public float valueOf(int k) {
+                    return (k + 1f) / (uniques);
+                }
+            }, rng));
 
         System.out.println(f);
         assertEquals(f.getUniqueCount(), uniques);

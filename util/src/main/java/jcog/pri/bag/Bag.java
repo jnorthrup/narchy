@@ -221,7 +221,12 @@ public abstract class Bag<X, Y> implements Table<X, Y>, Sampler<Y>, jcog.pri.Pre
     }
 
     public final Y[] toArray(@Nullable Y[] _target) {
-        return toArray(_target, y->y);
+        return toArray(_target, new Function<Y, Y>() {
+            @Override
+            public Y apply(Y y) {
+                return y;
+            }
+        });
     }
 
     /** subclasses may have more efficient ways of doing this */
@@ -233,7 +238,12 @@ public abstract class Bag<X, Y> implements Table<X, Y>, Sampler<Y>, jcog.pri.Pre
 
         int[] i = {0}; //HACK this is not good. use a AND predicate iteration or just plain iterator?
 
-        forEach(s, (y) -> target[i[0]++] = apply.apply(y));
+        forEach(s, new Consumer<Y>() {
+            @Override
+            public void accept(Y y) {
+                target[i[0]++] = apply.apply(y);
+            }
+        });
 
         //either trim the array. size could have decreased while iterating, or its perfect sized
         return i[0] < target.length ? Arrays.copyOf(target, i[0]) : target;
@@ -496,7 +506,12 @@ public abstract class Bag<X, Y> implements Table<X, Y>, Sampler<Y>, jcog.pri.Pre
     @Override
     public void depressurize(float toRemove) {
         if (toRemove == toRemove && toRemove > Float.MIN_NORMAL)
-            PRESSURE.update(this, (p, a) -> Math.max((float) 0, p - a), toRemove);
+            PRESSURE.update(this, new FloatFloatToFloatFunction() {
+                @Override
+                public float apply(float p, float a) {
+                    return Math.max((float) 0, p - a);
+                }
+            }, toRemove);
     }
 
     @Override
@@ -509,10 +524,13 @@ public abstract class Bag<X, Y> implements Table<X, Y>, Sampler<Y>, jcog.pri.Pre
         float percentToRemain = 1.0F -percentToRemove;
 
         float[] delta = new float[1];
-        PRESSURE.update(this, (priBefore, f) -> {
-            float priAfter = priBefore * f;
-            delta[0] = priBefore - priAfter;
-            return priAfter;
+        PRESSURE.update(this, new FloatFloatToFloatFunction() {
+            @Override
+            public float apply(float priBefore, float f) {
+                float priAfter = priBefore * f;
+                delta[0] = priBefore - priAfter;
+                return priAfter;
+            }
         }, percentToRemain);
 
         return Math.max((float) 0, delta[0]);

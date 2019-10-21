@@ -3,9 +3,11 @@ package jcog.grammar.parse;
 import jcog.grammar.parse.tokens.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.function.Supplier;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -63,7 +65,12 @@ class RuleGrammarTest {
 
 	@Test
     void unknownTerminalType() {
-		assertThrows(GrammarException.class, ()-> grammar.parse("r = UnknownXYZ"));
+		assertThrows(GrammarException.class, new Executable() {
+            @Override
+            public void execute() throws Throwable {
+                grammar.parse("r = UnknownXYZ");
+            }
+        });
 	}
 
 	@Test
@@ -178,12 +185,22 @@ class RuleGrammarTest {
 
 	private void assertParserType(String body, Class<? extends Parser> parserType) {
 		Parser parser = resultRule(body);
-		assertTrue(parserType.isInstance(parser),()->"should be of type: " + parserType);
+		assertTrue(parserType.isInstance(parser), new Supplier<String>() {
+            @Override
+            public String get() {
+                return "should be of type: " + parserType;
+            }
+        });
 	}
 
 	private Parser resultRule(String ruleBody) {
 		IParsingResult result = grammar.parse("r = " + ruleBody);
-		assertTrue(result.isCompleteMatch(),()->"should be complete match: " + result);
+		assertTrue(result.isCompleteMatch(), new Supplier<String>() {
+            @Override
+            public String get() {
+                return "should be complete match: " + result;
+            }
+        });
 		Parser rule = targetGrammar.getRule("r");
 		return rule;
 	}

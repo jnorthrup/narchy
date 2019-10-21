@@ -96,12 +96,15 @@ public class User {
             d = nrt(FSDirectory.open(Paths.get(dir.toAbsolutePath().toString())));
 
 
-            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-                try {
-                    logger.warn("save {}", dir);
-                    d.close();
-                } catch (IOException e) {
-                    throw new Error(e);
+            Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        logger.warn("save {}", dir);
+                        d.close();
+                    } catch (IOException e) {
+                        throw new Error(e);
+                    }
                 }
             }));
         } catch (Exception e) {
@@ -170,14 +173,17 @@ public class User {
     }
 
     public void whileEach(Predicate<Document> d) {
-        read((r) -> {
-            int n = r.numDocs();
-            for (int i = 0; i < n; i++) {
-                try {
-                    if (!d.test(r.document(i)))
-                        break;
-                } catch (IOException e) {
-                    e.printStackTrace();
+        read(new Consumer<IndexReader>() {
+            @Override
+            public void accept(IndexReader r) {
+                int n = r.numDocs();
+                for (int i = 0; i < n; i++) {
+                    try {
+                        if (!d.test(r.document(i)))
+                            break;
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         });
@@ -187,15 +193,18 @@ public class User {
         Document d = document(id, x);
         if (d != null) {
             logger.debug("put {} {}", id, x);
-            write((iw) -> {
-                try {
-                    
-                    
-                    iw.updateDocument(id(id), d);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+            write(new Consumer<IndexWriter>() {
+                @Override
+                public void accept(IndexWriter iw) {
+                    try {
 
+
+                        iw.updateDocument(id(id), d);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                }
             });
         } else {
             throw new RuntimeException("null document for " + x);
@@ -206,15 +215,18 @@ public class User {
     public <X> void get(String id, Consumer<X> yy) {
         logger.debug("get {}", id);
         Document[] D = new Document[1];
-        search((iis) -> {
-            try {
-                TopDocs y = iis.search(
-                        new TermQuery(id(id)), 1);
-                if (y.totalHits.value > 0L)
-                    D[0] = iis.doc(y.scoreDocs[0].doc); 
+        search(new Consumer<IndexSearcher>() {
+            @Override
+            public void accept(IndexSearcher iis) {
+                try {
+                    TopDocs y = iis.search(
+                            new TermQuery(id(id)), 1);
+                    if (y.totalHits.value > 0L)
+                        D[0] = iis.doc(y.scoreDocs[0].doc);
 
-            } catch (IOException e) {
-                e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         });
         if (D[0] != null) { 
@@ -295,19 +307,22 @@ public class User {
 
     public void get(Query q, int n, @Nullable FieldDoc after, Predicate<DocObj> yy) {
         logger.debug("query {}", q);
-        search((iis) -> {
-            try {
-                TopDocs y = iis.searchAfter(after, q, n);
-                if (y.totalHits.value > 0L) {
-                    DocObj d = new DocObj(iis.getIndexReader());
-                    for (ScoreDoc sd : y.scoreDocs) {
-                        if (!yy.test(d.update(sd.doc, sd.score)))
-                            break;
+        search(new Consumer<IndexSearcher>() {
+            @Override
+            public void accept(IndexSearcher iis) {
+                try {
+                    TopDocs y = iis.searchAfter(after, q, n);
+                    if (y.totalHits.value > 0L) {
+                        DocObj d = new DocObj(iis.getIndexReader());
+                        for (ScoreDoc sd : y.scoreDocs) {
+                            if (!yy.test(d.update(sd.doc, sd.score)))
+                                break;
+                        }
+                        d.clear();
                     }
-                    d.clear();
+                } catch (IOException e) {
+                    logger.error("search {}", q, e);
                 }
-            } catch (IOException e) {
-                logger.error("search {}", q, e);
             }
         });
     }
@@ -315,14 +330,17 @@ public class User {
     public <X> void get(String id, Supplier<X> ifAbsent, Consumer<X> with) {
         logger.debug("get {}", id);
         Document[] D = new Document[1];
-        search((is) -> {
+        search(new Consumer<IndexSearcher>() {
+            @Override
+            public void accept(IndexSearcher is) {
 
-            try {
-                TopDocs y = is.search(new TermQuery(id(id)), 1);
-                if (y.totalHits.value > 0L)
-                    D[0] = is.doc(y.scoreDocs[0].doc);
-            } catch (IOException e) {
-                e.printStackTrace();
+                try {
+                    TopDocs y = is.search(new TermQuery(id(id)), 1);
+                    if (y.totalHits.value > 0L)
+                        D[0] = is.doc(y.scoreDocs[0].doc);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         });
         if (D[0] != null) { 
@@ -376,18 +394,21 @@ public class User {
     }
 
     private void search(Consumer<IndexSearcher> with) {
-        read(ir -> {
+        read(new Consumer<IndexReader>() {
+            @Override
+            public void accept(IndexReader ir) {
 
 
-            try {
-                DirectoryReader r = DirectoryReader.open(iw);
-                IndexSearcher s = new IndexSearcher(r);
-                with.accept(s);
-                r.close();
-            } catch (IOException e) {
-                e.printStackTrace();
+                try {
+                    DirectoryReader r = DirectoryReader.open(iw);
+                    IndexSearcher s = new IndexSearcher(r);
+                    with.accept(s);
+                    r.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
             }
-
         });
     }
 

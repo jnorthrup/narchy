@@ -8,6 +8,7 @@ import nars.control.Cause;
 import nars.control.MetaGoal;
 import nars.exe.Exec;
 import nars.time.clock.RealTime;
+import org.eclipse.collections.api.block.function.primitive.IntFunction;
 
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -44,7 +45,12 @@ public abstract class MultiExec extends Exec {
 
         if (bn > 2) {
             /** sloppy sort by type */
-            b.sortThisByInt(x -> x.getClass().hashCode());
+            b.sortThisByInt(new IntFunction() {
+                @Override
+                public int intValueOf(Object x) {
+                    return x.getClass().hashCode();
+                }
+            });
         }
 
         if (concurrency <= 1) {

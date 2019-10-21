@@ -1,6 +1,7 @@
 package jcog.bloom;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 
 import java.util.Random;
 
@@ -122,21 +123,24 @@ class CountMinSketchTest {
 
     @Test
     void testIncompatibleMerge() {
-        assertThrows(RuntimeException.class, () -> {
-            CountMinSketch cms = new CountMinSketch(1024, 10);
-            cms.add("Hello".getBytes());
-            cms.add("Hello".getBytes());
-            cms.add("Hello".getBytes());
-            cms.add("Hello".getBytes());
-            CountMinSketch cms2 = new CountMinSketch(1024, 11);
-            cms2.add("Hello");
-            cms2.add("Hello");
-            cms2.add("Hello");
-            cms2.add("Hello");
+        assertThrows(RuntimeException.class, new Executable() {
+            @Override
+            public void execute() throws Throwable {
+                CountMinSketch cms = new CountMinSketch(1024, 10);
+                cms.add("Hello".getBytes());
+                cms.add("Hello".getBytes());
+                cms.add("Hello".getBytes());
+                cms.add("Hello".getBytes());
+                CountMinSketch cms2 = new CountMinSketch(1024, 11);
+                cms2.add("Hello");
+                cms2.add("Hello");
+                cms2.add("Hello");
+                cms2.add("Hello");
 
-            
-            cms.merge(cms2);
 
+                cms.merge(cms2);
+
+            }
         });
     }
 

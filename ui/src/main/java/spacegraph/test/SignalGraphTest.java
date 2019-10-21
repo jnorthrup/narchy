@@ -13,7 +13,9 @@ import spacegraph.video.VideoSurface;
 import spacegraph.video.VideoTransform;
 import spacegraph.video.WebCam;
 
+import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class SignalGraphTest {
 
@@ -30,25 +32,28 @@ public class SignalGraphTest {
             west(in);
             east(out);
             //in.update((xx)->{
-            in.on((x)->{
+            in.on(new Consumer<VideoSource>() {
+                @Override
+                public void accept(VideoSource x) {
 
-                if (this.y!=null) {
-                    try {
-                        y.close();
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                    if (VideoTransformPort.this.y != null) {
+                        try {
+                            y.close();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        y = null;
                     }
-                    y = null;
-                }
 
-                if (x!=null) {
-                    this.y = t.apply(x);
-                    center(new VideoSurface(y));
-                } else {
-                    center(new EmptySurface());
-                }
+                    if (x != null) {
+                        VideoTransformPort.this.y = t.apply(x);
+                        VideoTransformPort.this.center(new VideoSurface(y));
+                    } else {
+                        VideoTransformPort.this.center(new EmptySurface());
+                    }
 
-                out.out(y);
+                    out.out(y);
+                }
             });
         }
     }
@@ -58,9 +63,12 @@ public class SignalGraphTest {
         GraphEdit2D w = GraphEdit2D.graphWindow(1024, 1024);
 
         for (WebCam c : WebCam.theFirst(10)) {
-            w.add(new Surplier(c.toString(), Surface.class, () -> {
-                return Splitting.row(new ConstantPort(c), 0.1f, new VideoSurface(c));
-                ///return new PushButton("cam1");
+            w.add(new Surplier(c.toString(), Surface.class, new Supplier() {
+                @Override
+                public Object get() {
+                    return Splitting.row(new ConstantPort(c), 0.1f, new VideoSurface(c));
+                    ///return new PushButton("cam1");
+                }
             })).posRel((float) 0, (float) 0, 0.25f, 0.2f);
         }
         w.add(new VideoTransformPort(WebcamGestures.VideoBackgroundRemoval::new)).posRel((float) 0, (float) 0, 0.1f, 0.1f);

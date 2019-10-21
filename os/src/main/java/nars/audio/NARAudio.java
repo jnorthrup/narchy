@@ -17,6 +17,8 @@ import spacegraph.space2d.widget.meter.WaveBitmap;
 
 import javax.sound.sampled.LineUnavailableException;
 
+import java.util.function.IntFunction;
+
 import static spacegraph.space2d.container.grid.Gridding.grid;
 
 /**
@@ -38,7 +40,12 @@ public class NARAudio extends WaveIn {
         CircularFloatBuffer hearBuf = new CircularFloatBuffer(in.data);
         /* hack */
         FreqVectorSensor hear = new FreqVectorSensor(nar, hearBuf /* hack */,
-                512, 16, f -> $.inh(id, $.the(f)));
+                512, 16, new IntFunction<Term>() {
+            @Override
+            public Term apply(int f) {
+                return $.inh(id, $.the(f));
+            }
+        });
         h.addSensor(hear);
 
         //addSensor(hear);

@@ -104,7 +104,12 @@ public class Bagregate<X> implements Iterable<PriReference<X>> {
 
     /** compose */
     public <Y> Iterable<Y> iterable(Function<X, Y> f) {
-        return StreamSupport.stream(Iterables.filter(bag, Objects::nonNull).spliterator(), false).map((b) -> f.apply(b.get())).collect(Collectors.toList());
+        return StreamSupport.stream(Iterables.filter(bag, Objects::nonNull).spliterator(), false).map(new Function<PriReference<X>, Y>() {
+            @Override
+            public Y apply(PriReference<X> b) {
+                return f.apply(b.get());
+            }
+        }).collect(Collectors.toList());
     }
 
     public final void setCapacity(int c) {

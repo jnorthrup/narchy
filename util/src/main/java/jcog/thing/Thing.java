@@ -33,6 +33,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Executor;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -251,19 +252,22 @@ public class Thing<T, P /* service key */  /* context */> {
     private boolean tryStart(Part<T> x) {
 
         if (x.state.compareAndSet(ServiceState.Off, ServiceState.OffToOn)) {
-            executor.execute(() -> {
-                try {
+            executor.execute(new Runnable() {
+                @Override
+                public void run() {
+                    try {
 
-                    x.start(id);
+                        x.start(id);
 
-                    boolean nowOn = x.state.compareAndSet(ServiceState.OffToOn, ServiceState.On);
-                    assert (nowOn);
+                        boolean nowOn = x.state.compareAndSet(ServiceState.OffToOn, ServiceState.On);
+                        assert (nowOn);
 
-                    eventOnOff.emit(pair(x, true)/*, executor*/);
+                        eventOnOff.emit(pair(x, true)/*, executor*/);
 
-                } catch (Throwable e) {
-                    x.state.set(ServiceState.Off);
-                    error(x, e, "start");
+                    } catch (Throwable e) {
+                        x.state.set(ServiceState.Off);
+                        Thing.this.error(x, e, "start");
+                    }
                 }
             });
             return true;
@@ -276,25 +280,28 @@ public class Thing<T, P /* service key */  /* context */> {
     private boolean tryStop(Part<T> x, @Nullable Runnable afterOff) {
 
         if (x.state.compareAndSet(ServiceState.On, ServiceState.OnToOff)) {
-            executor.execute(() -> {
-                try {
+            executor.execute(new Runnable() {
+                @Override
+                public void run() {
+                    try {
 
 
-                    x.stop(id);
+                        x.stop(id);
 
-                    boolean nowOff = x.state.compareAndSet(Thing.ServiceState.OnToOff, Thing.ServiceState.Off);
-                    assert (nowOff);
+                        boolean nowOff = x.state.compareAndSet(Thing.ServiceState.OnToOff, Thing.ServiceState.Off);
+                        assert (nowOff);
 
-                    eventOnOff.emit(pair(x, false)/*, executor*/);
+                        eventOnOff.emit(pair(x, false)/*, executor*/);
 
 
-                    if (afterOff != null && x.isOff()) {
-                        afterOff.run();
+                        if (afterOff != null && x.isOff()) {
+                            afterOff.run();
+                        }
+
+                    } catch (Throwable e) {
+                        x.state.set(Thing.ServiceState.Off);
+                        Thing.this.error(x, e, "stop");
                     }
-
-                } catch (Throwable e) {
-                    x.state.set(Thing.ServiceState.Off);
-                    error(x, e, "stop");
                 }
             });
 
@@ -324,7 +331,12 @@ public class Thing<T, P /* service key */  /* context */> {
         if (x != removed) {
             //something removed
             if (removed != null) {
-                tryStop(removed, start ? () -> tryStart(x) : null);
+                tryStop(removed, start ? new Runnable() {
+                    @Override
+                    public void run() {
+                        Thing.this.tryStart(x);
+                    }
+                } : null);
                 return true;
             } else {
                 return !start || tryStart(x);
@@ -421,7 +433,12 @@ public class Thing<T, P /* service key */  /* context */> {
 
             //try new Part(thisContext) constructors
             if (args == null) {
-                int partsIDSettable = ArrayUtil.indexOf(constructors, c -> c.getParameterTypes().length == 1 && c.getParameterTypes()[0].isAssignableFrom(id.getClass()));
+                int partsIDSettable = ArrayUtil.indexOf(constructors, new Predicate<Constructor>() {
+                    @Override
+                    public boolean test(Constructor c) {
+                        return c.getParameterTypes().length == 1 && c.getParameterTypes()[0].isAssignableFrom(id.getClass());
+                    }
+                });
                 if (partsIDSettable != -1) {
                     constructor = partsIDSettable;
                     args = new Object[]{id};
@@ -430,7 +447,12 @@ public class Thing<T, P /* service key */  /* context */> {
 
             //try no-arg constructors
             if (args == null) {
-                int noArgConstructor = ArrayUtil.indexOf(constructors, c -> c.getParameterTypes().length == 0);
+                int noArgConstructor = ArrayUtil.indexOf(constructors, new Predicate<Constructor>() {
+                    @Override
+                    public boolean test(Constructor c) {
+                        return c.getParameterTypes().length == 0;
+                    }
+                });
                 if (noArgConstructor != -1) {
                     constructor = noArgConstructor;
                     args = ArrayUtil.EMPTY_OBJECT_ARRAY;

@@ -6,6 +6,9 @@ import nars.test.impl.DeductiveMeshTest;
 import org.junit.jupiter.api.Disabled;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.runner.RunnerException;
+import org.openjdk.jmh.runner.options.ChainedOptionsBuilder;
+
+import java.util.function.Consumer;
 
 import static nars.perf.NARBenchmarks.perf;
 
@@ -27,12 +30,15 @@ public class MultistepBenchmarks {
     private NAR n;
 
     public static void main(String[] args) throws RunnerException {
-        perf(MultistepBenchmarks.class, (o) -> {
-            o.warmupIterations(1);
-            o.measurementIterations(1);
+        perf(MultistepBenchmarks.class, new Consumer<ChainedOptionsBuilder>() {
+            @Override
+            public void accept(ChainedOptionsBuilder o) {
+                o.warmupIterations(1);
+                o.measurementIterations(1);
 
-            o.forks(1);
+                o.forks(1);
 
+            }
         });
     }
 

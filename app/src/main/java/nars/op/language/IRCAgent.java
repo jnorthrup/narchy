@@ -219,11 +219,14 @@ public class IRCAgent extends IRC {
 
         );
 
-        new Thread(()-> {
-            try {
-                bot.start();
-            } catch (IOException | IrcException e) {
-                e.printStackTrace();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    bot.start();
+                } catch (IOException | IrcException e) {
+                    e.printStackTrace();
+                }
             }
         }).start();
 

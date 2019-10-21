@@ -14,12 +14,14 @@ import nars.term.var.NormalizedVariable;
 import nars.term.var.UnnormalizedVariable;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
+import tech.tablesaw.api.Row;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -34,11 +36,14 @@ public class NALData {
     /**
      * all elements except a specified row become the subj of an impl to the element in the specified column
      */
-    static BiFunction<Term, Term[], Term> predictsLast = (ctx, tt) -> {
-        int lastCol = tt.length - 1;
-        Term[] subj = Arrays.copyOf(tt, lastCol);
-        Term pred = tt[lastCol];
-        return $.inh($.p($.p(subj), pred), ctx);
+    static BiFunction<Term, Term[], Term> predictsLast = new BiFunction<Term, Term[], Term>() {
+        @Override
+        public Term apply(Term ctx, Term[] tt) {
+            int lastCol = tt.length - 1;
+            Term[] subj = Arrays.copyOf(tt, lastCol);
+            Term pred = tt[lastCol];
+            return $.inh($.p($.p(subj), pred), ctx);
+        }
     };
 
     public static void believe(NAR n, DataTable data, BiFunction<Term, Term[], Term> pointGenerator) {
@@ -96,7 +101,12 @@ public class NALData {
 
         }
 
-        return meta.stream().map(t -> NALTask.the(t.normalize(), BELIEF, $.t(1f, nar.confDefault(BELIEF)), nar.time(), ETERNAL, ETERNAL, nar.evidence()).pri(nar)
+        return meta.stream().map(new Function<Term, Task>() {
+                                     @Override
+                                     public Task apply(Term t) {
+                                         return NALTask.the(t.normalize(), BELIEF, $.t(1f, nar.confDefault(BELIEF)), nar.time(), ETERNAL, ETERNAL, nar.evidence()).pri(nar);
+                                     }
+                                 }
         );
     }
 
@@ -126,32 +136,38 @@ public class NALData {
      */
     public static Stream<Task> data(NAR n, DataTable a, byte punc, BiFunction<Term, Term[], Term> pointGenerator) {
         long now = n.time();
-        return terms(a, pointGenerator).map(point -> {
+        return terms(a, pointGenerator).map(new Function<Term, Task>() {
+            @Override
+            public Task apply(Term point) {
 
-            byte p = (int) punc != 0 ?
-                    punc
-                    :
-                    (point.hasAny(VAR_QUERY) ? QUESTION : BELIEF);
+                byte p = (int) punc != 0 ?
+                        punc
+                        :
+                        (point.hasAny(VAR_QUERY) ? QUESTION : BELIEF);
 
-            @Nullable Truth truth = (int) p == (int) QUESTION || (int) p == (int) QUEST ? null :
-                    $.t(1f, n.confDefault(p));
-            return NALTask.the(point.normalize(), p, truth, now, ETERNAL, ETERNAL, n.evidence()).pri(n);
+                @Nullable Truth truth = (int) p == (int) QUESTION || (int) p == (int) QUEST ? null :
+                        $.t(1f, n.confDefault(p));
+                return NALTask.the(point.normalize(), p, truth, now, ETERNAL, ETERNAL, n.evidence()).pri(n);
+            }
         });
     }
 
     public static Stream<Term> terms(DataTable a, BiFunction<Term, Term[], Term> generator) {
         Term ctx = name(a);
-        return StreamSupport.stream(a.spliterator(), false).map(point -> {
-            //ImmutableList point = instance.data;
-            int n = point.columnCount();
-            Term[] t = new Term[n];
-            for (int i = 0; i < n; i++) {
-                Object x = point.getObject(i);
-                if (x instanceof String) t[i] = attrTerm((String) x);
-                else if (x instanceof Number) t[i] = $.the((Number) x);
-                else throw new UnsupportedOperationException();
+        return StreamSupport.stream(a.spliterator(), false).map(new Function<Row, Term>() {
+            @Override
+            public Term apply(Row point) {
+                //ImmutableList point = instance.data;
+                int n = point.columnCount();
+                Term[] t = new Term[n];
+                for (int i = 0; i < n; i++) {
+                    Object x = point.getObject(i);
+                    if (x instanceof String) t[i] = attrTerm((String) x);
+                    else if (x instanceof Number) t[i] = $.the((Number) x);
+                    else throw new UnsupportedOperationException();
+                }
+                return generator.apply(ctx, t);
             }
-            return generator.apply(ctx, t);
         });
     }
 
@@ -167,25 +183,36 @@ public class NALData {
      * any (query) variables are qualified by wrapping in conjunction specifying their type in the data model
      */
     public static Function<Term[], Term> typed(DataTable dataset, Function<Term[], Term> pointGenerator) {
-        return x -> {
-            Term y = pointGenerator.apply(x);
-            if (y.hasAny(Op.VAR_QUERY)) {
-                FasterList<Term> qVar = y.subterms().collect(s -> s.op() == VAR_QUERY, new FasterList());
+        return new Function<Term[], Term>() {
+            @Override
+            public Term apply(Term[] x) {
+                Term y = pointGenerator.apply(x);
+                if (y.hasAny(Op.VAR_QUERY)) {
+                    FasterList<Term> qVar = y.subterms().collect(new Predicate<Term>() {
+                        @Override
+                        public boolean test(Term s) {
+                            return s.op() == VAR_QUERY;
+                        }
+                    }, new FasterList());
 
-                Term[] typing = qVar.stream().map(q -> {
-                    if (q instanceof UnnormalizedVariable) {
-                        String col = q.toString().substring(1);
-                        return INH.the(q, attrTerm(col));
-                    } else {
+                    Term[] typing = qVar.stream().map(new Function<Term, Term>() {
+                        @Override
+                        public Term apply(Term q) {
+                            if (q instanceof UnnormalizedVariable) {
+                                String col = q.toString().substring(1);
+                                return INH.the(q, attrTerm(col));
+                            } else {
 
-                        assert (q instanceof NormalizedVariable);
-                        int col = q.hashCode() - 1;
-                        return INH.the(q, attrTerm(dataset.attrName(col)));
-                    }
-                }).toArray(Term[]::new);
-                y = CONJ.the(y, CONJ.the(typing));
+                                assert (q instanceof NormalizedVariable);
+                                int col = q.hashCode() - 1;
+                                return INH.the(q, attrTerm(dataset.attrName(col)));
+                            }
+                        }
+                    }).toArray(Term[]::new);
+                    y = CONJ.the(y, CONJ.the(typing));
+                }
+                return y;
             }
-            return y;
         };
     }
 }

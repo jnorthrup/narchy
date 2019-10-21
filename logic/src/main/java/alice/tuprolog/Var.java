@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.IdentityHashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 /**
  * This class represents a variable term.
@@ -162,7 +163,12 @@ public class Var extends Term {
                 vMap.putIfAbsent(this, this);
                 return this;
             } else {
-                Var y = vMap.computeIfAbsent(this, k -> new Var(k.name, k.timestamp));
+                Var y = vMap.computeIfAbsent(this, new Function<Var, Var>() {
+                    @Override
+                    public Var apply(Var k) {
+                        return new Var(k.name, k.timestamp);
+                    }
+                });
                 y.rename(idExecCtx, 0);
                 return y;
             }
@@ -180,7 +186,12 @@ public class Var extends Term {
     @Override
     Term copy(Map<Var, Var> vMap, Map<Term, Var> substMap) {
         Var v = vMap.computeIfAbsent(this,
-            tis -> new Var(tis.name, Var.PROGRESSIVE, vMap.size(), tis.timestamp)
+                new Function<Var, Var>() {
+                    @Override
+                    public Var apply(Var tis) {
+                        return new Var(tis.name, Var.PROGRESSIVE, vMap.size(), tis.timestamp);
+                    }
+                }
         );
 
         Term t = term();

@@ -151,7 +151,12 @@ public interface Compound extends Term, IPair, Subterms {
     boolean recurseTermsOrdered(Predicate<Term> inSuperCompound, Predicate<Term> whileTrue, Compound parent);
 
     default boolean unifiesRecursively(Term x) {
-        return unifiesRecursively(x, (y)->true);
+        return unifiesRecursively(x, new Predicate<Term>() {
+            @Override
+            public boolean test(Term y) {
+                return true;
+            }
+        });
     }
 
     /** TODO test */
@@ -167,11 +172,19 @@ public interface Compound extends Term, IPair, Subterms {
             //if (u.unifies(this, x)) return true;
 
             int xOp = x.opID();
-            return !subterms().recurseTerms(s->s.hasAny(1<<xOp)/*t->t.volume()>=xv*/, s->{
-                if (s instanceof Compound && s.opID()==xOp) {
-                    return !preFilter.test(s) || !x.unify(s, u);
+            return !subterms().recurseTerms(new Predicate<Term>() {
+                @Override
+                public boolean test(Term s) {
+                    return s.hasAny(1 << xOp);
                 }
-                return true;
+            }/*t->t.volume()>=xv*/, new Predicate<Term>() {
+                @Override
+                public boolean test(Term s) {
+                    if (s instanceof Compound && s.opID() == xOp) {
+                        return !preFilter.test(s) || !x.unify(s, u);
+                    }
+                    return true;
+                }
             }, this);
         } else {
             return x instanceof Variable || containsRecursively(x);
@@ -468,7 +481,12 @@ public interface Compound extends Term, IPair, Subterms {
 
     @Override
     default boolean eventsOR(LongObjectPredicate<Term> each, long offset, boolean decomposeConjDTernal, boolean decomposeXternal) {
-        return !eventsAND((when,what)-> !each.accept(when, what), offset, decomposeConjDTernal, decomposeXternal);
+        return !eventsAND(new LongObjectPredicate<Term>() {
+            @Override
+            public boolean accept(long when, Term what) {
+                return !each.accept(when, what);
+            }
+        }, offset, decomposeConjDTernal, decomposeXternal);
     }
 
     /**
@@ -505,20 +523,26 @@ public interface Compound extends Term, IPair, Subterms {
 
                             return seq.eventsAND(
                                     (!decomposeConjDTernal) ?
-                                            (when, what) -> {
-                                                //combine the component with the eternal factor
-                                                Term distributed = CONJ.the(what, factor);
+                                            new LongObjectPredicate<Term>() {
+                                                @Override
+                                                public boolean accept(long when, Term what) {
+                                                    //combine the component with the eternal factor
+                                                    Term distributed = CONJ.the(what, factor);
 
-                                                if (distributed.op() != CONJ)
-                                                    throw new TermTransformException(Compound.this, distributed, "invalid conjunction factorization"
-                                                    );
+                                                    if (distributed.op() != CONJ)
+                                                        throw new TermTransformException(Compound.this, distributed, "invalid conjunction factorization"
+                                                        );
 
-                                                return each.accept(when, distributed);
+                                                    return each.accept(when, distributed);
+                                                }
                                             }
                                             :
-                                            (when, what) ->
-                                                    //provide the component and the eternal separately, at the appropriate time
-                                                    each.accept(when, what) && each.accept(when, factor)
+                                            new LongObjectPredicate<Term>() {
+                                                @Override
+                                                public boolean accept(long when, Term what) {
+                                                    return each.accept(when, what) && each.accept(when, factor);
+                                                }
+                                            }
 
                                     , offset, decomposeConjDTernal, decomposeXternal);
 
@@ -704,9 +728,12 @@ public interface Compound extends Term, IPair, Subterms {
     default Term eventFirst() {
         if (Conj.isSeq(this)) {
             Term[] first = new Term[1];
-            eventsAND((when, what) -> {
-                first[0] = what;
-                return false; //done got first
+            eventsAND(new LongObjectPredicate<Term>() {
+                @Override
+                public boolean accept(long when, Term what) {
+                    first[0] = what;
+                    return false; //done got first
+                }
             }, 0L, false, false);
             return first[0];
         }
@@ -719,9 +746,12 @@ public interface Compound extends Term, IPair, Subterms {
     default Term eventLast() {
         if (Conj.isSeq(this)) {
             Term[] last = new Term[1];
-            eventsAND((when, what) -> {
-                last[0] = what;
-                return true; //HACK keep going to end
+            eventsAND(new LongObjectPredicate<Term>() {
+                @Override
+                public boolean accept(long when, Term what) {
+                    last[0] = what;
+                    return true; //HACK keep going to end
+                }
             }, 0L, false, false);
             return last[0];
         }

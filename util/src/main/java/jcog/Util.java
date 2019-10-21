@@ -21,10 +21,7 @@ import jcog.util.ArrayUtil;
 import org.apache.commons.math3.fitting.PolynomialCurveFitter;
 import org.apache.commons.math3.fitting.WeightedObservedPoint;
 import org.apache.commons.math3.stat.Frequency;
-import org.eclipse.collections.api.block.function.primitive.DoubleToFloatFunction;
-import org.eclipse.collections.api.block.function.primitive.FloatFunction;
-import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
-import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
+import org.eclipse.collections.api.block.function.primitive.*;
 import org.eclipse.collections.api.list.primitive.ByteList;
 import org.eclipse.collections.api.list.primitive.ImmutableByteList;
 import org.eclipse.collections.api.set.MutableSet;
@@ -38,6 +35,7 @@ import org.eclipse.collections.impl.list.mutable.primitive.DoubleArrayList;
 import org.eclipse.collections.impl.list.mutable.primitive.IntArrayList;
 import org.eclipse.collections.impl.map.mutable.primitive.ByteByteHashMap;
 import org.eclipse.collections.impl.set.mutable.primitive.IntHashSet;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import sun.misc.Unsafe;
@@ -56,6 +54,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.LockSupport;
 import java.util.concurrent.locks.StampedLock;
 import java.util.function.*;
+import java.util.function.IntFunction;
+import java.util.function.IntToDoubleFunction;
+import java.util.function.IntToLongFunction;
 import java.util.stream.DoubleStream;
 import java.util.stream.Stream;
 
@@ -73,7 +74,13 @@ public enum Util {
 	public static final Unsafe unsafe;
 
 	public static final Iterator emptyIterator = EmptyIterator.getInstance();
-	public static final Iterable emptyIterable = () -> emptyIterator;
+	public static final Iterable emptyIterable = new Iterable() {
+        @NotNull
+        @Override
+        public Iterator iterator() {
+            return emptyIterator;
+        }
+    };
 	public static final double PHI = 1.6180339887498948482;
 	public static final float PHIf = (float) PHI;
 	public static final double PHI_min_1 = PHI - 1.0;
@@ -190,16 +197,22 @@ public enum Util {
 			throw new WTF();
 
 		if (max == 1) {
-			return (z) -> {
-				x.test(z);
-				return false;
-			};
+			return new Predicate<X>() {
+                @Override
+                public boolean test(X z) {
+                    x.test(z);
+                    return false;
+                }
+            };
 		} else {
 			int[] remain = {max};
-			return (z) -> {
-				boolean next = (--remain[0] > 0);
-				return x.test(z) && next;
-			};
+			return new Predicate<X>() {
+                @Override
+                public boolean test(X z) {
+                    boolean next = (--remain[0] > 0);
+                    return x.test(z) && next;
+                }
+            };
 		}
 	}
 
@@ -2574,7 +2587,12 @@ public enum Util {
 
 	public static byte branchOr(byte key, ByteByteHashMap count, byte branch) {
 		byte branchBit = (byte) (1 << (int) branch);
-		return count.updateValue(key, branchBit, (x) -> (byte) ((int) x | (int) branchBit));
+		return count.updateValue(key, branchBit, new ByteToByteFunction() {
+            @Override
+            public byte valueOf(byte x) {
+                return (byte) ((int) x | (int) branchBit);
+            }
+        });
 	}
 
 	public static <X> X first(X[] x) {
@@ -2658,17 +2676,23 @@ public enum Util {
 	}
 
 	public static FloatSupplier compose(FloatSupplier f, FloatToFloatFunction g) {
-		return () -> {
-			float fx = f.asFloat();
-			return g.valueOf(fx);
-		};
+		return new FloatSupplier() {
+            @Override
+            public float asFloat() {
+                float fx = f.asFloat();
+                return g.valueOf(fx);
+            }
+        };
 	}
 
 	public static FloatToFloatFunction compose(FloatToFloatFunction f, FloatToFloatFunction g) {
-		return (x) -> {
-			float fx = f.valueOf(x);
-			return g.valueOf(fx);
-		};
+		return new FloatToFloatFunction() {
+            @Override
+            public float valueOf(float x) {
+                float fx = f.valueOf(x);
+                return g.valueOf(fx);
+            }
+        };
 	}
 
 	public static int concurrency() {
@@ -2715,7 +2739,12 @@ public enum Util {
 	}
 
 	public static <X> FloatFunction<X> softmaxFunc(FloatFunction<X> f, float temperature) {
-		return (x) -> softmax(f.floatValueOf(x), temperature);
+		return new FloatFunction<X>() {
+            @Override
+            public float floatValueOf(X x) {
+                return softmax(f.floatValueOf(x), temperature);
+            }
+        };
 	}
 
 	public static float and(float a, float b, float c, float d) {
@@ -2824,7 +2853,12 @@ public enum Util {
 		if (orgs.length == 0)
 			return ArrayUtil.EMPTY_CLASS_ARRAY;
 		else {
-			return map(x -> Primitives.unwrap(x.getClass()),
+			return map(new Function<Object, Class>() {
+                           @Override
+                           public Class apply(Object x) {
+                               return Primitives.unwrap(x.getClass());
+                           }
+                       },
 				new Class[to - from], 0, orgs, from, to);
 		}
 	}
@@ -2869,15 +2903,18 @@ public enum Util {
            */
 		int YMin = yMin, YMax = yMax;
 		assert (yMin < yMax);
-		return (X) -> {
-			int n = coefficients.length;
-			float x = (float) toInt.applyAsInt(X);
-			float y = coefficients[n - 1];
-			for (int j = n - 2; j >= 0; j--) {
-				y = x * y + coefficients[j];
-			}
-			return Util.clampSafe(Math.round(y), YMin, YMax);
-		};
+		return new ToIntFunction<X>() {
+            @Override
+            public int applyAsInt(X X) {
+                int n = coefficients.length;
+                float x = (float) toInt.applyAsInt(X);
+                float y = coefficients[n - 1];
+                for (int j = n - 2; j >= 0; j--) {
+                    y = x * y + coefficients[j];
+                }
+                return Util.clampSafe(Math.round(y), YMin, YMax);
+            }
+        };
 	}
 
 	public static int sqrtInt(int x) {
@@ -2940,7 +2977,12 @@ public enum Util {
 	}
 
 	public static double interpSum(float[] data, double sStart, double sEnd) {
-		return interpSum((i) -> data[i], data.length, sStart, sEnd, false);
+		return interpSum(new IntToFloatFunction() {
+            @Override
+            public float valueOf(int i) {
+                return data[i];
+            }
+        }, data.length, sStart, sEnd, false);
 	}
 
 	public static double interpSum(IntToFloatFunction data, int capacity, double sStart, double sEnd, boolean wrap) {

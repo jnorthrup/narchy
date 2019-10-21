@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -201,7 +202,12 @@ public class DataTable extends Table implements Externalizable {
 
         FloatTable<String> data = new FloatTable<String>(columnNames().toArray(ArrayUtil.EMPTY_STRING_ARRAY));
 
-        doWithRows(rr -> data.add(toFloatArray(rr)));
+        doWithRows(new Consumer<Row>() {
+            @Override
+            public void accept(Row rr) {
+                data.add(DataTable.this.toFloatArray(rr));
+            }
+        });
 
         return data;
     }
@@ -254,11 +260,14 @@ public class DataTable extends Table implements Externalizable {
     public @Nullable Row maxBy(int column) {
         double[] bestScore = {Double.NEGATIVE_INFINITY};
         Row[] best = {null};
-        doWithRows(e -> {
-            double s = e.getDouble(column);
-            if (s > bestScore[0]) {
-                best[0] = e;
-                bestScore[0] = s;
+        doWithRows(new Consumer<Row>() {
+            @Override
+            public void accept(Row e) {
+                double s = e.getDouble(column);
+                if (s > bestScore[0]) {
+                    best[0] = e;
+                    bestScore[0] = s;
+                }
             }
         });
         return best[0];

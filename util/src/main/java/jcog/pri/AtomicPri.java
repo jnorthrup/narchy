@@ -175,7 +175,12 @@ public abstract class AtomicPri implements ScalarValue {
     }
 
     private static FloatFloatToFloatFunction post(FloatFloatToFloatFunction update, FloatToFloatFunction post) {
-        return (xx,yy)-> post.valueOf(update.apply(xx,yy));
+        return new FloatFloatToFloatFunction() {
+            @Override
+            public float apply(float xx, float yy) {
+                return post.valueOf(update.apply(xx, yy));
+            }
+        };
     }
 
     private FloatToFloatFunction post() {

@@ -14,6 +14,7 @@ import java.io.PrintStream;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 public abstract class NodeGraph<N, E> /* TODO merge with guava Graph: implements ValueGraph<N,E> */ {
@@ -102,7 +103,12 @@ public abstract class NodeGraph<N, E> /* TODO merge with guava Graph: implements
     }
 
     private void print(PrintStream out) {
-        forEachNode((node) -> node.print(out));
+        forEachNode(new Consumer<Node<N, E>>() {
+            @Override
+            public void accept(Node<N, E> node) {
+                node.print(out);
+            }
+        });
     }
 
 
@@ -196,7 +202,12 @@ public abstract class NodeGraph<N, E> /* TODO merge with guava Graph: implements
             if (countSelfLoops) {
                 return in.size();
             } else {
-                return (int) streamIn().filter(e -> e.from() != this).count();
+                return (int) streamIn().filter(new Predicate<FromTo<Node<N, E>, E>>() {
+                    @Override
+                    public boolean test(FromTo<Node<N, E>, E> e) {
+                        return e.from() != MutableNode.this;
+                    }
+                }).count();
             }
         }
 
@@ -262,13 +273,23 @@ public abstract class NodeGraph<N, E> /* TODO merge with guava Graph: implements
         }
 
         public void removeIn(Node<N, E> src) {
-            for (FromTo<Node<N, E>, E> nodeEFromTo : edges(true, false, e -> e.to() == src, null)) {
+            for (FromTo<Node<N, E>, E> nodeEFromTo : edges(true, false, new Predicate<FromTo<Node<N, E>, E>>() {
+                @Override
+                public boolean test(FromTo<Node<N, E>, E> e) {
+                    return e.to() == src;
+                }
+            }, null)) {
                 removeSet(nodeEFromTo, true);
             }
         }
 
         public void removeOut(Node<N, E> target) {
-            for (FromTo<Node<N, E>, E> nodeEFromTo : edges(false, true, e -> e.to() == target, null)) {
+            for (FromTo<Node<N, E>, E> nodeEFromTo : edges(false, true, new Predicate<FromTo<Node<N, E>, E>>() {
+                @Override
+                public boolean test(FromTo<Node<N, E>, E> e) {
+                    return e.to() == target;
+                }
+            }, null)) {
                 removeSet(nodeEFromTo, false);
             }
         }

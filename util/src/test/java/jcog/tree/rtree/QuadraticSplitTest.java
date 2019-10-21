@@ -27,6 +27,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Random;
+import java.util.function.Supplier;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -124,7 +125,12 @@ class QuadraticSplitTest {
         final int expectedEntryCount = 17;
 
         Stats stats = rTree.stats();
-        assertEquals(expectedEntryCount, stats.size(), () -> "Unexpected number of entries in " + TYPE + " split tree: " + stats.size() + " entries - expected: " + expectedEntryCount + " actual: " + stats.size());
+        assertEquals(expectedEntryCount, stats.size(), new Supplier<String>() {
+            @Override
+            public String get() {
+                return "Unexpected number of entries in " + TYPE + " split tree: " + stats.size() + " entries - expected: " + expectedEntryCount + " actual: " + stats.size();
+            }
+        });
     }
 
     /**
@@ -144,7 +150,12 @@ class QuadraticSplitTest {
 
         Stats stats = rTree.stats();
         assertTrue(Math.abs(entryCount - stats.size()) < 20,
-                () -> "Unexpected number of entries in " + TYPE + " split tree: " + stats.size() + " entries - expected: " + entryCount + " actual: " + stats.size() /* in case of duplicates */);
+                new Supplier<String>() {
+                    @Override
+                    public String get() {
+                        return "Unexpected number of entries in " + TYPE + " split tree: " + stats.size() + " entries - expected: " + entryCount + " actual: " + stats.size();
+                    }
+                } /* in case of duplicates */);
         stats.print(System.out);
     }
 

@@ -25,6 +25,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.function.BiFunction;
+import java.util.function.IntFunction;
 
 import static nars.NAL.STAMP_CAPACITY;
 import static nars.Op.BELIEF;
@@ -64,30 +66,33 @@ public class ImpilerDeduction extends Search<Term, Task> {
 		List<Task> t = get(target, nar.time(), false);
 		if (t.isEmpty())
 			return null;
-		return ((when)->{
+		return (new LongToObjectFunction<Truth>() {
+            @Override
+            public Truth valueOf(long when) {
 
-			double F = (double) 0, E = (double) 0;
-			for (Task x : t) {
-				Term subj = x.sub(0);
-				long eStart = when - (long) subj.eventRange();
-				Truth sTruth = beliefOrGoal ? nar.beliefTruth(subj, eStart) : nar.goalTruth(subj, eStart);
-				if (sTruth!=null) {
-					Truth implTruth = x.truth();
-					boolean neg = implTruth.isNegative();
-					Truth c = NALTruth.Deduction.apply(sTruth, implTruth.negIf(neg), (float) 0, nar); //TODO correct truth func for goal
-					if (c != null) {
-						double ce = c.evi();
-						E += ce;
-						float cf = c.freq();
-						F += (double) (neg ? 1.0F - cf : cf) * ce;
-					}
-				}
-			}
-			if (E > NAL.truth.EVI_MIN) {
-				return PreciseTruth.byEvi((F/E), E);
-			} else
-				return null;
-		});
+                double F = (double) 0, E = (double) 0;
+                for (Task x : t) {
+                    Term subj = x.sub(0);
+                    long eStart = when - (long) subj.eventRange();
+                    Truth sTruth = beliefOrGoal ? nar.beliefTruth(subj, eStart) : nar.goalTruth(subj, eStart);
+                    if (sTruth != null) {
+                        Truth implTruth = x.truth();
+                        boolean neg = implTruth.isNegative();
+                        Truth c = NALTruth.Deduction.apply(sTruth, implTruth.negIf(neg), (float) 0, nar); //TODO correct truth func for goal
+                        if (c != null) {
+                            double ce = c.evi();
+                            E += ce;
+                            float cf = c.freq();
+                            F += (double) (neg ? 1.0F - cf : cf) * ce;
+                        }
+                    }
+                }
+                if (E > NAL.truth.EVI_MIN) {
+                    return PreciseTruth.byEvi((F / E), E);
+                } else
+                    return null;
+            }
+        });
 	}
 
 	/**
@@ -288,10 +293,19 @@ public class ImpilerDeduction extends Search<Term, Task> {
 			range = 0L; //all eternal
 
 		long finalStart = start, finalEnd = start + range;
-		Task z = Task.tryTask(implication, BELIEF, tAccum, (ttt, tr) ->
-			NALTask.the(ttt, BELIEF, tr.dither(nar), now, finalStart, finalEnd, Stamp.sample(STAMP_CAPACITY,
-				Stamp.toMutableSet(Math.round((float) n / 2f * (float) STAMP_CAPACITY), i -> pathTasks[i].stamp(), n),
-				nar.random())));
+		Task z = Task.tryTask(implication, BELIEF, tAccum, new BiFunction<Term, Truth, NALTask>() {
+            @Override
+            public NALTask apply(Term ttt, Truth tr) {
+                return NALTask.the(ttt, BELIEF, tr.dither(nar), now, finalStart, finalEnd, Stamp.sample(STAMP_CAPACITY,
+                        Stamp.toMutableSet(Math.round((float) n / 2f * (float) STAMP_CAPACITY), new IntFunction<long[]>() {
+                            @Override
+                            public long[] apply(int i) {
+                                return pathTasks[i].stamp();
+                            }
+                        }, n),
+                        nar.random()));
+            }
+        });
 		if (z != null) {
 
 			Task.fund(z, pathTasks, true);

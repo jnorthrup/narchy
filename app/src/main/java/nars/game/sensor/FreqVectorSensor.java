@@ -3,6 +3,7 @@ package nars.game.sensor;
 import jcog.Util;
 import jcog.data.iterator.ArrayIterator;
 import jcog.math.FloatRange;
+import jcog.math.FloatSupplier;
 import jcog.signal.buffer.CircularFloatBuffer;
 import jcog.signal.wave1d.SlidingDFT;
 import nars.NAR;
@@ -48,7 +49,12 @@ public class FreqVectorSensor extends VectorSensor {
         freqValue = new float[fftSize];
         for (int i = 0; i < components; i++) {
             int finalI = i;
-            component[i] = newComponent(termizer.apply(i), ()->componentValue[finalI]);
+            component[i] = newComponent(termizer.apply(i), new FloatSupplier() {
+                @Override
+                public float asFloat() {
+                    return componentValue[finalI];
+                }
+            });
             freqValue[i] = (float) 0;
         }
 

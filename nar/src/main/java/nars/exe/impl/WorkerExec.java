@@ -14,6 +14,7 @@ import org.jctools.queues.MpmcArrayQueue;
 
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 import static java.lang.System.nanoTime;
@@ -44,7 +45,12 @@ public class WorkerExec extends ThreadedExec {
 
 	@Override
 	protected Supplier<Worker> loop() {
-		return ()->new WorkPlayLoop(nar);
+		return new Supplier<Worker>() {
+            @Override
+            public Worker get() {
+                return new WorkPlayLoop(nar);
+            }
+        };
 	}
 
 	@Override
@@ -188,10 +194,13 @@ public class WorkerExec extends ThreadedExec {
 		public long sleep(final float throttle, final long cycleTimeNS, final long cycleStart, long cycleRemaining) {
 			//sleep at most until next cycle
             final long cycleSleepNS = Math.min(cycleRemaining, (long) (int) ((double) cycleTimeNS * (1.0 - (double) throttle)));
-			Util.sleepNSwhile(cycleSleepNS, naptime, ()->{
-				work();
-				return true;
-			});
+			Util.sleepNSwhile(cycleSleepNS, naptime, new BooleanSupplier() {
+                @Override
+                public boolean getAsBoolean() {
+                    WorkPlayLoop.this.work();
+                    return true;
+                }
+            });
             final long afterSleep = System.nanoTime();
 			cycleRemaining = cycleTimeNS - (afterSleep - cycleStart);
 			return cycleRemaining;

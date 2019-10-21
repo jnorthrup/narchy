@@ -26,16 +26,24 @@ public interface Sampler<X> {
      */
     default @Nullable X sample(Random rng) {
         Object[] result = new Object[1];
-        sample(rng, ((Predicate<? super X>) (x) -> {
-            result[0] = x;
-            return false;
+        sample(rng, (new Predicate<X>() {
+            @Override
+            public boolean test(X x) {
+                result[0] = x;
+                return false;
+            }
         }));
         return (X) result[0];
     }
 
 
     default Sampler<X> sample(Random rng, Predicate<? super X> each) {
-        sample(rng, (Function<X,SampleReaction>)(x -> each.test(x) ? Next : Stop));
+        sample(rng, (Function<X,SampleReaction>)(new Function<X, SampleReaction>() {
+            @Override
+            public SampleReaction apply(X x) {
+                return each.test(x) ? Next : Stop;
+            }
+        }));
         return this;
     }
 
@@ -52,9 +60,12 @@ public interface Sampler<X> {
     default Sampler<X> sampleOrPop(Random rng, boolean pop, int max, Consumer<? super X> each) {
         if (max > 0) {
             int[] count = {max};
-            sample(rng, (Function<X, SampleReaction>) x -> {
-                each.accept(x);
-                return --count[0] > 0 ? (pop ? Remove : Next) : (pop ? RemoveAndStop : Stop);
+            sample(rng, new Function<X, SampleReaction>() {
+                @Override
+                public SampleReaction apply(X x) {
+                    each.accept(x);
+                    return --count[0] > 0 ? (pop ? Remove : Next) : (pop ? RemoveAndStop : Stop);
+                }
             });
         }
         return this;
@@ -68,8 +79,12 @@ public interface Sampler<X> {
     default Sampler<X> sample(Random rng, int max, Predicate<? super X> kontinue) {
         if (max > 0) {
             int[] count = {max};
-            sample(rng, (Function<X, SampleReaction>)
-                    x -> kontinue.test(x) && --count[0] > 0 ? Next : Stop);
+            sample(rng, new Function<X, SampleReaction>() {
+                @Override
+                public SampleReaction apply(X x) {
+                    return kontinue.test(x) && --count[0] > 0 ? Next : Stop;
+                }
+            });
         }
         return this;
     }

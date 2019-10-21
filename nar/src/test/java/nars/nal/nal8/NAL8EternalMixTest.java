@@ -6,6 +6,7 @@ import nars.nal.nal7.NAL7Test;
 import nars.test.NALTest;
 import nars.test.TestNAR;
 import nars.time.Tense;
+import org.eclipse.collections.api.block.predicate.primitive.LongLongPredicate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -21,7 +22,12 @@ import static nars.time.Tense.ETERNAL;
  */
 class NAL8EternalMixTest extends NALTest {
 
-    private static final LongPredicate ZERO = t -> t >= 0;
+    private static final LongPredicate ZERO = new LongPredicate() {
+        @Override
+        public boolean test(long t) {
+            return t >= 0;
+        }
+    };
     private static final int cycles = 200;
 
     @BeforeEach
@@ -55,8 +61,18 @@ class NAL8EternalMixTest extends NALTest {
             .mustBelieve(cycles, x2, 1.0f, 0.40f, -15)
             .mustBelieve(cycles, x2, 1.0f, 0.73f, ETERNAL)
             .mustBelieve(cycles, x3, 1.0f, 0.81f, ETERNAL)
-            .mustNotBelieve(cycles, x2, 1.0f, 0.81f, (s, e) -> s != -15 && s!=ETERNAL)
-            .mustNotBelieve(cycles, x3, 1.0f, 0.81f, (s, e) -> s != -15 && s!=ETERNAL);
+            .mustNotBelieve(cycles, x2, 1.0f, 0.81f, new LongLongPredicate() {
+                @Override
+                public boolean accept(long s, long e) {
+                    return s != -15 && s != ETERNAL;
+                }
+            })
+            .mustNotBelieve(cycles, x3, 1.0f, 0.81f, new LongLongPredicate() {
+                @Override
+                public boolean accept(long s, long e) {
+                    return s != -15 && s != ETERNAL;
+                }
+            });
 
 
     }
@@ -134,7 +150,12 @@ class NAL8EternalMixTest extends NALTest {
         TestNAR tester = test;
         tester.input("x:y!");
         tester.inputAt(2, "(goto(z) ==>+1 x:y). |");
-        tester.mustGoal(cycles, "goto(z)", 1.0f, 0.45f, (t) -> t >= 1);
+        tester.mustGoal(cycles, "goto(z)", 1.0f, 0.45f, new LongPredicate() {
+            @Override
+            public boolean test(long t) {
+                return t >= 1;
+            }
+        });
     }
 
 
@@ -191,7 +212,12 @@ class NAL8EternalMixTest extends NALTest {
                 .input("a:b!")
                 .inputAt(10, "(( c:d &&+5 e:f ) ==> a:b).")
                 .mustGoal(cycles, "( c:d &&+5 e:f)", 1.0f, 0.45f, ETERNAL)
-                .mustNotOutput(cycles, "( c:d &&+5 e:f)", GOAL, (t) -> t > 0)
+                .mustNotOutput(cycles, "( c:d &&+5 e:f)", GOAL, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return t > 0;
+                    }
+                })
         ;
     }
 
@@ -212,7 +238,12 @@ class NAL8EternalMixTest extends NALTest {
                 .input("reachable(SELF,{t002})! |")
                 .inputAt(5, "((on($1,#2) &&+0 at(SELF,#2)) ==> reachable(SELF,$1)).")
                 .mustGoal(cycles, "(on({t002},#1) && at(SELF,#1))", 1.0f, 0.45f, 0)
-                .mustNotOutput(cycles, "(at(SELF,#1) && on({t002},#1))", GOAL, t -> t == ETERNAL || t == 5);
+                .mustNotOutput(cycles, "(at(SELF,#1) && on({t002},#1))", GOAL, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return t == ETERNAL || t == 5;
+                    }
+                });
 
     }
 
@@ -247,7 +278,12 @@ class NAL8EternalMixTest extends NALTest {
         test
                 .input("reachable(SELF,{t002}). | %1.0;0.7%")
                 .inputAt(3, "((reachable(SELF,{t002}) &&+5 pick({t002})) ==>+7 hold(SELF,{t002})).")
-                .mustBelieve(cycles, "(pick({t002}) ==>+7 hold(SELF,{t002}))", 1.0f, 0.81f, (t) -> t >= 3)
+                .mustBelieve(cycles, "(pick({t002}) ==>+7 hold(SELF,{t002}))", 1.0f, 0.81f, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return t >= 3;
+                    }
+                })
                 .mustBelieve(cycles, "(pick({t002}) ==>+7 hold(SELF,{t002}))", 1.0f, 0.81f, ETERNAL) //via structural reduction
 
         ;
@@ -266,7 +302,12 @@ class NAL8EternalMixTest extends NALTest {
         tester
                 .mustBelieve(cycles, "at(SELF,{t001})", 1.0f, 0.81f, 2)
                 .mustNotOutput(cycles, "at(SELF,{t001})", BELIEF, 1f, 1.0f, 0.81f, 0.81f,
-                        t -> t == 0);
+                        new LongPredicate() {
+                            @Override
+                            public boolean test(long t) {
+                                return t == 0;
+                            }
+                        });
     }
 
 
@@ -322,7 +363,12 @@ class NAL8EternalMixTest extends NALTest {
                 .input("hold. |")
                 .input("( hold &&+5 (at &&+5 open) )!")
                 .mustGoal(cycles, "(at &&+5 open)", 1.0f, 0.5f, 5)
-                .mustNotOutput(cycles, "(at &&+5 open)", GOAL, (t)->t!=5 && t!=ETERNAL)
+                .mustNotOutput(cycles, "(at &&+5 open)", GOAL, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return t != 5 && t != ETERNAL;
+                    }
+                })
         ;
     }
 
@@ -344,7 +390,12 @@ class NAL8EternalMixTest extends NALTest {
 
                 .input("use! |")
                 .inputAt(2, "( hold &&+5 use ).")
-                .mustGoal(cycles, "hold", 1f, 0.81f, t -> t == -5)
+                .mustGoal(cycles, "hold", 1f, 0.81f, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return t == -5;
+                    }
+                })
                 .mustNotOutput(cycles, "use", GOAL, ETERNAL)
                 .mustNotOutput(cycles, "hold", GOAL, ETERNAL)
         ;
@@ -357,7 +408,12 @@ class NAL8EternalMixTest extends NALTest {
                 .input("--use! |")
                 .inputAt(1, "( hold &&+5 --use ).")
                 .mustGoal(cycles, "hold", 1f, 0.81f, -5)
-                .mustNotOutput(cycles, "hold", GOAL, 0, 1f, 0, 1, (t)->t > -5)
+                .mustNotOutput(cycles, "hold", GOAL, 0, 1f, 0, 1, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return t > -5;
+                    }
+                })
                 .mustNotOutput(cycles, "use", GOAL, ETERNAL)
         ;
     }
@@ -372,7 +428,12 @@ class NAL8EternalMixTest extends NALTest {
         tester.inputAt(when, "hold:t2. :|:");
 
         String result = "((att1 &&+1 open:t1) ==>+1 opened:t1)";
-        tester.mustBelieve(cycles, result, 1.0f, 0.44f, t -> t >= when);
+        tester.mustBelieve(cycles, result, 1.0f, 0.44f, new LongPredicate() {
+            @Override
+            public boolean test(long t) {
+                return t >= when;
+            }
+        });
 
     }
 
@@ -386,7 +447,12 @@ class NAL8EternalMixTest extends NALTest {
                 .mustBelieve(cycles * 1, "opened:{t001}",
                         1.0f, 0.45f, 25)
                 .mustBelieve(cycles * 1, "((at(SELF,{t001}) &&+5 open({t001})) ==>+5 opened:{t001})",
-                        1.0f, 0.81f, t -> (t >= 10));
+                        1.0f, 0.81f, new LongPredicate() {
+                            @Override
+                            public boolean test(long t) {
+                                return (t >= 10);
+                            }
+                        });
 
     }
 
@@ -413,7 +479,12 @@ class NAL8EternalMixTest extends NALTest {
 
         tester.mustBelieve(cycles, "((at(SELF,{t001}) &&+5 open({t001})) ==>+5 opened:{t001})",
                 1.0f, 0.81f,
-                t -> true
+                new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return true;
+                    }
+                }
                 //2 + 5
         );
 
@@ -448,7 +519,12 @@ class NAL8EternalMixTest extends NALTest {
         test
                 .believe("x", Tense.Present, 1f, 0.9f)
                 .goal("(x &&+3 y)")
-                .mustGoal(cycles, "y", 1f, 0.81f, (t) -> t >= 3)
+                .mustGoal(cycles, "y", 1f, 0.81f, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return t >= 3;
+                    }
+                })
                 .mustNotOutput(cycles, "y", GOAL, ETERNAL);
     }
 
@@ -458,7 +534,12 @@ class NAL8EternalMixTest extends NALTest {
         test
                 .believe("x", Tense.Present, 0f, 0.9f)
                 .goal("(--x &&+3 y)")
-                .mustGoal(cycles, "y", 1f, 0.81f, x -> x >= 3)
+                .mustGoal(cycles, "y", 1f, 0.81f, new LongPredicate() {
+                    @Override
+                    public boolean test(long x) {
+                        return x >= 3;
+                    }
+                })
                 .mustNotOutput(cycles, "y", GOAL, ETERNAL);
     }
 
@@ -595,11 +676,14 @@ class NAL8EternalMixTest extends NALTest {
     @Test
     void testGoalImplComponentWithVar() {
 
-        test.nar.runAt(cycles * 4, () -> {
-            try {
-                test.nar.concept($.$("c($1)")).print();
-            } catch (Narsese.NarseseException e) {
-                e.printStackTrace();
+        test.nar.runAt(cycles * 4, new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    test.nar.concept($.$("c($1)")).print();
+                } catch (Narsese.NarseseException e) {
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -608,7 +692,12 @@ class NAL8EternalMixTest extends NALTest {
                 .inputAt(0, "cx! :|:")
 
                 .mustGoal(cycles * 5, "bx", 1f, 0.73f,
-                        (t) -> t >= 3 /* early since cx is alrady active when this gets derived */);
+                        new LongPredicate() {
+                            @Override
+                            public boolean test(long t) {
+                                return t >= 3;
+                            }
+                        } /* early since cx is alrady active when this gets derived */);
     }
 
     @Test
@@ -627,7 +716,12 @@ class NAL8EternalMixTest extends NALTest {
         test
                 .inputAt(0, "(out ==>-3 happy). |")
                 .inputAt(13, "happy!")
-                .mustGoal(cycles, "out", 1f, 0.81f, t->t>=10); //13 as if it were present
+                .mustGoal(cycles, "out", 1f, 0.81f, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return t >= 10;
+                    }
+                }); //13 as if it were present
     }
 
 
@@ -649,7 +743,12 @@ class NAL8EternalMixTest extends NALTest {
                 .input("(y ==>+1 x).")
                 .input("y. |")
                 .mustBelieve(cycles, "x", 1f, 0.81f, 1)
-                .mustNotOutput(cycles, "x", BELIEF, (t)->t!=1)
+                .mustNotOutput(cycles, "x", BELIEF, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return t != 1;
+                    }
+                })
         ;
     }
     @Test
@@ -659,7 +758,12 @@ class NAL8EternalMixTest extends NALTest {
                 .input("(--Y ==>+1 x).")
                 .input("--Y. |")
                 .mustBelieve(cycles, "x", 1f, 0.81f, 1)
-                .mustNotOutput(cycles, "x", BELIEF, (t)->t!=1)
+                .mustNotOutput(cycles, "x", BELIEF, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return t != 1;
+                    }
+                })
         ;
     }
     @Test

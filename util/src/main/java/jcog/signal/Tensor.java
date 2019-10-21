@@ -63,15 +63,30 @@ public interface Tensor  {
     }
 
     static Tensor logEach(Tensor vector) {
-        return forEach(vector, d -> (float)Math.log((double) d));
+        return forEach(vector, new FloatToFloatFunction() {
+            @Override
+            public float valueOf(float d) {
+                return (float) Math.log((double) d);
+            }
+        });
     }
 
     static Tensor sqrtEach(Tensor vector) {
-        return forEach(vector, d -> (float)Math.sqrt((double) d));
+        return forEach(vector, new FloatToFloatFunction() {
+            @Override
+            public float valueOf(float d) {
+                return (float) Math.sqrt((double) d);
+            }
+        });
     }
 
     static Tensor powEach(Tensor vector, double power) {
-        return forEach(vector, d -> (float)Math.pow((double) d, power));
+        return forEach(vector, new FloatToFloatFunction() {
+            @Override
+            public float valueOf(float d) {
+                return (float) Math.pow((double) d, power);
+            }
+        });
     }
 
     /*static float[] copyVectorValues(Tensor vector) {
@@ -80,12 +95,22 @@ public interface Tensor  {
 
     /** element-wise addition */
     default TensorFunc incrementEach(float v) {
-        return apply((x) -> x + v);
+        return apply(new FloatToFloatFunction() {
+            @Override
+            public float valueOf(float x) {
+                return x + v;
+            }
+        });
     }
 
     /** element-wise multiplication */
     default TensorFunc multiplyEach(float v) {
-        return apply((x) -> x * v);
+        return apply(new FloatToFloatFunction() {
+            @Override
+            public float valueOf(float x) {
+                return x * v;
+            }
+        });
     }
 
     default TensorTensorFunc func(Tensor x, FloatFloatToFloatFunction f)  {
@@ -99,7 +124,12 @@ public interface Tensor  {
 
     /** element-wise multiplication */
     default Tensor scale(Tensor vector) {
-        return func(vector, (a,b)->a*b);
+        return func(vector, new FloatFloatToFloatFunction() {
+            @Override
+            public float apply(float a, float b) {
+                return a * b;
+            }
+        });
     }
 
 
@@ -119,12 +149,22 @@ public interface Tensor  {
     static Tensor randomVector(int dimension, float min, float max) {
         Random random = new Random();
         return forEach(new ArrayTensor(new float[dimension]),
-                        d -> (float)random.nextDouble() * (max - min) + min);
+                new FloatToFloatFunction() {
+                    @Override
+                    public float valueOf(float d) {
+                        return (float) random.nextDouble() * (max - min) + min;
+                    }
+                });
     }
 
     static TensorFunc randomVectorGauss(int dimension, float mean, float standardDeviation, Random random) {
         return forEach(new ArrayTensor(dimension),
-                        d -> (float)random.nextGaussian() * standardDeviation + mean);
+                new FloatToFloatFunction() {
+                    @Override
+                    public float valueOf(float d) {
+                        return (float) random.nextGaussian() * standardDeviation + mean;
+                    }
+                });
     }
 
 
@@ -192,7 +232,12 @@ public interface Tensor  {
     }
 
     default   void forEach(FloatProcedure each) {
-        forEach((i,x)->each.value(x));
+        forEach(new IntFloatProcedure() {
+            @Override
+            public void value(int i, float x) {
+                each.value(x);
+            }
+        });
     }
 
     /**
@@ -225,7 +270,12 @@ public interface Tensor  {
     }
 
     default void writeTo(float[] target, int offset) {
-        forEach((i, v) -> target[i + offset] = v);
+        forEach(new IntFloatProcedure() {
+            @Override
+            public void value(int i, float v) {
+                target[i + offset] = v;
+            }
+        });
     }
 
     /** should not need subclassed */
@@ -234,7 +284,12 @@ public interface Tensor  {
     }
 
     default void writeTo(FloatToFloatFunction perElement, float[] target, int offset) {
-        forEach((i, v) -> target[i + offset] = perElement.valueOf(v));
+        forEach(new IntFloatProcedure() {
+            @Override
+            public void value(int i, float v) {
+                target[i + offset] = perElement.valueOf(v);
+            }
+        });
     }
 
     /** should not need subclassed */
@@ -243,7 +298,12 @@ public interface Tensor  {
     }
 
     default void writeTo(FloatFloatToFloatFunction perElement, float[] target, int offset) {
-        forEach((i, v) -> target[i + offset] = perElement.apply(target[i + offset], v));
+        forEach(new IntFloatProcedure() {
+            @Override
+            public void value(int i, float v) {
+                target[i + offset] = perElement.apply(target[i + offset], v);
+            }
+        });
     }
 
     default TensorFunc apply(FloatToFloatFunction f) {
@@ -253,25 +313,36 @@ public interface Tensor  {
 
     default float maxValue() {
         float[] max = {Float.NEGATIVE_INFINITY};
-        forEach((i, v) -> {
-            if (max[0] < v)
-                max[0] = v;
+        forEach(new IntFloatProcedure() {
+            @Override
+            public void value(int i, float v) {
+                if (max[0] < v)
+                    max[0] = v;
+            }
         });
         return max[0];
     }
 
     default float minValue() {
         float[] min = {Float.POSITIVE_INFINITY};
-        forEach((i, v) -> {
-            if (min[0] > v)
-                min[0] = v;
+        forEach(new IntFloatProcedure() {
+            @Override
+            public void value(int i, float v) {
+                if (min[0] > v)
+                    min[0] = v;
+            }
         });
         return min[0];
     }
 
     default float sumValues() {
         float[] sum = {(float) 0};
-        forEach((i,x) -> sum[0] += x);
+        forEach(new IntFloatProcedure() {
+            @Override
+            public void value(int i, float x) {
+                sum[0] += x;
+            }
+        });
         return sum[0];
     }
 
@@ -355,7 +426,12 @@ public interface Tensor  {
     default double[] doubleArray() {
         int v = volume();
         double[] xx = new double[v];
-        forEach((i,x)-> xx[i] = (double) x);
+        forEach(new IntFloatProcedure() {
+            @Override
+            public void value(int i, float x) {
+                xx[i] = (double) x;
+            }
+        });
         return xx;
     }
 
@@ -369,7 +445,12 @@ public interface Tensor  {
     default float[] floatArray() {
         int v = volume();
         float[] xx = new float[v];
-        forEach((i,x)-> xx[i] = x);
+        forEach(new IntFloatProcedure() {
+            @Override
+            public void value(int i, float x) {
+                xx[i] = x;
+            }
+        });
         return xx;
     }
 

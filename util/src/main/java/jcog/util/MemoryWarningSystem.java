@@ -8,7 +8,9 @@
 package jcog.util;
 
 
+import javax.management.Notification;
 import javax.management.NotificationEmitter;
+import javax.management.NotificationListener;
 import java.lang.management.*;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -63,12 +65,15 @@ public class MemoryWarningSystem {
         MemoryMXBean mbean = ManagementFactory.getMemoryMXBean();
         tenuredGenPool = MemoryWarningSystem.findTenuredGenPool();
         NotificationEmitter emitter = (NotificationEmitter) mbean;
-        emitter.addNotificationListener((n, hb) -> {
-            if (MemoryNotificationInfo.MEMORY_THRESHOLD_EXCEEDED.equals(n.getType())) {
-                MemoryUsage u = tenuredGenPool.getUsage();
-                long maxMemory = u.getMax(), usedMemory = u.getUsed();
-                for (Listener listener : listeners)
-                    listener.memoryUsageLow(usedMemory, maxMemory);
+        emitter.addNotificationListener(new NotificationListener() {
+            @Override
+            public void handleNotification(Notification n, Object hb) {
+                if (MemoryNotificationInfo.MEMORY_THRESHOLD_EXCEEDED.equals(n.getType())) {
+                    MemoryUsage u = tenuredGenPool.getUsage();
+                    long maxMemory = u.getMax(), usedMemory = u.getUsed();
+                    for (Listener listener : listeners)
+                        listener.memoryUsageLow(usedMemory, maxMemory);
+                }
             }
         }, null, null);
     }

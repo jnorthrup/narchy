@@ -35,13 +35,31 @@ public abstract class Signal extends TaskConcept implements GameLoop, PermanentC
     /**
      * update directly with next value
      */
-    public static Function<FloatSupplier, FloatFloatToObjectFunction<Truth>> SET = (conf) ->
-            ((prev, next) -> next == next ? $.t(next, conf.asFloat()) : null);
+    public static Function<FloatSupplier, FloatFloatToObjectFunction<Truth>> SET = new Function<FloatSupplier, FloatFloatToObjectFunction<Truth>>() {
+        @Override
+        public FloatFloatToObjectFunction<Truth> apply(FloatSupplier conf) {
+            return (new FloatFloatToObjectFunction<Truth>() {
+                @Override
+                public Truth value(float prev, float next) {
+                    return next == next ? $.t(next, conf.asFloat()) : null;
+                }
+            });
+        }
+    };
     /**
      * first order difference
      */
-    public static Function<FloatSupplier, FloatFloatToObjectFunction<Truth>> DIFF = (conf) ->
-            ((prev, next) -> (next == next) ? ((prev == prev) ? $.t((next - prev) / 2f + 0.5f, conf.asFloat()) : $.t(0.5f, conf.asFloat())) : $.t(0.5f, conf.asFloat()));
+    public static Function<FloatSupplier, FloatFloatToObjectFunction<Truth>> DIFF = new Function<FloatSupplier, FloatFloatToObjectFunction<Truth>>() {
+        @Override
+        public FloatFloatToObjectFunction<Truth> apply(FloatSupplier conf) {
+            return (new FloatFloatToObjectFunction<Truth>() {
+                @Override
+                public Truth value(float prev, float next) {
+                    return (next == next) ? ((prev == prev) ? $.t((next - prev) / 2f + 0.5f, conf.asFloat()) : $.t(0.5f, conf.asFloat())) : $.t(0.5f, conf.asFloat());
+                }
+            });
+        }
+    };
 
     private volatile Truth currentValue = null;
     boolean inputting;
@@ -84,9 +102,13 @@ public abstract class Signal extends TaskConcept implements GameLoop, PermanentC
 
     @Deprecated public static FloatToObjectFunction<Truth> truther(float freqRes, float conf, Game g) {
         float c = g.ditherConf(conf);
-        return nextValue ->
-            nextValue==nextValue ?
-                DiscreteTruth.the(g.ditherFreq(nextValue, freqRes),c) : null;
+        return new FloatToObjectFunction<Truth>() {
+            @Override
+            public Truth valueOf(float nextValue) {
+                return nextValue == nextValue ?
+                        DiscreteTruth.the(g.ditherFreq(nextValue, freqRes), c) : null;
+            }
+        };
     }
 
     public static Truth truthDithered(float nextValue, float freqRes, Game g) {

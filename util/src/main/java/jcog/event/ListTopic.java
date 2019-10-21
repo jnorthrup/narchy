@@ -1,6 +1,7 @@
 package jcog.event;
 
 import jcog.util.CountDownThenRun;
+import org.eclipse.collections.api.block.procedure.Procedure2;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executor;
@@ -40,7 +41,17 @@ public class ListTopic<V> extends jcog.data.list.FastCoWList<Consumer<V>> implem
 //
 //            for (Consumer c: cc)
 //                executorService.execute(() -> c.accept(x));
-        forEachWith((c,X)->executorService.execute(() -> c.accept(X)), x);
+        forEachWith(new Procedure2<Consumer<V>, V>() {
+            @Override
+            public void value(Consumer<V> c, V X) {
+                executorService.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        c.accept(X);
+                    }
+                });
+            }
+        }, x);
     }
 
     @Override
@@ -52,13 +63,16 @@ public class ListTopic<V> extends jcog.data.list.FastCoWList<Consumer<V>> implem
                 CountDownLatch l = new CountDownLatch(n);
 
                 for (Consumer c : cc) {
-                    executorService.execute(() -> {
-                        try {
-                            c.accept(x);
-                        } finally {
-                            l.countDown();
-                        }
+                    executorService.execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                c.accept(x);
+                            } finally {
+                                l.countDown();
+                            }
 
+                        }
                     });
                 }
                 l.await();
@@ -77,11 +91,14 @@ public class ListTopic<V> extends jcog.data.list.FastCoWList<Consumer<V>> implem
                 return;
             case 1: {
                 Consumer cc0 = cc[0];
-                exe.execute(() -> {
-                    try {
-                        cc0.accept(x);
-                    } finally {
-                        onFinish.run();
+                exe.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            cc0.accept(x);
+                        } finally {
+                            onFinish.run();
+                        }
                     }
                 });
                 break;

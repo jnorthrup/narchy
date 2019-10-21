@@ -2,6 +2,8 @@ package spacegraph.space2d.widget.port;
 
 import spacegraph.space2d.widget.textedit.TextEdit;
 
+import java.util.function.Consumer;
+
 public abstract class EditablePort<X> extends TypedPort<X> {
 
     public final TextEdit edit;
@@ -12,7 +14,12 @@ public abstract class EditablePort<X> extends TypedPort<X> {
 
         edit = new TextEdit(32, 1);
         //TODO txt = new TextEdit(8, 1);
-        edit.onChange.on(z -> out(parse(z.text())));
+        edit.onChange.on(new Consumer<TextEdit>() {
+            @Override
+            public void accept(TextEdit z) {
+                EditablePort.this.out(EditablePort.this.parse(z.text()));
+            }
+        });
         set(edit);
     }
 

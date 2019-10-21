@@ -1,13 +1,11 @@
 package nars.nal.nal8;
 
-import nars.$;
-import nars.NAR;
-import nars.NARS;
-import nars.Narsese;
+import nars.*;
 import nars.time.Tense;
 import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 
 import static nars.$.$;
 import static nars.Op.GOAL;
@@ -66,9 +64,12 @@ class QuestTest {
     }
 
     private static void quest(NAR nar, AtomicBoolean valid) throws Narsese.NarseseException {
-        nar.onTask(a -> {
-            if (a.toString().contains("(b-->a)!"))
-                valid.set(true);
+        nar.onTask(new Consumer<Task>() {
+            @Override
+            public void accept(Task a) {
+                if (a.toString().contains("(b-->a)!"))
+                    valid.set(true);
+            }
         }, GOAL);
 
         nar.quest($("a:?b@"));

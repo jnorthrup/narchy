@@ -236,7 +236,12 @@ public abstract class DeriverExecutor extends Derivation {
 			bag.clear();
 			bag.capacity(bufferCap);
 
-			each = p -> run(p.get(), nar.deriveBranchTTL.intValue());
+			each = new Consumer<PLink<Premise>>() {
+                @Override
+                public void accept(PLink<Premise> p) {
+                    BagDeriverExecutor.this.run(p.get(), nar.deriveBranchTTL.intValue());
+                }
+            };
 		}
 
 		@Override

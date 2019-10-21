@@ -18,6 +18,7 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.util.Set;
 import java.util.*;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 import static jcog.data.map.CustomConcurrentHashMap.*;
@@ -169,15 +170,18 @@ public class DefaultTermizer implements Termizer {
 
             Map mapo = (Map) o;
             List<Term> components = new FasterList(mapo.size());
-            mapo.forEach((k, v) -> {
+            mapo.forEach(new BiConsumer() {
+                @Override
+                public void accept(Object k, Object v) {
 
-                Term tv = obj2term(v);
-                Term tk = obj2term(k);
+                    Term tv = DefaultTermizer.this.obj2term(v);
+                    Term tk = DefaultTermizer.this.obj2term(k);
 
-                if ((tv != null) && (tk != null)) {
-                    components.add(
-                            $.inh(tv, tk)
-                    );
+                    if ((tv != null) && (tk != null)) {
+                        components.add(
+                                $.inh(tv, tk)
+                        );
+                    }
                 }
             });
             if (!components.isEmpty()) {

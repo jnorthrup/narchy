@@ -46,11 +46,14 @@ public class NumberConvertor implements Function<String,Object>  {
      * @see org.gocha.text.simpletypes.ToStringConvertor#convertToString
      */
 
-    public static final Function<Object,String> toString = srcData -> {
-        if (srcData == null) {
-            throw new IllegalArgumentException("srcData == null");
+    public static final Function<Object,String> toString = new Function<Object, String>() {
+        @Override
+        public String apply(Object srcData) {
+            if (srcData == null) {
+                throw new IllegalArgumentException("srcData == null");
+            }
+            return srcData.toString();
         }
-        return srcData.toString();
     };
 
     @Override

@@ -16,7 +16,12 @@ public class SwitchChip extends Gridding {
     int prev = -1;
 
     public SwitchChip(int size) {
-        this(size, (p) -> p);
+        this(size, new Function<Port, Surface>() {
+            @Override
+            public Surface apply(Port p) {
+                return p;
+            }
+        });
     }
 
     /**

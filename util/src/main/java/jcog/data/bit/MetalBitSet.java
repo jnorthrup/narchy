@@ -80,11 +80,21 @@ public abstract class MetalBitSet {
     public abstract int capacity();
 
     public final IntComparator indexComparator() {
-        return (a,b) -> Boolean.compare(get(a), get(b));
+        return new IntComparator() {
+            @Override
+            public int compare(int a, int b) {
+                return Boolean.compare(MetalBitSet.this.get(a), MetalBitSet.this.get(b));
+            }
+        };
     }
 
     public final IntComparator indexComparatorReverse() {
-        return (a,b) -> Boolean.compare(get(b), get(a));
+        return new IntComparator() {
+            @Override
+            public int compare(int a, int b) {
+                return Boolean.compare(MetalBitSet.this.get(b), MetalBitSet.this.get(a));
+            }
+        };
     }
 
     public void swap(int a, int b) {

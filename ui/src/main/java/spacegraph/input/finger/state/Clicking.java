@@ -23,33 +23,36 @@ public class Clicking extends Fingering {
 
         AtomicBoolean idle = new AtomicBoolean(false);
 
-        return f -> {
+        return new Predicate<Finger>() {
+            @Override
+            public boolean test(Finger f) {
 
-            if (f != null /*&& (what = f.touching()) != null*/) {
+                if (f != null /*&& (what = f.touching()) != null*/) {
 
-                idle.set(false);
+                    idle.set(false);
 
-                if (f.clickedNow(button, what)) {
+                    if (f.clickedNow(button, what)) {
 
-                    if (clicked != null)
-                        clicked.accept(f);
+                        if (clicked != null)
+                            clicked.accept(f);
 
-                } else if (f.pressed(button)) {
-                    if (armed != null)
-                        armed.run();
+                    } else if (f.pressed(button)) {
+                        if (armed != null)
+                            armed.run();
+
+                    } else {
+                        if (hover != null)
+                            hover.run();
+                    }
 
                 } else {
-                    if (hover != null)
-                        hover.run();
+                    if (idle.compareAndSet(false, true)) {
+                        if (becameIdle != null)
+                            becameIdle.run();
+                    }
                 }
-
-            } else {
-                if (idle.compareAndSet(false, true)) {
-                    if (becameIdle != null)
-                        becameIdle.run();
-                }
+                return false;
             }
-            return false;
         };
     }
 

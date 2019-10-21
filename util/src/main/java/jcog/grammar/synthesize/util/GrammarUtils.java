@@ -15,6 +15,7 @@
 package jcog.grammar.synthesize.util;
 
 import java.util.*;
+import java.util.function.Function;
 
 public class GrammarUtils {
     public static <V> Map<V, Integer> getInverse(List<V> list) {
@@ -296,7 +297,12 @@ public class GrammarUtils {
         }
 
         public Collection<V> ensure(K k) {
-            return super.computeIfAbsent(k, k1 -> new HashSet<>());
+            return super.computeIfAbsent(k, new Function<K, Set<V>>() {
+                @Override
+                public Set<V> apply(K k1) {
+                    return new HashSet<>();
+                }
+            });
         }
 
         @Override

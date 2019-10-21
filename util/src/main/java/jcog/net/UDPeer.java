@@ -37,6 +37,7 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 import static jcog.net.UDPeer.Command.*;
 import static jcog.net.UDPeer.Msg.ADDRESS_BYTES;
@@ -228,11 +229,14 @@ public class UDPeer extends UDP {
             byte[] bytes = o.arrayCompactDirect();
 
             int[] remain = {Math.round((float) them.size() * pri)};
-            them.sample(rng, (Predicate<UDProfile>) ((to) -> {
-                if (o.id() != to.id /*&& (pri >= 1 || rng.nextFloat() <= pri)*/)
-                    sendRaw(bytes, to.addr);
+            them.sample(rng, (Predicate<UDProfile>) (new Predicate<UDProfile>() {
+                @Override
+                public boolean test(UDProfile to) {
+                    if (o.id() != to.id /*&& (pri >= 1 || rng.nextFloat() <= pri)*/)
+                        UDPeer.this.sendRaw(bytes, to.addr);
 
-                return ((remain[0]--) > 0);
+                    return ((remain[0]--) > 0);
+                }
             }));
             return remain[0];
 
@@ -444,7 +448,12 @@ public class UDPeer extends UDP {
     }
 
     protected void receive(@Nullable UDProfile from, Msg m) {
-        receive.emit(() -> new MsgReceived(m, from));
+        receive.emit(new Supplier<MsgReceived>() {
+            @Override
+            public MsgReceived get() {
+                return new MsgReceived(m, from);
+            }
+        });
     }
 
     private RecycledSummaryStatistics latencyAvg() {

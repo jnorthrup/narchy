@@ -10,6 +10,7 @@ import org.eclipse.collections.impl.map.mutable.primitive.LongObjectHashMap;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.function.IntFunction;
 
 import static nars.time.Tense.ETERNAL;
 import static nars.time.Tense.dither;
@@ -85,10 +86,13 @@ public enum ConjSpans { ;
 			}
 		}
 
-        Term[] terms = Util.map(n, Term[]::new, I-> {
-            Task ttt = tt.get(I);
-			return ttt.term().negIf(!componentPolarity.get(I));
-		});
+        Term[] terms = Util.map(n, Term[]::new, new IntFunction<Term>() {
+            @Override
+            public Term apply(int I) {
+                Task ttt = tt.get(I);
+                return ttt.term().negIf(!componentPolarity.get(I));
+            }
+        });
 
 		//add to builder
 		for (int j = 0; j < wn; j++) {

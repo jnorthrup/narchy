@@ -18,6 +18,10 @@ import java.io.StringWriter;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BooleanSupplier;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static java.lang.System.out;
@@ -65,16 +69,36 @@ class NARTest {
 
         NAR m = NARS.tmp()
                 .input("<a --> b>.", "<b --> c>.")
-                .stopIf(() -> false);
-        m.onCycle(nn -> cycCount.incrementAndGet());
+                .stopIf(new BooleanSupplier() {
+                    @Override
+                    public boolean getAsBoolean() {
+                        return false;
+                    }
+                });
+        m.onCycle(new Consumer<NAR>() {
+            @Override
+            public void accept(NAR nn) {
+                cycCount.incrementAndGet();
+            }
+        });
         m.trace(sw);
         int frames = 32;
         m.run(frames);
 
         NAR n = NARS.tmp()
                 .input("<a --> b>.", "<b --> c>.")
-                .stopIf(() -> false);
-        n.onCycle(nn -> cycCount.incrementAndGet());
+                .stopIf(new BooleanSupplier() {
+                    @Override
+                    public boolean getAsBoolean() {
+                        return false;
+                    }
+                });
+        n.onCycle(new Consumer<NAR>() {
+            @Override
+            public void accept(NAR nn) {
+                cycCount.incrementAndGet();
+            }
+        });
         n.trace(sw);
 
         assertTrue(sw.toString().length() > 16);
@@ -133,9 +157,12 @@ class NARTest {
 
         long[] events = {2, 4, 4 /* test repeat */};
         for (long w : events) {
-            n.runAt(w, () -> {
-                assertEquals(w, n.time());
-                runs[0]++;
+            n.runAt(w, new Runnable() {
+                @Override
+                public void run() {
+                    assertEquals(w, n.time());
+                    runs[0]++;
+                }
             });
         }
 
@@ -169,10 +196,18 @@ class NARTest {
         Set<Task> written = new HashSet();
         a
                 .synch()
-                .outputBinary(baos, (Task t) -> {
-                    assertTrue(written.add(t), () -> "duplicate: " + t);
-                    count.incrementAndGet();
-                    return true;
+                .outputBinary(baos, new Predicate<Task>() {
+                    @Override
+                    public boolean test(Task t) {
+                        assertTrue(written.add(t), new Supplier<String>() {
+                            @Override
+                            public String get() {
+                                return "duplicate: " + t;
+                            }
+                        });
+                        count.incrementAndGet();
+                        return true;
+                    }
                 })
 
         ;

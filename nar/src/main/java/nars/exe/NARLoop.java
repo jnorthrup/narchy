@@ -4,6 +4,8 @@ import jcog.exe.InstrumentedLoop;
 import jcog.math.FloatRange;
 import nars.NAR;
 
+import java.util.function.Consumer;
+
 /**
  * self managed set of processes which run a NAR
  * as a loop at a certain frequency.
@@ -29,12 +31,22 @@ public abstract class NARLoop extends InstrumentedLoop {
     @Override
     protected void starting() {
         super.starting();
-        nar.parts(Pausing.class).forEach(g->g.pause(false));
+        nar.parts(Pausing.class).forEach(new Consumer<Pausing>() {
+            @Override
+            public void accept(Pausing g) {
+                g.pause(false);
+            }
+        });
     }
 
     @Override
     protected void stopping() {
-        nar.parts(Pausing.class).forEach(g->g.pause(true));
+        nar.parts(Pausing.class).forEach(new Consumer<Pausing>() {
+            @Override
+            public void accept(Pausing g) {
+                g.pause(true);
+            }
+        });
         super.stopping();
     }
 

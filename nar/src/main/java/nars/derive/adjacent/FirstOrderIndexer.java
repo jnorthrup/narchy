@@ -5,6 +5,7 @@ import nars.Op;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.unify.UnifyAny;
+import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 
 import java.util.function.Predicate;
 
@@ -24,10 +25,13 @@ public class FirstOrderIndexer extends AbstractAdjacentIndexer {
 			if (concept.opID() == targetOp && u.unifies(concept, target))
 				return true;
 
-			Predicate<Term> subunification = x -> {
-                Term xx = x.unneg();
-				return xx.opID()==targetOp && xx.hasAny(Op.AtomicConstant) && u.unifies(xx, target);
-			};
+			Predicate<Term> subunification = new Predicate<Term>() {
+                @Override
+                public boolean test(Term x) {
+                    Term xx = x.unneg();
+                    return xx.opID() == targetOp && xx.hasAny(Op.AtomicConstant) && u.unifies(xx, target);
+                }
+            };
 
 			return subUnifies(subunification, concept);
 
@@ -48,7 +52,12 @@ public class FirstOrderIndexer extends AbstractAdjacentIndexer {
 	protected static boolean subUnifies(Predicate<Term> u, Term concept) {
 
 		return concept.opID() == (int) CONJ.id ?
-			concept.eventsOR((when, what) -> u.test(what), 0L, true, true) :
+			concept.eventsOR(new LongObjectPredicate<Term>() {
+                @Override
+                public boolean accept(long when, Term what) {
+                    return u.test(what);
+                }
+            }, 0L, true, true) :
 			concept.subterms().OR(u);
 	}
 }

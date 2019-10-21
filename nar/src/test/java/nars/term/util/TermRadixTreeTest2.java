@@ -9,6 +9,7 @@ import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashSet;
+import java.util.function.Supplier;
 
 import static nars.$.$;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -43,7 +44,12 @@ public class TermRadixTreeTest2 {
 //            System.out.println(index.concepts.prettyPrint());
 
             assertEquals(x.concept(), y.term(),
-                    ()->y + " is " + y.getClass() + " and should have target equal to " + x.concept());
+                    new Supplier<String>() {
+                        @Override
+                        public String get() {
+                            return y + " is " + y.getClass() + " and should have target equal to " + x.concept();
+                        }
+                    });
         }
 
         assertEquals(terms.length + preSize, index.size());

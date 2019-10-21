@@ -19,6 +19,7 @@ import java.io.StringWriter;
 import java.util.function.Consumer;
 import java.util.function.LongPredicate;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 import static java.lang.Float.NaN;
 import static nars.$.$$;
@@ -296,9 +297,17 @@ public class TestNAR {
 
         //TODO use LambaTaskCondition
         requireConditions = false;
-        nar.onTask(c -> {
-            if (!c.isInput())
-                fail(() -> c + " output, but must not output anything");
+        nar.onTask(new Consumer<Task>() {
+            @Override
+            public void accept(Task c) {
+                if (!c.isInput())
+                    fail(new Supplier<String>() {
+                        @Override
+                        public String get() {
+                            return c + " output, but must not output anything";
+                        }
+                    });
+            }
         });
         return this;
     }
@@ -317,7 +326,12 @@ public class TestNAR {
 
 
     public TestNAR mustOutput(long cyclesAhead, String sentenceTerm, byte punc, float freqMin, float freqMax, float confMin, float confMax, LongPredicate occ) {
-        return mustEmit(taskEvent, cyclesAhead, sentenceTerm, punc, freqMin, freqMax, confMin, confMax, (s, e)-> occ.test(s) && occ.test(e));
+        return mustEmit(taskEvent, cyclesAhead, sentenceTerm, punc, freqMin, freqMax, confMin, confMax, new LongLongPredicate() {
+            @Override
+            public boolean accept(long s, long e) {
+                return occ.test(s) && occ.test(e);
+            }
+        });
     }
 
 
@@ -326,7 +340,12 @@ public class TestNAR {
     }
 
     public TestNAR mustOutput(long cyclesAhead, String sentenceTerm, byte punc, float freqMin, float freqMax, float confMin, float confMax, long start, long end) {
-        return mustOutput(cyclesAhead, sentenceTerm, punc, freqMin, freqMax, confMin, confMax, (s,e)->start==s && end==e);
+        return mustOutput(cyclesAhead, sentenceTerm, punc, freqMin, freqMax, confMin, confMax, new LongLongPredicate() {
+            @Override
+            public boolean accept(long s, long e) {
+                return start == s && end == e;
+            }
+        });
     }
     public TestNAR mustOutput(long cyclesAhead, String sentenceTerm, byte punc, float freqMin, float freqMax, float confMin, float confMax, LongLongPredicate time) {
         return mustEmit(taskEvent, cyclesAhead, sentenceTerm, punc, freqMin, freqMax, confMin, confMax, time);
@@ -443,7 +462,12 @@ public class TestNAR {
             freq = conf = NaN;
         }
 
-        return mustEmit(c, cyclesAhead, termString, t.punc(), freq, freq, conf, conf, (s, e) -> s == t.start() && e == t.end());
+        return mustEmit(c, cyclesAhead, termString, t.punc(), freq, freq, conf, conf, new LongLongPredicate() {
+            @Override
+            public boolean accept(long s, long e) {
+                return s == t.start() && e == t.end();
+            }
+        });
     }
 
 
@@ -478,7 +502,12 @@ public class TestNAR {
     }
 
     public TestNAR mustNotOutput(long cyclesAhead, String term, byte punc) {
-        return mustNotOutput(cyclesAhead, term, punc, (t)->true);
+        return mustNotOutput(cyclesAhead, term, punc, new LongPredicate() {
+            @Override
+            public boolean test(long t) {
+                return true;
+            }
+        });
     }
 
     public TestNAR mustNotOutput(long cyclesAhead, String term, byte punc, LongPredicate occ) {
@@ -490,17 +519,32 @@ public class TestNAR {
 
 
     public TestNAR mustNotOutput(long cyclesAhead, String term, byte punc, float freqMin, float freqMax, float confMin, float confMax) {
-        return mustNotOutput(cyclesAhead, term, punc, freqMin, freqMax, confMin,confMax, t->true);
+        return mustNotOutput(cyclesAhead, term, punc, freqMin, freqMax, confMin,confMax, new LongPredicate() {
+            @Override
+            public boolean test(long t) {
+                return true;
+            }
+        });
     }
 
     public TestNAR mustNotOutput(long cyclesAhead, String term, byte punc, float freqMin, float freqMax, float confMin, float confMax, long occ) {
-        LongPredicate badTime = (l) -> l == occ;
+        LongPredicate badTime = new LongPredicate() {
+            @Override
+            public boolean test(long l) {
+                return l == occ;
+            }
+        };
         return mustNotOutput(cyclesAhead, term, punc, freqMin, freqMax, confMin, confMax, badTime);
     }
 
 
     public TestNAR mustNotOutput(long cyclesAhead, String term, byte punc, float freqMin, float freqMax, float confMin, float confMax, LongPredicate badTimes) {
-        return mustNotOutput(cyclesAhead, term, punc, freqMin, freqMax, confMin, confMax, (s,e)->badTimes.test(s) || (s!=e && badTimes.test(e)));
+        return mustNotOutput(cyclesAhead, term, punc, freqMin, freqMax, confMin, confMax, new LongLongPredicate() {
+            @Override
+            public boolean accept(long s, long e) {
+                return badTimes.test(s) || (s != e && badTimes.test(e));
+            }
+        });
     }
     public TestNAR mustNotOutput(long cyclesAhead, String term, byte punc, float freqMin, float freqMax, float confMin, float confMax, LongLongPredicate timeFilter) {
         if (freqMin < (float) 0 || freqMin > 1f || freqMax < (float) 0 || freqMax > 1f || confMin < (float) 0 || confMin > 1f || confMax < (float) 0 || confMax > 1f || freqMin != freqMin || freqMax != freqMax)
@@ -529,7 +573,12 @@ public class TestNAR {
 
     public TestNAR mustBelieveAtOnly(long cyclesAhead, String term, float freq, float confidence, long startTime, long endTime) {
         mustBelieve(cyclesAhead, term, freq, confidence, startTime);
-        return mustNotBelieve(cyclesAhead, term, (s,e)->s!=startTime || e!=endTime);
+        return mustNotBelieve(cyclesAhead, term, new LongLongPredicate() {
+            @Override
+            public boolean accept(long s, long e) {
+                return s != startTime || e != endTime;
+            }
+        });
     }
 
     public TestNAR mustNotBelieve(long cyclesAhead, String term, float freq, float confidence, LongLongPredicate occTimeAbsolute) {

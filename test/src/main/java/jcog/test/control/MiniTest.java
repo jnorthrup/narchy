@@ -1,5 +1,6 @@
 package jcog.test.control;
 
+import jcog.math.FloatSupplier;
 import nars.NAR;
 import nars.game.Game;
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
@@ -15,17 +16,20 @@ public abstract class MiniTest extends Game {
         super(MiniTest.class.getSimpleName());
         //statPrint = n.emotion.printer(System.out);
 
-        reward(the("reward"), 1f, () -> {
+        reward(the("reward"), 1f, new FloatSupplier() {
+            @Override
+            public float asFloat() {
 //                System.out.println(this + " avgReward=" + avgReward() + " dexMean=" + dex.getMean() + " dexMax=" + dex.getMax());
 //                statPrint.run();
 //                nar.stats(System.out);
 
-            float yy = myReward();
+                float yy = MiniTest.this.myReward();
 
-            rewardSum += yy;
-            dex.addValue(dexterity());
+                rewardSum += yy;
+                dex.addValue(MiniTest.this.dexterity());
 
-            return yy;
+                return yy;
+            }
         });
 
     }

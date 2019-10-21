@@ -25,6 +25,7 @@ import io.jenetics.engine.EvolutionResult;
 import io.jenetics.engine.Limits;
 import io.jenetics.ext.SingleNodeCrossover;
 import io.jenetics.ext.util.TreeNode;
+import io.jenetics.prog.ProgramChromosome;
 import io.jenetics.prog.ProgramGene;
 import io.jenetics.prog.op.*;
 import io.jenetics.prog.regression.Error;
@@ -33,6 +34,9 @@ import io.jenetics.prog.regression.Regression;
 import io.jenetics.prog.regression.Sample;
 import io.jenetics.util.ISeq;
 import io.jenetics.util.RandomRegistry;
+
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 import static java.lang.Math.abs;
 import static java.lang.String.format;
@@ -56,11 +60,21 @@ public class JeneticSymbolicRegression {
 	// Definition of the terminals.
 	private static final ISeq<Op<Double>> TMS = ISeq.of(
 		Var.of("x", 0),
-		EphemeralConst.of(() -> (double)RandomRegistry.getRandom().nextInt(10))
+		EphemeralConst.of(new Supplier<Double>() {
+            @Override
+            public Double get() {
+                return (double) RandomRegistry.getRandom().nextInt(10);
+            }
+        })
 	);
 
 	private static final Regression<Double> REGRESSION = Regression.of(
-		Regression.codecOf(OPS, TMS, 5, t -> t.getGene().size() < 30),
+		Regression.codecOf(OPS, TMS, 5, new Predicate<ProgramChromosome<Double>>() {
+            @Override
+            public boolean test(ProgramChromosome<Double> t) {
+                return t.getGene().size() < 30;
+            }
+        }),
 		Error.of(LossFunction::mse),
 		// Lookup table for 4*x^3 - 3*x^2 + x
 		Sample.ofDouble(-1.0, -8.0000),

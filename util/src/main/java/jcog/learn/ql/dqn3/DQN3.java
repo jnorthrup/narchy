@@ -12,6 +12,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Random;
+import java.util.function.IntToDoubleFunction;
 
 /** untested
  * TODO use MLPMap for the MLP
@@ -104,7 +105,12 @@ public class DQN3 extends Agent {
 
     private static Mat matRandom(Random rand, int n, int d, float range) {
         Mat mat = new Mat(n, d);
-        Arrays.setAll(mat.w, i -> rand.nextGaussian() * (double) range);
+        Arrays.setAll(mat.w, new IntToDoubleFunction() {
+            @Override
+            public double applyAsDouble(int i) {
+                return rand.nextGaussian() * (double) range;
+            }
+        });
         return mat;
     }
 

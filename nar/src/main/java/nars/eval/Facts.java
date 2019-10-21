@@ -2,6 +2,7 @@ package nars.eval;
 
 import nars.NAR;
 import nars.Op;
+import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.table.BeliefTable;
 import nars.term.Term;
@@ -9,6 +10,7 @@ import nars.unify.UnifyAny;
 
 import java.util.Objects;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static nars.Op.IMPL;
@@ -45,38 +47,44 @@ public class Facts implements Function<Term, Stream<Term>> {
                         //TODO Stage 2
                         nar.concepts() //Stage 3
                 )
-                        .filter(c -> {
-                            if (!(c instanceof TaskConcept))
-                                return false;
+                        .filter(new Predicate<Concept>() {
+                            @Override
+                            public boolean test(Concept c) {
+                                if (!(c instanceof TaskConcept))
+                                    return false;
 
-                            Term yt = c.term();
-                            Op yo = yt.op();
-                            if (beliefsOrGoals && yo == IMPL) {
-                                Term head = yt.sub(1);
-                                return head.op() == xo && head.unify(x, u.clear());
+                                Term yt = c.term();
+                                Op yo = yt.op();
+                                if (beliefsOrGoals && yo == IMPL) {
+                                    Term head = yt.sub(1);
+                                    return head.op() == xo && head.unify(x, u.clear());
+                                }
+
+                                //TODO prefilter
+                                //TODO match implication predicate, store the association in a transition graph
+                                return xo == yo && x.unify(yt, u.clear());
+
+
                             }
-
-                            //TODO prefilter
-                            //TODO match implication predicate, store the association in a transition graph
-                            return xo == yo && x.unify(yt, u.clear());
-
-
                         })
-                        .map(c -> {
+                        .map(new Function<Concept, Term>() {
+                            @Override
+                            public Term apply(Concept c) {
 
 
-                            BeliefTable table = beliefsOrGoals ? c.beliefs() : c.goals();
-                            if (table.isEmpty())
-                                return null;
+                                BeliefTable table = beliefsOrGoals ? c.beliefs() : c.goals();
+                                if (table.isEmpty())
+                                    return null;
 
-                            boolean t = polarized(table, true), f = polarized(table, false);
-                            if (t == f)
-                                return null;
+                                boolean t = Facts.this.polarized(table, true), f = Facts.this.polarized(table, false);
+                                if (t == f)
+                                    return null;
 
-                            Term ct = c.term();
-							/*if (!t && f)*/
-							return t ? ct : ct.neg();
+                                Term ct = c.term();
+                                /*if (!t && f)*/
+                                return t ? ct : ct.neg();
 
+                            }
                         }).filter(Objects::nonNull);
     }
 

@@ -32,6 +32,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Supplier;
 
 /**
  * Object pool for arrays.
@@ -41,27 +42,37 @@ import java.util.Map;
 public class ArrayPool<T> extends FasterList<T> {
 
     private static final ThreadLocal<ArrayPool<byte[]>> bytes =
-            ThreadLocal.withInitial(() -> new ArrayPool<>(byte[].class) {
+            ThreadLocal.withInitial(new Supplier<ArrayPool<byte[]>>() {
                 @Override
-                protected byte[] create(int length) {
-                    return new byte[length];
-                }
+                public ArrayPool<byte[]> get() {
+                    return new ArrayPool<>(byte[].class) {
+                        @Override
+                        protected byte[] create(int length) {
+                            return new byte[length];
+                        }
 
-                @Override
-                protected int len(byte[] bytes) {
-                    return bytes.length;
+                        @Override
+                        protected int len(byte[] bytes) {
+                            return bytes.length;
+                        }
+                    };
                 }
             });
     private static final ThreadLocal<ArrayPool<short[]>> shorts =
-            ThreadLocal.withInitial(() -> new ArrayPool<>(short[].class) {
+            ThreadLocal.withInitial(new Supplier<ArrayPool<short[]>>() {
                 @Override
-                protected short[] create(int length) {
-                    return new short[length];
-                }
+                public ArrayPool<short[]> get() {
+                    return new ArrayPool<>(short[].class) {
+                        @Override
+                        protected short[] create(int length) {
+                            return new short[length];
+                        }
 
-                @Override
-                protected int len(short[] bytes) {
-                    return bytes.length;
+                        @Override
+                        protected int len(short[] bytes) {
+                            return bytes.length;
+                        }
+                    };
                 }
             });
 

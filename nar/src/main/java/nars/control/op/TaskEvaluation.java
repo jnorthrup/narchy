@@ -14,6 +14,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.function.Predicate;
+import java.util.function.UnaryOperator;
 
 import static nars.Op.*;
 import static nars.term.atom.IdempotentBool.False;
@@ -44,7 +45,12 @@ final class TaskEvaluation extends Evaluation implements Predicate<Term> {
 
                 FasterList f = new FasterList<>(result);
 				result = f;
-				f.replaceAll(yTerm -> perceiveable(this.t, (Term) yTerm, what));
+				f.replaceAll(new UnaryOperator() {
+                    @Override
+                    public Object apply(Object yTerm) {
+                        return perceiveable(TaskEvaluation.this.t, (Term) yTerm, what);
+                    }
+                });
 				f.removeNulls();
 
 				if (result.isEmpty())

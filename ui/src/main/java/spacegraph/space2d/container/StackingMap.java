@@ -5,6 +5,7 @@ import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.collection.AbstractMutableContainer;
 
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -24,16 +25,19 @@ public class StackingMap<X,Y extends Surface> extends AbstractMutableContainer<Y
 	}
 
 	public Y computeIfAbsent(X x, Function<X, Y> s) {
-		return map.compute(x, (xx, xp) -> {
-            Y xn = s.apply(xx);
-			if (xp != null) {
-				if (xp == xn) return xn;
-				else {
-					stop(xp);
-				}
-			}
-			return start(xn);
-		});
+		return map.compute(x, new BiFunction<X, Y, Y>() {
+            @Override
+            public Y apply(X xx, Y xp) {
+                Y xn = s.apply(xx);
+                if (xp != null) {
+                    if (xp == xn) return xn;
+                    else {
+                        StackingMap.this.stop(xp);
+                    }
+                }
+                return StackingMap.this.start(xn);
+            }
+        });
 	}
 
 	private Y start(@Nullable Y s) { if (s!=null) s.start(this); return s;}

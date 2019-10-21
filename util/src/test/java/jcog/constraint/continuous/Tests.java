@@ -4,6 +4,7 @@ import jcog.constraint.continuous.exceptions.DuplicateConstraintException;
 import jcog.constraint.continuous.exceptions.UnknownConstraintException;
 import jcog.constraint.continuous.exceptions.UnsatisfiableConstraintException;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -171,45 +172,54 @@ class Tests {
 
     @Test
     void inconsistent1() throws InternalError, DuplicateConstraintException, UnsatisfiableConstraintException {
-        assertThrows(UnsatisfiableConstraintException.class, () -> {
-            DoubleVar x = new DoubleVar("x");
-            ContinuousConstraintSolver solver = new ContinuousConstraintSolver();
+        assertThrows(UnsatisfiableConstraintException.class, new Executable() {
+            @Override
+            public void execute() throws Throwable {
+                DoubleVar x = new DoubleVar("x");
+                ContinuousConstraintSolver solver = new ContinuousConstraintSolver();
 
-            solver.add(C.equals(x, 10.0));
-            solver.add(C.equals(x, 5.0));
+                solver.add(C.equals(x, 10.0));
+                solver.add(C.equals(x, 5.0));
 
-            solver.update();
+                solver.update();
+            }
         });
     }
 
     @Test
     void inconsistent2() throws DuplicateConstraintException, UnsatisfiableConstraintException {
-        assertThrows(UnsatisfiableConstraintException.class, () -> {
-            DoubleVar x = new DoubleVar("x");
-            ContinuousConstraintSolver solver = new ContinuousConstraintSolver();
+        assertThrows(UnsatisfiableConstraintException.class, new Executable() {
+            @Override
+            public void execute() throws Throwable {
+                DoubleVar x = new DoubleVar("x");
+                ContinuousConstraintSolver solver = new ContinuousConstraintSolver();
 
-            solver.add(C.greaterThanOrEqualTo(x, 10.0));
-            solver.add(C.lessThanOrEqualTo(x, 5.0));
-            solver.update();
+                solver.add(C.greaterThanOrEqualTo(x, 10.0));
+                solver.add(C.lessThanOrEqualTo(x, 5.0));
+                solver.update();
+            }
         });
     }
 
     @Test
     void inconsistent3() throws DuplicateConstraintException, UnsatisfiableConstraintException {
-        assertThrows(UnsatisfiableConstraintException.class, () -> {
-            DoubleVar w = new DoubleVar("w");
-            DoubleVar x = new DoubleVar("x");
-            DoubleVar y = new DoubleVar("y");
-            DoubleVar z = new DoubleVar("z");
-            ContinuousConstraintSolver solver = new ContinuousConstraintSolver();
+        assertThrows(UnsatisfiableConstraintException.class, new Executable() {
+            @Override
+            public void execute() throws Throwable {
+                DoubleVar w = new DoubleVar("w");
+                DoubleVar x = new DoubleVar("x");
+                DoubleVar y = new DoubleVar("y");
+                DoubleVar z = new DoubleVar("z");
+                ContinuousConstraintSolver solver = new ContinuousConstraintSolver();
 
-            solver.add(C.greaterThanOrEqualTo(w, 10.0));
-            solver.add(C.greaterThanOrEqualTo(x, w));
-            solver.add(C.greaterThanOrEqualTo(y, x));
-            solver.add(C.greaterThanOrEqualTo(z, y));
-            solver.add(C.greaterThanOrEqualTo(z, 8.0));
-            solver.add(C.lessThanOrEqualTo(z, 4.0));
-            solver.update();
+                solver.add(C.greaterThanOrEqualTo(w, 10.0));
+                solver.add(C.greaterThanOrEqualTo(x, w));
+                solver.add(C.greaterThanOrEqualTo(y, x));
+                solver.add(C.greaterThanOrEqualTo(z, y));
+                solver.add(C.greaterThanOrEqualTo(z, 8.0));
+                solver.add(C.lessThanOrEqualTo(z, 4.0));
+                solver.update();
+            }
         });
     }
 

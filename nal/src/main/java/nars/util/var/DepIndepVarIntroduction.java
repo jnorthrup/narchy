@@ -13,7 +13,9 @@ import nars.term.Term;
 import nars.term.Terms;
 import nars.term.Variable;
 import nars.term.util.cache.Intermed;
+import org.eclipse.collections.api.block.function.primitive.ByteToByteFunction;
 import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
+import org.eclipse.collections.api.block.predicate.primitive.BytePredicate;
 import org.eclipse.collections.api.list.primitive.ByteList;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectByteHashMap;
 import org.jetbrains.annotations.Nullable;
@@ -22,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
+import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.function.ToIntFunction;
 
@@ -39,10 +42,18 @@ public class DepIndepVarIntroduction extends VarIntroduction {
     /**
      * sum by complexity if passes include filter
      */
-    public static final ToIntFunction<Term> depIndepFilter = t ->
-        (t.op().var) ? 0 : (t.hasAny(Op.VAR_INDEP.bit) ? 0 : 1);
-    public static final ToIntFunction<Term> nonNegdepIndepFilter = t ->
-            t.isAny(Op.Variable|Op.NEG.bit) ? 0 : (t.hasAny(Op.VAR_INDEP.bit) ? 0 : 1);
+    public static final ToIntFunction<Term> depIndepFilter = new ToIntFunction<Term>() {
+        @Override
+        public int applyAsInt(Term t) {
+            return (t.op().var) ? 0 : (t.hasAny(Op.VAR_INDEP.bit) ? 0 : 1);
+        }
+    };
+    public static final ToIntFunction<Term> nonNegdepIndepFilter = new ToIntFunction<Term>() {
+        @Override
+        public int applyAsInt(Term t) {
+            return t.isAny(Op.Variable | Op.NEG.bit) ? 0 : (t.hasAny(Op.VAR_INDEP.bit) ? 0 : 1);
+        }
+    };
 
     /** if no variables are present in the target target, use the normalized variable which can help ensure avoidance of a need for full compound normalization */
     private static final Variable UnnormalizedVarIndep = $.varIndep("_v");
@@ -83,7 +94,12 @@ public class DepIndepVarIntroduction extends VarIntroduction {
     @Override protected Term choose(Term[] x, Random rng) {
         IntToFloatFunction curve =
                 //n -> 1f / Util.cube(x[n].volume());
-                n -> 1f / (float) Util.sqr(x[n].volume());
+                new IntToFloatFunction() {
+                    @Override
+                    public float valueOf(int n) {
+                        return 1f / (float) Util.sqr(x[n].volume());
+                    }
+                };
                 //n -> 1f / x[n].volume()
                 //n -> (float) (1 / Math.sqrt(x[n].volume()))
 
@@ -103,10 +119,13 @@ public class DepIndepVarIntroduction extends VarIntroduction {
         Op inOp = input.op();
         List<ByteList> paths = new FasterList<>(4);
         int minPathLength = inOp.statement ? 2 : 0;
-        input.pathsTo(selected, (path, t) -> {
-            if (path.size() >= minPathLength)
-                paths.add(path.toImmutable());
-            return true;
+        input.pathsTo(selected, new BiPredicate<ByteList, Term>() {
+            @Override
+            public boolean test(ByteList path, Term t) {
+                if (path.size() >= minPathLength)
+                    paths.add(path.toImmutable());
+                return true;
+            }
         });
 
         int pSize = paths.size();
@@ -141,7 +160,12 @@ public class DepIndepVarIntroduction extends VarIntroduction {
 
                 if (!depOrIndep && validIndepVarSuperterm(o)) {
                     byte inside = (byte) (1 << (int) p.get(i + 1));
-                    m.updateValue(t, inside, (previous) -> (byte) ((int) previous | (int) inside));
+                    m.updateValue(t, inside, new ByteToByteFunction() {
+                        @Override
+                        public byte valueOf(byte previous) {
+                            return (byte) ((int) previous | (int) inside);
+                        }
+                    });
                 } else if (depOrIndep && validDepVarSuperterm(o)) {
                     m.addToValue(t, (byte) 1);
                 }
@@ -150,10 +174,20 @@ public class DepIndepVarIntroduction extends VarIntroduction {
 
 
         return (!depOrIndep) ?
-            ((m.anySatisfy(b -> (int) b == 0b11)) ?
+            ((m.anySatisfy(new BytePredicate() {
+                @Override
+                public boolean accept(byte b) {
+                    return (int) b == 0b11;
+                }
+            })) ?
                     (input.hasVars()  ? UnnormalizedVarIndep : FirstNormalizedVarIndep) /*varIndep(order)*/ : null)
                         :
-            (m.anySatisfy(b -> (int) b >= 2) ?
+            (m.anySatisfy(new BytePredicate() {
+                @Override
+                public boolean accept(byte b) {
+                    return (int) b >= 2;
+                }
+            }) ?
                     (input.hasVars()  ? UnnormalizedVarDep : FirstNormalizedVarDep)  /* $.varDep(order) */ : null)
         ;
 

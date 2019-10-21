@@ -10,6 +10,7 @@ import java.text.DateFormat;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.function.Supplier;
 import java.util.regex.Pattern;
 
 /**
@@ -519,8 +520,13 @@ public final class HttpUtil
              */
             static final class DateFormatHolder
             {
-                    private static final ThreadLocal<SoftReference<Map<String, SimpleDateFormat>>> THREADLOCAL_FORMATS = ThreadLocal.withInitial(() -> new SoftReference<>(
-                            new HashMap<>()));
+                    private static final ThreadLocal<SoftReference<Map<String, SimpleDateFormat>>> THREADLOCAL_FORMATS = ThreadLocal.withInitial(new Supplier<SoftReference<Map<String, SimpleDateFormat>>>() {
+                        @Override
+                        public SoftReference<Map<String, SimpleDateFormat>> get() {
+                            return new SoftReference<>(
+                                    new HashMap<>());
+                        }
+                    });
 
                     /**
                      * creates a {@link SimpleDateFormat} for the requested format string.

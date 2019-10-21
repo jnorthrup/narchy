@@ -7,6 +7,7 @@ import nars.term.Variable;
 import nars.term.atom.Atomic;
 import nars.unify.UnifyAny;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 
 import java.util.Set;
 import java.util.TreeSet;
@@ -51,8 +52,11 @@ class CommonVariableTest {
 
     @Test
     void testInvalid() {
-        assertThrows(Throwable.class, ()-> {
-            Variable p1p1 = common(p1, p1);
+        assertThrows(Throwable.class, new Executable() {
+            @Override
+            public void execute() throws Throwable {
+                Variable p1p1 = common(p1, p1);
+            }
         });
     }
 

@@ -2,6 +2,7 @@ package jcog.pri;
 
 import jcog.math.CachedFloatFunction;
 import jcog.sort.FloatRank;
+import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 
 public class CachedFloatRank<X> extends CachedFloatFunction<X> implements FloatRank<X> {
 
@@ -18,7 +19,12 @@ public class CachedFloatRank<X> extends CachedFloatFunction<X> implements FloatR
         if (minIgnored == Float.NEGATIVE_INFINITY)
             return getIfAbsentPutWithKey(x, f);
         else {
-            return getIfAbsentPutWithKey(x, (xx) -> ((FloatRank<X>) f).rank(xx, minIgnored));
+            return getIfAbsentPutWithKey(x, new FloatFunction<X>() {
+                @Override
+                public float floatValueOf(X xx) {
+                    return ((FloatRank<X>) f).rank(xx, minIgnored);
+                }
+            });
         }
     }
 

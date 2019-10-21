@@ -5,8 +5,10 @@ import jcog.data.list.FasterList;
 import jcog.math.FloatAveragedWindow;
 import jcog.math.FloatNormalized;
 import jcog.math.FloatRange;
+import jcog.math.FloatSupplier;
 import jcog.random.XoRoShiRo128PlusRandom;
 import jcog.signal.wave2d.Bitmap2D;
+import org.eclipse.collections.api.block.procedure.Procedure;
 
 import javax.swing.*;
 import java.awt.*;
@@ -77,8 +79,12 @@ final class RayTracer extends JPanel {
 
 
             //r.parallelStream().forEach(x ->
-            r.forEach(x ->
-                x.render(subSceneTimeNS)
+            r.forEach(new Procedure<Renderer>() {
+                          @Override
+                          public void value(Renderer x) {
+                              x.render(subSceneTimeNS);
+                          }
+                      }
             );
             repaint();
         }
@@ -195,7 +201,12 @@ final class RayTracer extends JPanel {
         @Deprecated private float eee;
 
         FloatAveragedWindow e = new FloatAveragedWindow(window, 0.5f, 0.5f).mode(FloatAveragedWindow.Mode.Mean);
-        FloatNormalized ee = new FloatNormalized(()->eee, (float) 0, 0.000001f) {
+        FloatNormalized ee = new FloatNormalized(new FloatSupplier() {
+            @Override
+            public float asFloat() {
+                return eee;
+            }
+        }, (float) 0, 0.000001f) {
 
             @Override
             public float asFloat() {

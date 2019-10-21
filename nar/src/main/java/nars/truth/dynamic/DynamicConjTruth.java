@@ -14,11 +14,13 @@ import nars.term.util.conj.ConjBuilder;
 import nars.term.util.conj.ConjList;
 import nars.term.util.conj.ConjSpans;
 import nars.truth.proj.TruthProjection;
+import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Predicate;
 
 import static nars.Op.*;
 import static nars.time.Tense.*;
@@ -133,7 +135,12 @@ public enum DynamicConjTruth {
 
 
             final long range = end-start;
-            return c.AND((when,what)-> each.accept(what, when, when + range));
+            return c.AND(new LongObjectPredicate<Term>() {
+                @Override
+                public boolean accept(long when, Term what) {
+                    return each.accept(what, when, when + range);
+                }
+            });
         }
 
 //        @Override
@@ -334,7 +341,12 @@ public enum DynamicConjTruth {
     }
 
 	public static boolean decomposeableConj(final Term conj) {
-        return !conj.hasVars() || conj.subterms().count(x -> !(x instanceof nars.term.Variable)) > 1;
+        return !conj.hasVars() || conj.subterms().count(new Predicate<Term>() {
+            @Override
+            public boolean test(Term x) {
+                return !(x instanceof nars.term.Variable);
+            }
+        }) > 1;
 	}
 
     //			if (conjSubterms.hasAny(VAR_DEP)) {

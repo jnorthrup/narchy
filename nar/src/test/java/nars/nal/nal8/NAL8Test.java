@@ -10,11 +10,14 @@ import nars.term.Term;
 import nars.test.NALTest;
 import nars.test.TestNAR;
 import nars.time.Tense;
+import org.eclipse.collections.api.block.predicate.primitive.LongLongPredicate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+
+import java.util.function.LongPredicate;
 
 import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
@@ -42,8 +45,18 @@ public class NAL8Test extends NALTest {
                 .input("(open(t1) &&+5 (t1-->[opened])). |")
                 .mustBelieve(cycles, "open(t1)", 1.0f, 0.81f, 0)
                 .mustBelieve(cycles, "(t1-->[opened])", 1.0f, 0.81f, 5)
-                .mustNotOutput(cycles, "open(t1)", BELIEF, (t) -> t != 0)
-                .mustNotOutput(cycles, "(t1-->[opened])", BELIEF, 0.5f, 1, 0, 0.8f, (t) -> t != 5)
+                .mustNotOutput(cycles, "open(t1)", BELIEF, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return t != 0;
+                    }
+                })
+                .mustNotOutput(cycles, "(t1-->[opened])", BELIEF, 0.5f, 1, 0, 0.8f, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return t != 5;
+                    }
+                })
         ;
     }
 
@@ -55,8 +68,18 @@ public class NAL8Test extends NALTest {
                 .input("(open(t1) &&+5 opened(t1))! |")
                 .mustGoal(cycles, "open(t1)", 1.0f, 0.81f, 0)
                 .mustGoal(cycles, "opened(t1)", 1.0f, 0.81f, 5)
-                .mustNotOutput(cycles, "open(t1)", GOAL, t -> t != 0)
-                .mustNotOutput(cycles, "opened(t1)", GOAL, t -> t!=5)
+                .mustNotOutput(cycles, "open(t1)", GOAL, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return t != 0;
+                    }
+                })
+                .mustNotOutput(cycles, "opened(t1)", GOAL, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return t != 5;
+                    }
+                })
         ;
     }
 
@@ -74,7 +97,12 @@ public class NAL8Test extends NALTest {
                 .input(((Task) NALTask.the($.$("(c-->b)"), BELIEF, $.t(1f, 0.9f), (long) 4, (long) 5, (long) 25, new long[]{101})).<Task>pri(0.5f))
                 .mustGoal(cycles, "(a-->c)", 1f, 0.4f,
 
-                        x -> x >= 5 && x <= 25
+                        new LongPredicate() {
+                            @Override
+                            public boolean test(long x) {
+                                return x >= 5 && x <= 25;
+                            }
+                        }
                 )
         ;
 
@@ -136,8 +164,18 @@ public class NAL8Test extends NALTest {
     void subbelief_2easy() {
         test
                 .input("(a:b &&+5 x:y). |")
-                .mustBelieve(cycles, "a:b", 1.0f, 0.81f, (t -> t == 0))
-                .mustBelieve(cycles, "x:y", 1.0f, 0.81f, (t -> t == 5))
+                .mustBelieve(cycles, "a:b", 1.0f, 0.81f, (new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return t == 0;
+                    }
+                }))
+                .mustBelieve(cycles, "x:y", 1.0f, 0.81f, (new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return t == 5;
+                    }
+                }))
         ;
     }
 
@@ -268,7 +306,12 @@ public class NAL8Test extends NALTest {
             .input("--y!")
             .believe("(x ==> y)")
             .mustGoal(cycles, "x", 0f, 0.81f)
-            .mustNotOutput(cycles, "x", GOAL, 0.5f, 1f, 0, 1, t -> true)
+            .mustNotOutput(cycles, "x", GOAL, 0.5f, 1f, 0, 1, new LongPredicate() {
+                @Override
+                public boolean test(long t) {
+                    return true;
+                }
+            })
         ;
     }
     @Disabled @Test void antigoal1_neg() {
@@ -276,7 +319,12 @@ public class NAL8Test extends NALTest {
             .input("y!")
             .believe("(x ==> --y)")
             .mustGoal(cycles, "x", 0f, 0.81f)
-            .mustNotOutput(cycles, "x", GOAL, 0.5f, 1f, 0, 1, t -> true)
+            .mustNotOutput(cycles, "x", GOAL, 0.5f, 1f, 0, 1, new LongPredicate() {
+                @Override
+                public boolean test(long t) {
+                    return true;
+                }
+            })
             ;
     }
     @Disabled @Test void antigoal1_neg_inner() {
@@ -284,7 +332,12 @@ public class NAL8Test extends NALTest {
             .input("--y!")
             .believe("(--x ==> y)")
             .mustGoal(cycles, "x", 1f, 0.81f)
-            .mustNotOutput(cycles, "x", GOAL, 0f, 0.5f, 0, 1, t -> true)
+            .mustNotOutput(cycles, "x", GOAL, 0f, 0.5f, 0, 1, new LongPredicate() {
+                @Override
+                public boolean test(long t) {
+                    return true;
+                }
+            })
         ;
     }
 //        test
@@ -351,7 +404,12 @@ public class NAL8Test extends NALTest {
                 .believe("(x &&+3 y)", Tense.Present, 1f, 0.9f)
                 .mustBelieve(cycles, "x", 1f, 0.81f, 0)
                 .mustBelieve(cycles, "y", 1f, 0.81f, 3)
-                .mustGoal(cycles, "x", 1f, 0.81f, t -> t >= 0);
+                .mustGoal(cycles, "x", 1f, 0.81f, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return t >= 0;
+                    }
+                });
     }
 
     @Test
@@ -394,8 +452,18 @@ public class NAL8Test extends NALTest {
         test
                 .goal("(x &&+3 y)", Tense.Present, 1f, 0.9f)
                 .believe("x", Tense.Present, 1f, 0.9f)
-                .mustGoal(cycles, "y", 1f, 0.81f, (t) -> t == 3)
-                .mustNotOutput(cycles, "y", GOAL, t -> t != 3);
+                .mustGoal(cycles, "y", 1f, 0.81f, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return t == 3;
+                    }
+                })
+                .mustNotOutput(cycles, "y", GOAL, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return t != 3;
+                    }
+                });
     }
 
     @Test
@@ -407,7 +475,12 @@ public class NAL8Test extends NALTest {
                 .goal("(x && y)", Tense.Present, 1f, 0.9f)
                 .believe("x", Tense.Present, 1f, 0.9f)
                 .mustGoal(cycles, "y", 1f, 0.81f, 0)
-                .mustNotOutput(cycles, "y", GOAL, t -> t != 0);
+                .mustNotOutput(cycles, "y", GOAL, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return t != 0;
+                    }
+                });
     }
 
     @Test
@@ -678,7 +751,12 @@ public class NAL8Test extends NALTest {
                 .termVolMax(6)
                 .inputAt(0, "((out) ==>-3 (happy)). |")
                 .inputAt(13, "(happy)! |")
-                .mustGoal(cycles, "(out)", 1f, 0.45f, (t) -> t > 13)
+                .mustGoal(cycles, "(out)", 1f, 0.45f, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return t > 13;
+                    }
+                })
                 .mustNotOutput(cycles, "(out)", GOAL, 3);
     }
 
@@ -689,7 +767,12 @@ public class NAL8Test extends NALTest {
                 .termVolMax(3)
                 .inputAt(0, "(happy ==>-3 out). |")
                 .inputAt(2, "happy! |")
-                .mustGoal(cycles, "out", 1f, 0.45f, (t) -> t == -1);
+                .mustGoal(cycles, "out", 1f, 0.45f, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return t == -1;
+                    }
+                });
 
 
     }
@@ -701,7 +784,12 @@ public class NAL8Test extends NALTest {
         test
                 .input("(a &&+1 (x &&+1 y)).")
                 .input("--x!")
-                .mustGoal(cycles, "(a &&+2 y)", 0f, 0.4f, t -> t == ETERNAL);
+                .mustGoal(cycles, "(a &&+2 y)", 0f, 0.4f, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return t == ETERNAL;
+                    }
+                });
     }
 
     @Disabled
@@ -711,7 +799,12 @@ public class NAL8Test extends NALTest {
         test
                 .input("(a &&+1 (--x &&+1 y)).")
                 .input("x!")
-                .mustGoal(cycles, "(a &&+2 y)", 0f, 0.4f, t -> t == ETERNAL);
+                .mustGoal(cycles, "(a &&+2 y)", 0f, 0.4f, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return t == ETERNAL;
+                    }
+                });
     }
 
     @Test
@@ -784,7 +877,12 @@ public class NAL8Test extends NALTest {
                 .inputAt(start, '(' + subjPred[0] + " ==>" + ((dt >= 0 ? "+" : "-") + Math.abs(dt)) + ' ' + subjPred[1] + "). |")
                 .inputAt(when, "b! |")
                 .mustGoal(when * 32, subjPred[0], 1f, 0.45f,
-                        (t) -> t >= goalAt)
+                        new LongPredicate() {
+                            @Override
+                            public boolean test(long t) {
+                                return t >= goalAt;
+                            }
+                        })
 
         ;
     }
@@ -796,7 +894,12 @@ public class NAL8Test extends NALTest {
                 .inputAt(1, "(a &&+3 b).")
                 .inputAt(5, "b! |")
 
-                .mustGoal(cycles, "a", 1f, 0.81f, t -> t == 2)
+                .mustGoal(cycles, "a", 1f, 0.81f, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return t == 2;
+                    }
+                })
 //                .mustNotOutput(cycles, "a", GOAL, t -> t!=2)
         ;
     }
@@ -808,7 +911,12 @@ public class NAL8Test extends NALTest {
                 .inputAt(1, "(a &&+3 b). |")
                 .inputAt(5, "b! |")
 
-                .mustGoal(cycles, "a", 1f, 0.3f, t -> t == 2)
+                .mustGoal(cycles, "a", 1f, 0.3f, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return t == 2;
+                    }
+                })
                 .mustNotOutput(cycles, "a", GOAL, ETERNAL);
     }
 
@@ -819,7 +927,12 @@ public class NAL8Test extends NALTest {
                 .termVolMax(6)
                 .inputAt(1, "(a &&+3 (b&&c)).")
                 .inputAt(5, "b! |")
-                .mustGoal(cycles, "(a &&+3 c)", 1f, 0.3f, t -> t == 2);
+                .mustGoal(cycles, "(a &&+3 c)", 1f, 0.3f, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return t == 2;
+                    }
+                });
     }
 
     @Test
@@ -829,7 +942,12 @@ public class NAL8Test extends NALTest {
                 .termVolMax(4)
                 .inputAt(1, "(a &&+3 --b).")
                 .inputAt(5, "b! |")
-                .mustGoal(cycles, "a", 0f, 0.3f, t -> t == 2)
+                .mustGoal(cycles, "a", 0f, 0.3f, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return t == 2;
+                    }
+                })
                 .mustNotOutput(cycles, "a", GOAL, ETERNAL);
     }
     @Test
@@ -838,7 +956,12 @@ public class NAL8Test extends NALTest {
         test
                 .input("((x &&+3 y) &&+1 --b).")
                 .inputAt(10, "b! |")
-                .mustGoal(cycles, "(x &&+3 y)", 0f, 0.81f, t -> t == 6);
+                .mustGoal(cycles, "(x &&+3 y)", 0f, 0.81f, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return t == 6;
+                    }
+                });
     }
     @Test
     void conjDecomposeGoalAfterPosNeg() {
@@ -846,7 +969,12 @@ public class NAL8Test extends NALTest {
         test
                 .inputAt(3, "(--a &&+3 b). |")
                 .inputAt(6, "b! |")
-                .mustGoal(cycles, "a", 0f, 0.81f, t -> t == 3)
+                .mustGoal(cycles, "a", 0f, 0.81f, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return t == 3;
+                    }
+                })
                 .mustNotOutput(cycles, "a", GOAL, ETERNAL);
     }
 
@@ -856,7 +984,12 @@ public class NAL8Test extends NALTest {
         test
                 .inputAt(0, "(--a ==>+1 b). |")
                 .inputAt(1, "b! |")
-                .mustGoal(cycles, "a", 0f, 0.81f, t -> t >= 0);
+                .mustGoal(cycles, "a", 0f, 0.81f, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return t >= 0;
+                    }
+                });
 
     }
 
@@ -867,8 +1000,18 @@ public class NAL8Test extends NALTest {
                 .termVolMax(4)
                 .inputAt(3, "(a &&+3 --b). |")
                 .inputAt(6, "--b! |")
-                .mustGoal(cycles, "a", 1f, 0.5f, t -> t == 3)
-                .mustNotOutput(cycles, "a", GOAL, t -> t!=3);
+                .mustGoal(cycles, "a", 1f, 0.5f, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return t == 3;
+                    }
+                })
+                .mustNotOutput(cycles, "a", GOAL, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return t != 3;
+                    }
+                });
     }
 
     @Test
@@ -897,7 +1040,12 @@ public class NAL8Test extends NALTest {
         test
                 .inputAt(1, "(--x ==>-1 x).")
                 .inputAt(2, "x! |")
-                .mustGoal(cycles, "x", 0f, 0.45f, t -> t == 3)
+                .mustGoal(cycles, "x", 0f, 0.45f, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return t == 3;
+                    }
+                })
 //                .mustNotOutput(cycles, "x",  GOAL,  t -> t != 3)
         ;
     }
@@ -943,8 +1091,18 @@ public class NAL8Test extends NALTest {
         test
                 .input("done!")
                 .input("((happy &&+20 y) &&+2 ((--,y) &&+1 done)). |")
-                .mustGoal(cycles, "((happy &&+20 y) &&+2 (--,y))", 1f, 0.43f, (t) -> t == 0)
-                .mustGoal(cycles, "((happy &&+20 y) &&+2 (--,y))", 1f, 0.43f, (t) -> t == -23)
+                .mustGoal(cycles, "((happy &&+20 y) &&+2 (--,y))", 1f, 0.43f, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return t == 0;
+                    }
+                })
+                .mustGoal(cycles, "((happy &&+20 y) &&+2 (--,y))", 1f, 0.43f, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return t == -23;
+                    }
+                })
         ;
     }
 
@@ -969,7 +1127,12 @@ public class NAL8Test extends NALTest {
         test.goal("a")
                 .believe("(b &&+1 (a &&+1 c))")
                 .mustGoal(cycles, "(b &&+2 c)", 1f, 0.45f)
-                .mustNotOutput(cycles, "(b &&+2 c)", GOAL, 0f, 0.5f, 0f, 1f, x -> true);
+                .mustNotOutput(cycles, "(b &&+2 c)", GOAL, 0f, 0.5f, 0f, 1f, new LongPredicate() {
+                    @Override
+                    public boolean test(long x) {
+                        return true;
+                    }
+                });
     }
 
     @Disabled
@@ -978,8 +1141,18 @@ public class NAL8Test extends NALTest {
 
         test.goal("--a")
                 .believe("(b &&+1 (a &&+1 c))")
-                .mustGoal(cycles, "(b &&+2 c)", 0f, 0.45f, (t) -> t == ETERNAL)
-                .mustNotOutput(cycles, "(b &&+2 c)", GOAL, 0.5f, 1f, 0f, 1f, x -> true);
+                .mustGoal(cycles, "(b &&+2 c)", 0f, 0.45f, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return t == ETERNAL;
+                    }
+                })
+                .mustNotOutput(cycles, "(b &&+2 c)", GOAL, 0.5f, 1f, 0f, 1f, new LongPredicate() {
+                    @Override
+                    public boolean test(long x) {
+                        return true;
+                    }
+                });
     }
 
     @Disabled
@@ -988,8 +1161,18 @@ public class NAL8Test extends NALTest {
 
         test.goal("a")
                 .believe("(b &&+1 (--a &&+1 c))")
-                .mustGoal(cycles, "(b &&+2 c)", 0f, 0.45f, (t) -> t == ETERNAL)
-                .mustNotOutput(cycles, "(b &&+2 c)", GOAL, 0.5f, 1f, 0f, 1f, x -> true);
+                .mustGoal(cycles, "(b &&+2 c)", 0f, 0.45f, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return t == ETERNAL;
+                    }
+                })
+                .mustNotOutput(cycles, "(b &&+2 c)", GOAL, 0.5f, 1f, 0f, 1f, new LongPredicate() {
+                    @Override
+                    public boolean test(long x) {
+                        return true;
+                    }
+                });
     }
 
     @Disabled
@@ -998,8 +1181,18 @@ public class NAL8Test extends NALTest {
 
         test.goal("--a")
                 .believe("(b &&+1 (--a &&+1 c))")
-                .mustGoal(cycles, "(b &&+2 c)", 1f, 0.45f, (t) -> t == ETERNAL)
-                .mustNotOutput(cycles, "(b &&+2 c)", GOAL, 0f, 0.5f, 0f, 1f, x -> true);
+                .mustGoal(cycles, "(b &&+2 c)", 1f, 0.45f, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return t == ETERNAL;
+                    }
+                })
+                .mustNotOutput(cycles, "(b &&+2 c)", GOAL, 0f, 0.5f, 0f, 1f, new LongPredicate() {
+                    @Override
+                    public boolean test(long x) {
+                        return true;
+                    }
+                });
     }
 
     //    @Test void GoalBeliefDecomposeTimeRangingRepeat() {
@@ -1027,14 +1220,32 @@ public class NAL8Test extends NALTest {
                 .termVolMax(3)
                 .input("x! +0..+100")
                 .input("(y &&+5 x). +20..+30")
-                .mustGoal(cycles, "y", 1f, 0.1f, (a, b) ->
-                        //(a == -5 && b == 5)
-                        (a == 0 && b == 10)
+                .mustGoal(cycles, "y", 1f, 0.1f, new LongLongPredicate() {
+                            @Override
+                            public boolean accept(long a, long b) {
+                                return (a == 0 && b == 10);
+                            }
+                        }
                 )
                 .mustNotOutput(cycles, "y", GOAL, 0f, 1, 0f, 1f,
-                        (s, e) -> (s == e))
-                .mustNotOutput(cycles, "x", GOAL, (t) -> true /* shouldnt drop first event */)
-                .mustNotOutput(cycles, "x", GOAL, 0f, 0.5f, 0f, 1f, (s, e) -> (e - s != 10))
+                        new LongLongPredicate() {
+                            @Override
+                            public boolean accept(long s, long e) {
+                                return (s == e);
+                            }
+                        })
+                .mustNotOutput(cycles, "x", GOAL, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return true;
+                    }
+                } /* shouldnt drop first event */)
+                .mustNotOutput(cycles, "x", GOAL, 0f, 0.5f, 0f, 1f, new LongLongPredicate() {
+                    @Override
+                    public boolean accept(long s, long e) {
+                        return (e - s != 10);
+                    }
+                })
         ;
 
 
@@ -1054,7 +1265,12 @@ public class NAL8Test extends NALTest {
         test
                 .inputAt(0, "(y &&+5 x)! |")
                 .inputAt(2, "y. |")
-                .mustGoal(cycles, "x", 1f, 0.1f, (t) -> t >= 7)
+                .mustGoal(cycles, "x", 1f, 0.1f, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return t >= 7;
+                    }
+                })
 //                .mustNotOutput(cycles, "x", GOAL, (t) -> t < 7)
         ;
     }
@@ -1070,7 +1286,12 @@ public class NAL8Test extends NALTest {
         test
                 .inputAt(0, "(--x &&+2 --x).")
                 .inputAt(2, "x! |")
-                .mustNotOutput(cycles, "x", GOAL, 0f, 0.5f, 0, 1f, t -> true)
+                .mustNotOutput(cycles, "x", GOAL, 0f, 0.5f, 0, 1f, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return true;
+                    }
+                })
         ;
 
     }
@@ -1085,7 +1306,12 @@ public class NAL8Test extends NALTest {
         test
                 .inputAt(0, "(x &&+2 x).")
                 .inputAt(2, "--x! |")
-                .mustNotOutput(cycles, "x", GOAL, 0.5f, 1, 0, 1f, t -> true)
+                .mustNotOutput(cycles, "x", GOAL, 0.5f, 1, 0, 1f, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return true;
+                    }
+                })
         ;
 
     }
@@ -1117,7 +1343,12 @@ public class NAL8Test extends NALTest {
         test
             .input("good! |")
             .input("(better ==>+1 better). |")
-            .mustNotOutput(cycles, "good", GOAL, 0, 1, 0, 1, t->true);
+            .mustNotOutput(cycles, "good", GOAL, 0, 1, 0, 1, new LongPredicate() {
+                @Override
+                public boolean test(long t) {
+                    return true;
+                }
+            });
     }
 
 
@@ -1158,8 +1389,18 @@ public class NAL8Test extends NALTest {
                 .input("on(t2,t3).")
                 .input("--(on(t2,t3) && at(t3))!")
                 .mustGoal(cycles, "at(t3)", 0.0f, 0.81f, ETERNAL)
-                .mustNotOutput(cycles, "at(t3)", GOAL, 0.1f, 1f, 0, 1, t->true)
-                .mustNotOutput(cycles, "on(t2,t3)", GOAL, 0f, 0.9f, 0, 1, t->true)
+                .mustNotOutput(cycles, "at(t3)", GOAL, 0.1f, 1f, 0, 1, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return true;
+                    }
+                })
+                .mustNotOutput(cycles, "on(t2,t3)", GOAL, 0f, 0.9f, 0, 1, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return true;
+                    }
+                })
                 ;
     }
 
@@ -1171,8 +1412,18 @@ public class NAL8Test extends NALTest {
                 .input("--(on(t2,#1) && at(#1))!")
                 .mustGoal(cycles, "at(t3)", 0.0f, 0.81f, ETERNAL)
                 //.mustGoal(cycles, "on(t2,t3)", 1.0f, 0.81f, ETERNAL)
-                .mustNotOutput(cycles, "at(t3)", GOAL, 0.1f, 1f, 0, 1, t->true)
-                .mustNotOutput(cycles, "on(t2,t3)", GOAL, 0f, 0.9f, 0, 1, t->true)
+                .mustNotOutput(cycles, "at(t3)", GOAL, 0.1f, 1f, 0, 1, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return true;
+                    }
+                })
+                .mustNotOutput(cycles, "on(t2,t3)", GOAL, 0f, 0.9f, 0, 1, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return true;
+                    }
+                })
         ;
     }
     @Test
@@ -1182,8 +1433,18 @@ public class NAL8Test extends NALTest {
                 .input("on(t2,t3).")
                 .input("(on(t2,#1) && at(#1))!")
                 .mustGoal(cycles, "at(t3)", 1.0f, 0.81f, ETERNAL)
-                .mustNotOutput(cycles, "at(t3)", GOAL, 0f, 0.9f, 0, 1, t->true)
-                .mustNotOutput(cycles, "on(t2,t3)", GOAL, 0.1f, 1f, 0, 1, t->true)
+                .mustNotOutput(cycles, "at(t3)", GOAL, 0f, 0.9f, 0, 1, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return true;
+                    }
+                })
+                .mustNotOutput(cycles, "on(t2,t3)", GOAL, 0.1f, 1f, 0, 1, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return true;
+                    }
+                })
         ;
     }
     @Test
@@ -1193,8 +1454,18 @@ public class NAL8Test extends NALTest {
             .input("--on(t2,t3).")
             .input("(on(t2,#1) || at(#1))!")
             .mustGoal(cycles, "at(t3)", 1.0f, 0.81f, ETERNAL)
-            .mustNotOutput(cycles, "at(t3)", GOAL, 0f, 0.9f, 0, 1, t->true)
-            .mustNotOutput(cycles, "on(t2,t3)", GOAL, 0f, 1f, 0, 1, t->true)
+            .mustNotOutput(cycles, "at(t3)", GOAL, 0f, 0.9f, 0, 1, new LongPredicate() {
+                @Override
+                public boolean test(long t) {
+                    return true;
+                }
+            })
+            .mustNotOutput(cycles, "on(t2,t3)", GOAL, 0f, 1f, 0, 1, new LongPredicate() {
+                @Override
+                public boolean test(long t) {
+                    return true;
+                }
+            })
         ;
     }
     @Test
@@ -1204,8 +1475,18 @@ public class NAL8Test extends NALTest {
                 .input("--on(t2,t3).")
                 .input("(--on(t2,#1) && at(#1))!")
                 .mustGoal(cycles, "at(t3)", 1.0f, 0.81f, ETERNAL)
-                .mustNotOutput(cycles, "at(t3)", GOAL, 0f, 0.9f, 0, 1, t->true)
-                .mustNotOutput(cycles, "on(t2,t3)", GOAL, 0.1f, 1f, 0, 1, t->true)
+                .mustNotOutput(cycles, "at(t3)", GOAL, 0f, 0.9f, 0, 1, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return true;
+                    }
+                })
+                .mustNotOutput(cycles, "on(t2,t3)", GOAL, 0.1f, 1f, 0, 1, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return true;
+                    }
+                })
         ;
     }
     @Test
@@ -1215,8 +1496,18 @@ public class NAL8Test extends NALTest {
                 .input("--on(t2,t3).")
                 .input("--(--on(t2,#1) && at(#1))!")
                 .mustGoal(cycles, "at(t3)", 0.0f, 0.81f, ETERNAL)
-                .mustNotOutput(cycles, "at(t3)", GOAL, 0.1f, 1f, 0, 1, t->true)
-                .mustNotOutput(cycles, "on(t2,t3)", GOAL, 0f, 0.9f, 0, 1, t->true)
+                .mustNotOutput(cycles, "at(t3)", GOAL, 0.1f, 1f, 0, 1, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return true;
+                    }
+                })
+                .mustNotOutput(cycles, "on(t2,t3)", GOAL, 0f, 0.9f, 0, 1, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return true;
+                    }
+                })
         ;
     }
     @Test
@@ -1249,7 +1540,12 @@ public class NAL8Test extends NALTest {
             .termVolMax(14)
                 .input("goto({t003}). |")
                 .input("(goto(#1) &&+5 at(SELF,#1))!")
-                .mustGoal(2 * cycles, "at(SELF,{t003})", 1.0f, 0.81f, (t) -> t >= 5)
+                .mustGoal(2 * cycles, "at(SELF,{t003})", 1.0f, 0.81f, new LongPredicate() {
+                    @Override
+                    public boolean test(long t) {
+                        return t >= 5;
+                    }
+                })
         ;
     }
 

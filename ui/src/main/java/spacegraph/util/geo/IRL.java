@@ -5,6 +5,7 @@ import jcog.Util;
 import jcog.exe.Exe;
 import jcog.memoize.CaffeineMemoize;
 import jcog.memoize.Memoize;
+import jcog.tree.rtree.HyperRegion;
 import jcog.tree.rtree.RTree;
 import jcog.tree.rtree.Spatialization;
 import jcog.tree.rtree.rect.RectFloat;
@@ -18,6 +19,9 @@ import spacegraph.util.geo.osm.OsmElement;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * "in real life" geospatial data cache
@@ -29,7 +33,12 @@ public class IRL {
 
 
     public final RTree<OsmElement> index =
-            new RTree<>(new Spatialization<>((OsmElement e) -> e,
+            new RTree<>(new Spatialization<>(new Function<OsmElement, HyperRegion>() {
+                @Override
+                public HyperRegion apply(OsmElement e) {
+                    return e;
+                }
+            },
                     //new AxialSplitLeaf<>(),
                     new LinearSplit<>(),
                     //new QuadraticSplitLeaf(),
@@ -40,7 +49,12 @@ public class IRL {
     }
 
 
-    final Memoize<RectFloat, Osm> reqCache = CaffeineMemoize.build(bounds -> load((double) bounds.left(), (double) bounds.bottom(), (double) bounds.right(), (double) bounds.top()), 1024, false);
+    final Memoize<RectFloat, Osm> reqCache = CaffeineMemoize.build(new Function<RectFloat, Osm>() {
+        @Override
+        public Osm apply(RectFloat bounds) {
+            return IRL.this.load((double) bounds.left(), (double) bounds.bottom(), (double) bounds.right(), (double) bounds.top());
+        }
+    }, 1024, false);
 
 
     /**
@@ -66,27 +80,38 @@ public class IRL {
         URL u = Osm.url("https://api.openstreetmap.org", lonMin, latMin, lonMax, latMax);
         osm.id = u.toExternalForm();
 
-        Exe.runLater(() -> user.get(u.toString(), () -> {
-            try {
-                logger.info("Downloading {}", u);
-                return u.openStream().readAllBytes();
-            } catch (IOException e) {
-                e.printStackTrace();
-                return null;
-            }
-        }, (data) -> {
-            try {
-                logger.info("Loading {} ({} bytes)", u, data.length);
-                osm.load(new ByteArrayInputStream(data));
-                osm.ways.forEachValue(index::add);
-                osm.ready = true;
+        Exe.runLater(new Runnable() {
+            @Override
+            public void run() {
+                user.get(u.toString(), new Supplier<byte[]>() {
+                    @Override
+                    public byte[] get() {
+                        try {
+                            logger.info("Downloading {}", u);
+                            return u.openStream().readAllBytes();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                            return null;
+                        }
+                    }
+                }, new Consumer<byte[]>() {
+                    @Override
+                    public void accept(byte[] data) {
+                        try {
+                            logger.info("Loading {} ({} bytes)", u, data.length);
+                            osm.load(new ByteArrayInputStream(data));
+                            osm.ways.forEachValue(index::add);
+                            osm.ready = true;
 //                    osm.nodes.forEachValue(n->{
 //                        index.addAt(n);
 //                    });
-            } catch (Exception e) {
-                e.printStackTrace();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
             }
-        }));
+        });
 
         return osm;
     }

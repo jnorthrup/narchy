@@ -80,10 +80,13 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 	}
 
 	private static Callable<?> constantlyNull(Runnable r) {
-		return () -> {
-			r.run();
-			return null;
-		};
+		return new Callable<Object>() {
+            @Override
+            public Object call() throws Exception {
+                r.run();
+                return null;
+            }
+        };
 	}
 
 	@Override
@@ -369,10 +372,13 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 		assert (recurringTimeout >= resolution) : "Cannot schedule tasks for amount of time less than timer precision.";
 
 		if (firstDelay > 0L) {
-			scheduleOneShot(firstDelay, () -> {
-				schedule(r);
-				return null;
-			});
+			scheduleOneShot(firstDelay, new Callable<Object>() {
+                @Override
+                public Object call() throws Exception {
+                    HashedWheelTimer.this.schedule(r);
+                    return null;
+                }
+            });
 		} else {
 			schedule(r);
 		}
@@ -392,10 +398,13 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 			this::schedule);
 
 		if (firstDelay > resolution) {
-			scheduleOneShot(firstDelay, () -> {
-				schedule(r);
-				return null;
-			});
+			scheduleOneShot(firstDelay, new Callable<Object>() {
+                @Override
+                public Object call() throws Exception {
+                    HashedWheelTimer.this.schedule(r);
+                    return null;
+                }
+            });
 		} else {
 			schedule(r);
 		}

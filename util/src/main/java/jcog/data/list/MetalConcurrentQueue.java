@@ -275,7 +275,12 @@ public class MetalConcurrentQueue<X> extends MetalAtomicReferenceArray<X> {
             int[] i = {initialSize};
             X[] a = x.array();
             int tryToGet = Math.min(a.length - initialSize, maxElements);
-            int drained = clear(y -> a[i[0]++] = y, tryToGet, retries);
+            int drained = clear(new Consumer<X>() {
+                @Override
+                public void accept(X y) {
+                    a[i[0]++] = y;
+                }
+            }, tryToGet, retries);
             x.setSize(drained);
             return drained;
         }
@@ -353,7 +358,12 @@ public class MetalConcurrentQueue<X> extends MetalAtomicReferenceArray<X> {
 
     /** TODO make a custom clear impl, avoiding lambda */
     public <Y> int clear(BiConsumer<X,Y> each, Y param) {
-        return clear((x)->each.accept(x, param));
+        return clear(new Consumer<X>() {
+            @Override
+            public void accept(X x) {
+                each.accept(x, param);
+            }
+        });
     }
 
     /** TODO clearWith(IntObjectConsumer... */
@@ -442,7 +452,11 @@ public class MetalConcurrentQueue<X> extends MetalAtomicReferenceArray<X> {
 
 
     public void clear() {
-        clear((x) -> {}, Integer.MAX_VALUE, Integer.MAX_VALUE);
+        clear(new Consumer<X>() {
+            @Override
+            public void accept(X x) {
+            }
+        }, Integer.MAX_VALUE, Integer.MAX_VALUE);
 
         //throw new TODO("review");
 //        int spin = 0;
@@ -527,8 +541,11 @@ public class MetalConcurrentQueue<X> extends MetalAtomicReferenceArray<X> {
     }
 
     public void add(X x) {
-        add(x, (xx)->{
-            throw new RuntimeException(this + " overflow on add: " + xx);
+        add(x, new Consumer<X>() {
+            @Override
+            public void accept(X xx) {
+                throw new RuntimeException(MetalConcurrentQueue.this + " overflow on add: " + xx);
+            }
         });
     }
 

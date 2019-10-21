@@ -32,10 +32,15 @@ public abstract class MetalPool<X> implements Pool<X> {
     /** note: ThreadLocal obviously doesnt require the thread-safe version */
     public static <X> ThreadLocal<MetalPool<X>> threadLocal(Supplier<X> o) {
         //noinspection Convert2Diamond
-        return ThreadLocal.withInitial(() -> new MetalPool<X>() {
+        return ThreadLocal.withInitial(new Supplier<MetalPool<X>>() {
             @Override
-            public X create() {
-                return o.get();
+            public MetalPool<X> get() {
+                return new MetalPool<X>() {
+                    @Override
+                    public X create() {
+                        return o.get();
+                    }
+                };
             }
         });
     }

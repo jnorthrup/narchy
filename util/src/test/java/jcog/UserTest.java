@@ -8,6 +8,7 @@ import org.eclipse.collections.impl.factory.Maps;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.function.Predicate;
 
 import static java.lang.Float.NEGATIVE_INFINITY;
 import static java.lang.Float.POSITIVE_INFINITY;
@@ -55,9 +56,12 @@ class UserTest {
 
         u.get(DoubleRange.newIntersectsQuery(BOUNDS,
                 new double[]{-1, NEGATIVE_INFINITY, NEGATIVE_INFINITY, NEGATIVE_INFINITY},
-                new double[]{3, POSITIVE_INFINITY, POSITIVE_INFINITY, POSITIVE_INFINITY}), 8, (d) -> {
-            System.out.println(d);
-            return true;
+                new double[]{3, POSITIVE_INFINITY, POSITIVE_INFINITY, POSITIVE_INFINITY}), 8, new Predicate<User.DocObj>() {
+            @Override
+            public boolean test(User.DocObj d) {
+                System.out.println(d);
+                return true;
+            }
         });
     }
 

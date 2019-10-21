@@ -2,9 +2,12 @@ package spacegraph.space2d.container.layout;
 
 import jcog.data.list.FasterList;
 import jcog.data.pool.MetalPool;
+import org.eclipse.collections.api.block.procedure.Procedure;
 import spacegraph.space2d.container.graph.Graph2D;
 import spacegraph.space2d.container.graph.NodeVis;
 import spacegraph.util.MutableRectFloat;
+
+import java.util.function.Consumer;
 
 public abstract class DynamicLayout2D<X> implements Graph2D.Graph2DUpdater<X> {
 
@@ -41,11 +44,14 @@ public abstract class DynamicLayout2D<X> implements Graph2D.Graph2DUpdater<X> {
     protected abstract void layout(Graph2D<X> g, float dtS);
 
     private boolean get(Graph2D<X> g) {
-        g.forEachValue(v -> {
-            if (v.visible() && !NodeVis.pinned()) {
-                MutableRectFloat<X> m = nodesPool.get();
-                m.set(v);
-                nodes.add(m);
+        g.forEachValue(new Consumer<NodeVis<X>>() {
+            @Override
+            public void accept(NodeVis<X> v) {
+                if (v.visible() && !NodeVis.pinned()) {
+                    MutableRectFloat<X> m = nodesPool.get();
+                    m.set(v);
+                    nodes.add(m);
+                }
             }
         });
 
@@ -53,7 +59,12 @@ public abstract class DynamicLayout2D<X> implements Graph2D.Graph2DUpdater<X> {
     }
 
     private void put() {
-        nodes.forEach(m -> put(m, m.node));
+        nodes.forEach(new Procedure<MutableRectFloat<X>>() {
+            @Override
+            public void value(MutableRectFloat<X> m) {
+                DynamicLayout2D.this.put(m, m.node);
+            }
+        });
 
         nodesPool.steal(nodes);
     }

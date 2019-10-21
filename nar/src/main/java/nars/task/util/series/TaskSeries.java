@@ -65,9 +65,12 @@ public interface TaskSeries<T extends Task> {
 //                return;
 //            }
 
-            whileEach(minT, maxT, exactRange, (t) -> {
-                x.accept(t);
-                return true;
+            whileEach(minT, maxT, exactRange, new Predicate<T>() {
+                @Override
+                public boolean test(T t) {
+                    x.accept(t);
+                    return true;
+                }
             });
         }
     }
@@ -99,9 +102,12 @@ public interface TaskSeries<T extends Task> {
      * returns false if there is some data which occurrs inside the given interval
      */
     default boolean isEmpty(long start, long end) {
-        return whileEach(start, end, true, (x)->{
-            //keep looking
-            return !x.intersectsRaw(start, end); //found
+        return whileEach(start, end, true, new Predicate<T>() {
+            @Override
+            public boolean test(T x) {
+                //keep looking
+                return !x.intersectsRaw(start, end); //found
+            }
         });
     }
 

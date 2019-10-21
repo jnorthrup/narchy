@@ -70,20 +70,36 @@ class ConceptGraph2DTest {
             window(new Splitting(g, 0.2f, new Gridding(
                 new Splitting(
                     new Splitting(
-                        new PushButton("good+").clicked(()->
-                            n.believe($$("good"), n.time(), Math.round(n.time() + ((double)n.dur())), 1f, 0.9f)
+                        new PushButton("good+").clicked(new Runnable() {
+                                                            @Override
+                                                            public void run() {
+                                                                n.believe($$("good"), n.time(), Math.round(n.time() + ((double) n.dur())), 1f, 0.9f);
+                                                            }
+                                                        }
                         ), 0.5f,
-                        new PushButton("good-").clicked(()->
-                            n.believe($$("good"), n.time(), Math.round(n.time() + ((double)n.dur())), 0f, 0.9f)
+                        new PushButton("good-").clicked(new Runnable() {
+                                                            @Override
+                                                            public void run() {
+                                                                n.believe($$("good"), n.time(), Math.round(n.time() + ((double) n.dur())), 0f, 0.9f);
+                                                            }
+                                                        }
                         )
                     ),
                     0.5f,
                     new Splitting(
-                        new PushButton("bad+").clicked(()->
-                            n.believe($$("bad"), n.time(), Math.round(n.time() + ((double)n.dur())), 1f, 0.9f)
+                        new PushButton("bad+").clicked(new Runnable() {
+                                                           @Override
+                                                           public void run() {
+                                                               n.believe($$("bad"), n.time(), Math.round(n.time() + ((double) n.dur())), 1f, 0.9f);
+                                                           }
+                                                       }
                         ), 0.5f,
-                        new PushButton("bad-").clicked(()->
-                            n.believe($$("bad"), n.time(), Math.round(n.time() + ((double)n.dur())), 0f, 0.9f)
+                        new PushButton("bad-").clicked(new Runnable() {
+                                                           @Override
+                                                           public void run() {
+                                                               n.believe($$("bad"), n.time(), Math.round(n.time() + ((double) n.dur())), 0f, 0.9f);
+                                                           }
+                                                       }
                         )
                     )
                     ),
@@ -93,7 +109,12 @@ class ConceptGraph2DTest {
                 ),
                 new Gridding(
                     new PushButton("reset").clicked(n::reset),
-                    new PushButton("print").clicked(()->n.tasks().forEach(System.out::println))
+                    new PushButton("print").clicked(new Runnable() {
+                        @Override
+                        public void run() {
+                            n.tasks().forEach(System.out::println);
+                        }
+                    })
                 )
             )), 1200, 800 );
 

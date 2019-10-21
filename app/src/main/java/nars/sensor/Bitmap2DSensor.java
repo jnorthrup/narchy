@@ -1,6 +1,7 @@
 package nars.sensor;
 
 import jcog.func.IntIntToObjectFunction;
+import jcog.math.FloatSupplier;
 import jcog.signal.wave2d.Bitmap2D;
 import nars.$;
 import nars.NAR;
@@ -35,7 +36,12 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
     public Bitmap2DSensor(@Nullable Term root, P src, NAR n) {
         this(n, src, src.height() > 1 ?
                         /* 2D default */ RadixProduct(root, src.width(), src.height(), /*RADIX*/1) :
-                        /* 1D default */ (x, y) -> root != null ? $.inh(root,$.the(x)) : $.p(x) //y==1
+                        /* 1D default */ new IntIntToObjectFunction<Term>() {
+                    @Override
+                    public Term apply(int x, int y) {
+                        return root != null ? $.inh(root, $.the(x)) : $.p(x);
+                    }
+                } //y==1
         );
     }
 
@@ -64,13 +70,29 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
         }
 
         /** modes */
-        SET = (p, v) ->
-                Signal.SET.apply(() ->
-                        nar.confDefault(BELIEF)).value(p, v);
+        SET = new FloatFloatToObjectFunction<Truth>() {
+            @Override
+            public Truth value(float p, float v) {
+                return Signal.SET.apply(new FloatSupplier() {
+                    @Override
+                    public float asFloat() {
+                        return nar.confDefault(BELIEF);
+                    }
+                }).value(p, v);
+            }
+        };
 
-        DIFF = (p, v) ->
-                Signal.DIFF.apply(() ->
-                        nar.confDefault(BELIEF)).value(p, v);
+        DIFF = new FloatFloatToObjectFunction<Truth>() {
+            @Override
+            public Truth value(float p, float v) {
+                return Signal.DIFF.apply(new FloatSupplier() {
+                    @Override
+                    public float asFloat() {
+                        return nar.confDefault(BELIEF);
+                    }
+                }).value(p, v);
+            }
+        };
 
         mode = SET;
     }
@@ -90,40 +112,58 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
     final FloatFloatToObjectFunction<Truth> DIFF;
 
     public static IntIntToObjectFunction<nars.term.Term> XY(Term root) {
-        return (x, y) -> $.inh($.p(x, y), root);
+        return new IntIntToObjectFunction<Term>() {
+            @Override
+            public Term apply(int x, int y) {
+                return $.inh($.p(x, y), root);
+            }
+        };
     }
 
     public static IntIntToObjectFunction<nars.term.Term> XY(Term root, int radix, int width, int height) {
-        return (x, y) ->
-                $.p(root, $.pRadix(x, radix, width), $.pRadix(y, radix, height));
+        return new IntIntToObjectFunction<Term>() {
+            @Override
+            public Term apply(int x, int y) {
+                return $.p(root, $.pRadix(x, radix, width), $.pRadix(y, radix, height));
+            }
+        };
     }
 
     public static IntIntToObjectFunction<nars.term.Term> RadixProduct(@Nullable Term root, int width, int height, int radix) {
-        return (x, y) -> {
-            Term coords = radix > 1 ?
-                    $.p(zipCoords(coord(x, width, radix), coord(y, height, radix))) :
-                    $.p(x, y);
-            return root == null ? coords :
-                    //$.p(root, coords);
-                    $.inh(coords, root);
+        return new IntIntToObjectFunction<Term>() {
+            @Override
+            public Term apply(int x, int y) {
+                Term coords = radix > 1 ?
+                        $.p(zipCoords(coord(x, width, radix), coord(y, height, radix))) :
+                        $.p(x, y);
+                return root == null ? coords :
+                        //$.p(root, coords);
+                        $.inh(coords, root);
+            }
         };
     }
 
     public static IntIntToObjectFunction<nars.term.Term> RadixRecurse(@Nullable Term root, int width, int height, int radix) {
-        return (x, y) -> {
-            Term coords = radix > 1 ?
-                    $.pRecurse(true, zipCoords(coord(x, width, radix), coord(y, height, radix))) :
-                    $.p(x, y);
-            return root == null ? coords : $.p(root,coords);
+        return new IntIntToObjectFunction<Term>() {
+            @Override
+            public Term apply(int x, int y) {
+                Term coords = radix > 1 ?
+                        $.pRecurse(true, zipCoords(coord(x, width, radix), coord(y, height, radix))) :
+                        $.p(x, y);
+                return root == null ? coords : $.p(root, coords);
+            }
         };
     }
 
     public static IntIntToObjectFunction<nars.term.Term> InhRecurse(@Nullable Term root, int width, int height, int radix) {
-        return (x, y) -> {
-            Term coords = radix > 1 ?
-                    $.inhRecurse(zipCoords(coord(x, width, radix), coord(y, height, radix))) :
-                    $.p(x, y);
-            return root == null ? coords : $.p(root,coords);
+        return new IntIntToObjectFunction<Term>() {
+            @Override
+            public Term apply(int x, int y) {
+                Term coords = radix > 1 ?
+                        $.inhRecurse(zipCoords(coord(x, width, radix), coord(y, height, radix))) :
+                        $.p(x, y);
+                return root == null ? coords : $.p(root, coords);
+            }
         };
     }
 

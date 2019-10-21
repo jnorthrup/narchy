@@ -19,15 +19,35 @@ public class Animating<X extends Surface> extends UnitContainer<X> implements An
     static final float maxLag = 0.01f;
 
     public Animating(X the, Runnable each, float minUpdatePeriod) {
-        this(the, (z)->each.run(), () -> minUpdatePeriod);
+        this(the, new Consumer<X>() {
+            @Override
+            public void accept(X z) {
+                each.run();
+            }
+        }, new FloatSupplier() {
+            @Override
+            public float asFloat() {
+                return minUpdatePeriod;
+            }
+        });
     }
 
     public Animating(X the, Runnable each, FloatSupplier minUpdatePeriod) {
-        this(the, (z)->each.run(), minUpdatePeriod);
+        this(the, new Consumer<X>() {
+            @Override
+            public void accept(X z) {
+                each.run();
+            }
+        }, minUpdatePeriod);
     }
 
     public Animating(X the, Consumer<X> each, float minUpdatePeriod) {
-        this(the, each, ()->minUpdatePeriod);
+        this(the, each, new FloatSupplier() {
+            @Override
+            public float asFloat() {
+                return minUpdatePeriod;
+            }
+        });
     }
 
     public Animating(X the, Consumer<X> each, FloatSupplier minUpdatePeriod) {

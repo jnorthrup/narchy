@@ -1,11 +1,13 @@
 package nars.game;
 
+import jcog.func.IntIntToObjectFunction;
 import jcog.signal.wave2d.Bitmap2D;
 import nars.$;
 import nars.NAR;
 import nars.NARS;
 import nars.op.AutoConceptualizer;
 import nars.sensor.Bitmap2DSensor;
+import nars.term.Term;
 import org.junit.jupiter.api.Test;
 
 public class AutoConceptualizerTest extends CameraSensorTest {
@@ -33,7 +35,12 @@ public class AutoConceptualizerTest extends CameraSensorTest {
             public float brightness(int xx, int yy) {
                 return (((xx + yy + n.time())) % 2) > 0 ? 1f : 0f;
             }
-        }, (x, y) -> $.p(x,y));
+        }, new IntIntToObjectFunction<Term>() {
+            @Override
+            public Term apply(int x, int y) {
+                return $.p(x, y);
+            }
+        });
 
         AutoConceptualizer ac = new AutoConceptualizer($.inh(c.id, "auto"),
                 c.concepts.order() /* HACK */, true, 2, n);

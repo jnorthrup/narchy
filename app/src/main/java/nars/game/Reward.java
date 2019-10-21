@@ -71,8 +71,13 @@ public abstract class Reward implements GameLoop, TermedDelegate, Iterable<Conce
     public final NAR nar() { return game.nar(); }
 
     @Deprecated protected FloatFloatToObjectFunction<Truth> truther() {
-        return (prev, next) -> (next == next) ?
-                DiscreteTruth.the(Util.unitize(next), nar().confDefault(BELIEF)) : null;
+        return new FloatFloatToObjectFunction<Truth>() {
+            @Override
+            public Truth value(float prev, float next) {
+                return (next == next) ?
+                        DiscreteTruth.the(Util.unitize(next), Reward.this.nar().confDefault(BELIEF)) : null;
+            }
+        };
     }
 
 

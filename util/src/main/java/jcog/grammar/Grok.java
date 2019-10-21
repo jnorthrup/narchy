@@ -22,6 +22,9 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.IntPredicate;
+import java.util.function.IntUnaryOperator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.IntStream;
@@ -61,18 +64,17 @@ public class Grok implements Serializable {
                 
                 "/var/log/alternatives.log"
         ));
-        br.lines().forEach(line -> {
-            System.out.println(line);
+        br.lines().forEach(new Consumer<String>() {
+            @Override
+            public void accept(String line) {
+                System.out.println(line);
 
-            String data = g.discover(line);
+                String data = g.discover(line);
 
-            System.out.println(data);
-
-
-
-
+                System.out.println(data);
 
 
+            }
         });
 
     }
@@ -342,10 +344,18 @@ public class Grok implements Serializable {
         if (!str.isEmpty()) {
             int sl = sub.length();
             if (sl > 0) {
-                int count = (int) IntStream.iterate(0, idx -> {
-                    int idx1 = idx;
-                    return (idx1 = str.indexOf(sub, idx1)) != -1;
-                }, idx -> idx + sl).count();
+                int count = (int) IntStream.iterate(0, new IntPredicate() {
+                    @Override
+                    public boolean test(int idx) {
+                        int idx1 = idx;
+                        return (idx1 = str.indexOf(sub, idx1)) != -1;
+                    }
+                }, new IntUnaryOperator() {
+                    @Override
+                    public int applyAsInt(int idx) {
+                        return idx + sl;
+                    }
+                }).count();
 
 
                 return count;

@@ -6,6 +6,7 @@ import com.jogamp.opengl.GLContext;
 import jcog.data.list.FasterList;
 import jcog.math.v2;
 import jcog.tree.rtree.HyperRegion;
+import jcog.tree.rtree.RNode;
 import jcog.tree.rtree.rect.HyperRectFloat;
 import jcog.tree.rtree.rect.RectFloat;
 import org.eclipse.collections.api.block.function.primitive.DoubleFunction;
@@ -31,14 +32,18 @@ import spacegraph.video.OsmSpace;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public class OsmSurface extends PaintSurface {
 
 
-    private static final Consumer<GL2> loading = (gl) -> {
-        gl.glColor3f(1.0F, (float) 0, (float) 0);
-        Draw.rectFrame((float) 0, (float) 0, 1.0F, 1.0F, 0.1f, gl);
+    private static final Consumer<GL2> loading = new Consumer<GL2>() {
+        @Override
+        public void accept(GL2 gl) {
+            gl.glColor3f(1.0F, (float) 0, (float) 0);
+            Draw.rectFrame((float) 0, (float) 0, 1.0F, 1.0F, 0.1f, gl);
+        }
     };
     public final AtomicBoolean debugIndexBounds = new AtomicBoolean(false);
 
@@ -113,9 +118,12 @@ public class OsmSurface extends PaintSurface {
     }
 
     private void renderTouchedIndexBounds(GL2 gl) {
-        index.index.root().intersectingNodes(HyperRectFloat.cube(touch, (float) 0), n -> {
-            renderBounds(gl, n.bounds());
-            return true;
+        index.index.root().intersectingNodes(HyperRectFloat.cube(touch, (float) 0), new Predicate<RNode<OsmElement>>() {
+            @Override
+            public boolean test(RNode<OsmElement> n) {
+                OsmSurface.this.renderBounds(gl, n.bounds());
+                return true;
+            }
         }, index.index.model);
     }
 
@@ -123,7 +131,12 @@ public class OsmSurface extends PaintSurface {
 
         gl.glLineWidth(2.0F);
 
-        index.index.root().streamNodesRecursively().forEach(n -> renderBounds(gl, n.bounds()));
+        index.index.root().streamNodesRecursively().forEach(new Consumer<RNode<OsmElement>>() {
+            @Override
+            public void accept(RNode<OsmElement> n) {
+                OsmSurface.this.renderBounds(gl, n.bounds());
+            }
+        });
     }
 
     private void renderBounds(GL2 gl, HyperRegion b) {
@@ -259,12 +272,15 @@ public class OsmSurface extends PaintSurface {
 
             float rad = 0.0000f;
             HyperRectFloat cursor = HyperRectFloat.cube(touch, rad);
-            index.index.intersectsWhile(cursor, (each) -> {
-                if (each.tags != null) {
-                    //System.out.println(each.tags);
-                    hilight.add(each);
+            index.index.intersectsWhile(cursor, new Predicate<OsmElement>() {
+                @Override
+                public boolean test(OsmElement each) {
+                    if (each.tags != null) {
+                        //System.out.println(each.tags);
+                        hilight.add(each);
+                    }
+                    return true;
                 }
-                return true;
             });
 
         }
@@ -276,16 +292,18 @@ public class OsmSurface extends PaintSurface {
         return //new Stacking(
                 new Bordering(new Clipped(this))
                     .south(
-                        new Animating<>(new BitmapLabel(), (b)->{
+                        new Animating<>(new BitmapLabel(), new Consumer<BitmapLabel>() {
+                            @Override
+                            public void accept(BitmapLabel b) {
 
-                            List<OsmElement> h = this.hilight;
-                            if (!h.isEmpty()) {
-                                try {
-                                    OsmElement hh = ((FasterList<OsmElement>) h).min(
-                                            Comparators.byDoubleFunction((DoubleFunction<OsmElement>)
-                                                    HyperRegion::perimeter)
-                                    );
-                                    if (hh != null) {
+                                List<OsmElement> h = OsmSurface.this.hilight;
+                                if (!h.isEmpty()) {
+                                    try {
+                                        OsmElement hh = ((FasterList<OsmElement>) h).min(
+                                                Comparators.byDoubleFunction((DoubleFunction<OsmElement>)
+                                                        HyperRegion::perimeter)
+                                        );
+                                        if (hh != null) {
 //
 //                            }
 //                            int hn = h.size();
@@ -293,14 +311,15 @@ public class OsmSurface extends PaintSurface {
 //                                b.text(hn + " objects");
 //                            } else if (hn == 1) {
 
-                                        b.text(Joiner.on("\n").join(hh.tags.entrySet()));
+                                            b.text(Joiner.on("\n").join(hh.tags.entrySet()));
+                                        }
+                                    } catch (Throwable t) {
+                                        b.text("");
+                                        //ignored HACK
                                     }
-                                } catch (Throwable t) {
+                                } else {
                                     b.text("");
-                                    //ignored HACK
                                 }
-                            } else {
-                                b.text("");
                             }
                         }, 0.1f)
 //                        Gridding.col(

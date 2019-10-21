@@ -86,8 +86,12 @@ public class TaskSummarizer extends NARPart implements Consumer<Task> {
         }
 
         public void print(PrintStream out) {
-            forEach((punc, num, o, volMean, priMean) ->
-                out.println(o.str + ' ' + ((char) punc) + " x " + num + ", volMean=" + n2(volMean) + " priMean=" + n2(priMean))
+            forEach(new CellConsumer() {
+                        @Override
+                        public void accept(byte punc, int num, Op o, float volMean, float priMean) {
+                            out.println(o.str + ' ' + ((char) punc) + " x " + num + ", volMean=" + n2(volMean) + " priMean=" + n2(priMean));
+                        }
+                    }
             );
         }
 

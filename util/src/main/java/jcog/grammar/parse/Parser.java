@@ -242,10 +242,13 @@ public abstract class Parser {
 		return this;
 	}
 	public Parser push(Function<Assembly,?> f) {
-		this.assembler = (x)->{
-			Object y = f.apply(x);
-			x.push(y);
-		};
+		this.assembler = new Consumer<Assembly>() {
+            @Override
+            public void accept(Assembly x) {
+                Object y = f.apply(x);
+                x.push(y);
+            }
+        };
 		return this;
 	}
 

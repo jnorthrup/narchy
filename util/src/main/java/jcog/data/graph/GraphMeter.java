@@ -19,6 +19,7 @@
 package jcog.data.graph;
 
 import jcog.data.list.FasterList;
+import org.eclipse.collections.api.block.procedure.primitive.IntProcedure;
 import org.eclipse.collections.api.collection.primitive.MutableIntCollection;
 import org.eclipse.collections.api.iterator.IntIterator;
 import org.eclipse.collections.impl.list.mutable.primitive.IntArrayList;
@@ -170,11 +171,14 @@ public class GraphMeter {
 
         color[from] = GREY;
 
-        g.neighborsOut(from).forEach(j->{
-            if (color[j] == WHITE) {
-                dfs(j);
-            } else {
-                if (color[j] < 0) cluster.add(color[j]);
+        g.neighborsOut(from).forEach(new IntProcedure() {
+            @Override
+            public void value(int j) {
+                if (color[j] == WHITE) {
+                    GraphMeter.this.dfs(j);
+                } else {
+                    if (color[j] < 0) cluster.add(color[j]);
+                }
             }
         });
 
@@ -208,17 +212,20 @@ public class GraphMeter {
             int u = q.removeAtIndex(0);
             int du = q.removeAtIndex(0);
 
-            g.neighborsOut(u).forEach(j->{
-                int cj = color[j];
-                if (cj == WHITE) {
-                    color[j] = GREY;
+            g.neighborsOut(u).forEach(new IntProcedure() {
+                @Override
+                public void value(int j) {
+                    int cj = color[j];
+                    if (cj == WHITE) {
+                        color[j] = GREY;
 
-                    q.add(j);
-                    q.add(du + 1);
-                    if (d != null) d[j] = du + 1;
-                } else {
-                    if (cj < 0)
-                        cluster.add(cj);
+                        q.add(j);
+                        q.add(du + 1);
+                        if (d != null) d[j] = du + 1;
+                    } else {
+                        if (cj < 0)
+                            cluster.add(cj);
+                    }
                 }
             });
             color[u] = BLACK;
@@ -236,14 +243,15 @@ public class GraphMeter {
         root[i] = i;
         stack.add(i);
 
-        g.neighborsOut(i).forEach(j->{
-            if (color[j] == WHITE) {
-                tarjanVisit(j);
-            }
-            if (color[j] > 0 && color[root[j]] < color[root[i]])
-            
-            {
-                root[i] = root[j];
+        g.neighborsOut(i).forEach(new IntProcedure() {
+            @Override
+            public void value(int j) {
+                if (color[j] == WHITE) {
+                    GraphMeter.this.tarjanVisit(j);
+                }
+                if (color[j] > 0 && color[root[j]] < color[root[i]]) {
+                    root[i] = root[j];
+                }
             }
         });
 

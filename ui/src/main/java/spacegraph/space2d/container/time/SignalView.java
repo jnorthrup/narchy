@@ -1,5 +1,6 @@
 package spacegraph.space2d.container.time;
 
+import com.jogamp.opengl.GL2;
 import jcog.Util;
 import jcog.math.v2;
 import jcog.pri.ScalarValue;
@@ -11,10 +12,14 @@ import spacegraph.input.finger.state.Dragging;
 import spacegraph.input.finger.state.FingerMove;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
+import spacegraph.space2d.container.graph.NodeVis;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.meter.WaveBitmap;
 import spacegraph.video.Draw;
+
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 import static jcog.math.LongInterval.ETERNAL;
 
@@ -119,12 +124,15 @@ public class SignalView extends Gridding {
                 if (sStart == sStart) {
                     float sEnd = (float) selectEnd;
                     if (sEnd == sEnd) {
-                        r.on((gl, rr) -> {
-                            float ss = Util.clamp(x(selectStart), left(), right());
-                            gl.glColor4f(1f, 0.8f, (float) 0, selectorAlpha);
-                            float ee = Util.clamp(x(selectEnd), left(), right());
-                            if (ee - ss > ScalarValue.EPSILON) {
-                                Draw.rect(x() + ss, y(), ee - ss, h(), gl);
+                        r.on(new BiConsumer<GL2, ReSurface>() {
+                            @Override
+                            public void accept(GL2 gl, ReSurface rr) {
+                                float ss = Util.clamp(x(selectStart), left(), right());
+                                gl.glColor4f(1f, 0.8f, (float) 0, selectorAlpha);
+                                float ee = Util.clamp(x(selectEnd), left(), right());
+                                if (ee - ss > ScalarValue.EPSILON) {
+                                    Draw.rect(x() + ss, y(), ee - ss, h(), gl);
+                                }
                             }
                         });
                         //System.ouprintln("select: " + sStart + ".." + sEnd);
@@ -135,12 +143,20 @@ public class SignalView extends Gridding {
             }
 
         };
-        t.addEvents(new Timeline2D.SimpleEventBuffer(), (nv)-> nv.set(new PushButton(nv.id.toString())), new Timeline2DEvents.LaneTimelineUpdater());
+        t.addEvents(new Timeline2D.SimpleEventBuffer(), new Consumer<NodeVis<Timeline2D.SimpleEvent>>() {
+            @Override
+            public void accept(NodeVis<Timeline2D.SimpleEvent> nv) {
+                nv.set(new PushButton(nv.id.toString()));
+            }
+        }, new Timeline2DEvents.LaneTimelineUpdater());
         add(t.withControls());
 
-        in.wave.on(raw->{
-            w.update();
-            g.set(raw);
+        in.wave.on(new Consumer<ArrayTensor>() {
+            @Override
+            public void accept(ArrayTensor raw) {
+                w.update();
+                g.set(raw);
+            }
         });
     }
 

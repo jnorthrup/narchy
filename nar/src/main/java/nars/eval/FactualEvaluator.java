@@ -17,7 +17,9 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static nars.Op.CONJ;
@@ -38,16 +40,24 @@ public class FactualEvaluator extends Evaluator {
     @Deprecated
     private static FactualEvaluator query(Term x, NAR n) {
         FactualEvaluator f = new FactualEvaluator(n::axioms, n.facts(0.75f, true));
-        f.eval((y) -> true, true, false, x);
+        f.eval(new Predicate<Term>() {
+            @Override
+            public boolean test(Term y) {
+                return true;
+            }
+        }, true, false, x);
         return f;
     }
 
     public static Set<Term> queryAll(Term x, NAR n) {
         Set<Term> solutions = new ArrayHashSet(1);
         FactualEvaluator f = new FactualEvaluator(n::axioms, n.facts(0.75f, true));
-        f.eval((y) -> {
-            solutions.add(y);
-            return true;
+        f.eval(new Predicate<Term>() {
+            @Override
+            public boolean test(Term y) {
+                solutions.add(y);
+                return true;
+            }
         }, true, false, x);
         return solutions;
     }
@@ -246,31 +256,33 @@ public class FactualEvaluator extends Evaluator {
         Unify u = new UnifyAny();
         u.commonVariables = false;
         //TODO neg, temporal
-        factResolver.apply(x.normalize()).forEach(y1 -> {
-            boolean neg = y1 instanceof Neg;
-            if (neg) y1 = y1.unneg();
-            if (y1.op() == IMPL) {
+        factResolver.apply(x.normalize()).forEach(new Consumer<Term>() {
+            @Override
+            public void accept(Term y1) {
+                boolean neg = y1 instanceof Neg;
+                if (neg) y1 = y1.unneg();
+                if (y1.op() == IMPL) {
 
 
-                Term pre = y1.sub(1);
-                if (pre.unify(x, u.clear())) {
+                    Term pre = y1.sub(1);
+                    if (pre.unify(x, u.clear())) {
 
-                    //ifs.get(k).forEach(v->{
-                    Term z = u.apply(y1.sub(0));
-                    if (z.op().conceptualizable) {
+                        //ifs.get(k).forEach(v->{
+                        Term z = u.apply(y1.sub(0));
+                        if (z.op().conceptualizable) {
 //                                //facts.addAt($.func("ifThen", vv, k));
 //                                //facts.put(vv, True);
 
 //
 //                                nodeOrAdd(x).add(z);
 //
-                        matches.add(z.negIf(neg));
+                            matches.add(z.negIf(neg));
 
-                    }
+                        }
 //                                });
-                }
+                    }
 
-            } else {
+                } else {
 
 //                        Node nx = nodeOrAdd(x);
 //                        if (y.equals(x)) {
@@ -280,13 +292,14 @@ public class FactualEvaluator extends Evaluator {
 //                        } else {
 //                            nx.add(y);
 //                        }
-                if (x.unify(y1, u.clear())) {
-                    Term z = u.apply(x);
-                    if (z.op().conceptualizable) {
-                        if (!z.equals(x)) {
-                            matches.add(z.negIf(neg));
-                        }
+                    if (x.unify(y1, u.clear())) {
+                        Term z = u.apply(x);
+                        if (z.op().conceptualizable) {
+                            if (!z.equals(x)) {
+                                matches.add(z.negIf(neg));
+                            }
 
+                        }
                     }
                 }
             }
