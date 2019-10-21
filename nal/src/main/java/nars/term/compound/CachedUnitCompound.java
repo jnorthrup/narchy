@@ -16,7 +16,7 @@ public class CachedUnitCompound extends SemiCachedUnitCompound {
     private final transient int cstruct;
     private final short volume;
 
-    public CachedUnitCompound(/*@NotNull*/ Op op, /*@NotNull*/ Term sub) {
+    public CachedUnitCompound( Op op,  Term sub) {
         super(sub, Compound.hash1((int) op.id, sub));
         assert(op!=NEG && op!=CONJ);
 

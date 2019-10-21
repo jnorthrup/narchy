@@ -108,7 +108,7 @@ public class TopN<X> extends SortedArray<X> implements FloatFunction<X>, TopFilt
 
 
 
-    public final boolean add(/*@NotNull*/ X e) {
+    public final boolean add( X e) {
         float negRank = floatValueOf(e);
         if (-negRank > min) {
             int r = addRanked(e, negRank, this);

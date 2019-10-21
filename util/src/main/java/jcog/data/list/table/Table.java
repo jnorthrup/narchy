@@ -12,10 +12,10 @@ public interface Table<K, V> extends Iterable<V> {
     void clear();
 
     @Nullable
-    V get(/*@NotNull*/ Object key);
+    V get( Object key);
 
     @Nullable
-    Object remove(/*@NotNull*/ K key);
+    Object remove( K key);
 
     int size();
 
@@ -28,7 +28,7 @@ public interface Table<K, V> extends Iterable<V> {
     /**
      * iterates in sorted order
      */
-    void forEachKey(/*@NotNull*/ Consumer<? super K> each);
+    void forEachKey( Consumer<? super K> each);
 
     int capacity();
 

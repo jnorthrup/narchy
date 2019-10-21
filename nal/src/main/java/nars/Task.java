@@ -210,7 +210,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
 //                new BytesHashProvider<>(IO::taskToBytes));
 //    }
 
-    static void proof(/*@NotNull*/Task task, int indent, /*@NotNull*/StringBuilder sb) {
+    static void proof(Task task, int indent, StringBuilder sb) {
 
 
         sb.append("  ".repeat(Math.max(0, indent)));
@@ -371,7 +371,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
         return taskTerm(t, punc, safe);
     }
     /** validates and prepares a term for use as a task's content */
-    static Term taskTerm(/*@NotNull*/Term t, byte punc, boolean safe) {
+    static Term taskTerm(Term t, byte punc, boolean safe) {
 
         boolean negated = (t instanceof Neg);
         if (negated)
@@ -766,7 +766,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
      * return the input task, or a modification of it to use a customized matched premise belief. or null to
      * to cancel any matched premise belief.
      */
-    default @Nullable Task onAnswered(/*@NotNull*/Task answer) {
+    default @Nullable Task onAnswered(Task answer) {
 
         Task question = this;
 
@@ -915,7 +915,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
 
     //    default String proof(NAR n) {
 //    }
-    default StringBuilder proof(/*@NotNull*/StringBuilder temporary) {
+    default StringBuilder proof(StringBuilder temporary) {
         temporary.setLength(0);
         proof(this, 0, temporary);
         return temporary;

@@ -25,7 +25,7 @@ public abstract class Memory {
      * internal get procedure (synchronous)
      * @return
      */
-    public abstract Concept get(/*@NotNull*/ Term key, boolean createIfMissing);
+    public abstract Concept get( Term key, boolean createIfMissing);
 
 //    private CompletableFuture<Termed> getAsync(Term key, boolean createIfMissing) {
 //        return CompletableFuture.completedFuture(get(key, createIfMissing));

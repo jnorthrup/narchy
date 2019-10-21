@@ -105,7 +105,7 @@ public class RTree<X> implements Space<X> {
     }
 
 
-    public final RInsertion<X> insert(/*@NotNull*/ X x) {
+    public final RInsertion<X> insert( X x) {
         RInsertion<X> i = model.insertion(x, true);
 
 //        i.start(this);

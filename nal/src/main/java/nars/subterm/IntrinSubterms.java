@@ -87,7 +87,7 @@ public class IntrinSubterms extends TermVector /*implements Subterms.SubtermsByt
         }
     }
 
-    public final boolean AND(/*@NotNull*/ Predicate<Term> p) {
+    public final boolean AND( Predicate<Term> p) {
         int s = subs();
         short prev = (short) 0;
         for (int i = 0; i < s; i++) {
@@ -99,7 +99,7 @@ public class IntrinSubterms extends TermVector /*implements Subterms.SubtermsByt
         return true;
     }
 
-    public final boolean OR(/*@NotNull*/ Predicate<Term> p) {
+    public final boolean OR( Predicate<Term> p) {
         int s = subs();
         short prev = (short) 0;
         for (int i = 0; i < s; i++) {

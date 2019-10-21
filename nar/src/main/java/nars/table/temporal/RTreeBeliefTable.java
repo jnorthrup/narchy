@@ -91,7 +91,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 	/**
 	 * returns true if at least one net task has been removed from the table.
 	 */
-	/*@NotNull*/
+
 	private static void compress(Space<TaskRegion> tree, Remember r) {
 
         long now = r.time();

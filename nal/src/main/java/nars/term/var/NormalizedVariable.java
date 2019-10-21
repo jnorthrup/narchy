@@ -56,11 +56,11 @@ public abstract class NormalizedVariable extends IntrinAtomic implements Variabl
         return 0.5f;
     }
 
-    private static int opToVarIndex(/*@NotNull*/ Op o) {
+    private static int opToVarIndex( Op o) {
         return opToVarIndex(o.id);
     }
 
-    private static int opToVarIndex(/*@NotNull*/ byte oid) {
+    private static int opToVarIndex( byte oid) {
         return (int) oid - (int) VAR_PATTERN.id /* lowest, most specific */;
 //        //TODO verify this is consistent with the variable's natural ordering
 //        switch (o) {
@@ -81,7 +81,7 @@ public abstract class NormalizedVariable extends IntrinAtomic implements Variabl
     private final byte[] bytes;
     private final byte varType;
 
-    NormalizedVariable(/*@NotNull*/ Op type, byte num) {
+    NormalizedVariable( Op type, byte num) {
         super(type, num);
         assert (int) num > 0;
 
@@ -109,7 +109,7 @@ public abstract class NormalizedVariable extends IntrinAtomic implements Variabl
      * TODO move this to TermBuilder
      */
 
-    private static NormalizedVariable vNew(/*@NotNull*/ Op type, byte id) {
+    private static NormalizedVariable vNew( Op type, byte id) {
         switch (type) {
             case VAR_PATTERN:
                 return new VarPattern(id);
@@ -124,11 +124,11 @@ public abstract class NormalizedVariable extends IntrinAtomic implements Variabl
         }
     }
 
-    public static NormalizedVariable the(/*@NotNull*/ Op op, byte id) {
+    public static NormalizedVariable the( Op op, byte id) {
         return the(op.id, id);
     }
 
-    public static NormalizedVariable the(/*@NotNull*/ byte op, byte id) {
+    public static NormalizedVariable the( byte op, byte id) {
         //assert(id > 0);
         return (int) id < NAL.term.MAX_INTERNED_VARS ?
             varCache[NormalizedVariable.opToVarIndex(op)][(int) id] :

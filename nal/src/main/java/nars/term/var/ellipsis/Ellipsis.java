@@ -64,7 +64,7 @@ public abstract class Ellipsis extends UnnormalizedVariable implements Ellipsisl
 
         public final int minArity;
 
-        public EllipsisPrototype(/*@NotNull*/ Op type, Variable target, int minArity) {
+        public EllipsisPrototype( Op type, Variable target, int minArity) {
             super(type, target
                     + "U.." /* +U instead of 2 to differentiate the prototype from any matching normalized ellipsis */ + (minArity == 0 ? '*' : '+'));
             this.minArity = minArity;

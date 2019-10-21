@@ -31,7 +31,7 @@ public class Spatialization<X> {
 
 
 
-    public HyperRegion bounds(/*@NotNull*/ X x) {
+    public HyperRegion bounds( X x) {
         return bounds.apply(x);
     }
 

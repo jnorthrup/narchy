@@ -27,7 +27,7 @@ public enum PatternTermBuilder /* implements TermBuilder ? */ { ;
     }
 
 
-    @Deprecated public static /*@NotNull*/ Term rule(Term x) {
+    @Deprecated public static  Term rule(Term x) {
         return patternify(new PremiseRuleNormalization().apply(x));
     }
 

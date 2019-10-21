@@ -163,7 +163,7 @@ public abstract class CachedCompound extends SeparateSubtermsCompound implements
     }
 
 
-    private CachedCompound(/*@NotNull*/ Op op, int dt, Subterms subterms) {
+    private CachedCompound( Op op, int dt, Subterms subterms) {
         super(dt == DTERNAL ? subterms.hashWith(op) : hashCombine(subterms.hashWith(op), dt) );
         this.op = op.id;
         this.subterms = subterms;

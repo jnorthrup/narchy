@@ -281,9 +281,9 @@ public enum SetSectDiff {
 //        return true;
 //    }
 
-//    /*@NotNull*/
+//
 //    @Deprecated
-//    private static Term intersect2(Term term1, Term term2, /*@NotNull*/ Op intersection, /*@NotNull*/ Op setUnion, /*@NotNull*/ Op setIntersection) {
+//    private static Term intersect2(Term term1, Term term2,  Op intersection,  Op setUnion,  Op setIntersection) {
 //
 //
 //        Op o1 = term1.op(), o2 = term2.op();
@@ -340,7 +340,7 @@ public enum SetSectDiff {
 //
 //    }
 
-//    public static Term differ(/*@NotNull*/ Op op, Term... t) {
+//    public static Term differ( Op op, Term... t) {
 //
 //
 //        switch (t.length) {
@@ -442,8 +442,8 @@ public enum SetSectDiff {
 //        return Op.compound(diffOp, DTERNAL, a, b);
 //    }
 
-    /*@NotNull*/
-    public static Term differenceSet(/*@NotNull*/ Op o, Term a, Term b) {
+
+    public static Term differenceSet( Op o, Term a, Term b) {
 
         assert (o.set && a.op() == o && b.op() == o);
 

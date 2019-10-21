@@ -121,7 +121,7 @@ public class Versioning<X> {
         return this;
     }
 
-    public final boolean add(/*@NotNull*/ Versioned<X> newItem) {
+    public final boolean add( Versioned<X> newItem) {
         //if (newItem == null)
         //    throw new NullPointerException();
 

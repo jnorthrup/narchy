@@ -165,11 +165,11 @@ public interface Termlike {
         return Op.has(structure(), structuralVector, false);
     }
 
-    default   boolean hasAny(/*@NotNull*/ Op op) {
+    default   boolean hasAny( Op op) {
         return hasAny(op.bit);
     }
 
-    default   boolean hasAllAny(/*@NotNull*/ int all, int any) {
+    default   boolean hasAllAny( int all, int any) {
         int s = structure();
         return Op.has(s, all, true) && Op.has(s, any, false);
     }
@@ -205,7 +205,7 @@ public interface Termlike {
 //        return otherTermsVolume > volume();
 //    }
 
-//    default boolean impossibleSubTermOrEquality(/*@NotNull*/Term target) {
+//    default boolean impossibleSubTermOrEquality(Term target) {
 //        return ((!hasAll(target.structure())) ||
 //                (impossibleSubTermOrEqualityVolume(target.volume())));
 //    }

@@ -342,7 +342,7 @@ public interface Stamp {
 
     void setCyclic(boolean b);
 
-    /*@NotNull*/
+
     default StringBuilder appendOccurrenceTime(StringBuilder sb) {
         long oc = start();
 
@@ -367,7 +367,7 @@ public interface Stamp {
     }
 
 
-    /*@NotNull*/
+
     default CharSequence stampAsStringBuilder() {
 
         long[] ev = stamp();
@@ -406,12 +406,12 @@ public interface Stamp {
 
     }
 
-    /*@NotNull*/
+
     static long[] toSetArray(long[] x) {
         return toSetArray(x, x.length);
     }
 
-    /*@NotNull*/
+
     static long[] toSetArray(long[] x, int outputLen) {
         int l = x.length;
 
@@ -420,7 +420,7 @@ public interface Stamp {
     }
 
 
-    /*@NotNull*/
+
     static long[] _toSetArray(int outputLen, long[] sorted) {
 
 
@@ -544,7 +544,7 @@ public interface Stamp {
      * this can always be calculated deterministically from the evidentialBAse
      * since it is the deduplicated and sorted form of it.
      */
-    /*@NotNull*/
+
     long[] stamp();
 
 

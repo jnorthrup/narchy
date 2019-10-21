@@ -234,7 +234,7 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
      * TODO add compacting procedure which, if nulls are detected while scanning and a
      * a result is found after it, to move the result to the earlier null position.
      */
-    private V update(/*@NotNull*/ Object k, @Nullable V incoming /* null to remove */, Mode mode, @Nullable NumberX overflowing) {
+    private V update( Object k, @Nullable V incoming /* null to remove */, Mode mode, @Nullable NumberX overflowing) {
 
         MetalAtomicReferenceArray<V> map = MAP.get(this);
         int c = map.length();
@@ -579,7 +579,7 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
      *
      */
     @Override
-    public final V put(/*@NotNull*/ V potentialVictimPri,  /* TODO */ NumberX overflowing) {
+    public final V put( V potentialVictimPri,  /* TODO */ NumberX overflowing) {
 
         K k = key(potentialVictimPri);
         if (k == null)
@@ -595,13 +595,13 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
 
 
     @Override
-    public final @Nullable V get(/*@NotNull*/ Object key) {
+    public final @Nullable V get( Object key) {
         return update(key, null, GET, null);
     }
 
 
     @Override
-    public void sample(/*@NotNull*/ Random random, Function<? super V, SampleReaction> each) {
+    public void sample( Random random, Function<? super V, SampleReaction> each) {
         int s;
 
         //System.out.println(); System.out.println();

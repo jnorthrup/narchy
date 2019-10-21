@@ -48,7 +48,7 @@ public enum TruthFunctions2 {
 //    }
 
 //    @Nullable
-//    public static Truth deduction(/*@NotNull*/ Truth a, float bF, float bC, float minConf) {
+//    public static Truth deduction( Truth a, float bF, float bC, float minConf) {
 //
 //
 //        float f = and(a.freq(), bF);
@@ -98,7 +98,7 @@ public enum TruthFunctions2 {
 //     * frequency determined entirely by the desire component.
 //     */
 //    @Nullable
-//    public static Truth desireNew(/*@NotNull*/ Truth goal, /*@NotNull*/ Truth belief, float minConf, boolean strong) {
+//    public static Truth desireNew( Truth goal,  Truth belief, float minConf, boolean strong) {
 //
 //        float c = and(goal.conf(), belief.conf(), belief.freq());
 //
@@ -120,7 +120,7 @@ public enum TruthFunctions2 {
 //    }
 
     /** TODO rename 'Conduction' ?  */
-    public static @Nullable Truth desire(/*@NotNull*/ Truth goal, /*@NotNull*/ Truth belief, float minConf, boolean bipolar, boolean strong) {
+    public static @Nullable Truth desire( Truth goal,  Truth belief, float minConf, boolean bipolar, boolean strong) {
 
         float cc = confCompose(belief, goal);
         if (cc >= minConf) {
@@ -173,7 +173,7 @@ public enum TruthFunctions2 {
 
 
     /** full positive, half negative */
-    public static @Nullable Truth desireSemiBipolar(/*@NotNull*/ Truth goal, /*@NotNull*/ Truth belief, float minConf, boolean strong) {
+    public static @Nullable Truth desireSemiBipolar( Truth goal,  Truth belief, float minConf, boolean strong) {
 
         float cc = confCompose(belief, goal);
         if (cc < minConf)

@@ -200,7 +200,7 @@ public final class OArrayList<T> extends AbstractList<T> implements RandomAccess
 	}
 
 	@Override
-	public int indexOf(/*@NotNull*/ Object o) {
+	public int indexOf( Object o) {
         int _size = size;
         T[] _array = array;
 		for (int i = 0; i<_size; i++) {

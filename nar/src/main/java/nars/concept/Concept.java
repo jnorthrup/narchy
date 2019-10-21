@@ -83,7 +83,7 @@ public interface Concept extends Termed, MetaMap {
     }
 
 
-    /*@NotNull*/
+
     default TaskTable table(byte punc) {
         switch (punc) {
             case BELIEF:

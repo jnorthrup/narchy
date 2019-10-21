@@ -27,9 +27,9 @@ import java.util.SortedSet;
 public class Choose2 extends Termutator.AbstractTermutator {
 
 
-//    /*@NotNull*/
+//
 //    private final Term[] x;
-    /*@NotNull*/
+
     private final Ellipsis xEllipsis;
 
 
@@ -54,7 +54,7 @@ public class Choose2 extends Termutator.AbstractTermutator {
     private Choose2(Ellipsis xEllipsis, Term[] x, Compound yFree) {
         super(CHOOSE_2, $.pFast(x), xEllipsis, yFree);
 
-        /*@NotNull*/
+
 
         this.xEllipsis = xEllipsis;
 

@@ -62,7 +62,7 @@ public interface BeliefTable extends TaskTable {
                 .match(this).truth();
     }
 
-    default void print(/*@NotNull*/ PrintStream out) {
+    default void print( PrintStream out) {
         this.forEachTask(new Consumer<Task>() {
             @Override
             public void accept(Task t) {

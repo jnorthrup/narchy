@@ -506,14 +506,14 @@ public enum Op {
         return ((existing | possiblyIncluded) == existing);
     }
 
-    public static int or(/*@NotNull*/ Op a, Op b) {
+    public static int or( Op a, Op b) {
         return a.bit | b.bit;
     }
-    public static int or(/*@NotNull*/ Op a, Op b, Op c) {
+    public static int or( Op a, Op b, Op c) {
         return a.bit | b.bit | c.bit;
     }
 
-    public static int or(/*@NotNull*/ Op... o) {
+    public static int or( Op... o) {
         int acc = 0;
         for (Op n : o) {
             int i = n.bit;
@@ -636,11 +636,11 @@ public enum Op {
                 s.arrayShared());
     }
 
-    public final Term the(/*@NotNull*/ Term... u) {
+    public final Term the( Term... u) {
         return the(DTERNAL, u);
     }
 
-    public Term the(/*@NotNull*/ Term onlySubterm) {
+    public Term the( Term onlySubterm) {
         return the(DTERNAL, onlySubterm);
     }
 
@@ -715,7 +715,7 @@ public enum Op {
         return commutative && Conj.concurrentInternal(dt) && u.subs() > 1 ? u.commuted() : u;
     }
 
-    public final Term the(/*@NotNull*/ Collection<Term> sub) {
+    public final Term the( Collection<Term> sub) {
         return the(DTERNAL, sub);
     }
 
@@ -723,11 +723,11 @@ public enum Op {
         return the(b, DTERNAL, sub);
     }
 
-    public final Term the(TermBuilder b, int dt, /*@NotNull*/ Collection<Term> sub) {
+    public final Term the(TermBuilder b, int dt,  Collection<Term> sub) {
         return the(b, dt, sub.toArray(EmptyTermArray));
     }
 
-    public final Term the(int dt, /*@NotNull*/ Collection<Term> sub) {
+    public final Term the(int dt,  Collection<Term> sub) {
         return the(terms, dt, sub.toArray(EmptyTermArray));
     }
 

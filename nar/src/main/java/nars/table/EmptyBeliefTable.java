@@ -60,13 +60,13 @@ public class EmptyBeliefTable implements BeliefTable {
 
 
     @Override
-    public void remember(/*@NotNull*/ Remember r  /*@NotNull*/) {
+    public void remember( Remember r  ) {
 
     }
 
 
     @Override
-    public void print(/*@NotNull*/ PrintStream out) {
+    public void print( PrintStream out) {
 
     }
 

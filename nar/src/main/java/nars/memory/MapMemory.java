@@ -48,7 +48,7 @@ public class MapMemory extends Memory {
     }
 
     @Override
-    public void set(/*@NotNull*/ Term src, Concept target) {
+    public void set( Term src, Concept target) {
         map.merge(src, target, setOrReplaceNonPermanent);
     }
 

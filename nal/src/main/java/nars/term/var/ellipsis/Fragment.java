@@ -31,7 +31,7 @@ public final class Fragment extends LightCompound {
                 return new Fragment(x.toArray(Op.EmptyTermArray));
         }
     }
-    public static Term fragment(/*@NotNull*/ Subterms y, int from, int to) {
+    public static Term fragment( Subterms y, int from, int to) {
         int len = to-from;
         switch (len) {
             case 0:
@@ -121,12 +121,12 @@ public final class Fragment extends LightCompound {
 
 
     @Override
-    public /*@NotNull*/ Term concept() {
+    public  Term concept() {
         throw new UnsupportedOperationException();
     }
 
 
-    public boolean linearMatch(Subterms y, int from, /*@NotNull*/ Unify subst) {
+    public boolean linearMatch(Subterms y, int from,  Unify subst) {
         int s = subs();
 
         if (s + from > y.subs())

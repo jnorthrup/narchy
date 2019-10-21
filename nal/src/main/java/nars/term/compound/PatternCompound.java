@@ -30,12 +30,12 @@ import static nars.time.Tense.XTERNAL;
 @Deprecated
 public abstract class PatternCompound extends CachedCompound.TemporalCachedCompound {
 
-    PatternCompound(/*@NotNull*/ Op op, int dt, Subterms subterms) {
+    PatternCompound( Op op, int dt, Subterms subterms) {
         super(op, dt, subterms);
     }
 
-    /*@NotNull*/
-    public static PatternCompound ellipsis(/*@NotNull*/ Compound seed, /*@NotNull*/ Subterms v, /*@NotNull*/ Ellipsis e) {
+
+    public static PatternCompound ellipsis( Compound seed,  Subterms v,  Ellipsis e) {
         Op op = seed.op();
         int dt = seed.dt();
 
@@ -62,7 +62,7 @@ public abstract class PatternCompound extends CachedCompound.TemporalCachedCompo
 
         final Ellipsis ellipsis;
 
-        PatternCompoundWithEllipsis(/*@NotNull*/ Op seed, int dt, Ellipsis ellipsis, Subterms subterms) {
+        PatternCompoundWithEllipsis( Op seed, int dt, Ellipsis ellipsis, Subterms subterms) {
             super(seed, dt, subterms);
             this.ellipsis = ellipsis;
         }
@@ -91,7 +91,7 @@ public abstract class PatternCompound extends CachedCompound.TemporalCachedCompo
 //            return new PatternCompoundEllipsisLinear(op, dt, ellipsis, subterms);
 //        }
 //
-//        private PatternCompoundEllipsisLinear(/*@NotNull*/ Op op, int dt, Ellipsis ellipsis, Subterms subterms) {
+//        private PatternCompoundEllipsisLinear( Op op, int dt, Ellipsis ellipsis, Subterms subterms) {
 //            super(op, dt, ellipsis, subterms);
 //            if (op.statement && subterms.OR(x -> x instanceof Ellipsislike))
 //                throw new WTF("raw ellipsis subj/pred makes no sense here");

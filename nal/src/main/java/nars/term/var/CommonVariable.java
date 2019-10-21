@@ -80,7 +80,7 @@ public final class CommonVariable extends UnnormalizedVariable {
     }
 
     /** vars must be sorted */
-    private CommonVariable(/*@NotNull*/ Op type, IntrinSubterms vars) {
+    private CommonVariable( Op type, IntrinSubterms vars) {
         super(type, key(type, vars));
 //        if (NAL.DEBUG) {
 //            for (Term t : vars)

@@ -16,7 +16,7 @@ public class PremiseRuleNormalization extends VariableNormalization {
     }
 
     @Override
-    protected Variable newVariable(/*@NotNull*/ Variable x) {
+    protected Variable newVariable( Variable x) {
         if (x instanceof Ellipsis.EllipsisPrototype)
             return Ellipsis.EllipsisPrototype.make((byte) count, ((Ellipsis.EllipsisPrototype) x).minArity);
         else if (x instanceof Ellipsis)

@@ -190,7 +190,7 @@ public abstract class Atomic implements Term {
         return result;
     }
 
-    /*@NotNull*/
+
     public static Atomic the(String id) {
         int l = id.length();
         if (l <= 0)

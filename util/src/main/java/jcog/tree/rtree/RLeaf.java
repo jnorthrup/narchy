@@ -101,7 +101,7 @@ public class RLeaf<X> extends AbstractRNode<X,X> {
 
 
     @Override
-    public RNode<X> add(/*@NotNull*/RInsertion<X> x) {
+    public RNode<X> add(RInsertion<X> x) {
         int s = (int) size;
         if (s > 0 && x.maybeContainedBy(bounds)) {
             X[] data = this.data;

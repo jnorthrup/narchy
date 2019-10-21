@@ -57,7 +57,7 @@ import static nars.time.Tense.*;
  */
 public interface Compound extends Term, IPair, Subterms {
 
-    static boolean equals(/*@NotNull*/ Compound A, Object b, boolean compareHashCode) {
+    static boolean equals( Compound A, Object b, boolean compareHashCode) {
         if (A == b) return true;
 
         if (((b instanceof Compound) && (!compareHashCode || (A.hashCode() == b.hashCode())))) {
@@ -264,7 +264,7 @@ public interface Compound extends Term, IPair, Subterms {
      * //
      */
 //    @Override
-//    default boolean unify(/*@NotNull*/ Term y, /*@NotNull*/ Unify u) {
+//    default boolean unify( Term y,  Unify u) {
 //        return (this == y) || unifyForward(y, u) || ((y instanceof Variable) && y.unify(this, u));
 //
 //    }
@@ -316,7 +316,7 @@ public interface Compound extends Term, IPair, Subterms {
     }
 
     @Override
-    default void appendTo(/*@NotNull*/ Appendable p) throws IOException {
+    default void appendTo( Appendable p) throws IOException {
         TermAppender.append(this, p);
     }
 
@@ -351,13 +351,13 @@ public interface Compound extends Term, IPair, Subterms {
     }
 
 
-    /*@NotNull*/
+
     @Override
     default Object setFirst(Object first) {
         throw new UnsupportedOperationException();
     }
 
-    /*@NotNull*/
+
     @Override
     default Object setRest(Object rest) {
         throw new UnsupportedOperationException();

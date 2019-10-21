@@ -12,7 +12,7 @@ import java.util.Iterator;
  */
 public class ArrayTermVector extends TermVector {
 
-    /*@NotNull*/
+
     /*@Stable*/
     private final Term[] terms;
 
@@ -33,7 +33,7 @@ public class ArrayTermVector extends TermVector {
     }
 
     @Override
-    public final boolean equals(/*@NotNull*/ Object obj) {
+    public final boolean equals( Object obj) {
         if (this == obj) return true;
 
         if (!(obj instanceof Subterms))
@@ -93,7 +93,7 @@ public class ArrayTermVector extends TermVector {
 
 
     @Override
-    /*@NotNull*/ public final Term sub(int i) {
+     public final Term sub(int i) {
         return terms[i];
     }
 

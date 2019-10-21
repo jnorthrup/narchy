@@ -91,7 +91,7 @@ public class UniSubst extends Functor implements InlineFunctor<Evaluation> {
     }
 
     @Override
-    public Term apply(Evaluation e, /*@NotNull*/ Subterms a) {
+    public Term apply(Evaluation e,  Subterms a) {
 
         int pp = a.subs();
         if (pp < 3)

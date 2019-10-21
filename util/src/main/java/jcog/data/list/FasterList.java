@@ -295,7 +295,7 @@ public class FasterList<X> extends FastList<X> {
     }
 
     @Override
-    public int indexOf(/*@NotNull*/ Object object) {
+    public int indexOf( Object object) {
 
         if (object == null)
             return indexOfInstance(null);
@@ -313,7 +313,7 @@ public class FasterList<X> extends FastList<X> {
         return -1;
     }
 
-    public int indexOfInstance(/*@NotNull*/ Object x) {
+    public int indexOfInstance( Object x) {
         int s = size;
         if (s > 0) {
             X[] items = this.items;
@@ -565,7 +565,7 @@ public class FasterList<X> extends FastList<X> {
     /**
      * remove, but with Map.remove semantics
      */
-    public X removed(/*@NotNull*/ X object) {
+    public X removed( X object) {
         int index = this.indexOf(object);
         if (index >= 0) {
             X r = get(index);

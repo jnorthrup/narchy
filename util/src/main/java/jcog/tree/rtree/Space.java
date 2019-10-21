@@ -100,7 +100,7 @@ public interface Space<X> extends Nodelike<X> {
         return insert(x).added();
     }
 
-    RInsertion<X> insert(/*@NotNull*/ X x);
+    RInsertion<X> insert( X x);
 
     /**
      * adds, deferred if necessary until un-busy
@@ -115,7 +115,7 @@ public interface Space<X> extends Nodelike<X> {
      * @param x Data entry to be removed
      * @return whether the item was added, or false if it wasn't (ex: duplicate or some other prohibition)
      */
-    boolean remove(/*@NotNull*/ X x);
+    boolean remove( X x);
 
 
     /**

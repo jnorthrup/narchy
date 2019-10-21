@@ -22,7 +22,7 @@ import static nars.time.Tense.XTERNAL;
  */
 public enum Intermpolate {;
 
-    private static Term intermpolate(/*@NotNull*/ Compound a,  /*@NotNull*/ Compound b, float aProp, float curDepth, NAL nar) {
+    private static Term intermpolate( Compound a,   Compound b, float aProp, float curDepth, NAL nar) {
 
         if (a.equals(b))
             return a;
@@ -192,7 +192,7 @@ public enum Intermpolate {;
 //    /**
 //     * for merging CONJ or IMPL of equal subterms, so only dt is different
 //     */
-//    private static Term dtMergeTemporalDirect(/*@NotNull*/ Term a, /*@NotNull*/ Term b, float aProp,
+//    private static Term dtMergeTemporalDirect( Term a,  Term b, float aProp,
 //                                                           float depth, NAR nar) {
 //        int dt = chooseDT(a, b, aProp, nar);
 //        Subterms aa = a.subterms(), bb = b.subterms();
@@ -243,7 +243,7 @@ public enum Intermpolate {;
 		return ratio < 1.0F ? ab : XTERNAL;
     }
 
-    public static Term intermpolate(/*@NotNull*/ Compound a, /*@NotNull*/ Compound b, float aProp, NAL nar) {
+    public static Term intermpolate( Compound a,  Compound b, float aProp, NAL nar) {
         return intermpolate(a, b, aProp, (float) 0, nar);
     }
 

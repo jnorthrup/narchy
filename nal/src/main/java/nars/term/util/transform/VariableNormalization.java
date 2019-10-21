@@ -26,7 +26,7 @@ public class VariableNormalization extends VariableTransform {
 
     public int count;
 
-    /*@NotNull*/
+
     public final Map<Variable /* Input Variable */, Variable /*Variable*/> map;
 
     @Override
@@ -36,14 +36,14 @@ public class VariableNormalization extends VariableTransform {
 
 
 
-    /*@NotNull*/
-    private Variable newVariableIncreasingCount(/*@NotNull*/ Variable x) {
+
+    private Variable newVariableIncreasingCount( Variable x) {
         ++count;
         return newVariable(x);
     }
 
-    /*@NotNull*/
-    protected Variable newVariable(/*@NotNull*/ Variable x) {
+
+    protected Variable newVariable( Variable x) {
 
 
         int vid = this.count + offset;
@@ -61,11 +61,11 @@ public class VariableNormalization extends VariableTransform {
         this(new UnifiedMap<>(size), offset);
     }
 
-//    public VariableNormalization(/*@NotNull*/ Map<Variable, Variable> r) {
+//    public VariableNormalization( Map<Variable, Variable> r) {
 //        this(r, 0);
 //    }
 
-    private VariableNormalization(/*@NotNull*/ Map<Variable, Variable> r, int offset) {
+    private VariableNormalization( Map<Variable, Variable> r, int offset) {
         this.offset = offset;
         this.map = r;
 

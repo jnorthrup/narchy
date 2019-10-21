@@ -638,7 +638,7 @@ public enum Terms {
         });
 	}
 
-	public static Term intersect(/*@NotNull*/ Op o, Subterms a, Subterms b) {
+	public static Term intersect( Op o, Subterms a, Subterms b) {
 		if (a instanceof Term && a.equals(b))
 			return (Term) a;
 
@@ -660,7 +660,7 @@ public enum Terms {
 
 	}
 
-	public static Term union(/*@NotNull*/ Op o, Subterms a, Subterms b) {
+	public static Term union( Op o, Subterms a, Subterms b) {
 		if (a == b)
 			return a instanceof Term && ((Term)a).op()==o ? (Term)a : o.the(a);
 
