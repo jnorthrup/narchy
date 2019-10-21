@@ -2535,22 +2535,6 @@ import static java.util.stream.Collectors.toList;
 		return x.getClass() + "@" + System.identityHashCode(x);
 	}
 
-	/** @noinspection ArrayEquality*/
-	public static int compare(byte[] a, byte[] b) {
-		if (a==b) return 0;
-		int al = a.length;
-		int l = Integer.compare(al, b.length);
-		if (l != 0)
-			return l;
-		for (int i = 0; i < al; i++) {
-			int d = (int) a[i] - (int) b[i];
-			if (d != 0) {
-				return d;
-			}
-		}
-		return 0;
-	}
-
 	public static <X> Supplier<Stream<X>> buffer(Stream<X> x) {
 		List<X> buffered = x.collect(toList());
 		return buffered::stream;
