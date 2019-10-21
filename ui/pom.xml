@@ -31,18 +31,6 @@
       <version>0.3.0</version>
       <scope>compile</scope>
     </dependency>
-<!--    <dependency>-->
-<!--      <groupId>org.ujmp</groupId>-->
-<!--      <artifactId>ujmp-ejml</artifactId>-->
-<!--      <version>0.3.0</version>-->
-<!--      <scope>compile</scope>-->
-<!--&lt;!&ndash;      <exclusions>&ndash;&gt;-->
-<!--&lt;!&ndash;        <exclusion>&ndash;&gt;-->
-<!--&lt;!&ndash;          <artifactId>ejml-core</artifactId>&ndash;&gt;-->
-<!--&lt;!&ndash;          <groupId>*</groupId>&ndash;&gt;-->
-<!--&lt;!&ndash;        </exclusion>&ndash;&gt;-->
-<!--&lt;!&ndash;      </exclusions>&ndash;&gt;-->
-<!--    </dependency>-->
     <dependency>
       <groupId>org.ejml</groupId>
       <artifactId>ejml-core</artifactId>
@@ -139,55 +127,4 @@
           <scope>test</scope>
       </dependency>
   </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.jetbrains.kotlin</groupId>
-                <artifactId>kotlin-maven-plugin</artifactId>
-                <version>${kotlin.version}</version>
-                <executions>
-                    <execution>
-                        <id>compile</id>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>compile</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>test-compile</id>
-                        <phase>test-compile</phase>
-                        <goals>
-                            <goal>test-compile</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <jvmTarget>1.8</jvmTarget>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>compile</id>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>compile</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>testCompile</id>
-                        <phase>test-compile</phase>
-                        <goals>
-                            <goal>testCompile</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
-
-
 </project>

@@ -10,7 +10,7 @@
     <name>narchy</name>
 
     <prerequisites>
-        <maven>3.6.2</maven>
+        <maven>3.6.2 </maven>
     </prerequisites>
     <modules>
         <module>app</module>
@@ -23,6 +23,7 @@
         <module>ui</module>
         <module>util</module>
     </modules>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <kotlin.version>1.3.50</kotlin.version>
@@ -41,43 +42,43 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
     <build>
         <plugins>
             <plugin>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.0.0-M3</version>
-                <configuration>
-                    <testFailureIgnore>true</testFailureIgnore>
-                    <skipTests>true</skipTests>
-                    <argLine>--illegal-access=permit</argLine>
-                    <forkCount>1C</forkCount>
-                </configuration>
-
-            </plugin>
-
-
-            <plugin><!--ghetto shade plugin, needs -cp lib/*-->
-                <artifactId>maven-dependency-plugin</artifactId>
-                <version>3.1.1</version>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-maven-plugin</artifactId>
+                <version>${kotlin.version}</version>
                 <executions>
                     <execution>
-                        <phase>install</phase>
+                        <id>compile</id>
+                        <phase>compile</phase>
                         <goals>
-                            <goal>copy-dependencies</goal>
+                            <goal>compile</goal>
                         </goals>
-                        <configuration>
-                            <outputDirectory>${project.build.directory}/lib</outputDirectory>
-                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>test-compile</id>
+                        <phase>test-compile</phase>
+                        <goals>
+                            <goal>test-compile</goal>
+                        </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <compilerPlugins>
+                        <plugin>all-open</plugin>
+                    </compilerPlugins>
+                    <jvmTarget>12</jvmTarget>
+                    <args>-Xjvm-default=compatibility</args>
+                </configuration>
             </plugin>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
                 <configuration>
-                    <release>12</release>
-                     <target>12</target>
-                    <useIncrementalCompilation>true</useIncrementalCompilation>
+                    <target>12</target>
+                    <source>12</source>
                 </configuration>
             </plugin>
         </plugins>
