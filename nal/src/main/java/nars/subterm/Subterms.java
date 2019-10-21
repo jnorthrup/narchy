@@ -932,12 +932,12 @@ public interface Subterms extends Termlike, Iterable<Term> {
         });
 	}
 
-	default void addAllTo(Collection target) {
+	default void addAllTo(Collection<Term> target) {
 		for (Term term : this)
 			target.add(term);
 	}
 
-	default void addAllTo(FasterList target) {
+	default void addAllTo(FasterList<Term> target) {
 		target.ensureCapacity(subs());
 		for (Term term : this)
 			target.addFast(term);
