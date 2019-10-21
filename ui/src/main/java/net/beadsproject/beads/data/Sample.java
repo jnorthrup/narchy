@@ -126,7 +126,7 @@ public class Sample {
         next = new float[nChannels];
         nFrames = (long) msToSamples(length);
         theSampleData = new float[nChannels][(int) nFrames];
-        length = 1000f * nFrames / this.sampleRate;
+        //length = 1000f * nFrames / this.sampleRate;
     }
 
     /**

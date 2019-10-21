@@ -13,7 +13,8 @@ import java.util.Arrays;
  * A set of handy array manipulation utilities
  * @author CVL
  */
-@Deprecated public class ArrayUtils {
+@Deprecated public enum ArrayUtils {
+    ;
 
     /**
      * Create a new array of length 'length' and fill it from array 'array'
@@ -61,10 +62,7 @@ import java.util.Arrays;
      */
     public static byte[] concatenate(byte[] input1, byte[] input2) {
         byte[] result;
-        if (input1 != null)
-            result = new byte[input1.length + input2.length];
-        else
-            result = new byte[input2.length];
+        result = input1 != null ? new byte[input1.length + input2.length] : new byte[input2.length];
 
         for (int i = 0; i < result.length; i++) {
             if (input1 == null)

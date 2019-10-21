@@ -192,8 +192,7 @@ public class SPTree {
 			int div = 1;
 			for(int d = 0; d < dimension; d++) {
 				new_width[d] = .5 * boundary.getWidth(d);
-				if((i / div) % 2 == 1) new_corner[d] = boundary.getCorner(d) - .5 * boundary.getWidth(d);
-				else                   new_corner[d] = boundary.getCorner(d) + .5 * boundary.getWidth(d);
+				new_corner[d] = (i / div) % 2 == 1 ? boundary.getCorner(d) - .5 * boundary.getWidth(d) : boundary.getCorner(d) + .5 * boundary.getWidth(d);
 				div *= 2;
 			}
 			children[i] = getNewTree(this, new_corner, new_width);

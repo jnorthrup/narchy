@@ -31,8 +31,9 @@ import spacegraph.space3d.phys.math.Clock;
  * 
  * @author jezek2
  */
-public class BulletStats {
-	
+public enum BulletStats {
+	;
+
 	public static int gTotalContactPoints;
 	
 	

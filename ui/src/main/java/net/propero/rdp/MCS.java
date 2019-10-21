@@ -113,17 +113,9 @@ public class MCS {
      */
     private static int berHeaderSize(int tagval, int length) {
         int total = 0;
-        if (tagval > 0xff) {
-            total += 2;
-        } else {
-            total += 1;
-        }
+		total += tagval > 0xff ? 2 : 1;
 
-        if (length >= 0x80) {
-            total += 3;
-        } else {
-            total += 1;
-        }
+		total += length >= 0x80 ? 3 : 1;
         return total;
     }
 
@@ -156,10 +148,7 @@ public class MCS {
      * @return Number of bytes the encoded data would occupy
      */
     private static int BERIntSize(int value) {
-        if (value > 0xff)
-            return 4;
-        else
-            return 3;
+		return value > 0xff ? 4 : 3;
     }
 
     /**
@@ -190,11 +179,7 @@ public class MCS {
             throws RdesktopException {
         int tag = 0;
 
-        if (tagval > 0x000000ff) {
-            tag = data.getBigEndian16();
-        } else {
-            tag = data.get8();
-        }
+		tag = tagval > 0x000000ff ? data.getBigEndian16() : data.get8();
 
         if (tag != tagval) {
             throw new RdesktopException("Unexpected tag got " + tag

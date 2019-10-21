@@ -310,11 +310,8 @@ public class Bitmap {
                 isfillormix = ((opcode == 2) || (opcode == 7));
 
                 if (count == 0) {
-                    if (isfillormix)
-                        count = (compressed_pixel[input++] & 0x000000ff) + 1;
-                    else
-                        count = (compressed_pixel[input++] & 0x000000ff)
-                                + offset;
+                    count = isfillormix ? (compressed_pixel[input++] & 0x000000ff) + 1 : (compressed_pixel[input++] & 0x000000ff)
+                        + offset;
                 } else if (isfillormix) {
                     count <<= 3;
                 }
@@ -699,10 +696,7 @@ public class Bitmap {
         data.incrementPosition(size);
 
         WrappedImage w = null;
-        if (cm == null)
-            w = new WrappedImage(width, height, BufferedImage.TYPE_INT_RGB);
-        else
-            w = new WrappedImage(width, height, BufferedImage.TYPE_INT_RGB, cm);
+        w = cm == null ? new WrappedImage(width, height, BufferedImage.TYPE_INT_RGB) : new WrappedImage(width, height, BufferedImage.TYPE_INT_RGB, cm);
 
         boolean isfillormix = false;
         boolean bicolor = false;
@@ -762,11 +756,8 @@ public class Bitmap {
                 isfillormix = ((opcode == 2) || (opcode == 7));
 
                 if (count == 0) {
-                    if (isfillormix)
-                        count = (compressed_pixel[input++] & 0x000000ff) + 1;
-                    else
-                        count = (compressed_pixel[input++] & 0x000000ff)
-                                + offset;
+                    count = isfillormix ? (compressed_pixel[input++] & 0x000000ff) + 1 : (compressed_pixel[input++] & 0x000000ff)
+                        + offset;
                 } else if (isfillormix) {
                     count <<= 3;
                 }
@@ -1185,11 +1176,8 @@ public class Bitmap {
                 isfillormix = ((opcode == 2) || (opcode == 7));
 
                 if (count == 0) {
-                    if (isfillormix)
-                        count = (compressed_pixel[input++] & 0x000000ff) + 1;
-                    else
-                        count = (compressed_pixel[input++] & 0x000000ff)
-                                + offset;
+                    count = isfillormix ? (compressed_pixel[input++] & 0x000000ff) + 1 : (compressed_pixel[input++] & 0x000000ff)
+                        + offset;
                 } else if (isfillormix) {
                     count <<= 3;
                 }
@@ -1251,11 +1239,7 @@ public class Bitmap {
                 switch (opcode) {
                     case 0: /* Fill */
                         if (insertmix) {
-                            if (previous == -1) {
-                                pixel[line + x] = mix;
-                            } else {
-                                pixel[line + x] = (pixel[previous + x] ^ mix);
-                            }
+                            pixel[line + x] = previous == -1 ? mix : pixel[previous + x] ^ mix;
 
                             insertmix = false;
                             count--;
@@ -1343,12 +1327,7 @@ public class Bitmap {
                                                 : compressed_pixel[input++];
                                         mixmask = 1;
                                     }
-                                    if ((mask & mixmask) != 0)
-                                        
-                                        pixel[line + x] = (byte) mix;
-                                    else
-                                        
-                                        pixel[line + x] = 0;
+                                    pixel[line + x] = (mask & mixmask) != 0 ? (byte) mix : 0;
                                     count--;
                                     x++;
                                 }
@@ -1360,12 +1339,7 @@ public class Bitmap {
                                             : compressed_pixel[input++];
                                     mixmask = 1;
                                 }
-                                if ((mask & mixmask) != 0)
-                                    
-                                    pixel[line + x] = mix;
-                                else
-                                    
-                                    pixel[line + x] = 0;
+                                pixel[line + x] = (mask & mixmask) != 0 ? mix : 0;
                                 count--;
                                 x++;
                             }
@@ -1378,15 +1352,7 @@ public class Bitmap {
                                                 : compressed_pixel[input++];
                                         mixmask = 1;
                                     }
-                                    if ((mask & mixmask) != 0)
-                                        
-                                        
-                                        
-                                        pixel[line + x] = (pixel[previous + x] ^ mix);
-                                    else
-                                        
-                                        
-                                        pixel[line + x] = pixel[previous + x];
+                                    pixel[line + x] = (mask & mixmask) != 0 ? pixel[previous + x] ^ mix : pixel[previous + x];
                                     count--;
                                     x++;
                                 }
@@ -1398,14 +1364,7 @@ public class Bitmap {
                                             : compressed_pixel[input++];
                                     mixmask = 1;
                                 }
-                                if ((mask & mixmask) != 0)
-                                    
-                                    
-                                    pixel[line + x] = (pixel[previous + x] ^ mix);
-                                else
-                                    
-                                    
-                                    pixel[line + x] = pixel[previous + x];
+                                pixel[line + x] = (mask & mixmask) != 0 ? pixel[previous + x] ^ mix : pixel[previous + x];
                                 count--;
                                 x++;
                             }
@@ -1606,11 +1565,8 @@ public class Bitmap {
                 isfillormix = ((opcode == 2) || (opcode == 7));
 
                 if (count == 0) {
-                    if (isfillormix)
-                        count = (compressed_pixel[input++] & 0x000000ff) + 1;
-                    else
-                        count = (compressed_pixel[input++] & 0x000000ff)
-                                + offset;
+                    count = isfillormix ? (compressed_pixel[input++] & 0x000000ff) + 1 : (compressed_pixel[input++] & 0x000000ff)
+                        + offset;
                 } else if (isfillormix) {
                     count <<= 3;
                 }
@@ -1673,13 +1629,7 @@ public class Bitmap {
                 switch (opcode) {
                     case 0: /* Fill */
                         if (insertmix) {
-                            if (previous == 0) {
-                                pixel[line + x] = (byte) mix;
-                            } else {
-                                
-                                
-                                pixel[line + x] = (byte) (pixel[previous + x] ^ (byte) mix);
-                            }
+                            pixel[line + x] = previous == 0 ? (byte) mix : (byte) (pixel[previous + x] ^ (byte) mix);
 
                             insertmix = false;
                             count--;
@@ -1769,12 +1719,7 @@ public class Bitmap {
                                                 : compressed_pixel[input++];
                                         mixmask = 1;
                                     }
-                                    if ((mask & mixmask) != 0)
-                                        
-                                        pixel[line + x] = (byte) mix;
-                                    else
-                                        
-                                        pixel[line + x] = 0;
+                                    pixel[line + x] = (mask & mixmask) != 0 ? (byte) mix : 0;
                                     count--;
                                     x++;
                                 }
@@ -1786,12 +1731,7 @@ public class Bitmap {
                                             : compressed_pixel[input++];
                                     mixmask = 1;
                                 }
-                                if ((mask & mixmask) != 0)
-                                    
-                                    pixel[line + x] = (byte) mix;
-                                else
-                                    
-                                    pixel[line + x] = 0;
+                                pixel[line + x] = (mask & mixmask) != 0 ? (byte) mix : 0;
                                 count--;
                                 x++;
                             }
@@ -1804,16 +1744,8 @@ public class Bitmap {
                                                 : compressed_pixel[input++];
                                         mixmask = 1;
                                     }
-                                    if ((mask & mixmask) != 0)
-                                        
-                                        
-                                        
-                                        pixel[line + x] = (byte) (pixel[previous
-                                                + x] ^ (byte) mix);
-                                    else
-                                        
-                                        
-                                        pixel[line + x] = pixel[previous + x];
+                                    pixel[line + x] = (mask & mixmask) != 0 ? (byte) (pixel[previous
+                                        + x] ^ (byte) mix) : pixel[previous + x];
                                     count--;
                                     x++;
                                 }
@@ -1825,17 +1757,7 @@ public class Bitmap {
                                             : compressed_pixel[input++];
                                     mixmask = 1;
                                 }
-                                if ((mask & mixmask) != 0)
-                                    
-                                    
-                                    
-                                    
-                                    pixel[line + x] = (byte) (pixel[previous + x] ^ (byte) mix);
-                                else
-                                    
-                                    
-                                    
-                                    pixel[line + x] = pixel[previous + x];
+                                pixel[line + x] = (mask & mixmask) != 0 ? (byte) (pixel[previous + x] ^ (byte) mix) : pixel[previous + x];
                                 count--;
                                 x++;
                             }

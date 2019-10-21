@@ -58,7 +58,7 @@ public class MIDIPiano extends JPanel {
         }
     }
 
-    private boolean[] selected = new boolean[KEYS];
+    private final boolean[] selected = new boolean[KEYS];
 
     public MIDIPiano(Controller ctrl) {
         this.requestFocusInWindow();
@@ -182,7 +182,8 @@ public class MIDIPiano extends JPanel {
     }
 
     /** from https://github.com/Xyene/VirtualSynth */
-    public static class Synth {
+    public enum Synth {
+        ;
         private static MidiChannel channel;
         private static Synthesizer synthesizer;
         private static Instrument[] soundbank;

@@ -1133,11 +1133,7 @@ public class Dynamics2D {
 
 
                     float beta = toiOutput.t;
-                    if (toiOutput.state == TimeOfImpact.TOIOutputState.TOUCHING) {
-                        alpha = MathUtils.min(alpha0 + (1.0f - alpha0) * beta, 1.0f);
-                    } else {
-                        alpha = 1.0f;
-                    }
+                    alpha = toiOutput.state == TimeOfImpact.TOIOutputState.TOUCHING ? MathUtils.min(alpha0 + (1.0f - alpha0) * beta, 1.0f) : 1.0f;
 
                     c.m_toi = alpha;
                     c.m_flags |= Contact.TOI_FLAG;

@@ -312,10 +312,7 @@ public class MapDef {
 
         
         definition += "\t";
-        if (characterDef)
-            definition += keyChar;
-        else
-            definition += keyCode;
+		definition += characterDef ? keyChar : keyCode;
 
         
         definition += "\t" + keyLocation;

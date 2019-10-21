@@ -30,7 +30,8 @@ package spacegraph.audio.modem.reedsolomon;
  * <p>
  * Simple interleaver that uses a "skip factor"
  */
-public class Interleaver {
+public enum Interleaver {
+    ;
     public static final int kSkipFactor = 4;
 
     public static void interleave(byte[] items) {

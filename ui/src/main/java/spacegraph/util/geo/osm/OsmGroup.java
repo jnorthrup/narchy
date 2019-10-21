@@ -23,10 +23,7 @@ public abstract class OsmGroup extends OsmElement {
 
     protected void validate() {
         int n;
-        if (children == null)
-            n = 0;
-        else
-            n = children.size();
+		n = children == null ? 0 : children.size();
 
         HyperRegion bounds;
         switch (n) {

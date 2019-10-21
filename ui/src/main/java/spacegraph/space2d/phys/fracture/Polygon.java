@@ -2,6 +2,7 @@ package spacegraph.space2d.phys.fracture;
 
 import jcog.math.v2;
 import spacegraph.space2d.phys.collision.AABB;
+import spacegraph.space2d.phys.common.MathUtils;
 import spacegraph.space2d.phys.common.PlatformMathUtils;
 import spacegraph.space2d.phys.common.Settings;
 import spacegraph.space2d.phys.fracture.hertelmehlhorn.SingletonHM;
@@ -285,7 +286,7 @@ public class Polygon implements Iterable<v2>, Cloneable {
             v2 a = get(i);
             v2 b = cycleGet(i + 1);
             v2 c = cycleGet(i + 2);
-            if (PlatformMathUtils.siteDef(a, b, c) == 1) {
+            if (MathUtils.siteDef(a, b, c) == 1) {
                 return false;
             }
         }

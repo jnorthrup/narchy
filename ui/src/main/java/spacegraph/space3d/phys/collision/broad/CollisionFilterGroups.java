@@ -28,7 +28,8 @@ package spacegraph.space3d.phys.collision.broad;
  * 
  * @author jezek2
  */
-public class CollisionFilterGroups {
+public enum CollisionFilterGroups {
+	;
 
 	public static final short DEFAULT_FILTER   = 1;
 	public static final short STATIC_FILTER    = 2;

@@ -451,11 +451,7 @@ public class SLAMTest extends JPanel {
         if (!skipStructure) {
             structureEstimator.configRansac.inlierThreshold = controls.inliers;
             structureEstimator.pruneFraction = (100 - controls.prune) / 100.0;
-            if (controls.autoFocal) {
-                structureEstimator.manualFocalLength = -1;
-            } else {
-                structureEstimator.manualFocalLength = controls.focal;
-            }
+            structureEstimator.manualFocalLength = controls.autoFocal ? -1 : controls.focal;
 
             //structureEstimator.setVerbose(System.out,0);
             System.out.println("Computing 3D structure. triplets " + associated.size);

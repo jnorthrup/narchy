@@ -125,13 +125,9 @@ public class VerletSurface extends PaintSurface implements Animated {
                 float distBottom = Math.abs(py - B);
                 float distTB = Math.min(distTop, distBottom);
 
-                if (distLR < distTB) {
-                    //along either left or right
-                    return new Vec2D((distLeft < distRight) ? L : R, Util.clamp(py, T, B));
-                } else {
-                    //along either top or bottom
-                    return new Vec2D(Util.clamp(px, L, R), (distTop < distBottom) ? T : B);
-                }
+				//along either left or right
+				//along either top or bottom
+				return distLR < distTB ? new Vec2D((distLeft < distRight) ? L : R, Util.clamp(py, T, B)) : new Vec2D(Util.clamp(px, L, R), (distTop < distBottom) ? T : B);
 //
 //                float x = px < ss.cx() ? ss.left() : ss.right();
 //                float y = py < ss.cy() ? ss.top() : ss.bottom();

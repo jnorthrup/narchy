@@ -2825,11 +2825,7 @@ public strictfp class FloatFFT {
             case MIXED_RADIX:
                 rfftf(a, offa);
                 int m;
-                if (n % 2 == 0) {
-                    m = n / 2;
-                } else {
-                    m = (n + 1) / 2;
-                }
+                m = n % 2 == 0 ? n / 2 : (n + 1) / 2;
                 for (int k = 1; k < m; k++) {
                     int idx1 = offa + twon - 2 * k;
                     int idx2 = offa + 2 * k;
@@ -3014,11 +3010,7 @@ public strictfp class FloatFFT {
                     scale(n, a, offa, false);
                 }
                 int m;
-                if (n % 2 == 0) {
-                    m = n / 2;
-                } else {
-                    m = (n + 1) / 2;
-                }
+                m = n % 2 == 0 ? n / 2 : (n + 1) / 2;
                 for (int k = 1; k < m; k++) {
                     int idx1 = offa + 2 * k;
                     int idx2 = offa + twon - 2 * k;
@@ -6373,43 +6365,39 @@ public strictfp class FloatFFT {
         int idx = 0;
         for (int i = 0; i < nthreads; i++) {
             int firstIdx = offa + i * m;
-            if (i != idiv4) {
-                futures[idx++] = ConcurrencyUtils.submit(() -> {
-                    int idx1 = firstIdx + mf;
-                    int m12 = n;
-                    while (m12 > 512) {
-                        m12 >>= 2;
-                        cftmdl1(m12, a, idx1 - m12, w, nw - (m12 >> 1));
-                    }
-                    cftleaf(m12, 1, a, idx1 - m12, nw, w);
-                    int k = 0;
-                    int idx2 = firstIdx - m12;
-                    for (int j = mf - m12; j > 0; j -= m12) {
-                        k++;
-                        int isplt = cfttree(m12, j, k, a, firstIdx, nw, w);
-                        cftleaf(m12, isplt, a, idx2 + j, nw, w);
-                    }
-                });
-            } else {
-                futures[idx++] = ConcurrencyUtils.submit(() -> {
-                    int idx1 = firstIdx + mf;
-                    int k = 1;
-                    int m1 = n;
-                    while (m1 > 512) {
-                        m1 >>= 2;
-                        k <<= 2;
-                        cftmdl2(m1, a, idx1 - m1, w, nw - m1);
-                    }
-                    cftleaf(m1, 0, a, idx1 - m1, nw, w);
-                    k >>= 1;
-                    int idx2 = firstIdx - m1;
-                    for (int j = mf - m1; j > 0; j -= m1) {
-                        k++;
-                        int isplt = cfttree(m1, j, k, a, firstIdx, nw, w);
-                        cftleaf(m1, isplt, a, idx2 + j, nw, w);
-                    }
-                });
-            }
+            futures[idx++] = i != idiv4 ? ConcurrencyUtils.submit(() -> {
+                int idx1 = firstIdx + mf;
+                int m12 = n;
+                while (m12 > 512) {
+                    m12 >>= 2;
+                    cftmdl1(m12, a, idx1 - m12, w, nw - (m12 >> 1));
+                }
+                cftleaf(m12, 1, a, idx1 - m12, nw, w);
+                int k = 0;
+                int idx2 = firstIdx - m12;
+                for (int j = mf - m12; j > 0; j -= m12) {
+                    k++;
+                    int isplt = cfttree(m12, j, k, a, firstIdx, nw, w);
+                    cftleaf(m12, isplt, a, idx2 + j, nw, w);
+                }
+            }) : ConcurrencyUtils.submit(() -> {
+                int idx1 = firstIdx + mf;
+                int k = 1;
+                int m1 = n;
+                while (m1 > 512) {
+                    m1 >>= 2;
+                    k <<= 2;
+                    cftmdl2(m1, a, idx1 - m1, w, nw - m1);
+                }
+                cftleaf(m1, 0, a, idx1 - m1, nw, w);
+                k >>= 1;
+                int idx2 = firstIdx - m1;
+                for (int j = mf - m1; j > 0; j -= m1) {
+                    k++;
+                    int isplt = cfttree(m1, j, k, a, firstIdx, nw, w);
+                    cftleaf(m1, isplt, a, idx2 + j, nw, w);
+                }
+            });
         }
         ConcurrencyUtils.waitForCompletion(futures);
     }
@@ -6435,11 +6423,7 @@ public strictfp class FloatFFT {
     private void scale(float m, float[] a, int offa, boolean complex) {
         float norm = (float) (1.0 / m);
         int n2;
-        if (complex) {
-            n2 = 2 * n;
-        } else {
-            n2 = n;
-        }
+        n2 = complex ? 2 * n : n;
         int nthreads = ConcurrencyUtils.getNumberOfThreads();
         if ((nthreads > 1) && (n2 >= ConcurrencyUtils.getThreadsBeginN_1D_FFT_2Threads())) {
             int k = n2 / nthreads;

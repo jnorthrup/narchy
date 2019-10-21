@@ -456,11 +456,7 @@ public class WheelJoint extends Joint {
         float k = m_invMassA + m_invMassB + m_invIA * m_sAy * m_sAy + m_invIB * m_sBy * m_sBy;
 
         float impulse;
-        if (k != 0.0f) {
-            impulse = -C / k;
-        } else {
-            impulse = 0.0f;
-        }
+		impulse = k != 0.0f ? -C / k : 0.0f;
 
         v2 P = pool.popVec2();
         P.x = impulse * ay.x;

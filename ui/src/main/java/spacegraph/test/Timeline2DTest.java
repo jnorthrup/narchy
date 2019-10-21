@@ -16,9 +16,10 @@ import spacegraph.space2d.widget.meter.WaveBitmap;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-public class Timeline2DTest {
+public enum Timeline2DTest {
+	;
 
-    public static void main(String[] args) {
+	public static void main(String[] args) {
         Surface t = timeline2dTest();
         SpaceGraph.window(t, 800, 600);
     }

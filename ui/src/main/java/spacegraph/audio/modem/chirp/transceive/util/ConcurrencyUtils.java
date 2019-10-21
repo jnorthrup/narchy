@@ -8,16 +8,14 @@ package spacegraph.audio.modem.chirp.transceive.util;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.concurrent.*;
 
-final class ConcurrencyUtils {
+enum ConcurrencyUtils {
+    ;
     private static final ExecutorService THREAD_POOL = Executors.newCachedThreadPool(new ConcurrencyUtils.CustomThreadFactory(new ConcurrencyUtils.CustomExceptionHandler()));
     private static int THREADS_BEGIN_N_1D_FFT_2THREADS = 8192;
     private static int THREADS_BEGIN_N_1D_FFT_4THREADS = 65536;
     private static int THREADS_BEGIN_N_2D = 65536;
     private static int THREADS_BEGIN_N_3D = 65536;
     private static int NTHREADS = prevPow2(getNumberOfProcessors());
-
-    private ConcurrencyUtils() {
-    }
 
     private static int getNumberOfProcessors() {
         return Runtime.getRuntime().availableProcessors();
@@ -99,11 +97,7 @@ final class ConcurrencyUtils {
     }
 
     public static boolean isPowerOf2(int var0) {
-        if (var0 <= 0) {
-            return false;
-        } else {
-            return (var0 & var0 - 1) == 0;
-        }
+		return var0 <= 0 ? false : (var0 & var0 - 1) == 0;
     }
 
     public static void sleep(long var0) {

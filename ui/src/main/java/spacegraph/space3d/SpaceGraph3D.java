@@ -325,10 +325,11 @@ public class SpaceGraph3D<X> extends JoglDisplay implements Iterable<Spatial<X>>
      *
      * @author jezek2
      */
-    public static class ExtraGlobals {
+    public enum ExtraGlobals {
+		;
 
 
-        public static final float FLT_EPSILON = 1.19209290e-07f;
+		public static final float FLT_EPSILON = 1.19209290e-07f;
         public static final float SIMD_EPSILON = FLT_EPSILON;
 
         static final float SIMD_2_PI = 6.283185307179586232f;

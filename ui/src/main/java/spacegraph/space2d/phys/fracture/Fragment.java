@@ -1,6 +1,7 @@
 package spacegraph.space2d.phys.fracture;
 
 import jcog.math.v2;
+import spacegraph.space2d.phys.common.MathUtils;
 import spacegraph.space2d.phys.common.PlatformMathUtils;
 
 import java.util.Arrays;
@@ -53,7 +54,7 @@ public class Fragment extends Polygon {
         double[] comparer = new double[10];
         int count = 0;
         for (int i1 = 0; i1 < size; i1++) {
-            double angle = PlatformMathUtils.angle(get(i1), focus);
+            double angle = MathUtils.angle(get(i1), focus);
             if (comparer.length == count) comparer = Arrays.copyOf(comparer, count * 2);
             comparer[count++] = angle;
         }

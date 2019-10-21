@@ -5,8 +5,9 @@ package spacegraph.space2d.phys.particle;
  *
  * @author dmurph
  */
-public class ParticleType {
-    public static final int b2_waterParticle = 0;
+public enum ParticleType {
+	;
+	public static final int b2_waterParticle = 0;
     /**
      * removed after next step
      */

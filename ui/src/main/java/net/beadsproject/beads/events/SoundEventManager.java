@@ -12,10 +12,11 @@ import java.util.Map;
  * SoundEventManager allows {@link SoundEvent}s to be played where the class of the {@link SoundEvent}
  * is specified by an entry in the {@link Map} argument referenced by the key "class".
  */
-class SoundEventManager {
+enum SoundEventManager {
+	;
 
 
-    /**
+	/**
      * Play the {@link SoundEvent} specified by the {@link Map} argument. The {@link SoundEvent}
      * to be played is specified by an entry in the {@link Map} with key "class" and value the class of
      * the {@link SoundEvent}.

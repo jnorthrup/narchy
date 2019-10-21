@@ -37,10 +37,11 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.StringTokenizer;
 
-public class JRdpLoader {
+public enum JRdpLoader {
+	;
 
-    
-    private static final String[] identifiers = {"--user", "--password", "--domain",
+
+	private static final String[] identifiers = {"--user", "--password", "--domain",
             "--fullscreen", "--geometry", "--use_rdp5"};
 
     

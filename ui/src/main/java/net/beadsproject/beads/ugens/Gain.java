@@ -134,10 +134,7 @@ public class Gain extends UGen implements DataBeadReceiver {
 
     public @Nullable Envelope envelope() {
         UGen g = this.gainUGen;
-        if (g instanceof Envelope)
-            return ((Envelope) g);
-        else
-            return null;
+		return g instanceof Envelope ? (Envelope) g : null;
     }
 
     /*

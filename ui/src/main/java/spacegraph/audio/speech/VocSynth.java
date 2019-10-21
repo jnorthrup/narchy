@@ -60,11 +60,7 @@ public class VocSynth extends Canvas implements MouseListener, MouseMotionListen
 		int h = d.height;
 		int x = e.getX();
 		int y = e.getY();
-		if (y > h / 2) {
-			tract[x * tlength / w] = (y * 2.0 - h) / h;
-		} else {
-			tract[x * tlength / w] = (h - 2.0 * y) / h;
-		}
+		tract[x * tlength / w] = y > h / 2 ? (y * 2.0 - h) / h : (h - 2.0 * y) / h;
 		repaint(x - w / tlength - 1, 0, w * 2 / tlength + 1, h - 1);
 //		parent.calcresponse();
 	}
@@ -90,11 +86,7 @@ public class VocSynth extends Canvas implements MouseListener, MouseMotionListen
 		if (x > w) x = w - 1;
 		if (y < 1) y = 1;
 		if (y > h - 2) y = h - 2;
-		if (y > h / 2) {
-			tract[x * tlength / w] = (y * 2.0 - h) / h;
-		} else {
-			tract[x * tlength / w] = (h - 2.0 * y) / h;
-		}
+		tract[x * tlength / w] = y > h / 2 ? (y * 2.0 - h) / h : (h - 2.0 * y) / h;
 		repaint(x - w / tlength - 1, 0, w * 2 / tlength + 1, h - 1);
 //		parent.calcresponse();
 	}

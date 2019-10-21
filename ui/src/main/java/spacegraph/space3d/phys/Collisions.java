@@ -261,7 +261,7 @@ public abstract class Collisions<X> extends BulletGlobals {
                                 castResult.fraction);
 
                         boolean normalInWorldSpace = true;
-                        resultCallback.addSingleResult(localRayResult, normalInWorldSpace);
+                        resultCallback.addSingleResult(localRayResult, true);
                     }
                 }
             }
@@ -386,7 +386,7 @@ public abstract class Collisions<X> extends BulletGlobals {
                         LocalConvexResult localConvexResult = new LocalConvexResult(collidable, null, castResult.normal, castResult.hitPoint, castResult.fraction);
 
                         boolean normalInWorldSpace = true;
-                        resultCallback.addSingleResult(localConvexResult, normalInWorldSpace);
+                        resultCallback.addSingleResult(localConvexResult, true);
                     }
                 }
             }
@@ -750,7 +750,7 @@ public abstract class Collisions<X> extends BulletGlobals {
             LocalRayResult rayResult = new LocalRayResult(collidable, shapeInfo, hitNormalLocal, hitFraction);
 
             boolean normalInWorldSpace = false;
-            return resultCallback.addSingleResult(rayResult, normalInWorldSpace);
+            return resultCallback.addSingleResult(rayResult, false);
         }
     }
 

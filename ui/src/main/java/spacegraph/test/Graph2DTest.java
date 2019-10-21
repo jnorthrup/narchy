@@ -29,8 +29,10 @@ public enum Graph2DTest {;
         h.addEdgeIfNodesExist(("y"), ("yz"), ("z"));
         h.addEdgeIfNodesExist(("w"), ("wy"), ("y"));
     }
-    public static class Graph2DTest1 {
-        public static void main(String[] args) {
+    public enum Graph2DTest1 {
+		;
+
+		public static void main(String[] args) {
 
 
             Graph2D<Node<Object, Object>> sg = newSimpleGraph();
@@ -42,8 +44,10 @@ public enum Graph2DTest {;
     }
 
 
-    public static class Ujmp1 {
-        public static void main(String[] args) {
+    public enum Ujmp1 {
+		;
+
+		public static void main(String[] args) {
             SpaceGraph.window(newUjmpGraph(), 800, 800);
         }
 

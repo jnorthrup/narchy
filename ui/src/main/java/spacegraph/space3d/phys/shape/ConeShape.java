@@ -65,7 +65,6 @@ public class ConeShape extends ConvexInternalShape {
 			VectorUtil.setCoord(out, coneIndices[0], 0f);
 			VectorUtil.setCoord(out, coneIndices[1], halfHeight);
 			VectorUtil.setCoord(out, coneIndices[2], 0f);
-			return out;
 		}
 		else {
 			float v0 = VectorUtil.coord(v, coneIndices[0]);
@@ -81,8 +80,8 @@ public class ConeShape extends ConvexInternalShape {
 				VectorUtil.setCoord(out, coneIndices[1], -halfHeight);
 				VectorUtil.setCoord(out, coneIndices[2], 0f);
 			}
-			return out;
 		}
+		return out;
 	}
 
 	@Override

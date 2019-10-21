@@ -803,14 +803,10 @@ public enum OsmSpace  { ;
             GLU.gluTessEndPolygon(tobj);
 
             Consumer<GL2>[] draws = s.dbuf.toArray(ArrayUtil.EMPTY_CONSUMER_ARRAY);
-            if (draws.length == 1)
-                this.draw = draws[0];
-            else {
-                this.draw = G ->{
-                    for (Consumer<GL2> d : draws)
-                        d.accept(G);
-                };
-            }
+            this.draw = draws.length == 1 ? draws[0] : (G -> {
+                for (Consumer<GL2> d : draws)
+                    d.accept(G);
+            });
 
             s.dbuf.clear();
         }

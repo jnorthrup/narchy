@@ -514,11 +514,7 @@ public class Distance {
                     assert (0 <= index && index < chain.m_count);
 
                     m_buffer[0] = chain.m_vertices[index];
-                    if (index + 1 < chain.m_count) {
-                        m_buffer[1] = chain.m_vertices[index + 1];
-                    } else {
-                        m_buffer[1] = chain.m_vertices[0];
-                    }
+                    m_buffer[1] = index + 1 < chain.m_count ? chain.m_vertices[index + 1] : chain.m_vertices[0];
 
                     m_vertices[0].set(m_buffer[0]);
                     m_vertices[1].set(m_buffer[1]);

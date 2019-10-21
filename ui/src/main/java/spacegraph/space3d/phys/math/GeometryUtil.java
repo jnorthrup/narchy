@@ -33,7 +33,8 @@ import spacegraph.util.math.Vector4f;
  * 
  * @author jezek2
  */
-class GeometryUtil {
+enum GeometryUtil {
+	;
 
 	public static boolean isPointInsidePlanes(OArrayList<Vector4f> planeEquations, v3 point, float margin) {
 		int numbrushes = planeEquations.size();

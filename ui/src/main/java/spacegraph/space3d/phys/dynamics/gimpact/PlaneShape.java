@@ -37,7 +37,8 @@ import spacegraph.util.math.Vector4f;
  *
  * @author jezek2
  */
-class PlaneShape {
+enum PlaneShape {
+	;
 
 	private static void get_plane_equation(StaticPlaneShape shape, Vector4f equation) {
 		v3 tmp = new v3();

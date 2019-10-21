@@ -30,7 +30,8 @@ import spacegraph.space3d.phys.BulletGlobals;
  * 
  * @author jezek2
  */
-public class ScalarUtil {
+public enum ScalarUtil {
+	;
 
 	public static float fsel(float a, float b, float c) {
 		return a >= 0 ? b : c;

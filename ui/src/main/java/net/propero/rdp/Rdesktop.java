@@ -49,7 +49,8 @@ import java.net.UnknownHostException;
 
 
 
-public class Rdesktop {
+public enum Rdesktop {
+    ;
 
     /* RDP5 disconnect PDU */
     private static final int exDiscReasonNoInfo = 0x0000;
@@ -178,11 +179,7 @@ public class Rdesktop {
                 break;
 
             default:
-                if (reason > 0x1000 && reason < 0x7fff) {
-                    text = "Internal protocol error: 0x" + Integer.toHexString(reason);
-                } else {
-                    text = "Unknown reason";
-                }
+                text = reason > 0x1000 && reason < 0x7fff ? "Internal protocol error: 0x" + Integer.toHexString(reason) : "Unknown reason";
         }
         return text;
     }

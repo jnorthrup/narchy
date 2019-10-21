@@ -25,10 +25,7 @@ public class Surplier<T> extends ConstantPort<T> {
                         return; //toggled off while waiting to execute
 
                     built.updateAndGet(x -> {
-                        if (x == null)
-                            return builder.get();
-                        else
-                            return x;
+                        return x == null ? builder.get() : x;
                     });
 //                    if (!toggle.on()) {
 //                        built.set(null);

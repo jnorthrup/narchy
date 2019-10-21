@@ -121,15 +121,10 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
 
     public ScrollXY<S> view(float w, float h) {
         RectFloat nextView = RectFloat.WH(w, h);
-        if (this.view == null) {
-            this.view = nextView; //initial
-        } else {
-
-
-//            Exe.invoke(() -> { //break suspected deadlock ?
-                this.view = Util.maybeEqual(this.view, nextView);
-            //            });
-        }
+        //initial
+        //            Exe.invoke(() -> { //break suspected deadlock ?
+        //            });
+        this.view = this.view == null ? nextView : Util.maybeEqual(this.view, nextView);
         layoutModel();
         return this;
     }
@@ -310,10 +305,8 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
 
             float k = knob.asFloat();
 
-            if (!Float.isFinite(k)) //HACK
-                k = 1f;
-            else
-                k = Util.unitize(k);
+            //HACK
+            k = !Float.isFinite(k) ? 1f : Util.unitize(k);
 
             ((FloatSliderModel.Knob)slider.ui).knob = k;
 

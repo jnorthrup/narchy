@@ -6,8 +6,9 @@ import java.util.Collection;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-public class MatrixUtils {
-    private static final Pattern LINE = Pattern.compile("\\s*");
+public enum MatrixUtils {
+	;
+	private static final Pattern LINE = Pattern.compile("\\s*");
 
     public static double[][] simpleRead2DMatrix(File file) {
         return simpleRead2DMatrix(file, " ");

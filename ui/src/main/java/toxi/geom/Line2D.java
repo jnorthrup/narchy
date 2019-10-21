@@ -305,19 +305,11 @@ public class Line2D {
             float ua = na / denom;
             float ub = nb / denom;
             Vec2D i = a.interpolateTo(b, ua);
-            if (ua >= 0.0f && ua <= 1.0 && ub >= 0.0 && ub <= 1.0) {
-                isec = new LineIntersection(Type.INTERSECTING, i, ua, ub);
-            } else {
-                isec = new LineIntersection(Type.NON_INTERSECTING, i, ua, ub);
-            }
+			isec = ua >= 0.0f && ua <= 1.0 && ub >= 0.0 && ub <= 1.0 ? new LineIntersection(Type.INTERSECTING, i, ua, ub) : new LineIntersection(Type.NON_INTERSECTING, i, ua, ub);
         } else {
             if (na == 0.0 && nb == 0.0) {
-                if (distanceToPoint(l.a) == 0.0) {
-                    isec = new LineIntersection(Type.COINCIDENT, null);
-                } else {
-                    isec = new LineIntersection(Type.COINCIDENT_NO_INTERSECT,
-                            null);
-                }
+				isec = distanceToPoint(l.a) == 0.0 ? new LineIntersection(Type.COINCIDENT, null) : new LineIntersection(Type.COINCIDENT_NO_INTERSECT,
+					null);
             } else {
                 isec = new LineIntersection(Type.PARALLEL, null);
             }

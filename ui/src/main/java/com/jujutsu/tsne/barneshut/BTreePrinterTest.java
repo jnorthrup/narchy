@@ -3,9 +3,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class BTreePrinterTest {
+public enum BTreePrinterTest {
+	;
 
-    private static Node<Integer> test1() {
+	private static Node<Integer> test1() {
         Node<Integer> root = new Node<>(2);
         Node<Integer> n11 = new Node<>(7);
         Node<Integer> n12 = new Node<>(5);
@@ -86,9 +87,10 @@ class Node<T extends Comparable<?>> {
     }
 }
 
-class BTreePrinter {
+enum BTreePrinter {
+	;
 
-    public static <T extends Comparable<?>> void printNode(Node<T> root) {
+	public static <T extends Comparable<?>> void printNode(Node<T> root) {
         int maxLevel = BTreePrinter.maxLevel(root);
 
         printNodeInternal(Collections.singletonList(root), 1, maxLevel);

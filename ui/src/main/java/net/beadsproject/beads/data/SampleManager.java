@@ -16,7 +16,8 @@ import java.util.*;
  *
  * @beads.category data
  */
-class SampleManager {
+enum SampleManager {
+    ;
 
     /**
      * List of all Samples, indexed by name.
@@ -183,9 +184,8 @@ class SampleManager {
         for (String simpleName : fileNameList) {
             try {
                 Sample sample = sample(simpleName, simpleName);
-                if (!group.contains(simpleName) && sample != null) {
+                if (sample != null && group.add(sample)) {
                     if (count++ >= maxItems) break;
-                    group.add(sample);
                 }
             } catch (Exception e) {
 

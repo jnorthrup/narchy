@@ -246,11 +246,7 @@ import java.util.Random;
     @Override
     public final float angleBetween(ReadonlyVec2D v, boolean forceNormalize) {
         float theta;
-        if (forceNormalize) {
-            theta = getNormalized().dot(v.getNormalized());
-        } else {
-            theta = dot(v);
-        }
+        theta = forceNormalize ? getNormalized().dot(v.getNormalized()) : dot(v);
         return (float) Math.acos(MathUtils.clipNormalized(theta));
     }
 
@@ -831,11 +827,7 @@ import java.util.Random;
 
     final float positiveHeading() {
         double dist = Math.sqrt(x * x + y * y);
-        if (y >= 0) {
-            return (float) Math.acos(x / dist);
-        } else {
-            return (float) (Math.acos(-x / dist) + MathUtils.PI);
-        }
+        return y >= 0 ? (float) Math.acos(x / dist) : (float) (Math.acos(-x / dist) + MathUtils.PI);
     }
 
     final Vec2D reciprocal() {

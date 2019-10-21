@@ -134,9 +134,7 @@ public class SplayTree {
     public BTreeNode find(Comparable keys) {
         if (isEmpty()) return null;
         root = splay(keys, root);
-        if (!root.keyValue().equals(keys)) {
-            return null;
-        } else return root;
+		return !root.keyValue().equals(keys) ? null : root;
     }
 
     /**

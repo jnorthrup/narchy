@@ -29,9 +29,10 @@
  */
 package net.propero.rdp;
 
-public class Constants {
+public enum Constants {
+	;
 
-    public static final boolean desktop_save = true;
+	public static final boolean desktop_save = true;
 
     
 

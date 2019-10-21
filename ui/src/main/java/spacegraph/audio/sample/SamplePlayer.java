@@ -11,18 +11,18 @@ public class SamplePlayer implements SoundProducer {
     private final SoundSample sample;
     private int pos;
 
+    public SamplePlayer(float[] buf, int rate) {
+        this(new SoundSample(buf, rate));
+    }
+
     public SamplePlayer(SoundSample sample) {
         this.sample = sample;
-        pos = sample.start;
+        this.pos = sample.start;
     }
 
     @Override
     public boolean read(float[] out, int readRate) {
-        if (Util.equals(sample.rate, readRate, 1f/readRate)) {
-            return readDirect(out);
-        } else {
-            return readResampled(out, readRate);
-        }
+        return Util.equals(sample.rate, readRate, 1f / readRate) ? readDirect(out) : readResampled(out, readRate);
     }
 
     private boolean readDirect(float[] out) {
@@ -34,7 +34,7 @@ public class SamplePlayer implements SoundProducer {
         arraycopy(sample.buf, pos, out, 0, toCopy);
         pos += toCopy;
 
-        return remain > toCopy;
+        return sample.end - pos > toCopy;
     }
 
     private boolean readResampled(float[] out, int readRate) {
@@ -42,15 +42,15 @@ public class SamplePlayer implements SoundProducer {
         float pos = this.pos;
 
         float[] in = sample.buf;
-        float end = sample.end - 0.5f;
+        float end = sample.end;
 
-        for (int i = 0; i < out.length; i++) {
-            if (pos >= end)
-                return false;
-
-            float next = in[Math.round(pos)];
-            out[i] = next;
-            pos = Math.min(end, pos + step);
+        for (int i = 0; i < out.length && pos < end; i++) {
+            int posI = (int) pos;
+            float a = in[posI];
+            float b = in[posI+1];
+            float p = (pos - posI);
+            out[i] = ((a * p) + (b * (1-p)))/2;
+            pos += step;
         }
         this.pos = Math.round(pos);
         return true;

@@ -6,8 +6,10 @@ import net.beadsproject.beads.data.Sample;
 import net.beadsproject.beads.data.WaveFactory;
 import net.beadsproject.beads.ugens.*;
 
-public class LFO_Granulation_01 {
-    public static void main(String[] args) {
+public enum LFO_Granulation_01 {
+	;
+
+	public static void main(String[] args) {
         
         AudioContext ac = new AudioContext();
 

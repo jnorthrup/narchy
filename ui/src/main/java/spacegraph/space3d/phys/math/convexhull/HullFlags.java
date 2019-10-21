@@ -28,8 +28,9 @@ package spacegraph.space3d.phys.math.convexhull;
  * 
  * @author jezek2
  */
-public class HullFlags {
-	
+public enum HullFlags {
+	;
+
 	public static final int TRIANGLES     = 1;
 	public static final int REVERSE_ORDER = 1 << 1; 
 	public static final int DEFAULT       = TRIANGLES;

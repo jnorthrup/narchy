@@ -54,9 +54,7 @@ public class Clip extends UGen implements DataBeadReceiver {
                 float[] bo = bufOut[j];
                 for (int i = 0; i < bufferSize; i++) {
                     float y = bi[i];
-                    if (y < min) {
-                        bo[i] = min;
-                    } else bo[i] = Math.min(y, max);
+					bo[i] = y < min ? min : Math.min(y, max);
                 }
             }
         } else {
@@ -67,9 +65,7 @@ public class Clip extends UGen implements DataBeadReceiver {
                 max = maxUGen.getValue(0, i);
                 for (int j = 0; j < ins; j++) {
                     float y = bufIn[j][i];
-                    if (y < min) {
-                        bufOut[j][i] = min;
-                    } else bufOut[j][i] = Math.min(y, max);
+					bufOut[j][i] = y < min ? min : Math.min(y, max);
                 }
             }
         }

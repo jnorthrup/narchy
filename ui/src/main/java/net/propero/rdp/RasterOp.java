@@ -33,8 +33,9 @@ package net.propero.rdp;
 
 import org.slf4j.Logger;
 
-class RasterOp {
-    private static final Logger logger = org.slf4j.LoggerFactory.getLogger(RasterOp.class);
+enum RasterOp {
+	;
+	private static final Logger logger = org.slf4j.LoggerFactory.getLogger(RasterOp.class);
 
     private static void ropInvert(WrappedImage biDst, int[] dest, int width, int x,
                                   int y, int cx, int cy, int Bpp) {

@@ -15,9 +15,10 @@ import spacegraph.video.WebCam;
 
 import java.util.function.Function;
 
-public class SignalGraphTest {
+public enum SignalGraphTest {
+	;
 
-    public static class VideoTransformPort extends Bordering {
+	public static class VideoTransformPort extends Bordering {
 
         private final ConstantPort<VideoSource> out;
 

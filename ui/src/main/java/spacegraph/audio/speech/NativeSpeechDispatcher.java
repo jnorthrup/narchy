@@ -26,11 +26,7 @@ public class NativeSpeechDispatcher {
     }
 
     private static String stringify(Object x) {
-        if (x instanceof Object[]) {
-            return Joiner.on(" ").join((Object[])x);
-        } else {
-            return x.toString();
-        }
+        return x instanceof Object[] ? Joiner.on(" ").join((Object[]) x) : x.toString();
     }
 
     public static void speak(Object x) {

@@ -28,7 +28,8 @@ package spacegraph.space3d.phys.collision;
  * 
  * @author jezek2
  */
-public class CollisionFlags {
+public enum CollisionFlags {
+	;
 
 	/** Sets this collision object as static. */
 	public static final int STATIC_OBJECT            = 1;

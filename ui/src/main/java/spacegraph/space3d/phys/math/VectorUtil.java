@@ -31,7 +31,8 @@ import spacegraph.util.math.Vector4f;
  * 
  * @author jezek2
  */
-public class VectorUtil {
+public enum VectorUtil {
+	;;
 
 	public static int maxAxis(v3 v) {
 		int maxIndex = -1;

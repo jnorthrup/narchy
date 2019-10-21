@@ -1,15 +1,14 @@
 package nars;
 
 import org.reflections.Reflections;
-import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.container.graph.GraphEdit2D;
 import spacegraph.space2d.widget.meta.ObjectSurface;
 
 import java.util.List;
 import java.util.Set;
 
 import static java.util.stream.Collectors.toList;
+import static spacegraph.SpaceGraph.window;
 import static spacegraph.space2d.container.grid.Gridding.grid;
 
 public class Launcher {
@@ -74,12 +73,14 @@ public class Launcher {
 //                            List.of(new MainRunner(OSMTest.class))
                 )
         );
+        window(m, 800, 600);
 
 
-        GraphEdit2D g = new GraphEdit2D();
-        SpaceGraph.window(                 g, 800, 800        );
+//        GraphEdit2D g = new GraphEdit2D();
+//        SpaceGraph.window(                 g, 800, 800        );
 
-        g.add(m).posRel(0.5f, 0.5f, 0.75f);
+//        GraphEdit2D g = GraphEdit2D.graphWindow(800,800);
+//        g.add(m).posRel(0.5f, 0.5f, 0.75f);
 
     }
 

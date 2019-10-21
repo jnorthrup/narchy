@@ -32,7 +32,8 @@ import spacegraph.util.math.Quat4f;
  * 
  * @author jezek2
  */
-public class QuaternionUtil {
+public enum QuaternionUtil {
+	;
 
 	public static float getAngle(Quat4f q) {
 		float s = 2f * (float) Math.acos(q.w);

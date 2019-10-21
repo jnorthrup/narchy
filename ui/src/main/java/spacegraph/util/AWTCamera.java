@@ -49,7 +49,8 @@ import static org.eclipse.collections.impl.tuple.Tuples.pair;
  *  ScreenImage.createImage( someComponent );
  *
  */
-public class AWTCamera {
+public enum AWTCamera {
+    ;
 
     public static BufferedImage get(Component component, @Nullable BufferedImage image) {
         return get(component, image, null);
@@ -102,11 +103,7 @@ public class AWTCamera {
                 if (g2d != null)
                     g2d.dispose();
                 GraphicsConfiguration gc = component.getGraphicsConfiguration();
-                if (gc != null) {
-                    image = gc.createCompatibleImage(region.width, region.height);
-                } else {
-                    image = new BufferedImage(region.width, region.height, BufferedImage.TYPE_INT_ARGB);
-                }
+				image = gc != null ? gc.createCompatibleImage(region.width, region.height) : new BufferedImage(region.width, region.height, BufferedImage.TYPE_INT_ARGB);
                 g2d = (Graphics2D) image.getGraphics();
                 graphicsDrawers.put(component, pair = pair(new AtomicBoolean(), g2d));
             }

@@ -263,8 +263,7 @@ class Polygon {
         int j = 0;
         if (i < _nVertices[currentLoop]) j = i + 1;
         else if (i == _nVertices[currentLoop]) {
-            if (currentLoop == 0) j = 1;
-            else j = _nVertices[prevLoop] + 1;
+            j = currentLoop == 0 ? 1 : _nVertices[prevLoop] + 1;
         }
 
         return j;

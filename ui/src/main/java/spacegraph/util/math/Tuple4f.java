@@ -460,21 +460,13 @@ public abstract class Tuple4f implements java.io.Serializable, Cloneable {
      * @param t   the source tuple, which will not be modified
      */
     public final void clamp(float min, float max, Tuple4f t) {
-        if (t.x > max) {
-            x = max;
-        } else x = Math.max(t.x, min);
+		x = t.x > max ? max : Math.max(t.x, min);
 
-        if (t.y > max) {
-            y = max;
-        } else y = Math.max(t.y, min);
+		y = t.y > max ? max : Math.max(t.y, min);
 
-        if (t.z > max) {
-            z = max;
-        } else z = Math.max(t.z, min);
+		z = t.z > max ? max : Math.max(t.z, min);
 
-        if (t.w > max) {
-            w = max;
-        } else w = Math.max(t.w, min);
+		w = t.w > max ? max : Math.max(t.w, min);
 
     }
 

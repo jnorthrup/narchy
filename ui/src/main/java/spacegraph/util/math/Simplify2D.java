@@ -8,16 +8,10 @@ import java.security.InvalidParameterException;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class Simplify2D {
-	
-	
+public enum Simplify2D {
+	;
 
-	
-	
-	
-	
-	
-	
+
 	public static FasterList<v2> collinearSimplify(FasterList<v2> vertices, float collinearityTolerance) {
 		
 		int n = vertices.size();

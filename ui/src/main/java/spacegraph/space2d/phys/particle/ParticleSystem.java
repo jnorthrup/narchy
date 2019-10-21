@@ -2181,7 +2181,9 @@ public class ParticleSystem {
         }
     }
 
-    static class Test {
+    enum Test {
+        ;
+
         static boolean IsProxyInvalid(Proxy proxy) {
             return proxy.index < 0;
         }

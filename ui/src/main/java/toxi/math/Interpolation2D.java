@@ -32,9 +32,10 @@ import toxi.geom.Vec2D;
 /**
  * Implementations of 2D interpolation functions (currently only bilinear).
  */
-public class Interpolation2D {
+public enum Interpolation2D {
+	;
 
-    /**
+	/**
      * @param x
      *            x coord of point to filter
      * @param y

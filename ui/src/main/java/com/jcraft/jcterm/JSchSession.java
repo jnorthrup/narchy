@@ -88,11 +88,7 @@ public final class JSchSession {
                                          String hostname, int port, UserInfo userinfo, Proxy proxy)
             throws JSchException {
         Session session = null;
-        if (sessionFactory == null) {
-            session = getJSch().getSession(username, hostname, port);
-        } else {
-            session = sessionFactory.getSession(username, hostname, port);
-        }
+		session = sessionFactory == null ? getJSch().getSession(username, hostname, port) : sessionFactory.getSession(username, hostname, port);
         session.setTimeout(60000);
         if (password != null)
             session.setPassword(password);

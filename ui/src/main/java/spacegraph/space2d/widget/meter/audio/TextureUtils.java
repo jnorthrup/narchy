@@ -28,7 +28,8 @@ import java.nio.ByteOrder;
 
 import static com.jogamp.opengl.GL2.*;
 
-class TextureUtils {
+enum TextureUtils {
+	;
 
 //    public static Texture loadImageAsTexture_UNMODIFIED(GL inGL, String inFileName) {
 //

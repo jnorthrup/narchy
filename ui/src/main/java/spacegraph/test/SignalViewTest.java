@@ -53,7 +53,8 @@ import java.util.function.Supplier;
 import static java.util.stream.Collectors.toList;
 import static spacegraph.SpaceGraph.window;
 
-public class SignalViewTest {
+public enum SignalViewTest {
+    ;
 
     static final int capacity = 128;
 

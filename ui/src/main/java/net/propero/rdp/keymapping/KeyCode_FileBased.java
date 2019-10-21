@@ -244,17 +244,11 @@ public abstract class KeyCode_FileBased {
 
         String changes = "";
         if (state[SHIFT][BEFORE] != state[SHIFT][AFTER]) {
-            if (state[SHIFT][BEFORE])
-                changes += ((char) 0x2a) + up;
-            else
-                changes += ((char) 0x2a) + down;
+            changes += state[SHIFT][BEFORE] ? ((char) 0x2a) + up : ((char) 0x2a) + down;
         }
 
         if (state[CTRL][BEFORE] != state[CTRL][AFTER]) {
-            if (state[CTRL][BEFORE])
-                changes += ((char) 0x1d) + up;
-            else
-                changes += ((char) 0x1d) + down;
+            changes += state[CTRL][BEFORE] ? ((char) 0x1d) + up : ((char) 0x1d) + down;
         }
 
         if (Options.altkey_quiet) {
@@ -283,10 +277,7 @@ public abstract class KeyCode_FileBased {
 
         } else {
             if (state[ALT][BEFORE] != state[ALT][AFTER]) {
-                if (state[ALT][BEFORE])
-                    changes += ((char) 0x38) + up;
-                else
-                    changes += ((char) 0x38) + down;
+                changes += state[ALT][BEFORE] ? ((char) 0x38) + up : ((char) 0x38) + down;
             }
         }
 
@@ -446,10 +437,7 @@ public abstract class KeyCode_FileBased {
 
         MapDef d = getDef(e);
 
-        if (d != null) {
-            return d.getScancode();
-        } else
-            return -1;
+        return d != null ? d.getScancode() : -1;
     }
 
     private void registerKeyEvent(KeyEvent e, MapDef m) {

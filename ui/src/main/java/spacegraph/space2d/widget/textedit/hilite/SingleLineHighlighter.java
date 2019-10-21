@@ -4,6 +4,7 @@ import spacegraph.space2d.widget.textedit.view.LineView;
 
 import java.awt.*;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class SingleLineHighlighter {
     public static void main(String[] args) {
@@ -107,6 +108,7 @@ public class SingleLineHighlighter {
     }
 
     private static class WordMatchRule extends SyntaxRule {
+        private static final Pattern wordMatcherer = Pattern.compile(wordMatcher);
         final String word;
         final TextStyle highlight;
 
@@ -127,8 +129,8 @@ public class SingleLineHighlighter {
         }
 
         private static boolean isFiniteWord(String line, int s, int e) {
-            return (s <= 0 || !Character.toString(line.charAt(s - 1)).matches(wordMatcher)) &&
-                    (e >= line.length() - 1 || !Character.toString(line.charAt(e)).matches(wordMatcher));
+            return (s <= 0 || !wordMatcherer.matcher(Character.toString(line.charAt(s - 1))).matches()) &&
+                    (e >= line.length() - 1 || !wordMatcherer.matcher(Character.toString(line.charAt(e))).matches());
         }
     }
 
@@ -234,10 +236,11 @@ public class SingleLineHighlighter {
             int index_of_match = -1;
             while ((index_of_match = s.indexOf(match, index_of_match + 1)) != -1) {
                 int index_of_word = index_of_match;
-                while (index_of_word >= 0 && !Character.toString(s.charAt(index_of_word)).matches(wordMatcher))
+                boolean wm = (WordMatchRule.wordMatcherer.matcher(Character.toString(s.charAt(index_of_word))).matches());
+                while (index_of_word >= 0 && !wm)
                     index_of_word--;
                 int end_index_of_word = index_of_word;
-                while (index_of_word >= 0 && Character.toString(s.charAt(index_of_word)).matches(wordMatcher))
+                while (index_of_word >= 0 && wm)
                     index_of_word--;
                 int start_index_of_word = index_of_word;
                 if (start_index_of_word >= 0 && end_index_of_word > 0 && start_index_of_word != end_index_of_word)

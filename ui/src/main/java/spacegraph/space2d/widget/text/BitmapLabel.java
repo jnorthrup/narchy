@@ -10,7 +10,7 @@ import spacegraph.util.math.Color4f;
 
 public class BitmapLabel extends AbstractLabel {
 
-    private BitmapTextGrid view;
+    private final BitmapTextGrid view;
 //    static final float minPixelsToBeVisible = 7;
 
     private volatile RectFloat textBounds;
@@ -48,13 +48,9 @@ public class BitmapLabel extends AbstractLabel {
 
             int rows = 1 + Texts.countRows(next, '\n');
             boolean resized;
-            if (rows == 1) {
-                resized = view.resize(next.length(), 1);
-            } else {
-                //HACK do better
-                //int cols = Arrays.stream(next.split("\n")).mapToInt(String::length).max().getAsInt();
-                resized = view.resize(Texts.countCols(next), rows);
-            }
+            //HACK do better
+            //int cols = Arrays.stream(next.split("\n")).mapToInt(String::length).max().getAsInt();
+            resized = rows == 1 ? view.resize(next.length(), 1) : view.resize(Texts.countCols(next), rows);
 
             super.text(next);
 

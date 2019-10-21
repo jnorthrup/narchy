@@ -210,12 +210,7 @@ public final class Dbvt {
 	}
 
 	private static int countLeaves(Node node) {
-		if (node.isinternal()) {
-			return countLeaves(node.childs[0]) + countLeaves(node.childs[1]);
-		}
-		else {
-			return 1;
-		}
+		return node.isinternal() ? countLeaves(node.childs[0]) + countLeaves(node.childs[1]) : 1;
 	}
 
 	private static void extractLeaves(Node node, OArrayList<Node> leaves) {
@@ -637,13 +632,8 @@ public final class Dbvt {
 		else {
 			if (!root.isLeaf()) {
 				do {
-					if (DbvtAabbMm.Proximity(root.childs[0].volume, leaf.volume) <
-					    DbvtAabbMm.Proximity(root.childs[1].volume, leaf.volume)) {
-						root = root.childs[0];
-					}
-					else {
-						root = root.childs[1];
-					}
+					root = DbvtAabbMm.Proximity(root.childs[0].volume, leaf.volume) <
+						DbvtAabbMm.Proximity(root.childs[1].volume, leaf.volume) ? root.childs[0] : root.childs[1];
 				}
 				while (!root.isLeaf());
 			}

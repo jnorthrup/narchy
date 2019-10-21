@@ -124,7 +124,7 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
     public PhySurface add(Surface w) {
         return this.w.computeIfAbsent(w, (ww->{
             Body2D body = new Body2D(BodyType.DYNAMIC, physics);
-            PhySurface<?> wd = ww instanceof Windo ?
+            PhySurface<?> wd = !(ww instanceof Windo) ?
                     new PhySurface(ww, body)
                     :
                     new PhyWindo((Windo) ww, body);
@@ -252,12 +252,8 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
 
     @Override
     public Link link(Wire w) {
-        if ((w.a instanceof WeakSurface) ^ (w.b instanceof WeakSurface)) {
-            //one is a dependent of the other
-            return new GlueLink(w);
-        } else {
-            return new SnakeLink(w);
-        }
+        //one is a dependent of the other
+        return (w.a instanceof WeakSurface) ^ (w.b instanceof WeakSurface) ? new GlueLink(w) : new SnakeLink(w);
     }
 
     @Override
@@ -321,11 +317,8 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
 
         AABB physicsBounds(Body2D x) {
             Fixture f = x.fixtures();
-            if (f != null) {
-                return f.getAABB(0);
-            } else {
-                return new AABB(); //empty
-            }
+            //empty
+            return f != null ? f.getAABB(0) : new AABB();
 
         }
 
@@ -386,31 +379,26 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
 
             Body2D a = sourceBody();
             Body2D b = targetBody();
-            if (a != null && b != null && a.fixtures != null && b.fixtures != null) {
-//                RayCastOutput out12 = new RayCastOutput();
-//                RayCastInput in12 = new RayCastInput();
-//                in12.p2.setAt(a.pos);
-//                in12.p1.setAt(b.pos);
-//                in12.maxFraction = 1f;
-//                if (a.fixtures.raycast(out12, in12, 0)) {
-//                    RayCastInput in21 = new RayCastInput();
-//                    in21.p1.setAt(a.pos);
-//                    in21.p2.setAt(b.pos);
-//                    in21.maxFraction = 1-out12.fraction;
-//                    RayCastOutput out21 = new RayCastOutput();
-//                    if (b.fixtures.raycast(out21, in21, 0)) {
-//                        return (out21.fraction + out12.fraction) * in12.p1.distance(in12.p2);
-//                    }
-//
-//                }
-//                float ad = a.fixtures.distance(b.pos, 0, b.pos.sub(a.pos));
-//                float bd = b.fixtures.distance(a.pos, 0, a.pos.sub(b.pos));
-//                return (ad + bd) * (1f+margin);
-
-                return (sourceRadius() + targetRadius()) * (1f + margin);
-            } else {
-                return 0;
-            }
+            //                RayCastOutput out12 = new RayCastOutput();
+            //                RayCastInput in12 = new RayCastInput();
+            //                in12.p2.setAt(a.pos);
+            //                in12.p1.setAt(b.pos);
+            //                in12.maxFraction = 1f;
+            //                if (a.fixtures.raycast(out12, in12, 0)) {
+            //                    RayCastInput in21 = new RayCastInput();
+            //                    in21.p1.setAt(a.pos);
+            //                    in21.p2.setAt(b.pos);
+            //                    in21.maxFraction = 1-out12.fraction;
+            //                    RayCastOutput out21 = new RayCastOutput();
+            //                    if (b.fixtures.raycast(out21, in21, 0)) {
+            //                        return (out21.fraction + out12.fraction) * in12.p1.distance(in12.p2);
+            //                    }
+            //
+            //                }
+            //                float ad = a.fixtures.distance(b.pos, 0, b.pos.sub(a.pos));
+            //                float bd = b.fixtures.distance(a.pos, 0, a.pos.sub(b.pos));
+            //                return (ad + bd) * (1f+margin);
+            return a != null && b != null && a.fixtures != null && b.fixtures != null ? (sourceRadius() + targetRadius()) * (1f + margin) : 0;
         }
     }
 

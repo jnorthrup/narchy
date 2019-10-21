@@ -107,26 +107,18 @@ public class TreeMap2D<X> extends DynamicLayout2D<X> {
             assert(ratio==ratio): p + " " + rowSize;
 
             RectFloat r;
-            if (isHorizontal) {
-                r = RectFloat.X0Y0WH(bounds.x,
-                        bounds.y + bounds.h * offset,
-                        bounds.w * rowRatio,
-                        bounds.h * ratio);
-            } else {
-                r = RectFloat.X0Y0WH(
-                        bounds.x + bounds.w * offset,
-                        bounds.y,
-                        bounds.w * ratio,
-                        bounds.h * rowRatio);
-            }
+			r = isHorizontal ? RectFloat.X0Y0WH(bounds.x,
+				bounds.y + bounds.h * offset,
+				bounds.w * rowRatio,
+				bounds.h * ratio) : RectFloat.X0Y0WH(
+				bounds.x + bounds.w * offset,
+				bounds.y,
+				bounds.w * ratio,
+				bounds.h * rowRatio);
             x.set(r);
             offset += ratio;
         }
-        if (isHorizontal) {
-            return RectFloat.X0Y0WH(bounds.x + bounds.w * rowRatio, bounds.y, bounds.w - bounds.w * rowRatio, bounds.h);
-        } else {
-            return RectFloat.X0Y0WH(bounds.x, bounds.y + bounds.h * rowRatio, bounds.w, bounds.h - bounds.h * rowRatio);
-        }
+		return isHorizontal ? RectFloat.X0Y0WH(bounds.x + bounds.w * rowRatio, bounds.y, bounds.w - bounds.w * rowRatio, bounds.h) : RectFloat.X0Y0WH(bounds.x, bounds.y + bounds.h * rowRatio, bounds.w, bounds.h - bounds.h * rowRatio);
 
     }
 

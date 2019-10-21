@@ -2,8 +2,10 @@ package spacegraph.space2d.phys.common;
 
 import java.lang.reflect.Array;
 
-public class BufferUtils {
-    /**
+public enum BufferUtils {
+	;
+
+	/**
      * Reallocate a buffer.
      */
     public static <T> T[] reallocateBuffer(Class<T> klass, T[] oldBuffer, int oldCapacity,

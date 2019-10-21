@@ -4,6 +4,7 @@ import jcog.data.list.FasterList;
 import jcog.math.v2;
 import spacegraph.space2d.phys.callbacks.ContactImpulse;
 import spacegraph.space2d.phys.collision.WorldManifold;
+import spacegraph.space2d.phys.common.MathUtils;
 import spacegraph.space2d.phys.common.PlatformMathUtils;
 import spacegraph.space2d.phys.dynamics.Dynamics2D;
 import spacegraph.space2d.phys.dynamics.Fixture;
@@ -376,7 +377,7 @@ public class Smasher {
                 v2 p2Next = p2.cycleGet(firstV.index + 1);
                 v2 p1Back = p1.cycleGet((firstV.p1 == p1 ? firstV.i1 : firstV.i2) + 1);
 
-                if (PlatformMathUtils.siteDef(p1Back, firstV, p2Next) >= 0) {
+                if (MathUtils.siteDef(p1Back, firstV, p2Next) >= 0) {
                     break;
                 }
             }
@@ -539,7 +540,7 @@ public class Smasher {
             if (v.next != null && !v.visited) {
                 Polygon p = new Polygon();
                 for (GraphVertex iterator = v; !iterator.visited; iterator = iterator.next) {
-                    if (PlatformMathUtils.siteDef(iterator.next.value, iterator.value, iterator.prev.value) != 0) {
+                    if (MathUtils.siteDef(iterator.next.value, iterator.value, iterator.prev.value) != 0) {
                         p.add(iterator.value);
                     }
                     iterator.visited = true;

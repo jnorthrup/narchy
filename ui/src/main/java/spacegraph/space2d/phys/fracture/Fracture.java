@@ -228,11 +228,7 @@ public final class Fracture {
     private static boolean equals(Fixture f1, Fixture f2) {
         PolygonFixture p1 = f1.polygon;
         PolygonFixture p2 = f2.polygon;
-        if (p1 != null && p2 != null) {
-            return p1 == p2;
-        } else {
-            return f1 == f2;
-        }
+        return p1 != null && p2 != null ? p1 == p2 : f1 == f2;
     }
 
     @Override

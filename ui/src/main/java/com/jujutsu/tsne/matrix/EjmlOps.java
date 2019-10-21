@@ -7,7 +7,8 @@ import org.ejml.data.DMatrixRMaj;
 import static org.ejml.dense.row.CommonOps_DDRM.divide;
 import static org.ejml.dense.row.CommonOps_DDRM.sumCols;
 
-public class EjmlOps {
+public enum EjmlOps {
+	;
 
 	public static void maximize(DMatrix p, double minval) {
 		int rows = p.getNumRows();

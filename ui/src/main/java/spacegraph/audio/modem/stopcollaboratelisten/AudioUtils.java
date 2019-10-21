@@ -20,7 +20,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * @author CVL
  */
 
-public class AudioUtils {
+public enum AudioUtils {
+	;
 
 	/*
     //the default format for reading and writing audio information

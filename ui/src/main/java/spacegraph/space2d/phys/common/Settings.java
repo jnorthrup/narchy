@@ -30,9 +30,10 @@ import static jcog.Util.sqr;
  * Global tuning constants based on MKS units and various integer maximums (vertices per shape,
  * pairs, etc.).
  */
-public class Settings {
+public enum Settings {
+	;
 
-    /**
+	/**
      * A "close to zero" float epsilon value for use
      */
     public static final float EPSILON =

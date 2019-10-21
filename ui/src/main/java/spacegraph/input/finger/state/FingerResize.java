@@ -170,9 +170,6 @@ public abstract class FingerResize extends Dragging {
     }
 
     public @Nullable FingerResize mode(DragEdit mode) {
-        if (null == (this.mode = mode))
-            return null;
-        else
-            return this;
+		return null == (this.mode = mode) ? null : this;
     }
 }

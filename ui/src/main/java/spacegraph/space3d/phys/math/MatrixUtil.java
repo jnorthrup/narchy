@@ -38,8 +38,9 @@ import static spacegraph.space3d.phys.math.VectorUtil.setCoord;
  * 
  * @author jezek2
  */
-public class MatrixUtil {
-	
+public enum MatrixUtil {
+	;;
+
 	public static void scale(Matrix3f dest, Matrix3f mat, v3 s) {
 		float sx = s.x;
 		dest.m00 = mat.m00 * sx;

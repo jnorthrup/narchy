@@ -11,9 +11,10 @@ import spacegraph.space2d.widget.button.AbstractButton;
 import spacegraph.space2d.widget.text.BitmapLabel;
 
 /** hover / tooltip tests */
-public class HoverTest {
+public enum HoverTest {
+	;
 
-    public static void main(String[] args) {
+	public static void main(String[] args) {
         SpaceGraph.window(hoverTest(), 500, 500);
     }
 

@@ -336,17 +336,11 @@ public abstract class Tuple3i implements java.io.Serializable, Cloneable {
      *  @param t   the source tuple, which will not be modified
      */
     public final void clamp(int min, int max, Tuple3i t) {
-        if( t.x > max ) {
-	    x = max;
-        } else x = Math.max(t.x, min);
+		x = t.x > max ? max : Math.max(t.x, min);
 
-        if( t.y > max ) {
-	    y = max;
-        } else y = Math.max(t.y, min);
+		y = t.y > max ? max : Math.max(t.y, min);
 
-        if( t.z > max ) {
-	    z = max;
-        } else z = Math.max(t.z, min);
+		z = t.z > max ? max : Math.max(t.z, min);
     }
 
 

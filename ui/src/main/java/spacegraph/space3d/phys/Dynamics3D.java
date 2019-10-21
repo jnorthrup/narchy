@@ -930,12 +930,8 @@ public class Dynamics3D<X> extends Collisions<X> {
 
             v3 relativeVelocity = new v3();
             relativeVelocity.sub(linVelA, linVelB);
-            
-            if (convexResult.hitNormalLocal.dot(relativeVelocity) >= -allowedPenetration) {
-                return 1f;
-            } else {
-                return super.addSingleResult(convexResult, normalInWorldSpace);
-            }
+
+            return convexResult.hitNormalLocal.dot(relativeVelocity) >= -allowedPenetration ? 1f : super.addSingleResult(convexResult, normalInWorldSpace);
         }
 
         @Override

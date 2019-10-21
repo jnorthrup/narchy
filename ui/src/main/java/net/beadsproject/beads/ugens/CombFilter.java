@@ -131,9 +131,7 @@ public class CombFilter extends IIRFilter {
      * @return This CombFilter instance.
      */
     private CombFilter setDelay(int delay) {
-        if (delay < 1) {
-            this.delay = 1;
-        } else this.delay = Math.min(delay, maxDelay);
+        this.delay = delay < 1 ? 1 : Math.min(delay, maxDelay);
 
         if (isDelayStatic) {
             delayUGen.setValue(delay);

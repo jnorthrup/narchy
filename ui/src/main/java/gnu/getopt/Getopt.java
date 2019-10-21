@@ -1000,13 +1000,11 @@ public class Getopt  {
                     finished = true;
                 } else if (argv[optind].isEmpty() || argv[optind].charAt(0) != '-' ||
                         "-".equals(argv[optind])) {
-                    if (ordering == REQUIRE_ORDER) {
-                        finished = true;
-                    } else {
+                    if (ordering != REQUIRE_ORDER) {
                         optarg = argv[optind++];
                         result = 1;
-                        finished = true;
                     }
+                    finished = true;
 
                 } else {
                     nextchar = argv[optind].substring(argv[optind].startsWith("--") ? 2 : 1);
@@ -1112,13 +1110,12 @@ public class Getopt  {
 
                                 if (longopt_handled) {
                                     result = c;
-                                    finished = true;
                                 } else {
                                     nextchar = null;
                                     ++optind;
                                     result = 'W';
-                                    finished = true;
                                 }
+                                finished = true;
                             }
 
                         }

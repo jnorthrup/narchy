@@ -100,10 +100,7 @@ public class TypeHandlerList {
     }
 
     public TypeHandler getFirst() {
-        if (count > 0)
-            return (TypeHandler) handlers.get(0);
-        else
-            return null;
+		return count > 0 ? (TypeHandler) handlers.get(0) : null;
     }
 
     public Iterator iterator() {

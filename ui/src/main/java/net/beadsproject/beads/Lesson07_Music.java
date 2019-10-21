@@ -9,7 +9,9 @@ import net.beadsproject.beads.ugens.*;
 
 class Lesson07_Music {
 
-    public static class Music1 {
+    public enum Music1 {
+        ;
+
         public static void main(String[] args) {
 
             AudioContext ac = new AudioContext();

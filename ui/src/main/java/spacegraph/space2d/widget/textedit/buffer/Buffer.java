@@ -184,12 +184,8 @@ public class Buffer {
         if (s.isEmpty()) {
             return isEmpty();
         } else {
-            if (lines.isEmpty())
-                return false;
-            else {
-                //TODO optimize without necessarily constructing String
-                return text().equals(s);
-            }
+			//TODO optimize without necessarily constructing String
+			return lines.isEmpty() ? false : text().equals(s);
         }
     }
 

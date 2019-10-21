@@ -31,7 +31,8 @@ package net.propero.rdp;
 
 import java.awt.image.DirectColorModel;
 
-public class Options {
+public enum Options {
+    ;
 
     public static final int DIRECT_BITMAP_DECOMPRESSION = 0;
 
@@ -106,10 +107,7 @@ public class Options {
     public static void set_bpp(int server_bpp) {
         Options.server_bpp = server_bpp;
         Options.Bpp = (server_bpp + 7) / 8;
-        if (server_bpp == 8)
-            bpp_mask = 0xFF;
-        else
-            bpp_mask = 0xFFFFFF;
+		bpp_mask = server_bpp == 8 ? 0xFF : 0xFFFFFF;
 
         DirectColorModel colour_model = new DirectColorModel(24, 0xFF0000, 0x00FF00, 0x0000FF);
     }

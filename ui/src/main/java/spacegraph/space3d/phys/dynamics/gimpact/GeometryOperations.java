@@ -36,7 +36,8 @@ import spacegraph.util.math.Vector4f;
  *
  * @author jezek2
  */
-class GeometryOperations {
+enum GeometryOperations {
+	;
 
 	private static final float PLANEDIREPSILON = 0.0000001f;
 	public static final float PARALELENORMALS = 0.000001f;

@@ -474,9 +474,6 @@ public final class EmulatorVT100 extends TerminalEmulator {
                                 b = getChar();
                                 switch (b) {
                                     case 'h':
-
-
-                                        continue;
                                     case 'l':
 
 

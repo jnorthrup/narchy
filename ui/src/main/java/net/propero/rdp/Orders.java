@@ -288,12 +288,9 @@ public class Orders {
 
         Bitmap bitmap;
         if (compressed) {
-            if (Bpp == 1)
-                bmpdataInt = Bitmap.convertImage(Bitmap.decompress(width,
-                        height, bufsize, data, 1), 1);
-            else
-                bmpdataInt = Bitmap.decompressInt(width, height, bufsize, data,
-                        Bpp);
+			bmpdataInt = Bpp == 1 ? Bitmap.convertImage(Bitmap.decompress(width,
+				height, bufsize, data, 1), 1) : Bitmap.decompressInt(width, height, bufsize, data,
+				Bpp);
 
             bitmap = new Bitmap(bmpdataInt, width, height, 0, 0);
         } else {
@@ -1260,11 +1257,7 @@ public class Orders {
                             }
                         }
                     }
-                    if (i + 2 < length) {
-                        i += 3;
-                    } else {
-                        i += 2;
-                    }
+					i += i + 2 < length ? 3 : 2;
                     length -= i;
                     ptext = i;
                     i = 0;

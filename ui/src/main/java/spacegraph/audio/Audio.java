@@ -4,6 +4,7 @@ import jcog.Util;
 import jcog.WTF;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import spacegraph.audio.sample.SamplePlayer;
 
 import javax.sound.sampled.*;
 import java.io.File;
@@ -191,6 +192,10 @@ public class Audio implements Runnable {
 
     public <S extends SoundProducer> Sound<S> play(S p) {
 	    return play(p, 1, 1, 0);
+    }
+
+    public <S extends SoundProducer> Sound play(float[] buffer, int rate) {
+	    return play((SoundProducer)new SamplePlayer(buffer,rate));
     }
 
     public <S extends SoundProducer> Sound<S> play(S p, float volume, float priority, float balance) {

@@ -33,7 +33,8 @@ import jcog.math.v3;
  *
  * @author jezek2
  */
-public class GImpactMassUtil {
+public enum GImpactMassUtil {
+	;
 
 	public static v3 get_point_inertia(v3 point, float mass, v3 out) {
 		float x2 = point.x * point.x;

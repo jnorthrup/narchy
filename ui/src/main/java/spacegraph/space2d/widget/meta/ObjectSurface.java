@@ -205,10 +205,7 @@ public class ObjectSurface extends MutableUnitContainer<Surface> {
 
                 String l = relationLabel(relation);
 
-                if (!l.isEmpty())
-                    return LabeledPane.the(l, xx);
-                else
-                    return xx;
+            return !l.isEmpty() ? LabeledPane.the(l, xx) : xx;
             //});
         });
 //        classer.put(Surface.class, (Surface x, Object relation) -> {

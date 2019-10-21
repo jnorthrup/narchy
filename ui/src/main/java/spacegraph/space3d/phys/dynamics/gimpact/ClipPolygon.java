@@ -38,8 +38,9 @@ import spacegraph.util.math.Vector4f;
  *
  * @author jezek2
  */
-class ClipPolygon {
-	
+enum ClipPolygon {
+	;
+
 	public static float distance_point_plane(Vector4f plane, v3 point) {
 		return VectorUtil.dot3(point, plane) - plane.w;
 	}

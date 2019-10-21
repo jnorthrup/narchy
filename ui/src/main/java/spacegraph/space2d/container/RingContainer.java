@@ -34,7 +34,7 @@ public abstract class RingContainer<X extends Surface> extends EmptyContainer {
 
 
     /** current time */
-    protected AtomicInteger y = new AtomicInteger(0);
+    protected final AtomicInteger y = new AtomicInteger(0);
 
 
     float[] coords = null;

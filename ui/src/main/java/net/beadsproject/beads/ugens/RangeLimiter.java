@@ -40,9 +40,7 @@ public class RangeLimiter extends UGen {
             float[] bo = bufOut[j];
             for (int i = 0; i < bufferSize; i++) {
                 float y;
-                if ((y = bi[i]) > 1.0f) {
-                    bo[i] = 1f;
-                } else bo[i] = Math.max(y, -1f);
+				bo[i] = (y = bi[i]) > 1.0f ? 1f : Math.max(y, -1f);
             }
         }
     }

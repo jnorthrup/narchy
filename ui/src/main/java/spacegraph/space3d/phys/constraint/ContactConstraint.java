@@ -39,8 +39,9 @@ import spacegraph.util.math.Matrix3f;
  * 
  * @author jezek2
  */
-public class ContactConstraint {
-	
+public enum ContactConstraint {
+	;
+
 	public static final ContactSolverFunc resolveSingleCollision = new ContactSolverFunc() {
 		@Override
         public float resolveContact(Body3D body1, Body3D body2, ManifoldPoint contactPoint, ContactSolverInfo info) {

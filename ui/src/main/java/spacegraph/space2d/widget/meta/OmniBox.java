@@ -208,11 +208,7 @@ public class OmniBox extends Widget {
 
     public static void popup(String src, Object x) {
         Surface surface;
-        if (x instanceof String || x.getClass().isPrimitive() || x instanceof Number) {
-            surface = new VectorLabel(x.toString());
-        } else {
-            surface = new ObjectSurface(x);
-        }
+		surface = x instanceof String || x.getClass().isPrimitive() || x instanceof Number ? new VectorLabel(x.toString()) : new ObjectSurface(x);
 
         SpaceGraph.window(LabeledPane.the(src, surface), 800, 800);
     }

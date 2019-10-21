@@ -4,7 +4,8 @@ import jcog.math.v2;
 
 import java.util.ArrayList;
 
-public class Triangulation {
+public enum Triangulation {
+	;
 //    /**
 //     * Set this to TRUE to obtain file with name debugFileName with the
 //     * log about triangulation

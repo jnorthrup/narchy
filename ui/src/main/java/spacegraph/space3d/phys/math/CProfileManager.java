@@ -40,7 +40,8 @@ import java.util.Objects;
  * 
  * @author jezek2
  */
-public class CProfileManager {
+public enum CProfileManager {
+	;
 
 	private static final CProfileNode root = new CProfileNode("Root", null);
 	private static CProfileNode currentNode = root;

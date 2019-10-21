@@ -34,7 +34,8 @@ import static jcog.math.v3.v;
  * 
  * @author jezek2
  */
-public class AabbUtil2 {
+public enum AabbUtil2 {
+	;
 
 	public static void aabbExpand(v3 aabbMin, v3 aabbMax, v3 expansionMin, v3 expansionMax) {
 		aabbMin.add(expansionMin);

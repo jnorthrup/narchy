@@ -471,10 +471,8 @@ public class Plot2D extends Widget {
             @Override
             public float get(int index) {
                 float[] ii = this.items;
-                if (ii.length > index)
-                    return ii[index];
-                else
-                    return Float.NaN; //HACK
+                //HACK
+                return ii.length > index ? ii[index] : Float.NaN;
             }
         }
     }

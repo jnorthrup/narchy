@@ -71,10 +71,7 @@ public class Windo extends MutableUnitContainer {
         if (!canDrag)
             potentialDragMode = null;
 
-        if (canDrag && drag(finger))
-            return this;
-        else
-            return other;
+        return canDrag && drag(finger) ? this : other;
 
     }
 

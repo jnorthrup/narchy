@@ -31,7 +31,7 @@ package net.propero.rdp;
 
 import java.awt.datatransfer.DataFlavor;
 
-public class Utilities_Localised extends Utilities {
+public class Utilities_Localised implements Utilities {
 
     public static final DataFlavor imageFlavor = DataFlavor.imageFlavor;
 

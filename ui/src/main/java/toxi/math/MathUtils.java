@@ -32,7 +32,8 @@ import java.util.Random;
 /**
  * Miscellaneous math utilities.
  */
-public final class MathUtils {
+public enum MathUtils {
+    ;
 
     public static final float THIRD = 1f / 3;
 
@@ -689,10 +690,6 @@ public final class MathUtils {
     @Deprecated
     public static float sqrt(float x) {
         x = fastInverseSqrt(x);
-        if (x > 0) {
-            return 1.0f / x;
-        } else {
-            return 0;
-        }
+        return x > 0 ? 1.0f / x : 0;
     }
 }

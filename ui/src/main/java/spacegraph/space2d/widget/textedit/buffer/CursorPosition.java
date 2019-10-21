@@ -12,11 +12,7 @@ public class CursorPosition implements Comparable<CursorPosition> {
     @Override
     public int compareTo(CursorPosition o) {
         int rowCompare = Integer.compare(this.row, o.row);
-        if (rowCompare == 0) {
-            return Integer.compare(this.col, o.col);
-        } else {
-            return rowCompare;
-        }
+        return rowCompare == 0 ? Integer.compare(this.col, o.col) : rowCompare;
     }
 
     @Override

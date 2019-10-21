@@ -540,12 +540,8 @@ public class DynamicTree implements BroadPhaseStrategy {
                 break;
             }
 
-            
-            if (cost1 < cost2) {
-                index = child1;
-            } else {
-                index = child2;
-            }
+
+			index = cost1 < cost2 ? child1 : child2;
         }
 
         DynamicTreeNode sibling = index;

@@ -84,19 +84,11 @@ public class TimeStamp {
     }
 
     public boolean isBefore(TimeStamp other) {
-        if (timeStep < other.timeStep) {
-            return true;
-        } else {
-            return timeStep == other.timeStep && timeSamples < other.timeSamples;
-        }
+		return timeStep < other.timeStep ? true : timeStep == other.timeStep && timeSamples < other.timeSamples;
     }
 
     public boolean isAfter(TimeStamp other) {
-        if (timeStep > other.timeStep) {
-            return true;
-        } else {
-            return timeStep == other.timeStep && timeSamples > other.timeSamples;
-        }
+		return timeStep > other.timeStep ? true : timeStep == other.timeStep && timeSamples > other.timeSamples;
     }
 
     /**

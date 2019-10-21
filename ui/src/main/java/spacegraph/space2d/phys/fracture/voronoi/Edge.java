@@ -73,10 +73,6 @@ class Edge {
      * @return Vrati index hrany
      */
     static int index(int i1, int i2) {
-        if (i1 < i2) {
-            return i1 << 8 | i2;
-        } else {
-            return i2 << 8 | i1;
-        }
+		return i1 < i2 ? i1 << 8 | i2 : i2 << 8 | i1;
     }
 }

@@ -18,7 +18,8 @@ import java.util.Random;
  *
  * @author ollie
  */
-public final class AudioUtils {
+public enum AudioUtils {
+    ;
 
     /**
      * A handy random number generator.

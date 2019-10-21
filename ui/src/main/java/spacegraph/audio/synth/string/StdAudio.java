@@ -36,9 +36,10 @@ import java.util.Arrays;
  * @author Robert Sedgewick
  * @author Kevin Wayne
  */
-final class StdAudio {
+enum StdAudio {
+	;
 
-    /**
+	/**
      * The sample rate - 44,100 Hz for CD quality audio.
      */
     private static final int SAMPLE_RATE = 44100;
@@ -53,11 +54,7 @@ final class StdAudio {
     private static byte[] buffer;         // our internal buffer
     private static int bufferSize = 0;    // number of samples currently in internal buffer
 
-    private StdAudio() {
-        // can not instantiate
-    }
-
-    // static initializer
+	// static initializer
     static {
         init();
     }

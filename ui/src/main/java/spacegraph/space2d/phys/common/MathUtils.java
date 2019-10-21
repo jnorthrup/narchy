@@ -53,10 +53,13 @@ import java.util.Random;
 /**
  * A few math methods that don't fit very well anywhere else.
  */
-public class MathUtils extends PlatformMathUtils {
+public class MathUtils  {
     public static final float PI = (float) Math.PI;
     public static final float TWOPI = (float) (Math.PI * 2);
     public static final float INV_PI = 1f / PI;
+    public static final float SHIFT23 = 1 << 23;
+    public static final float INV_SHIFT23 = 1.0f / SHIFT23;
+    public static final double DEFICIT = 0.0001;
     private static final float HALF_PI = PI / 2;
     public static final float QUARTER_PI = PI / 4;
     public static final float THREE_HALVES_PI = TWOPI - HALF_PI;
@@ -96,12 +99,8 @@ public class MathUtils extends PlatformMathUtils {
                 x %= index;
             }
 
-            
-            if (index == Settings.SINCOS_LUT_LENGTH - 1) {
-                return ((1 - x) * sinLUT[index] + x * sinLUT[0]);
-            } else {
-                return ((1 - x) * sinLUT[index] + x * sinLUT[index + 1]);
-            }
+
+			return index == Settings.SINCOS_LUT_LENGTH - 1 ? (1 - x) * sinLUT[index] + x * sinLUT[0] : (1 - x) * sinLUT[index] + x * sinLUT[index + 1];
 
         } else {
             return sinLUT[MathUtils.round(x / Settings.SINCOS_LUT_PRECISION) % Settings.SINCOS_LUT_LENGTH];
@@ -114,11 +113,7 @@ public class MathUtils extends PlatformMathUtils {
     }
 
     public static int floor(float x) {
-        if (Settings.FAST_FLOOR) {
-            return fastFloor(x);
-        } else {
-            return (int) StrictMath.floor(x);
-        }
+		return Settings.FAST_FLOOR ? fastFloor(x) : (int) StrictMath.floor(x);
     }
 
     private static int fastFloor(float x) {
@@ -130,11 +125,7 @@ public class MathUtils extends PlatformMathUtils {
     }
 
     public static int ceil(float x) {
-        if (Settings.FAST_CEIL) {
-            return fastCeil(x);
-        } else {
-            return (int) StrictMath.ceil(x);
-        }
+		return Settings.FAST_CEIL ? fastCeil(x) : (int) StrictMath.ceil(x);
     }
 
     private static int fastCeil(float x) {
@@ -146,11 +137,7 @@ public class MathUtils extends PlatformMathUtils {
     }
 
     private static int round(float x) {
-        if (Settings.FAST_ROUND) {
-            return floor(x + .5f);
-        } else {
-            return StrictMath.round(x);
-        }
+		return Settings.FAST_ROUND ? floor(x + .5f) : StrictMath.round(x);
     }
 
     /**
@@ -280,5 +267,61 @@ public class MathUtils extends PlatformMathUtils {
 
     public static float distance(v2 v1, v2 v2) {
         return (float) Math.sqrt(distanceSquared(v1, v2));
+    }
+
+    public static float fastPow(float a, float b) {
+        float x = Float.floatToRawIntBits(a);
+        x *= INV_SHIFT23;
+        x -= 127;
+        float y = x - (x >= 0 ? (int) x : (int) x - 1);
+        b *= x + (y - y * y) * 0.346607f;
+        y = b - (b >= 0 ? (int) b : (int) b - 1);
+        y = (y - y * y) * 0.33971f;
+        return Float.intBitsToFloat((int) ((b + 127 - y) * SHIFT23));
+    }
+
+    /**
+     * @param a
+     * @param b
+     * @return Kvadraticky uhol v rozmedzi (0-4) medzi vektorom (b - a) a vektorom (0, 1).
+     */
+    public static double angle(v2 a, v2 b) {
+        double vx = b.x - a.x;
+        double vy = b.y - a.y;
+        double x = vx * vx;
+        double cos = x / (x + vy * vy);
+        return vx > 0 ? vy > 0 ? 3 + cos : 1 - cos : vy > 0 ? 3 - cos : 1 + cos;
+    }
+
+    /**
+     * @param a 1. bod usecky
+     * @param b 2. bod usecky
+     * @param v Bod, u ktoreho sa rozhoduje, na ktorej strane sa nachadza.
+     * @return <tt>-1</tt>, ak sa bod <tt>v</tt> nachadza na lavo od usecky |ab|<br>
+     * <tt>0</tt>, ak body <tt>a, b, v</tt> lezia na jednej priamke.<br>
+     * <tt>1</tt>, ak sa bod <tt>v</tt> nachadza na pravo od usecky |ab|<br>
+     */
+    public static int site(v2 a, v2 b, v2 v) {
+        double g = (b.x - a.x) * (v.y - b.y);
+        double h = (v.x - b.x) * (b.y - a.y);
+        return Double.compare(g, h);
+    }
+
+    /**
+     * @param a 1. bod usecky
+     * @param b 2. bod usecky
+     * @param v Bod, u ktoreho sa rozhoduje, na ktorej strane sa nachadza.
+     * @return Rovnako ako funkcia site, s tym rozdielom, ze zohladnuje deficit.
+     */
+    public static int siteDef(v2 a, v2 b, v2 v) {
+        double ux = b.x - a.x;
+        double uy = b.y - a.y;
+        double wx = b.x - v.x;
+        double wy = b.y - v.y;
+        double sin = (ux * wy - wx * uy) / Math.sqrt((ux * ux + uy * uy) * (wx * wx + wy * wy));
+        if (Double.isNaN(sin) || Math.abs(sin) < DEFICIT) {
+            return 0;
+        }
+        return sin < 0 ? 1 : -1;
     }
 }

@@ -748,10 +748,7 @@ public abstract class RdesktopCanvas extends Canvas {
                 int psrc = 0;
                 for (i = 0; i < cy; i++) {
                     for (int j = 0; j < cx; j++) {
-                        if ((ipattern[(i + brushy) % 8] & (0x01 << ((j + brushx) % 8))) == 0)
-                            src[psrc] = fgcolor;
-                        else
-                            src[psrc] = bgcolor;
+						src[psrc] = (ipattern[(i + brushy) % 8] & (0x01 << ((j + brushx) % 8))) == 0 ? fgcolor : bgcolor;
                         psrc++;
                     }
                 }
@@ -1169,11 +1166,7 @@ public abstract class RdesktopCanvas extends Canvas {
                     boolean isCursor = (cursor[pcursor] & nextbit) != 0;
                     boolean isMask = (mask[pmask] & nextbit) != 0;
                     if (isMask) {
-                        if (isCursor) {
-                            cursormap[pcursormap] = fg;
-                        } else {
-                            cursormap[pcursormap] = bg;
-                        }
+						cursormap[pcursormap] = isCursor ? fg : bg;
                     }
                     pcursormap++;
                 }

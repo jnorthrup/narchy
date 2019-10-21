@@ -40,7 +40,8 @@ import static java.util.Collections.swap;
  * 
  * @author jezek2
  */
-public class MiscUtil {
+public enum MiscUtil {
+	;
 
 	public static int getListCapacityForHash(Collection<?> list) {
 		return getListCapacityForHash(list.size());

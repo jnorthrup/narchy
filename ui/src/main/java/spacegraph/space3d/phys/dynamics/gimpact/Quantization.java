@@ -34,7 +34,8 @@ import spacegraph.space3d.phys.math.VectorUtil;
  *
  * @author jezek2
  */
-class Quantization {
+enum Quantization {
+	;
 
 	public static void bt_calc_quantization_parameters(v3 outMinBound, v3 outMaxBound, v3 bvhQuantization, v3 srcMinBound, v3 srcMaxBound, float quantizationMargin) {
 		

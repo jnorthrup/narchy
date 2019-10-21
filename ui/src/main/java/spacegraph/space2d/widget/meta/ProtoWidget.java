@@ -230,11 +230,7 @@ public class ProtoWidget extends Bordering {
                     break;
             }
 
-            if (icon!=null) {
-                return ToggleButton.awesome(icon );
-            } else {
-                return new CheckBox(l);
-            }
+			return icon != null ? ToggleButton.awesome(icon) : new CheckBox(l);
         }));
 
         set(N, new LazySurface(()->{

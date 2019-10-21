@@ -32,9 +32,10 @@ package net.propero.rdp;
 
 import net.propero.rdp.rdp5.Rdp5;
 
-public class Common {
+public enum Common {
+	;
 
-    public static boolean underApplet;
+	public static boolean underApplet;
 
     public static Rdp5 rdp;
 

@@ -176,10 +176,7 @@ class Sftp implements Runnable {
                 if ("cd".equals(cmd) || "lcd".equals(cmd)) {
                     String path = null;
                     if (cmds.size() < 2) {
-                        if ("cd".equals(cmd))
-                            path = c.getHome();
-                        else
-                            path = lhome;
+                        path = "cd".equals(cmd) ? c.getHome() : lhome;
                     } else {
                         path = (String) cmds.elementAt(1);
                     }
@@ -284,10 +281,7 @@ class Sftp implements Runnable {
                 if ("pwd".equals(cmd) || "lpwd".equals(cmd)) {
                     String str = ("pwd".equals(cmd) ? "Remote" : "Local");
                     str += " working directory: ";
-                    if ("pwd".equals(cmd))
-                        str += c.pwd();
-                    else
-                        str += c.lpwd();
+                    str += "pwd".equals(cmd) ? c.pwd() : c.lpwd();
                     
                     out.write(str.getBytes());
                     out.write(lf);
@@ -383,10 +377,7 @@ class Sftp implements Runnable {
                     String p1 = (String) cmds.elementAt(1);
                     SftpATTRS attrs = null;
                     try {
-                        if ("stat".equals(cmd))
-                            attrs = c.stat(p1);
-                        else
-                            attrs = c.lstat(p1);
+                        attrs = "stat".equals(cmd) ? c.stat(p1) : c.lstat(p1);
                     } catch (SftpException e) {
                         
                         out.write(e.getMessage().getBytes());

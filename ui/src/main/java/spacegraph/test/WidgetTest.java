@@ -39,7 +39,8 @@ import java.util.function.Supplier;
 
 import static spacegraph.space2d.container.grid.Gridding.*;
 
-public class WidgetTest {
+public enum WidgetTest {
+    ;
 
     static final Map<String, Supplier<Surface>> menu;
 

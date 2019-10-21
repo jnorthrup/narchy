@@ -205,10 +205,7 @@ public class MutableRectFloat<X> extends v2 {
             change = true;
         }
 
-        if (change)
-            return setXYXY(x1, y1, x2, y2);
-        else
-            return this;
+        return change ? setXYXY(x1, y1, x2, y2) : this;
     }
 
     public final float left() {

@@ -35,9 +35,10 @@ package net.propero.rdp;
 
 import jcog.Util;
 
-public class CommunicationMonitor {
+public enum CommunicationMonitor {
+	;
 
-    private static Object locker;
+	private static Object locker;
 
     /**
      * Identify whether or not communications are locked

@@ -8,10 +8,11 @@ import jcog.Util;
  *
  *  LLA - Lat Lon Alt
  */
-public class ECEF {
+public enum ECEF {
+	;
 
 
-    private static final double a = 6378137; 
+	private static final double a = 6378137;
     private static final double e = 8.1819190842622e-2;  
 
     private static final double asq = Util.sqr(a);

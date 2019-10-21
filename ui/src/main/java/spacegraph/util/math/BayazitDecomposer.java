@@ -13,7 +13,8 @@ import java.util.Collections;
  * For more information about this algorithm, see http:
  * </summary>
  */
-class BayazitDecomposer {
+enum BayazitDecomposer {
+	;
 
 	private static final float Epsilon = 1.192092896e-07f;
 	private static final int MaxPolygonVertices = 8;
@@ -155,13 +156,9 @@ class BayazitDecomposer {
 						if (canSee(i, j, vertices)) {
 							double score = 1 / (squareDist(at(i, vertices), at(j, vertices)) + 1);
 							if (reflex(j, vertices)) {
-								if (rightOn(at(j - 1, vertices), at(j, vertices), at(i, vertices))
-										&& leftOn(at(j + 1, vertices), at(j, vertices),
-												at(i, vertices))) {
-									score += 3;
-								} else {
-									score += 2;
-								}
+								score += rightOn(at(j - 1, vertices), at(j, vertices), at(i, vertices))
+									&& leftOn(at(j + 1, vertices), at(j, vertices),
+									at(i, vertices)) ? 3 : 2;
 							} else {
 								score += 1;
 							}

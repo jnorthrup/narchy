@@ -28,8 +28,9 @@ package spacegraph.space3d.phys.math;
  * 
  * @author jezek2
  */
-public class DebugDrawModes {
-	
+public enum DebugDrawModes {
+	;
+
 	public static final int NO_DEBUG              = 0;
 	public static final int DRAW_WIREFRAME        = 1;
 	public static final int DRAW_AABB             = 2;

@@ -223,10 +223,7 @@ public class MetaFrame extends Bordering  {
         Surface x = the();
         if (x!=null) {
             Surface label;
-            if (x instanceof Labeled)
-                label = ((Labeled) x).label();
-            else
-                label = new VectorLabel(name());
+			label = x instanceof Labeled ? ((Labeled) x).label() : new VectorLabel(name());
             return label;
         } else
             return null;

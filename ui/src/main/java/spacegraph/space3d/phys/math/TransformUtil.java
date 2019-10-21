@@ -33,8 +33,9 @@ import spacegraph.util.math.Quat4f;
  * 
  * @author jezek2
  */
-public class TransformUtil {
-	
+public enum TransformUtil {
+	;
+
 	private static final float SIMDSQRT12 = 0.7071067811865475244008443621048490f;
 	private static final float ANGULAR_MOTION_THRESHOLD = 0.5f* BulletGlobals.SIMD_HALF_PI;
 	

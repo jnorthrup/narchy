@@ -2,10 +2,11 @@ package spacegraph.space2d.phys.fracture.poly2Tri;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-class Poly2TriUtils {
+enum Poly2TriUtils {
+	;
 
-    
-    public static final double PI = Math.PI;
+
+	public static final double PI = Math.PI;
 
     
     public static final int UNKNOWN = 1;

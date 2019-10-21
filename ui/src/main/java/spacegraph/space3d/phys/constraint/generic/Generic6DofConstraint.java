@@ -544,12 +544,7 @@ public class Generic6DofConstraint extends TypedConstraint {
 		float imA = rbA.getInvMass();
 		float imB = rbB.getInvMass();
 		float weight;
-		if (imB == 0f) {
-			weight = 1f;
-		}
-		else {
-			weight = imA / (imA + imB);
-		}
+		weight = imB == 0f ? 1f : imA / (imA + imB);
 		v3 pA = calculatedTransformA;
 		v3 pB = calculatedTransformB;
 

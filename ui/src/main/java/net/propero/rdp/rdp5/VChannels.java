@@ -135,10 +135,7 @@ public class VChannels {
      * @return The requested Virtual Channel
      */
     public VChannel channel(int c) {
-        if (c < num_channels)
-            return channels[c];
-        else
-            return null;
+		return c < num_channels ? channels[c] : null;
     }
 
     /**

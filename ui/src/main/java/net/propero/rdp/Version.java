@@ -37,8 +37,9 @@ import java.io.PrintWriter;
  * Records the current version information of properJavaRDP
  */
 
-public class Version {
-    public static final String version = "1.1";
+public enum Version {
+	;
+	public static final String version = "1.1";
 
     /**
      * Display the current version of properJavaRDP

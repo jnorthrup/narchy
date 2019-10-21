@@ -62,11 +62,7 @@ public class AudioFormat {
 
     public Map<String, Object> properties() {
         Object var1;
-        if (this.properties == null) {
-            var1 = new HashMap(0);
-        } else {
-            var1 = this.properties.clone();
-        }
+        var1 = this.properties == null ? new HashMap(0) : this.properties.clone();
 
         return Collections.unmodifiableMap((Map) var1);
     }
@@ -86,18 +82,10 @@ public class AudioFormat {
         }
 
         String var2;
-        if (this.sampleRate == -1.0F) {
-            var2 = "unknown sample rate, ";
-        } else {
-            var2 = this.sampleRate + " Hz, ";
-        }
+        var2 = this.sampleRate == -1.0F ? "unknown sample rate, " : this.sampleRate + " Hz, ";
 
         String var3;
-        if ((float) this.sampleSizeInBits == -1.0F) {
-            var3 = "unknown bits per sample, ";
-        } else {
-            var3 = this.sampleSizeInBits + " bit, ";
-        }
+        var3 = (float) this.sampleSizeInBits == -1.0F ? "unknown bits per sample, " : this.sampleSizeInBits + " bit, ";
 
         String var4;
         switch (this.channels) {
@@ -116,28 +104,16 @@ public class AudioFormat {
         }
 
         String var5;
-        if ((float) this.frameSize == -1.0F) {
-            var5 = "unknown frame size, ";
-        } else {
-            var5 = this.frameSize + " bytes/frame, ";
-        }
+        var5 = (float) this.frameSize == -1.0F ? "unknown frame size, " : this.frameSize + " bytes/frame, ";
 
         String var6 = "";
         if ((double) Math.abs(this.sampleRate - this.frameRate) > 1.0E-5D) {
-            if (this.frameRate == -1.0F) {
-                var6 = "unknown frame rate, ";
-            } else {
-                var6 = this.frameRate + " frames/second, ";
-            }
+            var6 = this.frameRate == -1.0F ? "unknown frame rate, " : this.frameRate + " frames/second, ";
         }
 
         String var7 = "";
         if ((this.encoding.equals(AudioFormat.Encoding.PCM_SIGNED) || this.encoding.equals(AudioFormat.Encoding.PCM_UNSIGNED)) && (this.sampleSizeInBits > 8 || this.sampleSizeInBits == -1)) {
-            if (this.bigEndian) {
-                var7 = "big-endian";
-            } else {
-                var7 = "little-endian";
-            }
+            var7 = this.bigEndian ? "big-endian" : "little-endian";
         }
 
         return var1 + var2 + var3 + var4 + var5 + var6 + var7;
@@ -155,11 +131,7 @@ public class AudioFormat {
         }
 
         public final boolean equals(Object var1) {
-            if (this.toString() != null) {
-                return var1 instanceof Encoding && this.toString().equals(var1.toString());
-            } else {
-                return var1 != null && var1.toString() == null;
-            }
+            return this.toString() != null ? var1 instanceof Encoding && this.toString().equals(var1.toString()) : var1 != null && var1.toString() == null;
         }
 
         public final int hashCode() {

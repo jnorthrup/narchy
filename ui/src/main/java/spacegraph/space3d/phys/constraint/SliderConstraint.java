@@ -576,12 +576,7 @@ public class SliderConstraint extends TypedConstraint {
 						new_acc = maxLinMotorForce;
 					}
 					float del = new_acc - accumulatedLinMotorImpulse;
-					if (normalImpulse < 0f) {
-						normalImpulse = -del;
-					}
-					else {
-						normalImpulse = del;
-					}
+					normalImpulse = normalImpulse < 0f ? -del : del;
 					accumulatedLinMotorImpulse = new_acc;
 					
 					impulse_vector.scale(normalImpulse, normal);
@@ -677,11 +672,7 @@ public class SliderConstraint extends TypedConstraint {
 					new_acc = maxAngMotorForce;
 				}
 				float del = new_acc - accumulatedAngMotorImpulse;
-				if (angImpulse < 0f) {
-					angImpulse = -del;
-				} else {
-					angImpulse = del;
-				}
+				angImpulse = angImpulse < 0f ? -del : del;
 				accumulatedAngMotorImpulse = new_acc;
 
 				

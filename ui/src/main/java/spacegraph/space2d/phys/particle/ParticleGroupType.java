@@ -1,7 +1,8 @@
 package spacegraph.space2d.phys.particle;
 
-class ParticleGroupType {
-    /**
+enum ParticleGroupType {
+	;
+	/**
      * resists penetration
      */
     public static final int b2_solidParticleGroup = 1;

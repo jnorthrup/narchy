@@ -238,12 +238,12 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 
         //when called from a main thread, unless this is executed as queued then the main thread can exit before the GL threads activate and this race condition results in a dead, empty window.
         //solution is to queue this to the global timer which starts the self-invoking loop
+        window.setSize(w, h);
 
         //GLWorkerThread.invokeLater(()-> {
         Exe.runLater(() -> {
 
             setSize(w, h);
-            window.setSize(w, h);
 
             if (x != Integer.MIN_VALUE) {
                 window.setPosition(x, y);

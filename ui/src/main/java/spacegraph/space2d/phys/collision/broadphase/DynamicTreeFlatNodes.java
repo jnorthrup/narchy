@@ -528,12 +528,8 @@ public class DynamicTreeFlatNodes implements BroadPhaseStrategy {
                 break;
             }
 
-            
-            if (cost1 < cost2) {
-                index = child1;
-            } else {
-                index = child2;
-            }
+
+			index = cost1 < cost2 ? child1 : child2;
         }
 
         int sibling = index;
@@ -595,11 +591,7 @@ public class DynamicTreeFlatNodes implements BroadPhaseStrategy {
         int parentChild1 = m_child1[parent];
         int parentChild2 = m_child2[parent];
         int sibling;
-        if (parentChild1 == leaf) {
-            sibling = parentChild2;
-        } else {
-            sibling = parentChild1;
-        }
+		sibling = parentChild1 == leaf ? parentChild2 : parentChild1;
 
         if (grandParent != NULL_NODE) {
             

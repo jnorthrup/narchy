@@ -226,13 +226,7 @@ public class TimeOfImpact {
                 for (; ; ) {
                     
                     float t;
-                    if ((rootIterCount & 1) == 1) {
-                        
-                        t = a1 + (target - s1) * (a2 - a1) / (s2 - s1);
-                    } else {
-                        
-                        t = 0.5f * (a1 + a2);
-                    }
+					t = (rootIterCount & 1) == 1 ? a1 + (target - s1) * (a2 - a1) / (s2 - s1) : 0.5f * (a1 + a2);
 
                     float s = fcn.evaluate(indexes[0], indexes[1], t);
 

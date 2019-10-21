@@ -39,9 +39,10 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-class PstCache {
+enum PstCache {
+	;
 
-    private static final int MAX_CELL_SIZE = 0x1000; /* pixels */
+	private static final int MAX_CELL_SIZE = 0x1000; /* pixels */
     private static final Logger logger = LoggerFactory.getLogger(PstCache.class);
     private static final File[] g_pstcache_fd = new File[8];
     static int g_stamp;

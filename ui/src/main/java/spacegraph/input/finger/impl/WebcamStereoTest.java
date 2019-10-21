@@ -69,7 +69,9 @@ import java.util.stream.IntStream;
 
 import static spacegraph.SpaceGraph.window;
 
-public class WebcamStereoTest {
+public enum WebcamStereoTest {
+    ;
+
     public static void main(String[] args) {
 
         VideoSource[] ab = WebCam.theFirst(2);
@@ -408,7 +410,8 @@ public class WebcamStereoTest {
      *
      * @author Peter Abeles
      */
-    static class ExampleFundamentalMatrix {
+    enum ExampleFundamentalMatrix {
+        ;
 
         /**
          * Given a set of noisy observations, compute the Fundamental matrix while removing

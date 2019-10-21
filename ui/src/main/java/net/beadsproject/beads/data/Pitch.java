@@ -9,7 +9,8 @@ package net.beadsproject.beads.data;
  * @author ollie
  * @beads.category data
  */
-public abstract class Pitch {
+public enum Pitch {
+    ;
 
     /**
      * The constant log(2) = 0.6931472.

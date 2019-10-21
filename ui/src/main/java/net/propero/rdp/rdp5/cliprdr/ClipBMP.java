@@ -225,11 +225,7 @@ public class ClipBMP extends Component {
                     
                     
                     int nNumColors = 0;
-                    if (nclrused > 0) {
-                        nNumColors = nclrused;
-                    } else {
-                        nNumColors = (1 & 0xff) << 16;
-                    }
+					nNumColors = nclrused > 0 ? nclrused : (1 & 0xff) << 16;
                     
 
                     
@@ -289,11 +285,7 @@ public class ClipBMP extends Component {
                     
                     
                     int nNumColors = 0;
-                    if (nclrused > 0) {
-                        nNumColors = nclrused;
-                    } else {
-                        nNumColors = (1 & 0xff) << 8;
-                    }
+					nNumColors = nclrused > 0 ? nclrused : (1 & 0xff) << 8;
                     
 
                     
@@ -352,11 +344,7 @@ public class ClipBMP extends Component {
                     
                     
                     int nNumColors = 0;
-                    if (nclrused > 0) {
-                        nNumColors = nclrused;
-                    } else {
-                        nNumColors = (1 & 0xff) << 4;
-                    }
+					nNumColors = nclrused > 0 ? nclrused : (1 & 0xff) << 4;
                     
 
                     

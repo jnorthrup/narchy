@@ -376,13 +376,9 @@ public abstract class Tuple2d implements java.io.Serializable, Cloneable {
     */
    public final void clamp(double min, double max, Tuple2d t)
    {
-        if( t.x > max ) { 
-          x = max;
-        } else x = Math.max(t.x, min);
+	   x = t.x > max ? max : Math.max(t.x, min);
 
-        if( t.y > max ) { 
-          y = max;
-        } else y = Math.max(t.y, min);
+	   y = t.y > max ? max : Math.max(t.y, min);
 
    }
 

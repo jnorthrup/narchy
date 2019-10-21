@@ -925,11 +925,7 @@ public enum MatrixOps { ;
 		double [][] result = new double[matrix.length][matrix[0].length];
 		for (int i = 0; i < matrix.length; i++) {
 			for (int j = 0; j < matrix[0].length; j++) {
-				if(Double.isInfinite(matrix[i][j])) {
-					result[i][j] = repl;
-				} else {
-					result[i][j] = matrix[i][j];
-				}
+				result[i][j] = Double.isInfinite(matrix[i][j]) ? repl : matrix[i][j];
 			}
 		}
 		return result;
@@ -1457,10 +1453,7 @@ public enum MatrixOps { ;
 		for (int i = 0; i < result.length; i++) {
 			for (int j = 0; j < result.length; j++) {
 				if(i==j) {
-					if(isLong)
-						result[i][j] = ds[i][0];
-					else
-						result[i][j] = ds[0][i];
+					result[i][j] = isLong ? ds[i][0] : ds[0][i];
 				}
 			}
 		}

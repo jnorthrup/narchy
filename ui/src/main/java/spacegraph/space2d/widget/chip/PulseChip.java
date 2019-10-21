@@ -33,11 +33,7 @@ public class PulseChip extends Gridding {
         periodMS.on(x -> {
             synchronized (this) {
 
-                if (x instanceof Number) {
-                    p = ((Number) x).floatValue();
-                } else {
-                    p = Float.NaN;
-                }
+				p = x instanceof Number ? ((Number) x).floatValue() : Float.NaN;
 
                 if (p > 0.5f) {
                     if (loop == null)

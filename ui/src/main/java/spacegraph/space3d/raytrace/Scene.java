@@ -287,7 +287,9 @@ final class Scene {
         }
     }
 
-    static class Utils {
+    enum Utils {
+        ;
+
         static String nextLineOrEmpty(Scanner scanner) {
             return scanner.hasNextLine() ? scanner.nextLine() : "";
         }

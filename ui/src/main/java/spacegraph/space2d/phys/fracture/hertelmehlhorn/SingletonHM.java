@@ -1,6 +1,7 @@
 package spacegraph.space2d.phys.fracture.hertelmehlhorn;
 
 import jcog.math.v2;
+import spacegraph.space2d.phys.common.MathUtils;
 import spacegraph.space2d.phys.common.PlatformMathUtils;
 import spacegraph.space2d.phys.fracture.Polygon;
 
@@ -56,7 +57,7 @@ public class SingletonHM {
             v2 a = vertices[ar[0]];
             v2 b = vertices[ar[1]];
             v2 c = vertices[ar[2]];
-            if (PlatformMathUtils.site(a, b, c) == 1) {
+            if (MathUtils.site(a, b, c) == 1) {
                 int k = ar[1];
                 ar[1] = ar[2];
                 ar[2] = k;
@@ -176,8 +177,8 @@ public class SingletonHM {
                 int i3 = opposite.index;
 
                 if (
-                        PlatformMathUtils.siteDef(vertices[i3], vertices[i2], vertices[n2.next.index]) < 1 &&
-                                PlatformMathUtils.siteDef(vertices[i3], vertices[i1], vertices[n1.prev.index]) > -1
+                        MathUtils.siteDef(vertices[i3], vertices[i2], vertices[n2.next.index]) < 1 &&
+                                MathUtils.siteDef(vertices[i3], vertices[i1], vertices[n1.prev.index]) > -1
                         ) {
                     
                     int oppositeTriangleIndex = e.i1 == triangle ? e.i2 : e.i1;
