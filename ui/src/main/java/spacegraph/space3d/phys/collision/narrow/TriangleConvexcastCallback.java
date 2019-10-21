@@ -33,7 +33,7 @@ import spacegraph.space3d.phys.shape.TriangleShape;
  *
  * @author jezek2
  */
-public abstract class TriangleConvexcastCallback extends TriangleCallback {
+public abstract class TriangleConvexcastCallback implements TriangleCallback {
 
 	private final ConvexShape convexShape;
 	private final Transform convexShapeFrom = new Transform();

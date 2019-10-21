@@ -9,9 +9,9 @@ import spacegraph.video.Draw;
 import java.util.function.Function;
 
 /** decoration inference for dynamic representational surfaces of arbitrary objects */
-public abstract class IconBuilder<X> implements Function<X,Surface> {
+public interface IconBuilder<X> extends Function<X,Surface> {
 
-    public static final IconBuilder<Object> simpleBuilder = new IconBuilder<>() {
+    IconBuilder<Object> simpleBuilder = new IconBuilder<>() {
 
         @Override
         public Surface apply(Object o) {

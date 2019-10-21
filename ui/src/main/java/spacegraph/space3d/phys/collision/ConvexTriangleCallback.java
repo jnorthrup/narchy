@@ -41,7 +41,7 @@ import spacegraph.space3d.phys.shape.TriangleShape;
  * 
  * @author jezek2
  */
-class ConvexTriangleCallback extends TriangleCallback {
+class ConvexTriangleCallback implements TriangleCallback {
 
 	
 	

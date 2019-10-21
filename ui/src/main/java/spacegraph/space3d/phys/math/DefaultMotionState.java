@@ -29,7 +29,7 @@ package spacegraph.space3d.phys.math;
  * 
  * @author jezek2
  */
-public class DefaultMotionState extends MotionState {
+public class DefaultMotionState implements MotionState {
 
 	/** Current interpolated world transform, used to draw object. */
 	private final Transform graphicsWorldTrans = new Transform();

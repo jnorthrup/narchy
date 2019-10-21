@@ -32,12 +32,12 @@ import spacegraph.space3d.phys.shape.ConvexShape;
  * 
  * @author jezek2
  */
-public abstract class ConvexPenetrationDepthSolver {
+public interface ConvexPenetrationDepthSolver {
 
-	public abstract boolean calcPenDepth(SimplexSolverInterface simplexSolver,
-                                         ConvexShape convexA, ConvexShape convexB,
-                                         Transform transA, Transform transB,
-                                         v3 v, v3 pa, v3 pb
-                                         /*, btStackAlloc* stackAlloc*/);
+	boolean calcPenDepth(SimplexSolverInterface simplexSolver,
+                         ConvexShape convexA, ConvexShape convexB,
+                         Transform transA, Transform transB,
+                         v3 v, v3 pa, v3 pb
+            /*, btStackAlloc* stackAlloc*/);
 	
 }

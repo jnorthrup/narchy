@@ -55,7 +55,7 @@ public abstract class StridingMeshInterface {
 		}
 	}
 
-	private static class AabbCalculationCallback extends InternalTriangleIndexCallback {
+	private static class AabbCalculationCallback implements InternalTriangleIndexCallback {
 		final v3 aabbMin = new v3(1e30f, 1e30f, 1e30f);
 		final v3 aabbMax = new v3(-1e30f, -1e30f, -1e30f);
 

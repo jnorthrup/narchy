@@ -26,13 +26,13 @@ public abstract class Menu extends MutableUnitContainer {
 
 
     /** view model */
-    public abstract static class MenuView {
-        public abstract Surface view();
+    public static interface MenuView {
+        Surface view();
 
-        public abstract void active(Surface surface);
-        public abstract boolean inactive(Surface surface);
+        void active(Surface surface);
+        boolean inactive(Surface surface);
 
-        public abstract boolean isEmpty();
+        boolean isEmpty();
     }
 
     public Menu(Map<String, Supplier<Surface>> menu, MenuView view) {

@@ -169,7 +169,7 @@ public class ConvexConcaveCollisionAlgorithm extends CollisionAlgorithm {
 
 	
 
-	private static class LocalTriangleSphereCastCallback extends TriangleCallback {
+	private static class LocalTriangleSphereCastCallback implements TriangleCallback {
 		final Transform ccdSphereFromTrans = new Transform();
 		final Transform ccdSphereToTrans = new Transform();
 		public final Transform meshTransform = new Transform();

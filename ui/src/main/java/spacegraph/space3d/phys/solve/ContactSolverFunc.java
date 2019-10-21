@@ -31,8 +31,8 @@ import spacegraph.space3d.phys.collision.narrow.ManifoldPoint;
  * 
  * @author jezek2
  */
-public abstract class ContactSolverFunc {
+public interface ContactSolverFunc {
 
-	public abstract float resolveContact(Body3D body1, Body3D body2, ManifoldPoint contactPoint, ContactSolverInfo info);
+	float resolveContact(Body3D body1, Body3D body2, ManifoldPoint contactPoint, ContactSolverInfo info);
 	
 }

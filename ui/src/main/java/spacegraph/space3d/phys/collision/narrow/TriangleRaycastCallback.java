@@ -31,7 +31,7 @@ import spacegraph.space3d.phys.shape.TriangleCallback;
  *
  * @author jezek2
  */
-public abstract class TriangleRaycastCallback extends TriangleCallback {
+public abstract class TriangleRaycastCallback implements TriangleCallback {
 	
 	
 

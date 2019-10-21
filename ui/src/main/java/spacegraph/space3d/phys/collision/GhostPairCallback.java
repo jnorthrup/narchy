@@ -32,7 +32,7 @@ import spacegraph.space3d.phys.collision.broad.*;
  *
  * @author tomrbryn
  */
-public class GhostPairCallback extends OverlappingPairCallback {
+public class GhostPairCallback implements OverlappingPairCallback {
 
 	@Override
 	public BroadphasePair addOverlappingPair(Broadphasing proxy0, Broadphasing proxy1) {

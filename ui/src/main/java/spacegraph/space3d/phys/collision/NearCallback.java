@@ -34,8 +34,8 @@ import spacegraph.space3d.phys.collision.broad.DispatcherInfo;
  * @see DefaultIntersecter#getNearCallback
  * @author jezek2
  */
-public abstract class NearCallback {
+public interface NearCallback {
 
-	public abstract void handleCollision(BroadphasePair collisionPair, DefaultIntersecter dispatcher, DispatcherInfo dispatchInfo);
+	void handleCollision(BroadphasePair collisionPair, DefaultIntersecter dispatcher, DispatcherInfo dispatchInfo);
 	
 }

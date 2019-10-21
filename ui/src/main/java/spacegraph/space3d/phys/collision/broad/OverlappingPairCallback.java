@@ -29,12 +29,12 @@ package spacegraph.space3d.phys.collision.broad;
  *
  * @author jezek2
  */
-public abstract class OverlappingPairCallback {
+public interface OverlappingPairCallback {
 
-	public abstract BroadphasePair addOverlappingPair(Broadphasing proxy0, Broadphasing proxy1);
+	BroadphasePair addOverlappingPair(Broadphasing proxy0, Broadphasing proxy1);
 
-	public abstract Object removeOverlappingPair(Broadphasing proxy0, Broadphasing proxy1, Intersecter intersecter);
+	Object removeOverlappingPair(Broadphasing proxy0, Broadphasing proxy1, Intersecter intersecter);
 
-	public abstract void removeOverlappingPairsContainingProxy(Broadphasing proxy0, Intersecter intersecter);
+	void removeOverlappingPairsContainingProxy(Broadphasing proxy0, Intersecter intersecter);
 	
 }

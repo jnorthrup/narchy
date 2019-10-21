@@ -33,28 +33,28 @@ import jcog.math.v3;
  * 
  * @author jezek2
  */
-public abstract class SimplexSolverInterface {
+public interface SimplexSolverInterface {
 
-	public abstract void reset();
+	void reset();
 
-	public abstract void addVertex(v3 w, v3 p, v3 q);
+	void addVertex(v3 w, v3 p, v3 q);
 	
-	public abstract boolean closest(v3 v);
+	boolean closest(v3 v);
 
-	public abstract float maxVertex();
+	float maxVertex();
 
-	public abstract boolean fullSimplex();
+	boolean fullSimplex();
 
-	public abstract int getSimplex(v3[] pBuf, v3[] qBuf, v3[] yBuf);
+	int getSimplex(v3[] pBuf, v3[] qBuf, v3[] yBuf);
 
-	public abstract boolean inSimplex(v3 w);
+	boolean inSimplex(v3 w);
 	
-	public abstract void backup_closest(v3 v);
+	void backup_closest(v3 v);
 
-	public abstract boolean emptySimplex();
+	boolean emptySimplex();
 
-	public abstract void compute_points(v3 p1, v3 p2);
+	void compute_points(v3 p1, v3 p2);
 
-	public abstract int numVertices();
+	int numVertices();
 	
 }

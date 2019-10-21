@@ -30,7 +30,7 @@ import spacegraph.space3d.phys.collision.broad.BroadphaseNativeType;
  * 
  * @author jezek2
  */
-public abstract class CollisionConfiguration {
+public interface CollisionConfiguration {
 
 	/*
 	
@@ -39,6 +39,6 @@ public abstract class CollisionConfiguration {
 	virtual btStackAlloc*	getStackAllocator() = 0;
 	 */
 	
-	public abstract CollisionAlgorithmCreateFunc collider(BroadphaseNativeType proxyType0, BroadphaseNativeType proxyType1);
+	CollisionAlgorithmCreateFunc collider(BroadphaseNativeType proxyType0, BroadphaseNativeType proxyType1);
 	
 }

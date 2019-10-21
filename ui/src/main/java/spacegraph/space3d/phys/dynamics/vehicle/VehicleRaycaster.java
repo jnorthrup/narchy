@@ -30,8 +30,8 @@ import jcog.math.v3;
  * 
  * @author jezek2
  */
-public abstract class VehicleRaycaster {
+public interface VehicleRaycaster {
 
-	public abstract Object castRay(v3 from, v3 to, VehicleRaycasterResult result);
+	Object castRay(v3 from, v3 to, VehicleRaycasterResult result);
 	
 }

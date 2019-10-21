@@ -227,7 +227,7 @@ public class BvhTriangleMeshShape extends TriangleMeshShape {
 
 	
 
-	protected static class MyNodeOverlapCallback extends NodeOverlapCallback {
+	protected static class MyNodeOverlapCallback implements NodeOverlapCallback {
 		final StridingMeshInterface meshInterface;
 		final TriangleCallback callback;
 

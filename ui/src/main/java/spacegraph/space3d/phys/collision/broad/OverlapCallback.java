@@ -29,9 +29,9 @@ package spacegraph.space3d.phys.collision.broad;
  * @see OverlappingPairCache#processAllOverlappingPairs
  * @author jezek2
  */
-public abstract class OverlapCallback {
+public interface OverlapCallback {
 
 	
-	public abstract boolean processOverlap(BroadphasePair pair);
+	boolean processOverlap(BroadphasePair pair);
 	
 }

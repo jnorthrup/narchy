@@ -32,12 +32,12 @@ import spacegraph.space3d.phys.math.Transform;
  * 
  * @author jezek2
  */
-public abstract class ConvexCast {
+public interface ConvexCast {
 
 	/**
 	 * Cast a convex against another convex object.
 	 */
-	public abstract boolean calcTimeOfImpact(Transform fromA, Transform toA, Transform fromB, Transform toB, CastResult result);
+    boolean calcTimeOfImpact(Transform fromA, Transform toA, Transform fromB, Transform toB, CastResult result);
 	
 	
 	
@@ -45,7 +45,7 @@ public abstract class ConvexCast {
 	 * RayResult stores the closest result. Alternatively, add a callback method
 	 * to decide about closest/all results.
 	 */
-	public static class CastResult {
+	static class CastResult {
 //		public final Transform hitTransformA = new Transform();
 //		public final Transform hitTransformB = new Transform();
 		

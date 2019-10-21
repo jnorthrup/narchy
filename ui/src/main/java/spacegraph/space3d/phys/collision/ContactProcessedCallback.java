@@ -32,8 +32,8 @@ import spacegraph.space3d.phys.collision.narrow.ManifoldPoint;
  * @see BulletGlobals#setContactProcessedCallback
  * @author jezek2
  */
-public abstract class ContactProcessedCallback {
+public interface ContactProcessedCallback {
 	
-	public abstract boolean contactProcessed(ManifoldPoint cp, Object body0, Object body1);
+	boolean contactProcessed(ManifoldPoint cp, Object body0, Object body1);
 
 }

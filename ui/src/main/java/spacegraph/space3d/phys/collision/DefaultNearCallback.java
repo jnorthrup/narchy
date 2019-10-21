@@ -33,7 +33,7 @@ import spacegraph.space3d.phys.collision.broad.DispatcherInfo;
  *
  * @author jezek2
  */
-public class DefaultNearCallback extends NearCallback {
+public class DefaultNearCallback implements NearCallback {
 
 	private final ManifoldResult contactPointResult = new ManifoldResult();
 

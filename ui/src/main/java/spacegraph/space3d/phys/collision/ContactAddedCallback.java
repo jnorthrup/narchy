@@ -34,8 +34,8 @@ import spacegraph.space3d.phys.collision.narrow.ManifoldPoint;
  * @see BulletGlobals#setContactAddedCallback
  * @author jezek2
  */
-public abstract class ContactAddedCallback {
+public interface ContactAddedCallback {
 
-	public abstract boolean contactAdded(ManifoldPoint cp, Collidable colObj0, int partId0, int index0, Collidable colObj1, int partId1, int index1);
+	boolean contactAdded(ManifoldPoint cp, Collidable colObj0, int partId0, int index0, Collidable colObj1, int partId1, int index1);
 	
 }

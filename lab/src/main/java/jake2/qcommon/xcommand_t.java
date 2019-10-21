@@ -28,7 +28,7 @@ package jake2.qcommon;
 /**
  * xcommand_t
  */
-public abstract class xcommand_t {
+public interface xcommand_t {
 
-	public abstract void execute();
+	void execute();
 }

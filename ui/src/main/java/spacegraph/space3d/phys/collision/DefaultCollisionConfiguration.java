@@ -36,7 +36,7 @@ import spacegraph.space3d.phys.dynamics.gimpact.GImpactCollisionAlgorithm;
  *
  * @author jezek2
  */
-public class DefaultCollisionConfiguration extends CollisionConfiguration {
+public class DefaultCollisionConfiguration implements CollisionConfiguration {
 
 
     private final CollisionAlgorithmCreateFunc convexConvexCreateFunc;

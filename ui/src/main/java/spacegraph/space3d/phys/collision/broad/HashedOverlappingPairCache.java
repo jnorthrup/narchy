@@ -425,7 +425,7 @@ public class HashedOverlappingPairCache extends OverlappingPairCache {
 
 	
 
-	private static class RemovePairCallback extends OverlapCallback {
+	private static class RemovePairCallback implements OverlapCallback {
 		private final Broadphasing obsoleteProxy;
 
 		RemovePairCallback(Broadphasing obsoleteProxy) {
@@ -439,7 +439,7 @@ public class HashedOverlappingPairCache extends OverlappingPairCache {
 		}
 	}
 
-	private static final class CleanPairCallback extends OverlapCallback {
+	private static final class CleanPairCallback implements OverlapCallback {
 		private final Broadphasing cleanProxy;
 		private final OverlappingPairCache pairCache;
 		private final Intersecter intersecter;

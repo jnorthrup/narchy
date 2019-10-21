@@ -172,7 +172,7 @@ public abstract class TriangleMeshShape extends ConcaveShape {
 
 	
 
-	private static class SupportVertexCallback extends TriangleCallback {
+	private static class SupportVertexCallback implements TriangleCallback {
 		private final v3 supportVertexLocal = new v3();
 		final Transform worldTrans = new Transform();
 		float maxDot = -1e30f;
@@ -206,7 +206,7 @@ public abstract class TriangleMeshShape extends ConcaveShape {
 		}
 	}
 
-	private static class FilteredCallback extends InternalTriangleIndexCallback {
+	private static class FilteredCallback implements InternalTriangleIndexCallback {
 		final TriangleCallback callback;
 		final v3 aabbMin = new v3();
 		final v3 aabbMax = new v3();

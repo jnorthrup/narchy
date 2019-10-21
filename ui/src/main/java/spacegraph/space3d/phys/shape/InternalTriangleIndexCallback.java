@@ -31,8 +31,8 @@ import jcog.math.v3;
  * @see StridingMeshInterface#internalProcessAllTriangles
  * @author jezek2
  */
-abstract class InternalTriangleIndexCallback {
+interface InternalTriangleIndexCallback {
 
-	public abstract void internalProcessTriangleIndex(v3[] triangle, int partId, int triangleIndex);
+	void internalProcessTriangleIndex(v3[] triangle, int partId, int triangleIndex);
 	
 }

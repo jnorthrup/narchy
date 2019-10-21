@@ -34,7 +34,7 @@ import spacegraph.space3d.phys.shape.ConvexShape;
  * 
  * @author jezek2
  */
-public class GjkConvexCast extends ConvexCast {
+public class GjkConvexCast implements ConvexCast {
 
 
 

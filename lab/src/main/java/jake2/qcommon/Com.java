@@ -52,9 +52,9 @@ public final class Com
 	static int com_argc;
 	static final String[] com_argv= new String[Defines.MAX_NUM_ARGVS];
 
-	public abstract static class RD_Flusher
+	public static interface RD_Flusher
 	{
-		public abstract void rd_flush(int target, StringBuffer buffer);
+		void rd_flush(int target, StringBuffer buffer);
 	}
 
 	static int rd_target;

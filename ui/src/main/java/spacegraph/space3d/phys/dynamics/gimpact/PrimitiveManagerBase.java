@@ -40,20 +40,20 @@ package spacegraph.space3d.phys.dynamics.gimpact;
  * 
  * @author jezek2
  */
-public abstract class PrimitiveManagerBase {
+public interface PrimitiveManagerBase {
 
 	/**
 	 * Determines if this manager consist on only triangles, which special case will be optimized.
 	 */
-	public abstract boolean is_trimesh();
+    boolean is_trimesh();
 
-	public abstract int get_primitive_count();
+	int get_primitive_count();
 
-	public abstract void get_primitive_box(int prim_index, BoxCollision.AABB primbox);
+	void get_primitive_box(int prim_index, BoxCollision.AABB primbox);
 	
 	/**
 	 * Retrieves only the points of the triangle, and the collision margin.
 	 */
-	public abstract void get_primitive_triangle(int prim_index, PrimitiveTriangle triangle);
+    void get_primitive_triangle(int prim_index, PrimitiveTriangle triangle);
 	
 }

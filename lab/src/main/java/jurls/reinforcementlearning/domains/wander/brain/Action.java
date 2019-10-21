@@ -7,10 +7,10 @@ import java.io.Serializable;
  * one specified action of the Agent. 
  * @author Elser http:
  */
-public abstract class Action implements Serializable{
+public interface Action extends Serializable {
 	/**
 	 * Here you implement what the agent should do,
 	 * when performing the action. 
 	 */
-	public abstract void execute();
+    void execute();
 }

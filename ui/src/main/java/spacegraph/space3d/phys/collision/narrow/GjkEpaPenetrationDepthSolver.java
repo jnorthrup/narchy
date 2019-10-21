@@ -33,7 +33,7 @@ import spacegraph.space3d.phys.shape.ConvexShape;
  * 
  * @author jezek2
  */
-public class GjkEpaPenetrationDepthSolver extends ConvexPenetrationDepthSolver {
+public class GjkEpaPenetrationDepthSolver implements ConvexPenetrationDepthSolver {
 
 	private final GjkEpaSolver gjkEpaSolver = new GjkEpaSolver();
 

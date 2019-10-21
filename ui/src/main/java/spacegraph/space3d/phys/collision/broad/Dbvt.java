@@ -985,10 +985,10 @@ public final class Dbvt {
 		}
 	}
 
-	public abstract static class IWriter {
-		public abstract void Prepare(Node root, int numnodes);
-		public abstract void WriteNode(Node n, int index, int parent, int child0, int child1);
-		public abstract void WriteLeaf(Node n, int index, int parent);
+	public static interface IWriter {
+		void Prepare(Node root, int numnodes);
+		void WriteNode(Node n, int index, int parent, int child0, int child1);
+		void WriteLeaf(Node n, int index, int parent);
 	}
 	
 	private static class IClone {

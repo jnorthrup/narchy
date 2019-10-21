@@ -202,7 +202,7 @@ public class OptimizedBvh implements Serializable {
 		}
 	}
 
-	private static class NodeTriangleCallback extends InternalTriangleIndexCallback {
+	private static class NodeTriangleCallback implements InternalTriangleIndexCallback {
 		final FasterList<OptimizedBvhNode> triangleNodes;
 
 		NodeTriangleCallback(FasterList<OptimizedBvhNode> triangleNodes) {
@@ -237,7 +237,7 @@ public class OptimizedBvh implements Serializable {
 		}
 	}
 
-	private static class QuantizedNodeTriangleCallback extends InternalTriangleIndexCallback {
+	private static class QuantizedNodeTriangleCallback implements InternalTriangleIndexCallback {
 		
 
 		final QuantizedBvhNodes triangleNodes;

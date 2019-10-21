@@ -35,8 +35,8 @@ import jcog.math.v3;
  * 
  * @author jezek2
  */
-public abstract class TriangleCallback {
+public interface TriangleCallback {
 
-	public abstract void processTriangle(v3[] triangle, int partId, int triangleIndex);
+	void processTriangle(v3[] triangle, int partId, int triangleIndex);
 	
 }

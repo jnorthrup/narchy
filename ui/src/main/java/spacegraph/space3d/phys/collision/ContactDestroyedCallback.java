@@ -31,8 +31,8 @@ import spacegraph.space3d.phys.BulletGlobals;
  * @see BulletGlobals#setContactDestroyedCallback
  * @author jezek2
  */
-public abstract class ContactDestroyedCallback {
+public interface ContactDestroyedCallback {
 
-	public abstract boolean contactDestroyed(Object userPersistentData);
+	boolean contactDestroyed(Object userPersistentData);
 	
 }

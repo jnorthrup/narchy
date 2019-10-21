@@ -1154,7 +1154,7 @@ public enum Draw {
         Left, Center, Right
     }
 
-    private static class GlDrawcallback extends TriangleCallback {
+    private static class GlDrawcallback implements TriangleCallback {
         private final GL gl;
         boolean wireframe;
 

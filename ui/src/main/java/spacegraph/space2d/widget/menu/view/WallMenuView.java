@@ -8,7 +8,7 @@ import spacegraph.space2d.container.unit.Clipped;
 import spacegraph.space2d.widget.menu.Menu;
 
 /** TODO */
-public class WallMenuView extends Menu.MenuView {
+public class WallMenuView implements Menu.MenuView {
 
     private final GraphEdit2D wall;
 

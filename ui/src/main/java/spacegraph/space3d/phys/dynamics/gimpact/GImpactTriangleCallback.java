@@ -36,7 +36,7 @@ import spacegraph.space3d.phys.shape.TriangleCallback;
  *
  * @author jezek2
  */
-class GImpactTriangleCallback extends TriangleCallback {
+class GImpactTriangleCallback implements TriangleCallback {
 
 	public GImpactCollisionAlgorithm algorithm;
 	public Collidable body0;

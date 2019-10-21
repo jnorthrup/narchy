@@ -867,7 +867,7 @@ public class Dynamics3D<X> extends Collisions<X> {
         return collidable;
     }
 
-    private static class InplaceSolverIslandCallback extends Islands.IslandCallback {
+    private static class InplaceSolverIslandCallback implements Islands.IslandCallback {
         ContactSolverInfo solverInfo;
         Constrainer solver;
         FasterList<TypedConstraint> sortedConstraints;

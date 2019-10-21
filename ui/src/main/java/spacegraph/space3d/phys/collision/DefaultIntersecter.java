@@ -193,7 +193,7 @@ public class DefaultIntersecter extends Intersecter {
 		return (body0.hasContactResponse() && body1.hasContactResponse()) && ((!body0.isStaticOrKinematicObject()) || (!body1.isStaticOrKinematicObject()));
 	}
 
-	private static class CollisionPairCallback extends OverlapCallback {
+	private static class CollisionPairCallback implements OverlapCallback {
 		private DispatcherInfo dispatchInfo;
 		private DefaultIntersecter dispatcher;
 		private NearCallback cb;

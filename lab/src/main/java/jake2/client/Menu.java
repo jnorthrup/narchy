@@ -105,8 +105,8 @@ public final class Menu extends Key {
 
     }
 
-    abstract static class mcallback {
-        public abstract void execute(Object self);
+    static interface mcallback {
+        void execute(Object self);
     }
 
     static class menucommon_s {

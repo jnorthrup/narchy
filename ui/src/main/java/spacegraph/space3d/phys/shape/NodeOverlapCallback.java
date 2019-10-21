@@ -28,8 +28,8 @@ package spacegraph.space3d.phys.shape;
  * 
  * @author jezek2
  */
-abstract class NodeOverlapCallback {
+interface NodeOverlapCallback {
 
-	public abstract void processNode(int subPart, int triangleIndex);
+	void processNode(int subPart, int triangleIndex);
 	
 }

@@ -4,7 +4,7 @@ import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.menu.Menu;
 
-public class GridMenuView extends Menu.MenuView {
+public class GridMenuView implements Menu.MenuView {
 
 
     final Gridding view = new Gridding();

@@ -31,7 +31,7 @@ import jcog.data.list.FasterList;
  *
  * @author jezek2
  */
-public abstract class OverlappingPairCache extends OverlappingPairCallback {
+public abstract class OverlappingPairCache implements OverlappingPairCallback {
 
 	public abstract FasterList<BroadphasePair> getOverlappingPairArray();
 	

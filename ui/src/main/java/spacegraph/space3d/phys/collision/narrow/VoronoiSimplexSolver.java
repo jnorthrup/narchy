@@ -34,7 +34,7 @@ import spacegraph.space3d.phys.math.VectorUtil;
  * 
  * @author jezek2
  */
-public class VoronoiSimplexSolver extends SimplexSolverInterface {
+public class VoronoiSimplexSolver implements SimplexSolverInterface {
 
 	private static final int VORONOI_SIMPLEX_MAX_VERTS = 5;
 	
