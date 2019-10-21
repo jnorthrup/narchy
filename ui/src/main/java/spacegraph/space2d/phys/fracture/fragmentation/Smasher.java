@@ -5,7 +5,6 @@ import jcog.math.v2;
 import spacegraph.space2d.phys.callbacks.ContactImpulse;
 import spacegraph.space2d.phys.collision.WorldManifold;
 import spacegraph.space2d.phys.common.MathUtils;
-import spacegraph.space2d.phys.common.PlatformMathUtils;
 import spacegraph.space2d.phys.dynamics.Dynamics2D;
 import spacegraph.space2d.phys.dynamics.Fixture;
 import spacegraph.space2d.phys.dynamics.contacts.Contact;

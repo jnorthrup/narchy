@@ -2,7 +2,6 @@ package spacegraph.space2d.phys.fracture;
 
 import jcog.math.v2;
 import spacegraph.space2d.phys.common.MathUtils;
-import spacegraph.space2d.phys.common.PlatformMathUtils;
 
 import java.util.Arrays;
 
