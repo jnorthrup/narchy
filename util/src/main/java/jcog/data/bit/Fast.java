@@ -39,8 +39,7 @@ package jcog.data.bit;
   * @since 0.1
   */
 
-public enum Fast {
-	;
+  public final   class Fast {
 
 	public static final long ONES_STEP_4 = 0x1111111111111111L;
 	public static final long ONES_STEP_8 = 0x0101010101010101L;

@@ -4,8 +4,7 @@ package jcog.math;
  *
  * @lucene.internal
  */
-public enum SmallFloat {
-  ;
+  public final   class SmallFloat {
 
   /** Converts a 32 bit float to an 8 bit float.
    * <br>Values less than zero are all mapped to zero.

@@ -40,8 +40,7 @@ import static nars.term.atom.IdempotentBool.Null;
  *
  * @author me
  */
-public enum Terms {
-	;
+  public final   class Terms {
 
 
 

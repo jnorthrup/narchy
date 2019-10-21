@@ -13,8 +13,7 @@ import java.util.function.BiConsumer;
 /**
  * Utilities for process Text & String input/output, ex: encoding/escaping and decoding/unescaping Terms
  */
-public enum Texts {
-	;
+  public final   class Texts {
 
 	static final String NaN2 = "NaN";
 	static final String NaN4 = "NNaaNN";

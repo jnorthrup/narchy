@@ -6,8 +6,7 @@ import java.util.Comparator;
  * https://github.com/jasondavies/smoothsort.js/blob/master/smoothsort.js
  * https://raw.githubusercontent.com/ClovisMonteiro/SmoothSort/master/src/ordenamento/Sort.java
  */
-public enum SmoothSort {
-	;
+  public final   class SmoothSort {
 
 
 	public static <X> void smoothSort(X[] m, int lo, int hi, Comparator<X> compare) {

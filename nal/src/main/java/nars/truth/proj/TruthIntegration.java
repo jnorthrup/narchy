@@ -12,8 +12,7 @@ import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static nars.time.Tense.ETERNAL;
 
-public enum TruthIntegration {
-	;
+  public final   class TruthIntegration {
 
 
 	public static double evi(Task t) {

@@ -29,8 +29,7 @@ import java.io.*;
  * @see BitVector
  */
 
-public enum BitVectors {
-	;
+  public final   class BitVectors {
 
 
 	public static void ensureFromTo( long bitVectorLength, long from, long to ) {

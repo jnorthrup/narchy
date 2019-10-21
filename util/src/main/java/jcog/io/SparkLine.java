@@ -14,8 +14,7 @@ import static java.util.Arrays.asList;
  * 
  * @author Richard Warburton
  */
-public enum SparkLine {
-	;
+  public final   class SparkLine {
 
 	private static final List<Character> ticks = asList('\u2581','\u2582', '\u2583', '\u2584', '\u2585', '\u2586', '\u2587','\u2588');
 

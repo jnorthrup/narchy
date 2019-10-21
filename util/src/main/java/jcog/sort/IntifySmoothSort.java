@@ -5,8 +5,7 @@ import java.util.function.ToIntFunction;
 /**
  * variation that uses IntFunction<X> instead of comparators, for faster cached comparisons
  */
-public enum IntifySmoothSort {
-	;
+  public final   class IntifySmoothSort {
 
 
 	public static <X> void smoothSort(X[] m, int lo, int hi, ToIntFunction<X> compare) {

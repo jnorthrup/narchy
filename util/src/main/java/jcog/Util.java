@@ -67,8 +67,7 @@ import static java.util.stream.Collectors.toList;
 /**
  *
  */
-public enum Util {
-	;
+  public final   class Util {
 
 
 	public static final Unsafe unsafe;

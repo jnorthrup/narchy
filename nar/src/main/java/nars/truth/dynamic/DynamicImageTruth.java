@@ -5,8 +5,7 @@ import nars.term.Compound;
 import nars.term.Term;
 import nars.truth.Truth;
 
-public enum DynamicImageTruth {
-	;
+  public final   class DynamicImageTruth {
 
 	public static final AbstractDynamicTruth ImageDynamicTruthModel = new AbstractDynamicTruth() {
 

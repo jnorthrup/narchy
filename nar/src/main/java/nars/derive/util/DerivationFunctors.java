@@ -29,8 +29,7 @@ import java.util.function.UnaryOperator;
 import static nars.term.atom.IdempotentBool.Null;
 import static nars.term.util.conj.ConjMatch.CONJ_WITHOUT_UNIFY;
 
-public enum DerivationFunctors {
-	;
+  public final   class DerivationFunctors {
 
 	public static final Atom Task = Atomic.atom("task");
 	public static final Atom Belief = Atomic.atom("belief");

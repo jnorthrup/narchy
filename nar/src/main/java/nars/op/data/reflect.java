@@ -17,8 +17,7 @@ import org.jetbrains.annotations.Nullable;
  *
  * @author me
  */
-public enum reflect {
-	;
+  public final   class reflect {
 
 	static final Atomic REFLECT_OP = Atomic.the("reflect");
 

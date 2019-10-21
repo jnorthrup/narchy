@@ -11,8 +11,7 @@ import static nars.Op.IMPL;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
 
-public enum DynamicImplConjTruth {
-	;
+  public final   class DynamicImplConjTruth {
 
 	public static final AbstractDynamicTruth ImplSubjDisj = new DynamicStatementTruth.AbstractInhImplSectTruth(true, true) {
 		@Override
