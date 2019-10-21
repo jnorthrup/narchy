@@ -353,8 +353,8 @@ import static nars.Op.BELIEF;
 
             float q = Q.q(b,g);
             float qC =
-                //(g!=null ? g.expectation() : 0);
-                q;
+                (g!=null ? g.expectation() : 0);
+                //q;
             boolean xq = q >= thresh.asFloat();
             boolean y = L.accept(xq && qC >= r.floatValue());
             l.set(xq ? qC : 0);
@@ -370,8 +370,8 @@ import static nars.Op.BELIEF;
         GoalActionConcept RA = action(tr, (b, g) -> {
             float q = Q.q(b,g);
             float qC =
-                //(g!=null ? g.expectation() : 0);
-                q;
+                (g!=null ? g.expectation() : 0);
+                //q;
             boolean xq = q >= thresh.asFloat();
             boolean y = R.accept(xq && qC >= l.floatValue());
             r.set(xq ? qC : 0);

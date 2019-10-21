@@ -9,16 +9,16 @@ import nars.NAL;
  */
 public abstract class EvidenceEvaluator extends LongFloatTrapezoidalIntegrator   {
 
-    public static EvidenceEvaluator of(long s, long e, float dur) {
-        if (dur < Float.MIN_NORMAL) {
-            return s == e ?
-                new TemporalRawPointEvidenceEvaluator(s) :
-                new TemporalRawSpanEvidenceEvaluator(s, e);
-        } else {
-            return s == e ?
-                new TemporalDurPointEvidenceEvaluator(s, dur) :
-                new TemporalDurSpanEvidenceEvaluator(s, e, dur);
-        }
+    public static TemporalDurSpanEvidenceEvaluator of(long s, long e, float dur) {
+//        if (dur < Float.MIN_NORMAL) {
+//            return s == e ?
+//                new TemporalRawPointEvidenceEvaluator(s) :
+//                new TemporalRawSpanEvidenceEvaluator(s, e);
+//        } else {
+//            return s == e ?
+//                new TemporalDurPointEvidenceEvaluator(s, dur) :
+          return      new TemporalDurSpanEvidenceEvaluator(s, e, dur);
+//        }
     }
 
 //    public static final class EternalEvidenceEvaluator extends EvidenceEvaluator {
@@ -76,7 +76,7 @@ public abstract class EvidenceEvaluator extends LongFloatTrapezoidalIntegrator  
             long dt = dt(when);
             return (dt == 0) ?
                 1
-                : NAL.evi(1, dt, dur);
+                : dur > Float.MIN_NORMAL ? NAL.evi(1, dt, dur) : 0;
         }
 
     }
@@ -127,7 +127,7 @@ public abstract class EvidenceEvaluator extends LongFloatTrapezoidalIntegrator  
         }
     }
 
-    static final class TemporalDurSpanEvidenceEvaluator extends TemporalDurPointEvidenceEvaluator {
+    public static final class TemporalDurSpanEvidenceEvaluator extends TemporalDurPointEvidenceEvaluator {
         final long e;
 
         TemporalDurSpanEvidenceEvaluator(long s, long e, float dur) {

@@ -40,7 +40,7 @@ public class GameMetaAgent extends MetaAgent {
 
 
 		floatAction($.inh(gid, forget), ((TaskLinkWhat) w).links.decay);
-		floatAction($.inh(gid, grow), ((TaskLinkWhat) w).links.grow);
+		//floatAction($.inh(gid, grow), ((TaskLinkWhat) w).links.grow);
 		//actionCtl($.inh(gid, remember), ((TaskLinkWhat) w).links.sustain);
 
 		//actionCtl($.inh(gid, amplify), ((TaskLinkWhat) w).links.amp);

@@ -217,9 +217,7 @@ public abstract class GameX extends Game {
 
         n.causeCapacity.set(16);
         n.termVolMax.set(
-
-                48
-
+                64
         );
 
 
