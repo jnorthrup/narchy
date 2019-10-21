@@ -718,7 +718,7 @@ public class NARui {
 						for (int i = 0; i < n; i++) {
 							TaskLink x = items[i];
 							if (x == null) continue;
-							float amp = vol * (float) ((Math.exp(x.pri() * 10) - 1) / Util.sqrt(n));
+							float amp = vol * x.pri()/*((Math.exp(x.pri() * 10) - 1)*/ / Util.sqrt(n);
 							Op o = x.op();
 
 							//stupid grain synth
@@ -728,7 +728,7 @@ public class NARui {
 							int ss = (int) (rng.nextFloat() * (buf.length - sw - 1));
 							int se = ss + sw;
 							for (int s = ss; s < se; s++) {
-								float env = 2 * Math.min(Math.abs(s - ss), Math.abs(s - se)) / (sw + 1f); //triangular
+								float env = (float) (0.5f*(1+Math.sin(((double)(s-ss))/(se-ss))*Math.PI)); //2 * Math.min(Math.abs(s - ss), Math.abs(s - se)) / (sw + 1f); //triangular
 								buf[s] += amp * (float) Math.sin(f * s * 2 * 1f / readRate) * env;
 							}
 						}

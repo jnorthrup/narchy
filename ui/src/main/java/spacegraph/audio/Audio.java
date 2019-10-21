@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.Arrays;
 
 
 public class Audio implements Runnable {
@@ -236,6 +237,8 @@ public class Audio implements Runnable {
             ba[b++] = (byte) (r & 0x00ff);
             ba[b++] = (byte) (r >> 8);
         }
+        Arrays.fill(leftBuf, 0);
+        Arrays.fill(rightBuf, 0);
 
         int bw = bufferSize * 2 * 2;
 //        byte[] ba = soundBuffer.array();

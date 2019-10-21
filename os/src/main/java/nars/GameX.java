@@ -20,9 +20,10 @@ import nars.derive.time.ActionTiming;
 import nars.derive.time.MixedTimeFocus;
 import nars.derive.time.NonEternalTaskOccurenceOrPresentDeriverTiming;
 import nars.exe.impl.WorkerExec;
-import nars.game.Game;
-import nars.game.GameTime;
-import nars.game.MetaAgent;
+import nars.game.*;
+import nars.game.meta.GameMetaAgent;
+import nars.game.meta.MetaAgent;
+import nars.game.meta.SelfMetaAgent;
 import nars.gui.NARui;
 import nars.memory.CaffeineMemory;
 import nars.op.Arithmeticize;
@@ -116,12 +117,12 @@ public abstract class GameX extends Game {
                     g -> !(g instanceof MetaAgent)
             ).forEach(g -> {
                 float fps = metaFPS;
-                MetaAgent gm = new MetaAgent.GameMetaAgent(g, metaAllowPause);
+                MetaAgent gm = new GameMetaAgent(g, metaAllowPause);
                 n.add(gm);
 
             });
 
-            MetaAgent.SelfMetaAgent self = new MetaAgent.SelfMetaAgent(n);
+            SelfMetaAgent self = new SelfMetaAgent(n);
             if (initMetaRL)
                 self.addRLBoost();
             n.add(self);

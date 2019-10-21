@@ -87,8 +87,7 @@ public class SoundMixer extends FastCoWList<Sound> implements StereoSoundProduce
 		}
 
 
-		Arrays.fill(leftBuf, 0);
-		Arrays.fill(rightBuf, 0);
+
 	}
 
 
