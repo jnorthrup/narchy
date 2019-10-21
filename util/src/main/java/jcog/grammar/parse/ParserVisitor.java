@@ -18,7 +18,7 @@ import java.util.Set;
  * 
  * @version 1.0
  */
-public abstract class ParserVisitor {
+public interface ParserVisitor {
 	/**
 	 * Visit an alternation.
 	 * 
@@ -29,7 +29,7 @@ public abstract class ParserVisitor {
 	 *            a collection of previously visited parsers
 	 * 
 	 */
-	public abstract void visitAlternation(Alternation a, Set<Parser> visited);
+	void visitAlternation(Alternation a, Set<Parser> visited);
 
 	/**
 	 * Visit an empty parser.
@@ -41,7 +41,7 @@ public abstract class ParserVisitor {
 	 *            a collection of previously visited parsers
 	 * 
 	 */
-	public abstract void visitEmpty(Empty e, Set<Parser> visited);
+	void visitEmpty(Empty e, Set<Parser> visited);
 
 	/**
 	 * Visit a repetition.
@@ -53,7 +53,7 @@ public abstract class ParserVisitor {
 	 *            a collection of previously visited parsers
 	 * 
 	 */
-	public abstract void visitRepetition(Repetition r, Set<Parser> visited);
+	void visitRepetition(Repetition r, Set<Parser> visited);
 
 	/**
 	 * Visit a sequence.
@@ -65,7 +65,7 @@ public abstract class ParserVisitor {
 	 *            a collection of previously visited parsers
 	 * 
 	 */
-	public abstract void visitSequence(Seq s, Set<Parser> visited);
+	void visitSequence(Seq s, Set<Parser> visited);
 
 	/**
 	 * Visit a terminal.
@@ -77,5 +77,5 @@ public abstract class ParserVisitor {
 	 *            a collection of previously visited parsers
 	 * 
 	 */
-	public abstract void visitTerminal(Terminal t, Set<Parser> visited);
+	void visitTerminal(Terminal t, Set<Parser> visited);
 }

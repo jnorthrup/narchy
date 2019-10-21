@@ -30,7 +30,7 @@ import jcog.grammar.parse.examples.engine.BooleanTerm;
  * 
  * @version 1.0
  */
-public class IfCommand extends Command {
+public class IfCommand implements Command {
 	private BooleanTerm condition;
 	private Command ifCommand;
 	private Command elseCommand;

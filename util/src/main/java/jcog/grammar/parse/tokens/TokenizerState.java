@@ -25,7 +25,7 @@ import java.io.PushbackReader;
  * 
  * @version 1.0
  */
-abstract class TokenizerState {
+interface TokenizerState {
 	/**
 	 * Return a token that represents a logical piece of a reader.
 	 * 
@@ -45,5 +45,5 @@ abstract class TokenizerState {
 	 * @exception IOException
 	 *                if there is any problem reading
 	 */
-	public abstract Token nextToken(PushbackReader r, int c, Tokenizer t) throws IOException;
+	Token nextToken(PushbackReader r, int c, Tokenizer t) throws IOException;
 }

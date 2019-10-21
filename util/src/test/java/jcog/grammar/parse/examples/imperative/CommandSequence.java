@@ -18,7 +18,7 @@ import java.util.List;
  * 
  * @version 1.0
  */
-public class CommandSequence extends Command {
+public class CommandSequence implements Command {
 	private List<Command> commands;
 
 	/**

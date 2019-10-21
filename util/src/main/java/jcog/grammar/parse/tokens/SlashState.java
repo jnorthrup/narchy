@@ -12,7 +12,7 @@ import java.math.BigDecimal;
  * 
  * @version 1.0
  */
-public class SlashState extends TokenizerState {
+public class SlashState implements TokenizerState {
 
 	private final SlashStarState slashStarState = new SlashStarState();
 

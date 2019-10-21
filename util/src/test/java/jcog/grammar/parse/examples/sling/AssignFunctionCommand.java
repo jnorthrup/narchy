@@ -10,7 +10,7 @@ import jcog.grammar.parse.examples.imperative.Command;
  * 
  * @version 1.0 
  */
-public class AssignFunctionCommand extends Command {
+public class AssignFunctionCommand implements Command {
 	private Variable v;
 	private SlingFunction f;
 

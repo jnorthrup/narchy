@@ -21,7 +21,7 @@ import java.math.BigDecimal;
  * 
  * @version 1.0
  */
-public class NumberState extends TokenizerState {
+public class NumberState implements TokenizerState {
 	protected int c;
 	protected BigDecimal value;
 	protected boolean absorbedLeadingMinus;

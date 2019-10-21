@@ -18,7 +18,7 @@ package jcog.grammar.parse.examples.imperative;
  * 
  * @version 1.0
  */
-public class NullCommand extends Command {
+public class NullCommand implements Command {
 	/**
 	 * Does nothing.
 	 */

@@ -28,7 +28,7 @@ import java.math.BigDecimal;
  * 
  * @version 1.0
  */
-public class SymbolState extends TokenizerState {
+public class SymbolState implements TokenizerState {
 	private final SymbolRootNode symbols = new SymbolRootNode();
 
 	/**

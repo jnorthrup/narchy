@@ -44,7 +44,7 @@ import jcog.grammar.parse.examples.engine.*;
  * 
  * @version 1.0
  */
-public class ForCommand extends Command {
+public class ForCommand implements Command {
 	private Command setupCommand;
 	private BooleanTerm condition;
 	private Command endCommand;

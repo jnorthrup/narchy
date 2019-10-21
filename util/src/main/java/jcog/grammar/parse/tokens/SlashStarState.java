@@ -19,7 +19,7 @@ import java.io.PushbackReader;
  * 
  * @version 1.0
  */
-public class SlashStarState extends TokenizerState {
+public class SlashStarState implements TokenizerState {
 	/**
 	 * Ignore everything up to a closing star and slash, and then return the
 	 * tokenizer's next token.

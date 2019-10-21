@@ -20,7 +20,7 @@ import java.io.PrintWriter;
  * 
  * @version 1.0
  */
-public class PrintlnCommand extends Command {
+public class PrintlnCommand implements Command {
 	private Term term;
 	private PrintWriter out;
 

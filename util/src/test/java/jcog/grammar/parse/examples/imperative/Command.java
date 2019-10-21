@@ -23,9 +23,9 @@ package jcog.grammar.parse.examples.imperative;
  * 
  * @version 1.0
  */
-public abstract class Command {
+public interface Command {
 	/**
 	 * Perform the request encapsulated in this command.
 	 */
-	public abstract void execute();
+	void execute();
 }

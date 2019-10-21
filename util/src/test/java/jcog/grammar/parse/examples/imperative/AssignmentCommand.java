@@ -21,7 +21,7 @@ import jcog.grammar.parse.examples.engine.Variable;
  * 
  * @version 1.0
  */
-public class AssignmentCommand extends Command {
+public class AssignmentCommand implements Command {
 	private Evaluation evaluation;
 
 	/**

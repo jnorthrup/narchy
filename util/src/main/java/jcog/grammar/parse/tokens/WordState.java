@@ -37,7 +37,7 @@ import java.util.Set;
  * 
  * @version 1.0
  */
-public class WordState extends TokenizerState {
+public class WordState implements TokenizerState {
 	private final Set<Integer> wordChars = new HashSet<>();
 
 	/**

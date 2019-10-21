@@ -25,7 +25,7 @@ import java.io.InputStreamReader;
  * 
  * @version 1.0
  */
-public class ReadCommand extends Command {
+public class ReadCommand implements Command {
 	private Variable variable;
 	private BufferedReader reader;
 

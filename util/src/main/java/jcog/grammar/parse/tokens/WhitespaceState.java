@@ -21,7 +21,7 @@ import java.math.BigDecimal;
  * 
  * @version 1.0
  */
-public class WhitespaceState extends TokenizerState {
+public class WhitespaceState implements TokenizerState {
 	private final boolean[] whitespaceChar = new boolean[256];
 	private boolean whitespaceTokensEnabled = false;
 

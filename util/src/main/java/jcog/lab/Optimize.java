@@ -337,12 +337,12 @@ public class Optimize<S, E> extends Lab<E>  {
 //    }
 
 
-    public abstract static class OptimizationStrategy {
+    public static interface OptimizationStrategy {
 
-        public abstract void run(Optimize eOptimize);
+        void run(Optimize eOptimize);
     }
 
-    public abstract static class ApacheCommonsMathOptimizationStrategy extends OptimizationStrategy {
+    public abstract static class ApacheCommonsMathOptimizationStrategy implements OptimizationStrategy {
 
 
         @Override

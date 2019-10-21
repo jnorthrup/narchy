@@ -16,7 +16,7 @@ import java.math.BigDecimal;
  * 
  * @version 1.0
  */
-public class QuoteState extends TokenizerState {
+public class QuoteState implements TokenizerState {
 	private char[] charbuf = new char[16];
 
 	/*

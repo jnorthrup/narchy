@@ -10,7 +10,7 @@ import jcog.grammar.parse.examples.imperative.Command;
  * 
  * @version 1.0 
  */
-public class AddFunctionCommand extends Command {
+public class AddFunctionCommand implements Command {
 	private RenderableCollection renderables;
 	private SlingFunction f;
 	private Variable nLine;
