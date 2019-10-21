@@ -855,25 +855,31 @@ public interface Subterms extends Termlike, Iterable<Term> {
 		int s = subs();
 		if (s != c.subs())
 			return false;
-		return IntStream.range(0, s).allMatch(i -> sub(i).equals(c.sub(i)));
+        for (int i = 0; i < s; i++) {
+            if (!sub(i).equals(c.sub(i)))
+                return false;
+        }
+        return true;
 	}
 
 	default boolean equalTerms(/*@NotNull*/ Term[] c) {
 		int s = subs();
 		if (s != c.length)
 			return false;
-		return ANDi((x,i) -> x.equals(c[i]));
+        for (int i = 0; i < s; i++) {
+            if (!sub(i).equals(c[i]))
+                return false;
+        }
+        return true;
 	}
 
 	default void addAllTo(Collection target) {
-		for (Term term : this)
-			target.add(term);
+        forEach(target::add);
 	}
 
 	default void addAllTo(FasterList target) {
 		target.ensureCapacity(subs());
-		for (Term term : this)
-			target.addFast(term);
+        forEach(target::addFast);
 	}
 
 	default /* final */ boolean impossibleSubStructure(int structure) {
@@ -1231,7 +1237,10 @@ public interface Subterms extends Termlike, Iterable<Term> {
 	 */
 	default boolean ANDi(/*@NotNull*/ ObjectIntPredicate<Term> p) {
 		int s = subs();
-		return IntStream.range(0, s).allMatch(i -> p.accept(sub(i), i));
+        for (int i = 0; i < s; i++)
+            if (!p.accept(sub(i), i))
+                return false;
+        return true;
 	}
 
 	/**
@@ -1239,7 +1248,10 @@ public interface Subterms extends Termlike, Iterable<Term> {
 	 */
 	default boolean ORi(/*@NotNull*/ ObjectIntPredicate<Term> p) {
 		int s = subs();
-		return IntStream.range(0, s).anyMatch(i -> p.accept(sub(i), i));
+        for (int i = 0; i < s; i++)
+            if (p.accept(sub(i), i))
+                return true;
+        return false;
 	}
 
 	/**
@@ -1281,7 +1293,11 @@ public interface Subterms extends Termlike, Iterable<Term> {
 	 */
 	default <X> boolean ANDwithOrdered(/*@NotNull*/ BiPredicate<Term, X> p, X param) {
 		int s = subs();
-		return IntStream.range(0, s).allMatch(i -> p.test(sub(i), param));
+        for (int i = 0; i < s; i++) {
+            if (!p.test(sub(i), param))
+                return false;
+        }
+        return true;
 	}
 
 	/**

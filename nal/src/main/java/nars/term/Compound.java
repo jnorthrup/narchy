@@ -270,13 +270,14 @@ public interface Compound extends Term, IPair, Subterms {
     default boolean unifySubterms(Compound y, Unify u) {
 
         Compound x = this;
-        Subterms xx = x.subterms();
-        Subterms yy = y.subterms();
 
         Op o = op();
+        if (o.temporal && !u.unifyDT(x, y))
+            return false;
+
+        Subterms xx = x.subterms(), yy = y.subterms();
+
         if (o.temporal) {
-            if (!u.unifyDT(x, y))
-                return false;
 
             if (xx.equals(yy))
                 return true; //compound equality would have been true if non-temporal
@@ -284,7 +285,6 @@ public interface Compound extends Term, IPair, Subterms {
             if (o == CONJ)
                 return ConjUnify.unifyConj(x, y, xx, yy, u);
         }
-
 
         int xs = xx.subs();
         if (xs != yy.subs())
@@ -586,10 +586,8 @@ public interface Compound extends Term, IPair, Subterms {
 
     @Override
     default @Nullable Term normalize(byte varOffset) {
-        if (varOffset == 0 && this.isNormalized())
-            return this;
+        return varOffset == 0 && this.isNormalized() ? this : Op.terms.normalize(this, varOffset);
 
-        return Op.terms.normalize(this, varOffset);
     }
 
 
@@ -599,7 +597,7 @@ public interface Compound extends Term, IPair, Subterms {
 
     @Override
     default int eventRange() {
-        if (op() == CONJ) {
+        if (opID() == CONJ.id) {
             int dt = dt();
             if (dt == XTERNAL)
                 return 0; //unknown actual range; logically must be considered as point-like event
@@ -618,16 +616,12 @@ public interface Compound extends Term, IPair, Subterms {
                         break;
                 }
 
-                return tt.subEventRange(0) + (dt) + tt.subEventRange(1);
+                return tt.subEventRange(0) + dt + tt.subEventRange(1);
 
             } else {
                 int s = 0;
-
-
-                for (int i = 0; i < l; i++) {
+                for (int i = 0; i < l; i++)
                     s = Math.max(s, tt.subEventRange(i));
-                }
-
                 return s;
             }
         }
@@ -657,7 +651,7 @@ public interface Compound extends Term, IPair, Subterms {
         if (this.equals(x))
             return true;
 
-        if (op() != x.op() || !hasAny(Op.Temporal)
+        if (opID() != x.opID() || !hasAny(Op.Temporal)
                 || structure()!=x.structure())
             return false;
 

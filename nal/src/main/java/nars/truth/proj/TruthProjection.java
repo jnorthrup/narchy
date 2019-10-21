@@ -37,7 +37,6 @@ import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.IntPredicate;
 import java.util.function.Supplier;
-import java.util.stream.IntStream;
 
 import static java.lang.System.arraycopy;
 import static nars.NAL.STAMP_CAPACITY;
@@ -493,7 +492,9 @@ public abstract class TruthProjection extends TaskList {
 			return Stamp.zip(s0, stamp(1), (float) (evi[0] / (evi[0] + evi[1])), capacity);
 		}
 
-		int lenSum = IntStream.range(0, n).map(i1 -> stamp(i1).length).sum();
+		int lenSum = 0;
+		for (int i = 0; i < n; i++)
+			lenSum += stamp(i).length;
 
 		if (lenSum <= capacity) {
 			//return Stamp.toMutableSet(maxPossibleStampLen, this::stamp, n).toSortedArray();
@@ -595,7 +596,16 @@ public abstract class TruthProjection extends TaskList {
 
 
 	private double eviSum(@Nullable IntPredicate each) {
-		return IntStream.range(0, size).filter(i -> each == null || each.test(i)).mapToDouble(i -> evi[i]).filter(TruthProjection::sane).sum();
+		double e = 0;
+		int n = size;
+		for (int i = 0; i < n; i++) {
+			if (each == null || each.test(i)) {
+				double ce = evi[i];
+				if (sane(ce))
+					e += ce;
+			}
+		}
+		return e;
 	}
 
 	private boolean commit1() {

@@ -51,7 +51,7 @@ public class TaskLinks implements Sampler<TaskLink> {
     /**
      * short target memory, TODO abstract and remove, for other forms of attention that dont involve TaskLinks or anything like them
      */
-    public nars.link.TaskLinkBag links = null;
+    public final nars.link.TaskLinkBag links;
     /**
      * capacity of the links bag
      */
@@ -83,7 +83,6 @@ public class TaskLinks implements Sampler<TaskLink> {
         PriMerge merge = NAL.tasklinkMerge;
         links = new nars.link.TaskLinkBag(
                 c, merge
-
         );
 
         links.setCapacity(c);

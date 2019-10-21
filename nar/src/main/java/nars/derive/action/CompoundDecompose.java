@@ -48,9 +48,9 @@ public class CompoundDecompose extends NativeHow {
 					.priSet(srcTask.punc(), srcTask.priElseZero() * links.grow.floatValue());
 
 				//TODO lazy calculate
-				l.why = why.why(d);
+				l.why = why.why(srcTask /* d */);
 
-				links.link(l);
+				d.x.link(l);
 			}
 
 
