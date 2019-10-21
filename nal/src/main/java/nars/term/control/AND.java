@@ -13,7 +13,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static jcog.data.iterator.ArrayIterator.stream;
@@ -47,7 +46,11 @@ public abstract class AND<X> extends AbstractPred<X> {
 
         @Override
         public final boolean test(X m) {
-            return Arrays.stream(cond).allMatch(x -> x.test(m));
+            for (PREDICATE<X> x : cond) {
+                if (!x.test(m))
+                    return false;
+            }
+            return true;
         }
 
 
@@ -139,7 +142,7 @@ public abstract class AND<X> extends AbstractPred<X> {
 
         @Override
         public final boolean test(X x) {
-            return Stream.of(a, b, c).allMatch(xpredicate -> xpredicate.test(x));
+            return a.test(x) && b.test(x) && c.test(x);
         }
 
         public PREDICATE<X> first() {
@@ -217,7 +220,12 @@ public abstract class AND<X> extends AbstractPred<X> {
     }
     public static @Nullable <X> PREDICATE<X>  first(AND<X>  b, Predicate<PREDICATE<X> > test) {
         int s = b.subs();
-        return IntStream.range(0, s).mapToObj(i -> (PREDICATE<X>) b.sub(i)).filter(test).findFirst().orElse(null);
+        for (int i = 0; i < s; i++) {
+            PREDICATE<X>  x = (PREDICATE<X> ) b.sub(i);
+            if (test.test(x))
+                return x;
+        }
+        return null;
     }
 
     /** recursive */

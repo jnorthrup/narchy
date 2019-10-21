@@ -5,7 +5,6 @@ import jcog.data.array.IntComparator;
 import jcog.util.ArrayUtil;
 
 import java.util.Arrays;
-import java.util.stream.IntStream;
 
 /**
  * Bare Metal Fixed-Size BitSets
@@ -18,10 +17,6 @@ import java.util.stream.IntStream;
 public abstract class MetalBitSet {
 
     public abstract boolean get(int i);
-
-    public final boolean getNot(int i) {
-        return !get(i);
-    }
 
     public abstract void set(int i);
 
@@ -69,7 +64,11 @@ public abstract class MetalBitSet {
      * finds the next bit matching 'what' between from (inclusive) and to (exclusive), or -1 if nothing found
      */
     public int next(boolean what, int from, int to) {
-        return IntStream.range(from, to).filter(i -> get(i) == what).findFirst().orElse(-1);
+        for (int i = from; i < to; i++) {
+            if (get(i) == what)
+                return i;
+        }
+        return -1;
     }
 
 
@@ -173,13 +172,18 @@ public abstract class MetalBitSet {
          * number of bits set to true
          */
         public int cardinality() {
-            int sum = Arrays.stream(data).mapToInt(Long::bitCount).sum();
+            int sum = 0;
+            for (long l : data)
+                sum += Long.bitCount(l);
             return sum;
         }
 
         @Override
         public boolean isEmpty() {
-            return Arrays.stream(data).noneMatch(l -> l != 0);
+            for (long l : data)
+                if (l != 0)
+                    return false;
+            return true;
         }
 
         /**

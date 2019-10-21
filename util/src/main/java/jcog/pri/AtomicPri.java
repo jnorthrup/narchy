@@ -27,7 +27,7 @@ public abstract class AtomicPri implements ScalarValue {
 
 
     /** initialized to zero */
-    public volatile int pri = iZero;
+    private volatile int pri = iZero;
     static final FloatToFloatFunction vNonZero = AtomicPri::_vNonZero;
     static final FloatToFloatFunction vUnit = AtomicPri::_vUnit;
 

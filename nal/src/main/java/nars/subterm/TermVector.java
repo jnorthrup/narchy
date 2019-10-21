@@ -7,6 +7,7 @@ import nars.subterm.util.TermMetadata;
 import nars.term.Term;
 
 import java.util.Iterator;
+import java.util.function.Predicate;
 
 /**
  * what differentiates TermVector from TermContainer is that
@@ -24,9 +25,11 @@ public abstract class TermVector extends TermMetadata implements Subterms, The /
         the = true;
     }
 
+    static final Predicate<Term> isThe = Term::the;
+
     protected TermVector(Term[] terms) {
         super(terms);
-        the = Util.and(Term::the, terms);
+        this.the = Util.and(isThe, terms);
     }
 
     @Override

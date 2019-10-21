@@ -37,10 +37,10 @@ public interface Prioritizable extends Prioritized, ScalarValue {
         return PriMerge.min.merge(this, p, mode);
     }
 
-    default float take(Prioritizable source, float p, boolean amountOrFraction, boolean copyOrMove) {
+    default void take(Prioritizable source, float p, boolean amountOrFraction, boolean copyOrMove) {
 
         if (p!=p || p < ScalarValue.EPSILON)
-            return 0; //amount is insignificant
+            return; //amount is insignificant
 
         assert(this!=source);
 
@@ -48,41 +48,34 @@ public interface Prioritizable extends Prioritized, ScalarValue {
         if (amountOrFraction) {
             float s = source.pri();
             if (s!=s || s < ScalarValue.EPSILON)
-                return 0; //source is depleted
+                return; //source is depleted
 
             amount = Math.min(s, p);
         } else {
             assert(p <= 1f);
             amount = source.priElseZero() * p;
             if (amount < ScalarValue.EPSILON)
-                return 0; //request*source is insignificant
+                return; //request*source is insignificant
         }
 
-        float[] before = new float[1];
-
-        float after = pri((x,a)->{
-            float x1 = x;
-            if (x1 != x1)
-                x1 = 0;
-            before[0] = x1;
-            return x1 + a;
-        }, amount);
-
-        float b = before[0];
-        if (b!=b)
-            b = 0;
-
-        float taken = after - b;
-
-        if (!copyOrMove) {
+        //TODO verify source actually had it.  this would involve somehow combining the 2 atomic ops
 //            float taken = source.priDelta((exist,subtracting)->{
 //
 //            }, amount);
-            //TODO verify source actually had it.  this would involve somehow combining the 2 atomic ops
+        if (!copyOrMove) {
+            float[] before = new float[1];
+            float after = pri((x,a)->{
+                if (x != x)
+                    x = 0;
+                before[0] = x;
+                return x + a;
+            }, amount);
+            float taken = after - before[0];
             source.priSub(taken);
+        } else {
+            priAdd(amount);
         }
 
-        return taken;
     }
 
 
@@ -152,8 +145,8 @@ public interface Prioritizable extends Prioritized, ScalarValue {
             //TODO random visit order if not copying (transferring)
             for (X t: src) {
                 if (t != null) {
-                    float v = u.take(getPri.apply(t), perSrc, true, copyOrTransfer);
-                    if (Util.equals(v, 1f, EPSILON))
+                    u.take(getPri.apply(t), perSrc, true, copyOrTransfer);
+                    if (u.pri() >= 1f - EPSILON)
                         break; //done
                 }
             }
