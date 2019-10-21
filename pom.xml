@@ -67,7 +67,7 @@
                 </executions>
                 <configuration>
                     <compilerPlugins>
-                        <plugin>all-open</plugin>
+<!--                        <plugin>all-open</plugin>-->
                     </compilerPlugins>
                     <jvmTarget>12</jvmTarget>
                     <args>-Xjvm-default=compatibility</args>
