@@ -27,8 +27,10 @@ public class CachedPriorityQueue<X> extends AbstractQueue<X> {
 		queue = new PriorityQueue<>(new Comparator<NLink<X>>() {
             @Override
             public int compare(NLink<X> a, NLink<X> b) {
-                return a != b ?
-                        compare(b.priElse(rank), a.priElse(rank))
+				float v = b.priElse(rank);
+				float v1 = a.priElse(rank);
+				return a != b ?
+                        CachedPriorityQueue.compare(v, v1)
                         : 0;
             }
         });

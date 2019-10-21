@@ -519,7 +519,7 @@ public class Opjects extends DefaultTermizer {
                         instanceAndArgs = new Object[]{instance};
                         types = Collections.emptyList();
                     } else {
-                        instanceAndArgs = MethodExec.this.object(instance, maWrapped ? methodArgs.subterms().arrayShared() : new Term[]{methodArgs});
+                        instanceAndArgs = object(instance, maWrapped ? methodArgs.subterms().arrayShared() : new Term[]{methodArgs});
                         types = Util.typesOf(instanceAndArgs, 1 /* skip leading instance value */, instanceAndArgs.length);
                     }
 
@@ -539,7 +539,7 @@ public class Opjects extends DefaultTermizer {
 
                             try {
                                 mh.invokeWithArguments(instanceAndArgs);
-                                MethodExec.this.evoked(methodName, instance, instanceAndArgs);
+                                evoked(methodName, instance, instanceAndArgs);
                             } catch (Throwable throwable) {
                                 logger.error("{} execution {}", term, throwable);
                             } finally {

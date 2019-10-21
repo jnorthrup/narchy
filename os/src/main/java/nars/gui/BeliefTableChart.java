@@ -249,7 +249,7 @@ public class BeliefTableChart extends DurSurface<Stacking> implements Labeled, M
                 ((BeliefTables)table).forEach(new Procedure<BeliefTable>() {
                     @Override
                     public void value(BeliefTable b) {
-                        TruthGrid.this.renderBeliefTable(gl, b);
+                        renderBeliefTable(gl, b);
                     }
                 });
             else
@@ -284,8 +284,8 @@ public class BeliefTableChart extends DurSurface<Stacking> implements Labeled, M
             }).forEach(new Consumer<TaskRegion>() {
                 @Override
                 public void accept(TaskRegion b) {
-                    float x1 = TruthGrid.this.xTime(b.start());
-                    float x2 = TruthGrid.this.xTime(b.end());
+                    float x1 = xTime(b.start());
+                    float x2 = xTime(b.end());
                     float y1 = b.freqMin() - fEps;
                     float y2 = b.freqMax() + fEps;
                     Draw.rectStroke(x1, y1, x2 - x1, y2 - y1, gl);
@@ -302,11 +302,11 @@ public class BeliefTableChart extends DurSurface<Stacking> implements Labeled, M
                 @Override
                 public void onTruth(float freq, float conf, long s, long e) {
 
-                    float start = TruthGrid.this.xTime(s);
+                    float start = xTime(s);
                     if (start > 1.0F)
                         return;
 
-                    float end = TruthGrid.this.xTime(e + 1L);
+                    float end = xTime(e + 1L);
                     if (end < (float) 0)
                         return;
 
