@@ -40,6 +40,8 @@ import nars.time.Tense;
 import nars.unify.Unify;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 import org.eclipse.collections.api.list.primitive.ByteList;
+import org.eclipse.collections.api.list.primitive.ImmutableByteList;
+import org.eclipse.collections.impl.factory.primitive.ByteLists;
 import org.eclipse.collections.impl.list.mutable.primitive.ByteArrayList;
 import org.jetbrains.annotations.Nullable;
 
@@ -61,44 +63,50 @@ import static nars.time.Tense.DTERNAL;
  * from Medieval Latin use of terminus to render Greek horos "boundary,"
  * employed in mathematics and logic.
  * Hence in terms of "in the language or phraseology peculiar to."
- * https://www.etymonline.com/word/term
+ * https:
  */
 public interface Term extends Termlike, Termed, Comparable<Term> {
 
     static <X> boolean pathsTo(Term that, ByteArrayList p, Predicate<Term> descendIf, Function<Term, X> subterm, BiPredicate<ByteList, X> receiver) {
-        if (!descendIf.test(that))
-            return true;
+        boolean result = false;
+        boolean finished = false;
+        if (descendIf.test(that)) {
+            if (that instanceof Compound) {
+                Subterms superTerm = ((Compound) that).subtermsDirect();
+                int ppp = p.size();
+                int n = superTerm.subs();
+                for (int i = 0; i < n; i++) {
 
-        if (!(that instanceof Compound))
-            return false;
+                    p.add((byte) i);
 
-        Subterms superTerm = ((Compound) that).subtermsDirect();
+                    Term s = superTerm.sub(i);
 
-        int ppp = p.size();
+                    boolean kontinue = true;
+                    X ss = subterm.apply(s);
+                    if (ss != null) if (!receiver.test(p, ss))
+                        kontinue = false;
 
-        int n = superTerm.subs();
-        for (int i = 0; i < n; i++) {
+                    
+                    if (s instanceof Compound) if (!pathsTo(s, p, descendIf, subterm, receiver))
+                        kontinue = false;
 
-            p.add((byte) i);
+                    p.removeAtIndex(ppp);
 
-            Term s = superTerm.sub(i);
+                    if (!kontinue) {
+                        finished = true;
+                        break;
+                    }
+                }
+                if (!finished) {
+                    result = true;
+                }
+            }
 
-            boolean kontinue = true;
-            X ss = subterm.apply(s);
-            if (ss != null) if (!receiver.test(p, ss))
-                kontinue = false;
-
-            //(s.subs() > 0) {
-            if (s instanceof Compound) if (!pathsTo(s, p, descendIf, subterm, receiver))
-                kontinue = false;
-
-            p.removeAtIndex(ppp);
-
-            if (!kontinue)
-                return false;
+        } else {
+            result = true;
         }
 
-        return true;
+        return result;
     }
 
     static Term nullIfNull(@Nullable Term maybeNull) {
@@ -178,7 +186,7 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
     boolean containsRecursively(Term t, boolean root, @Nullable Predicate<Term> inSubtermsOf);
 
     Term transform(TermTransform t);
-//    Term transform(TermTransform t, @Nullable TermBuffer b, int volMax);
+
 
     @JvmDefault default int hashCodeShort() {
         int h = hashCode();
@@ -270,7 +278,7 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
 
         Term x = css.sub((int) which);
         Term y = x.replaceAt(path, depth + 1, replacement);
-        if (y == x) return src; //unchanged
+        if (y == x) return src; 
         else {
             Term[] target = css.arrayClone();
             target[(int) which] = y;
@@ -286,18 +294,19 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
             }
         }, descendIf, receiver);
     }
+    ImmutableByteList EmptyByteList = ByteLists.immutable.empty();
 
     @JvmDefault default <X> boolean pathsTo(Function<Term, X> target, Predicate<Term> descendIf, BiPredicate<ByteList, X> receiver) {
         X ss = target.apply(this);
-        if (ss != null && !receiver.test(Util.EmptyByteList, ss))
+        if (ss != null && !receiver.test( EmptyByteList, ss))
             return false;
 
-        return this.subs() <= 0 ||
+        return subs() <= 0 ||
                 pathsTo(this, new ByteArrayList(0), descendIf, target, receiver);
     }
 
     @JvmDefault default Term commonParent(List<ByteList> subpaths) {
-        int subpathsSize = subpaths.size(); //assert (subpathsSize > 1);
+        int subpathsSize = subpaths.size(); 
 
         int shortest = Integer.MAX_VALUE;
         for (ByteList subpath : subpaths)
@@ -408,31 +417,31 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
         subTimesWhile(x, new IntPredicate() {
             @Override
             public boolean test(int w) {
-                time[0] = w; //got it
-                return false; //stop
+                time[0] = w; 
+                return false; 
             }
         });
         return time[0];
     }
 
-//    /**
-//     * computes the occurrence times of an event within a compound.
-//     * if equals or is the first event only, it will be [0]
-//     * null if not contained or indeterminate (ex: XTERNAL)
-//     */
-//    @Nullable
-//    @Deprecated default int[] subTimes(Term x) {
-//        int t = subTimeOnly(x);
-//        return t == DTERNAL ? null : new int[]{t};
-//    }
-//
-//    /**
-//     * returns the unique sub-event time of the given target,
-//     * or DTERNAL if not present or there is not one unique time.
-//     */
-//    @Deprecated default int subTimeOnly(Term x) {
-//        return equals(x) ? 0 : DTERNAL;
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * returns DTERNAL if not found
@@ -443,8 +452,8 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
         subTimesWhile(x, new IntPredicate() {
             @Override
             public boolean test(int w) {
-                time[0] = Math.max(time[0], w); //got it
-                return true; //keep going
+                time[0] = Math.max(time[0], w); 
+                return true; 
             }
         });
         return time[0];
@@ -460,15 +469,15 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
 
 
         if (op() == CONJ) if (Conj.isSeq(this)) {
-//                final int[] hits = {0};
+
             eventsAND(new LongObjectPredicate<Term>() {
                 @Override
                 public boolean accept(long when, Term what) {
-                    //                        hits[0]++;
+                    
                     if (what.equals(match)) return each.test(Tense.occToDT(when));
-                    else if (Term.this != what && what.op() == CONJ) { //HACK unwrap this better to avoid unnecessary recursion
+                    else if (Term.this != what && what.op() == CONJ) { 
                         int subWhen = what.subTimeFirst(match);
-                        //                                hits[0]++;
+                        
                         if (subWhen != DTERNAL) return each.test(Tense.occToDT(when + (long) subWhen));
                     }
                     return true;
@@ -522,14 +531,14 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
                     result = -1;
                 } else {
                     if (!b) {
-                        int vc = Integer.compare(t.volume(), this.volume());
+                        int vc = Integer.compare(t.volume(), volume());
                         if (vc != 0) {
                             result = vc;
                             finished = true;
                         }
                     }
                     if (!finished) {
-                        Op op = this.op();
+                        Op op = op();
                         int oc = Integer.compare((int) op.id, t.opID());
                         if (oc != 0) {
                             result = oc;
@@ -538,7 +547,7 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
                             if (this instanceof IdempotInt /*&& t instanceof Int*/) {
                                 result = Integer.compare(((IdempotInt) this).i, ((IdempotInt) t).i);
                             } else if (this instanceof IntrinAtomic && t instanceof IntrinAtomic) {
-                                result = Integer.compare(hashCode(), t.hashCode());//same op, same hashcode
+                                result = Integer.compare(hashCode(), t.hashCode());
                             } else {
                                 result = Arrays.compare(
                                         ((Atomic) this).bytes(),
@@ -548,7 +557,7 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
 
 
                         } else {
-                            //COMPOUND
+                            
 
                             int c = Subterms.compare(
                                     ((Compound) this).subtermsDirect(),
@@ -642,7 +651,7 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
         return this instanceof Idempotent;
     }
 
-//    int structure();
+
 
     @Override
     @JvmDefault default boolean these() {
@@ -676,17 +685,17 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
         return s;
     }
 
-//    @JvmDefault default boolean equalsNegRoot(Term t) {
-//        if (this == t) {
-//            return false;
-//        } else if (t.op() == NEG) {
-//            return equalsRoot(t.unneg());
-//        } else if (op() == NEG) {
-//            return unneg().equalsRoot(t);
-//        } else {
-//            return false;
-//        }
-//    }
+
+
+
+
+
+
+
+
+
+
+
 
     @JvmDefault default Term eventFirst() {
         return this;
@@ -697,10 +706,10 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
     }
 
     enum TermWalk {
-        Left, //prev subterm
-        Right, //next subterm
-        Down, //descend, recurse, or equivalent to Right if atomic
-        Stop //CUT
+        Left, 
+        Right, 
+        Down, 
+        Stop 
     }
 
 
