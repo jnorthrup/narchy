@@ -13,8 +13,7 @@ import java.util.jar.JarInputStream;
 /**
  *
  */
-public enum PackageUtility {
-    ;
+public final class PackageUtility{
 
     public static List<Class> getClasses(String pkgName, boolean innerClasses) throws ClassNotFoundException {
 

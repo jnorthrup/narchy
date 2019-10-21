@@ -26,8 +26,7 @@ import static nars.time.Tense.*;
 /**
  * utilities for working with commutive conjunctions (DTERNAL, parallel, and XTERNAL)
  */
-public enum ConjPar {
-    ;
+public final class ConjPar{
 
     public static Term the(TermBuilder B, int dt, boolean sort, Term... t) {
         if (t.length == 1)

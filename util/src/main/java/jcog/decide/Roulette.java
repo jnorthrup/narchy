@@ -11,8 +11,7 @@ import java.util.Random;
 /**
  * roulette decision making
  */
-public enum Roulette {
-    ;
+public final class Roulette{
 
 
     public static int selectRoulette(float[] x, FloatSupplier rng) {

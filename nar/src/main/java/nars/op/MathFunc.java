@@ -17,8 +17,7 @@ import java.util.function.Predicate;
 import static nars.Op.INT;
 import static nars.term.atom.IdempotentBool.*;
 
-public enum MathFunc {
-    ;
+public final class MathFunc{
 
 
     public static final Functor mul =

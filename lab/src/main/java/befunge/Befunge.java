@@ -13,8 +13,7 @@ import java.util.Stack;
 /**
  * Created by didrik on 30.12.2014.
  */
-public enum Befunge {
-    ;
+public final class Befunge{
 
     public static void main(String[] args) throws IOException {
         BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));

@@ -45,8 +45,7 @@ import java.util.stream.IntStream;
  *
  * @since 2.0
  */
-public enum ArrayUtil {
-    ;
+public final class ArrayUtil{
 
     /**
      * An empty immutable {@code Object} array.

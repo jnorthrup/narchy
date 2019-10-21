@@ -13,8 +13,7 @@ import static nars.Op.CONJ;
 import static nars.time.Tense.ETERNAL;
 import static nars.time.Tense.XTERNAL;
 
-public enum ConjUnify {
-    ;
+public final class ConjUnify{
 
     /** conjunction unfiication when # subterms differ */
     public static boolean unifyConj(Term x, Term y, Subterms xx, Subterms yy, Unify u) {

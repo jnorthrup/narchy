@@ -5,8 +5,7 @@ import spacegraph.audio.Audio;
 import spacegraph.audio.SoundSource;
 import spacegraph.audio.sample.SampleLoader;
 
-public enum GranulizerDemo {
-    ;
+public final class GranulizerDemo{
 
     @SuppressWarnings("HardcodedFileSeparator")
     public static void main(String[] args) throws InterruptedException {

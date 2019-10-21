@@ -19,8 +19,7 @@ import static nars.term.atom.IdempotentBool.True;
 /**
  * utilities for transforming image compound terms
  */
-public enum Image {
-    ;
+public final class Image{
 
     public static final int ImageBits = PROD.bit | IMG.bit | INH.bit;
 

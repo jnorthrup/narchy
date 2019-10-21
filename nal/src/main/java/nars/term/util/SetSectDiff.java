@@ -24,8 +24,7 @@ import static nars.time.Tense.DTERNAL;
 /**
  * NAL2/NAL3 setAt, intersection and difference functions
  */
-public enum SetSectDiff {
-    ;
+public final class SetSectDiff{
 
     /** high-level intersection/union build procedure.  handles:
      *      decoding op type

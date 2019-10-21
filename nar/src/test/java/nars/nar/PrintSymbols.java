@@ -6,8 +6,7 @@ import nars.Op;/**
  */
 
 
-public enum PrintSymbols {
-    ;
+public final class PrintSymbols{
 
     public static void main(String[] args) {
 

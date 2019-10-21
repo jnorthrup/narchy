@@ -51,8 +51,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
  * see:
  * https:
  */
-public enum Builtin {
-    ;
+public final class Builtin{
     public static final Functor[] statik = {
 
             Equal.equal,

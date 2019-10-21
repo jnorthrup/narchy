@@ -38,8 +38,7 @@ import java.util.function.Supplier;
  *
  * untested
  */
-public enum Mocker {
-    ;
+public final class Mocker{
 
     public static @NotNull <T> T logging(@NotNull Class<T> tClass, String description, @NotNull PrintStream out) {
         return intercepting(tClass, description, out::println);

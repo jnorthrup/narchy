@@ -24,8 +24,7 @@ import java.util.function.*;
 /**
  * high-level interface for compiling premise deriver rules
  */
-public enum PremiseRuleCompiler {
-    ;
+public final class PremiseRuleCompiler{
 
     public static DeriverProgram the(Collection<PremiseRule> rr, NAR nar, UnaryOperator<How> functionTransform) {
         return compile(rr,

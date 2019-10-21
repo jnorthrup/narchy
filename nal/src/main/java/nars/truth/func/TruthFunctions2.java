@@ -10,8 +10,7 @@ import static nars.$.tt;
 import static nars.truth.func.TruthFunctions.confCompose;
 import static nars.truth.func.TruthFunctions.w2cSafe;
 
-public enum TruthFunctions2 {
-    ;
+public final class TruthFunctions2{
 
 //    /**
 //     * freq symmetric intersection

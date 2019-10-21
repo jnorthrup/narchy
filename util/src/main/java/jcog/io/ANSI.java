@@ -3,8 +3,7 @@ package jcog.io;
 /**
  * Created by me on 9/12/15.
  */
-public enum ANSI {
-    ;
+public final class ANSI{
 
     public static final String COLOR_RESET = "\u001b[0m";
 

@@ -24,8 +24,7 @@ import java.nio.ByteBuffer;
  *
  * @author Philip Diffenderfer
  */
-public enum Tries {
-    ;
+public final class Tries{
 
     
     public static final TrieSequencerByteArray TRIE_SEQUENCER_BYTE_ARRAY = new TrieSequencerByteArray();

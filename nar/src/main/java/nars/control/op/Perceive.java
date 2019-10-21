@@ -24,8 +24,7 @@ import static nars.Op.GOAL;
 /**
  * transforms an input task into any smaller sub-tasks that constitute the perception process
  */
-public enum Perceive {
-    ;
+public final class Perceive{
 
     static final Logger logger = LoggerFactory.getLogger(Perceive.class);
 

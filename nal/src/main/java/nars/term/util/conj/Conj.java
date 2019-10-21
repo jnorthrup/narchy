@@ -32,8 +32,7 @@ import static nars.time.Tense.*;
  * https://en.wikipedia.org/wiki/Negation_normal_form
  * https://en.wikipedia.org/wiki/Conjunctive_normal_form
  */
-public enum Conj {
-    ;
+public final class Conj{
 
 
 //    Conj(ObjectByteHashMap<Term> x, FasterList<Term> y) {

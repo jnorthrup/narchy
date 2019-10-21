@@ -34,8 +34,7 @@ import static nars.truth.func.TruthFunctions2.weak;
 /**
  * All truth-value (and desire-value) functions used in logic rules
  */
-public enum TruthFunctions {
-    ;
+public final class TruthFunctions{
 
     /* ----- Single argument functions, called in MatchingRules ----- */
 

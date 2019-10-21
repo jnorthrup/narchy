@@ -9,8 +9,7 @@ import java.util.Arrays;
 import java.util.function.Function;
 
 /** canonical subterm sorting and permutation wrapping for advanced interning */
-public enum SortedSubterms {
-    ;
+public final class SortedSubterms{
 
     public static Subterms the(Term[] x, Function<Term[],Subterms> b) {
         return the(x, false, b);

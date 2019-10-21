@@ -23,8 +23,7 @@ import java.util.function.Function;
 
 import static nars.term.atom.IdempotentBool.Null;
 
-public enum SetFunc {
-    ;
+public final class SetFunc{
 
     public static final Functor union = new BinarySetFunctor("union") {
 

@@ -49,8 +49,7 @@ import static java.util.regex.Pattern.compile;
  * There have been at least 2 other Java ports, but they are not in the lineage
  * for the code here.
  */
-public enum Twokenize {
-    ;
+public final class Twokenize{
 
     static Pattern Contractions = compile("(?i)(\\w+)(n['’′]t|['’′]ve|['’′]ll|['’′]d|['’′]re|['’′]s|['’′]m)$");
     static Pattern Whitespace = compile("[\\s\\p{Zs}]+");

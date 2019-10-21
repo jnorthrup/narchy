@@ -23,8 +23,7 @@ import java.nio.ByteOrder;
  * 32-bit Java port of https:
  * 128-bit Java port of https:
  */
-public enum Murmur3Hash {
-    ;
+public final class Murmur3Hash{
 
 
     

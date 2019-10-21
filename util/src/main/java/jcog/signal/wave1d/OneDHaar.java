@@ -25,8 +25,7 @@ import static java.lang.System.out;
  * ============================================================================
     https:
  */
-public enum OneDHaar {
-    ;
+public final class OneDHaar{
 
     private static final double FSNORM = Math.sqrt(2.0);
     private static final double FDNORM = 1.0 /FSNORM;

@@ -74,8 +74,7 @@ import jcog.util.ArrayUtil;
  *
  * @see java.util.Arrays
  */
-public enum LongArrays {
-    ;
+public final class LongArrays{
 
 
     /**

@@ -51,8 +51,7 @@ import static org.eclipse.collections.impl.tuple.Tuples.pair;
  * greater/less than comparisons
  */
 @Paper
-public enum Arithmeticize {
-    ;
+public final class Arithmeticize{
 
 //    private static final Logger logger = LoggerFactory.getLogger(Arithmeticize.class);
 

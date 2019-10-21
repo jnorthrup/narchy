@@ -62,8 +62,7 @@ import static nars.Op.PROD;
  *  gives
  * Y
  */
-public enum ListFunc {
-    ;
+public final class ListFunc{
 
     /**
      * emulates prolog append/3

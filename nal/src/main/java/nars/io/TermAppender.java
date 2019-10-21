@@ -19,8 +19,7 @@ import static nars.time.Tense.XTERNAL;
 /**
  * prints readable forms of terms
  */
-public enum TermAppender {
-    ;
+public final class TermAppender{
 
     static void compoundAppend(Compound c, Appendable p, Op op) throws IOException {
 

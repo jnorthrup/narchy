@@ -54,8 +54,7 @@ import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
  * allow modification of inner conjunctions, not only at top level
  */
 @Paper
-public enum Factorize {
-    ;
+public final class Factorize{
 
     static final Function<Subterms,Term[]> factorize = Memoizers.the.memoizeByte(
             Factorize.class.getSimpleName() + "_factorize",

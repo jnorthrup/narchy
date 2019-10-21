@@ -62,8 +62,7 @@ import static jcog.math.v3.v;
 /**
  * @author jezek2
  */
-public enum Draw {
-    ;
+public final class Draw{
 
 
 

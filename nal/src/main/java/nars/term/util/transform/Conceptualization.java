@@ -20,8 +20,7 @@ import static nars.time.Tense.XTERNAL;
  * generally, terms name concepts directly except in temporal cases there is a many to one target to concept mapping
  * effectively using concepts to 'bin' together varieties of related terms
  */
-public enum Conceptualization {
-    ;
+public final class Conceptualization{
 
     public static final Retemporalize DirectXternal = new Untemporalization() {
         @Override

@@ -258,8 +258,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 	/**
      * SignalTask's
      */
-    public enum signal {
-        ;
+    public final class signal{
 
         public static final boolean SIGNAL_TABLE_FILTER_NON_SIGNAL_TEMPORAL_TASKS= true;
         public static final int SIGNAL_BELIEF_TABLE_SERIES_SIZE = 128;
@@ -593,8 +592,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     }
 
 
-    public enum premise {
-        ;
+    public final class premise{
 //        public static final boolean PREMISE_FOCUS_TIME_DITHER= configIs("PREMISE_FOCUS_TIME_DITHER");
 
         /**
@@ -609,8 +607,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     }
 
 
-    public enum belief {
-        ;
+    public static final  class belief{
 
         /**
          * true will filter sub-confMin revision results.  false will not, allowing sub-confMin
@@ -643,8 +640,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     }
 
 
-    public enum term {
-        ;
+    public final static class term{
 
         /**
          * whether INT atoms can name a concept directly
@@ -700,8 +696,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
 	}
 
-    public enum test {
-        ;
+    public static final  class test{
 
         /**
          * for NALTest's: extends the time all unit tests are allowed to run for.
@@ -719,8 +714,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
         public static final boolean DEBUG_OCCURRIFY = false;
     }
 
-    public enum derive {
-        ;
+    public final static class derive{
 
         /**
          * may cause unwanted "sticky" event conflation. may only be safe when the punctuation of the task in which the event contained is the same
@@ -802,8 +796,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
     }
 
-    public enum unify {
-        ;
+    public final class unify{
 
         /**
          * max variable unification recursion depth as a naive cyclic filter

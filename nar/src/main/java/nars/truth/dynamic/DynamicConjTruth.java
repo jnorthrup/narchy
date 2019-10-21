@@ -25,8 +25,7 @@ import java.util.function.Predicate;
 import static nars.Op.*;
 import static nars.time.Tense.*;
 
-public enum DynamicConjTruth {
-    ;
+public final class DynamicConjTruth{
 
     public static final AbstractDynamicTruth ConjIntersection = new AbstractSectTruth() {
 

@@ -22,8 +22,7 @@ import static nars.time.Tense.*;
 /**
  * statements include: inheritance -->, similarity <->, and implication ==>
  */
-public enum Statement {
-    ;
+public final class Statement{
 
 
 //    private static final int mobiusExcept = Op.or(/*CONJ, */VAR_PATTERN);
