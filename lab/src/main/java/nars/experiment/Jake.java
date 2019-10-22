@@ -1,6 +1,5 @@
 package nars.experiment;
 
-import com.jogamp.opengl.GL;
 import jake2.Defines;
 import jake2.Jake2;
 import jake2.client.CL_input;
@@ -18,10 +17,12 @@ import jcog.signal.wave2d.ImageFlip;
 import jcog.signal.wave2d.ScaledBitmap2D;
 import nars.$;
 import nars.GameX;
+import nars.game.sensor.DigitizedScalar;
 import nars.game.sensor.FreqVectorSensor;
 import nars.gui.sensor.VectorSensorChart;
 import nars.sensor.Bitmap2DSensor;
 import nars.sensor.PixelBag;
+import nars.term.atom.Atomic;
 import nars.video.AutoclassifiedBitmap;
 import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;
 import spacegraph.SpaceGraph;
@@ -31,7 +32,6 @@ import spacegraph.space2d.widget.meter.WaveBitmap;
 import spacegraph.video.GLScreenShot;
 
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Consumer;
 
 import static jake2.Globals.STAT_FRAGS;
 import static jake2.Globals.cl;
@@ -43,8 +43,8 @@ import static spacegraph.space2d.container.grid.Gridding.grid;
  */
 public class Jake extends GameX implements Runnable {
 
-    static final int FPS = 24;
-    static float timeScale = 2.5f;
+    static final int FPS = 20;
+    static float timeScale = 5f;
 
     static float yawSpeed = 10;
 
@@ -174,13 +174,13 @@ public class Jake extends GameX implements Runnable {
         BitmapMatrixView rgbView = new BitmapMatrixView(rgbVision);
         onFrame(rgbView::updateIfShowing);
 
-        BitmapMatrixView depthView = new BitmapMatrixView(depthVision.src);
-        onFrame(depthView::updateIfShowing);
+        //BitmapMatrixView depthView = new BitmapMatrixView(depthVision.src);
+        //onFrame(depthView::updateIfShowing);
 
-        SpaceGraph.window(grid(rgbView, rgbAE.newChart(), depthView ), 500, 500);
+        SpaceGraph.window(grid(rgbView, rgbAE.newChart(), new VectorSensorChart(depthVision, this.what()).withControls()/*,depthView*/ ), 500, 500);
 
-        hear = new FreqVectorSensor(nar, new CircularFloatBuffer(8*1024),
-            512, 16, f->$.inh($.the(f), "hear"));
+        hear = new FreqVectorSensor(nar, new CircularFloatBuffer(4*1024),
+            4096, 16, f->$.inh($.the(f), "hear"));
         addSensor(hear);
         WaveBitmap hearView = new WaveBitmap(hear.buf, 300, 64);
         onFrame(hearView::update);
@@ -188,6 +188,11 @@ public class Jake extends GameX implements Runnable {
             //spectrogram(hear.buf, 0.1f,512, 16),
             new ObjectSurface(hear), hearView), 400, 400);
 
+
+        int angles = 8;
+        DigitizedScalar ang = senseAngle(angles, Atomic.the("ang"), ()-> player.angle,
+            a->$.inh(id, $.p($.the("ang"), $.the(a))));
+        ang.resolution(0.1f);
 
         actionPushButtonMutex(
             $.the("fore"), $.the("back"),
@@ -264,52 +269,16 @@ public class Jake extends GameX implements Runnable {
                 "+dmflags 1024",
                 "+cl_gun 0",
                 "lookspring 1",
+                "s_impl jsound",
                 "+timescale " + timeScale,
 
 
                 "+map " + nextMap()
 
-        }, new Consumer<>() {
-
-            int lastSamplePos = -1;
-
-            @Override
-            public void accept(GL g) {
-                rgb.update(g);
-                depth.update(g);
-
-                byte[] b = SND_JAVA.dma.buffer;
-                if (b == null)
-                    return;
-                int sample = SND_JAVA.SNDDMA_GetDMAPos();
-                if (sample != lastSamplePos) {
-
-
-                    //System.out.println(sample + " " + SND_MIX.paintedtime);
-
-                    int samples = 1024;
-                    if (hear.buf.available() < samples * 2)
-                        hear.buf.skip(samples * 2);
-
-                    int from = (sample - samples * 4) % b.length;
-                    int to = (sample - samples * 2) % b.length;
-
-                    while (from < 0) from += b.length;
-                    while (to < 0) to += b.length;
-
-                    if (from <= to) {
-                        hear.buf.writeS16(b, from, to, (float) 1);
-                    } else {
-                        hear.buf.writeS16(b, from, b.length, (float) 1);
-                        hear.buf.writeS16(b, 0, to, (float) 1);
-                    }
-
-
-                    lastSamplePos = sample;
-                }
-
-
-            }
+        }, g -> {
+            rgb.update(g);
+            depth.update(g);
+            soundUpdate();
         });
 
 
@@ -363,6 +332,38 @@ public class Jake extends GameX implements Runnable {
 
     }
 
+    private int lastSamplePos = -1;
+    protected void soundUpdate() {
+        byte[] b = SND_JAVA.dma.buffer;
+        if (b == null)
+            return;
+        int sample = SND_JAVA.SNDDMA_GetDMAPos();
+        if (sample != lastSamplePos) {
+
+
+            //System.out.println(sample + " " + SND_MIX.paintedtime);
+
+            int samples = 1024;
+            if (hear.buf.available() < samples * 2)
+                hear.buf.skip(samples * 2);
+
+            int from = (sample - samples * 4) % b.length;
+            int to = (sample - samples * 2) % b.length;
+
+            while (from < 0) from += b.length;
+            while (to < 0) to += b.length;
+
+            if (from <= to) {
+                hear.buf.writeS16(b, from, to, (float) 1);
+            } else {
+                hear.buf.writeS16(b, from, b.length, (float) 1);
+                hear.buf.writeS16(b, 0, to, (float) 1);
+            }
+
+
+            lastSamplePos = sample;
+        }
+    }
 
     public static void main(String[] args) {
 

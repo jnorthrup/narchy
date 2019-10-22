@@ -19,6 +19,7 @@ import static nars.Op.*;
 import static nars.term.atom.Bool.False;
 import static nars.term.atom.Bool.Null;
 import static nars.term.util.TermTest.assertEq;
+import static nars.term.util.TermTest.assertInvalidTerms;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -412,6 +413,11 @@ public class TermReductionsTest extends NarseseTest {
         }
     }
 
+    @Test void recursiveInh() {
+        assertEq("((x-->r)-->(r,s))", "((x-->r)-->(r,s))");         //assertFalse(assertEqRCom($);
+        assertEq("((x-->r)-->{r,s})", "((x-->r)-->{r,s})");
+        assertInvalidTerms("((x-->r)-->r)");
+    }
 
     @Test
     void testImplCommonSubterms() {

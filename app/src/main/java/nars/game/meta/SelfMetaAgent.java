@@ -6,6 +6,7 @@ import jcog.thing.Part;
 import nars.$;
 import nars.Emotion;
 import nars.NAR;
+import nars.Op;
 import nars.control.MetaGoal;
 import nars.derive.pri.DefaultPuncWeightedDerivePri;
 import nars.game.Game;
@@ -45,7 +46,10 @@ public class SelfMetaAgent extends MetaAgent {
 		actionUnipolar($.inh(SELF,$.p("derive", goal)), (float v)->dPri.goalPri = Util.lerp(v, 0.1f, 1f));
 		actionUnipolar($.inh(SELF,$.p("derive", question)), (float v)->dPri.questionPri = Util.lerp(v, 0.1f, 1f));
 		actionUnipolar($.inh(SELF,$.p("derive", quest)), (float v)->dPri.questPri = Util.lerp(v, 0.1f, 1f));
-
+		for (Op o : Op.values()) {
+			if (o.taskable)
+				actionUnipolar($.inh(SELF, $.p("derive", $.quote(o.str))), (float v) -> dPri.opPri[o.id] = Util.lerp(v, 0.1f, 1f));
+		}
 
 		for (MetaGoal mg : MetaGoal.values()) {
 			GoalActionConcept a = actionUnipolar($.inh(SELF, $.the(mg.name())), (x) -> {

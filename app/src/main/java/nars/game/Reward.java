@@ -158,8 +158,8 @@ public abstract class Reward implements GameLoop, TermedDelegate, Iterable<Conce
 			//Rememorize t = reinforcement.get(nar().random());
 			//t.input(pri);
 
-			for (Rememorize t : reinforcement)
-				t.input(pri);
+			for (Rememorize r : reinforcement)
+				r.input(pri);
 
 		}
 

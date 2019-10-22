@@ -100,8 +100,8 @@ public class S {
 	 * Switches to the specific sound driver.
 	 */
 	private static void useDriver(String driverName) {
-		Sound driver = null;
-//		int count = drivers.size();
+		Sound driver;
+
 		for (Object driver1 : drivers) {
 			driver = (Sound) driver1;
 			if (driver.getName().equals(driverName)) {

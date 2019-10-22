@@ -525,8 +525,8 @@ public class Occurrify extends TimeGraph {
                     x[0] = imm;
                     x[1] = imm + r;
 
-                    if (delta > 0)
-                        d.doubt(NAL.eviEternalizable(1, delta, d.dur));
+//                    if (delta > 0)
+//                        d.doubt(NAL.eviEternalizable(1, delta, d.dur));
 
                 }
                 if (x == null) {

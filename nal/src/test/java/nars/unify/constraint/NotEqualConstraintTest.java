@@ -29,10 +29,10 @@ class NotEqualConstraintTest {
 //        assertNotEqRCom("(x && y)", "(&&, x, y, z)");
 //    }
 
-    static void assertNotEqRCom(String a, String b) {
+    public static void assertNotEqRCom(String a, String b) {
         assertEqRCom(a, b, false);
     }
-    static void assertEqRCom(String a, String b) {
+    public static void assertEqRCom(String a, String b) {
         assertEqRCom(a, b, true);
     }
     static void assertEqRCom(String a, String b, boolean isTrue) {

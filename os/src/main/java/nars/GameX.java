@@ -167,7 +167,7 @@ public abstract class GameX extends Game {
         double ramGB = Runtime.getRuntime().maxMemory() / (1024 * 1024 * 1024.0);
         return new NARS()                  .what(
                         (w) -> new TaskLinkWhat(w,
-                                256,
+                                512,
                                 new PriBuffer.DirectTaskBuffer()
                         )
                 ).exe(

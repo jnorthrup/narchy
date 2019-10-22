@@ -3,8 +3,11 @@ package nars.derive.pri;
 import jcog.Util;
 import jcog.pri.ScalarValue;
 import nars.NAR;
+import nars.Op;
 import nars.Task;
 import nars.derive.Derivation;
+
+import java.util.Arrays;
 
 import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
@@ -23,7 +26,10 @@ public class DefaultPuncWeightedDerivePri extends DefaultDerivePri {
     public transient float questionPri;
     public transient float questPri;
 
+    public float[] opPri = new float[Op.values().length];
+
     public DefaultPuncWeightedDerivePri() {
+        Arrays.fill(opPri, 1f);
     }
 
     @Override
@@ -56,8 +62,9 @@ public class DefaultPuncWeightedDerivePri extends DefaultDerivePri {
 
     }
 
-    @Override
-    public float preAmp(byte conclusionPunc) {
+
+
+    public float puncPri(byte conclusionPunc) {
         switch (conclusionPunc) {
             case BELIEF: return beliefPri;
             case GOAL: return goalPri;
@@ -70,6 +77,6 @@ public class DefaultPuncWeightedDerivePri extends DefaultDerivePri {
 
     @Override
     protected float postAmp(Task t, float derivePri, float factor) {
-        return derivePri * preAmp(t.punc()) * factor;
+        return derivePri * opPri[t.op().id] * puncPri(t.punc()) * factor;
     }
 }
