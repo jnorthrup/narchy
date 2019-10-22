@@ -96,7 +96,7 @@ public class DigitizedScalar extends DemultiplexedScalarSensor {
      */
     public static final ScalarEncoder Needle = (v, i, indices) -> {
         float vv = v * indices;
-        int which = (int) Math.floor(vv);
+        int which = (int)vv;
         return i == which ? 1 : 0;
     };
 

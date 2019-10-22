@@ -22,7 +22,6 @@ import nars.game.sensor.FreqVectorSensor;
 import nars.gui.sensor.VectorSensorChart;
 import nars.sensor.Bitmap2DSensor;
 import nars.sensor.PixelBag;
-import nars.term.atom.Atomic;
 import nars.video.AutoclassifiedBitmap;
 import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;
 import spacegraph.SpaceGraph;
@@ -44,7 +43,7 @@ import static spacegraph.space2d.container.grid.Gridding.grid;
 public class Jake extends GameX implements Runnable {
 
     static final int FPS = 20;
-    static float timeScale = 5f;
+    static float timeScale = 2f;
 
     static float yawSpeed = 10;
 
@@ -66,7 +65,7 @@ public class Jake extends GameX implements Runnable {
         public float speed;
         public int weaponState;
         public short frags;
-        public float angle;
+//        public float angle;
         edict_t player = null;
 
         final AtomicInteger damageInflicted = new AtomicInteger();
@@ -110,7 +109,7 @@ public class Jake extends GameX implements Runnable {
             frags = p.client.ps.stats[STAT_FRAGS];
 
 
-            angle = p.angle;
+//            angle = p.angle;
 
             float[] v = p.velocity;
             velX = v[0];
@@ -166,7 +165,14 @@ public class Jake extends GameX implements Runnable {
         rgbAE.alpha(0.03f);
         rgbAE.noise.set(0.05f);
 
+        DigitizedScalar vx = senseNumberBi($.inh(id, $.p($.the("v"), $.the("x"))), new FloatNormalized(()->player.velX));
+        DigitizedScalar vy = senseNumberBi($.inh(id, $.p($.the("v"), $.the("y"))), new FloatNormalized(()->player.velY));
+        DigitizedScalar vz = senseNumberBi($.inh(id, $.p($.the("v"), $.the("z"))), new FloatNormalized(()->player.velZ));
 
+//        int angles = 8;
+//        DigitizedScalar ang = senseAngle(angles, Atomic.the("ang"), ()-> player.angle/180f,
+//            a->$.inh(id, $.p($.the("ang"), $.the(a))));
+//        ang.resolution(0.1f);
 
         //SpaceGraph.(column(visionView, camAE.newChart()), 500, 500);
 //        }
@@ -177,7 +183,15 @@ public class Jake extends GameX implements Runnable {
         //BitmapMatrixView depthView = new BitmapMatrixView(depthVision.src);
         //onFrame(depthView::updateIfShowing);
 
-        SpaceGraph.window(grid(rgbView, rgbAE.newChart(), new VectorSensorChart(depthVision, this.what()).withControls()/*,depthView*/ ), 500, 500);
+        SpaceGraph.window(grid(
+            grid(
+                new VectorSensorChart(vx, this),
+                new VectorSensorChart(vy, this),
+                new VectorSensorChart(vz, this)
+//                new VectorSensorChart(ang, this)
+            ),
+            rgbView, rgbAE.newChart(),
+            new VectorSensorChart(depthVision, this.what()).withControls()/*,depthView*/ ), 500, 500);
 
         hear = new FreqVectorSensor(nar, new CircularFloatBuffer(4*1024),
             4096, 16, f->$.inh($.the(f), "hear"));
@@ -189,10 +203,7 @@ public class Jake extends GameX implements Runnable {
             new ObjectSurface(hear), hearView), 400, 400);
 
 
-        int angles = 8;
-        DigitizedScalar ang = senseAngle(angles, Atomic.the("ang"), ()-> player.angle,
-            a->$.inh(id, $.p($.the("ang"), $.the(a))));
-        ang.resolution(0.1f);
+
 
         actionPushButtonMutex(
             $.the("fore"), $.the("back"),

@@ -6,15 +6,11 @@ import nars.Task;
 import java.util.Arrays;
 
 import static nars.Op.*;
-import static nars.time.Tense.ETERNAL;
 
 /** TODO strength parameter
  *  TODO toggle for preamp and postamp - both dont need applied necessarily
  * */
 public class DefaultPuncWeightedDerivePri extends DefaultDerivePri {
-
-    long lastUpdate = ETERNAL;
-    static final float updateDurs = 1;
 
     /** cache of punctuation priorities */
     public transient float beliefPri;
@@ -26,8 +22,11 @@ public class DefaultPuncWeightedDerivePri extends DefaultDerivePri {
 
     public DefaultPuncWeightedDerivePri() {
         Arrays.fill(opPri, 1f); //TODO only taskable ops else Float.NaN
+        beliefPri = goalPri = questionPri = questPri = 1;
     }
 
+//    long lastUpdate = ETERNAL;
+//    static final float updateDurs = 1;
 //    @Override
 //    public void reset(Derivation d) {
 //        if (lastUpdate == ETERNAL || d.time - lastUpdate > updateDurs * d.dur) {

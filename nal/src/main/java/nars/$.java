@@ -244,7 +244,11 @@ public enum $ { ;
         if (t.length == 0) return Op.EmptyProduct;
 
         if (t.length < 31) {
-            int b = IntStream.range(0, t.length).filter(i -> t[i]).map(i -> 1 << i).reduce(0, (a, b1) -> a | b1);
+            int b = 0;
+            for (int i = 0; i < t.length; i++) {
+                if (t[i])
+                    b |= 1 << i;
+            }
             return Int.the(b);
         } else {
             throw new TODO();
@@ -324,7 +328,10 @@ public enum $ { ;
     }
 
     public static Term p(char[] c, CharToObjectFunction<Term> f) {
-        Term[] x = IntStream.range(0, c.length).mapToObj(i -> f.valueOf(c[i])).toArray(Term[]::new);
+        Term[] x = new Term[c.length];
+        for (int i = 0; i < c.length; i++) {
+            x[i] = f.valueOf(c[i]);
+        }
         return $.p(x);
     }
 
@@ -333,7 +340,7 @@ public enum $ { ;
     }
 
     public static <X> Term[] terms(X[] map, Function<X, Term> toTerm) {
-        return Arrays.stream(map).map(toTerm).toArray(Term[]::new);
+        return Stream.of(map).map(toTerm).toArray(Term[]::new);
     }
 
     private static Term[] array(Collection<? extends Term> t) {
@@ -466,11 +473,17 @@ public enum $ { ;
 
     public static Term[] ints(short... i) {
         int l = i.length;
-        return IntStream.range(0, l).mapToObj(j -> the(i[j])).toArray(Term[]::new);
+        Term[] x = new Term[l];
+        for (int j = 0; j < l; j++)
+            x[j] = the(i[j]);
+        return x;
     }
     public static Term[] ints(int... i) {
         int l = i.length;
-        return Arrays.stream(i).mapToObj($::the).toArray(Term[]::new);
+        Term[] x = new Term[l];
+        for (int j = 0; j < l; j++)
+            x[j] = the(i[j]);
+        return x;
     }
 
     /**

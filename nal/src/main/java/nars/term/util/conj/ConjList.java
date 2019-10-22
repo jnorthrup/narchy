@@ -22,7 +22,6 @@ import org.roaringbitmap.RoaringBitmap;
 import java.util.Arrays;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
-import java.util.stream.IntStream;
 
 import static jcog.util.ArrayUtil.EMPTY_INT_ARRAY;
 import static nars.Op.CONJ;
@@ -261,8 +260,11 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
     public int eventCount(long w) {
         int s = size;
         long[] when = this.when;
-        long count = IntStream.range(0, s).filter(i -> when[i] == w).count();
-        return (int) count;
+        int c = 0;
+        for (int i = 0; i < s; i++)
+            if (when[i] == w)
+                c++;
+        return c;
     }
 
     @Override
@@ -291,8 +293,13 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
 
         if (B instanceof InterningTermBuilder) {
             long w0 = when[0];
-            boolean allParallel = IntStream.range(1, n).noneMatch(i -> when[i] != w0);
-            //difference
+            boolean allParallel = true;
+            for (int i = 1; i < n; i++) {
+                if (when[i] != w0) {
+                    allParallel = false;
+                    break; //difference
+                }
+            }
             //all same time
             if (allParallel) {
                 return B.conj( toArrayRecycled(Term[]::new));

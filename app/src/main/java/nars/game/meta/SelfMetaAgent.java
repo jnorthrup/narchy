@@ -40,7 +40,7 @@ public class SelfMetaAgent extends MetaAgent {
 
 		DefaultPuncWeightedDerivePri dPri = new DefaultPuncWeightedDerivePri();
 		actionUnipolar($.inh(SELF,$.p("derive", "complexity")), (float v)->dPri.simplicityImportance.set(1-v));
-		actionUnipolar($.inh(SELF,$.p("derive", "polarize")), (float v)->dPri.polarityImportance.set(v));
+//		actionUnipolar($.inh(SELF,$.p("derive", "polarize")), (float v)->dPri.polarityImportance.set(v));
 //		actionUnipolar($.inh(SELF,$.p("derive", belief)), (float v)->dPri.beliefPri = Util.lerp(v, 0.1f, 1f));
 //		actionUnipolar($.inh(SELF,$.p("derive", goal)), (float v)->dPri.goalPri = Util.lerp(v, 0.1f, 1f));
 //		actionUnipolar($.inh(SELF,$.p("derive", question)), (float v)->dPri.questionPri = Util.lerp(v, 0.1f, 1f));

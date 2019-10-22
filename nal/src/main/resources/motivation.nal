@@ -57,10 +57,10 @@ G, G, task("!") |-         (?1 ==> G) , (Punctuation:Question, Time:Task)
     //(X && Y), (X && Y) |- ((X && ?1) && --(Y && ?2)), (Punctuation:Ask)
 
     //implication look-ahead
-    (X==>Y), (X==>Y), task("."), --isVar(X), --isVar(Y), neqPN(X,Y) |- ((X && polarizeTask(Y)) ==> ?1), (Punctuation:Question, Time:BeliefEvent)
+//    (X==>Y), (X==>Y), task("."), --isVar(X), --isVar(Y), neqPN(X,Y) |- ((X && polarizeTask(Y)) ==> ?1), (Punctuation:Question, Time:BeliefEvent)
 
     //implication look-behind
-    (X==>Y), (X==>Y), task("."), --isVar(X), --isVar(Y), neqPN(X,Y) |- (?1 ==> (  X && polarizeTask(Y))), (Punctuation:Question)
+//    (X==>Y), (X==>Y), task("."), --isVar(X), --isVar(Y), neqPN(X,Y) |- (?1 ==> (  X && polarizeTask(Y))), (Punctuation:Question)
 
 
     //sequence possibility quest

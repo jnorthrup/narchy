@@ -201,6 +201,13 @@ public class NAL8Test extends NALTest {
     }
 
     @Test
+    void temporal_abduction_subj_conj_1() {
+        test.input("hold:t2. |");
+        test.inputAt(2, "((x &&+1 pick:t2) ==>+1 hold:t2).");
+        test.mustBelieve(cycles, "(x &&+1 pick:t2)", 1.0f, 0.45f, -2);
+    }
+
+    @Test
     void subbelief_2medium() {
 
 

@@ -2887,7 +2887,7 @@ public enum Util {
 
 	public static double interpSum(IntToFloatFunction data, int capacity, double sStart, double sEnd, boolean wrap) {
 		int iStart = (int) Math.ceil(sStart);
-		int iEnd = (int) Math.floor(sEnd);
+		int iEnd = (int) (sEnd);
 		if (iEnd < 0 || iStart >= capacity)
 			return 0;
 

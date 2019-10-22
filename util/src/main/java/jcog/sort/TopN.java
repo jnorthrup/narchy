@@ -180,7 +180,7 @@ public class TopN<X> extends SortedArray<X> implements FloatFunction<X>, TopFilt
      */
     public void removePercentage(float below, boolean ofExistingOrCapacity) {
         assert (below >= 0 && below <= 1.0f);
-        int belowIndex = (int) Math.floor(ofExistingOrCapacity ? size() : capacity() * below);
+        int belowIndex = (int) (ofExistingOrCapacity ? size() : capacity() * below);
         if (belowIndex < size) {
             size = belowIndex;
             Arrays.fill(items, size, items.length - 1, null);

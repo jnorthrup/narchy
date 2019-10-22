@@ -9,6 +9,7 @@ import java.awt.color.ColorSpace;
 import java.awt.image.*;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 
 import static com.jogamp.opengl.GL.*;
@@ -84,23 +85,25 @@ public class GLScreenShot implements Supplier<BufferedImage> {
         }
     }
 
+    final AtomicBoolean busy = new AtomicBoolean(false);
+
     public void update(GL gl) {
 
 
-        GLDrawable drawable = gl.getContext().getGLDrawable();
-        width = drawable.getSurfaceWidth();
-        height = drawable.getSurfaceHeight();
+        if (!busy.compareAndSet(false,true))
+            return;
+
+        try {
+            GLDrawable drawable = gl.getContext().getGLDrawable();
+            width = drawable.getSurfaceWidth();
+            height = drawable.getSurfaceHeight();
+
+            int pixels = width * height;
 
 
+            if (width % 4 != 0)
+                gl.glPixelStorei(GL_PACK_ALIGNMENT, 1);
 
-        int pixels = width * height;
-
-
-        if (width % 4 != 0) {
-            gl.glPixelStorei(GL_PACK_ALIGNMENT, 1);
-        }
-
-        synchronized (this) {
             current = null;
             int bytes = rgbOrDepth ? pixels * 3 : pixels;
 
@@ -115,10 +118,12 @@ public class GLScreenShot implements Supplier<BufferedImage> {
             } else {
                 gl.glReadPixels(0, 0, width, height, GL2ES2.GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, seen);
             }
+
+            gl.glPixelStorei(GL_PACK_ALIGNMENT, 4);
+
+        } finally {
+            busy.set(false);
         }
-
-
-        gl.glPixelStorei(GL_PACK_ALIGNMENT, 4);
 
     }
 }

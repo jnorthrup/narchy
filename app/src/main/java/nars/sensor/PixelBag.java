@@ -141,8 +141,8 @@ public class PixelBag implements Bitmap2D {
 
         float xRange = maxX - minX, yRange = maxY - minY;
 
-        int supersamplingX = (int) Math.floor(xRange / px / 2f),
-                supersamplingY = (int) Math.floor(yRange / py / 2f);
+        int supersamplingX = (int) (xRange / px / 2f),
+                supersamplingY = (int) (yRange / py / 2f);
 
         for (int oy = 0; oy < py; oy++) {
             float sy = (lerpSafe((oy / py), minY, maxY));
@@ -151,7 +151,7 @@ public class PixelBag implements Bitmap2D {
 
                 //TODO optimize sources which are already gray (ex: 8-bit grayscale)
 
-                float sx = (lerpSafe((ox) / px, minX, maxX));
+                float sx = lerpSafe(ox / px, minX, maxX);
 
 
                 /** sampled pixels in the original image (inclusive) */
@@ -195,11 +195,7 @@ public class PixelBag implements Bitmap2D {
                     v = (samples > 0) ? brightSum / samples : Float.NaN;
                 }
 
-
-                if (v != v) {
-                    v = missing();
-                }
-                pixels[ox][oy] = v;
+                pixels[ox][oy] = v==v ? v : missing();
             }
 
         }

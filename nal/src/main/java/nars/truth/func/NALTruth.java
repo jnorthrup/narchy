@@ -410,7 +410,7 @@ public enum NALTruth implements TruthFunction {
         }
     },
 
-    Desire() {
+    @AllowOverlap Desire() {
         @Override
         public Truth apply(Truth T, Truth B, float minConf, NAL n) {
             return TruthFunctions2.desire(T, B, minConf, false,true);

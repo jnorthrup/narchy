@@ -204,14 +204,14 @@ public interface Stamp {
 
 
             if (aToB <= 0.5f) {
-                int usedA = Math.max(1, (int) Math.floor(aToB * (aLen + bLen)));
+                int usedA = Math.max(1, (int) (aToB * (aLen + bLen)));
                 if (usedA < aLen) {
                     if (bLen + usedA < maxLen)
                         usedA += maxLen - usedA - bLen;
                     aMin = Math.max(0, aLen - usedA);
                 }
             } else /* aToB > 0.5f */ {
-                int usedB = Math.max(1, (int) Math.floor((1f - aToB) * (aLen + bLen)));
+                int usedB = Math.max(1, (int) ((1f - aToB) * (aLen + bLen)));
                 if (usedB < bLen) {
                     if (aLen + usedB < maxLen)
                         usedB += maxLen - usedB - aLen;
