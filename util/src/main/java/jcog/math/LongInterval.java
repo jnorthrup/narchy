@@ -188,31 +188,30 @@ public interface LongInterval {
 	 */
 	default long minTimeTo(long a, long b) {
 
-		if (a == ETERNAL)
-			return 0;
 		if (a == TIMELESS)
 			throw new WTF(); //return TIMELESS;
 
-		long s = start(); //assert(s!=TIMELESS);
-
-		if (s == ETERNAL || s == a)
+		if (a == ETERNAL)
 			return 0;
 
-		long e = end();
-
-		if (/*e != s && */intersectsRaw(a, b, s, e))
+		long s = start(); //assert(s!=TIMELESS);
+		if (s == ETERNAL)
 			return 0;
 
 		long sa = Math.abs(s - a);
+		if (sa == 0)
+			return 0; //internal
+
+		long e = end();
 		if (a == b) {
-			return s == e ? sa : Math.min(sa, Math.abs(e - b));
+			return s == e ? sa :
+					(max(a, s) <= min(a, e)) ? 0 : Math.min(sa, Math.abs(e - b));
 		} else {
+			if (/*e != s && */intersectsRaw(a, b, s, e))
+				return 0; //internal
 			long sab = Math.min(sa, Math.abs(s - b));
 			return s == e ? sab : Math.min(sab, Math.min(Math.abs(e - a), Math.abs(e - b)));
 		}
-		//} else {
-		//return 0;
-		//}
 	}
 
 	default long maxTimeTo(long a, long b) {

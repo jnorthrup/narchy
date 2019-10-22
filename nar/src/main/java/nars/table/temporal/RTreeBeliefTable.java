@@ -48,36 +48,44 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 	 * immediately returns false if space removed at least one as a result of the scan, ie. by removing
 	 * an encountered deleted task.
 	 */
-	private static boolean findEvictable(Space<TaskRegion> tree, RNode<TaskRegion> next, Top<Task> weakest, Top<RLeaf<TaskRegion>> mergeableLeaf) {
-		if (next instanceof RLeaf) {
+	private static boolean findEvictable(Space<TaskRegion> tree, RNode<TaskRegion> _next, Top<Task> weakest, Top<RLeaf<TaskRegion>> mergeableLeaf) {
+		FasterList<RNode> stack = new FasterList<>(64);
+		stack.add(_next);
 
-			RLeaf l = (RLeaf) next;
-			Object[] data = l.data;
-			short s = l.size;
-			for (int i = 0; i < s; i++) {
-				Task x = (Task) data[i];
-				if (x.isDeleted()) {
-					boolean removed = tree.remove(x);
-					assert (removed);
-					return false;
+		RNode next;
+		while ((next = stack.poll())!=null) {
+
+			if (next instanceof RLeaf) {
+
+				RLeaf l = (RLeaf) next;
+				Object[] data = l.data;
+				short s = l.size;
+				for (int i = 0; i < s; i++) {
+					Task x = (Task) data[i];
+					if (x.isDeleted()) {
+						boolean removed = tree.remove(x);
+						assert (removed);
+						return false;
+					}
+
+					weakest.add(x);
 				}
 
-				weakest.accept(x);
+				if (s >= 2)
+					mergeableLeaf.accept(l);
+
+			} else {
+				for (RNode bb : ((RBranch<TaskRegion>) next).data) {
+
+					if (bb == null) break; //null-terminated
+
+					stack.add(bb);
+//					if (!findEvictable(tree, bb, /*closest, */weakest, mergeableLeaf))
+//						return false;
+
+				}
 			}
-
-			if (s >= 2)
-				mergeableLeaf.accept(l);
-
-		} else {
-			for (RNode bb : ((RBranch<TaskRegion>) next).data) {
-
-				if (bb == null) break; //null-terminated
-
-				if (!findEvictable(tree, bb, /*closest, */weakest, mergeableLeaf))
-					return false;
-
-			}
-		}
+		};
 
 		return true;
 	}

@@ -46,11 +46,11 @@ public class Top<X> implements TopFilter<X> {
     }
 
     @Override
-    public boolean add(X x) {
-        float override = rank.rank(x, score);
-        if (override==override && override > score) {
+    public final boolean add(X x) {
+        float xs = rank.rank(x, score);
+        if (xs==xs && xs > score) {
             the = x;
-            score = override;
+            score = xs;
             return true;
         }
         return false;

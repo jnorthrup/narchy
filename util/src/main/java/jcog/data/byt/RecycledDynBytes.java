@@ -45,11 +45,6 @@ public class RecycledDynBytes extends DynBytes {
     }
 
     @Override
-    protected byte[] realloc(byte[] x, int oldLen, int newLen) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public void close() {
         //MetalPool p = pool;
         //if (p==null) throw new WTF("already closed");

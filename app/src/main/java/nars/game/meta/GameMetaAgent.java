@@ -102,7 +102,7 @@ public class GameMetaAgent extends MetaAgent {
 
 		for (GameLoop s : g.sensors) {
 			if (s instanceof VectorSensor)
-				floatAction($.inh(((AbstractSensor) s).id, pri), ((VectorSensor) s).pri.amp);
+				_priAction($.inh(((AbstractSensor) s).id, pri), ((VectorSensor) s).pri.amp::set);
 		}
 
 

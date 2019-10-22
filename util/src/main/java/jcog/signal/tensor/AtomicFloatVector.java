@@ -52,9 +52,6 @@ public class AtomicFloatVector extends AbstractVector implements WritableTensor 
 
     /** @see jcog.data.atomic.AtomicFloatFieldUpdater */
     @Override public final float addAt(float x, int linearCell) {
-        if (Math.abs(x) < Float.MIN_NORMAL)
-            return 0; //no effect
-
         AtomicIntegerArray data = this.data;
 
         float nextFloat;

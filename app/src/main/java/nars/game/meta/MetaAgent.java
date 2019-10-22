@@ -106,7 +106,7 @@ public abstract class MetaAgent extends Game {
 //	}
 
 	void priAction(PriSource a) {
-		priAction($.inh(a.id, pri), a);
+		_priAction($.inh(a.id, pri), a::pri);
 	}
 
 	void priAction(PriAmp a) {
@@ -114,7 +114,7 @@ public abstract class MetaAgent extends Game {
 	}
 
 	void priAction(Term id, PriSource a) {
-		floatAction(id, 2, a.pri).resolution(PRI_ACTION_RESOLUTION);
+		_priAction/*floatAction*/(id, a.pri::pri).resolution(PRI_ACTION_RESOLUTION);
 	}
 
 //    @Override
@@ -140,6 +140,15 @@ public abstract class MetaAgent extends Game {
 
 	protected GoalActionConcept floatAction(Term t, FloatRange r) {
 		return floatAction(t, 1, r);
+	}
+	protected GoalActionConcept _priAction(Term t, FloatConsumer r) {
+		return floatAction(t, 0, 1, 1, r);
+//		return actionUnipolar(x, (v)->{
+//			if (v <= 0.5f)
+//				r.accept(0);
+//			else
+//				r.accept((v - 0.5f)*2);
+//		}).resolution(PRI_ACTION_RESOLUTION);
 	}
 
 	protected GoalActionConcept floatAction(Term t, float exp, FloatRange r) {

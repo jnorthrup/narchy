@@ -4,7 +4,6 @@ import jcog.memoize.Memoizers;
 import jcog.memoize.byt.ByteHijackMemoize;
 import nars.concept.snapshot.Snapshot;
 import nars.derive.util.PremiseKey;
-import nars.link.TaskLink;
 import nars.term.util.builder.InterningTermBuilder;
 
 import java.util.function.Function;
@@ -46,8 +45,8 @@ import static jcog.memoize.Memoizers.DEFAULT_HIJACK_REPROBES;
         /** decides what premises can be interned */
         protected static boolean intern(PreDerivation d) {
             return
-                !(((Derivation)d)._task instanceof TaskLink) &&
-                (d.taskTerm.volume() + d.beliefTerm.volume() <= 3 * InterningTermBuilder.volMaxDefault);
+                //!(((Derivation)d)._task instanceof TaskLink) &&
+                (d.taskTerm.volume() + d.beliefTerm.volume() <= 2 * InterningTermBuilder.volMaxDefault);
         }
 
     }

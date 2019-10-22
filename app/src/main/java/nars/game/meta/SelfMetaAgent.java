@@ -6,7 +6,6 @@ import jcog.thing.Part;
 import nars.$;
 import nars.Emotion;
 import nars.NAR;
-import nars.Op;
 import nars.control.MetaGoal;
 import nars.derive.pri.DefaultPuncWeightedDerivePri;
 import nars.game.Game;
@@ -42,14 +41,14 @@ public class SelfMetaAgent extends MetaAgent {
 		DefaultPuncWeightedDerivePri dPri = new DefaultPuncWeightedDerivePri();
 		actionUnipolar($.inh(SELF,$.p("derive", "complexity")), (float v)->dPri.simplicityImportance.set(1-v));
 		actionUnipolar($.inh(SELF,$.p("derive", "polarize")), (float v)->dPri.polarityImportance.set(v));
-		actionUnipolar($.inh(SELF,$.p("derive", belief)), (float v)->dPri.beliefPri = Util.lerp(v, 0.1f, 1f));
-		actionUnipolar($.inh(SELF,$.p("derive", goal)), (float v)->dPri.goalPri = Util.lerp(v, 0.1f, 1f));
-		actionUnipolar($.inh(SELF,$.p("derive", question)), (float v)->dPri.questionPri = Util.lerp(v, 0.1f, 1f));
-		actionUnipolar($.inh(SELF,$.p("derive", quest)), (float v)->dPri.questPri = Util.lerp(v, 0.1f, 1f));
-		for (Op o : Op.values()) {
-			if (o.taskable)
-				actionUnipolar($.inh(SELF, $.p("derive", $.quote(o.str))), (float v) -> dPri.opPri[o.id] = Util.lerp(v, 0.1f, 1f));
-		}
+//		actionUnipolar($.inh(SELF,$.p("derive", belief)), (float v)->dPri.beliefPri = Util.lerp(v, 0.1f, 1f));
+//		actionUnipolar($.inh(SELF,$.p("derive", goal)), (float v)->dPri.goalPri = Util.lerp(v, 0.1f, 1f));
+//		actionUnipolar($.inh(SELF,$.p("derive", question)), (float v)->dPri.questionPri = Util.lerp(v, 0.1f, 1f));
+//		actionUnipolar($.inh(SELF,$.p("derive", quest)), (float v)->dPri.questPri = Util.lerp(v, 0.1f, 1f));
+//		for (Op o : Op.values()) {
+//			if (o.taskable)
+//				actionUnipolar($.inh(SELF, $.p("derive", $.quote(o.str))), (float v) -> dPri.opPri[o.id] = Util.lerp(v, 0.1f, 1f));
+//		}
 
 		for (MetaGoal mg : MetaGoal.values()) {
 			GoalActionConcept a = actionUnipolar($.inh(SELF, $.the(mg.name())), (x) -> {
@@ -130,8 +129,9 @@ public class SelfMetaAgent extends MetaAgent {
 
 		//top-level priority controls of other NAR components
 		nar.what.stream()
+			.filter(w -> w != this.what())
 			.peek(w -> w.derivePri = dPri)
-			.filter(w -> w != this.what()).forEach(w -> priAction(w.pri));
+			.forEach(w -> priAction(w.pri));
 
 
 		//shouldnt be necessary, manipulate the downstream PriNodes instead and leave these constant
@@ -172,10 +172,13 @@ public class SelfMetaAgent extends MetaAgent {
 		return (float) nar.parts(Game.class)
 			.filter(g -> g != SelfMetaAgent.this)
 			.filter(Part::isOn)
-			.mapToDouble(g ->
-				(((g.happiness(start, end, dur) - 0.5f) * 2f
+			.mapToDouble(g -> g.happiness(start, end, dur))
+			.filter(x -> x==x) //not NaN
+			/*.map(gg ->
+				(((gg - 0.5f) * 2f
 					* g.what().pri() //weighted by current priority
 				) / 2f) + 0.5f
-			).average().orElse(0);
+			)*/
+			.average().orElse(Float.NaN);
 	}
 }

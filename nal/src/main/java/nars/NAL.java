@@ -138,8 +138,8 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
      * priority calculation here currently depends on a commutive and associaive function
      */
     public static final FloatFloatToFloatFunction DerivationPri =
-        //Math::max;
         Util::or;
+        //Math::max;
         //(t, b) -> Util.unitize(t + b); //plus, max=1
         //Util::and;
 
@@ -269,15 +269,15 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
          * <p>
          * TODO make this a per-sensor implementation decision
          */
-        public static final float SIGNAL_STRETCH_LIMIT_DURS = 8;
+        public static final float SIGNAL_STRETCH_LIMIT_DURS = 16;
         /**
          * maximum time between signal updates to stretch an equivalently-truthed data point across.
          * stretches perception across some amount of lag
          */
         public static final float SIGNAL_LATCH_LIMIT_DURS =
-                //2f;
+                2f;
                 //1.5f;
-                1f;
+                //1f;
 
 //        /**
 //         *  max tasked matched by series table, in case the answer limit is higher.

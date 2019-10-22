@@ -36,7 +36,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
 
     protected static final int sizeDefault = Memoizers.DEFAULT_MEMOIZE_CAPACITY;
-    public static final int volMaxDefault = 8;
+    public static final int volMaxDefault = 7;
     private static final int ATOM_INTERNING_LENGTH_MAX = 16;
 
     /**

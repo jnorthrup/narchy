@@ -89,8 +89,7 @@ public abstract class TermBuilder implements TermConstructor {
 
     public Term normalize(Compound x, byte varOffset) {
 
-        CompoundNormalization c = new CompoundNormalization(x, varOffset);
-        Term y = c.apply(x); //x.transform();
+        Term y = new CompoundNormalization(x, varOffset).apply(x);
 
         if (varOffset == 0 && y instanceof Compound)
             ((Compound)y).subtermsDirect().setNormalized();

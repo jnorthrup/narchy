@@ -554,7 +554,7 @@ public abstract class Derivation extends PreDerivation implements Caused, Predic
         for (Unify u : _u)
             u.dtTolerance = dtTolerance;
 
-        w.derivePri.reset(this);
+//        w.derivePri.reset(this);
 
     }
 
