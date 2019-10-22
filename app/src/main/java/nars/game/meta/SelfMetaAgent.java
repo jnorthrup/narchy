@@ -125,9 +125,9 @@ public class SelfMetaAgent extends MetaAgent {
 //			});
 
 		//top-level priority controls of other NAR components
-		nar.parts(Game.class)
-			.peek(g -> g.what().derivePri = dPri)
-			.filter(g -> g != this).forEach(g -> priAction(g.what().pri));
+		nar.what.stream()
+			.peek(w -> w.derivePri = dPri)
+			.filter(w -> w != this.what()).forEach(w -> priAction(w.pri));
 
 
 		//shouldnt be necessary, manipulate the downstream PriNodes instead and leave these constant
@@ -168,8 +168,10 @@ public class SelfMetaAgent extends MetaAgent {
 		return (float) nar.parts(Game.class)
 			.filter(g -> g != SelfMetaAgent.this)
 			.filter(Part::isOn)
-			.mapToDouble(g -> g.happiness(start, end, dur))
-			.average()
-			.orElseGet(() -> 0);
+			.mapToDouble(g ->
+				(((g.happiness(start, end, dur) - 0.5f) * 2f
+					* g.what().pri() //weighted by current priority
+				) / 2f) + 0.5f
+			).average().orElse(0);
 	}
 }

@@ -16,8 +16,8 @@
         </plugins>
     </build>
     <properties>
-        <junit-platform-launcher.version>1.5.2</junit-platform-launcher.version>
-        <junit-jupiter-params.version>5.5.2</junit-jupiter-params.version>
+        <junit-platform-launcher.version>1.6.0-M1</junit-platform-launcher.version>
+        <junit-jupiter-params.version>5.6.0-M1</junit-jupiter-params.version>
     </properties>
     <parent>
         <groupId>automenta</groupId>
