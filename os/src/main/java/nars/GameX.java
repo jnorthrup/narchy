@@ -2,10 +2,12 @@ package nars;
 
 import com.google.common.util.concurrent.AtomicDouble;
 import jcog.Util;
+import jcog.exe.Exe;
 import jcog.exe.Loop;
 import jcog.func.IntIntToObjectFunction;
 import jcog.learn.pid.MiniPID;
 import jcog.learn.ql.HaiQae;
+import jcog.math.FloatRange;
 import jcog.signal.wave2d.Bitmap2D;
 import jcog.signal.wave2d.MonoBufImgBitmap2D;
 import jcog.signal.wave2d.ScaledBitmap2D;
@@ -22,9 +24,11 @@ import nars.derive.time.NonEternalTaskOccurenceOrPresentDeriverTiming;
 import nars.exe.impl.WorkerExec;
 import nars.game.Game;
 import nars.game.GameTime;
+import nars.game.SimpleReward;
 import nars.game.meta.GameMetaAgent;
 import nars.game.meta.MetaAgent;
 import nars.game.meta.SelfMetaAgent;
+import nars.gui.BeliefTableChart;
 import nars.gui.NARui;
 import nars.memory.CaffeineMemory;
 import nars.op.Arithmeticize;
@@ -46,6 +50,7 @@ import nars.video.WaveletBag;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.grid.Gridding;
+import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space2d.widget.meter.PaintUpdateMatrixView;
 import spacegraph.space2d.widget.meter.Plot2D;
@@ -126,7 +131,17 @@ public abstract class GameX extends Game {
             SelfMetaAgent self = new SelfMetaAgent(n);
             if (initMetaRL)
                 self.addRLBoost();
+
+            final FloatRange enc = new FloatRange(0.5f, 0, 1);
+            SimpleReward e = self.reward($.inh(n.self, "encouragement"), () -> {
+                float v = enc.floatValue();
+                enc.set(Util.lerp(0.01f, v, 0.5f)); //fade to 0.5
+                return v;
+            });
             n.add(self);
+
+            window(new Gridding(new BeliefTableChart(e.concept, n), new PushButton(":)", ()->enc.set(1)), new PushButton(":(", ()->enc.set(0))), 800, 800);
+
             self.pri(0.1f);
 
         }

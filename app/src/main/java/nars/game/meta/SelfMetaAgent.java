@@ -13,6 +13,7 @@ import nars.game.action.GoalActionConcept;
 import nars.term.Term;
 
 import static nars.$.$$;
+import static nars.Op.GOAL;
 
 /**
  * core metavisor
@@ -155,12 +156,12 @@ public class SelfMetaAgent extends MetaAgent {
 		float emotionalMomentumDurs = 4;
 		reward($.inh(SELF, $.p(happy, past)), () -> {
 			return happiness(Math.round(nowPercept.start - dur() * emotionalMomentumDurs), nowPercept.start, durMeasured, nar);
-		});
+		}).conf(0.25f*nar.confDefault(GOAL));
 
 		/** optimism */
 		reward($.inh(SELF, $.p(happy, future)), () -> {
 			return happiness(nowPercept.end, Math.round(nowPercept.end + dur() * emotionalMomentumDurs), durMeasured, nar);
-		});
+		}).conf(0.5f*nar.confDefault(GOAL));;
 
 //        ThreadCPUTimeTracker.getCPUTime()
 //        reward("lazy", 1, ()->{
