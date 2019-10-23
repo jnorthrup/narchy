@@ -577,8 +577,11 @@ public enum Texts {
 
 	public static int countRows(String s, char x) {
 		int bound = s.length();
-		long count = IntStream.range(0, bound).filter(i -> s.charAt(i) == x).count();
-
+		long count = 0L;
+		for (int i = 0; i < bound; i++) {
+			if (s.charAt(i) == x)
+				count++;
+		}
 		return (int) count;
 	}
 	public static int countCols(String next) {

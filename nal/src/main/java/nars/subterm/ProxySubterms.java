@@ -19,8 +19,7 @@ public class ProxySubterms<S extends Termlike> implements Subterms {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        return ((Subterms)obj).equalTerms(this);
+        return this == obj || equalTerms((Subterms) obj);
     }
 
     @Override

@@ -7,7 +7,6 @@ import nars.$;
 import nars.Emotion;
 import nars.NAR;
 import nars.control.MetaGoal;
-import nars.derive.pri.DefaultPuncWeightedDerivePri;
 import nars.game.Game;
 import nars.game.GameTime;
 import nars.game.action.GoalActionConcept;
@@ -38,8 +37,8 @@ public class SelfMetaAgent extends MetaAgent {
 		sense($.inh(SELF, $$("deriveTask")), new FloatNormalized(e.deriveTask));
 		sense($.inh(SELF, $$("lag")), new FloatNormalized(e.durLoopLag));
 
-		DefaultPuncWeightedDerivePri dPri = new DefaultPuncWeightedDerivePri();
-		actionUnipolar($.inh(SELF,$.p("derive", "complexity")), (float v)->dPri.simplicityImportance.set(1-v));
+//		DefaultPuncWeightedDerivePri dPri = new DefaultPuncWeightedDerivePri();
+//		actionUnipolar($.inh(SELF,$.p("derive", "complexity")), (float v)->dPri.simplicityImportance.set(1-v));
 //		actionUnipolar($.inh(SELF,$.p("derive", "polarize")), (float v)->dPri.polarityImportance.set(v));
 //		actionUnipolar($.inh(SELF,$.p("derive", belief)), (float v)->dPri.beliefPri = Util.lerp(v, 0.1f, 1f));
 //		actionUnipolar($.inh(SELF,$.p("derive", goal)), (float v)->dPri.goalPri = Util.lerp(v, 0.1f, 1f));
@@ -130,7 +129,7 @@ public class SelfMetaAgent extends MetaAgent {
 		//top-level priority controls of other NAR components
 		nar.what.stream()
 			.filter(w -> w != this.what())
-			.peek(w -> w.derivePri = dPri)
+			//.peek(w -> w.derivePri = dPri)
 			.forEach(w -> priAction(w.pri));
 
 

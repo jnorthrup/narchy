@@ -44,7 +44,7 @@ public class WorkerExec extends ThreadedExec {
 
 	@Override
 	protected Supplier<Worker> loop() {
-		return ()->new WorkPlayLoop(nar);
+		return () -> new WorkPlayLoop(nar);
 	}
 
 	@Override
@@ -73,21 +73,21 @@ public class WorkerExec extends ThreadedExec {
 
 	private static final class WorkPlayLoop implements ThreadedExec.Worker {
 
-		long loopNS_recorded_max = 5_000_000; //initial guess at cycle per loop
-		long naptime = 2_000_000;
-
-
 		final Random rng;
 		private final AtomicBoolean alive = new AtomicBoolean(true);
 		private final NAR nar;
 		private final MpmcArrayQueue in;
+		long loopNS_recorded_max = 5_000_000; //initial guess at cycle per loop
+		long naptime = 2_000_000;
 		private transient DeriverExecutor deriver;
 		@Deprecated
 		private transient int concurrency;
 
+		FloatAveragedWindow loopTime = new FloatAveragedWindow(32, 0.5f, false).mode(FloatAveragedWindow.Mode.Mean);
+
 		WorkPlayLoop(NAR nar) {
 			this.nar = nar;
-			in = ((ThreadedExec)nar.exe).in;
+			in = ((ThreadedExec) nar.exe).in;
 			rng = new XoRoShiRo128PlusRandom((31L * System.identityHashCode(this)) + nanoTime());
 		}
 
@@ -108,14 +108,13 @@ public class WorkerExec extends ThreadedExec {
 
 			//Histogram loopTime = new Histogram(30_000, loopNS_recorded_max, 3);
 			//loopTime.recordValue(loopNS_recorded_max);
-			FloatAveragedWindow loopTime = new FloatAveragedWindow(8, 0.5f, false).mode(FloatAveragedWindow.Mode.Mean);
 			loopTime.fill(loopNS_recorded_max);
 
 			NARLoop loop = nar.loop;
 
 			while (alive.getOpaque()) {
 
-				concurrency = Math.max(1,nar.exe.concurrency());
+				concurrency = Math.max(1, nar.exe.concurrency());
 				long cycleTimeNS = loop.cycleTimeNS;
 
 				long cycleStart = System.nanoTime();
@@ -134,61 +133,66 @@ public class WorkerExec extends ThreadedExec {
 						continue; //slept all day
 				}
 
-				DeriverExecutor d = deriver();
-				if (d == null) continue;
-
-				PartBag<What> ww = nar.what;
-				int N = ww.size();
-				if (N == 0) continue;
-
-				float whatGranularity = 1; //increase what slicing
-
-				double meanLoopTimeNS = loopTime.mean(); //getMean();
-				int maxWhatLoops;
-				int minWhatLoops = 2;
-				int loopsPlanned;
-				if (loopTime.mean() < 1) {
-					//TODO this means it has been measuring empty loops, add some safety limit
-					loopsPlanned = maxWhatLoops = minWhatLoops;
-				} else {
-					loopsPlanned = (int) (cycleRemaining / meanLoopTimeNS);
-					maxWhatLoops = minWhatLoops + Math.round(loopsPlanned / Math.max(1f, (N * whatGranularity) / concurrency)); //TODO tune
-				}
-
-				//StringBuilder y = new StringBuilder();
-
-				int loopsRemain = loopsPlanned;
-
-				long beforePlay = System.nanoTime();
-
-				while (loopsRemain > 0) {
-
-					What w = ww.get(rng);
-					if (w == null)  break;
-					float p = w.priElseZero();
-//					if (p < ScalarValue.EPSILON) continue; //HACK
-
-					int loops = Math.min(loopsRemain, (int) Util.lerpSafe(p / ww.mass(), minWhatLoops, maxWhatLoops));
-					loopsRemain -= loops;
-
-					d.next(w, loops);
-
-					//work();
-				}
-
-				long playTimeNS = System.nanoTime() - beforePlay;
-				//totalPlayTimeNS += playTimeNS;
-				int loopsRun = loopsPlanned - loopsRemain;
-				if (loopsRun > 0)
-					loopTime.next/*recordValue*/(/*Math.min(loopNS_recorded_max,*/ (((float)playTimeNS)/ loopsRun));
-
+				play(cycleRemaining);
 			}
 		}
 
-		public long sleep(float throttle, long cycleTimeNS, long cycleStart, long cycleRemaining) {
+		protected void play(long cycleRemaining) {
+			DeriverExecutor d = deriver();
+			if (d == null) return;
+
+			PartBag<What> ww = nar.what;
+			int N = ww.size();
+			if (N == 0) return;
+
+			float whatGranularity = 1; //increase what slicing
+
+			double meanLoopTimeNS = loopTime.mean(); //getMean();
+			int maxWhatLoops;
+			int minWhatLoops = 2;
+			int loopsPlanned;
+			if (loopTime.mean() < 1) {
+				//TODO this means it has been measuring empty loops, add some safety limit
+				loopsPlanned = maxWhatLoops = minWhatLoops;
+			} else {
+				loopsPlanned = (int) (cycleRemaining / meanLoopTimeNS);
+				maxWhatLoops = minWhatLoops + Math.round(loopsPlanned / Math.max(1f, (N * whatGranularity) / concurrency)); //TODO tune
+			}
+
+			//StringBuilder y = new StringBuilder();
+
+			int loopsRemain = loopsPlanned;
+
+			long beforePlay = System.nanoTime();
+
+			while (loopsRemain > 0) {
+
+				What w = ww.get(rng);
+				if (w == null) break;
+				float p = w.priElseZero();
+//					if (p < ScalarValue.EPSILON) continue; //HACK
+
+				int loops = Math.min(loopsRemain, (int) Util.lerpSafe(p / ww.mass(), minWhatLoops, maxWhatLoops));
+				loopsRemain -= loops;
+
+				d.next(w, loops);
+
+				//work();
+			}
+
+			long playTimeNS = System.nanoTime() - beforePlay;
+			//totalPlayTimeNS += playTimeNS;
+			int loopsRun = loopsPlanned - loopsRemain;
+			if (loopsRun > 0)
+				loopTime.next/*recordValue*/(/*Math.min(loopNS_recorded_max,*/ (((float) playTimeNS) / loopsRun));
+
+
+		}
+
+		protected long sleep(float throttle, long cycleTimeNS, long cycleStart, long cycleRemaining) {
 			//sleep at most until next cycle
-			long cycleSleepNS = Math.min(cycleRemaining, (int)(cycleTimeNS * (1.0-throttle)));
-			Util.sleepNSwhile(cycleSleepNS, naptime, ()->{
+			long cycleSleepNS = Math.min(cycleRemaining, (int) (cycleTimeNS * (1.0 - throttle)));
+			Util.sleepNSwhile(cycleSleepNS, naptime, () -> {
 				work();
 				return true;
 			});

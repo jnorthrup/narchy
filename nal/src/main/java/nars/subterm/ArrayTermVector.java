@@ -1,11 +1,10 @@
 package nars.subterm;
 
 import jcog.data.iterator.ArrayIterator;
+import jcog.util.ArrayUtil;
 import nars.term.Term;
 
-import java.util.Arrays;
 import java.util.Iterator;
-import java.util.stream.IntStream;
 
 /**
  * Holds a vector or tuple of terms.
@@ -29,11 +28,6 @@ public class ArrayTermVector extends TermVector {
     }
 
     @Override
-    public boolean equalTerms(Term[] c) {
-        return Arrays.equals(terms, c);
-    }
-
-    @Override
     public final boolean equals(/*@NotNull*/ Object obj) {
         if (this == obj) return true;
 
@@ -42,44 +36,19 @@ public class ArrayTermVector extends TermVector {
 
         Subterms that = (Subterms) obj;
 
-        //HACK
-        //if (!(that instanceof TermVector) && !(that instanceof AnonVector) && !(that instanceof RemappedSubterms.HashCachedRemappedSubterms) && !(that instanceof RemappedSubterms.RepeatedSubterms))
-            if (subs()!=that.subs()) //check before computing hashCode
-                return false;
-
-        if (hash != that.hashCodeSubterms()) {
-            return false;
-        }
-
-        if (obj instanceof ArrayTermVector) {
-
-            ArrayTermVector v = (ArrayTermVector) obj;
-//            if (terms == v.terms)
-//                return true;
-//            int n = terms.length;
-//            if (v.terms.length != n)
+//        //HACK
+//        //if (!(that instanceof TermVector) && !(that instanceof AnonVector) && !(that instanceof RemappedSubterms.HashCachedRemappedSubterms) && !(that instanceof RemappedSubterms.RepeatedSubterms))
+//            if (subs()!=that.subs()) //check before computing hashCode
 //                return false;
-//            for (int i = 0; i < terms.length; i++) {
-//                Term a = terms[i];
-//                Term b = v.terms[i];
-//                if (a == b) continue;
-//                if (a.equals(b)) {
-//                    v.terms[i] = a; //share copy
-//                } else {
-//                    return false; //mismatch
-//                }
-//            }
-            return Arrays.equals(terms, v.terms);
 
-        } else {
-            Term[] x = this.terms;
-            int s = x.length;
-            if (s != that.subs())
-                return false;
+        if (hash != that.hashCodeSubterms())
+            return false;
 
-            return IntStream.range(0, s).allMatch(i -> x[i].equals(that.sub(i)));
+        if (obj instanceof ArrayTermVector)
+            return ArrayUtil.equalArraysDirect(terms, ((ArrayTermVector) obj).terms);
+        else
+            return equalTerms(that);
 
-        }
 
 //        if (obj instanceof TermVector)
 //            equivalentTo((TermVector) obj);

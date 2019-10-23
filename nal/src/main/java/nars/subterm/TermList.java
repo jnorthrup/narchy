@@ -88,8 +88,8 @@ public class TermList extends FasterList<Term> implements Subterms {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        return (obj instanceof TermList) ? nonNullEquals(((TermList) obj)) : ((Subterms) obj).equalTerms(this);
+        return this == obj ||
+            ((obj instanceof TermList) ? nonNullEquals(((TermList) obj)) : equalTerms((Subterms) obj));
     }
 
 //

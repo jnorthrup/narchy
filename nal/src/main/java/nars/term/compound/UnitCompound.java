@@ -213,7 +213,7 @@ public abstract class UnitCompound implements SameSubtermsCompound {
     }
 
     @Override
-    public boolean recurseTermsOrdered(Predicate<Term> aSuperCompoundMust, Predicate<Term> whileTrue, Compound superterm) {
+    public final boolean recurseTermsOrdered(Predicate<Term> aSuperCompoundMust, Predicate<Term> whileTrue, Compound superterm) {
         return !aSuperCompoundMust.test(this) || (whileTrue.test(this) && sub().recurseTermsOrdered(aSuperCompoundMust, whileTrue, this));
     }
 

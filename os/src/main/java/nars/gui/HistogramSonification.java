@@ -84,13 +84,13 @@ public class HistogramSonification extends Gridding {
 //            });
     }
 
-    @Override
-    protected void stopping() {
-//        for (SoundProducer g : this.g) {
-//            g.stop();
-//        }
-        super.stopping();
-    }
+//    @Override
+//    protected void stopping() {
+////        for (SoundProducer g : this.g) {
+////            g.stop();
+////        }
+//        super.stopping();
+//    }
 
     @Override
     protected void paintIt(GL2 gl, ReSurface r) {

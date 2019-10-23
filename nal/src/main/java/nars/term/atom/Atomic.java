@@ -17,7 +17,6 @@ import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
-import java.util.stream.IntStream;
 
 import static nars.Op.EmptySubterms;
 import static nars.term.atom.Bool.Null;
@@ -370,7 +369,11 @@ public abstract class Atomic implements Term {
         if ((t0 == '\"') && (t.charAt(len - 1) == '\"'))
             return false;
 
-        return IntStream.range(0, len).anyMatch(i -> !Atom.isValidAtomChar(t.charAt(i)));
+        for (int i = 0; i < len; i++) {
+            if (!Atom.isValidAtomChar(t.charAt(i)))
+                return true;
+        }
+        return false;
     }
 
 

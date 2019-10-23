@@ -44,7 +44,6 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static java.lang.Character.isDigit;

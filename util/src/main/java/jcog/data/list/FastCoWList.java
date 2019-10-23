@@ -9,11 +9,13 @@ import org.eclipse.collections.api.block.procedure.Procedure2;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Array;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Random;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.*;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 /** be careful about synchronizing to instances of this class
@@ -212,13 +214,17 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
             if (copy.compareAndSet(prev, next))
                 return next;
 
-            haveNext = Arrays.equals(prev, (prev = copy.get()));
+            haveNext = prev == (prev = copy.get());
         }
     }
 
     @Override
     public final X[] apply(X[] current) {
-        return Objects.requireNonNullElseGet(current, () -> list.fillArray(arrayBuilder.apply(list.size()), false));
+        if (current != null) {
+            return current;
+        } else {
+            return list.fillArray(arrayBuilder.apply(list.size()), false);
+        }
     }
 
     //@Override
@@ -359,25 +365,48 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
     public boolean isEmpty() { return size() == 0; }
 
     public boolean AND(Predicate<X> o) {
-        return Arrays.stream(array()).allMatch(o);
+        for (X x : array()) {
+            if (!o.test(x))
+                return false;
+        }
+        return true;
     }
     public boolean OR(Predicate<X> o) {
-        return Arrays.stream(array()).anyMatch(o);
+        for (X x : array()) {
+            if (o.test(x))
+                return true;
+        }
+        return false;
     }
     public boolean whileEach(Predicate<X> o) {
-        return Arrays.stream(array()).noneMatch(x -> x != null && !o.test(x));
+        for (X x : array()) {
+            if (x!=null && !o.test(x))
+                return false;
+        }
+        return true;
     }
     public boolean whileEachReverse(Predicate<X> o) {
         @Nullable X[] xx = this.array();
-        return IntStream.iterate(xx.length - 1, i -> i >= 0, i -> i - 1).mapToObj(i -> xx[i]).noneMatch(x -> x != null && !o.test(x));
+        for (int i = xx.length - 1; i >= 0; i--) {
+            X x = xx[i];
+            if (x!=null && !o.test(x))
+                return false;
+        }
+        return true;
     }
 
     public double sumBy(FloatFunction<X> each) {
-        return Arrays.stream(array()).mapToDouble(each::floatValueOf).sum();
+        double s =  0;
+        for (X x : array())
+            s += each.floatValueOf(x);
+        return s;
     }
     public double sumBy(ToDoubleFunction<X> each) {
-        return Arrays.stream(array()).mapToDouble(each).sum();
-    }
+        double s =  0;
+        for (X x : array())
+            s += each.applyAsDouble(x);
+        return s;
+        }
 
     /** NaN valued items are not included */
     public double meanBy(ToDoubleFunction<X> each) {
@@ -390,8 +419,9 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
                 i++;
             }
         }
-        return i > 0 ? s/i : Float.NaN;
+        return i > 0 ? s/i : Double.NaN;
     }
+
     /** NaN valued items are not included */
     public double meanByFloat(FloatFunction<X> each) {
         double s =  0;
@@ -405,7 +435,6 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
         }
         return i > 0 ? s/i : Float.NaN;
     }
-
     public <Y> Y[] toArray(Y[] _target, Function<X, Y> f) {
         int s = size();
         if (s == 0) return _target.length == 0 ? _target : null;

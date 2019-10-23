@@ -19,7 +19,6 @@ import java.nio.file.Path;
 import java.util.Set;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import static jcog.data.map.CustomConcurrentHashMap.*;
 import static nars.Op.*;
@@ -226,8 +225,10 @@ public class DefaultTermizer implements Termizer {
 
     
     private static Term[] getArgVariables(String prefix, int numParams) {
-        Term[] x = IntStream.range(0, numParams).mapToObj(i -> $.varDep(prefix + i)).toArray(Term[]::new);
-        return x;
+        List<nars.term.Variable> list = new FasterList<>(numParams);
+        for (int i = 0; i < numParams; i++)
+            list.add($.varDep(prefix + i));
+        return list.toArray(new Term[0]);
     }
 
     public static Term classTerm(Class c) {

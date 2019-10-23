@@ -401,12 +401,10 @@ public class RectFloat implements HyperRegion, Comparable<RectFloat> {
 
         if (x < left()) { // Region I, VIII, or VII
             if (y < bottom()) { // I
-                //Vector2 diff = point - new Vector2(rect.xMin, rect.yMin);return diff.magnitude;
-                return (float)Math.sqrt(Util.sqr(x - left())+Util.sqr(y - bottom()));
+                return Util.sqrt(Util.sqr(x - left())+Util.sqr(y - bottom()));
             }
             else if (y > top()) { // VII
-                //Vector2 diff = point - new Vector2(rect.xMin, rect.yMax); diff.magnitude;
-                return (float)Math.sqrt(Util.sqr(x - left())+Util.sqr(y - top()));
+                return Util.sqrt(Util.sqr(x - left())+Util.sqr(y - top()));
             }
             else { // VIII
                 return left() - x;
@@ -414,12 +412,10 @@ public class RectFloat implements HyperRegion, Comparable<RectFloat> {
         }
         else if (x > right()) { // Region III, IV, or V
             if (y < bottom()) { // III
-                //Vector2 diff = point - new Vector2(rect.xMax, rect.yMin);return diff.magnitude;
-                return (float)Math.sqrt(Util.sqr(x - right())+Util.sqr(y - bottom()));
+                return Util.sqrt(Util.sqr(x - right())+Util.sqr(y - bottom()));
             }
             else if (y > top()) { // V
-                //Vector2 diff = point - new Vector2(rect.xMax, rect.yMax);return diff.magnitude;
-                return (float)Math.sqrt(Util.sqr(x - right())+Util.sqr(y - top()));
+                return Util.sqrt(Util.sqr(x - right())+Util.sqr(y - top()));
             }
             else { // IV
                 return x - right();

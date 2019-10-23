@@ -187,11 +187,12 @@ public class DynTaskify extends TaskList {
 
 
     private boolean evalComponent(Term subTerm, long start, long end) {
-        boolean negated = subTerm instanceof Neg;
+        FasterList<Component> cc = this.components;
+
         Term c;
-        if (negated) {
+        if (subTerm instanceof Neg) {
             c = subTerm.unneg();
-            componentPolarity.clear(components==null ? 0 : components.size());
+            componentPolarity.clear(cc ==null ? 0 : cc.size());
         } else
             c = subTerm;
 
@@ -199,10 +200,10 @@ public class DynTaskify extends TaskList {
         if (table==null || table.isEmpty())
             return false;
 
-        if (components == null)
-            components = new FasterList<>(0, new Component[model.componentsEstimate()]);
+        if (cc == null)
+            cc = this.components = new FasterList<>(0, new Component[model.componentsEstimate()]);
 
-        components.add(new Component(c, table, start, end));
+        cc.add(new Component(c, table, start, end));
 
         return true;
     }

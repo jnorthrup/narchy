@@ -334,7 +334,7 @@ public abstract class FastCompound implements SameSubtermsCompound /* The */ {
                             ||
                             (obj instanceof Subterms)
                                     && hashCodeSubterms() == ((Subterms) obj).hashCodeSubterms()
-                                    && equalTerms(((Subterms) obj).arrayShared());
+                                    && equalTerms(((Subterms) obj));
         }
 
         @Override

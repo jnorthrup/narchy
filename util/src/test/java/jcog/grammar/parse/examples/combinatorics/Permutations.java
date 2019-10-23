@@ -1,7 +1,6 @@
 package jcog.grammar.parse.examples.combinatorics;
 
 import java.util.Iterator;
-import java.util.stream.IntStream;
 
 /*
  * Copyright (c) 2000 Steven J. Metsker. All Rights Reserved.
@@ -197,8 +196,9 @@ public class Permutations implements Iterator<Object> {
 			return null;
 		}
 
-		int bound = m;
-		Object[] out = IntStream.range(0, bound).mapToObj(i -> inArray[index[i]]).toArray();
+		Object[] out = new Object[m];
+		for (int i = 0; i < m; i++)
+			out[i] = inArray[index[i]];
 
         moveIndex();
 		return out;
@@ -226,7 +226,12 @@ public class Permutations implements Iterator<Object> {
 	 *         than its neighbor on the right.
 	 */
     private int rightmostDip() {
-        return IntStream.iterate(n - 2, i -> i >= 0, i -> i - 1).filter(i -> index[i] < index[i + 1]).findFirst().orElse(-1);
+		for (int i = n - 2; i >= 0; i--) {
+			if (index[i] < index[i + 1]) {
+				return i;
+			}
+		}
+		return -1;
 
     }
 

@@ -32,7 +32,6 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.IntFunction;
 import java.util.function.Predicate;
-import java.util.stream.IntStream;
 
 /**
  * <p>Operations on arrays, primitive arrays (like {@code int[]}) and

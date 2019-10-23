@@ -482,7 +482,10 @@ public class MetalConcurrentQueue<X> extends MetalAtomicReferenceArray<X> {
         if (s > 0) {
             //TODO use fast iteration method
             int h = head();
-            return IntStream.range(0, s).mapToObj(i -> peek(h, i)).anyMatch(b -> b != null && b.equals(o));
+            for (int i = 0; i < s; i++) {
+                X b = peek(h, i);
+                if (b != null && b.equals(o)) return true;
+            }
         }
         return false;
     }

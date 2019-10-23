@@ -10,7 +10,6 @@ import nars.term.Term;
 import java.util.Arrays;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
-import java.util.stream.IntStream;
 
 import static nars.Op.NEG;
 
@@ -118,7 +117,8 @@ public abstract class RemappedSubterms<S extends Subterms> extends MappedSubterm
 
         @Override
         public boolean equals(Object obj) {
-            return (this==obj) || (obj instanceof Subterms && hash == ((Subterms)obj).hashCodeSubterms() && ((Subterms) obj).equalTerms(this));
+            return (this==obj) || obj instanceof Subterms && hash == ((Subterms)obj).hashCodeSubterms()
+                && equalTerms((Subterms) obj);
         }
     }
 
@@ -155,7 +155,8 @@ public abstract class RemappedSubterms<S extends Subterms> extends MappedSubterm
         @Override
         public boolean equals(Object obj) {
             return (this == obj) || (
-                    obj instanceof Subterms && hash == ((Subterms)obj).hashCodeSubterms() && ((Subterms) obj).equalTerms(this)
+                    obj instanceof Subterms && hash == ((Subterms)obj).hashCodeSubterms()
+                        && equalTerms(((Subterms) obj))
             );
         }
 
@@ -305,7 +306,7 @@ public abstract class RemappedSubterms<S extends Subterms> extends MappedSubterm
                 return hash == m.hash && ref.equals(m.ref) && Arrays.equals(map, m.map);
             } else {
                 return obj instanceof Subterms && /*hash == obj.hashCodeSubterms() && */
-                        ((Subterms) obj).equalTerms(this);
+                        equalTerms(((Subterms) obj));
             }
         }
 
@@ -367,11 +368,18 @@ public abstract class RemappedSubterms<S extends Subterms> extends MappedSubterm
 
     protected boolean wrapsNeg() {
         int s = subs();
-        return IntStream.range(0, s).anyMatch(i -> subMap(i) < 0);
+        for (int i = 0; i < s; i++)
+            if (subMap(i) < 0)
+                return true;
+        return false;
     }
 
     protected int negs() {
-        return (int) IntStream.range(0, subs()).filter(i -> subMap(i) < 0).count();
+        int n = 0, s = subs();
+        for (int i = 0; i < s; i++)
+            if (subMap(i) < 0)
+                n++;
+        return n;
     }
 
     @Override

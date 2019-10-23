@@ -1,7 +1,6 @@
 package spacegraph.space2d;
 
 import jcog.Texts;
-import jcog.grammar.evolve.selections.Rank;
 import jcog.math.v2;
 import jcog.sort.FloatRank;
 import jcog.sort.RankedN;

@@ -9,8 +9,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.UnaryOperator;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -166,17 +164,22 @@ public class ConcurrentOpenHashMapTest {
         final int N = 100_000;
         String value = "value";
 
-        Collection<Future<?>> futures = IntStream.range(0, nThreads).mapToObj(threadIdx -> executor.submit(() -> {
-            Random random = new Random();
+        Collection<Future<?>> futures = new ArrayList<>();
+        for (int i = 0; i < nThreads; i++) {
+            int threadIdx = i;
+            Future<?> submit = executor.submit(() -> {
+                Random random = new Random();
 
-            for (int j = 0; j < N; j++) {
-                long key = random.nextLong();
-                // Ensure keys are uniques
-                key -= key % (threadIdx + 1);
+                for (int j = 0; j < N; j++) {
+                    long key = random.nextLong();
+                    // Ensure keys are uniques
+                    key -= key % (threadIdx + 1);
 
-                map.put(key, value);
-            }
-        })).collect(Collectors.toList());
+                    map.put(key, value);
+                }
+            });
+            futures.add(submit);
+        }
 
         for (Future<?> future : futures) {
             try {
@@ -202,17 +205,22 @@ public class ConcurrentOpenHashMapTest {
         final int N = 100_000;
         String value = "value";
 
-        Collection<Future<?>> futures = IntStream.range(0, nThreads).mapToObj(threadIdx -> executor.submit(() -> {
-            Random random = new Random();
+        Collection<Future<?>> futures = new ArrayList<>();
+        for (int i = 0; i < nThreads; i++) {
+            int threadIdx = i;
+            Future<?> submit = executor.submit(() -> {
+                Random random = new Random();
 
-            for (int j = 0; j < N; j++) {
-                long key = random.nextLong();
-                // Ensure keys are uniques
-                key -= key % (threadIdx + 1);
+                for (int j = 0; j < N; j++) {
+                    long key = random.nextLong();
+                    // Ensure keys are uniques
+                    key -= key % (threadIdx + 1);
 
-                map.put(key, value);
-            }
-        })).collect(Collectors.toList());
+                    map.put(key, value);
+                }
+            });
+            futures.add(submit);
+        }
 
         for (Future<?> future : futures) {
             try {

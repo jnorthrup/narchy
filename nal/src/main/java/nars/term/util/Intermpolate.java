@@ -24,9 +24,6 @@ public enum Intermpolate {;
 
     private static Term intermpolate(/*@NotNull*/ Compound a,  /*@NotNull*/ Compound b, float aProp, float curDepth, NAL nar) {
 
-        if (a.equals(b))
-            return a;
-
         if (a instanceof Neg) {
             if (!(b instanceof Neg)) return Null;
             Term au = a.unneg();
@@ -35,6 +32,9 @@ public enum Intermpolate {;
             if (!(bu instanceof Compound)) return Null;
             return intermpolate((Compound)au, (Compound)bu, aProp, curDepth, nar).neg();
         }
+
+        if (a.equals(b))
+            return a;
 
         if (!a.equalsRoot(b))
             return Null;

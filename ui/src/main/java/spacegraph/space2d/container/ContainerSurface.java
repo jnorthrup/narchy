@@ -128,19 +128,9 @@ public abstract class ContainerSurface extends Surface {
     public Surface finger(Finger finger) {
 
         if (showing() && childrenCount() > 0 && (!clipBounds || finger.intersects(bounds))) {
-            Surface[] found = new Surface[1];
-            whileEachReverse(c -> {
-
-                Surface s = c.finger(finger);
-                if (s != null) {
-                    found[0] = s;
-                    return false;
-                }
-
-                return true;
-
-            });
-            return found[0];
+            FingerFirst ff = new FingerFirst(finger);
+            if (!whileEachReverse(ff))
+                return ff.found;
         }
 
         return null;
@@ -154,7 +144,6 @@ public abstract class ContainerSurface extends Surface {
         forEachOrphan(s -> s.start(this));
         layout();
     }
-
 
     @Override
     protected void stopping() {
@@ -211,9 +200,26 @@ public abstract class ContainerSurface extends Surface {
         MUSTLAYOUT.lazySet(this, 1);
     }
 
-    public final boolean layoutPending() {
-        return MUSTLAYOUT.getOpaque(this)>0;
+//    public final boolean layoutPending() {
+//        return MUSTLAYOUT.getOpaque(this)>0;
+//    }
+    private static final class FingerFirst implements Predicate<Surface> {
+        private final Finger finger;
+        public Surface found = null;
+
+        public FingerFirst(Finger finger) {
+            this.finger = finger;
+        }
+
+        @Override
+        public boolean test(Surface c) {
+            Surface s = c.finger(finger);
+            if (s != null) {
+                found = s;
+                return false;
+            }
+
+            return true;
+        }
     }
-
-
 }

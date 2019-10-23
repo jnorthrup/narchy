@@ -36,7 +36,7 @@ public interface SameSubtermsCompound extends Compound {
     @Override
     default boolean recurseTermsOrdered(Predicate<Term> inSuperCompound, Predicate<Term> whileTrue, Compound parent) {
         //copied from Subterms.java
-        return inSuperCompound.test(this) && whileTrue.test(this) && AND(i -> i.recurseTermsOrdered(inSuperCompound, whileTrue, parent));
+        return inSuperCompound.test(this) && whileTrue.test(this) && ANDwithOrdered((i,WT) -> i.recurseTermsOrdered(inSuperCompound, WT, parent), whileTrue);
     }
 
     @Override

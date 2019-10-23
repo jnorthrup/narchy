@@ -37,8 +37,6 @@ import java.util.Set;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import static nars.Op.*;
 import static nars.term.atom.Bool.False;
@@ -937,7 +935,13 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
 		} else {
 
-			int w = IntStream.range(0, s).filter(i -> subEvents[i] != null && !subEvents[i].isEmpty()).findFirst().orElse(-1);
+			int w = -1;
+			for (int i = 0; i < s; i++) {
+				if (subEvents[i] != null && !subEvents[i].isEmpty()) {
+					w = i;
+					break;
+				}
+			}
 			//found
             List<Absolute> ss = subEvents[w];
 			for (Absolute e : ss) {
@@ -1072,7 +1076,12 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
 				solveOcc(b, false, bx -> {
 					if ((bx instanceof Absolute) && ae.add(bx)) {
-						return Arrays.stream(aa).allMatch(ax -> solveDTAbsolutePair(x, ax, bx, each));
+						for (Event ax : aa) {
+							if (!solveDTAbsolutePair(x, ax, bx, each)) {
+								return false;
+							}
+						}
+						return true;
 					}
 					return true;
 				});
@@ -1243,7 +1252,12 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
 		Collection<Event> ee = events(f.id);
 		if (ee != null) {
-			return ee.stream().noneMatch(e -> e instanceof Absolute && !each.test((Absolute) e));
+			for (Event e : ee) {
+				if (e instanceof Absolute && !each.test((Absolute) e)) {
+					return false;
+				}
+			}
+			return true;
 		}
 
 		return true;
@@ -1549,9 +1563,13 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 		if (!solutions.isEmpty()) {
 			Term t = x.id;
 			/** clone the list because modifying solutions while iterating will cause infinite loop */
-			List<Event> list = solutions.list.stream().filter(event -> (event instanceof Absolute && (event.start() != ETERNAL) && event.id.equals(t) && !event.equals(x))).collect(Collectors.toList());
-			return new FasterList<>(list
-			).allSatisfy(s -> {
+			FasterList<Absolute> list = new FasterList<>(solutions.list.size());
+			for (Event event : solutions.list) {
+				if ((event instanceof Absolute && (event.start() != ETERNAL) && event.id.equals(t) && !event.equals(x))) {
+					list.add((Absolute) event);
+				}
+			}
+			return list.allSatisfy(s -> {
 
 				Collection<Event> eee = events(t);
 				if (eee != null) {
@@ -1568,10 +1586,9 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 									if (random().nextBoolean())
 										dt = -dt; //vary order
 
-									Absolute as = (Absolute) s;
-									if (!each.test(as.shift(+dt)))
+									if (!each.test(s.shift(+dt)))
 										return false;
-									if (!each.test(as.shift(-dt)))
+									if (!each.test(s.shift(-dt)))
 										return false;
 
 								}

@@ -207,8 +207,11 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
     public float density() {
         MetalAtomicReferenceArray<V> m = map;
         int mm = m.length();
-        long count = IntStream.range(0, mm).filter(i -> m.getFast(i) != null).count();
-        int filled = (int) count;
+        int filled = 0;
+        for (int i = 0; i < mm; i++) {
+            if (m.getFast(i) != null)
+                filled++;
+        }
         return ((float) filled) / mm;
     }
 
@@ -749,7 +752,8 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
 
     @Override
     public Iterator<V> iterator() {
-        return stream().iterator();
+        //return stream().iterator();
+        return new HijackIterator(map);
     }
 
 
@@ -877,8 +881,35 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
     }
 
     public static <X> List<X> list(AtomicReferenceArray<X> a) {
-        int bound = a.length();
-        return IntStream.range(0, bound).mapToObj(a::get).filter(Objects::nonNull).collect(Collectors.toList());
+        return IntStream.range(0, a.length()).mapToObj(a::get).filter(Objects::nonNull).collect(Collectors.toList());
+    }
+
+    private final class HijackIterator implements Iterator<V> {
+
+        private final MetalAtomicReferenceArray<V> map;
+        int i = 0;
+        V next = null;
+
+        public HijackIterator(MetalAtomicReferenceArray<V> map) {
+            this.map = map;
+        }
+
+        @Override
+        public boolean hasNext() {
+            V v = null;
+            int n = map.length();
+            int i = this.i;
+            while (i < n && v!=null) {
+                v = map.getFast(i++);
+            }
+            this.i = i;
+            return (next = v)!=null;
+        }
+
+        @Override
+        public V next() {
+            return next;
+        }
     }
 
 

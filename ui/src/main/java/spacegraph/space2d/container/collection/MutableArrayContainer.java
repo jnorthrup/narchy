@@ -96,9 +96,12 @@ public abstract class MutableArrayContainer<S extends Surface> extends AbstractM
     @Override
     public int childrenCount() {
         int l = this.length;
-        long result = IntStream.range(0, l).filter(i -> children.getFast(i) != null).count();
-        int count = (int) result;
-        return count;
+        int result = 0;
+        for (int i = 0; i < l; i++) {
+            if (children.getFast(i) != null)
+                result++;
+        }
+        return result;
     }
 
     @Override

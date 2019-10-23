@@ -79,10 +79,10 @@ public class CompoundDecompose extends NativeHow {
 	 */
 	protected static TermDecomposer decomposer(Compound t) {
 		switch (t.op()) {
-			case IMPL:
-				return DynamicTermDecomposer.WeightedImpl;
-			case CONJ:
-				return DynamicTermDecomposer.WeightedConjEvent;
+//			case IMPL:
+//				return DynamicTermDecomposer.WeightedImpl;
+//			case CONJ:
+//				return DynamicTermDecomposer.WeightedConjEvent;
 			default:
 				return DynamicTermDecomposer.Weighted;
 		}

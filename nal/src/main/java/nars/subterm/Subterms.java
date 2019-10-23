@@ -227,7 +227,11 @@ public interface Subterms extends Termlike, Iterable<Term> {
 					c[k++] = i;
 			}
 			QuickSort.sort(c, cc -> -(x.sub(cc).volume() + y.sub(cc).volume())); //sorts descending
-			return Arrays.stream(c).allMatch(cc -> x.sub(cc).unify(y.sub(cc), u));
+			for (int cc : c) {
+				if (!x.sub(cc).unify(y.sub(cc), u))
+					return false;
+			}
+			return true;
 		}
 	}
 
@@ -623,7 +627,29 @@ public interface Subterms extends Termlike, Iterable<Term> {
 	 */
 	@Override
 	default Iterator<Term> iterator() {
-		return IntStream.range(0, subs()).mapToObj(this::sub).iterator();
+		return new SubtermsIterator(this);
+		//return IntStream.range(0, subs()).mapToObj(this::sub).iterator();
+	}
+
+	final class SubtermsIterator implements Iterator<Term> {
+		final int s;
+		private final Subterms terms;
+		int i = 0;
+
+		public SubtermsIterator(Subterms terms) {
+			this.terms = terms;
+			this.s = terms.subs();
+		}
+
+		@Override
+		public boolean hasNext() {
+			return i < s;
+		}
+
+		@Override
+		public Term next() {
+			return terms.sub(i++);
+		}
 	}
 
 	default boolean subEquals(int i, /*@NotNull*/ Term x) {
@@ -639,8 +665,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 	@SuppressWarnings("LambdaUnfriendlyMethodOverload")
 	default /*@NotNull*/ SortedSet<Term> toSetSorted(UnaryOperator<Term> map) {
 		MetalTreeSet<Term> u = new MetalTreeSet();
-		for (Term z : this)
-			u.add(map.apply(z));
+		addAllTo(u);
 		return u;
 	}
 
@@ -857,17 +882,6 @@ public interface Subterms extends Termlike, Iterable<Term> {
 			return false;
         for (int i = 0; i < s; i++) {
             if (!sub(i).equals(c.sub(i)))
-                return false;
-        }
-        return true;
-	}
-
-	default boolean equalTerms(/*@NotNull*/ Term[] c) {
-		int s = subs();
-		if (s != c.length)
-			return false;
-        for (int i = 0; i < s; i++) {
-            if (!sub(i).equals(c[i]))
                 return false;
         }
         return true;
@@ -1353,7 +1367,11 @@ public interface Subterms extends Termlike, Iterable<Term> {
 	 * incl repeats
 	 */
 	default boolean recurseTermsOrdered(Predicate<Term> inSuperCompound, Predicate<Term> whileTrue, Compound parent) {
-		return AND(i -> i.recurseTermsOrdered(inSuperCompound, whileTrue, parent));
+        int s = subs();
+        for (int i = 0; i < s; i++)
+            if (!sub(i).recurseTermsOrdered(inSuperCompound, whileTrue, parent))
+                return false;
+        return true;
 	}
 
 	default Subterms reversed() {

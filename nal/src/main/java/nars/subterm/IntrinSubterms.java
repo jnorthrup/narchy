@@ -13,7 +13,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.function.Predicate;
-import java.util.stream.IntStream;
 
 import static nars.Op.NEG;
 import static nars.term.anon.Intrin.term;
@@ -177,8 +176,8 @@ public class IntrinSubterms extends TermVector /*implements Subterms.SubtermsByt
                     tt[i] = (y);
                 }
             } else {
-                //replace negative only
-                tt = IntStream.range(0, n).mapToObj(i -> (a[i] == fid ? to : term(a[i]))).toArray(Term[]::new);
+                for (int i = 0; i < n; i++) //replace negative only
+                    tt[i] = (a[i] == fid ? to : term(a[i]));
 
             }
             return new TermList(tt);
@@ -372,7 +371,13 @@ public class IntrinSubterms extends TermVector /*implements Subterms.SubtermsByt
             //if (this.hash != ss.hashCodeSubterms()) return false;
 
             int s = subterms.length;
-            return ss.subs() == s && IntStream.range(0, s).allMatch(i -> subEquals(i, ss.sub(i)));
+            if (ss.subs() != s)
+                return false;
+            for (int i = 0; i < s; i++)
+                if (!subEquals(i, ss.sub(i)))
+                    return false;
+
+            return true;
 
         }
         return false;

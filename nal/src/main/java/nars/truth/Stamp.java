@@ -45,7 +45,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.function.IntFunction;
-import java.util.stream.IntStream;
 
 import static nars.time.Tense.ETERNAL;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
@@ -500,11 +499,18 @@ public interface Stamp {
     }
 
     static boolean overlap(Task a, IntToObjectFunction<Task> b, int from, int to) {
-        return IntStream.range(from, to).anyMatch(i -> Stamp.overlap(a, b.apply(i)));
+        for (int i = from; i < to; i++) {
+            if (Stamp.overlap(a,b.apply(i)))
+                return true;
+        }
+        return false;
     }
 
     static boolean overlapsAny(MetalLongSet aa,  long[] b) {
-        return Arrays.stream(b).anyMatch(aa::contains);
+        for (long x : b)
+            if (aa.contains(x))
+                return true;
+        return false;
     }
 
     static boolean overlapNullable(@Nullable Task x, Task y) {
@@ -608,12 +614,13 @@ public interface Stamp {
                 int rr = ptr[i];
                 if (rr >= 0) {
                     long[] ss = stamps.get(i);
-                    long count = IntStream.range(0, rr).filter(j -> l.contains(ss[j])).count();
-                    repeats += count;
+                    for (int j = 0; j < rr; j++) {
+                        if (l.contains(ss[j]))
+                            repeats++;
+                    }
                 }
             }
         }
-
 
         assert (size <= maxLen);
 

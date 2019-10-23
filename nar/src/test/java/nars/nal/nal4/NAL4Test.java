@@ -364,9 +364,9 @@ public class NAL4Test extends NALTest {
     void composition_on_both_sides_of_a_statement_2_neg() {
         test
                .termVolMax(12)
+                .mustBelieve(cycles, "(((x|y),plant) --> (animal,plant))", 1.0f, 0.81f)
                 .believe("((x|y)-->animal)",1.0f,0.9f)
                 .ask("(((x|y),plant) --> (animal,plant))")
-                .mustBelieve(cycles, "(((x|y),plant) --> (animal,plant))", 1.0f, 0.81f)
         ;
     }
 

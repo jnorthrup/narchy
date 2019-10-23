@@ -165,15 +165,13 @@ public abstract class DynamicTermDecomposer implements TermDecomposer {
                             1 / (1 + (root.volume()-1f)/s);
 
                     float w =
-                            fanoutRatio;
+                            //fanoutRatio;
                             //Util.sqr(fanoutRatio);
-                            //Util.sqrt(fanoutRatio);
+                            Util.sqrt(fanoutRatio);
                             //(float)Math.pow(fanoutRatio, 0.75f);
                             //(float)Math.pow(fanoutRatio, 1.5f);
 
-                    float p = rng.nextFloat();
-
-                    return p >= w ? 2 : 1;
+                    return rng.nextFloat() >= w ? 2 : 1;
                 }
 
         @Override
