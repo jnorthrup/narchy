@@ -13,7 +13,6 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.ToIntFunction;
 import java.util.function.UnaryOperator;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 /**
@@ -326,9 +325,11 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
      */
     public boolean isSorted(FloatFunction<X> f) {
         X[] ii = this.items;
-        //TODO use valueAt(
-        int bound = size;
-        return IntStream.range(1, bound).noneMatch(i -> f.floatValueOf(ii[i - 1]) >= f.floatValueOf(ii[i]));
+        for (int i = 1; i < size; i++) {
+            if (f.floatValueOf(ii[i - 1]) >= f.floatValueOf(ii[i])) //TODO use valueAt(
+                return false;
+        }
+        return true;
     }
 
     public int indexOf(X element, FloatFunction<X> cmp) {
@@ -444,8 +445,16 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
         int s = (n == -1) ? s0 : Math.min(s0, n);
         if (s > 0) {
             X[] ii = items;
+            for (int i = 0; i < s; i++) {
+                X iii = ii[i];
+                if (iii!=null) {
+                    if (!action.test(
             //(X) ITEM.getOpaque(ii,i)
-            return Arrays.stream(ii, 0, s).filter(Objects::nonNull).allMatch(action);
+                            iii
+                    ))
+                        return false;
+                }
+            }
         }
         return true;
     }

@@ -608,12 +608,11 @@ public class RevisionTest {
     void testRevision3Eternals() throws Narsese.NarseseException {
         NAR n = newNAR(6);
 
-        n.input("(a). %1.0;0.5%",
-                "(a). %0.0;0.5%",
-                "(a). %0.1;0.5%"
-        );
-        n.run(1);
-        Task t = n.conceptualize("(a)").beliefs().match(ETERNAL, ETERNAL, null, 0, n);
+        n.input("a. %1.0;0.5%",
+                "a. %0.0;0.5%",
+                "a. %0.1;0.5%");
+//        n.run(1);
+        Task t = n.conceptualize("a").beliefs().match(ETERNAL, ETERNAL, null, 0, n);
         assertEquals(0.37f, t.freq(), 0.02f);
         assertEquals(0.75f, t.conf(), 0.02f);
     }

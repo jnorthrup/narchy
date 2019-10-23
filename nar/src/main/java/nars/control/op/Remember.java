@@ -101,8 +101,8 @@ public class Remember {
             link();
         }
 
-        if (result!=input)
-            input.delete();
+//        if (result!=input)
+//            input.delete();
 
     }
 

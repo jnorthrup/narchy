@@ -138,7 +138,16 @@ public abstract class NAL8DecomposeTest extends NALTest {
                     .mustNotOutput(cycles, "b", GOAL, 0f, 0.5f, 0f, 1f)
             ;
         }
-
+        @Test
+        void testDisjConditionalDecompose_3ary() {
+            test
+                .termVolMax(6)
+                .input("(||,a,b,c)!")
+                .input("--a.")
+                .mustGoal(cycles, "(b||c)", 1f, 0.81f)
+                .mustNotOutput(cycles, "(b||c)", GOAL, 0f, 0.5f, 0f, 1f)
+            ;
+        }
         @Test
         void testDisjConditionalDecompose_opposite_neg() {
             test
@@ -147,6 +156,16 @@ public abstract class NAL8DecomposeTest extends NALTest {
                 .input("--a!")
                 .mustGoal(cycles, "b", 1f, 0.81f)
                 .mustNotOutput(cycles, "b", GOAL, 0f, 0.5f, 0f, 1f)
+            ;
+        }
+        @Test
+        void testDisjConditionalDecompose_opposite_neg_3ary() {
+            test
+                .termVolMax(6)
+                .input("(||,a,b,c).")
+                .input("--a!")
+                .mustGoal(cycles, "(b||c)", 1f, 0.81f)
+                .mustNotOutput(cycles, "(b||c)", GOAL, 0f, 0.5f, 0f, 1f)
             ;
         }
         @Disabled @Test
@@ -201,6 +220,7 @@ public abstract class NAL8DecomposeTest extends NALTest {
         }
 
     }
+
     static class ConjGoal extends NAL8DecomposeTest {
         @Test
         void testConjPos1() {

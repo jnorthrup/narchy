@@ -56,12 +56,12 @@ public class BeliefTables extends FasterList<BeliefTable> implements BeliefTable
                 }
                 int N = nonEmpty.size();
                 if (N ==1) {
-                    items[nonEmpty.get(0)].match(a);
+                    items[nonEmpty.getInt(0)].match(a);
                 } else {
                     switch (matchMode) {
                         case ORDERED: {
                             for (int i = 0; i < N; i++) {
-                                items[nonEmpty.get(i)].match(a);
+                                items[nonEmpty.getInt(i)].match(a);
                                 if (a.ttl <= 0)
                                     break;
                             }

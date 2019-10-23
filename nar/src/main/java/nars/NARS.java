@@ -176,7 +176,7 @@ public class NARS {
 
         time = new CycleTime();
 
-        exec = () -> new UniExec(7);
+        exec = () -> new UniExec(8);
 
         what = w -> new TaskLinkWhat(w, 32,
                        new PriBuffer.DirectTaskBuffer<>()
@@ -197,10 +197,10 @@ public class NARS {
 
         /** shared temporal belief and goal capacity curve */
         ToIntFunction<Concept> bgTemporal = curve(termVolume,
-                1, 256,
-                8, 128,
-                16, 64,
-                32, 32
+                1, 64,
+                8, 48,
+                16, 32,
+                32, 16
         );
 
         /** shared question and quest capacity curve */
