@@ -28,7 +28,7 @@ public class DefaultDerivePri implements DerivePri {
     public final FloatRange eviImportance = new FloatRange(0.5f, 0f, 1f);
 
     /** occam's razor - increase this discriminate more heavily against more complex derivations */
-    public final FloatRange simplicityImportance = new FloatRange(1f, 0f, 8f);
+    public final FloatRange simplicityImportance = new FloatRange(0.5f, 0f, 8f);
 
     public final FloatRange simplicityExponent = new FloatRange(2f, 0f, 4f);
 

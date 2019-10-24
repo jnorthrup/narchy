@@ -75,8 +75,13 @@ conjGoalBefore {
 
     X, C                                                 |-    conjBefore(C,   X),        (  Goal:DesirePP,     Time:TaskImmediate)
     X, C, has(C,"--")                                    |-    conjBefore(C, --X),        (  Goal:DesireNP,     Time:TaskImmediate)
+      X, C                                                 |-    --conjBefore(C,   X),        (  Goal:DesireNP,     Time:TaskImmediate)
+      X, C, has(C,"--")                                    |-    --conjBefore(C, --X),        (  Goal:DesirePP,     Time:TaskImmediate)
         X, D                                                 |-    --conjBefore(D,   X),        (  Goal:DesirePN,     Time:TaskImmediate)
         X, D, has(D,"--")                                    |-    --conjBefore(D, --X),        (  Goal:DesireNN,     Time:TaskImmediate)
+          X, D                                                 |-    conjBefore(D,   X),        (  Goal:DesireNN,     Time:TaskImmediate)
+          X, D, has(D,"--")                                    |-    conjBefore(D, --X),        (  Goal:DesirePN,     Time:TaskImmediate)
+
 }
 
 //      X, C, has(C,"--")                                    |-    --conjBefore(C, --X),        (  Goal:DeductionPP,     Time:TaskEvent)
