@@ -596,7 +596,7 @@ public abstract class Derivation extends PreDerivation implements Caused, Predic
 
     @Override
     public String toString() {
-        return _task + " " + (_belief != null ? _belief : beliefTerm)
+        return _task + " " + (_belief != null ? _belief : _beliefTerm)
                 + ' ' + unify.toString();
     }
 

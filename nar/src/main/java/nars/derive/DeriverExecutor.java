@@ -1,5 +1,6 @@
 package nars.derive;
 
+import jcog.Util;
 import jcog.data.set.PrioritySet;
 import jcog.pri.HashedPLink;
 import jcog.pri.PLink;
@@ -31,8 +32,9 @@ public abstract class DeriverExecutor extends Derivation {
 	protected static float pri(Premise p) {
 		Task t = p.task(), b = p.belief();
 		float tPri = t.priElseZero();
-		return b != null ? Math.max(
-			//Util.or(
+		return b != null ?
+			//Math.max(
+			Util.or(
 			//Util.min(
 			//Util.mean(
 			//Util.sum(
@@ -201,6 +203,9 @@ public abstract class DeriverExecutor extends Derivation {
 
 		@Override
 		public void add(Premise p) {
+
+			if (NAL.TRACE)
+				System.out.println("\t" + p);
 
 			if (/*novel.putIfAbsent(p,p)==null && */ queue.offer(p)) {
 				use(NAL.derive.TTL_COST_TASK_TASKIFY);

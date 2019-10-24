@@ -10,7 +10,6 @@ import nars.game.action.ActionSignal;
 import nars.game.sensor.ScalarSignal;
 import nars.game.sensor.Signal;
 import nars.term.Term;
-import nars.term.Termed;
 import nars.truth.MutableTruth;
 import nars.truth.Stamp;
 import nars.truth.Truth;
@@ -73,9 +72,7 @@ public abstract class ScalarReward extends Reward {
 
     @Override
     public final void accept(Game g) {
-        if (reinforcement.isEmpty()) { //HACK
-            reinforceInit(g);
-        }
+
 
         super.accept(g);
 
@@ -99,7 +96,7 @@ public abstract class ScalarReward extends Reward {
         Term rTargetP = goal.isPositive() ? Rpos : Rneg;
         Term rTargetN = rTargetP.neg();
         //reinforceTemporal(concept.term(), GOAL, goal, newStamp());
-        reinforce(concept.term(), GOAL, goal, newStamp());
+        reinforcement.add(reinforce(concept.term(), GOAL, goal, newStamp()));
 //        reinforce(CONJ.the(Rpos, $.varDep(1)), GOAL, RimplAPos);
 //        reinforce(CONJ.the(Rpos.neg(), $.varDep(1)), GOAL, RimplAPos);
 
@@ -112,8 +109,8 @@ public abstract class ScalarReward extends Reward {
 
 //            reinforce(CONJ.the(rTargetP, A), GOAL, RimplAPos, stampP);
 //            reinforce(CONJ.the(rTargetP, A.neg()), GOAL, RimplAPos, stampP);
-            reinforce(CONJ.the(rTargetN, A), GOAL, RimplANeg, stampP);
-            reinforce(CONJ.the(rTargetN, A.neg()), GOAL, RimplANeg, stampP);
+            curiosity.add(reinforce(CONJ.the(rTargetN, A), GOAL, RimplANeg, stampP));
+            curiosity.add(reinforce(CONJ.the(rTargetN, A.neg()), GOAL, RimplANeg, stampP));
 
 //            reinforce(CONJ.the(rTargetN, A), GOAL, RimplAPos, stampP);
 //            reinforce(CONJ.the(rTargetN, A.neg()), GOAL, RimplAPos, stampP);
@@ -174,13 +171,9 @@ public abstract class ScalarReward extends Reward {
     }
 
     protected long[] newStamp() {
-        long[] stamp = !stamped ? Stamp.UNSTAMPED : nar().evidence();
-        return stamp;
+        return !stamped ? Stamp.UNSTAMPED : nar().evidence();
     }
 
-    public void reinforce(Termed x, byte punc, Truth truth) {
-        reinforce(x, punc, truth, newStamp());
-    }
 
     @Override
     protected void reinforce() {
@@ -256,6 +249,9 @@ public abstract class ScalarReward extends Reward {
         why = in.why.why;
 
         concept = new ScalarSignal(id, () -> reward, why, pri, g.nar);
+
+        reinforceInit(g);
+
 //        if (!concept.pri.equals(attn))
 //            nar().control.input(concept.pri, attn);
     }

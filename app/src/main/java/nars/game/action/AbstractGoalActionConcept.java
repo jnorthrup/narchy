@@ -161,6 +161,9 @@ public abstract class AbstractGoalActionConcept extends ActionSignal {
     private Truth actionTruth(int limit, When<What> w, int shift) {
 
         TruthProjection gt = truth(false, limit, w, shift);
+        if (NAL.TRACE) {
+            System.out.println(term + " action"); gt.print(System.out);
+        }
         Truth nextActionDex = gt!=null ? truth(gt, w, shift) : null;
         Truth c = null; //w.x.random().nextFloat() < 0.01f ? curiosity(w.x) : null;
         if (nextActionDex!=null) {

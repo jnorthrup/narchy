@@ -64,17 +64,18 @@ class SensorBeliefTablesTest {
             assertEquals(3, tt.size());
         }
 
-        RingBufferTaskSeries rb = (RingBufferTaskSeries) (xb.series.series);
-        int head = rb.q.head();
-        assertEquals(0, rb.indexNear(head,0));
-        assertEquals(0, rb.indexNear(head,1));
-        assertEquals(1, rb.indexNear(head,2));
-        assertEquals(2, rb.indexNear(head,4));
-        assertEquals(2, rb.indexNear(head,5));
-        assertEquals(2, rb.indexNear(head,6));
-        assertEquals(2, rb.indexNear(head,1000));
-        assertEquals(0, rb.indexNear(head,-5));
-        assertTrue(rb.first().start() < rb.last().start());
+        RingBufferTaskSeries b = (RingBufferTaskSeries) xb.series.series;
+        int head = b.q.head();
+//        assertEquals(0, rb.indexNear(head,0));
+        assertEquals(0, b.indexNear(head,1));
+        assertEquals(0, b.indexNear(head,2));
+        assertEquals(1, b.indexNear(head,3));
+        assertEquals(1, b.indexNear(head,4));
+        assertEquals(2, b.indexNear(head,5));
+        assertEquals(2, b.indexNear(head,6));
+        assertEquals(2, b.indexNear(head,1000));
+        assertEquals(0, b.indexNear(head,-5));
+        assertTrue(b.first().start() < b.last().start());
 
         //stretch another step
         step(n, xb);

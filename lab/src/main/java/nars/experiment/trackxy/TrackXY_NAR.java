@@ -343,7 +343,7 @@ public class TrackXY_NAR extends GameX {
 						Term ttt = tt.term();
 						boolean l = ttt.equals(L);
 						boolean r = ttt.equals(R);
-						System.out.println(tt);
+						//System.out.println(tt);
 						if (l || r) {
 
 
@@ -360,8 +360,10 @@ public class TrackXY_NAR extends GameX {
 								boolean ok = Math.signum(wantsDir) == Math.signum(needsDir);
 								if (!ok) {
 									String summary = ok ? "OK" : "WRONG";
+									System.out.println();
 									System.out.println(ttt + " " + n2(wantsDir) + " ? " + n2(needsDir) + " " + summary);
 									System.out.println(tt.proof());
+									System.out.println();
 
 //									((TaskLinkWhat)a.what()).links.links.print();
 //									System.out.println();
@@ -369,7 +371,6 @@ public class TrackXY_NAR extends GameX {
 								}
 
 								//System.out.println(NAR.proof(tt, n));
-								System.out.println();
 
 							}
 

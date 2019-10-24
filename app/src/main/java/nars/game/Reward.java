@@ -19,6 +19,7 @@ import nars.truth.DiscreteTruth;
 import nars.truth.PreciseTruth;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFunction;
+import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.BELIEF;
 import static nars.time.Tense.ETERNAL;
@@ -37,6 +38,7 @@ public abstract class Reward implements GameLoop, TermedDelegate, Iterable<Conce
 
 	@Skill({"Curiosity", "Central_pattern_generator","Phantom_limb"})
     protected final FasterList<Rememorize> reinforcement = new FasterList<>();
+	protected final FasterList<Rememorize> curiosity = new FasterList<>();
 
     protected Reward(Term id, Game g) {
     	this.id = id;
@@ -98,7 +100,7 @@ public abstract class Reward implements GameLoop, TermedDelegate, Iterable<Conce
 //		}
 //	}
 
-    public void reinforce(Termed x, byte punc, Truth truth, long[] stamp) {
+    public @Nullable Rememorize reinforce(Termed x, byte punc, Truth truth, long[] stamp) {
         Term goal = x.term();
 
         //Term at = term().equals(goal) ? $.func(Inperience.want, goal) : $.func(Inperience.want, this.term(), goal);
@@ -110,9 +112,10 @@ public abstract class Reward implements GameLoop, TermedDelegate, Iterable<Conce
         Task t = NALTask.the(goal, punc, truth, nar().time(), ETERNAL, ETERNAL, stamp);
 		//t.setCyclic(true); //TODO permanent
 
-		synchronized(reinforcement) {
-			reinforcement.add(Rememorize.the(t, game.what()));
-		}
+		return Rememorize.the(t, game.what());
+//		synchronized(reinforcement) {
+//			reinforcement.add();
+//		}
         //return t;
 //        @Nullable EternalTable eteTable = ((BeliefTables) ((TaskConcept) g).goals()).tableFirst(EternalTable.class);
 //        eteTable.insert(t); //insert directly
@@ -150,16 +153,13 @@ public abstract class Reward implements GameLoop, TermedDelegate, Iterable<Conce
 				///n;
 				///Util.sqrt(n); //not too large or it will compete with the signal itself
 
-//			for (Task t : reinforcement)
-//				t.pri(pri);
-//			game.what().acceptAll(reinforcement);
-
-			/* one at random */
-			//Rememorize t = reinforcement.get(nar().random());
-			//t.input(pri);
-
+			//all reinforcement
 			for (Rememorize r : reinforcement)
 				r.input(pri);
+
+			//one from curiosity
+			Rememorize c = curiosity.get(nar().random());
+			if (c!=null) c.input(pri);
 
 		}
 

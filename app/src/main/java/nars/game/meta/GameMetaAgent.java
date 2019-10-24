@@ -32,12 +32,10 @@ public class GameMetaAgent extends MetaAgent {
 		Term gid = w.id; //$.p(w.nar.self(), w.id);
 		//this.what().accept(new EternalTask($.inh(aid,this.id), BELIEF, $.t(1f, 0.9f), nar));
 
-
 		//actionCtlPriNodeRecursive(g.sensorPri, g.nar.control.graph);
 		priAction(g.sensorPri);
 		priAction(g.rewardPri);
 		priAction(g.actionPri);
-
 
 		floatAction($.inh(gid, forget), ((TaskLinkWhat) w).links.decay);
 		//floatAction($.inh(gid, grow), ((TaskLinkWhat) w).links.grow);
@@ -71,7 +69,6 @@ public class GameMetaAgent extends MetaAgent {
 //				}
 //			};
 
-
 		actionUnipolar($.inh(gid, duration), (x) -> {
 			float ditherDT = nar.dtDither();
 			float nextDur =
@@ -85,20 +82,11 @@ public class GameMetaAgent extends MetaAgent {
 		if (w.inBuffer instanceof PriBuffer.BagTaskBuffer)
 			floatAction($.inh(gid, input), ((PriBuffer.BagTaskBuffer) (w.inBuffer)).valve);
 
-
-		reward($.inh(gid, happy), () -> {
-			return g.isOn() ? (float) g.happiness(nowPercept.start, nowPercept.end, 0) : Float.NaN;
-		});
-
+		reward($.inh(gid, happy),
+			() -> g.isOn() ? (float) g.happiness(nowPercept.start, nowPercept.end, 0) : Float.NaN);
 
 		rewardNormalized($.inh(gid, dex), 1, 0, ScalarValue.EPSILON,
-			() -> {
-////            float p = a.proficiency();
-////            float hp = Util.or(h, p);
-//            //System.out.println(h + " " + p + " -> " + hp);
-////            return hp;
-				return g.isOn() ? (float) g.dexterity() : Float.NaN;
-			});
+			() -> g.isOn() ? (float) g.dexterity() : Float.NaN);
 
 		for (GameLoop s : g.sensors) {
 			if (s instanceof VectorSensor)

@@ -327,7 +327,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
     @Deprecated public final FloatRange questionForgetRate = new FloatRange(1f, 0, 1);
 
-    @Deprecated public final IntRange deriveBranchTTL = new IntRange(16, 1, 256);
+    @Deprecated public final IntRange deriveBranchTTL = new IntRange(24, 1, 256);
 
     /**
      * how many cycles above which to dither dt and occurrence time

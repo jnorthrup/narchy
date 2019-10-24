@@ -62,19 +62,21 @@ public class ConstraintParser {
     private static double parseStrength(String strengthString) {
 
         double strength =  Strength.REQUIRED;
-        switch (strengthString) {
-            case "!required":
-                strength = Strength.REQUIRED;
-                break;
-            case "!strong":
-                strength = Strength.STRONG;
-                break;
-            case "!medium":
-                strength = Strength.MEDIUM;
-                break;
-            case "!weak":
-                strength = Strength.WEAK;
-                break;
+        if (strengthString !=null) {
+            switch (strengthString) {
+                case "!required":
+                    strength = Strength.REQUIRED;
+                    break;
+                case "!strong":
+                    strength = Strength.STRONG;
+                    break;
+                case "!medium":
+                    strength = Strength.MEDIUM;
+                    break;
+                case "!weak":
+                    strength = Strength.WEAK;
+                    break;
+            }
         }
         return strength;
     }

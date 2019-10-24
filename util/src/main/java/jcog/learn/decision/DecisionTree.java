@@ -52,20 +52,17 @@ public class DecisionTree<K, V> {
     /**
      * Returns Label if data is homogeneous.
      */
-    protected static <K, V> V label(V value, float homogenityPercentage, Stream<UnaryOperator<V>> data) {
-        V result = null;
+    protected static <K, V> V label(K value, Stream<Function<K, V>> data, float homogenityPercentage) {
 
         Map<V, Long> labelCount = data.collect(groupingBy((x) -> x.apply(value), counting()));
 
         long totalCount = labelCount.values().stream().mapToLong(x -> x).sum();
         for (Map.Entry<V, Long> e : labelCount.entrySet()) {
             long nbOfLabels = e.getValue();
-            if ((nbOfLabels / (double) totalCount) >= homogenityPercentage) {
-                result = e.getKey();
-                break;
-            }
+            if ((nbOfLabels / (double) totalCount) >= homogenityPercentage)
+                return e.getKey();
         }
-        return result;
+        return null;
     }
 
     protected static <K, V> Stream<List<Function<K, V>>> split(Predicate<Function<K, V>> p, List<Function<K, V>> data) {
@@ -94,17 +91,8 @@ public class DecisionTree<K, V> {
      */
     static <K, V> V majority(K value, Stream<Function<K, V>> data) {
 
-        boolean seen = false;
-        Map.Entry<V, Long> best = null;
-        Comparator<Map.Entry<V, Long>> comparator = Map.Entry.comparingByValue();
-        for (Map.Entry<V, Long> vLongEntry : data.collect(groupingBy(x -> x.apply(value), counting()))
-                .entrySet()) {
-            if (!seen || comparator.compare(vLongEntry, best) > 0) {
-                seen = true;
-                best = vLongEntry;
-            }
-        }
-        return (seen ? Optional.of(best) : Optional.<Map.Entry<V, Long>>empty()).get().getKey();
+        return data.collect(groupingBy(x -> x.apply(value), counting()))
+                .entrySet().stream().max(Map.Entry.comparingByValue()).get().getKey();
     }
 
     private static void printSubtree(DecisionNode<?> node, PrintStream o) {
@@ -200,8 +188,9 @@ public class DecisionTree<K, V> {
 
 
         V currentNodeLabel;
-        if ((currentNodeLabel = (V) label(key, depthToPrecision.valueOf(currentDepth),  (Stream ) d.get())) != null)
+        if ((currentNodeLabel = label(key, d.get(), depthToPrecision.valueOf(currentDepth))) != null) {
             return leaf(currentNodeLabel);
+        }
 
         boolean stoppingCriteriaReached = currentDepth >= maxDepth;
         if (stoppingCriteriaReached) {
@@ -290,12 +279,14 @@ public class DecisionTree<K, V> {
     /** var is the name of the target value */
     public SortedMap<DecisionNode.LeafNode<V>, List<String>> explainedConditions() {
         SortedMap<DecisionNode.LeafNode<V>, List<String>> map = new TreeMap<>();
-        for (Map.Entry<DecisionNode.LeafNode<V>, List<ObjectBooleanPair<DecisionNode<V>>>> e : explanations().entrySet()) {
+        explanations().entrySet().forEach((e) -> {
             DecisionNode.LeafNode<V> result = e.getKey();
-            List<String> cond = e.getValue().stream().map(c -> c.getOne().condition(c.getTwo())).filter(x -> !"false".equals(x)).collect(toList());
+            List<String> cond = e.getValue().stream().map(c ->
+                c.getOne().condition(c.getTwo())
+            ).filter(x -> !x.equals("false")).collect(toList());
             if (!cond.isEmpty())
                 map.put(result, cond);
-        }
+        });
         return map;
     }
 
@@ -467,10 +458,6 @@ public class DecisionTree<K, V> {
     }
 
     public void printExplanations(PrintStream out) {
-        for (Map.Entry<DecisionNode.LeafNode<V>, List<String>> entry : explainedConditions().entrySet()) {
-            DecisionNode.LeafNode<V> leaf = entry.getKey();
-            List<String> path = entry.getValue();
-            out.println(leaf + "\n\t" + path);
-        }
+        explainedConditions().forEach((leaf, path) -> out.println(leaf + "\n\t" + path));
     }
 }

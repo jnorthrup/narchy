@@ -31,6 +31,7 @@ import org.jetbrains.annotations.Nullable;
 import org.roaringbitmap.PeekableIntIterator;
 import org.roaringbitmap.RoaringBitmap;
 
+import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Random;
@@ -1010,7 +1011,11 @@ public abstract class TruthProjection extends TaskList {
 
 
 	public void print() {
-		forEach(t -> System.out.println(t.proof()));
+		print(System.out);
+	}
+
+	public void print(PrintStream o) {
+		forEachWith((t,oo) -> oo.println(t.proof()), o);
 	}
 
 	public final long start() {
