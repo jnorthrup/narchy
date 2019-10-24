@@ -164,6 +164,8 @@ public class NARS {
 
     }
 
+    private static final ToIntFunction<Concept> termVolume = c->c.term().volume();
+
     /**
      * defaults
      */
@@ -176,7 +178,7 @@ public class NARS {
 
         time = new CycleTime();
 
-        exec = () -> new UniExec(8);
+        exec = () -> new UniExec(9);
 
         what = w -> new TaskLinkWhat(w, 32,
                        new PriBuffer.DirectTaskBuffer<>()
@@ -186,7 +188,6 @@ public class NARS {
 
         rng = ThreadLocalRandom::current;
 
-        ToIntFunction<Concept> termVolume = c->c.term().volume();
 
 
         /** shared eternal belief and goal capacity curve */

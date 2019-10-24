@@ -135,8 +135,14 @@ public abstract class GameX extends Game {
             final FloatRange enc = new FloatRange(0.5f, 0, 1);
             SimpleReward e = self.reward($.inh(n.self, "encouragement"), () -> {
                 float v = enc.floatValue();
+                if (Util.equals(v, 0.5f, n.freqResolution.floatValue()))
+                    return Float.NaN; //neutral
+
                 enc.set(Util.lerp(0.01f, v, 0.5f)); //fade to 0.5
                 return v;
+            });
+            Exe.runLater(()->{ //HACK
+                e.setDefault($.t(0.5f, n.beliefConfDefault.floatValue()));
             });
             n.add(self);
 

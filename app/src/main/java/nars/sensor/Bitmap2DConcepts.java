@@ -78,6 +78,7 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<ComponentS
     }
 
 
+
     /**
      * iterate columns (x) first, then rows (y)
      */
@@ -85,7 +86,9 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<ComponentS
     public final Iterator<ComponentSignal> iterator() {
         return iter.iterator();
     }
-
+    public Iterator<ComponentSignal> iterator(int s, int e) {
+        return iter.iterator(s, e);
+    }
 
     public Signal get(int i) {
         return iter.get(i);
@@ -131,6 +134,7 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<ComponentS
     }
 
     public final int size() { return area; }
+
 
 
 

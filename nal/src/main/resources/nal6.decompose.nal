@@ -57,12 +57,16 @@ conjBeliefBefore {
 }
 
 conjGoalAfter {
+      C, X                                                 |-  conjAfter(C,   X),  (  Goal:DesirePP, Time:TaskEvent)
+      C, X, has(C,"--")                                    |-  conjAfter(C, --X),  (  Goal:DesirePN, Time:TaskEvent)
+//        C, X, --eventOfNeg(C,X)                                  |-  --conjAfter(C,   X),  (  Goal:DesireWeakPN, Time:TaskEvent)
+//        C, X, --eventOf(C,X), has(C,"--")                        |-  --conjAfter(C, --X),  (  Goal:DesireWeakPP, Time:TaskEvent)
 
-      C, X                                                 |-  conjAfter(C,   X),  (  Goal:DeductionPP, Time:BeliefEvent)
-      C, X, has(C,"--")                                    |-  conjAfter(C, --X),  (  Goal:DeductionPN, Time:BeliefEvent)
+//      C, X                                                 |-  conjAfter(C,   X),  (  Goal:DeductionRecursivePP, Time:BeliefEvent)
+//      C, X, has(C,"--")                                    |-  conjAfter(C, --X),  (  Goal:DeductionRecursivePN, Time:BeliefEvent)
 
-      D, X                                                 |-  --conjAfter(D,   X),  (  Goal:DeductionNP, Time:BeliefEvent)
-      D, X, has(D,"--")                                    |-  --conjAfter(D, --X),  (  Goal:DeductionNN, Time:BeliefEvent)
+//      D, X                                                 |-  --conjAfter(D,   X),  (  Goal:DeductionRecursiveNP, Time:BeliefEvent)
+//      D, X, has(D,"--")                                    |-  --conjAfter(D, --X),  (  Goal:DeductionRecursiveNN, Time:BeliefEvent)
 
 
 }

@@ -148,18 +148,24 @@ public abstract class Reward implements GameLoop, TermedDelegate, Iterable<Conce
 	protected void reinforce() {
 		int n = reinforcement.size();
 		if (n > 0) {
+			double h = happiness(game.nowPercept.start, game.nowPercept.end, game.nowPercept.dur); if (h!=h) h = 0;
 			float pri = this.pri.pri()
+				* (float)(1 - h)
 				;
 				///n;
 				///Util.sqrt(n); //not too large or it will compete with the signal itself
 
-			//all reinforcement
 			for (Rememorize r : reinforcement)
 				r.input(pri);
 
-			//one from curiosity
-			Rememorize c = curiosity.get(nar().random());
-			if (c!=null) c.input(pri);
+			//int cc = curiosity.size();
+			float pric =
+				//pri/cc;
+				pri;
+			for (Rememorize c : curiosity)
+				c.input(pric);
+			//Rememorize c = curiosity.get(nar().random());
+			//if (c!=null) c.input(pri);
 
 		}
 

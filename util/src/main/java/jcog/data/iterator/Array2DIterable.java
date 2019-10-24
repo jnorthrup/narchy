@@ -13,9 +13,10 @@
  */
 package jcog.data.iterator;
 
+import com.google.common.collect.Iterators;
+import jcog.Util;
 import jcog.data.list.FasterList;
 
-import java.util.Arrays;
 import java.util.Iterator;
 
 /**
@@ -28,29 +29,37 @@ import java.util.Iterator;
 public class Array2DIterable<X> implements Iterable<X> {
 
     public FasterList<X> order;
-    
 
     public Array2DIterable(X[][] x) {
-
         int cols = x[0].length;
         int rows = x.length;
         int area = rows * cols;
-        order = new FasterList(area);
-
-        for (X[] xes : x) {
-            order.addAll(Arrays.asList(xes).subList(0, cols));
-        }
-
-        
+        order = new FasterList<>(area);
+        for (X[] xes : x)
+            order.addAll(xes);
     }
 
     @Override
-    public Iterator<X> iterator() {
+    public final Iterator<X> iterator() {
         return order.iterator();
     }
 
-
     public final X get(int i) {
         return order.get(i);
+    }
+
+    /** iterate a range */
+    public Iterator<X> iterator(int s, int e) {
+        if (s == e)
+            return Util.emptyIterator;
+        else if (s < e)
+            return order.subList(s, e).iterator();
+        else {
+            //wrap-around
+            return Iterators.concat(
+                order.subList(s, order.size()).iterator(),
+                order.subList(0, e).iterator()
+            );
+        }
     }
 }

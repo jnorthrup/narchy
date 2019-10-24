@@ -170,23 +170,14 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
 
 	@Override
     public void accept(Game g) {
+        int area = concepts.area;
+        ptrEnd = (ptrStart + pixelsToUpdate())%area;
+
         src.updateBitmap();
         super.accept(g);
-        //link(g);
-    }
 
-//    public void link(Game g) {
-//        float basePri = this.pri.pri();
-//        double sur = surprise();
-//        float pri = (float) sur * basePri;
-//
-//        AbstractTaskLink tl = newLink();
-//        tl.priMerge(BELIEF, pri, NAL.tasklinkMerge); //TODO * preamp?
-////            tl.priMax(QUEST, surprise);
-////            tl.priMax(GOAL, surprise*(1/4f));
-//        g.what().link(tl);
-//
-//    }
+        ptrStart = ptrEnd;
+    }
 
     public final TaskConcept get(int x, int y) {
         return concepts.get(x, y);
@@ -200,6 +191,39 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
         return concepts.iterator();
     }
 
+
+    private int ptrStart = 0, ptrEnd;
+
+
+    @Override
+    public Iterator<ComponentSignal> inputIterator() {
+        return concepts.iterator(ptrStart, ptrEnd);
+    }
+
+    public int pixelsToUpdate() {
+        return Math.round(
+            (concepts.area-1) *
+                1 //all
+                //pri.amp.floatValue()
+                //Util.sqrt(pri.amp.floatValue() /*pri()*/)
+
+        );
+    }
+
+
+}
+//    public void link(Game g) {
+//        float basePri = this.pri.pri();
+//        double sur = surprise();
+//        float pri = (float) sur * basePri;
+//
+//        AbstractTaskLink tl = newLink();
+//        tl.priMerge(BELIEF, pri, NAL.tasklinkMerge); //TODO * preamp?
+////            tl.priMax(QUEST, surprise);
+////            tl.priMax(GOAL, surprise*(1/4f));
+//        g.what().link(tl);
+//
+//    }
 
 //    private class PixelSelectorTaskLink extends DynamicTaskLink {
 //        PixelSelectorTaskLink() {
@@ -295,5 +319,3 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
 //        }
 //
 //    }
-
-}

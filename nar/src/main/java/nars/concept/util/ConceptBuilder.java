@@ -51,7 +51,7 @@ public abstract class ConceptBuilder implements BiFunction<Term, Concept, Concep
             case IMPL:
                 return dynamicImpl(t);
             case CONJ:
-                if (DynamicConjTruth.decomposeableConj(t))
+                if (DynamicConjTruth.decomposeableConjEvents(t))
                     return table(DynamicConjTruth.ConjIntersection);
                 break;
 
@@ -81,41 +81,18 @@ public abstract class ConceptBuilder implements BiFunction<Term, Concept, Concep
         AbstractDynamicTruth c = null;
         if (tt.hasAny(Op.CONJ)) {
 
-            Term su = tt.sub(0);
-//                if (su.hasAny(Op.VAR_INDEP))
-//                    return null;
-            Term pu = tt.sub(1);
-//                if (pu.hasAny(Op.VAR_INDEP))
-//                    return null;
-
-            Op suo = su.op();
-            //subject has special negation union case
-            boolean subjDyn = (
-                    suo == CONJ && DynamicConjTruth.decomposeableConj(su)
-                            ||
-                            suo == NEG && (su.unneg().op() == CONJ && DynamicConjTruth.decomposeableConj(su.unneg()))
-            );
-            boolean predDyn = (pu.op() == CONJ && DynamicConjTruth.decomposeableConj(pu));
-
-
-            if (subjDyn && predDyn) {
-                //choose the simpler to dynamically calculate for
-                if (su.volume() <= pu.volume()) {
-                    predDyn = false; //dyn subj
-                } else {
-                    subjDyn = false; //dyn pred
-                }
-            }
-
-            if (subjDyn) {
-                if (suo == NEG) {
-                    //c = DynamicImplConjTruth.ImplSubjDisj;
-                } else {
-                    //c = DynamicImplConjTruth.ImplSubjConj;
-                }
-            } else if (predDyn) {
+            boolean predDyn = DynamicConjTruth.decomposeableConjEvents(tt.sub(1));
+            if (predDyn)
                 c = DynamicImplConjTruth.ImplPred;
-            }
+
+//            if (subjDyn) {
+//                if (suo == NEG) {
+//                    //c = DynamicImplConjTruth.ImplSubjDisj;
+//                } else {
+//                    //c = DynamicImplConjTruth.ImplSubjConj;
+//                }
+//                //c = DynamicImplConjTruth.ImplSubjConj;
+//            } else
         }
 
         AbstractDynamicTruth i = (!(tt.sub(0).unneg() instanceof nars.term.Variable || tt.sub(1) instanceof nars.term.Variable)) ?
@@ -130,7 +107,7 @@ public abstract class ConceptBuilder implements BiFunction<Term, Concept, Concep
 
         Subterms ii = i.subterms();
 
-        @Nullable AbstractDynamicTruth m = dynamicInhSect(ii);
+        @Nullable AbstractDynamicTruth[] m = dynamicInhSect(ii);
         @Nullable ObjectBooleanToObjectFunction<Term, BeliefTable[]> s = m != null ? table(m) : null;
 
         //HACK the temporal restriction is until ImageDynamicTruthModel can support dynamic transformation and untransformation of temporal-containing INH, like:
@@ -152,34 +129,17 @@ public abstract class ConceptBuilder implements BiFunction<Term, Concept, Concep
 //        conceptors.put(c.target, c);
 //    }
 
-    private static @Nullable AbstractDynamicTruth dynamicInhSect(Subterms ii) {
+    private static @Nullable AbstractDynamicTruth[] dynamicInhSect(Subterms ii) {
         if (ii.hasAny(Op.CONJ /*| Op.PROD.bit*/)) {
 
-            //TODO if both subject and predicate are CONJ
+            boolean sc = DynamicConjTruth.decomposeableConj(ii.sub(0)), pc = DynamicConjTruth.decomposeableConj(ii.sub(1));
 
-            Term s = ii.sub(0);
-            if (s instanceof Compound && s.opID() == Op.CONJ.id) {
-                //if (s.subterms().AND(z -> validDynamicSubterm.test(INH.the(z, p)))) {
-//                    switch (so) {
-//                        case CONJ:
-                            return DynamicStatementTruth.SubjInter;
-//                        case NEG:
-//                            return DynamicStatementTruth.SubjUnion;
-//                    }
-                //}
-            }
-
-            Term p = ii.sub(1);
-            if (p instanceof Compound && p.opID() == Op.CONJ.id) {
-                //if (p.subterms().AND(z -> validDynamicSubterm.test(INH.the(s, z)))) {
-//                    switch (po) {
-//                        case CONJ:
-                            return DynamicStatementTruth.PredInter;
-//                        case NEG:
-//                            return DynamicStatementTruth.PredUnion;
-//                    }
-                //}
-            }
+            if (sc && pc)
+                return new AbstractDynamicTruth[] { DynamicStatementTruth.SubjInter, DynamicStatementTruth.PredInter };
+            else if (sc)
+                return new AbstractDynamicTruth[] { DynamicStatementTruth.SubjInter };
+            else if (pc)
+                return new AbstractDynamicTruth[] { DynamicStatementTruth.PredInter };
         }
         return null;
     }

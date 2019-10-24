@@ -9,10 +9,6 @@ public abstract class AbstractSensor extends NARPart implements GameLoop {
 
     protected final FloatRange res;
 
-    protected AbstractSensor(NAR nar) {
-        this(null, nar);
-    }
-
     protected AbstractSensor(Term id, NAR n) {
         super(id);
 

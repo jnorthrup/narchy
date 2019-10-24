@@ -334,8 +334,13 @@ public enum DynamicConjTruth {
     }
 
 	public static boolean decomposeableConj(Term conj) {
-        return !conj.hasVars() || conj.subterms().count(x -> !(x instanceof nars.term.Variable)) > 1;
+        return conj instanceof Compound && conj.opID() == CONJ.id &&
+            (!conj.hasVars() || conj.subterms().count(x -> !(x instanceof nars.term.Variable)) > 1);
 	}
+
+    public static boolean decomposeableConjEvents(Term conj) {
+        return decomposeableConj(conj) && conj.eventsAND((when,x)->x instanceof Variable || x.op().taskable, ETERNAL, true, false);
+    }
 
     //			if (conjSubterms.hasAny(VAR_DEP)) {
 //

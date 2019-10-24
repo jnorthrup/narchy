@@ -14,6 +14,8 @@ import nars.time.When;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.FloatToObjectFunction;
 
+import java.util.Iterator;
+
 /**
  * base class for a group of concepts representing a sensor 'vector'
  */
@@ -59,16 +61,18 @@ public abstract class VectorSensor extends AbstractSensor implements Iterable<Co
         //pre-commit
         int active = 0;
         Term why = in.why.why;
-        for (ComponentSignal s : this) {
+        for (Iterator<ComponentSignal> iterator = this.inputIterator(); iterator.hasNext(); ) {
+            ComponentSignal s = iterator.next();
             //if (quality >= 1 || rng.nextFloat() < quality )
             if (s.input(truther.valueOf(s.value(g)), why, wLoop))
                 active++;
         }
+
         if (active > 0) {
             //post-commit phase
             float aPri = pri.pri() / active;
-            for (ComponentSignal s : this)
-                s.commit(aPri, wLoop);
+            for (Iterator<ComponentSignal> iterator = this.inputIterator(); iterator.hasNext(); )
+                iterator.next().commit(aPri, wLoop);
         }
     }
 
@@ -92,6 +96,10 @@ public abstract class VectorSensor extends AbstractSensor implements Iterable<Co
         }
     }
 
+    /** default: input everything , but subclasses can override to return sub-ranges */
+    public Iterator<ComponentSignal> inputIterator() {
+        return iterator();
+    }
 
     @Override
     public final Iterable<? extends Termed> components() {

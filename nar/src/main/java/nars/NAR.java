@@ -1649,8 +1649,8 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
     public @Nullable BeliefTable tableDynamic(Termed concept, boolean beliefOrGoal) {
         //heavyweight, concept construction involved
         if (!concept.term().op().conceptualizable) {
-            if (NAL.DEBUG)
-                throw new WTF();
+//            if (NAL.DEBUG)
+//                throw new WTF();
             return null;
         }
 //        Concept c = conceptualizeDynamic(su);
