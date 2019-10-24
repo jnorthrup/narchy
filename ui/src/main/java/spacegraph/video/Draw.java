@@ -680,8 +680,8 @@ public enum Draw {
         if (saturation == 0) {
             r = g = b = (int) (brightness * 255.0f + 0.5f);
         } else {
-            float h = (hue - (float) (hue)) * 6.0f;
-            float f = h - (float) (h);
+            float h = (hue - (int) (hue)) * 6.0f;
+            float f = h - (int) (h);
             float p = brightness * (1.0f - saturation);
             float q = brightness * (1.0f - saturation * f);
             float t = brightness * (1.0f - (saturation * (1.0f - f)));
@@ -734,8 +734,8 @@ public enum Draw {
         } else if (brightness < Float.MIN_NORMAL) {
             return 0;
         } else {
-            float h = (hue - (float) Math.floor(hue)) * 6.0f;
-            float f = h - (float) Math.floor(h);
+            float h = (hue - (int)(hue)) * 6.0f;
+            float f = h - (int)(h);
             float p = brightness * (1.0f - saturation);
             float q = brightness * (1.0f - saturation * f);
             float t = brightness * (1.0f - (saturation * (1.0f - f)));

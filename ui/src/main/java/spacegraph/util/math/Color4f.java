@@ -157,10 +157,10 @@ public class Color4f extends Tuple4f {
      * @since vecmath 1.2
      */
     public final Color awt() {
-        int r = Math.round(x * 255.0f);
-        int g = Math.round(y * 255.0f);
-        int b = Math.round(z * 255.0f);
-        int a = Math.round(w * 255.0f);
+        int r = (int)(x * 255.9f);
+        int g = (int)(y * 255.9f);
+        int b = (int)(z * 255.9f);
+        int a = (int)(w * 255.9f);
 
         return new Color(r, g, b, a);
     }
