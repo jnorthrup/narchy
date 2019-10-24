@@ -27,7 +27,7 @@ public class NAL1GoalTest extends NALTest {
 	}
 
 
-	@Test
+	@Disabled @Test
 	void deductionPositiveGoalNegativeBelief() {
 		test
 			.input("(a-->b)!")
@@ -85,7 +85,7 @@ public class NAL1GoalTest extends NALTest {
 		;
 	}
 
-	@Test
+	@Disabled @Test
 	void intersectionGoalPosBeliefNeg() {
 		test
 			.input("(a-->c)!")

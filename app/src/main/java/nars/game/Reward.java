@@ -158,7 +158,7 @@ public abstract class Reward implements GameLoop, TermedDelegate, Iterable<Conce
 			for (Rememorize r : reinforcement)
 				r.input(pri);
 
-			//int cc = curiosity.size();
+			int cc = curiosity.size();
 			float pric =
 				//pri/cc;
 				pri;

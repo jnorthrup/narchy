@@ -26,7 +26,7 @@ analogy_sym_decompose {
         (S --> P), (S <-> P), has(S,"."), has(P,".")   |-   (P --> S), (Punctuation:AskAsk, Time:Task)
 }
 
-//        (S <-> P), (P --> S), --isVar(S), --isVar(P)   |-   (S --> P), (Goal:Desire, Time:Task)
+        (S <-> P), (P --> S), --isVar(S), --isVar(P)   |-   (S --> P), (Goal:Desire, Time:Task)
 //        (S <-> P), (P --> S), --isVar(S), --isVar(P)   |-   (P --> S), (Goal:Undesire, Time:Task)
 
 analogy_sym_compose {

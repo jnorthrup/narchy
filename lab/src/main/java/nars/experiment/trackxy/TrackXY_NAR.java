@@ -264,9 +264,9 @@ public class TrackXY_NAR extends GameX {
 //
 //            ), 400, 300);
 
-		final int W = 4, H = 1;
+		//final int W = 4, H = 1;
 		//final int W = 3, H = 1;
-		//final int W = 3, H = 3;
+		final int W = 3, H = 3;
 
 		TrackXY_NAR a = new TrackXY_NAR(n, new TrackXY(W, H));
 
