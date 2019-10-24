@@ -134,28 +134,18 @@ public class Smasher {
                 if (e.start) {
                     EdgeDiagram ex = (EdgeDiagram) e.e;
                     diagramEdges.add(ex);
-
-
-                    for (EdgePolygon px : polygonEdges) {
-                        process(px, ex);
-                    }
-
-                } else {
+                    polygonEdges.forEach(px -> process(px, ex));
+                } else
                     diagramEdges.remove(e.e);
-                }
+
             } else {
                 if (e.start) {
                     EdgePolygon px = (EdgePolygon) e.e;
                     polygonEdges.add(px);
-
-                    for (EdgeDiagram ex : diagramEdges) {
-                        process(px, ex);
-                    }
-
-
-                } else {
+                    diagramEdges.forEach(ex -> process(px, ex));
+                } else
                     polygonEdges.remove(e.e);
-                }
+
             }
         }
 
@@ -230,7 +220,7 @@ public class Smasher {
         MyList<EdgeDiagram> allEdgesPolygon = new MyList<>();
 
 
-        for (EdgeDiagram edgeDiagram : table) {
+        table.forEach(edgeDiagram->{
             if (edgeDiagram.d2 == null) {
                 v2 vv = edgeDiagram.kolmicovyBod(contactPoint);
                 double newDistance = contactPoint.distanceSq(vv);
@@ -241,7 +231,7 @@ public class Smasher {
                 }
                 allEdgesPolygon.add(edgeDiagram);
             }
-        }
+        });
 
         MyList<Fragment> ppx = new MyList<>();
         ppx.add(startPolygon[0]);
@@ -254,10 +244,8 @@ public class Smasher {
             vysledneFragmenty.add(px);
 
             for (int i = 0; i < px.size(); ++i) {
-                v2 v1 = px.get(i);
-                v2 v2 = px.cycleGet(i + 1);
-                epx.p1 = v1;
-                epx.p2 = v2;
+                epx.p1 = px.get(i);
+                epx.p2 = px.cycleGet(i + 1);
                 EdgeDiagram ep = table.get(epx);
                 Fragment opposite = ep.d1 == px ? ep.d2 : ep.d1;
 
@@ -265,7 +253,13 @@ public class Smasher {
                     jcog.math.v2 centroid = opposite.centroid();
                     opposite.visited = true;
                     if (ic.contains(centroid)) {
-                        boolean intersection = allEdgesPolygon.stream().anyMatch(edge -> edge.d1 != startPolygon[0] && edge.d2 != startPolygon[0] && edge.intersectAre(centroid, kolmicovyBod[0]));
+                        boolean intersection = false;
+                        for (EdgeDiagram edge : allEdgesPolygon) {
+                            if (edge.d1 != startPolygon[0] && edge.d2 != startPolygon[0] && edge.intersectAre(centroid, kolmicovyBod[0])) {
+                                intersection = true;
+                                break;
+                            }
+                        }
 
 
                         if (!intersection) {

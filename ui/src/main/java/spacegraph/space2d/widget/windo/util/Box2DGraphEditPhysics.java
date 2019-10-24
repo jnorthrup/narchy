@@ -191,7 +191,7 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
     @Override
     public void remove(Surface w) {
         PhySurface ww = this.w.remove(w);
-        physics.removeBody(ww.body);
+        physics.removeBody(ww.body, false);
     }
 
     @Override

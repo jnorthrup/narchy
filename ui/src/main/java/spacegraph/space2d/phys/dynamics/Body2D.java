@@ -1302,7 +1302,7 @@ public class Body2D extends Transform {
     }
 
     public void remove() {
-        W.removeBody(this);
+        W.removeBody(this, false);
     }
 
     /**

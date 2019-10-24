@@ -280,6 +280,10 @@ public class Dynamics2D {
         return b;
     }
 
+    public final void removeBody(Body2D b) {
+        removeBody(b, false);
+    }
+
     /**
      * destroy a rigid body given a definition. No reference to the definition is retained. This
      * function is locked during callbacks.
@@ -288,60 +292,65 @@ public class Dynamics2D {
      * @warning This automatically deletes all associated shapes and joints.
      * @warning This function is locked during callbacks.
      */
-    public void removeBody(Body2D b) {
+    public void removeBody(Body2D b, boolean inline) {
 
         if (bodies.remove(b)) {
-
-            invoke(() -> {
-
-                b.onRemoval();
-
-                b.setActive(false);
-
-
-                JointEdge je = b.joints;
-                while (je != null) {
-                    JointEdge je0 = je;
-                    je = je.next;
-                    if (destructionListener != null) {
-                        destructionListener.beforeDestruct(je0.joint);
-                    }
-
-                    removeJoint(je0.joint);
-
-                    b.joints = je;
-                }
-                b.joints = null;
-
-
-                ContactEdge ce = b.contacts;
-                while (ce != null) {
-                    ContactEdge ce0 = ce;
-                    ce = ce.next;
-                    contactManager.destroy(ce0.contact);
-                }
-                b.contacts = null;
-
-                Fixture f = b.fixtures;
-                while (f != null) {
-                    Fixture f0 = f;
-                    f = f.next;
-
-                    if (destructionListener != null) {
-                        destructionListener.beforeDestruct(f0);
-                    }
-
-                    f0.destroyProxies(contactManager.broadPhase);
-                    f0.destroy();
-
-                    b.fixtures = f;
-                    b.fixtureCount -= 1;
-                }
-                b.fixtures = null;
-                b.fixtureCount = 0;
-
-            });
+            if (inline) {
+                _removeBody(b);
+            } else {
+                invoke(() -> {
+                    _removeBody(b);
+                });
+            }
         }
+    }
+
+    public void _removeBody(Body2D b) {
+        b.onRemoval();
+
+        b.setActive(false);
+
+
+        JointEdge je = b.joints;
+        while (je != null) {
+            JointEdge je0 = je;
+            je = je.next;
+            if (destructionListener != null) {
+                destructionListener.beforeDestruct(je0.joint);
+            }
+
+            removeJoint(je0.joint);
+
+            b.joints = je;
+        }
+        b.joints = null;
+
+
+        ContactEdge ce = b.contacts;
+        while (ce != null) {
+            ContactEdge ce0 = ce;
+            ce = ce.next;
+            contactManager.destroy(ce0.contact);
+        }
+        b.contacts = null;
+
+        Fixture f = b.fixtures;
+        while (f != null) {
+            Fixture f0 = f;
+            f = f.next;
+
+            if (destructionListener != null) {
+                destructionListener.beforeDestruct(f0);
+            }
+
+            f0.destroyProxies(contactManager.broadPhase);
+            f0.destroy();
+
+            b.fixtures = f;
+            b.fixtureCount -= 1;
+        }
+        b.fixtures = null;
+        b.fixtureCount = 0;
     }
 
     /**
@@ -878,21 +887,19 @@ public class Dynamics2D {
         });
 
         if (!preRemove.isEmpty()) {
-            for (Body2D body2D : preRemove) {
-                removeBody(body2D);
-            }
+            for (Body2D body2D : preRemove)
+                removeBody(body2D, true);
             preRemove.clear();
         }
 
 
         int bodyCount = bodies.size();
-        island.init(bodyCount + 1, contactManager.m_contactCount, jointCount,
+        island.init(2 * bodyCount, contactManager.m_contactCount, jointCount,
                 contactManager.contactListener);
 
 
-        for (Contact c = contactManager.m_contactList; c != null; c = c.m_next) {
+        for (Contact c = contactManager.m_contactList; c != null; c = c.m_next)
             c.m_flags &= ~Contact.ISLAND_FLAG;
-        }
 
         joints(j -> j.islandFlag = false);
 

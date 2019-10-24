@@ -168,7 +168,7 @@ public final class Fracture {
         }
 
         if (b1.fixtureCount == 0) {
-            w.removeBody(b1);
+            w.removeBody(b1, true);
         }
 
         

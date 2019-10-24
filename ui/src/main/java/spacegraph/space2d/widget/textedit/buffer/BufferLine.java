@@ -5,7 +5,6 @@ import jcog.data.list.FasterList;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class BufferLine implements Comparable<BufferLine> {
 
@@ -34,9 +33,11 @@ public class BufferLine implements Comparable<BufferLine> {
         if (length()==0)
             return "";
 
-        String sb = chars.stream().map(bc -> String.valueOf(bc.getChar())).collect(Collectors.joining());
-        String buf = sb;
-        return buf;
+        StringBuilder buf = new StringBuilder(chars.size());
+        for (BufferChar bc : chars) {
+            buf.append(bc.getChar());
+        }
+        return buf.toString();
     }
 
     void insertChar(char c, int col) {

@@ -32,9 +32,7 @@ public class Buffer {
 
             int l = lines.size();
             if (l > 0) {
-                for (BufferLine line : lines) {
-                    observer.removeLine(line);
-                }
+                lines.forEach(observer::removeLine);
                 lines.clear();
             }
 
@@ -135,12 +133,13 @@ public class Buffer {
 
 
             //List<BufferChar> nlc = nextLine.getChars();
-            int[] k = {0};
+            final int[] k = {0};
+            nextLineChars.forEach(c -> {
             //nlc.add(c);
             //observer.moveChar(currentLine, nextLine, c);
-            for (BufferChar c : nextLineChars) {
                 nextLine.insertChar(k[0]++, c);
-            }
+
+            });
 
             nextLine.update();
 
@@ -229,11 +228,11 @@ public class Buffer {
                         BufferLine currentLine = currentLine();
                         BufferLine removedLine = lines.remove(currentCursor.getRow() + 1);
                         currentLine.join(removedLine);
+                        removedLine.getChars().forEach(c -> {
                         //TODO fix where characters are appended here. to not use moveChar() then remove that method
                         //see splitReturn() for similarity
-                        for (BufferChar c : removedLine.getChars()) {
                             observer.moveChar(removedLine, currentLine, c);
-                        }
+                        });
                         observer.removeLine(removedLine);
                     }
                 }

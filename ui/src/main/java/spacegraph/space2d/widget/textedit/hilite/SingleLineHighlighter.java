@@ -123,14 +123,14 @@ public class SingleLineHighlighter {
             int index_of_word = -1;
             while ((index_of_word = s.indexOf(word, index_of_word + 1)) != -1) {
                 if (isFiniteWord(s, index_of_word, index_of_word + word.length()))
-                    line = LineView.apply(index_of_word, index_of_word + word.length(), highlight);
+                    line = line.apply(index_of_word, index_of_word + word.length(), highlight);
             }
             return line;
         }
 
-        private static boolean isFiniteWord(String line, int s, int e) {
-            return (s <= 0 || !wordMatcherer.matcher(Character.toString(line.charAt(s - 1))).matches()) &&
-                    (e >= line.length() - 1 || !wordMatcherer.matcher(Character.toString(line.charAt(e))).matches());
+        private boolean isFiniteWord(String line, int s, int e) {
+            return (s <= 0 || !Character.toString(line.charAt(s - 1)).matches(wordMatcher)) &&
+                    (e >= line.length() - 1 || !Character.toString(line.charAt(e)).matches(wordMatcher));
         }
     }
 
@@ -154,20 +154,20 @@ public class SingleLineHighlighter {
             while (true) {
                 start_index = line.toString().indexOf(start, end_index);
                 int escapeLen = escape != null ? escape.length() : -1;
-                while (start_index != -1 && escape != null && start_index > escapeLen && LineView.substring(start_index - escapeLen, start_index).equals(escape)) {//skip escapes
+                while (start_index != -1 && escape != null && start_index > escapeLen && line.substring(start_index - escapeLen, start_index).equals(escape)) {//skip escapes
                     start_index = line.toString().indexOf(start, start_index + 1);
                 }
                 end_index = line.toString().indexOf(end, Math.max(end_index, start_index + start.length()));
-                while (end_index != -1 && escape != null && end_index > escapeLen && LineView.substring(end_index - escapeLen, end_index).equals(escape)) {//skip escapes
+                while (end_index != -1 && escape != null && end_index > escapeLen && line.substring(end_index - escapeLen, end_index).equals(escape)) {//skip escapes
                     end_index = line.toString().indexOf(end, end_index + 1);
                 }
                 if (start_index != -1 && end_index != -1) {
-                    line = LineView.apply(start_index, end_index += end.length(), highlight);
+                    line = line.apply(start_index, end_index += end.length(), highlight);
                 } else
                     break;
             }
             if (start_index != -1 && end_index == -1)
-                line = LineView.apply(start_index, start_index + start.length(), highlight);
+                line = line.apply(start_index, start_index + start.length(), highlight);
 
             return line;
         }
@@ -186,7 +186,7 @@ public class SingleLineHighlighter {
         LineView apply(LineView line) {
             int indexOf = line.toString().indexOf(match);
             if (indexOf != -1)
-                line = LineView.apply(indexOf, line.length(), highlight);
+                line = line.apply(indexOf, line.length(), highlight);
             return line;
         }
     }
@@ -206,11 +206,11 @@ public class SingleLineHighlighter {
         LineView apply(LineView line) {
             int indexOf = line.toString().indexOf(after_match);
             if (indexOf != -1 && count_occurrences(line.toString(), in_between_match, indexOf) % 2 == 0)
-                line = LineView.apply(indexOf, line.length(), highlight);
+                line = line.apply(indexOf, line.length(), highlight);
             return line;
         }
 
-        private static int count_occurrences(String string, String occur, int upUntil) {
+        private int count_occurrences(String string, String occur, int upUntil) {
             int index = string.indexOf(occur);
             int count = 0;
             while (index != -1 && index < upUntil) {
@@ -236,15 +236,14 @@ public class SingleLineHighlighter {
             int index_of_match = -1;
             while ((index_of_match = s.indexOf(match, index_of_match + 1)) != -1) {
                 int index_of_word = index_of_match;
-                boolean wm = (WordMatchRule.wordMatcherer.matcher(Character.toString(s.charAt(index_of_word))).matches());
-                while (index_of_word >= 0 && !wm)
+                while (index_of_word >= 0 && !Character.toString(s.charAt(index_of_word)).matches(wordMatcher))
                     index_of_word--;
                 int end_index_of_word = index_of_word;
-                while (index_of_word >= 0 && wm)
+                while (index_of_word >= 0 && Character.toString(s.charAt(index_of_word)).matches(wordMatcher))
                     index_of_word--;
                 int start_index_of_word = index_of_word;
                 if (start_index_of_word >= 0 && end_index_of_word > 0 && start_index_of_word != end_index_of_word)
-                    line = LineView.apply(start_index_of_word, end_index_of_word + 1, highlight);
+                    line = line.apply(start_index_of_word, end_index_of_word + 1, highlight);
             }
             return line;
         }

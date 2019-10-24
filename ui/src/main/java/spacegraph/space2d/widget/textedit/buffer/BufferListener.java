@@ -25,29 +25,21 @@ public interface BufferListener {
 
         @Override
         public void update(Buffer buffer) {
-            for (BufferListener l : listeners) {
-                l.update(buffer);
-            }
+            listeners.forEach((l) -> l.update(buffer));
         }
 
         @Override
         public void addLine(BufferLine bufferLine) {
-            for (BufferListener l : listeners) {
-                l.addLine(bufferLine);
-            }
+            listeners.forEach((l) -> l.addLine(bufferLine));
         }
 
         @Override
         public void removeLine(BufferLine bufferLine) {
-            for (BufferListener l : listeners) {
-                l.removeLine(bufferLine);
-            }
+            listeners.forEach((l) -> l.removeLine(bufferLine));
         }
 
         public void moveChar(BufferLine fromLine, BufferLine toLine, BufferChar c) {
-            for (BufferListener l : listeners) {
-                l.moveChar(fromLine, toLine, c);
-            }
+            listeners.forEach((l) -> l.moveChar(fromLine, toLine, c));
         }
 
     }

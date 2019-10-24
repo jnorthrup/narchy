@@ -218,9 +218,8 @@ class Island {
             Velocity[] old = velocities == null ? VELOCITIES : velocities;
             velocities = new Velocity[m_bodyCapacity];
             System.arraycopy(old, 0, velocities, 0, old.length);
-            for (int i = old.length; i < velocities.length; i++) {
+            for (int i = old.length; i < velocities.length; i++)
                 velocities[i] = new Velocity();
-            }
         }
 
 
@@ -543,7 +542,7 @@ class Island {
     }
 
     void add(Body2D body) {
-        assert (m_bodyCount <= m_bodyCapacity) : "island overcapacity: " + m_bodyCount + '/' + m_bodyCapacity;
+        assert (m_bodyCount+1 <= m_bodyCapacity) : "island overcapacity: " + (m_bodyCount+1) + '/' + m_bodyCapacity;
         body.island = m_bodyCount;
         bodies[m_bodyCount++] = body;
     }
