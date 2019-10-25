@@ -409,7 +409,7 @@ object `$` {
         throw UnsupportedOperationException("$x termize fail")
     }
 
-    infix fun the(x: String): Atomic = Atomic.the(x)
+    infix fun the(x: String): Atomic  = Atomic.the(x)
 
     fun the(file: Path): Term = the(file.toUri())
 

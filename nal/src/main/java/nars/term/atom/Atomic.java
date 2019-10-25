@@ -4,7 +4,6 @@ import nars.$;
 import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Compound;
-import nars.term.Neg;
 import nars.term.Term;
 import nars.term.Termlike;
 import nars.term.util.transform.TermTransform;
@@ -18,111 +17,11 @@ import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-import static nars.Op.EmptySubterms;
 import static nars.term.atom.IdempotentBool.Null;
 
+public interface Atomic extends Term {
 
-/**
- * Base class for Atomic types.
- */
-public abstract class Atomic implements Term {
-
-
-    @Override
-    public final boolean containsRecursively(Term t, boolean root, Predicate<Term> inSubtermsOf) {
-        return false;
-    }
-
-    @Override
-    public final boolean hasXternal() {
-        return false;
-    }
-
-
-    @Override
-    public boolean equalsRoot(Term x) {
-        return this==x || (x instanceof Atomic && equals(x));
-    }
-
-
-    @Override
-    public int vars() {
-        return 0;
-    }
-
-    @Override
-    public int varDep() {
-        return 0;
-    }
-
-    @Override
-    public int varIndep() {
-        return 0;
-    }
-
-    @Override
-    public int varQuery() {
-        return 0;
-    }
-
-    @Override
-    public int varPattern() {
-        return 0;
-    }
-
-    @Override
-    public boolean equalsNeg(Term t) {
-        return t instanceof Neg && equals(t.unneg());
-    }
-
-    @Override
-    public   Subterms subterms() { return EmptySubterms; }
-
-    @Override
-    public Term normalize(byte offset) {
-        return this;
-    }
-
-    @Override
-    public boolean hasAny(int structuralVector) {
-        return isAny(structuralVector);
-    }
-    @Override
-    public boolean hasAll(int structuralVector) {
-        return opBit() == structuralVector;
-    }
-
-    @Override
-    public Term concept() {
-        //return Op.terms.concept(this);
-        return this;
-    }
-
-    @Override
-    public Term root() { return this; }
-
-
-    @Override
-    public Term replace(Term from, Term to) {
-        return equals(from) ? to : this; 
-    }
-
-
-    @Override
-    public int intifyShallow(int v, IntObjectToIntFunction<Term> reduce) {
-        return reduce.intValueOf(v, this);
-    }
-
-    @Override
-    public int intifyRecurse(int v, IntObjectToIntFunction<Term> reduce) {
-        return intifyShallow(v, reduce);
-    }
-
-    public static Atom atom(String id) {
-        return (Atom)the(id);
-    }
-
-    public static @Nullable Atomic the(char c) {
+    static @Nullable Atomic the(char c) {
         @Nullable Atomic result = Op.VarAuto;
         boolean finished = false;
         switch (c) {
@@ -190,14 +89,39 @@ public abstract class Atomic implements Term {
         return result;
     }
 
+    static Atom atom(String id) {
+        return (Atom)the(id);
+    }
 
-    public static Atomic the(String id) {
+    /**
+     * determines if the string is invalid as an unquoted target according to the characters present
+     * assumes len > 0
+     */
+    static boolean quoteable(CharSequence t, int len) {
+
+        char t0 = t.charAt(0);
+
+        if (Character.isDigit(t0))
+            return true;
+
+        if (((int) t0 == (int) '\"') && ((int) t.charAt(len - 1) == (int) '\"'))
+            return false;
+
+        for (int i = 0; i < len; i++) {
+            if (!Atom.isValidAtomChar(t.charAt(i))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    static Atomic the(String id) {
         int l = id.length();
         if (l <= 0)
             throw new RuntimeException("attempted construction of zero-length Atomic id");
 
         if (l == 1)
-            return the(id.charAt(0));
+            return Atomic.the(id.charAt(0));
 
         switch (id) {
             case "true":
@@ -227,171 +151,136 @@ public abstract class Atomic implements Term {
     }
 
     @Override
-    public abstract String toString();
+    boolean containsRecursively(Term t, boolean root, Predicate<Term> inSubtermsOf);
+
+    @Override
+    boolean hasXternal();
+
+    @Override
+    boolean equalsRoot(Term x);
+
+    @Override
+    int vars();
+
+    @Override
+    int varDep();
+
+    @Override
+    int varIndep();
+
+    @Override
+    int varQuery();
+
+    @Override
+    int varPattern();
+
+    @Override
+    boolean equalsNeg(Term t);
+
+    @Override
+    Subterms subterms();
+
+    @Override
+    Term normalize(byte offset);
+
+    @Override
+    boolean hasAny(int structuralVector);
+
+    @Override
+    boolean hasAll(int structuralVector);
+
+    @Override
+    Term concept();
+
+    @Override
+    Term root();
+
+    @Override
+    Term replace(Term from, Term to);
+
+    @Override
+    int intifyShallow(int v, IntObjectToIntFunction<Term> reduce);
+
+    @Override
+    int intifyRecurse(int v, IntObjectToIntFunction<Term> reduce);
+
+    @Override
+    String toString();
 
     /** byte[] representation */
-    public abstract byte[] bytes();
+    byte[] bytes();
 
-
-    public boolean recurseTerms(Predicate<Term> inSuperCompound, Predicate<Term> whileTrue, @Nullable Compound superterm) {
-        return whileTrue.test(this);
-    }
+    boolean recurseTerms(Predicate<Term> inSuperCompound, Predicate<Term> whileTrue, @Nullable Compound superterm);
 
     @Override
-    public boolean recurseTerms(Predicate<Compound> aSuperCompoundMust, BiPredicate<Term, Compound> whileTrue, @Nullable Compound superterm) {
-        return whileTrue.test(this, superterm);
-    }
+    boolean recurseTerms(Predicate<Compound> aSuperCompoundMust, BiPredicate<Term, Compound> whileTrue, @Nullable Compound superterm);
 
     @Override
-    public boolean recurseTermsOrdered(Predicate<Term> inSuperCompound, Predicate<Term> whileTrue, Compound parent) {
-        return whileTrue.test(this);
-    }
+    boolean recurseTermsOrdered(Predicate<Term> inSuperCompound, Predicate<Term> whileTrue, Compound parent);
 
     @Override
-    public boolean recurseTermsOrdered(Predicate<Term> whileTrue) {
-        return whileTrue.test(this);
-    }
-
-    /** convenience, do not override */
-    @Override
-    public void recurseTerms(BiConsumer<Term, Compound> each) {
-        each.accept(this, null);
-    }
+    boolean recurseTermsOrdered(Predicate<Term> whileTrue);
 
     @Override
-    public   void recurseTerms(Consumer<Term> each) {
-        each.accept(this);
-    }
-
+    void recurseTerms(BiConsumer<Term, Compound> each);
 
     @Override
-    public void appendTo(Appendable w) throws IOException {
-        w.append(toString());
-    }
-
-    /**
-     * number of subterms; for atoms this must be zero
-     */
-    @Override
-    public int subs() {
-        return 0;
-    }
-
-
-    /**
-     * atoms contain no subterms so impossible for anything to fit "inside" it
-     */
-    @Override
-    public boolean impossibleSubVolume(int otherTermVolume) {
-        return true;
-    }
+    void recurseTerms(Consumer<Term> each);
 
     @Override
-    public boolean impossibleSubStructure(int structure) { return true; }
+    void appendTo(Appendable w) throws IOException;
 
     @Override
-    public boolean impossibleSubTerm(Termlike target) {
-        return true;
-    }
-
-//    @Override
-//    default boolean impossibleSubTermOrEqualityVolume(int otherTermsVolume) {
-//        return otherTermsVolume != 1;
-//    }
+    int subs();
 
     @Override
-    public boolean contains(Term t) {
-        return false;
-    }
+    boolean impossibleSubVolume(int otherTermVolume);
 
     @Override
-    public boolean containsInstance(Term t) { return false; }
+    boolean impossibleSubStructure(int structure);
 
     @Override
-    public boolean isCommutative() {
-        return false;
-    }
+    boolean impossibleSubTerm(Termlike target);
 
     @Override
-    public int complexity() { return 1; }
+    boolean contains(Term t);
 
     @Override
-    public int volume() {
-        return 1;
-    }
+    boolean containsInstance(Term t);
 
     @Override
-    public float voluplexity() {
-        return 1.0F;
-    }
+    boolean isCommutative();
 
     @Override
-    public   Term sub(int i, Term ifOutOfBounds) {
-        return ifOutOfBounds;
-    }
+    int complexity();
 
     @Override
-    public   Term sub(int i) {
-        throw new ArrayIndexOutOfBoundsException();
-    }
+    int volume();
 
     @Override
-    public @Nullable Term subPath(int start, int end, byte... path) {
-        return start == 0 && start == end ? this : null;
-    }
+    float voluplexity();
 
     @Override
-    public @Nullable Term subPath(ByteList path, int start, int end) {
-        return start == 0 && start == end ? this : null;
-    }
+    Term sub(int i, Term ifOutOfBounds);
 
     @Override
-    public   int structure() {
-        return opBit();
-    }
+    Term sub(int i);
 
     @Override
-    public   int structureSurface() {
-        return opBit();
-    }
+    @Nullable Term subPath(int start, int end, byte... path);
 
-    /**
-     * determines if the string is invalid as an unquoted target according to the characters present
-     * assumes len > 0
-     */
-    public static boolean quoteable(CharSequence t, int len) {
+    @Override
+    @Nullable Term subPath(ByteList path, int start, int end);
 
-        char t0 = t.charAt(0);
-        
-        if (Character.isDigit(t0))
-            return true;
+    @Override
+    int structure();
 
-        if (((int) t0 == (int) '\"') && ((int) t.charAt(len - 1) == (int) '\"'))
-            return false;
+    @Override
+    int structureSurface();
 
-        for (int i = 0; i < len; i++) {
-            if (!Atom.isValidAtomChar(t.charAt(i))) {
-                return true;
-            }
-        }
-        return false;
-    }
+    int height();
 
+    Term transform(TermTransform t);
 
-    public int height() { return 1; }
-
-    public   Term transform(TermTransform t) {
-        return t.applyAtomic(this); //force unbuffered transform
-    }
-
-//    default Term transform(TermTransform t, TermBuffer b, int volMax) {
-//        return t.apply(this); //force unbuffered transform
-//    }
-
-    /** returns non-zero, positive value if this term has an INTrinsic representation */
-	public short intrin() {
-        return (short) 0;
-    }
-
-
+    abstract short intrin();
 }

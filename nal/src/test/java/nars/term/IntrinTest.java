@@ -25,7 +25,6 @@ import java.util.Random;
 import java.util.function.Supplier;
 
 import static nars.$.*;
-import static nars.$.*;
 import static nars.Op.*;
 import static nars.term.util.TermTest.assertEq;
 import static org.junit.jupiter.api.Assertions.*;

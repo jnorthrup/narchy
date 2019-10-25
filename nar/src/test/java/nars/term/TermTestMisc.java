@@ -25,7 +25,6 @@ import java.util.function.Supplier;
 
 import static java.lang.Long.toBinaryString;
 import static nars.$.*;
-import static nars.$.*;
 import static nars.Op.*;
 import static org.junit.jupiter.api.Assertions.*;
 

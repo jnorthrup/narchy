@@ -6,7 +6,7 @@ import nars.Idempotent;
 import nars.term.Term;
 
 /** special atoms which are universally singleton */
-public abstract class Keyword extends Atomic implements Idempotent {
+public abstract class Keyword extends AtomicImpl implements Idempotent {
 	protected final String label;
 	protected final byte[] bytes;
 	protected final int hash;

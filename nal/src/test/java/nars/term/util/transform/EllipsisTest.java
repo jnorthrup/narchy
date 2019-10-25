@@ -25,7 +25,6 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 import static nars.$.*;
-import static nars.$.*;
 import static nars.Op.VAR_PATTERN;
 import static nars.term.util.TermTest.assertEq;
 import static nars.term.var.ellipsis.Ellipsis.firstEllipsis;

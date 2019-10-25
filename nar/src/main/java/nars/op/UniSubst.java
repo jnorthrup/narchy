@@ -78,7 +78,7 @@ public class UniSubst extends Functor implements InlineFunctor<Evaluation> {
 
     public static final Term INDEP_VAR = $.INSTANCE.quote("$");
     public static final Term DEP_VAR = $.INSTANCE.quote("#");
-    public static final Atom unisubst = (Atom) Atomic.the("unisubst");
+    public static final Atom unisubst = Atomic.atom("unisubst");
 
     public final MyUnifyTransform u; //TODO find what state is being held that contaminated repeated use of this
 
@@ -151,26 +151,15 @@ public class UniSubst extends Functor implements InlineFunctor<Evaluation> {
 
     private Term unify(Term c, Term x, Term y, int var, boolean strict, int subTTL) {
 
-        //int subTTL = Util.clamp(parent.unify.ttl, 0, NAL.derive.TTL_UNISUBST_MAX);
-//        if (subTTL == 0)
-//            return Null;
+
 
         u.setTTL(subTTL);
 
         return u.unifySubst(x, y, c, var, strict);
 
-        //int used = subTTL - u.ttl;
-        //parent.use(used);
 
     }
 
-//    public boolean transformed() {
-//        if (u.result!=null && u.xy.size() > 0) {
-//            u.result = null;
-//            return true;
-//        }
-//        return false;
-//    }
 
     public final class MyUnifyTransform extends UnifyTransform {
         public MyUnifyTransform() {

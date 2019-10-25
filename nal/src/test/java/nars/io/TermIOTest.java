@@ -9,10 +9,7 @@ import nars.term.Term;
 import nars.term.Termed;
 import nars.term.Variable;
 import nars.term.anon.Anom;
-import nars.term.atom.Atom;
-import nars.term.atom.Atomic;
-import nars.term.atom.IdempotentBool;
-import nars.term.atom.IdempotInt;
+import nars.term.atom.*;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
@@ -20,7 +17,6 @@ import java.io.IOException;
 import java.util.Arrays;
 
 import static java.lang.System.out;
-import static nars.$.*;
 import static nars.$.*;
 import static nars.Op.*;
 import static nars.term.util.TermTest.assertEq;

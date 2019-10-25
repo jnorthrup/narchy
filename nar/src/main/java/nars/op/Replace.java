@@ -22,7 +22,7 @@ public class Replace extends Functor implements InlineFunctor<Evaluation>, Idemp
     public static final Replace replace = new Replace("replace");
 
     protected Replace(String id) {
-        this((Atom)Atomic.the(id));
+        this(Atomic.atom(id));
     }
 
     protected Replace(Atom id) {
@@ -51,10 +51,5 @@ public class Replace extends Functor implements InlineFunctor<Evaluation>, Idemp
 
         return (result == Null) || (strict && input.equals(result)) ? Null : result;
     }
-
-
-
-
-
 
 }

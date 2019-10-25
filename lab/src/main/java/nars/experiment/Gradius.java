@@ -110,7 +110,7 @@ public class Gradius extends GameX {
                     int ii = i;
                     int jj = j;
                     Term Pbig = //$.p(big, $.p($.the(ii), $.the(jj)));
-                        $.INSTANCE.p(Atomic.atom("c" + ii),Atomic.atom("c" + jj));
+                        $.INSTANCE.p(Atomic.atom("c" + ii), Atomic.atom("c" + jj));
 
                     //Term subSection = $.p(id, $.the(ii), $.the(jj));
                     Bitmap2DSensor c = senseCamera(new IntIntToObjectFunction<Term>() {

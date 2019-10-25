@@ -4,9 +4,9 @@ import nars.Op;
 import nars.Idempotent;
 import nars.term.Neg;
 import nars.term.Term;
-import nars.term.atom.Atomic;
+import nars.term.atom.AtomicImpl;
 
-public abstract class IntrinAtomic extends Atomic implements Idempotent {
+public abstract class IntrinAtomic extends AtomicImpl implements Idempotent {
     /** meant to be a perfect hash among all normalized variables */
     public final short i;
 

@@ -10,7 +10,7 @@ import static java.lang.System.arraycopy;
 /**
  * an Atomic impl which relies on the value provided by toString()
  */
-public abstract class AbstractAtomic extends Atomic {
+public abstract class AbstractAtomic extends AtomicImpl {
 
 
     /*@Stable*/

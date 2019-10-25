@@ -74,7 +74,6 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 import static nars.$.*;
-import static nars.$.*;
 import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
 import static org.fusesource.jansi.Ansi.ansi;

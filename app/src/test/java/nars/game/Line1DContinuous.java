@@ -11,7 +11,6 @@ import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction
 import java.util.Arrays;
 
 import static java.lang.System.out;
-import static nars.term.atom.Atomic.atom;
 
 
 /**
@@ -48,13 +47,13 @@ public class Line1DContinuous extends Game {
 
         for (int i = 0; i < size; i++) {
             int ii = i;
-            sense($.INSTANCE.func("h", atom("x"), $.INSTANCE.the(i)), new FloatSupplier() {
+            sense($.INSTANCE.func("h", Atomic.atom("x"), $.INSTANCE.the(i)), new FloatSupplier() {
                 @Override
                 public float asFloat() {
                     return ins[ii];
                 }
             });
-            sense($.INSTANCE.func("e", atom("x"), $.INSTANCE.the(i)), new FloatSupplier() {
+            sense($.INSTANCE.func("e", Atomic.atom("x"), $.INSTANCE.the(i)), new FloatSupplier() {
                 @Override
                 public float asFloat() {
                     return ins[size + ii];

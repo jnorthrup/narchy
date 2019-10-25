@@ -14,7 +14,6 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static nars.$.*;
-import static nars.$.*;
 import static nars.Op.*;
 import static nars.term.atom.IdempotentBool.False;
 import static nars.term.atom.IdempotentBool.Null;
