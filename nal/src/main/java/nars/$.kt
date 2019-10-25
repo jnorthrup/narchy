@@ -63,12 +63,12 @@ object `$` {
 
 
     @Throws(Narsese.NarseseException::class)
-    fun <T : Term> `$`(term: String): T = Narsese.term(term, true) as T
+    infix fun <T : Term> `$`(term: String): T = Narsese.term(term, true) as T
 
     /**
      * doesnt throw exception, but may throw RuntimeException
      */
-    fun <T : Term> `$$`(term: String): T {
+    infix fun <T : Term> `$$`(term: String): T {
         try {
             return `$`(term)
         } catch (e: Narsese.NarseseException) {
@@ -80,7 +80,7 @@ object `$` {
     /**
      * doesnt normalize, doesnt throw exception, but may throw RuntimeException
      */
-    fun <T : Term> `$$$`(term: String): T {
+    infix fun <T : Term> `$$$`(term: String): T {
         try {
             return Narsese.term(term, false) as T
         } catch (e: Narsese.NarseseException) {
@@ -89,9 +89,9 @@ object `$` {
 
     }
 
-    fun quote(text: String): Atom = if (text.isEmpty()) emptyQuote else Atomic.the(Texts.quote(text)) as Atom
+    infix fun quote(text: String): Atom = if (text.isEmpty()) emptyQuote else Atomic.the(Texts.quote(text)) as Atom
 
-    fun quote(text: Any): Atom {
+    infix fun quote(text: Any): Atom {
         val s = text.toString()
         return quote(s)
     }
@@ -99,7 +99,7 @@ object `$` {
     fun the(vararg id: String): Array<Term> = Util.map(Function { Atomic.the(it) }, arrayOfNulls(id.size), *id)
 
 
-    fun the(c: Char): Atomic = if (isDigit(c)) IdempotInt.the(Character.digit(c, 10)) else Atomic.the(c.toString())
+    infix fun the(c: Char): Atomic = if (isDigit(c)) IdempotInt.the(Character.digit(c, 10)) else Atomic.the(c.toString())
 
     /**
      * Op.INHERITANCE from 2 Terms: subj --> pred
@@ -147,7 +147,7 @@ object `$` {
 
     fun <T : Term> impl(a: Term, dt: Int, b: Term): T = IMPL.the(a, dt, b) as T
 
-    fun p(t: Collection<Term>): Term = p(*t.toTypedArray())
+    infix fun p(t: Collection<Term>): Term = p(*t.toTypedArray())
 
     fun p(vararg t: Term): Term = PROD.the(*t)
 
@@ -157,7 +157,7 @@ object `$` {
      * creates from a sublist of a list
      */
 
-    fun p(l: List<Term>, from: Int, to: Int): Term =p(*l.subList(from, to).toTypedArray())
+    fun p(l: List<Term>, from: Int, to: Int): Term = p(*l.subList(from, to).toTypedArray())
 
     fun p(x: String, y: Term): Term = p(the(x), y)
 
@@ -210,19 +210,19 @@ object `$` {
         return UnnormalizedVariable(type, type.ch + name)
     }
 
-    fun varDep(i: Int): Variable = v(VAR_DEP, i.toByte())
+    infix fun varDep(i: Int): Variable = v(VAR_DEP, i.toByte())
 
-    fun varDep(s: String): Variable = v(VAR_DEP, s)
+    infix fun varDep(s: String): Variable = v(VAR_DEP, s)
 
-    fun varIndep(i: Int): Variable = v(VAR_INDEP, i.toByte())
+    infix fun varIndep(i: Int): Variable = v(VAR_INDEP, i.toByte())
 
-    fun varIndep(s: String): Variable = v(VAR_INDEP, s)
+    infix fun varIndep(s: String): Variable = v(VAR_INDEP, s)
 
-    fun varQuery(i: Int): Variable = v(VAR_QUERY, i.toByte())
+    infix fun varQuery(i: Int): Variable = v(VAR_QUERY, i.toByte())
 
-    fun varQuery(s: String): Variable = v(VAR_QUERY, s)
+    infix fun varQuery(s: String): Variable = v(VAR_QUERY, s)
 
-    fun varPattern(i: Int): VarPattern = v(VAR_PATTERN, i.toByte()) as VarPattern
+    infix fun varPattern(i: Int): VarPattern = v(VAR_PATTERN, i.toByte()) as VarPattern
 
     /**
      * Try to make a new compound from two components. Called by the logic rules.
@@ -261,20 +261,20 @@ object `$` {
         return list.toTypedArray()
     }
 
-    private fun array(t: Collection<Term>): Array<Term> = t.toTypedArray()
+    private infix fun array(t: Collection<Term>): Array<Term> = t.toTypedArray()
 
     @Throws(Narsese.NarseseException::class)
-    private fun array(vararg s: String)  =s.map{ `$`(it) as Term}.toTypedArray()
+    private fun array(vararg s: String) = s.map { `$`(it) as Term }.toTypedArray()
 
-    fun seti(t: Collection<Term>): Term = SETi.the(*array(t))
+    infix fun seti(t: Collection<Term>): Term = SETi.the(*array(t))
 
-    fun sete(b: RoaringBitmap): Term = SETe.the(*ints(b))
+    infix fun sete(b: RoaringBitmap): Term = SETe.the(*ints(b))
 
-    fun sete(b: RichIterable<Term>): Term = SETe.the(b.toSortedSet())
+    infix fun sete(b: RichIterable<Term>): Term = SETe.the(b.toSortedSet())
 
-    fun p(b: RoaringBitmap): Term = PROD.the(*ints(b))
+    infix fun p(b: RoaringBitmap): Term = PROD.the(*ints(b))
 
-    fun ints(b: RoaringBitmap): Array<Term> {
+    infix fun ints(b: RoaringBitmap): Array<Term> {
         val size = b.cardinality
         val ii = b.intIterator
         val t = arrayOfNulls<Term>(size)
@@ -315,7 +315,7 @@ object `$` {
     /**
      * create a literal atom from a class (it's name)
      */
-    fun the(c: Class<*>): Atom = Atomic.the(c.name) as Atom
+    infix fun the(c: Class<*>): Atom = Atomic.the(c.name) as Atom
 
     /**
      * gets the atomic target of an integer, with specific radix (up to 36)
@@ -384,11 +384,11 @@ object `$` {
         return if (Util.equals(rx.toDouble(), x, java.lang.Double.MIN_NORMAL)) IdempotInt.the(rx) else the(Fraction(x))
     }
 
-    fun doubleValue(x: Term): Double {
-        return if (x.op() === INT) {
-            (x as IdempotInt).i.toDouble()
-        } else if (x.op() === ATOM) {
-            java.lang.Double.parseDouble(unquote(x))
+    infix fun doubleValue(x: Term): Double = when {
+        x.op() === INT -> (x as IdempotInt).i.toDouble()
+        else -> if (x.op() === ATOM) {
+            unquote(  x) .let {it.toDouble()    }
+
         } else {
             throw TODO()
         }
@@ -396,7 +396,7 @@ object `$` {
 
     fun the(o: Fraction): Term = func(DIV, the(o.numerator), the(o.denominator))
 
-    fun the(x: Any): Term {
+    infix fun the(x: Any): Term {
         if (x is Term)
             return x
 
@@ -409,7 +409,7 @@ object `$` {
         throw UnsupportedOperationException("$x termize fail")
     }
 
-    fun the(x: String): Atomic = Atomic.the(x)
+    infix fun the(x: String): Atomic = Atomic.the(x)
 
     fun the(file: Path): Term = the(file.toUri())
 
@@ -417,7 +417,7 @@ object `$` {
         throw TODO()
     }
 
-    fun the(n: Number): Term {
+    infix fun the(n: Number): Term {
         val result: Term
         if (n is Int) {
             result = IdempotInt.the(n)
@@ -514,7 +514,7 @@ object `$` {
     }
 
 
-    fun unquote(s: Term): String = Texts.unquote(s.toString())
+    infix fun unquote(s: Term): String = Texts.unquote(s.toString())
 
 
     //    /**
@@ -533,7 +533,7 @@ object `$` {
             LambdaPred(DISJ(a, b), Predicate { x -> a.test(x) || b.test(x) })
 
     @Throws(NumberFormatException::class)
-    fun intValue(intTerm: Term): Int {
+    infix fun intValue(intTerm: Term): Int {
         if (intTerm is IdempotInt)
             return intTerm.i
 
@@ -544,23 +544,23 @@ object `$` {
     fun intValue(intTerm: Term, ifNotInt: Int): Int =
             if (intTerm is IdempotInt && intTerm.op() === INT) intTerm.i else ifNotInt
 
-    fun fromJSON(j: String): Term = JsonTerm.the(j)
+    infix fun fromJSON(j: String): Term = JsonTerm.the(j)
 
-    fun pFast(x: Subterms): Compound = if (x.subs() == 0) EmptyProduct else LightCompound(PROD, x)
+    infix fun pFast(x: Subterms): Compound = if (x.subs() == 0) EmptyProduct else LightCompound(PROD, x)
 
     fun pFast(vararg x: Term): Compound = if (x.size == 0) EmptyProduct else LightCompound(PROD, *x)
     //new LighterCompound(PROD, x);
 
-    fun sFast(x: Subterms): Compound {
+    infix fun sFast(x: Subterms): Compound {
         if (x.subs() == 0) throw UnsupportedOperationException()
         return LightCompound(SETe, x)
     }
 
-    fun sFast(x: Array<Term>): Term = sFast(true, x)
+    infix fun sFast(x: Array<Term>): Term = sFast(true, x)
 
-    fun sFast(x: SortedSet<Term>): Compound = sFast(false, x.toTypedArray())
+    infix fun sFast(x: SortedSet<Term>): Compound = sFast(false, x.toTypedArray())
 
-    fun sFast(x: Collection<Term>): Compound = sFast(false, Terms.commute(x))
+    infix fun sFast(x: Collection<Term>): Compound = sFast(false, Terms.commute(x))
 
     fun sFast(sort: Boolean, x: Array<Term>): Compound {
         var x = x
@@ -571,11 +571,11 @@ object `$` {
         //new LighterCompound(Op.SETe, x);
     }
 
-    fun sFast(b: RoaringBitmap): Term = sFast(true, ints(b))
+    infix fun sFast(b: RoaringBitmap): Term = sFast(true, ints(b))
 
-    fun pFast(x: Collection<Term>): Term = pFast(*x.toTypedArray())
+    infix fun pFast(x: Collection<Term>): Term = pFast(*x.toTypedArray())
 
-    fun vFast(t: Collection<Term>): Subterms = vFast(*t.toTypedArray())
+    infix fun vFast(t: Collection<Term>): Subterms = vFast(*t.toTypedArray())
 
     /**
      * on-stack/on-heap cheaply constructed Subterms
@@ -621,7 +621,7 @@ object `$` {
     }
 
 
-    fun `$`(s: Array<String>): Array<Term> =          s .map { `$`(it) as  Term }.toTypedArray()
+    infix fun `$`(s: Array<String>): Array<Term> = s.map { `$`(it) as Term }.toTypedArray()
 
     fun func(f: Atomic, args: List<Term>): Term = func(f, *args.toTypedArray())
 
@@ -651,7 +651,7 @@ object `$` {
         return CONJ.the(a, b.neg())
     }
 
-    fun identity(x: Any): Term {
+    infix fun identity(x: Any): Term {
 
         if (x is Term)
             return x
@@ -757,3 +757,30 @@ object `$` {
             inh(PROD.the(INH.the(path, /*TODO parse*/the(authority))), scheme)
     }
 }
+
+fun Any.identity(): Term = `$` identity this
+fun Any.quote(): Atom = `$` quote this
+fun Any.the(): Term = `$` the this
+fun Array<String>.`$`(): Array<Term> = `$` `$` this
+fun Array<Term>.sFast(): Term = `$`.sFast(this)
+fun Char.the(): Atomic = `$`.the(this)
+fun Collection<Term>.pFast(): Term = `$` pFast this
+fun Collection<Term>.sFast(): Compound = `$` sFast this
+fun Collection<Term>.vFast(): Subterms = `$` vFast this
+fun Int.varDep(): Variable = `$` varDep this
+fun Int.varIndep(): Variable = `$` varIndep this
+fun Int.varPattern(): VarPattern = `$` varPattern this
+fun Int.varQuery(): Variable = `$` varQuery(this)
+fun Number.the(): Term = `$` the this
+fun RoaringBitmap.sFast(): Term = `$` sFast this
+fun SortedSet<Term>.sFast(): Compound = `$` sFast this
+fun String.fromJSON(): Term = `$` fromJSON this
+fun String.quote(): Atom = `$` quote this
+fun String.the(): Term = `$` the this
+fun String.varDep(): Variable = `$` varDep(this)
+fun String.varIndep(): Variable = `$` varIndep(this)
+fun String.varQuery(): Variable = `$` varQuery(this)
+fun Subterms.pFast(): Compound = `$` pFast this
+fun Subterms.sFast(): Compound = `$`  sFast(this)
+fun URI.the(): Term = `$`.the(this)
+fun URL.the(): Term = `$`.the(this)
