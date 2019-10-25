@@ -50,14 +50,14 @@ class Metronome {
                     snareEnv.add(0.5f, 2.00f);
                     snareEnv.add(0.2f, 8.0f);
                     snareEnv.add(0.0f, 80.0f);
-                    n.believe($.inh("snare", id), Tense.Present);
+                    n.believe($.INSTANCE.inh("snare", id), Tense.Present);
                 }
                 if (c.isBeat(4)) {
 
                     kickEnv.add(0.5f, 2.0f);
                     kickEnv.add(0.2f, 5.0f);
                     kickEnv.add(0.0f, 50.0f);
-                    n.believe($.inh("kick", id), Tense.Present);
+                    n.believe($.INSTANCE.inh("kick", id), Tense.Present);
 
 
                 }

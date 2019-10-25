@@ -89,7 +89,7 @@ public enum Unifiable { ;
         }
 
         private EventUnifiability(Variable conj, Variable x, boolean xNeg, boolean forward) {
-            super(U, conj, x, $.the(xNeg), $.the(forward));
+            super(U, conj, x, $.INSTANCE.the(xNeg), $.INSTANCE.the(forward));
             this.xNeg = xNeg;
             this.forward = forward;
         }
@@ -163,7 +163,7 @@ public enum Unifiable { ;
         private static final Atom U = Atomic.atom(Unifiability.class.getSimpleName());
 
         Unifiability(Variable x, Variable y, boolean isStrict, int varBits) {
-            super(U, x, y, $.the(isStrict), $.the(varBits));
+            super(U, x, y, $.INSTANCE.the(isStrict), $.INSTANCE.the(varBits));
             this.isStrict = isStrict; this.varBits = varBits;
         }
 

@@ -5,7 +5,7 @@ import nars.term.Term;
 import org.eclipse.collections.api.block.predicate.primitive.BooleanBooleanPredicate;
 import org.eclipse.collections.api.block.predicate.primitive.BooleanPredicate;
 
-import static nars.$.the;
+import static nars.$.*;
 
 public class BooleanChoiceTest extends MiniTest {
 
@@ -13,7 +13,7 @@ public class BooleanChoiceTest extends MiniTest {
     boolean prev = false;
 
     public BooleanChoiceTest(NAR n, BooleanBooleanPredicate goal) {
-        this(n, the("x"), goal);
+        this(n, INSTANCE.the("x"), goal);
     }
 
     public BooleanChoiceTest(NAR n, Term action, BooleanBooleanPredicate goal) {

@@ -5,7 +5,7 @@ import nars.NAR;
 import nars.game.Game;
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 
-import static nars.$.the;
+import static nars.$.*;
 
 public abstract class MiniTest extends Game {
 
@@ -16,7 +16,7 @@ public abstract class MiniTest extends Game {
         super(MiniTest.class.getSimpleName());
         //statPrint = n.emotion.printer(System.out);
 
-        reward(the("reward"), 1f, new FloatSupplier() {
+        reward(INSTANCE.the("reward"), 1f, new FloatSupplier() {
             @Override
             public float asFloat() {
 //                System.out.println(this + " avgReward=" + avgReward() + " dexMean=" + dex.getMean() + " dexMax=" + dex.getMax());

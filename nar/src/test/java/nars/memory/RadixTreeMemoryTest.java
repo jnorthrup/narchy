@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 
-import static nars.$.$;
+import static nars.$.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
@@ -22,14 +22,14 @@ class RadixTreeMemoryTest {
     @Test
     void testTermIndex() {
         TermRadixTree<Term> t = new TermRadixTree<>();
-        byte[] a = t.key($.func("x", $.the("y"))).arrayCompactDirect();
+        byte[] a = t.key($.INSTANCE.func("x", $.INSTANCE.the("y"))).arrayCompactDirect();
         System.out.println(Arrays.toString(a));
-        t.put($.func("x", $.the("y")), $.the(1));
-        t.put($.func("x", $.the("z")), $.the(2));
+        t.put($.INSTANCE.func("x", $.INSTANCE.the("y")), $.INSTANCE.the(1));
+        t.put($.INSTANCE.func("x", $.INSTANCE.the("z")), $.INSTANCE.the(2));
         Term y = t.get(
                 new ArrayBytes(a)
         );
-        assertEquals($.the(1), y);
+        assertEquals($.INSTANCE.the(1), y);
 
 //        Term yy = t.get(new ConcatBytes(
 //                    new ArrayBytes((byte)2, (byte)2, (byte)8, (byte)1),
@@ -49,12 +49,12 @@ class RadixTreeMemoryTest {
         RadixTreeMemory t = new RadixTreeMemory( 128);
         NAR n = NARS.tmp(1);
         t.start(n);
-        n.concept($("a"), true);
-        n.concept($("(a)"), true);
-        n.concept($("(a-->b)"), true);
-        n.concept($("(a-->(b,c,d))"), true);
-        n.concept($("(a-->(b,c,d,e,f,g))"), true);
-        n.concept($("(a-->(b,c,d,e,f,g,h,i,j,k))"), true);
+        n.concept(INSTANCE.$("a"), true);
+        n.concept(INSTANCE.$("(a)"), true);
+        n.concept(INSTANCE.$("(a-->b)"), true);
+        n.concept(INSTANCE.$("(a-->(b,c,d))"), true);
+        n.concept(INSTANCE.$("(a-->(b,c,d,e,f,g))"), true);
+        n.concept(INSTANCE.$("(a-->(b,c,d,e,f,g,h,i,j,k))"), true);
         t.concepts.prettyPrint(System.out);
         t.print(System.out);
         assertEquals(6, t.size());

@@ -4,7 +4,7 @@ import nars.Narsese;
 import nars.term.Compound;
 import org.junit.jupiter.api.Test;
 
-import static nars.$.$;
+import static nars.$.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -26,7 +26,7 @@ class SerialCompoundTest {
     }
 
     private static void assertEqual(String x) throws Narsese.NarseseException {
-        assertEqual($(x));
+        assertEqual(INSTANCE.$(x));
     }
 
     private static void assertEqual(Compound x) {

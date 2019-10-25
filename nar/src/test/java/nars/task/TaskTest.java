@@ -65,7 +65,7 @@ public class TaskTest {
 
                 /*"((a) &&+1 (a))",*/
         }) {
-            Term t = $(x);
+            Term t = INSTANCE.$(x);
             assertTrue(t instanceof Compound, new Supplier<String>() {
                 @Override
                 public String get() {
@@ -74,7 +74,7 @@ public class TaskTest {
             });
             assertTrue(t.dt() != DTERNAL);
 
-            Task y = TaskTest.task(t, Op.BELIEF, t(1f, 0.9f)).apply(n);
+            Task y = TaskTest.task(t, Op.BELIEF, INSTANCE.t(1f, 0.9f)).apply(n);
 
             y.term().printRecursive();
             assertEquals(x, y.term().toString());
@@ -85,10 +85,10 @@ public class TaskTest {
     }
 
     @Test void InvalidIndepOnlyTask() {
-        assertFalse(Task.validTaskTerm($$("((--,$1) ==>-2 $1)")));
-        assertFalse(Task.validTaskTerm($$("($1 ==>-2 $1)")));
-        assertFalse(Task.validTaskTerm($$("(#1 ==>-2 #1)")));
-        assertFalse(Task.validTaskTerm($$("(#1,#2)")));
+        assertFalse(Task.validTaskTerm(INSTANCE.$$("((--,$1) ==>-2 $1)")));
+        assertFalse(Task.validTaskTerm(INSTANCE.$$("($1 ==>-2 $1)")));
+        assertFalse(Task.validTaskTerm(INSTANCE.$$("(#1 ==>-2 #1)")));
+        assertFalse(Task.validTaskTerm(INSTANCE.$$("(#1,#2)")));
     }
 
 
@@ -102,31 +102,31 @@ public class TaskTest {
 
         assertEq("(((--,#1)==>x),#1)", "((--#1 ==> x),#1)");
 
-        assertEq("(#1==>x)", Task.postNormalize($$("(--#1 ==> x)")));
-        assertEq("(?1==>x)", Task.postNormalize($$("(--?1 ==> x)")));
+        assertEq("(#1==>x)", Task.postNormalize(INSTANCE.$$("(--#1 ==> x)")));
+        assertEq("(?1==>x)", Task.postNormalize(INSTANCE.$$("(--?1 ==> x)")));
 
 
-        assertEq("(#1,x)", Task.postNormalize($$("((--,#1),x)")));
+        assertEq("(#1,x)", Task.postNormalize(INSTANCE.$$("((--,#1),x)")));
 
-        assertEq("($1==>(x,$1))", Task.postNormalize($$("(--$1 ==> (x, --$1))")));
+        assertEq("($1==>(x,$1))", Task.postNormalize(INSTANCE.$$("(--$1 ==> (x, --$1))")));
         //multiple:
-        assertEq("((#1,#1)==>x)", Task.postNormalize($$("((--#1,--#1) ==> x)")));
-        assertEq("((?1,?1)==>x)", Task.postNormalize($$("((--?1,--?1) ==> x)")));
+        assertEq("((#1,#1)==>x)", Task.postNormalize(INSTANCE.$$("((--#1,--#1) ==> x)")));
+        assertEq("((?1,?1)==>x)", Task.postNormalize(INSTANCE.$$("((--?1,--?1) ==> x)")));
 
     }
 
     @Test
     void testTaskPostNormalize1_multiple_imbalance() {
 
-        assertEq("((#1,#1,(--,#1))==>x)", Task.postNormalize($$("((--#1,--#1, #1) ==> x)")));
-        assertEq("((#1,(--,#1),#1)==>x)", Task.postNormalize($$("((--#1,#1,--#1) ==> x)")));
+        assertEq("((#1,#1,(--,#1))==>x)", Task.postNormalize(INSTANCE.$$("((--#1,--#1, #1) ==> x)")));
+        assertEq("((#1,(--,#1),#1)==>x)", Task.postNormalize(INSTANCE.$$("((--#1,#1,--#1) ==> x)")));
 
-        assertEq("((#1,#1,(--,#1),#2,#2)==>x)", Task.postNormalize($$("((--#1,--#1, #1,--#2,--#2) ==> x)")));
+        assertEq("((#1,#1,(--,#1),#2,#2)==>x)", Task.postNormalize(INSTANCE.$$("((--#1,--#1, #1,--#2,--#2) ==> x)")));
     }
 
     @Test
     void testTaskPostNormalize2() {
-        assertEq("((#1,#2)==>x)", Task.postNormalize($$("((--#1,--#2) ==> x)")));
+        assertEq("((#1,#2)==>x)", Task.postNormalize(INSTANCE.$$("((--#1,--#2) ==> x)")));
     }
 
 //    @Test
@@ -136,7 +136,7 @@ public class TaskTest {
 
     @Test
     void testTaskPostNormalize_Indep() {
-        assertEq("(($1,x)==>a($1))", Task.postNormalize($$("((--$1,x) ==> a(--$1))")));
+        assertEq("(($1,x)==>a($1))", Task.postNormalize(INSTANCE.$$("((--$1,x) ==> a(--$1))")));
     }
 
 
@@ -212,7 +212,7 @@ public class TaskTest {
     }
 
     @Deprecated public static TaskBuilder task( Term term, byte punct, float freq, float conf) {
-        return task(term, punct, $.t(freq, conf));
+        return task(term, punct, $.INSTANCE.t(freq, conf));
     }
 
     @Deprecated public static TaskBuilder task( Term term, byte punct, Truth truth) {
@@ -220,7 +220,7 @@ public class TaskTest {
     }
 
     @Deprecated public static TaskBuilder task( String term, byte punct, float freq, float conf) throws Narsese.NarseseException {
-        return task($.$(term), punct, freq, conf);
+        return task($.INSTANCE.$(term), punct, freq, conf);
     }
 
     @Test
@@ -235,7 +235,7 @@ public class TaskTest {
 
     @Test void ValidIndepTaskConcept() {
         NAR tt = NARS.shell();
-        Concept c = tt.conceptualize($$("(((sx,$1)&|good) ==>+2331 ((sx,$1)&&good))"));
+        Concept c = tt.conceptualize(INSTANCE.$$("(((sx,$1)&|good) ==>+2331 ((sx,$1)&&good))"));
         assertTrue(c instanceof TaskConcept);
     }
 //    @Test void DiffQueryVarNormalization() throws Narsese.NarseseException {

@@ -73,8 +73,8 @@ public class FileContext extends NARPart {
         super();
 
         this.view = new Opjects(n).a(
-                $.func("cpu", /* computer (more specific than "central") processing unit, short for computer */
-                        $.the(InetAddress.getLocalHost().getHostName())),
+                $.INSTANCE.func("cpu", /* computer (more specific than "central") processing unit, short for computer */
+                        $.INSTANCE.the(InetAddress.getLocalHost().getHostName())),
                 FileBelief.class);
 
         this.rootPath = path;

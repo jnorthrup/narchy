@@ -18,24 +18,24 @@ class TermHashTest {
     @Test
     void testStructureIsVsHas() throws Narsese.NarseseException {
 
-        assertTrue(inh("a", "b").hasAny(Op.ATOM));
-        assertTrue(inh(p("a"), $("b"))
+        assertTrue(INSTANCE.inh("a", "b").hasAny(Op.ATOM));
+        assertTrue(INSTANCE.inh(INSTANCE.p("a"), INSTANCE.$("b"))
                 .hasAny(or(Op.ATOM, Op.PROD)));
 
-        assertFalse(inh(p("a"), $("b"))
+        assertFalse(INSTANCE.inh(INSTANCE.p("a"), INSTANCE.$("b"))
                 .isAny(or(SIM, Op.PROD)));
-        assertNotSame(inh(p("a"), $("b"))
+        assertNotSame(INSTANCE.inh(INSTANCE.p("a"), INSTANCE.$("b"))
                 .op(), Op.PROD);
 
-        assertSame(inh("a", "b").op(), INH);
-        assertTrue(inh("a", "b").hasAny(INH));
-        assertTrue(inh("a", "b").hasAny(Op.ATOM));
-        assertFalse(inh("a", "b").hasAny(SIM));
+        assertSame(INSTANCE.inh("a", "b").op(), INH);
+        assertTrue(INSTANCE.inh("a", "b").hasAny(INH));
+        assertTrue(INSTANCE.inh("a", "b").hasAny(Op.ATOM));
+        assertFalse(INSTANCE.inh("a", "b").hasAny(SIM));
     }
 
     @Test
     void testHasAnyVSAll() throws Narsese.NarseseException {
-        @Nullable Term iii = impl(inh("a", "b"), $("c"));
+        @Nullable Term iii = INSTANCE.impl(INSTANCE.inh("a", "b"), INSTANCE.$("c"));
         assertTrue(iii.hasAll(or(IMPL, INH)));
         assertFalse(iii.hasAll(or(IMPL, SIM)));
         assertTrue(iii.hasAny(or(IMPL, INH)));

@@ -68,19 +68,19 @@ public class Tetris extends GameX {
     Term tLEFT =
             //$.the("left");
             //$.inh("left", id);
-            $.inh(id, NAct.NEG);
+            $.INSTANCE.inh(id, NAct.NEG);
     Term tRIGHT =
             //$.the("right");
             //$.inh("right", id);
-            $.inh(id, NAct.POS);
+            $.INSTANCE.inh(id, NAct.POS);
     Term tROT =
             //$.the("rotate");
             //$.inh("rotate", id);
-            $.inh(id, "rotate");
+            $.INSTANCE.inh(id, "rotate");
     Term tFALL =
             //$.the("fall");
             //$.inh("fall", id);
-            $.inh(id, "fall");
+            $.INSTANCE.inh(id, "fall");
 
 
     public Tetris(NAR nar) {
@@ -127,7 +127,7 @@ public class Tetris extends GameX {
                         n, grid, new IntIntToObjectFunction<Term>() {
                     @Override
                     public Term apply(int x, int y) {
-                        return $.inh(id, $.p(x, y));
+                        return $.INSTANCE.inh(id, $.INSTANCE.p(x, y));
                     }
                 }
                 ));
@@ -151,7 +151,7 @@ public class Tetris extends GameX {
             });
         }
 
-        actionUnipolar($.inh(id, "speed"), new FloatToFloatFunction() {
+        actionUnipolar($.INSTANCE.inh(id, "speed"), new FloatToFloatFunction() {
             @Override
             public float valueOf(float s) {
                 int fastest = (int) Tetris.this.timePerFall.min, slowest = (int) Tetris.this.timePerFall.max;
@@ -188,7 +188,7 @@ public class Tetris extends GameX {
         Exe.runLater(new Runnable() {
                          @Override
                          public void run() {
-                             lower.setDefault($.t(0.5f, n.confDefault(BELIEF) / 3.0F));
+                             lower.setDefault($.INSTANCE.t(0.5f, n.confDefault(BELIEF) / 3.0F));
                              //lower.addGuard(true,false);
                          }
                      }
@@ -230,7 +230,7 @@ public class Tetris extends GameX {
 
     private TetrisState actionsReflect(NAR nar) {
 
-        Opjects oo = new Opjects(nar.fork((Term) $.inh(id, "opjects")));
+        Opjects oo = new Opjects(nar.fork((Term) $.INSTANCE.inh(id, "opjects")));
         oo.exeThresh.set(0.51f);
         Opjects.methodExclusions.add("toVector");
 
@@ -282,7 +282,7 @@ public class Tetris extends GameX {
     void actionsTriState() {
 
 
-        actionTriState($.inh(id, "X"), new IntPredicate() {
+        actionTriState($.INSTANCE.inh(id, "X"), new IntPredicate() {
             @Override
             public boolean test(int i) {
                 switch (i) {

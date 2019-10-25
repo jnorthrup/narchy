@@ -67,8 +67,8 @@ class BooleanTest {
         d.believe("( (i && --j) ==> " + outcomes[2] + ')');
         d.believe("( (i && j) ==> " + outcomes[3] + ')');
 
-        Term I = $.$("i").negIf(i == 0);
-        Term J = $.$("j").negIf(j == 0);
+        Term I = $.INSTANCE.$("i").negIf(i == 0);
+        Term J = $.INSTANCE.$("j").negIf(j == 0);
 
 
         d.believe(CONJ.the(I, J));
@@ -152,8 +152,8 @@ class BooleanTest {
     @Disabled @Test
     void testConditionalImplication() {
         boolean[] booleans = {true, false};
-        Term x = $.the("x");
-        Term y = $.the("y");
+        Term x = $.INSTANCE.the("x");
+        Term y = $.INSTANCE.the("y");
         Term[] concepts = {x, y};
 
         for (boolean goalSubjPred : booleans) {
@@ -164,7 +164,7 @@ class BooleanTest {
                     for (boolean goalPolarity : booleans) {
 
                         Term goal = (goalSubjPred ? x : y).negIf(!goalPolarity);
-                        Term condition = $.impl(x.negIf(!subjPolarity), y.negIf(!predPolarity));
+                        Term condition = $.INSTANCE.impl(x.negIf(!subjPolarity), y.negIf(!predPolarity));
 
                         NAR n = NARS.tmp();
                         n.want(goal);
@@ -241,7 +241,7 @@ class BooleanTest {
                 new IntFunction<Term>() {
                     @Override
                     public Term apply(int i) {
-                        return $.inh($.the(i), $.the("x"));
+                        return $.INSTANCE.inh($.INSTANCE.the(i), $.INSTANCE.the("x"));
                     }
                 };
 

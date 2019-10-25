@@ -15,7 +15,7 @@ import java.util.DoubleSummaryStatistics;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.*;
 
-import static nars.$.$$$;
+import static nars.$.*;
 import static nars.Op.BELIEF;
 import static nars.term.Functor.f;
 import static nars.term.util.TermTest.assertEq;
@@ -54,7 +54,7 @@ class QuestionTest {
         AtomicInteger ok = new AtomicInteger(0);
 
 
-        Term expectedSolutionTerm = $.$(expectedSolution);
+        Term expectedSolutionTerm = $.INSTANCE.$(expectedSolution);
 
         NAR nar = NARS.tmp(1);
 
@@ -164,7 +164,7 @@ class QuestionTest {
             public Term apply(Subterms a) {
                 if (a.subs() == 1 && a.sub(0).op() == Op.ATOM) {
                     try {
-                        return $.intValue(a.sub(0)) % 2 == 0 ? IdempotentBool.False : IdempotentBool.True;
+                        return $.INSTANCE.intValue(a.sub(0)) % 2 == 0 ? IdempotentBool.False : IdempotentBool.True;
                     } catch (NumberFormatException ignored) {
 
                     }
@@ -261,8 +261,8 @@ class QuestionTest {
 
     @Test
     void testDepVarInIndepImpl3() {
-        assertFalse($$$("f(#2,#1)").isNormalized());
-        assertEq("f(#1,#2)", $$$("f(#2,#1)").normalize());
+        assertFalse(INSTANCE.$$$("f(#2,#1)").isNormalized());
+        assertEq("f(#1,#2)", INSTANCE.$$$("f(#2,#1)").normalize());
 
         new TestNAR(NARS.tmp(6))
                 .confMin(0.75f)

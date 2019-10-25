@@ -55,33 +55,33 @@ public enum NALTruth implements TruthFunction {
         @Override
         public Truth apply(Truth T, Truth Bignored, float minConf, NAL n) {
             float c = confCompose(T, (double) NALTruth.confDefault(n));
-            return c >= minConf ? $.tt(T.freq(), c) : null;
+            return c >= minConf ? $.INSTANCE.tt(T.freq(), c) : null;
         }
     },
     @AllowOverlap @SinglePremise StructuralReductionWeak() {
         @Override
         public Truth apply(Truth T, Truth Bignored, float minConf, NAL n) {
             float c = confCompose(T, (double) NALTruth.confDefault(n));
-            return c >= minConf ? weak($.tt(T.freq(), c),minConf) : null;
+            return c >= minConf ? weak($.INSTANCE.tt(T.freq(), c),minConf) : null;
         }
     },
     @AllowOverlap @SinglePremise StructuralDeduction() {
         @Override
         public Truth apply(Truth T, Truth Bignored, float minConf, NAL n) {
-            return T != null ? Deduction.apply(T, $.tt(1f, confDefault(n)), minConf, n) : null;
+            return T != null ? Deduction.apply(T, $.INSTANCE.tt(1f, confDefault(n)), minConf, n) : null;
         }
     },
     @AllowOverlap @SinglePremise StructuralDeductionWeak() {
         @Override
         public Truth apply(Truth T, Truth Bignored, float minConf, NAL n) {
-            return T != null ? weak(Deduction.apply(T, $.tt(1f, confDefault(n)), minConf, n), minConf) : null;
+            return T != null ? weak(Deduction.apply(T, $.INSTANCE.tt(1f, confDefault(n)), minConf, n), minConf) : null;
         }
     },
 
     BeliefStructuralIntersection() {
         @Override
         public Truth apply(Truth Tignored, Truth B, float minConf, NAL n) {
-            return Intersection.apply(B, $.tt(1f, confDefault(n)), minConf, n);
+            return Intersection.apply(B, $.INSTANCE.tt(1f, confDefault(n)), minConf, n);
         }
     },
 
@@ -399,14 +399,14 @@ public enum NALTruth implements TruthFunction {
     StructuralAbduction() {
         @Override
         public Truth apply(Truth T, Truth B, float minConf, NAL n) {
-            return Abduction.apply($.tt(1f, confDefault(n)), T, minConf, n);
+            return Abduction.apply($.INSTANCE.tt(1f, confDefault(n)), T, minConf, n);
         }
     },
 
     BeliefStructuralAbduction() {
         @Override
         public Truth apply(@Nullable Truth T, Truth B, float minConf, NAL n) {
-            return Abduction.apply($.tt(1f, confDefault(n)), B, minConf, n);
+            return Abduction.apply($.INSTANCE.tt(1f, confDefault(n)), B, minConf, n);
         }
     },
 

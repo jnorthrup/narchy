@@ -265,7 +265,7 @@ public abstract class PatternCompound extends CachedCompound.TemporalCachedCompo
                                 break;
                             default:
                                 xMatch.sortThis();
-                                result = Subterms.unifyCommute(xMatch, $.vFast(yFree), u);
+                                result = Subterms.unifyCommute(xMatch, $.INSTANCE.vFast(yFree), u);
                                 finished = true;
                                 break;
                         }

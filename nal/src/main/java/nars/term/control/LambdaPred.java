@@ -11,7 +11,7 @@ public final class LambdaPred<X> extends AbstractPred<X> {
     private final Predicate<X> test;
 
     public LambdaPred(Predicate<X> p) {
-        this($.identity(p), p);
+        this($.INSTANCE.identity(p), p);
     }
 
     public LambdaPred(Term term, Predicate<X> p) {

@@ -90,7 +90,7 @@ public class Truthify extends AbstractPred<Derivation> {
 
         args.add(time.term);
 
-        return new Truthify( $.func(TRUTH, args.toArrayRecycled(Term[]::new)),
+        return new Truthify( $.INSTANCE.func(TRUTH, args.toArrayRecycled(Term[]::new)),
                 punc,
                 beliefTruthOp, goalTruthOp,
                 time);

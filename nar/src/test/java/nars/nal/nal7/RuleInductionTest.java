@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import static nars.$.$$;
+import static nars.$.*;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.ETERNAL;
 import static org.junit.jupiter.api.Assertions.*;
@@ -56,9 +56,9 @@ class RuleInductionTest {
 
         int period = dur * 4;
         int dutyPeriod = period / 2;
-        Term aConjB = $$("(a &&+" + dutyPeriod + " --a)");
+        Term aConjB = INSTANCE.$$("(a &&+" + dutyPeriod + " --a)");
         Term aConjB_root = aConjB.concept();
-        Term aImpB = $$("(a ==>+" + dutyPeriod + " --a)");
+        Term aImpB = INSTANCE.$$("(a ==>+" + dutyPeriod + " --a)");
 
         PairedStatsAccumulator aConjB_exp = new PairedStatsAccumulator();
 

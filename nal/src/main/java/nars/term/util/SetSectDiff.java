@@ -194,7 +194,7 @@ public final class SetSectDiff{
             xy[i] = ab;
         }
 
-        return $.pFast(xy);
+        return $.INSTANCE.pFast(xy);
     }
 
     /**

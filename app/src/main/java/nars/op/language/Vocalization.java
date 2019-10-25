@@ -22,8 +22,8 @@ import java.util.function.Consumer;
 
 public class Vocalization extends NARPart {
 
-    public static final Term PREPOSITION = $.the("preposition");
-    public static final Term PRONOUN = $.the("pronoun");
+    public static final Term PREPOSITION = $.INSTANCE.the("preposition");
+    public static final Term PRONOUN = $.INSTANCE.the("pronoun");
     /**
      * when, word, truth
      */

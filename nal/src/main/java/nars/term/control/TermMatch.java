@@ -44,9 +44,9 @@ public final class TermMatch<X extends Unify> extends AbstractTermMatchPred<X> {
         if (cc.isEmpty())
             throw new WTF();
         Atomic a = Atomic.the(cc);
-        Term r = $.$$(resolve.toString());
+        Term r = $.INSTANCE.$$(resolve.toString());
         Term p = match.param();
-        return p!=null ? $.func(a, r, p) : $.func(a, r);
+        return p!=null ? $.INSTANCE.func(a, r, p) : $.INSTANCE.func(a, r);
     }
 
 

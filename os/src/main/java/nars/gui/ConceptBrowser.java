@@ -10,7 +10,7 @@ import spacegraph.space2d.widget.textedit.TextEdit;
 
 import java.util.function.Consumer;
 
-import static nars.$.$;
+import static nars.$.*;
 
 public class ConceptBrowser extends Bordering {
 
@@ -37,7 +37,7 @@ public class ConceptBrowser extends Bordering {
     private synchronized void update(String termString) {
         Term t;
         try {
-            t = $(termString);
+            t = INSTANCE.$(termString);
         } catch (Narsese.NarseseException e) {
             center(new VectorLabel(e.getMessage()));
             current = null;

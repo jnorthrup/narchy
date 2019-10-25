@@ -42,11 +42,11 @@ public final class SWITCH<D extends PreDerivation> extends AbstractPred<D> {
     }
 
     public SWITCH(boolean taskOrBelief, EnumMap<Op, PREDICATE<D>> cases) {
-        super(/*$.impl*/ $.func("op", taskOrBelief ? Task  : Belief,
-                $.p(cases.entrySet().stream().map(new Function<Map.Entry<Op, PREDICATE<D>>, Term>() {
+        super(/*$.impl*/ $.INSTANCE.func("op", taskOrBelief ? Task  : Belief,
+                $.INSTANCE.p(cases.entrySet().stream().map(new Function<Map.Entry<Op, PREDICATE<D>>, Term>() {
                     @Override
                     public Term apply(Map.Entry<Op, PREDICATE<D>> e) {
-                        return $.p($.quote(e.getKey().toString()), e.getValue());
+                        return $.INSTANCE.p($.INSTANCE.quote(e.getKey().toString()), e.getValue());
                     }
                 }).toArray(Term[]::new))));
 

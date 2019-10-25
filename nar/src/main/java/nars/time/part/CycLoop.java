@@ -69,7 +69,7 @@ public abstract class CycLoop extends NARPart implements Consumer<NAR> {
         private final Consumer<NAR> each;
 
         LambdaCycLoop(Consumer<NAR> each) {
-            super($.func(CycLoop.onCycle, $.identity(each)));
+            super($.INSTANCE.func(CycLoop.onCycle, $.INSTANCE.identity(each)));
             this.each = each;
         }
 

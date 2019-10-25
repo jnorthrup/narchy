@@ -76,8 +76,8 @@ public class NARHear extends Loop {
     }
 
     public static Loop hearIfNotNarsese(NAR nar, String msg, String src, Function<String, Loop> ifNotNarsese) {
-        @NotNull List<Task> parsed = $.newArrayList();
-        @NotNull List<Narsese.NarseseException> errors = $.newArrayList();
+        @NotNull List<Task> parsed = $.INSTANCE.newArrayList();
+        @NotNull List<Narsese.NarseseException> errors = $.INSTANCE.newArrayList();
 
         try {
             Narsese.tasks(msg, parsed, nar);
@@ -149,8 +149,8 @@ public class NARHear extends Loop {
 
         Term term =
                 context != null ?
-                        $.func("hear", next, context) :
-                        $.func("hear", next);
+                        $.INSTANCE.func("hear", next, context) :
+                        $.INSTANCE.func("hear", next);
 
         long now = nar.time();
 		//            new TruthletTask(
@@ -162,7 +162,7 @@ public class NARHear extends Loop {
 		//                ),
 		//                nar)
 		nar.input(
-			((Task) NALTask.the(term, BELIEF, $.t(1.0F, (nar.confDefault(BELIEF) * confFactor)), now, now,
+			((Task) NALTask.the(term, BELIEF, $.INSTANCE.t(1.0F, (nar.confDefault(BELIEF) * confFactor)), now, now,
                     (long) Math.round((float) now + nar.dur()), nar.evidence())).<Task>pri(nar.priDefault(BELIEF) * priorityFactor)
         );
     }
@@ -176,7 +176,7 @@ public class NARHear extends Loop {
                 try {
 
 
-                    return readURL(n, $.unquote(args[0]));
+                    return readURL(n, $.INSTANCE.unquote(args[0]));
 
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -214,7 +214,7 @@ public class NARHear extends Loop {
 
             }
         } catch (Throwable tt) {
-            nar.input(Operator.log(nar.time(), $.p(t, tt.toString())));
+            nar.input(Operator.log(nar.time(), $.INSTANCE.p(t, tt.toString())));
         }
 
     }

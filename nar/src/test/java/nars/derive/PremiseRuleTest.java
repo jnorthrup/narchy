@@ -19,7 +19,7 @@ import org.junit.jupiter.api.function.Executable;
 
 import java.util.function.Supplier;
 
-import static nars.$.$$;
+import static nars.$.*;
 import static nars.term.util.TermTest.assertEq;
 import static nars.time.Tense.XTERNAL;
 import static org.junit.jupiter.api.Assertions.*;
@@ -37,17 +37,17 @@ class PremiseRuleTest {
 
     @Test
     void testPatternCompoundWithXTERNAL() throws Narsese.NarseseException {
-        Compound p = (Compound) PatternTermBuilder.patternify($.$("((x) ==>+- (y))")).term();
+        Compound p = (Compound) PatternTermBuilder.patternify($.INSTANCE.$("((x) ==>+- (y))")).term();
         assertEquals(XTERNAL, p.dt());
 
     }
 
     @Test
     void testPatternTermConjHasXTERNAL() {
-        Term p = PatternTermBuilder.patternify($$("(x && y)"));
+        Term p = PatternTermBuilder.patternify(INSTANCE.$$("(x && y)"));
         assertEquals("(x &&+- y)", p.toString());
 
-        Term r = PatternTermBuilder.patternify($$("(x || y)"));
+        Term r = PatternTermBuilder.patternify(INSTANCE.$$("(x || y)"));
         assertEquals(
                 //"(--,((--,x) &&+- (--,y)))",
                 "(x ||+- y)",
@@ -60,7 +60,7 @@ class PremiseRuleTest {
 
         String a = "<x --> #1>";
         String b = "<y --> #1>";
-        Term p = $.p(
+        Term p = $.INSTANCE.p(
                 Narsese.term(a),
                 Narsese.term(b)
         );

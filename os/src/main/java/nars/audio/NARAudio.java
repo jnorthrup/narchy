@@ -27,7 +27,7 @@ import static spacegraph.space2d.container.grid.Gridding.grid;
 public class NARAudio extends WaveIn {
 
     public NARAudio(Term id, NAR nar, SignalInput src, float fps) {
-        super($.quote(src.toString()/*HACK*/), src, fps);
+        super($.INSTANCE.quote(src.toString()/*HACK*/), src, fps);
 
         Game h = new Game("hear");
 
@@ -43,7 +43,7 @@ public class NARAudio extends WaveIn {
                 512, 16, new IntFunction<Term>() {
             @Override
             public Term apply(int f) {
-                return $.inh(id, $.the(f));
+                return $.INSTANCE.inh(id, $.INSTANCE.the(f));
             }
         });
         h.addSensor(hear);
@@ -72,7 +72,7 @@ public class NARAudio extends WaveIn {
 
         audio.start();
 
-        NARAudio na = new NARAudio($.quote(audio.toString()), n, i, 30f);
+        NARAudio na = new NARAudio($.INSTANCE.quote(audio.toString()), n, i, 30f);
 
         SpaceGraph.window(new SignalView(i), 800, 800);
 

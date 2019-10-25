@@ -240,7 +240,7 @@ public class Opjects extends DefaultTermizer {
 
     @Override
     protected Term classInPackage(Term classs, Term packagge) {
-        Term t = $.inst(classs, packagge);
+        Term t = $.INSTANCE.inst(classs, packagge);
 
 
         return t;
@@ -254,7 +254,7 @@ public class Opjects extends DefaultTermizer {
         nar.add(Functor.f(op, new Function<Subterms, Term>() {
                     @Override
                     public Term apply(Subterms s) {
-                        return $.func(method, instance, s.subs() == 1 ? s.sub(0) : PROD.the(s));
+                        return $.INSTANCE.func(method, instance, s.subs() == 1 ? s.sub(0) : PROD.the(s));
                     }
                 }
         ));
@@ -306,7 +306,7 @@ public class Opjects extends DefaultTermizer {
 
             Task feedback;
             if (isVoid || evokedOrInvoked) {
-                feedback = feedback(opTerm(instance, method, args, isVoid ? null : $.varDep(1)), start, end, nar);
+                feedback = feedback(opTerm(instance, method, args, isVoid ? null : $.INSTANCE.varDep(1)), start, end, nar);
             } else {
                 feedback = null;
             }
@@ -462,7 +462,7 @@ public class Opjects extends DefaultTermizer {
             }
         }
 
-        return $.func(methodName(method), x).negIf(negate).normalize();
+        return $.INSTANCE.func(methodName(method), x).negIf(negate).normalize();
 
     }
 
@@ -491,7 +491,7 @@ public class Opjects extends DefaultTermizer {
         MethodExec(String _methodName) {
             super(null, Opjects.this.exeThresh);
 
-            this.methodName = $.the(_methodName);
+            this.methodName = $.INSTANCE.the(_methodName);
 
             runCache = CaffeineMemoize.build(new Function<Term, Runnable>() {
                 @Override
@@ -600,7 +600,7 @@ public class Opjects extends DefaultTermizer {
 
 
     public final <T> T the(String id, T instance, Object... args) {
-        return the($.the(id), instance, args);
+        return the($.INSTANCE.the(id), instance, args);
     }
 
     /**
@@ -675,7 +675,7 @@ public class Opjects extends DefaultTermizer {
     }
 
     public final <T> T a(String id, Class<? extends T> cl, Object... args) {
-        return a($.the(id), cl, args);
+        return a($.INSTANCE.the(id), cl, args);
     }
 
     /**

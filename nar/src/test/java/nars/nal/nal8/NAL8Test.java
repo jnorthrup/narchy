@@ -93,8 +93,8 @@ public class NAL8Test extends NALTest {
          */
 
 		test
-                .input(((Task) NALTask.the($.$("(a-->b)"), GOAL, $.t(1f, 0.9f), (long) 5, (long) 10, (long) 20, new long[]{100})).<Task>pri(0.5f))
-                .input(((Task) NALTask.the($.$("(c-->b)"), BELIEF, $.t(1f, 0.9f), (long) 4, (long) 5, (long) 25, new long[]{101})).<Task>pri(0.5f))
+                .input(((Task) NALTask.the($.INSTANCE.$("(a-->b)"), GOAL, $.INSTANCE.t(1f, 0.9f), (long) 5, (long) 10, (long) 20, new long[]{100})).<Task>pri(0.5f))
+                .input(((Task) NALTask.the($.INSTANCE.$("(c-->b)"), BELIEF, $.INSTANCE.t(1f, 0.9f), (long) 4, (long) 5, (long) 25, new long[]{101})).<Task>pri(0.5f))
                 .mustGoal(cycles, "(a-->c)", 1f, 0.4f,
 
                         new LongPredicate() {
@@ -147,7 +147,7 @@ public class NAL8Test extends NALTest {
     void subbelief_2() throws Narsese.NarseseException {
 
         {
-            Term t = $.$("(hold(SELF,{t002}) &&+5 (at(SELF,{t001}) &&+5 open({t001})))");
+            Term t = $.INSTANCE.$("(hold(SELF,{t002}) &&+5 (at(SELF,{t001}) &&+5 open({t001})))");
             assertEquals(2, t.subs());
             assertEquals(10, t.eventRange());
         }
@@ -867,7 +867,7 @@ public class NAL8Test extends NALTest {
         int when = 6;
 
         int goalAt = //Math.max(when,
-                when - dt - $.$$(sj).eventRange();
+                when - dt - $.INSTANCE.$$(sj).eventRange();
 
         String[] subjPred = sj.split("\\/");
         assertEquals(2, subjPred.length);

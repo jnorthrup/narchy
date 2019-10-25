@@ -60,8 +60,8 @@ public final class Arithmeticize{
     private static final Function<IntArrayListCached, ArithmeticOp[]> cached = Memoizers.the.memoize(Arithmeticize.class.getSimpleName() + "_mods",
         16 * 1024, Arithmeticize::_mods);
 
-    private static final Variable A = $.varDep("A_");
-    private static final Variable B = $.varDep("B_");
+    private static final Variable A = $.INSTANCE.varDep("A_");
+    private static final Variable B = $.INSTANCE.varDep("B_");
     private static final Op Aop = A.op();
 
     private static final Function<Atom, Functor> ArithFunctors = Map.of(
@@ -251,7 +251,7 @@ public final class Arithmeticize{
                             IdempotInt.the(b), new UnaryOperator<Term>() {
                                 @Override
                                 public Term apply(Term v) {
-                                    return $.func(MathFunc.mul, v, IdempotInt.NEG_ONE);
+                                    return $.INSTANCE.func(MathFunc.mul, v, IdempotInt.NEG_ONE);
                                 }
                             }
                     ));
@@ -265,7 +265,7 @@ public final class Arithmeticize{
                                 IdempotInt.the(b), new UnaryOperator<Term>() {
                                     @Override
                                     public Term apply(Term v) {
-                                        return $.func(MathFunc.mul, v, $.the(b / a));
+                                        return $.INSTANCE.func(MathFunc.mul, v, $.INSTANCE.the(b / a));
                                     }
                                 }
                         ));
@@ -280,7 +280,7 @@ public final class Arithmeticize{
                             IdempotInt.the(a), new UnaryOperator<Term>() {
                                 @Override
                                 public Term apply(Term v) {
-                                    return $.func(MathFunc.add, v, $.the(AMinB));
+                                    return $.INSTANCE.func(MathFunc.add, v, $.INSTANCE.the(AMinB));
                                 }
                             }
                     ));
@@ -346,7 +346,7 @@ public final class Arithmeticize{
 
             Term var = x.hasAny(Aop) ?
                 A :
-                $.v(Aop, (byte) 1); //optimistic prenormalization
+                $.INSTANCE.v(Aop, (byte) 1); //optimistic prenormalization
 
             Term yy = x.replace(baseTerm, var);
 
@@ -384,7 +384,7 @@ public final class Arithmeticize{
             this.b = bigger;
         }
 
-        static final Term cmpABNormalized = Equal._cmp($.varDep(1), $.varDep(2), -1);
+        static final Term cmpABNormalized = Equal._cmp($.INSTANCE.varDep(1), $.INSTANCE.varDep(2), -1);
         static final Term cmpABUnnormalized = Equal._cmp(A, B, -1);
 
         @Override
@@ -393,7 +393,7 @@ public final class Arithmeticize{
             Term cmp;
             Variable A, B;
             if (!x.hasAny(Aop)) {
-                A = $.varDep(1); B = $.varDep(2); //optimistic prenormalization
+                A = $.INSTANCE.varDep(1); B = $.INSTANCE.varDep(2); //optimistic prenormalization
                 cmp = cmpABNormalized;
             } else {
                 A = Arithmeticize.A; B = Arithmeticize.B;

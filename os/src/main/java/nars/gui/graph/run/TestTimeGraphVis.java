@@ -30,10 +30,10 @@ public class TestTimeGraphVis extends SimpleGraph3D<TimeGraph.Event> {
 
     static MapNodeGraph dt() {
         TimeGraph A = new TimeGraph();
-        A.know($.$$("((one &&+1 two) ==>+1 (three &&+1 four))"), ETERNAL);
-        A.know($.$$("one"), 1L);
-        A.know($.$$("two"), 20L);
-        A.solve($.$$("\"(one &&+- two)\""), new Predicate<TimeGraph.Event>() {
+        A.know($.INSTANCE.$$("((one &&+1 two) ==>+1 (three &&+1 four))"), ETERNAL);
+        A.know($.INSTANCE.$$("one"), 1L);
+        A.know($.INSTANCE.$$("two"), 20L);
+        A.solve($.INSTANCE.$$("\"(one &&+- two)\""), new Predicate<TimeGraph.Event>() {
             @Override
             public boolean test(TimeGraph.Event x) {
                 return true;

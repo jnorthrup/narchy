@@ -147,7 +147,7 @@ class RTreeBeliefTableTest {
         assertTrue(avgErr < 0.4f);
     }
 
-    static final Term ab = nars.$.$$("a:b");
+    static final Term ab = nars.$.INSTANCE.$$("a:b");
     @Test
     void testBasicOperations() {
         NAR n = NARS.shell();
@@ -199,7 +199,7 @@ class RTreeBeliefTableTest {
     @Test
     void testProjection() throws Narsese.NarseseException {
         NAR nar = NARS.shell();
-        Term ab = nars.$.$("a:b");
+        Term ab = nars.$.INSTANCE.$("a:b");
         TaskConcept AB = (TaskConcept) nar.conceptualize(ab);
         RTreeBeliefTable r = new RTreeBeliefTable();
         r.setTaskCapacity(4);
@@ -285,7 +285,7 @@ class RTreeBeliefTableTest {
 
         n.time.dur(1);
 
-        Term term = $.p("x");
+        Term term = $.INSTANCE.p("x");
 
         TaskConcept c = (TaskConcept) n.conceptualize(term);
         BeliefTables cb = (BeliefTables) (true ? c.beliefs() : c.goals());
@@ -349,7 +349,7 @@ class RTreeBeliefTableTest {
 
         n.time.dur(1);
 
-        Term term = $.p("x");
+        Term term = $.INSTANCE.p("x");
 
         TaskConcept c = (TaskConcept) n.conceptualize(term);
         BeliefTables cb = (BeliefTables) (true ? c.beliefs() : c.goals());

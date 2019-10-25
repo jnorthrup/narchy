@@ -23,14 +23,14 @@ public class Choose1 extends Termutator.AbstractTermutator {
     private final Term /*Ellipsis*/ xEllipsis;
     private final Term[] yy;
 
-    private static final Atom CHOOSE_1 = $.the(Choose1.class);
+    private static final Atom CHOOSE_1 = $.INSTANCE.the(Choose1.class);
 
     public Choose1(Term /*Ellipsis*/ xEllipsis, Term x, SortedSet<Term> yFree) {
         this(xEllipsis, x, yFree.toArray(Op.EmptyTermArray));
     }
 
     private Choose1(Term /*Ellipsis*/ xEllipsis, Term x, Term[] yFree /* sorted */) {
-        super(CHOOSE_1, x, xEllipsis, $.sFast(false, yFree));
+        super(CHOOSE_1, x, xEllipsis, $.INSTANCE.sFast(false, yFree));
 
         assert(yFree.length >= 2): Arrays.toString(yFree) + " must offer choice";
 

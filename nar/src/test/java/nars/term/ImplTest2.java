@@ -3,7 +3,7 @@ package nars.term;
 import nars.Narsese;
 import org.junit.jupiter.api.Test;
 
-import static nars.$.$;
+import static nars.$.*;
 
 public class ImplTest2 {
     @Test
@@ -14,8 +14,8 @@ public class ImplTest2 {
 
     @Test
     void testCoNegatedImplOK() throws Narsese.NarseseException {
-        TermTestMisc.assertValid($("((--,(a)) ==>+1 (a))"));
-        TermTestMisc.assertValid($("((--,a) ==>+1 a)"));
+        TermTestMisc.assertValid(INSTANCE.$("((--,(a)) ==>+1 (a))"));
+        TermTestMisc.assertValid(INSTANCE.$("((--,a) ==>+1 a)"));
     }
 
 }

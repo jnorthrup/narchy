@@ -17,8 +17,8 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.function.Supplier;
 
-import static nars.$.$;
-import static nars.$.$$;
+import static nars.$.*;
+import static nars.$.*;
 import static nars.Op.BELIEF;
 import static nars.term.util.TermTest.assertEq;
 import static nars.time.Tense.ETERNAL;
@@ -37,63 +37,63 @@ class DynamicConjTest extends AbstractDynamicTaskTest {
         n.run(1);
         long now = n.time();
 
-        assertEquals($.t(1f, 0.81f), n.beliefTruth($("(a:x && a:y)"), now));
+        assertEquals($.INSTANCE.t(1f, 0.81f), n.beliefTruth(INSTANCE.$("(a:x && a:y)"), now));
 
-        assertEquals($.t(0f, 0.81f), n.beliefTruth("(a:x && (--,a:y))", now));
+        assertEquals($.INSTANCE.t(0f, 0.81f), n.beliefTruth("(a:x && (--,a:y))", now));
 
-        assertEquals($.t(1f, 0.81f), n.belief($("(a:x && a:y)"), now).truth());
+        assertEquals($.INSTANCE.t(1f, 0.81f), n.belief(INSTANCE.$("(a:x && a:y)"), now).truth());
 
-        assertEquals($.t(0f, 0.81f), n.beliefTruth("(b:x && a:y)", now));
-        assertEquals($.t(1f, 0.81f), n.beliefTruth("((--,b:x) && a:y)", now));
-        assertEquals($.t(0f, 0.81f), n.beliefTruth("((--,b:x) && (--,a:y))", now));
+        assertEquals($.INSTANCE.t(0f, 0.81f), n.beliefTruth("(b:x && a:y)", now));
+        assertEquals($.INSTANCE.t(1f, 0.81f), n.beliefTruth("((--,b:x) && a:y)", now));
+        assertEquals($.INSTANCE.t(0f, 0.81f), n.beliefTruth("((--,b:x) && (--,a:y))", now));
     }
 
     @Test
     void testDynamicConjunctionEternalOverride() throws Narsese.NarseseException {
         NAR n = NARS.shell()
-                .believe($$("a:x"), 0)
-                .believe($$("a:y"), 0);
+                .believe(INSTANCE.$$("a:x"), 0)
+                .believe(INSTANCE.$$("a:y"), 0);
 
         final long now = 0; //n.time();
-        assertEquals($.t(1f, 0.81f), n.beliefTruth($("(a:x && a:y)"), now));
+        assertEquals($.INSTANCE.t(1f, 0.81f), n.beliefTruth(INSTANCE.$("(a:x && a:y)"), now));
 
         {
             //temporal evaluated a specific point
-            Task xy = n.belief($("(a:x && a:y)"), now);
+            Task xy = n.belief(INSTANCE.$("(a:x && a:y)"), now);
             assertEquals("((x-->a)&&(y-->a))", xy.term().toString());
-            assertEquals($.t(1f, 0.81f), xy.truth());
+            assertEquals($.INSTANCE.t(1f, 0.81f), xy.truth());
         }
 
         {
-            Task xAndNoty = n.belief($("(a:x && --a:y)"), now);
+            Task xAndNoty = n.belief(INSTANCE.$("(a:x && --a:y)"), now);
             assertEquals("((--,(y-->a))&&(x-->a))", xAndNoty.term().toString());
-            assertEquals($.t(0f, 0.81f), xAndNoty.truth());
+            assertEquals($.INSTANCE.t(0f, 0.81f), xAndNoty.truth());
         }
 
         {
             //remain eternal
-            Task xy = n.belief($("(a:x && a:y)"), ETERNAL);
+            Task xy = n.belief(INSTANCE.$("(a:x && a:y)"), ETERNAL);
             assertNotNull(xy);
             assertEquals(0, xy.start()); //exact time since it was what was stored
             assertEquals("((x-->a)&&(y-->a))", xy.term().toString());
-            assertEquals($.t(1f, 0.81f), xy.truth());
+            assertEquals($.INSTANCE.t(1f, 0.81f), xy.truth());
         }
 
 
         //override or revise dynamic with an input belief
         {
-            n.believe($$("--(a:x && a:y)"), 0);
+            n.believe(INSTANCE.$$("--(a:x && a:y)"), 0);
             assertEquals(1, n.concept("(a:x && a:y)").beliefs().taskCount());
 
-            Task ttEte = n.answerBelief($("(a:x && a:y)"), now);
+            Task ttEte = n.answerBelief(INSTANCE.$("(a:x && a:y)"), now);
 //            assertEquals(1, ttEte.stamp().length);
 
 
             assertTrue(ttEte.toString().contains("((x-->a)&&(y-->a)). 0 %"));
 
-            Truth tNow = n.beliefTruth($("(a:x && a:y)"), now);
+            Truth tNow = n.beliefTruth(INSTANCE.$("(a:x && a:y)"), now);
             assertTrue(
-                    $.t(0.32f, 0.93f /*0.87f*/)
+                    $.INSTANCE.t(0.32f, 0.93f /*0.87f*/)
                     //$.t(0.00f, 0.90f)
                     //$.t(0.32f, 0.90f /*0.87f*/)
                             .equalTruth(tNow, n), new Supplier<String>() {
@@ -105,25 +105,25 @@ class DynamicConjTest extends AbstractDynamicTaskTest {
 
         }
         {
-            n.believe($$("--(a:x && a:y)"), 0);
+            n.believe(INSTANCE.$$("--(a:x && a:y)"), 0);
             assertTrue(2 <= n.concept("(a:x && a:y)").beliefs().taskCount());
 
-            Task ttNow = n.answerBelief($("(a:x && a:y)"), now);
+            Task ttNow = n.answerBelief(INSTANCE.$("(a:x && a:y)"), now);
             assertTrue(ttNow.isNegative());
             assertTrue(ttNow.toString().contains("((x-->a)&&(y-->a)). 0"), ttNow::toString);
         }
 
 
-        Task tAfterTask = n.belief($("(a:x && a:y)"), now + 2);
+        Task tAfterTask = n.belief(INSTANCE.$("(a:x && a:y)"), now + 2);
         assertEquals(now + 2, tAfterTask.start());
         assertEquals(now + 2, tAfterTask.end());
 
-        Truth tAfter = n.beliefTruth($("(a:x && a:y)"), now + 2);
+        Truth tAfter = n.beliefTruth(INSTANCE.$("(a:x && a:y)"), now + 2);
         assertNotNull(tAfter);
         assertTrue(tAfter.isNegative());
         //assertTrue($.t(0.19f, 0.88f).equalsIn(tAfter, n), () -> tAfter.toString());
 
-        Truth tLater = n.beliefTruth($("(a:x && a:y)"), now + 5);
+        Truth tLater = n.beliefTruth(INSTANCE.$("(a:x && a:y)"), now + 5);
         assertTrue(tLater.isPositive() == tAfter.isPositive());
         assertTrue(tLater.conf() < tAfter.conf());
         //assertTrue($.t(0.19f, 0.79f).equalsIn(tLater, n), () -> tLater.toString());
@@ -136,11 +136,11 @@ class DynamicConjTest extends AbstractDynamicTaskTest {
 //        assertEquals(xx, $$("((x&&y)&&e)").toString());
 
         NAR n = NARS.shell()
-                .believe($$("x"), 0)
-                .believe($$("y"), 0)
-                .believe($$("e"), ETERNAL);
+                .believe(INSTANCE.$$("x"), 0)
+                .believe(INSTANCE.$$("y"), 0)
+                .believe(INSTANCE.$$("e"), ETERNAL);
 
-        Term xye = $("(&&,x,y,e)");
+        Term xye = INSTANCE.$("(&&,x,y,e)");
 
         Task atZero = n.belief(xye, 0);
         assertNotNull(atZero);
@@ -169,13 +169,13 @@ class DynamicConjTest extends AbstractDynamicTaskTest {
 
         n.run(1);
         long now = n.time();
-        assertEquals($.t(1f, 0.81f), n.beliefTruth($("(a:x && a:y)"), now));
+        assertEquals($.INSTANCE.t(1f, 0.81f), n.beliefTruth(INSTANCE.$("(a:x && a:y)"), now));
 
-        n.believe($$("--(a:x && a:y)"), now);
+        n.believe(INSTANCE.$$("--(a:x && a:y)"), now);
 
 
-        Truth tt = n.belief($("(a:x && a:y)"), now).truth();
-        assertTrue($.t(0.32f, 0.93f).equalTruth(tt, n), tt::toString);
+        Truth tt = n.belief(INSTANCE.$("(a:x && a:y)"), now).truth();
+        assertTrue($.INSTANCE.t(0.32f, 0.93f).equalTruth(tt, n), tt::toString);
     }
 
     @Test
@@ -186,10 +186,10 @@ class DynamicConjTest extends AbstractDynamicTaskTest {
         n.believe("a:z", 1f, 0.9f);
         n.run(1);
 
-        TaskConcept cc = (TaskConcept) n.conceptualize($("(&&, a:x, a:y, a:z)"));
+        TaskConcept cc = (TaskConcept) n.conceptualize(INSTANCE.$("(&&, a:x, a:y, a:z)"));
         Truth now = n.beliefTruth(cc, n.time());
         assertNotNull(now);
-        assertTrue($.t(1f, 0.73f).equalTruth(now, 0.1f), new Supplier<String>() {
+        assertTrue($.INSTANCE.t(1f, 0.73f).equalTruth(now, 0.1f), new Supplier<String>() {
             @Override
             public String get() {
                 return now + " truth at " + n.time();
@@ -198,13 +198,13 @@ class DynamicConjTest extends AbstractDynamicTaskTest {
 
 
         {
-            TaskConcept ccn = (TaskConcept) n.conceptualize($("(&&, a:x, a:w)"));
+            TaskConcept ccn = (TaskConcept) n.conceptualize(INSTANCE.$("(&&, a:x, a:w)"));
             Truth nown = n.beliefTruth(ccn, n.time());
             assertNull(nown);
         }
 
 
-        Concept ccn = n.conceptualize($("(&&, a:x, (--, a:y), a:z)"));
+        Concept ccn = n.conceptualize(INSTANCE.$("(&&, a:x, (--, a:y), a:z)"));
 
         {
             Task t = n.belief(ccn.term());
@@ -222,7 +222,7 @@ class DynamicConjTest extends AbstractDynamicTaskTest {
         n.believe("a:y", 0, 0.95f);
         n.run(1);
         n.concept("a:y").print();
-        Task ay = n.belief($$("a:y"));
+        Task ay = n.belief(INSTANCE.$$("a:y"));
         assertTrue(ay.freq() < 0.5f);
 
 //        for (int i = 0; i < 4; i++) {
@@ -236,35 +236,35 @@ class DynamicConjTest extends AbstractDynamicTaskTest {
     @Test
     void testDynamicConjunctionEternal() throws Narsese.NarseseException {
         NAR n = NARS.shell();
-        n.believe($("x"));
-        n.believe($("y"));
-        n.believe($("--z"));
+        n.believe(INSTANCE.$("x"));
+        n.believe(INSTANCE.$("y"));
+        n.believe(INSTANCE.$("--z"));
 
 
         for (long w: new long[]{ETERNAL, 0, 1}) {
-            assertEquals($.t(1, 0.81f), n.truth($("(x && y)"), BELIEF, w));
-            assertEquals($.t(0, 0.81f), n.truth($("(x && --y)"), BELIEF, w));
-            assertEquals($.t(1, 0.81f), n.truth($("(x && --z)"), BELIEF, w));
+            assertEquals($.INSTANCE.t(1, 0.81f), n.truth(INSTANCE.$("(x && y)"), BELIEF, w));
+            assertEquals($.INSTANCE.t(0, 0.81f), n.truth(INSTANCE.$("(x && --y)"), BELIEF, w));
+            assertEquals($.INSTANCE.t(1, 0.81f), n.truth(INSTANCE.$("(x && --z)"), BELIEF, w));
         }
     }
 
     @Test
     void testDynamicConjunction2Temporal() throws Narsese.NarseseException {
         NAR n = NARS.shell();
-        n.believe($("(x)"), 0);
-        n.believe($("(y)"), 4);
+        n.believe(INSTANCE.$("(x)"), 0);
+        n.believe(INSTANCE.$("(y)"), 4);
         n.time.dur(8);
-        TaskConcept cc = (TaskConcept) n.conceptualize($("((x) && (y))"));
+        TaskConcept cc = (TaskConcept) n.conceptualize(INSTANCE.$("((x) && (y))"));
 
         BeliefTable xtable = cc.beliefs();
 
 
         int dur = 0;
-        assertEquals(0.81f, xtable.matchExact((long) 0, (long) 0, $("((x) &&+4 (y))"), null, dur, n).conf(), 0.05f);
-        assertEquals(0.74f, xtable.matchExact((long) 0, (long) 0, $("((x) &&+6 (y))"), null, dur, n).conf(), 0.07f);
-        assertEquals(0.75f, xtable.matchExact((long) 0, (long) 0, $("((x) &&+2 (y))"), null, dur, n).conf(), 0.07f);
-        assertEquals(0.75f, xtable.matchExact((long) 0, (long) 0, $("((x) &&+0 (y))"), null, dur, n).conf(), 0.07f);
-        assertEquals(0.62f, xtable.matchExact((long) 0, (long) 0, $("((x) &&-32 (y))"), null, dur, n).conf(), 0.2f);
+        assertEquals(0.81f, xtable.matchExact((long) 0, (long) 0, INSTANCE.$("((x) &&+4 (y))"), null, dur, n).conf(), 0.05f);
+        assertEquals(0.74f, xtable.matchExact((long) 0, (long) 0, INSTANCE.$("((x) &&+6 (y))"), null, dur, n).conf(), 0.07f);
+        assertEquals(0.75f, xtable.matchExact((long) 0, (long) 0, INSTANCE.$("((x) &&+2 (y))"), null, dur, n).conf(), 0.07f);
+        assertEquals(0.75f, xtable.matchExact((long) 0, (long) 0, INSTANCE.$("((x) &&+0 (y))"), null, dur, n).conf(), 0.07f);
+        assertEquals(0.62f, xtable.matchExact((long) 0, (long) 0, INSTANCE.$("((x) &&-32 (y))"), null, dur, n).conf(), 0.2f);
 
         //TODO test dur = 1, 2, ... etc
 
@@ -274,7 +274,7 @@ class DynamicConjTest extends AbstractDynamicTaskTest {
     void testDynamicConceptValid1() throws Narsese.NarseseException {
         Term c =
 
-                Op.CONJ.the(XTERNAL, $.$("(--,($1 ==>+- (((joy-->fz)&&fwd) &&+- $1)))"), $.$("(joy-->fz)"), $.$("fwd")).normalize();
+                Op.CONJ.the(XTERNAL, $.INSTANCE.$("(--,($1 ==>+- (((joy-->fz)&&fwd) &&+- $1)))"), $.INSTANCE.$("(joy-->fz)"), $.INSTANCE.$("fwd")).normalize();
 
         assertTrue(c instanceof Compound, c::toString);
         assertTrue(Task.validTaskTerm(c), new Supplier<String>() {
@@ -289,7 +289,7 @@ class DynamicConjTest extends AbstractDynamicTaskTest {
     void testDynamicConceptValid2() throws Narsese.NarseseException {
         Term c =
 
-                Op.CONJ.the(XTERNAL, $.$("(--,((--,#1)&&#2))"), $.$("(--,#2)"), $.varDep(1)).normalize();
+                Op.CONJ.the(XTERNAL, $.INSTANCE.$("(--,((--,#1)&&#2))"), $.INSTANCE.$("(--,#2)"), $.INSTANCE.varDep(1)).normalize();
 
         assertTrue(c instanceof Compound, c::toString);
         assertTrue(Task.validTaskTerm(c), new Supplier<String>() {
@@ -311,36 +311,36 @@ class DynamicConjTest extends AbstractDynamicTaskTest {
         n.run(1);
         assertEquals(
                 "%0.0;.20%", n.beliefTruth(
-                        n.conceptualize($("(&&,x,y,z)")
+                        n.conceptualize(INSTANCE.$("(&&,x,y,z)")
                         ), n.time()).toString()
         );
         {
 
-            Task bXYZ = n.belief($("(&&,x,y,z)"), n.time());
+            Task bXYZ = n.belief(INSTANCE.$("(&&,x,y,z)"), n.time());
             assertEquals("(&&,x,y,z)", bXYZ.term().toString());
             assertEquals(3, bXYZ.stamp().length);
         }
         {
 
-            Task bXY = n.belief($("(x && y)"), n.time());
+            Task bXY = n.belief(INSTANCE.$("(x && y)"), n.time());
             assertEquals("(x&&y)", bXY.term().toString());
             assertEquals(2, bXY.stamp().length);
         }
         {
 
-            Task bXY = n.belief($("(x && y)"), ETERNAL);
+            Task bXY = n.belief(INSTANCE.$("(x && y)"), ETERNAL);
             assertEquals("(x&&y)", bXY.term().toString());
             assertEquals(2, bXY.stamp().length);
         }
 
         assertEquals(
                 "%0.0;.40%", n.beliefTruth(
-                        n.conceptualize($("(&&,y,z)")
+                        n.conceptualize(INSTANCE.$("(&&,y,z)")
                         ), n.time()).toString()
         );
         assertEquals(
                 "%1.0;.25%", n.beliefTruth(
-                        n.conceptualize($("(&&,x,y)")
+                        n.conceptualize(INSTANCE.$("(&&,x,y)")
                         ), n.time()).toString()
         );
     }
@@ -356,7 +356,7 @@ class DynamicConjTest extends AbstractDynamicTaskTest {
                 "((y-->t) &&+1 --(t-->happy))",
                 "(--(y-->t) &&+1 --(t-->happy))",
         }) {
-            Concept c = n.conceptualize($.$(s));
+            Concept c = n.conceptualize($.INSTANCE.$(s));
             assertTrue(((BeliefTables)c.beliefs()).tableFirst(DynamicTruthTable.class)!=null);
             assertTrue(((BeliefTables)c.goals()).tableFirst(DynamicTruthTable.class)!=null);
         }
@@ -366,24 +366,24 @@ class DynamicConjTest extends AbstractDynamicTaskTest {
     @Test
     void testDynamicConjunctionFactored() throws Narsese.NarseseException {
         NAR n = NARS.shell();
-        n.believe($("x"), ETERNAL);
-        n.believe($("y"), 0);
-        n.believe($("z"), 2);
+        n.believe(INSTANCE.$("x"), ETERNAL);
+        n.believe(INSTANCE.$("y"), 0);
+        n.believe(INSTANCE.$("z"), 2);
         n.time.dur(8);
 
         {
-            Task t = n.answerBelief($$("(x&&y)"), 0);
+            Task t = n.answerBelief(INSTANCE.$$("(x&&y)"), 0);
             assertNotNull(t);
             assertTrue(t.isPositive());
         }
         {
-            Task t = n.answerBelief($$("(x&&z)"), 2);
+            Task t = n.answerBelief(INSTANCE.$$("(x&&z)"), 2);
             assertNotNull(t);
             assertTrue(t.isPositive());
         }
 
         {
-            Compound xyz = $("(x && (y &&+2 z))");
+            Compound xyz = INSTANCE.$("(x && (y &&+2 z))");
             assertEquals(
                     "[x @ 0..2, y @ 0..0, z @ 2..2]",
                     //"[(x&&y) @ 0..0, (x&&z) @ 2..2]",
@@ -401,17 +401,17 @@ class DynamicConjTest extends AbstractDynamicTaskTest {
         }
 
         int dur = 0; //TODO test other durations
-        TaskConcept cc = (TaskConcept) n.conceptualize($("(&&, x, y, z)"));
+        TaskConcept cc = (TaskConcept) n.conceptualize(INSTANCE.$("(&&, x, y, z)"));
         BeliefTable xtable = cc.beliefs();
         {
-            Term xyz = $("((x && y) &&+2 (x && z))");
+            Term xyz = INSTANCE.$("((x && y) &&+2 (x && z))");
             assertEq("((y &&+2 z)&&x)", xyz);
             Task t = xtable.matchExact((long) 0, (long) 0, xyz, null, dur, n);
             assertEquals(1f, t.freq(), 0.05f);
             assertEquals(0.81f, t.conf(), 0.4f);
         }
         {
-            Task t = xtable.matchExact((long) 0, (long) 0, $("((x && y) &&+2 (x && z))"), null, dur, n);
+            Task t = xtable.matchExact((long) 0, (long) 0, INSTANCE.$("((x && y) &&+2 (x && z))"), null, dur, n);
             assertEquals(1f, t.freq(), 0.05f);
             assertEquals(0.81f, t.conf(), 0.4f);
         }
@@ -422,13 +422,13 @@ class DynamicConjTest extends AbstractDynamicTaskTest {
     @Test
     void testDynamicConjunctionFactoredWithAllTemporalEvidence() throws Narsese.NarseseException {
         NAR n = NARS.shell();
-        n.believe($("x"), 0, 2);
-        n.believe($("y"), 0);
-        n.believe($("z"), 2);
+        n.believe(INSTANCE.$("x"), 0, 2);
+        n.believe(INSTANCE.$("y"), 0);
+        n.believe(INSTANCE.$("z"), 2);
         n.time.dur(8);
 
         {
-            Term xyz = $("((y &&+2 z)&&x)");
+            Term xyz = INSTANCE.$("((y &&+2 z)&&x)");
             Task t = n.answerBelief(xyz, 0, 2);
             assertNotNull(t);
             assertEquals(1f, t.freq(), 0.05f);
@@ -437,7 +437,7 @@ class DynamicConjTest extends AbstractDynamicTaskTest {
         }
         {
             //Term xyz = $("((x&&y) &&+2 z))");
-            Term xyz = $("(&&+- ,x,y,z)");
+            Term xyz = INSTANCE.$("(&&+- ,x,y,z)");
             Task t = n.answerBelief(xyz, 0);
             assertNotNull(t);
             assertEquals(1f, t.freq(), 0.05f);
@@ -447,7 +447,7 @@ class DynamicConjTest extends AbstractDynamicTaskTest {
         }
         {
             //Term xyz = $("((x&&y) &&+2 z))");
-            Term xyz = $("(&&+- ,x,--y,z)");
+            Term xyz = INSTANCE.$("(&&+- ,x,--y,z)");
             Task t = n.answerBelief(xyz, 0);
             assertNotNull(t);
             assertEquals(0f, t.freq(), 0.05f);
@@ -460,12 +460,12 @@ class DynamicConjTest extends AbstractDynamicTaskTest {
     @Test
     void testDynamicConjunction_collapseToRevisionOnIntersect() throws Narsese.NarseseException {
         NAR n = NARS.shell();
-        n.believe($("x"), 0, 2, 1f, 0.9f);
-        n.believe($("x"), 0, 2, 0.5f, 0.9f);
+        n.believe(INSTANCE.$("x"), 0, 2, 1f, 0.9f);
+        n.believe(INSTANCE.$("x"), 0, 2, 0.5f, 0.9f);
         n.time.dur(8);
 
         for (String s : new String[] { "(x &&+1 x)", "(x &&+- x)"}){
-            Term xyz = $(s);
+            Term xyz = INSTANCE.$(s);
             Task t = n.answerBelief(xyz, 0, 2);
             assertNotNull(t, new Supplier<String>() {
                 @Override
@@ -498,14 +498,14 @@ class DynamicConjTest extends AbstractDynamicTaskTest {
 
     @Test void CoNegatedXternal() throws Narsese.NarseseException {
         NAR n = NARS.shell();
-        n.believe($("x"), 0, 0);
-        n.believe($("--x"), 2,2);
+        n.believe(INSTANCE.$("x"), 0, 0);
+        n.believe(INSTANCE.$("--x"), 2,2);
         n.time.dur(2);
 
         float conf = 0.59f;
         //try all combinations.  there is only one valid result
         for (int i = 0; i < 8; i++) {
-            Task t = n.answerBelief($("(x &&+- --x)"), 0, 2);
+            Task t = n.answerBelief(INSTANCE.$("(x &&+- --x)"), 0, 2);
             assertNotNull(t);
             switch(t.term().toString()) {
                 case "(x &&+2 (--,x))":
@@ -531,26 +531,26 @@ class DynamicConjTest extends AbstractDynamicTaskTest {
     @Test void conjSeqWithDepVar() throws Narsese.NarseseException {
 
             NAR n = NARS.shell();
-            n.believe($("(x && #1)"), 0);
-            n.believe($("y"), 1);
+            n.believe(INSTANCE.$("(x && #1)"), 0);
+            n.believe(INSTANCE.$("y"), 1);
             //n.believe($("(y && #1)"), 2);
             n.time.dur(8);
 
-            Task t = n.answerBelief($$("((x&&#1) &&+1 y)"), 0);
+            Task t = n.answerBelief(INSTANCE.$$("((x&&#1) &&+1 y)"), 0);
             assertNotNull(t);
 
     }
     @Test void conjSeqWithDepVarSeq() throws Narsese.NarseseException {
         NAR n = NARS.shell();
-        n.believe($("(x &&+1 #1)"), 0);
-        n.believe($("y"), 2);
+        n.believe(INSTANCE.$("(x &&+1 #1)"), 0);
+        n.believe(INSTANCE.$("y"), 2);
         //n.believe($("(y && #1)"), 2);
         n.time.dur(8);
 
         Task T = null;
         //try because there are 2 solutions, one will be null
         for (int i = 0; i < 16; i++) {
-            Task t = n.answerBelief($$("((x &&+1 #1) &&+1 y)"), 0);
+            Task t = n.answerBelief(INSTANCE.$$("((x &&+1 #1) &&+1 y)"), 0);
             if (t!=null) {
                 T = t;
                 break;

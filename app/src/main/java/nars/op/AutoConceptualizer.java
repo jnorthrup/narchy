@@ -85,7 +85,7 @@ public class AutoConceptualizer extends VectorSensor {
         float dur = w.dur();
         long start = (long) Math.round((float) now - dur / 2.0F), end = (long) Math.round((float) now + dur / 2.0F);
         int[] order = new int[inputs];
-        Truth truth = $.t(1f, 0.9f);
+        Truth truth = $.INSTANCE.t(1f, 0.9f);
         for (int i = 0; i < outputs; i++) {
             b[i] = 1.0F;
 

@@ -50,7 +50,7 @@ public abstract class NarseseTest {
     static List<Task> tasks(@NotNull String s) throws Narsese.NarseseException {
 
 
-        List<Task> l = $.newArrayList(1);
+        List<Task> l = $.INSTANCE.newArrayList(1);
         Narsese.tasks(s, l, new DummyNAL());
         return l;
     }

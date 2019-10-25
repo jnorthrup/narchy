@@ -52,7 +52,7 @@ import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 
-import static nars.$.$$;
+import static nars.$.*;
 import static nars.Op.*;
 import static nars.op.rdfowl.NQuadsRDF.equi;
 
@@ -71,21 +71,21 @@ import static nars.op.rdfowl.NQuadsRDF.equi;
 public class KIF implements Iterable<Task> {
 
     private static final Logger logger = LoggerFactory.getLogger(KIF.class);
-    private static final Term SYMMETRIC_RELATION = $$("SymmetricRelation");
-    private static final Term ASYMMETRIC_RELATION = $$("AsymmetricRelation");
+    private static final Term SYMMETRIC_RELATION = INSTANCE.$$("SymmetricRelation");
+    private static final Term ASYMMETRIC_RELATION = INSTANCE.$$("AsymmetricRelation");
     private static final boolean includePredArgCounts = false;
     private static final Set<Term> predExclusions = java.util.Set.of(
 
-            $$("UnaryPredicate"),
-            $$("BinaryPredicate"), $$("TernaryPredicate"),
-            $$("QuaternaryPredicate"), $$("QuintaryPredicate"),
+            INSTANCE.$$("UnaryPredicate"),
+            INSTANCE.$$("BinaryPredicate"), INSTANCE.$$("TernaryPredicate"),
+            INSTANCE.$$("QuaternaryPredicate"), INSTANCE.$$("QuintaryPredicate"),
 
-            $$("UnaryFunction"), $$("BinaryFunction"), $$("TernaryFunction"),
-            $$("QuaternaryRelation"),
-            $$("QuintaryRelation"),
-            $$("SingleValuedRelation"), $$("TotalValuedRelation"),
+            INSTANCE.$$("UnaryFunction"), INSTANCE.$$("BinaryFunction"), INSTANCE.$$("TernaryFunction"),
+            INSTANCE.$$("QuaternaryRelation"),
+            INSTANCE.$$("QuintaryRelation"),
+            INSTANCE.$$("SingleValuedRelation"), INSTANCE.$$("TotalValuedRelation"),
 
-            $$("AsymmetricRelation")
+            INSTANCE.$$("AsymmetricRelation")
     );
     public final ArrayHashSet<Term> assertions = new ArrayHashSet<>();
     private final KIFParser kif;
@@ -114,9 +114,9 @@ public class KIF implements Iterable<Task> {
     private static Term atomic(String sx) {
         sx = sx.replace("?", "#");
         try {
-            return $.$(sx);
+            return $.INSTANCE.$(sx);
         } catch (Narsese.NarseseException e) {
-            return $.quote(sx);
+            return $.INSTANCE.quote(sx);
         }
     }
 
@@ -176,7 +176,7 @@ public class KIF implements Iterable<Task> {
             common.forEach(new Procedure<Term>() {
                 @Override
                 public void value(Term t) {
-                    nars.term.Variable u = $.v(
+                    nars.term.Variable u = $.INSTANCE.v(
                             Op.VAR_INDEP,
 
 
@@ -190,7 +190,7 @@ public class KIF implements Iterable<Task> {
             for (Term aa : ab) {
                 if (aa.op() == VAR_INDEP && !common.contains(aa)) {
                     String str = aa.toString().substring(1);
-                    nars.term.Variable bb = $.v(VAR_DEP, str);
+                    nars.term.Variable bb = $.INSTANCE.v(VAR_DEP, str);
                     if (!remap.containsKey(bb))
                         remap.put(aa, bb);
                 }
@@ -248,23 +248,23 @@ public class KIF implements Iterable<Task> {
             Term[] vt = Util.map(0, ds, Term[]::new, new IntFunction<Term>() {
                 @Override
                 public Term apply(int i) {
-                    return $.varDep(1 + i);
+                    return $.INSTANCE.varDep(1 + i);
                 }
             });
             Term v = null;
             if (s.range != null) {
-                v = $.varDep("R");
+                v = $.INSTANCE.varDep("R");
                 vt = ArrayUtil.add(vt, v);
             }
             int[] k = {1};
             Term[] typeConds = Util.map(0, ds, Term[]::new, new IntFunction<Term>() {
                 @Override
                 public Term apply(int i) {
-                    return INH.the($.varDep(1 + i),
+                    return INH.the($.INSTANCE.varDep(1 + i),
                             s.domain.getIfAbsent(1 + i, new Function0<Term>() {
                                 @Override
                                 public Term value() {
-                                    return $.varDep(k[0]++);
+                                    return $.INSTANCE.varDep(k[0]++);
                                 }
                             }));
                 }
@@ -275,7 +275,7 @@ public class KIF implements Iterable<Task> {
             Term types = CONJ.the(
                     typeConds
             );
-            Term fxy = impl(INH.the($.p(vt), f), types, true);
+            Term fxy = impl(INH.the($.INSTANCE.p(vt), f), types, true);
             if (fxy != null) {
                 if (fxy instanceof IdempotentBool) {
                     logger.error("bad function {} {} {}", f, s.domain, s.range);
@@ -345,7 +345,7 @@ public class KIF implements Iterable<Task> {
                 result = atomic(x.theFormula);
                 break;
             case 1:
-                result = $.p(formulaToTerm(x.getArgument(0), level + 1));
+                result = $.INSTANCE.p(formulaToTerm(x.getArgument(0), level + 1));
                 break;
             default:
                 if (l == 0) {
@@ -391,7 +391,7 @@ public class KIF implements Iterable<Task> {
                     boolean finished = false;
                     switch (root) {
                         case "ListFn":
-                            y = $.p(args);
+                            y = $.INSTANCE.p(args);
                             break;
 
 
@@ -429,7 +429,7 @@ public class KIF implements Iterable<Task> {
                                 }
 
                                 if ("instance".equals(root))
-                                    y = $.inst(subj, pred);
+                                    y = $.INSTANCE.inst(subj, pred);
                                 else
                                     y = INH.the(subj, pred);
 
@@ -456,11 +456,11 @@ public class KIF implements Iterable<Task> {
 
                         case "greaterThan":
                             if (args.size() == 2)
-                                y = $.func("cmp", args.get(0), args.get(1), IdempotInt.the(+1));
+                                y = $.INSTANCE.func("cmp", args.get(0), args.get(1), IdempotInt.the(+1));
                             break;
                         case "lessThan":
                             if (args.size() == 2)
-                                y = $.func("cmp", args.get(0), args.get(1), IdempotInt.the(-1));
+                                y = $.INSTANCE.func("cmp", args.get(0), args.get(1), IdempotInt.the(-1));
                             break;
 
                         case "equal":
@@ -586,7 +586,7 @@ public class KIF implements Iterable<Task> {
                         case "contraryAttribute":
 
 
-                            y = $.inh(VarAuto, SETe.the(args));
+                            y = $.INSTANCE.inh(VarAuto, SETe.the(args));
 
 
                             break;
@@ -598,9 +598,9 @@ public class KIF implements Iterable<Task> {
                                 if (args.size() == 3) {
                                     Term subj = args.get(0);
                                     Term lang = args.get(1);
-                                    Term desc = $.quote(args.get(2));
+                                    Term desc = $.INSTANCE.quote(args.get(2));
                                     try {
-                                        y = INH.the($.p(subj, desc), lang);
+                                        y = INH.the($.INSTANCE.p(subj, desc), lang);
                                     } catch (Exception e) {
 
                                         y = null;
@@ -621,7 +621,7 @@ public class KIF implements Iterable<Task> {
 
                                 Term term = args.get(1);
                                 Term string = args.get(2);
-                                y = INH.the($.p($.the(language), string), term);
+                                y = INH.the($.INSTANCE.p($.INSTANCE.the(language), string), term);
                             } else {
                                 finished = true;
                                 break;
@@ -653,10 +653,10 @@ public class KIF implements Iterable<Task> {
                                         break;
                                     default:
                                         if (!z.op().var)
-                                            y = INH.the($.p(args), z);
+                                            y = INH.the($.INSTANCE.p(args), z);
                                         else {
                                             args.add(0, z);
-                                            y = $.p(args);
+                                            y = $.INSTANCE.p(args);
                                         }
                                         break;
                                 }

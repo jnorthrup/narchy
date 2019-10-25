@@ -75,7 +75,7 @@ public final class ListFunc{
             if (xx.length == 0) return y;
             Term[] yy = y.op() == PROD ? y.subterms().arrayShared() : new Term[]{y};
             if (yy.length == 0) return x;
-            return $.pFast(Terms.concat(xx, yy));
+            return $.INSTANCE.pFast(Terms.concat(xx, yy));
         }
 
         @Override
@@ -94,13 +94,13 @@ public final class ListFunc{
                     for (int i = -1; i < l; i++) {
                         int finalI = i;
                         Predicate<Termerator> assign = Termerator.assign(
-                                x, $.pFast(xys.terms(new IntObjectPredicate<Term>() {
+                                x, $.INSTANCE.pFast(xys.terms(new IntObjectPredicate<Term>() {
                                     @Override
                                     public boolean accept(int xyi, Term ii) {
                                         return xyi <= finalI;
                                     }
                                 })),
-                                y, $.pFast(xys.terms(new IntObjectPredicate<Term>() {
+                                y, $.INSTANCE.pFast(xys.terms(new IntObjectPredicate<Term>() {
                                     @Override
                                     public boolean accept(int xyi, Term ii) {
                                         return xyi > finalI;
@@ -118,7 +118,7 @@ public final class ListFunc{
         @Override
         protected Term computeXfromYandXY(Evaluation e, Term x, Term y, Term xy) {
 
-            Term yy = y.op() != PROD ? $.pFast(y) : y;
+            Term yy = y.op() != PROD ? $.INSTANCE.pFast(y) : y;
 
             int ys = yy.subs();
 
@@ -133,7 +133,7 @@ public final class ListFunc{
                     return e.is(x, remainderLength == 0 ?
                             Op.EmptyProduct
                             :
-                            $.pFast(xy.subterms().terms(new IntObjectPredicate<Term>() {
+                            $.INSTANCE.pFast(xy.subterms().terms(new IntObjectPredicate<Term>() {
                                 @Override
                                 public boolean accept(int i, Term ii) {
                                     return i < ys;
@@ -148,7 +148,7 @@ public final class ListFunc{
         @Override
         protected Term computeYfromXandXY(Evaluation e, Term x, Term y, Term xy) {
 
-            Term xx = x.op() != PROD ? $.pFast(x) : x;
+            Term xx = x.op() != PROD ? $.INSTANCE.pFast(x) : x;
 
             int xs = xx.subs();
             int remainderLength = xy.subs() - xs;
@@ -159,7 +159,7 @@ public final class ListFunc{
                         return xy.sub(xii).equals(xi);
                     }
                 }))
-                    return e.is(y, (remainderLength == 0) ? Op.EmptyProduct : $.pFast(xy.subterms().terms(new IntObjectPredicate<Term>() {
+                    return e.is(y, (remainderLength == 0) ? Op.EmptyProduct : $.INSTANCE.pFast(xy.subterms().terms(new IntObjectPredicate<Term>() {
                         @Override
                         public boolean accept(int i, Term ii) {
                             return i >= xs;

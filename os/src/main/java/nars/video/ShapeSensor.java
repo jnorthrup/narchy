@@ -243,7 +243,7 @@ public class ShapeSensor extends NARPart {
         public Term point(int px, int py) {
             int x = Math.round((float) px * sx);
             int y = Math.round((float) py * sy);
-            return $.p($.the(x), $.the(y));
+            return $.INSTANCE.p($.INSTANCE.the(x), $.INSTANCE.the(y));
         }
 
         public Term line(int ax, int ay, int bx, int by) {
@@ -252,14 +252,14 @@ public class ShapeSensor extends NARPart {
 
 
             int ab = a.compareTo(b);
-            return ab <= 0 ? $.p(a, b) : $.p(b, a);
+            return ab <= 0 ? $.INSTANCE.p(a, b) : $.INSTANCE.p(b, a);
         }
 
         public void input(CauseChannel<Task> t, long last, What what) {
             NAR n = what.nar;
             long now = n.time();
             for (Term x : image) {
-                Task xx = ((Task) new SeriesBeliefTable.SeriesTask($.inh(x, id), BELIEF, $.t(1f, n.confDefault(BELIEF)),
+                Task xx = ((Task) new SeriesBeliefTable.SeriesTask($.INSTANCE.inh(x, id), BELIEF, $.INSTANCE.t(1f, n.confDefault(BELIEF)),
 					last, now, new long[]{n.time.nextStamp()})).pri(n.priDefault(BELIEF));
                 t.accept(xx, what);
             }

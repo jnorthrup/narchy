@@ -85,7 +85,7 @@ import java.util.stream.StreamSupport;
 import static com.jogamp.newt.event.KeyEvent.VK_ENTER;
 import static java.util.stream.Collectors.toList;
 import static jcog.Util.sqrt;
-import static nars.$.$$;
+import static nars.$.*;
 import static nars.Op.*;
 import static spacegraph.space2d.container.grid.Gridding.VERTICAL;
 import static spacegraph.space2d.container.grid.Gridding.grid;
@@ -500,7 +500,7 @@ public class NARui {
 	}
 
 	public static void conceptWindow(String t, NAR n) {
-		conceptWindow($$(t), n);
+		conceptWindow(INSTANCE.$$(t), n);
 	}
 
 	public static void conceptWindow(Termed t, NAR n) {

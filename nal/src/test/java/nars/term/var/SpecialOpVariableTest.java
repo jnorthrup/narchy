@@ -11,8 +11,8 @@ class SpecialOpVariableTest {
 
     @Test
     void test1() {
-        Variable i = $.varIndep(1);
-        Variable d = $.varDep(1);
+        Variable i = $.INSTANCE.varIndep(1);
+        Variable d = $.INSTANCE.varDep(1);
         SpecialOpVariable s = new SpecialOpVariable(i, VAR_DEP);
         UnnormalizedVariable u = new UnnormalizedVariable(VAR_DEP, "#$1");
 

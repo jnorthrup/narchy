@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import static nars.$.$$;
+import static nars.$.*;
 import static nars.truth.func.TruthFunctions.c2wSafe;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -44,7 +44,7 @@ class AIMATests {
                 "A",
                 "B");
 
-        n.question($$("Q"));
+        n.question(INSTANCE.$$("Q"));
 
 //        try {
             assertBelief(n, true, "Q", (int) (NAL.test.TIME_MULTIPLIER * 500));
@@ -70,7 +70,7 @@ class AIMATests {
 
 //        n.log();
 
-        assertEquals(20, $$("((&&,Weapon(#y),Sells($x,#y,#z),Hostile(#z)) ==> Criminal($x))").volume());
+        assertEquals(20, INSTANCE.$$("((&&,Weapon(#y),Sells($x,#y,#z),Hostile(#z)) ==> Criminal($x))").volume());
 
         n.termVolMax.set(21);
 
@@ -87,7 +87,7 @@ class AIMATests {
         );
 
 
-        @Nullable Task Q = n.question($.$(
+        @Nullable Task Q = n.question($.INSTANCE.$(
                 "Criminal:?x"
                 //"Criminal(?x)"
 
@@ -107,7 +107,7 @@ class AIMATests {
 //        assertNotNull(qc)
 //        qc.print();
 
-        Task y = n.belief($.$("Criminal(West)"));
+        Task y = n.belief($.INSTANCE.$("Criminal(West)"));
         assertNotNull(y);
 
     }
@@ -123,7 +123,7 @@ class AIMATests {
         for (int i = 0; i < time; i += metricPeriod) {
             n.run(metricPeriod);
 
-            Task y = n.belief($.the(x), i);
+            Task y = n.belief($.INSTANCE.the(x), i);
             if (y == null)
                 continue;
 
@@ -139,7 +139,7 @@ class AIMATests {
 
 
         for (char c : "ABLMPQ".toCharArray()) {
-            Term t = $.the(String.valueOf(c));
+            Term t = $.INSTANCE.the(String.valueOf(c));
             Task cc = n.belief(t);
             System.out.println(cc);
         }

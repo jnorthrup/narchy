@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.function.Supplier;
 
-import static nars.$.$$;
+import static nars.$.*;
 import static nars.Op.CONJ;
 import static nars.Op.PROD;
 import static nars.term.util.TermTest.assertEq;
@@ -51,7 +51,7 @@ class InterningTermBuilderTest {
 
         InterningTermBuilder t = new InterningTermBuilder();
         assertTrue(InterningTermBuilder.sortCanonically);
-        Subterms s = t.subterms((Op)null, $$("x1").neg(), $$("y1"));
+        Subterms s = t.subterms((Op)null, INSTANCE.$$("x1").neg(), INSTANCE.$$("y1"));
         assertTrue(s instanceof RemappedSubterms, new Supplier<String>() {
             @Override
             public String get() {

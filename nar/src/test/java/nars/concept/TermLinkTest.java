@@ -5,7 +5,7 @@ import nars.NARS;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import static nars.$.$$;
+import static nars.$.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Disabled
@@ -141,7 +141,7 @@ class TermLinkTest {
     @Test
     void testConjEventsNotInternalDternals2() {
         assertEquals("( &&+- ,a,b,c,d)",
-                $$("(&&,(a&|b),(c&|d))").concept().toString());
+                INSTANCE.$$("(&&,(a&|b),(c&|d))").concept().toString());
         testTemplates("(&&,(a&|b),(c&|d))",
                 "[a, b, c, d]"
                 );
@@ -267,7 +267,7 @@ class TermLinkTest {
 
     private void testTemplates(String term, String expect) {
         
-        Concept c = n.conceptualize($$(term));
+        Concept c = n.conceptualize(INSTANCE.$$(term));
         //Activate a = new Activate(c, 0.5f);
         //Set<Termed> t = DynamicTermLinker.Uniform.targets().collect(toCollection(TreeSet::new));
         //assertEquals(expect, t.toString());

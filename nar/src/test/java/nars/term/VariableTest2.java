@@ -12,7 +12,7 @@ public class VariableTest2 {
         String t = "<$x --> y>";
         String n = "($1-->y)";
         Timed timed = NARS.shell();
-        Termed x = $.$(t);
+        Termed x = $.INSTANCE.$(t);
         assertEquals(n, x.toString());
 
 
@@ -27,7 +27,7 @@ public class VariableTest2 {
 
         String t = "<<($1, $2) --> bigger> ==> <($2, $1) --> smaller>>";
 
-        Termed term = $.$(t);
+        Termed term = $.INSTANCE.$(t);
         Task task = Narsese.task(t + '.', n);
 
         System.out.println(t);

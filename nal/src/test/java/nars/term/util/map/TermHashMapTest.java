@@ -11,27 +11,27 @@ class TermHashMapTest {
     void test1() {
         TermHashMap m = new TermHashMap();
 
-        m.put($.the("x"), "a");
+        m.put($.INSTANCE.the("x"), "a");
         assertNotNull(m.other);
         assertEquals(1, m.size());
         assertFalse(m.isEmpty());
-        m.put($.varDep(1), "v");
+        m.put($.INSTANCE.varDep(1), "v");
         assertNotNull(m.id);
         assertEquals(2, m.size());
-        m.put($.varDep(1), "v");
+        m.put($.INSTANCE.varDep(1), "v");
         assertEquals(2, m.size()); 
 
         assertEquals("{#1=v, x=a}", m.toString());
 
-        assertEquals("v", m.remove($.varDep(1)));
+        assertEquals("v", m.remove($.INSTANCE.varDep(1)));
         assertEquals(1, m.size());
-        assertNull(m.remove($.varDep(1)));
+        assertNull(m.remove($.INSTANCE.varDep(1)));
 
-        assertEquals("a", m.remove($.the("x")));
+        assertEquals("a", m.remove($.INSTANCE.the("x")));
         assertEquals(0, m.size());
 
         
-        m.put($.the("x"), "a");
+        m.put($.INSTANCE.the("x"), "a");
 
         m.clear();
 

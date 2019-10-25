@@ -42,7 +42,7 @@ public class NALData {
             int lastCol = tt.length - 1;
             Term[] subj = Arrays.copyOf(tt, lastCol);
             Term pred = tt[lastCol];
-            return $.inh($.p($.p(subj), pred), ctx);
+            return $.INSTANCE.inh($.INSTANCE.p($.INSTANCE.p(subj), pred), ctx);
         }
     };
 
@@ -78,7 +78,7 @@ public class NALData {
         int n = a.columnCount();
         List<nars.term.Variable> list = new ArrayList<>();
         for (int i1 = 0; i1 < n; i1++) {
-            nars.term.Variable variable = $.varDep(i1 + 1);
+            nars.term.Variable variable = $.INSTANCE.varDep(i1 + 1);
             list.add(variable);
         }
         Term pattern = pointGenerator.apply(
@@ -92,26 +92,26 @@ public class NALData {
 
             meta.add(
 
-                    IMPL.the(pattern.replace($.varDep(i + 1), $.varIndep(i + 1)),
-                            $.inh($.varIndep(i + 1), attr))
+                    IMPL.the(pattern.replace($.INSTANCE.varDep(i + 1), $.INSTANCE.varIndep(i + 1)),
+                            $.INSTANCE.inh($.INSTANCE.varIndep(i + 1), attr))
             );
 
             String[] nom = a.categories(ai);
-            if (nom != null) meta.add(INH.the(SETe.the($.$(nom)), attr));
+            if (nom != null) meta.add(INH.the(SETe.the($.INSTANCE.$(nom)), attr));
 
         }
 
         return meta.stream().map(new Function<Term, Task>() {
                                      @Override
                                      public Task apply(Term t) {
-                                         return NALTask.the(t.normalize(), BELIEF, $.t(1f, nar.confDefault(BELIEF)), nar.time(), ETERNAL, ETERNAL, nar.evidence()).pri(nar);
+                                         return NALTask.the(t.normalize(), BELIEF, $.INSTANCE.t(1f, nar.confDefault(BELIEF)), nar.time(), ETERNAL, ETERNAL, nar.evidence()).pri(nar);
                                      }
                                  }
         );
     }
 
     private static Term attrTerm(String ai) {
-        return $.$$(Texts.INSTANCE.unquote(ai));
+        return $.INSTANCE.$$(Texts.INSTANCE.unquote(ai));
     }
 
     public static Stream<Task> tasks(NAR n, DataTable a, BiFunction<Term, Term[], Term> pointGenerator) {
@@ -146,7 +146,7 @@ public class NALData {
                         (point.hasAny(VAR_QUERY) ? QUESTION : BELIEF);
 
                 @Nullable Truth truth = (int) p == (int) QUESTION || (int) p == (int) QUEST ? null :
-                        $.t(1f, n.confDefault(p));
+                        $.INSTANCE.t(1f, n.confDefault(p));
                 return NALTask.the(point.normalize(), p, truth, now, ETERNAL, ETERNAL, n.evidence()).pri(n);
             }
         });
@@ -163,7 +163,7 @@ public class NALData {
                 for (int i = 0; i < n; i++) {
                     Object x = point.getObject(i);
                     if (x instanceof String) t[i] = attrTerm((String) x);
-                    else if (x instanceof Number) t[i] = $.the((Number) x);
+                    else if (x instanceof Number) t[i] = $.INSTANCE.the((Number) x);
                     else throw new UnsupportedOperationException();
                 }
                 return generator.apply(ctx, t);
@@ -175,7 +175,7 @@ public class NALData {
         String r = a instanceof DataTable ? ((ARFF) a).getRelation() : a.toString();
         if (r == null)
             r = ("ARFF_" + System.identityHashCode(a));
-        return $.the(r);
+        return $.INSTANCE.the(r);
     }
 
 

@@ -69,12 +69,12 @@ public class MIDITaskifier {
 
 
 
-        List<Concept> keys = $.newArrayList();
+        List<Concept> keys = $.INSTANCE.newArrayList();
         for (int i = 36; i <= 51; i++) {
             Term key =
                     channelKey(9, i);
 
-            Term keyTerm = $.p(key);
+            Term keyTerm = $.INSTANCE.p(key);
 
             int finalI = i;
 
@@ -88,9 +88,9 @@ public class MIDITaskifier {
                         return null;
                     float v = d.freq();
                     if (v > 0.55f)
-                        return $.t(v, nar.confDefault(BELIEF));
+                        return $.INSTANCE.t(v, nar.confDefault(BELIEF));
                     else if (b != null && b.freq() > 0.5f)
-                        return $.t((float) 0, nar.confDefault(BELIEF));
+                        return $.INSTANCE.t((float) 0, nar.confDefault(BELIEF));
                     else
                         return null;
                 }
@@ -98,8 +98,8 @@ public class MIDITaskifier {
             nar.add(c);
 
 
-            nar.input(NALTask.the(c.term(), BELIEF, $.t(0f, 0.35f), (long) 0, ETERNAL, ETERNAL, nar.evidence()));
-            nar.input(NALTask.the(c.term(), GOAL, $.t(0f, 0.1f), (long) 0, ETERNAL, ETERNAL, nar.evidence()));
+            nar.input(NALTask.the(c.term(), BELIEF, $.INSTANCE.t(0f, 0.35f), (long) 0, ETERNAL, ETERNAL, nar.evidence()));
+            nar.input(NALTask.the(c.term(), GOAL, $.INSTANCE.t(0f, 0.1f), (long) 0, ETERNAL, ETERNAL, nar.evidence()));
             nar.onCycle(new Consumer<NAR>() {
                 @Override
                 public void accept(NAR n) {
@@ -136,7 +136,7 @@ public class MIDITaskifier {
         
         new Loop(2f) {
 
-            final Term now = $.p("now");
+            final Term now = $.INSTANCE.p("now");
 
             @Override
             public boolean next() {
@@ -265,7 +265,7 @@ public class MIDITaskifier {
 
 
     public static @NotNull Term channelKey(int channel, int key) {
-        return $.the(key);
+        return $.INSTANCE.the(key);
         
     }
 

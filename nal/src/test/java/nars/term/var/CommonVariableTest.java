@@ -12,7 +12,7 @@ import org.junit.jupiter.api.function.Executable;
 import java.util.Set;
 import java.util.TreeSet;
 
-import static nars.$.$$;
+import static nars.$.*;
 import static nars.term.util.TermTest.assertEq;
 import static nars.term.var.CommonVariable.common;
 import static org.junit.jupiter.api.Assertions.*;
@@ -24,9 +24,9 @@ import static org.junit.jupiter.api.Assertions.*;
 class CommonVariableTest {
 
 
-    private static final Variable p1 = $.varDep(1);
-    private static final Variable p2 = $.varDep(2);
-    private static final Variable p3 = $.varDep(3);
+    private static final Variable p1 = $.INSTANCE.varDep(1);
+    private static final Variable p2 = $.INSTANCE.varDep(2);
+    private static final Variable p3 = $.INSTANCE.varDep(3);
     private static final Variable c12 = common(p1, p2);
 
 
@@ -96,7 +96,7 @@ class CommonVariableTest {
         for (int i = 0; i < 16; i++) {
             UnifyAny u = new UnifyAny();
             assertTrue(
-                    $$("x(" + vx + "1," + vy + "1)").unify($$("x(" + vy + "1," + vx + "1)"), u)
+                    INSTANCE.$$("x(" + vx + "1," + vy + "1)").unify(INSTANCE.$$("x(" + vy + "1," + vx + "1)"), u)
             );
             uu.add(u.toString());
             for (Term c : u.xy.values()) {

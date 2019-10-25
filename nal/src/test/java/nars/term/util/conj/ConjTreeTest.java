@@ -3,17 +3,17 @@ package nars.term.util.conj;
 import nars.term.Term;
 import org.junit.jupiter.api.Test;
 
-import static nars.$.$$;
+import static nars.$.*;
 import static nars.term.atom.IdempotentBool.False;
 import static nars.term.util.TermTest.assertEq;
 import static nars.time.Tense.ETERNAL;
 
 class ConjTreeTest {
 
-    static final Term w = $$("w");
-    static final Term x = $$("x");
-    static final Term y = $$("y");
-    static final Term z = $$("z");
+    static final Term w = INSTANCE.$$("w");
+    static final Term x = INSTANCE.$$("x");
+    static final Term y = INSTANCE.$$("y");
+    static final Term z = INSTANCE.$$("z");
 
     @Test
     void testSimple() {
@@ -62,14 +62,14 @@ class ConjTreeTest {
     void testDisjReductionOutward() {
         ConjTree t = new ConjTree();
         t.add(ETERNAL, x);
-        t.add(ETERNAL, $$("(x||y)"));
+        t.add(ETERNAL, INSTANCE.$$("(x||y)"));
         assertEq(x, t.term());
     }
     @Test
     void testDisjReductionOutwardSeq() {
         ConjTree t = new ConjTree();
         t.add(ETERNAL, x);
-        t.add(ETERNAL, $$("--(--y &&+1 --x)"));
+        t.add(ETERNAL, INSTANCE.$$("--(--y &&+1 --x)"));
         assertEq(x, t.term());
     }
 
@@ -84,7 +84,7 @@ class ConjTreeTest {
         {
             ConjTree t = new ConjTree();
             t.add(ETERNAL, x);
-            t.add(ETERNAL, $$("--(--y &&+1 x)"));
+            t.add(ETERNAL, INSTANCE.$$("--(--y &&+1 x)"));
             assertEq("(x&&y)", t.term());
         }
     }

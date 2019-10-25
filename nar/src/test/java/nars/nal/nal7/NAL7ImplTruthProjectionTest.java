@@ -41,7 +41,7 @@ class NAL7ImplTruthProjectionTest {
                 double[] max = new MyBrentOptimizer(0.001f, 0.01, 0, end, new DoubleToDoubleFunction() {
                     @Override
                     public double valueOf(double t) {
-                        Truth u = n.beliefTruth($.the("y"), Math.round(t));
+                        Truth u = n.beliefTruth($.INSTANCE.the("y"), Math.round(t));
                         if (u == null)
                             return -1f;
                         return u.conf();

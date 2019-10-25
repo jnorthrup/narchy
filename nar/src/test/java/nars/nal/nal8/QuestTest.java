@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
-import static nars.$.$;
+import static nars.$.*;
 import static nars.Op.GOAL;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -72,11 +72,11 @@ class QuestTest {
             }
         }, GOAL);
 
-        nar.quest($("a:?b@"));
+        nar.quest(INSTANCE.$("a:?b@"));
     }
 
     private static void goal(NAR nar) throws Narsese.NarseseException {
-        nar.want($.$("a:b"), Tense.Eternal, 1.0f, 0.9f);
+        nar.want($.INSTANCE.$("a:b"), Tense.Eternal, 1.0f, 0.9f);
     }
 
 

@@ -6,7 +6,7 @@ import nars.term.Term;
 import nars.term.util.TermTest;
 import org.junit.jupiter.api.Test;
 
-import static nars.$.$;
+import static nars.$.*;
 
 
 class FastCompoundTest {
@@ -56,7 +56,7 @@ class FastCompoundTest {
     }
 
     private static void assertEquivalent(String c) throws Narsese.NarseseException {
-        assertEquivalent($(c));
+        assertEquivalent(INSTANCE.$(c));
     }
 
     private static void assertEquivalent(Compound c) {

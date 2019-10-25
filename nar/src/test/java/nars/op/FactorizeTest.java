@@ -4,7 +4,7 @@ import nars.term.Term;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import static nars.$.$$;
+import static nars.$.*;
 import static nars.Op.CONJ;
 import static nars.term.util.TermTest.assertEq;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -19,31 +19,31 @@ public class FactorizeTest {
     @Test
     void testConjPar2() {
         assertEquals(
-                $$("(f(#1) && member(#1,{a,b}))"),
-                f.applyAndNormalize($$("(f(a) && f(b))"))
+                INSTANCE.$$("(f(#1) && member(#1,{a,b}))"),
+                f.applyAndNormalize(INSTANCE.$$("(f(a) && f(b))"))
         );
     }
     @Test
     void testConjPar2_xternal() {
         assertEquals(
-            $$("(f(#1) && member(#1,{a,b}))"),
-            f.applyAndNormalize($$("(f(a) &&+- f(b))"))
+            INSTANCE.$$("(f(#1) && member(#1,{a,b}))"),
+            f.applyAndNormalize(INSTANCE.$$("(f(a) &&+- f(b))"))
         );
     }
     @Disabled
     @Test
     void testConjPar_in_Seq() {
         assertEquals(
-            $$("((f(#1) && member(#1,{a,b})) &&+1 f(c))"),
-            f.applyAndNormalize($$("((f(a) && f(b)) &&+1 f(c))"))
+            INSTANCE.$$("((f(#1) && member(#1,{a,b})) &&+1 f(c))"),
+            f.applyAndNormalize(INSTANCE.$$("((f(a) && f(b)) &&+1 f(c))"))
         );
     }
 
     @Test
     void testDisjPar2() {
         assertEquals(
-            $$("--(--f(#1) && member(#1,{a,b}))"),
-            f.applyAndNormalize($$("(f(a) || f(b))"))
+            INSTANCE.$$("--(--f(#1) && member(#1,{a,b}))"),
+            f.applyAndNormalize(INSTANCE.$$("(f(a) || f(b))"))
         );
     }
 
@@ -51,43 +51,43 @@ public class FactorizeTest {
     void testConjSeq2() {
         String x = "(f(a) &&+3 f(b))";
         //factoring NOT POSSIBLE
-        assertEq(x, f.applyAndNormalize($$(x)));
+        assertEq(x, f.applyAndNormalize(INSTANCE.$$(x)));
     }
 
     @Test
     void testTriple() {
         assertEquals(
-                $$("(f(#1) && member(#1,{a,b,c}))"),
-                f.applyAndNormalize($$("(&&, f(a), f(b), f(c))"))
+                INSTANCE.$$("(f(#1) && member(#1,{a,b,c}))"),
+                f.applyAndNormalize(INSTANCE.$$("(&&, f(a), f(b), f(c))"))
         );
     }
     @Test
     void testWithSomeNonInvolved() {
         assertEquals(
-                $$("(&&, g, f(#1), member(#1,{a,b}))"),
-                f.applyAndNormalize($$("(&&, f(a), f(b), g)"))
+                INSTANCE.$$("(&&, g, f(#1), member(#1,{a,b}))"),
+                f.applyAndNormalize(INSTANCE.$$("(&&, f(a), f(b), g)"))
         );
     }
 
     @Test
     void testDoubleCommutive() {
         assertEquals(
-                $$("(member(#1,{a,y})&&{x,#1})"),
-                f.applyAndNormalize($$("({a,x} && {x,y})"))
+                INSTANCE.$$("(member(#1,{a,y})&&{x,#1})"),
+                f.applyAndNormalize(INSTANCE.$$("({a,x} && {x,y})"))
         );
     }
 
     @Test
     void test2() {
         assertEquals(
-                $$("(f(x,#1) && member(#1,{a,b}))"),
-                f.applyAndNormalize($$("(f(x,a) && f(x,b))"))
+                INSTANCE.$$("(f(x,#1) && member(#1,{a,b}))"),
+                f.applyAndNormalize(INSTANCE.$$("(f(x,a) && f(x,b))"))
         );
     }
 
     @Test void three() {
         String s = "(&|,(--,isRow(tetris,(15,true),true)),isRow(tetris,(15,false),true),(--,nextColliding(tetris,true)),nextInBounds(tetris,true))";
-        Term t = $$(s);
+        Term t = INSTANCE.$$(s);
         assertEquals(
                 t, //unchanged
                 f.applyAndNormalize(t)
@@ -97,8 +97,8 @@ public class FactorizeTest {
     @Test
     void testInduction1() {
         assertEquals(
-                $$("(f(#1) && member(#1,{a,b,c}))"),
-                f.applyAndNormalize(CONJ.the((Term)$$("f(c)"), f.applyAndNormalize($$("(f(a) && f(b))"))))
+                INSTANCE.$$("(f(#1) && member(#1,{a,b,c}))"),
+                f.applyAndNormalize(CONJ.the((Term) INSTANCE.$$("f(c)"), f.applyAndNormalize(INSTANCE.$$("(f(a) && f(b))"))))
         );
     }
 }

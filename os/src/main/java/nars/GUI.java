@@ -13,7 +13,7 @@ import spacegraph.space2d.widget.chip.ReplChip;
 
 import java.util.function.Consumer;
 
-import static nars.$.$$;
+import static nars.$.*;
 import static spacegraph.SpaceGraph.window;
 
 /**
@@ -56,7 +56,7 @@ public class GUI {
         try {
 
                 try {
-                    TaskLinkWhat w = n.fork(new TaskLinkWhat($$("demo"), new TaskLinks(1024),
+                    TaskLinkWhat w = n.fork(new TaskLinkWhat(INSTANCE.$$("demo"), new TaskLinks(1024),
                         new PriBuffer.DirectTaskBuffer<>()));
 
                     n.input(KIF.file("/home/me/sumo/FinancialOntology.kif"));

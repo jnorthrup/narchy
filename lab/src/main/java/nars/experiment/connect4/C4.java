@@ -159,9 +159,9 @@ public class C4 {
             }
             List<Term> c =(List<Term>) fasterList;
 
-            c.add($.$$("whoWon(c,1)"));
-            c.add($.$$("whoWon(c,0)"));
-            c.add($.$$("whoWon(c,2)"));
+            c.add($.INSTANCE.$$("whoWon(c,1)"));
+            c.add($.INSTANCE.$$("whoWon(c,0)"));
+            c.add($.INSTANCE.$$("whoWon(c,2)"));
 
             return NARui.beliefCharts(n, c);
         }

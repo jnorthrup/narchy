@@ -35,7 +35,7 @@ public abstract class PremiseTermAccessor implements Function<PreDerivation, Ter
 
         SubRootTermAccessor(byte... path) {
             assert(path.length>0);
-            this.pathID = $.func(term, $.p(path));
+            this.pathID = $.INSTANCE.func(term, $.INSTANCE.p(path));
             this.path = path;
             this.hash = Util.hashCombine(rootID, Util.hash(path));
         }

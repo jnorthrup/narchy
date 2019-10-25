@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.LongPredicate;
 
-import static nars.$.$$;
+import static nars.$.*;
 import static nars.Op.BELIEF;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -206,17 +206,17 @@ public class NAL8SequenceTest extends NALTest {
     void testGoalDeduction_MidSequenceDTernalComponentWithUnification2() {
         {
 
-            Term seq = $$("( ( ( (d(x,#1) &&+1 e(#1)) &&+1 (b(#1)&&c))  &&+1 c(#1)) &&+1 f)");
-            Term cmd = $$("(b(x) &&+1 c(x))");
-            Term result = $$("f");
+            Term seq = INSTANCE.$$("( ( ( (d(x,#1) &&+1 e(#1)) &&+1 (b(#1)&&c))  &&+1 c(#1)) &&+1 f)");
+            Term cmd = INSTANCE.$$("(b(x) &&+1 c(x))");
+            Term result = INSTANCE.$$("f");
             assertEquals(result, ConjMatch.beforeOrAfter(seq, cmd, false, false, true,
                     new UnifyTransform(new XoRoShiRo128PlusRandom(1)),
                     10));
         }
 
-        Term seq = $$("((d(x,#1) &&+1 e(#1)) &&+1 ((b(#1)&&c) &&+1 c(#1)))");
-        Term cmd = $$("(b(x) &&+1 c(x))");
-        Term result = $$("((d(x,x) &&+1 e(x)) &&+1 c)");
+        Term seq = INSTANCE.$$("((d(x,#1) &&+1 e(#1)) &&+1 ((b(#1)&&c) &&+1 c(#1)))");
+        Term cmd = INSTANCE.$$("(b(x) &&+1 c(x))");
+        Term result = INSTANCE.$$("((d(x,x) &&+1 e(x)) &&+1 c)");
         assertEquals(result, ConjMatch.beforeOrAfter(seq, cmd, true, false, false,
                 new UnifyTransform(new XoRoShiRo128PlusRandom(1)),
                 10));
@@ -283,27 +283,27 @@ public class NAL8SequenceTest extends NALTest {
             public void accept(Term x, NAR nar) {
                 System.err.println(x);
 
-                nar.want($.func("f", x).neg(), Tense.Present, 1f); //quench
+                nar.want($.INSTANCE.func("f", x).neg(), Tense.Present, 1f); //quench
 
                 if (!log.isEmpty()) {
                     Term prev = ((FasterList<Term>) log).getLast();
                     if (prev.equals(x))
                         return; //same
-                    nar.believe($.func("f", prev).neg(), nar.time()); //TODO truthlet quench?
+                    nar.believe($.INSTANCE.func("f", prev).neg(), nar.time()); //TODO truthlet quench?
                 }
 
                 log.add(x);
 
-                nar.believe($.func("f", x), nar.time());
+                nar.believe($.INSTANCE.func("f", x), nar.time());
 
-                n.want($$(goal), Tense.Present, 1f); //reinforce
+                n.want(INSTANCE.$$(goal), Tense.Present, 1f); //reinforce
             }
         });
 
         String sequence = "(((f(a) &&+2 f(b)) &&+2 f(c)) &&+2 done)";
         n.believe(sequence);
         //n.want($$(goal), Tense.Eternal /* Present */, 1f);
-        n.want($$(goal), Tense.Present, 1f);
+        n.want(INSTANCE.$$(goal), Tense.Present, 1f);
         n.run(1400);
     }
 

@@ -8,15 +8,15 @@ import nars.term.util.transform.RecursiveTermTransform;
 import nars.term.util.transform.TermTransform;
 import org.junit.jupiter.api.Test;
 
-import static nars.$.$$;
+import static nars.$.*;
 import static nars.term.atom.IdempotentBool.Null;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class TermBufferTest {
 
-    private static final Term A = $$("a");
-    private static final Term B = $$("b");
-    private static final Term C = $$("c");
+    private static final Term A = INSTANCE.$$("a");
+    private static final Term B = INSTANCE.$$("b");
+    private static final Term C = INSTANCE.$$("c");
 
     private static class MyTermBuffer extends TermBuffer {
         @Override
@@ -67,7 +67,7 @@ class TermBufferTest {
     };
     static final TermTransform atomToCompoundTransform = new RecursiveTermTransform() {
 
-        final Term cmp = $$("(x,y)");
+        final Term cmp = INSTANCE.$$("(x,y)");
 
         @Override
         public Term applyAtomic(Atomic atomic) {
@@ -83,7 +83,7 @@ class TermBufferTest {
     @Test void Transform2() {
         String x = "((_1) ==>+- _1)";
         assertEquals("(((x,y)) ==>+- (x,y))",
-                $$(x).transform(atomToCompoundTransform).toString());
+                INSTANCE.$$(x).transform(atomToCompoundTransform).toString());
 
     }
 
@@ -103,7 +103,7 @@ class TermBufferTest {
     }
 
     private static void assertLazyTransforms(String x) {
-        assertEquals(x, $$(x).transform(nullTransform).toString());
+        assertEquals(x, INSTANCE.$$(x).transform(nullTransform).toString());
     }
 
 

@@ -17,7 +17,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import java.util.function.LongPredicate;
 import java.util.function.Predicate;
 
-import static nars.$.$;
+import static nars.$.*;
 import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -1177,7 +1177,7 @@ public class NAL7Test extends NALTest {
         test
 
 
-                .nar.believe($.parallel($("x"), $("y"), $("z")), 3, 1f, 0.9f);
+                .nar.believe($.INSTANCE.parallel(INSTANCE.$("x"), INSTANCE.$("y"), INSTANCE.$("z")), 3, 1f, 0.9f);
 
         test
                 .mustBelieve(cycles, "(x && y)", 1f, 0.81f, 3)
@@ -1240,7 +1240,7 @@ public class NAL7Test extends NALTest {
         for (int i = 0; i < cycles; i++) {
 
             if (i == cycles - 1) {
-                TaskTest.task($("y"), QUESTION, null).time(0, x, x + 2 * eventDT).withPri(1f).apply(t.nar);
+                TaskTest.task(INSTANCE.$("y"), QUESTION, null).time(0, x, x + 2 * eventDT).withPri(1f).apply(t.nar);
             }
 
             t
@@ -1319,7 +1319,7 @@ public class NAL7Test extends NALTest {
 
         assertEquals("((x &&+2 y) ==>+3 z)",
 
-                $.$("(x ==>+2 (y ==>+3 z))").toString()
+                $.INSTANCE.$("(x ==>+2 (y ==>+3 z))").toString()
         );
 
         test
@@ -1579,7 +1579,7 @@ public class NAL7Test extends NALTest {
 
 
         assertEquals("(a &&+2 (&&,b,c,d))",
-                $("(a &&+2 (&&,b,c,d) )").toString());
+                INSTANCE.$("(a &&+2 (&&,b,c,d) )").toString());
 
 
         test
@@ -1606,7 +1606,7 @@ public class NAL7Test extends NALTest {
     void testInductionIntervalMerge3Neg() throws Narsese.NarseseException {
 
 //        List m = $.newArrayList();
-        Term d = $("--(a &&+3 --c)");
+        Term d = INSTANCE.$("--(a &&+3 --c)");
         assertEquals(0, d.eventRange());
 //        d.events(m::addAt);
 

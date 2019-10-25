@@ -7,8 +7,8 @@ import nars.link.AtomicTaskLink;
 import org.junit.jupiter.api.Test;
 
 import static jcog.pri.op.PriReturn.Delta;
-import static nars.$.$;
-import static nars.$.$$;
+import static nars.$.*;
+import static nars.$.*;
 import static nars.Op.BELIEF;
 import static nars.Op.GOAL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class TaskLinkTest {
 
     @Test void TaskLinkComponentPriOverflow() {
-        AtomicTaskLink t = AtomicTaskLink.link($$("x"));
+        AtomicTaskLink t = AtomicTaskLink.link(INSTANCE.$$("x"));
         assertEquals(0, t.pri(), 0.001f);
 
         t.priSet(BELIEF, 0.9f);
@@ -41,7 +41,7 @@ public class TaskLinkTest {
     //    private final NAR n = new NARS().shell();
 
     @Test void TaskLinkComponentRange() {
-        AtomicTaskLink t = AtomicTaskLink.link($$("x"));
+        AtomicTaskLink t = AtomicTaskLink.link(INSTANCE.$$("x"));
         t.mergeComponent(BELIEF, 0.9f, PriMerge.plus, Delta);
         t.mergeComponent(GOAL, 0.9f, PriMerge.plus, Delta);
         assertEquals(0.5f, t.pri(), 0.1f);
@@ -53,7 +53,7 @@ public class TaskLinkTest {
 
     @Test
     void testConceptualizeNonTaskable_IndepVarUnbalanced() throws Narsese.NarseseException {
-        assertNotNull(NARS.tmp(1).conceptualize($("(x --> $1)")));
+        assertNotNull(NARS.tmp(1).conceptualize(INSTANCE.$("(x --> $1)")));
     }
 
 //    @Test

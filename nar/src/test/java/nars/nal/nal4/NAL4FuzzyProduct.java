@@ -11,7 +11,7 @@ import nars.test.NALTest;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import static nars.$.$$;
+import static nars.$.*;
 import static nars.Op.CONJ;
 import static nars.term.atom.IdempotentBool.Null;
 import static nars.term.util.TermTest.assertEq;
@@ -31,26 +31,26 @@ public class NAL4FuzzyProduct extends NALTest {
 
     private static void testUnionSect() {
         assertEq("(x&&y)", //"(x|y)",
-                SetSectDiff.intersect(CONJ, false, $$("x"), $$("y")));
+                SetSectDiff.intersect(CONJ, false, INSTANCE.$$("x"), INSTANCE.$$("y")));
         assertEq("(x||y)", //"(x&y)",
-                SetSectDiff.intersect(CONJ, true, $$("x"), $$("y")));
+                SetSectDiff.intersect(CONJ, true, INSTANCE.$$("x"), INSTANCE.$$("y")));
         assertEq("(x~y)",
-                SetSectDiff.intersect(CONJ, false, $$("x"), $$("y").neg()));
+                SetSectDiff.intersect(CONJ, false, INSTANCE.$$("x"), INSTANCE.$$("y").neg()));
         assertEq("(y~x)",
-                SetSectDiff.intersect(CONJ, false, $$("x").neg(), $$("y")));
+                SetSectDiff.intersect(CONJ, false, INSTANCE.$$("x").neg(), INSTANCE.$$("y")));
         assertEq("(x-y)",
-                SetSectDiff.intersect(CONJ, true, $$("x"), $$("y").neg()));
+                SetSectDiff.intersect(CONJ, true, INSTANCE.$$("x"), INSTANCE.$$("y").neg()));
     }
     private static void testUnionProduct() {
         assertEq("(x,(y|z))",
-                SetSectDiff.intersectProd(CONJ, false, $$("(x,y)"), $$("(x,z)")));
+                SetSectDiff.intersectProd(CONJ, false, INSTANCE.$$("(x,y)"), INSTANCE.$$("(x,z)")));
         assertEq("(x,(y&z))",
-                SetSectDiff.intersectProd(CONJ, false, $$("(x,y)"), $$("(x,z)")));
+                SetSectDiff.intersectProd(CONJ, false, INSTANCE.$$("(x,y)"), INSTANCE.$$("(x,z)")));
 
         assertEq("(x,(y-z))",
-                SetSectDiff.intersectProd(CONJ, true, $$("(x,y)"), $$("(x,z)").neg()));
+                SetSectDiff.intersectProd(CONJ, true, INSTANCE.$$("(x,y)"), INSTANCE.$$("(x,z)").neg()));
         assertEq(Null,
-                SetSectDiff.intersectProd(CONJ, false, $$("(x,y)"), $$("(x,z)").neg()));
+                SetSectDiff.intersectProd(CONJ, false, INSTANCE.$$("(x,y)"), INSTANCE.$$("(x,z)").neg()));
 
     }
     @Test
@@ -100,8 +100,8 @@ public class NAL4FuzzyProduct extends NALTest {
         test.termVolMax(11);
 
         String F = "f((x|y),z)";
-        Term f = $$(F);
-        assertEq("(--,(((--,x)&&(--,y))-->(f,/,z)))",Image.imageExt(f,$$("(x|y)")));
+        Term f = INSTANCE.$$(F);
+        assertEq("(--,(((--,x)&&(--,y))-->(f,/,z)))",Image.imageExt(f, INSTANCE.$$("(x|y)")));
 
         test
             .believe(F, 1.0f, 0.9f)

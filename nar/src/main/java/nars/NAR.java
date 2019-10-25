@@ -73,8 +73,8 @@ import java.util.stream.Stream;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-import static nars.$.$;
-import static nars.$.$$;
+import static nars.$.*;
+import static nars.$.*;
 import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
 import static org.fusesource.jansi.Ansi.ansi;
@@ -428,14 +428,14 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
      * gets a concept if it exists, or returns null if it does not
      */
     public final @Nullable Concept conceptualize(String conceptTerm) throws NarseseException {
-        return conceptualize($(conceptTerm));
+        return conceptualize(INSTANCE.$(conceptTerm));
     }
 
     /**
      * ask question
      */
     public Task question(String termString) throws NarseseException {
-        return question($(termString));
+        return question(INSTANCE.$(termString));
     }
 
     /**
@@ -450,7 +450,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
     }
 
     public @Nullable Task want(String goalTermString, Tense tense, float freq, float conf) throws NarseseException {
-        return want($(goalTermString), tense, freq, conf);
+        return want(INSTANCE.$(goalTermString), tense, freq, conf);
     }
 
     public Task want(Term goal, Tense tense, float freq) {
@@ -493,7 +493,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
 
     public NAR believe(String term, Tense tense, float freq, float conf) {
         try {
-            believe(priDefault(BELIEF), $(term), time(tense), freq, conf);
+            believe(priDefault(BELIEF), INSTANCE.$(term), time(tense), freq, conf);
         } catch (NarseseException e) {
             throw new RuntimeException(e);
         }
@@ -509,12 +509,12 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
     }
 
     public NAR believe(String termString, float freq, float conf, long start, long end) {
-        believe($$(termString), start, end, freq, conf);
+        believe(INSTANCE.$$(termString), start, end, freq, conf);
         return this;
     }
 
     public Task want(String termString) {
-        return want($$(termString), true);
+        return want(INSTANCE.$$(termString), true);
     }
 
     public NAR believe(String... tt) throws NarseseException {
@@ -526,12 +526,12 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
     }
 
     public NAR believe(String termString, boolean isTrue) throws NarseseException {
-        believe($(termString), isTrue);
+        believe(INSTANCE.$(termString), isTrue);
         return this;
     }
 
     public Task want(String termString, boolean isTrue) throws NarseseException {
-        return want($(termString), isTrue);
+        return want(INSTANCE.$(termString), isTrue);
     }
 
     public Task believe(Term term) {
@@ -589,7 +589,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
 
     public Task input(float pri, Term term, byte punc, long start, long end, float freq, double conf) throws TaskException {
 
-        PreciseTruth truth = $.t(freq, conf);
+        PreciseTruth truth = $.INSTANCE.t(freq, conf);
 
         Term c = Task.taskValid(term, punc, truth, false);
 
@@ -812,11 +812,11 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
     }
 
     public final @Nullable Truth beliefTruth(String concept, long when) throws NarseseException {
-        return truth($(concept), BELIEF, when);
+        return truth(INSTANCE.$(concept), BELIEF, when);
     }
 
     public final @Nullable Truth goalTruth(String concept, long when) throws NarseseException {
-        return truth($(concept), GOAL, when);
+        return truth(INSTANCE.$(concept), GOAL, when);
     }
 
     public final @Nullable Truth beliefTruth(Termed concept, long when) {
@@ -1094,7 +1094,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
     }
 
     public final @Nullable Concept concept(String term) {
-        return concept($$(term), false);
+        return concept(INSTANCE.$$(term), false);
     }
 
     /**
@@ -1454,7 +1454,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
     }
 
     public final Task belief(String c, long when) throws NarseseException {
-        return belief($(c), when);
+        return belief(INSTANCE.$(c), when);
     }
 
     public final Task belief(Termed c, long when) {

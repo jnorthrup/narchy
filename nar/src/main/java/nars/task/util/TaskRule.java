@@ -31,7 +31,7 @@ public class TaskRule extends TaskMatch {
     public TaskRule(String input, String output, NAR nar) throws Narsese.NarseseException {
         super(nar);
 
-        this.input = $.$(input);
+        this.input = $.INSTANCE.$(input);
         /** version of output with the original GenericVariable's, for display or reference purposes */
         Compound outputRaw = (Compound) Narsese.term(output, false);
 
@@ -43,7 +43,7 @@ public class TaskRule extends TaskMatch {
 
         /** mapping of input variables to normalized variables */
         Map<Variable, Variable> io = varNorm.map;
-        this.id = $.impl($.p(this.input, outputRaw, this.output), $.varQuery("what")).normalize();
+        this.id = $.INSTANCE.impl($.INSTANCE.p(this.input, outputRaw, this.output), $.INSTANCE.varQuery("what")).normalize();
 
 
 

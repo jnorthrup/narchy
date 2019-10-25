@@ -14,7 +14,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import static java.util.stream.Collectors.toList;
-import static nars.$.$$;
+import static nars.$.*;
 import static nars.Op.BELIEF;
 import static nars.Op.QUESTION;
 import static org.junit.jupiter.api.Assertions.*;
@@ -195,10 +195,10 @@ public class InterNARTest {
             public void accept(NAR a, NAR b) {
 
 
-                a.believe($$("(b --> c)"));
-                b.believe($$("(a --> b)"));
-                b.believe($$("(c --> d)"));
-                b.question($$("(a --> d)"));
+                a.believe(INSTANCE.$$("(b --> c)"));
+                b.believe(INSTANCE.$$("(a --> b)"));
+                b.believe(INSTANCE.$$("(c --> d)"));
+                b.question(INSTANCE.$$("(a --> d)"));
 
             }
         });

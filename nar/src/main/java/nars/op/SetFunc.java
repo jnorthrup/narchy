@@ -121,11 +121,11 @@ public final class SetFunc{
                     return Null; 
 
                 l.sort(cmp);
-                return $.pFast(l);
+                return $.INSTANCE.pFast(l);
             }
 
             private Term eval(Term t, Atomic atom) {
-                return nar.eval($.func(atom, t));
+                return nar.eval($.INSTANCE.func(atom, t));
             }
 
             @Override

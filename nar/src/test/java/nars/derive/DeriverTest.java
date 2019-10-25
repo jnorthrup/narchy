@@ -13,7 +13,7 @@ import org.junit.jupiter.api.function.Executable;
 
 import java.util.List;
 
-import static nars.$.$$;
+import static nars.$.*;
 import static nars.Op.QUEST;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class DeriverTest {
 
-    private final List<TestNAR> tests = $.newArrayList();
+    private final List<TestNAR> tests = $.INSTANCE.newArrayList();
 
 //    private static void print(NAR n, PrintStream p) {
 //        derivers(n).forEach(d -> {
@@ -162,8 +162,8 @@ class DeriverTest {
     }
 
     @Deprecated @Test void Temporal() {
-        assertFalse(Occurrify.temporal($$("(x==>y)")));
-        assertTrue(Occurrify.temporal($$("(x ==>+1 y)")));
+        assertFalse(Occurrify.temporal(INSTANCE.$$("(x==>y)")));
+        assertTrue(Occurrify.temporal(INSTANCE.$$("(x ==>+1 y)")));
     }
 
 }

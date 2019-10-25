@@ -33,7 +33,7 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-import static nars.$.$$;
+import static nars.$.*;
 import static nars.Op.NEG;
 import static nars.Op.PROD;
 import static nars.time.Tense.DTERNAL;
@@ -50,8 +50,8 @@ public enum TermTest { ;
         try {
 
 
-            Termed term1 = $.$(term1String);
-            Termed term2 = $.$(term2String);
+            Termed term1 = $.INSTANCE.$(term1String);
+            Termed term2 = $.INSTANCE.$(term2String);
 
 
             assertEq(term1.term(), term2.term());
@@ -104,7 +104,7 @@ public enum TermTest { ;
     }
 
     public static Term assertEq(String exp, String is) {
-        Term t = $$(is);
+        Term t = INSTANCE.$$(is);
         return assertEq(exp, is, t);
     }
 
@@ -120,7 +120,7 @@ public enum TermTest { ;
         //test for stability:
         Term y = null;
         try {
-            y = $.$(x.toString());
+            y = $.INSTANCE.$(x.toString());
         } catch (Narsese.NarseseException e) {
             e.printStackTrace();
             fail(new Supplier<String>() {
@@ -143,7 +143,7 @@ public enum TermTest { ;
     }
 
     public static Term assertEq(Term z, String x) {
-        Term y = $$(x);
+        Term y = INSTANCE.$$(x);
         assertEq(z, y);
         assertEq(z, x, y);
         return y;
@@ -216,7 +216,7 @@ public enum TermTest { ;
 
         assertEquals(TermBuilder.newCompound(PROD, a), TermBuilder.newCompound(PROD, b));
         assertEquals(TermBuilder.newCompound(PROD, b), TermBuilder.newCompound(PROD, a));
-        assertEquals($.pFast(a), $.pFast(b));
+        assertEquals($.INSTANCE.pFast(a), $.INSTANCE.pFast(b));
         assertEquals(TermBuilder.newCompound(PROD, DTERNAL, a), TermBuilder.newCompound(PROD, DTERNAL, b));
 
         Assertions.assertEquals(a.hashCodeSubterms(), b.hashCodeSubterms());
@@ -237,14 +237,14 @@ public enum TermTest { ;
         assertEquals(a.isCommuted(), b.isCommuted());
 
         {
-            byte[] bytesExpected = IO.termToBytes($.pFast(a));
-            byte[] bytesActual = IO.termToBytes($.pFast(b));
+            byte[] bytesExpected = IO.termToBytes($.INSTANCE.pFast(a));
+            byte[] bytesActual = IO.termToBytes($.INSTANCE.pFast(b));
             assertArrayEquals(bytesExpected, bytesActual);
         }
         {
             if (a.subs() > 0) {
-                byte[] bytesExpected = IO.termToBytes($.sFast(a));
-                byte[] bytesActual = IO.termToBytes($.sFast(b));
+                byte[] bytesExpected = IO.termToBytes($.INSTANCE.sFast(a));
+                byte[] bytesActual = IO.termToBytes($.INSTANCE.sFast(b));
                 assertArrayEquals(bytesExpected, bytesActual);
             }
         }
@@ -292,7 +292,7 @@ public enum TermTest { ;
     @Deprecated public static void testParse(String expected, String input) {
         Termed t = null;
         try {
-            t = $.$(input);
+            t = $.INSTANCE.$(input);
         } catch (Narsese.NarseseException e) {
             fail(e);
         }

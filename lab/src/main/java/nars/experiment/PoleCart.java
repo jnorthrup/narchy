@@ -81,8 +81,8 @@ public class PoleCart extends GameX {
                         public Game apply(NAR n) {
                             PoleCart p = new PoleCart(
                                     instances > 1 ?
-                                            $.p(Atomic.the(PoleCart.class.getSimpleName()), n.self()) :
-                                            $.the(PoleCart.class.getSimpleName()), n);
+                                            $.INSTANCE.p(Atomic.the(PoleCart.class.getSimpleName()), n.self()) :
+                                            $.INSTANCE.the(PoleCart.class.getSimpleName()), n);
                             Iterable<? extends Termed> predicting = Iterables.concat(
                                     p.angX.sensors, p.angY.sensors, p.angVel.sensors, p.xVel.sensors, p.x.sensors
                             );
@@ -244,13 +244,13 @@ public class PoleCart extends GameX {
 		 */
 
 
-		x = senseNumberBi($.p("x", id), new FloatSupplier() {
+		x = senseNumberBi($.INSTANCE.p("x", id), new FloatSupplier() {
             @Override
             public float asFloat() {
                 return (float) (pos - (double) posMin) / (posMax - posMin);
             }
         });
-		xVel = senseNumberBi($.p(id, $.the("d"), $.the("x")),
+		xVel = senseNumberBi($.INSTANCE.p(id, $.INSTANCE.the("d"), $.INSTANCE.the("x")),
 			new FloatNormalized(new FloatSupplier() {
                 @Override
                 public float asFloat() {
@@ -259,14 +259,14 @@ public class PoleCart extends GameX {
             })
 		);
 
-		angX = senseNumberTri($.p(id, $.the("ang"), $.the("x")),
+		angX = senseNumberTri($.INSTANCE.p(id, $.INSTANCE.the("ang"), $.INSTANCE.the("x")),
                 new FloatSupplier() {
                     @Override
                     public float asFloat() {
                         return (float) (0.5 + 0.5 * Math.sin(angle));
                     }
                 });
-		angY = senseNumberTri($.p(id, $.the("ang"), $.the("y")),
+		angY = senseNumberTri($.INSTANCE.p(id, $.INSTANCE.the("ang"), $.INSTANCE.the("y")),
                 new FloatSupplier() {
                     @Override
                     public float asFloat() {
@@ -275,7 +275,7 @@ public class PoleCart extends GameX {
                 });
 
 
-		angVel = senseNumberBi($.p(id, $.the("d"), $.the("ang")),
+		angVel = senseNumberBi($.INSTANCE.p(id, $.INSTANCE.the("d"), $.INSTANCE.the("ang")),
 			new FloatNormalized(new FloatSupplier() {
                 @Override
                 public float asFloat() {
@@ -290,7 +290,7 @@ public class PoleCart extends GameX {
 		initUnipolar();
 
 		if (speedControl) {
-			actionUnipolar($.inh(id, "S"), new FloatConsumer() {
+			actionUnipolar($.INSTANCE.inh(id, "S"), new FloatConsumer() {
                 @Override
                 public void accept(float s) {
                     speed = Util.sqr(s * 2.0F);
@@ -438,7 +438,7 @@ public class PoleCart extends GameX {
 	public void initUnipolar() {
         GoalActionConcept L = actionUnipolar(
 			//$.funcImg("mx", id, $.the(-1))
-			$.inh(id, "L"), new FloatToFloatFunction() {
+			$.INSTANCE.inh(id, "L"), new FloatToFloatFunction() {
                     @Override
                     public float valueOf(float a) {
                         if (!manualOverride) {
@@ -450,7 +450,7 @@ public class PoleCart extends GameX {
                 });
         GoalActionConcept R = actionUnipolar(
 			//$.funcImg("mx", id, $.the(+1))
-			$.inh(id, "R"), new FloatToFloatFunction() {
+			$.INSTANCE.inh(id, "R"), new FloatToFloatFunction() {
                     @Override
                     public float valueOf(float a) {
                         if (!manualOverride) {

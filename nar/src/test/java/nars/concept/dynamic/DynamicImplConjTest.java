@@ -16,7 +16,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import java.util.List;
 import java.util.function.Supplier;
 
-import static nars.$.$$;
+import static nars.$.*;
 import static nars.Op.BELIEF;
 import static nars.time.Tense.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -97,10 +97,10 @@ class DynamicImplConjTest extends AbstractDynamicTaskTest {
                 }
 
 
-                Term pt_p = $$(xy);
+                Term pt_p = INSTANCE.$$(xy);
                 assertEquals(xy, pt_p.toString());
-                assertEquals(x, $$(x).toString());
-                assertEquals(y, $$(y).toString());
+                assertEquals(x, INSTANCE.$$(x).toString());
+                assertEquals(y, INSTANCE.$$(y).toString());
 
 
                 testImpl(mode, outer, inner, x, y, xy, pt_p, truthIntersectOrUnion);
@@ -185,7 +185,7 @@ class DynamicImplConjTest extends AbstractDynamicTaskTest {
     }
 
     private static Task assertBelief(String inputTerm, long when, String answerTermExpected, float freqExpected, float confExpected, NAR n) {
-        Term x = $$(inputTerm);
+        Term x = INSTANCE.$$(inputTerm);
         assertDynamicTable(n, x);
         Task t = n.answer(x, BELIEF, when);
         assertNotNull(t, new Supplier<String>() {
@@ -260,51 +260,51 @@ class DynamicImplConjTest extends AbstractDynamicTaskTest {
 
             //AND
             {
-                Term pp = $$("((x && y) ==> a)");
+                Term pp = INSTANCE.$$("((x && y) ==> a)");
                 assertTrue(isDynamicTable(pp));
-                Term pn = $$("((x || z) ==> a)");
+                Term pn = INSTANCE.$$("((x || z) ==> a)");
                 assertTrue(isDynamicTable(pn));
 
-                assertEquals($.t(1f, 0.81f), n.beliefTruth(pp, now));
+                assertEquals($.INSTANCE.t(1f, 0.81f), n.beliefTruth(pp, now));
 
-                assertEquals($.t(1f, 0.81f), n.beliefTruth(pn, now));
+                assertEquals($.INSTANCE.t(1f, 0.81f), n.beliefTruth(pn, now));
 
                 {
-                    Term pnnConj = $$("((x && --z) ==> a)");
+                    Term pnnConj = INSTANCE.$$("((x && --z) ==> a)");
                     Truth pnnConjTruth = n.beliefTruth(pnnConj, now);
-                    assertEquals($.t(/* union */ 0.75f, 0.81f), pnnConjTruth);
+                    assertEquals($.INSTANCE.t(/* union */ 0.75f, 0.81f), pnnConjTruth);
                 }
                 {
-                    Term pnnDisj = $$("((x || --z) ==> a)");
+                    Term pnnDisj = INSTANCE.$$("((x || --z) ==> a)");
                     Truth pnnDisjTruth = n.beliefTruth(pnnDisj, now);
-                    assertEquals($.t(/* intersection */ 1, 0.81f), pnnDisjTruth);
+                    assertEquals($.INSTANCE.t(/* intersection */ 1, 0.81f), pnnDisjTruth);
                 }
 
 
-                assertEquals($.t(0f, 0.81f), n.beliefTruth($$("((z && w) ==> a)"), now));
-                assertEquals($.t(0f, 0.81f), n.beliefTruth($$("((z || w) ==> a)"), now));
+                assertEquals($.INSTANCE.t(0f, 0.81f), n.beliefTruth(INSTANCE.$$("((z && w) ==> a)"), now));
+                assertEquals($.INSTANCE.t(0f, 0.81f), n.beliefTruth(INSTANCE.$$("((z || w) ==> a)"), now));
             }
 
             //OR
             {
-                Term NppAndNeg = $$("(--(--x && --y) ==> a)");
-                assertEquals($.t(1f, 0.81f), n.beliefTruth(NppAndNeg, now));
+                Term NppAndNeg = INSTANCE.$$("(--(--x && --y) ==> a)");
+                assertEquals($.INSTANCE.t(1f, 0.81f), n.beliefTruth(NppAndNeg, now));
 
-                Term NppOrPos = $$("((x || y) ==> a)");
-                assertEquals($.t(1f, 0.81f), n.beliefTruth(NppOrPos, now));
+                Term NppOrPos = INSTANCE.$$("((x || y) ==> a)");
+                assertEquals($.INSTANCE.t(1f, 0.81f), n.beliefTruth(NppOrPos, now));
             }
 
 
             { //Unknowable cases
-                Term NppOrPosNeg = $$("((x || --y) ==> a)");
+                Term NppOrPosNeg = INSTANCE.$$("((x || --y) ==> a)");
                 assertEquals(null /* $.t(1f, 0.81f) */, n.beliefTruth(NppOrPosNeg, now));
 
 
-                Term NppAndPos = $$("(--(x && y) ==> a)");
+                Term NppAndPos = INSTANCE.$$("(--(x && y) ==> a)");
                 assertEquals(null, n.beliefTruth(NppAndPos, now));
 
 
-                Term NppOrNeg = $$("((--x || --y) ==> a)");
+                Term NppOrNeg = INSTANCE.$$("((--x || --y) ==> a)");
                 assertEquals(null, n.beliefTruth(NppOrNeg, now));
             }
 

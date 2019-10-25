@@ -4,7 +4,7 @@ import nars.Narsese;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import static nars.$.$$;
+import static nars.$.*;
 import static nars.op.ArithmeticTest.assertEval;
 import static nars.op.ArithmeticTest.assertSolves;
 import static nars.term.atom.IdempotentBool.*;
@@ -40,23 +40,23 @@ public class EqualTest {
     }
 
     @Test public void testEqualSolutionAddInverse() {
-        assertEval($$("x(0)"), "(x(#1) && equal(add(#1,1),1))");
-        assertEval($$("x(0)"), "(x(#1) && equal(add(1,#1),1))");
-        assertEval($$("x(0)"), "(x(#1) && equal(1,add(#1,1)))");
-        assertEval($$("x(0)"), "(x(#1) && equal(1,add(1,#1)))");
+        assertEval(INSTANCE.$$("x(0)"), "(x(#1) && equal(add(#1,1),1))");
+        assertEval(INSTANCE.$$("x(0)"), "(x(#1) && equal(add(1,#1),1))");
+        assertEval(INSTANCE.$$("x(0)"), "(x(#1) && equal(1,add(#1,1)))");
+        assertEval(INSTANCE.$$("x(0)"), "(x(#1) && equal(1,add(1,#1)))");
     }
 
     @Test public void testEqualSolutionMulInverseA() {
-        assertEval($$("x(-2)"), "(x(#1) && equal(mul(#1,-1),2))");
-        assertEval($$("x(-2)"), "(x(#1) && equal(mul(-1,#1),2))");
-        assertEval($$("x(-2)"), "(x(#1) && equal(2,mul(#1,-1)))");
-        assertEval($$("x(-2)"), "(x(#1) && equal(2,mul(-1,#1)))");
+        assertEval(INSTANCE.$$("x(-2)"), "(x(#1) && equal(mul(#1,-1),2))");
+        assertEval(INSTANCE.$$("x(-2)"), "(x(#1) && equal(mul(-1,#1),2))");
+        assertEval(INSTANCE.$$("x(-2)"), "(x(#1) && equal(2,mul(#1,-1)))");
+        assertEval(INSTANCE.$$("x(-2)"), "(x(#1) && equal(2,mul(-1,#1)))");
     }
     @Test public void testEqualSolutionMulInverseB() {
-        assertEval($$("x(1)"), "(x(#1) && equal(mul(2,#1),2))");
-        assertEval($$("x(1)"), "(x(#1) && equal(mul(#1,2),2))");
-        assertEval($$("x(1)"), "(x(#1) && equal(2,mul(#1,2)))");
-        assertEval($$("x(1)"), "(x(#1) && equal(2,mul(2,#1)))");
+        assertEval(INSTANCE.$$("x(1)"), "(x(#1) && equal(mul(2,#1),2))");
+        assertEval(INSTANCE.$$("x(1)"), "(x(#1) && equal(mul(#1,2),2))");
+        assertEval(INSTANCE.$$("x(1)"), "(x(#1) && equal(2,mul(#1,2)))");
+        assertEval(INSTANCE.$$("x(1)"), "(x(#1) && equal(2,mul(2,#1)))");
     }
 
     @Test public void testEqualSolutionComplex() {
@@ -73,7 +73,7 @@ public class EqualTest {
 
         String t = "(&&,(--,(g(add(#1,1),0,(0,add(add(#1,1),9)))&&equal(add(#1,1),1))),(--,c(add(#1,1))),(--,add(#1,1)),(--,down))";
 
-        assertEval($$("(&&,(--,g(1,0,(0,10))),(--,c(1)),(--,down),(--,1))"), t);
+        assertEval(INSTANCE.$$("(&&,(--,g(1,0,(0,10))),(--,c(1)),(--,down),(--,1))"), t);
     }
 
 
@@ -81,6 +81,6 @@ public class EqualTest {
 
     @Test
     void testAddEqualIdentity() {
-        assertEval($$("answer(0)"), "(equal(#x,add(#x,$y))==>answer($y))");
+        assertEval(INSTANCE.$$("answer(0)"), "(equal(#x,add(#x,$y))==>answer($y))");
     }
 }

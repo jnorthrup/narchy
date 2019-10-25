@@ -65,7 +65,7 @@ public abstract class WhenTimeIs extends ScheduledTask {
 
     @Override
     public Term term() {
-        return $.p($.identity(_id()), $.the((float) whenOrAfter));
+        return $.INSTANCE.p($.INSTANCE.identity(_id()), $.INSTANCE.the((float) whenOrAfter));
     }
 
     protected abstract Object _id();

@@ -176,7 +176,7 @@ public class DigitizedScalar extends DemultiplexedScalarSensor {
                     public Truth value(float prev, float next) {
                         if (next < (float) 0 || next > 1.0F)
                             throw new OutOfRangeException(next, 0, 1);
-                        return next == next ? $.t(next, nar.confDefault(BELIEF)) : null;
+                        return next == next ? $.INSTANCE.t(next, nar.confDefault(BELIEF)) : null;
                     }
                 }
         );

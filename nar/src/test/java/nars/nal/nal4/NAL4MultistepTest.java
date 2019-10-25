@@ -7,7 +7,7 @@ import nars.test.NALTest;
 import nars.test.TestNAR;
 import org.junit.jupiter.api.Test;
 
-import static nars.$.$$;
+import static nars.$.*;
 
 public class NAL4MultistepTest extends NALTest {
     @Override
@@ -25,7 +25,7 @@ public class NAL4MultistepTest extends NALTest {
 
         TestNAR tester = test;
 
-        tester.nar.termVolMax.set($$("(likes(cat,[blue]) <-> likes({tom},[blue]))").volume()+2);
+        tester.nar.termVolMax.set(INSTANCE.$$("(likes(cat,[blue]) <-> likes({tom},[blue]))").volume()+2);
 
         //tester.nar.freqResolution.setAt(0.05f);
         tester.nar.questionPriDefault.pri(0.5f);
@@ -67,9 +67,9 @@ public class NAL4MultistepTest extends NALTest {
 //        test.nar.freqResolution.setAt(0.25f);
 //        test.nar.confResolution.setAt(0.1f);
 
-        Term cat = $$("cat");
-        Term blue = $$("blue");
-        Term answer = $$("likes(cat,blue)");;
+        Term cat = INSTANCE.$$("cat");
+        Term blue = INSTANCE.$$("blue");
+        Term answer = INSTANCE.$$("likes(cat,blue)");;
 
         int time = 2550;
         test.believe("(blue<->sky)")
@@ -89,9 +89,9 @@ public class NAL4MultistepTest extends NALTest {
 //        test.nar.freqResolution.setAt(0.25f);
 //        test.nar.confResolution.setAt(0.1f);
 
-        Term cat = $$("cat");
-        Term blue = $$("blue");
-        Term answer = $$("likes(cat,blue)");;
+        Term cat = INSTANCE.$$("cat");
+        Term blue = INSTANCE.$$("blue");
+        Term answer = INSTANCE.$$("likes(cat,blue)");;
 
         int time = 2550;
         test.believe("blue:sky")

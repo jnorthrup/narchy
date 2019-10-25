@@ -6,7 +6,7 @@ import nars.NAL;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
-import static nars.$.tt;
+import static nars.$.*;
 import static nars.truth.func.TruthFunctions.confCompose;
 import static nars.truth.func.TruthFunctions.w2cSafe;
 
@@ -161,7 +161,7 @@ public final class TruthFunctions2{
                             //Util.lerpSafe(bF, 0.5f, gF)
                         ;
 
-                return tt(f, cc);
+                return INSTANCE.tt(f, cc);
 
             }
 
@@ -187,7 +187,7 @@ public final class TruthFunctions2{
         }
 
         float f = Util.lerp(bF, ((1.0F -goal.freq()) + 0.5f)/ 2.0F, goal.freq());
-        return tt(f, cc);
+        return INSTANCE.tt(f, cc);
     }
 
 
@@ -202,7 +202,7 @@ public final class TruthFunctions2{
         float sim =
             (1f - Math.abs(t.freq() - b.freq())) * Math.max(t.polarity(), b.polarity());
         float cc = /*weak*/(c * sim);
-        return cc >= minConf ? tt(sim, cc) : null;
+        return cc >= minConf ? INSTANCE.tt(sim, cc) : null;
     }
 
     public static float weak(float c) {
@@ -215,7 +215,7 @@ public final class TruthFunctions2{
         if (t == null)
             return null;
         float c = weak(t.conf());
-        return c >= minConf ? tt(t.freq(), c) : null;
+        return c >= minConf ? INSTANCE.tt(t.freq(), c) : null;
     }
 
     /**
@@ -228,7 +228,7 @@ public final class TruthFunctions2{
         float f = t.freq();
         float fPolarization = t.polarity();
         float c = weak(fPolarization * t.conf());
-        return c >= minConf ? tt((1.0F - f), c) : null;
+        return c >= minConf ? INSTANCE.tt((1.0F - f), c) : null;
     }
 
 
@@ -266,7 +266,7 @@ public final class TruthFunctions2{
             cc = weak(cc);
         if (cc < minConf) return null;
 
-        return tt(f, cc);
+        return INSTANCE.tt(f, cc);
     }
 
     /**
@@ -322,7 +322,7 @@ public final class TruthFunctions2{
 //            f = Util.lerp(alignment, 0.5f, 1);  //vanish toward maybe
         }
 
-        return tt(f, c);
+        return INSTANCE.tt(f, c);
     }
 
 //    @Nullable public static Truth intersectionSym(Truth t, Truth b, float minConf) {
@@ -428,7 +428,7 @@ public final class TruthFunctions2{
             fy = 1.0F;
         }
 
-        return tt(fy, c);
+        return INSTANCE.tt(fy, c);
     }
 
     /** variation of the original union truth function that
@@ -449,7 +449,7 @@ public final class TruthFunctions2{
         float loss = Math.abs( (f - tf) - (f - bf) );
         float lossFraction = loss / f;
         c *= 1.0F - lossFraction;
-        return c < minConf ? null : tt(f, c);
+        return c < minConf ? null : INSTANCE.tt(f, c);
     }
 
 

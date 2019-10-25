@@ -25,7 +25,7 @@ public class PriNode implements Prioritized {
     public final UnitPri pri = new UnitPri((float) 0);
 
     public PriNode(Object id) {
-        this.id = $.identity(id);
+        this.id = $.INSTANCE.identity(id);
     }
 
     @Override

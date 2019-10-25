@@ -9,7 +9,7 @@ import nars.term.TermTestMisc;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import static nars.$.$;
+import static nars.$.*;
 import static nars.term.TermTestMisc.assertValid;
 import static nars.term.util.TermTest.assertInvalidTerms;
 import static org.junit.jupiter.api.Assertions.*;
@@ -21,8 +21,8 @@ import static org.junit.jupiter.api.Assertions.*;
 public class ConjTest3 {
     private final NAR n = NARS.shell();
 
-    static final Term x = $.the("x");
-    static final Term y = $.the("y");
+    static final Term x = $.INSTANCE.the("x");
+    static final Term y = $.INSTANCE.the("y");
 
     @Test
     void testCoNegatedSubtermTask() throws Narsese.NarseseException {
@@ -54,12 +54,12 @@ public class ConjTest3 {
 
         TermTestMisc.assertValidTermValidConceptInvalidTaskContent(("((--,x) && x)."));
         TermTestMisc.assertValidTermValidConceptInvalidTaskContent("((--,x) &| x).");
-        assertValid($("((--,x) &&+1 x)"));
-        assertValid($("(x &&+1 x)"));
+        assertValid(INSTANCE.$("((--,x) &&+1 x)"));
+        assertValid(INSTANCE.$("(x &&+1 x)"));
 
-        assertEquals($("x"), $("(x &| x)"));
-        assertEquals($("x"), $("(x && x)"));
-        assertNotEquals($("x"), $("(x &&+1 x)"));
+        assertEquals(INSTANCE.$("x"), INSTANCE.$("(x &| x)"));
+        assertEquals(INSTANCE.$("x"), INSTANCE.$("(x && x)"));
+        assertNotEquals(INSTANCE.$("x"), INSTANCE.$("(x &&+1 x)"));
 
         assertInvalidTerms("((--,x) || x)");
         assertInvalidTerms("(&|,(--,(score-->tetris)),(--,(height-->tetris)),(--,(density-->tetris)),(score-->tetris),(height-->tetris))");

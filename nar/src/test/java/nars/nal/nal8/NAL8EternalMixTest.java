@@ -680,7 +680,7 @@ class NAL8EternalMixTest extends NALTest {
             @Override
             public void run() {
                 try {
-                    test.nar.concept($.$("c($1)")).print();
+                    test.nar.concept($.INSTANCE.$("c($1)")).print();
                 } catch (Narsese.NarseseException e) {
                     e.printStackTrace();
                 }

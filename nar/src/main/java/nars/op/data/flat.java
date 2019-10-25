@@ -26,7 +26,7 @@ public abstract class flat extends AbstractInlineFunctor1 {
 
         @Override
         public Term result(List<Term> terms) {
-            return $.p(terms);
+            return $.INSTANCE.p(terms);
         }
 
     };
@@ -48,7 +48,7 @@ public abstract class flat extends AbstractInlineFunctor1 {
     @Override
     public @Nullable Term apply1(Term x) {
 
-        List<Term> l = $.newArrayList(x.volume());
+        List<Term> l = $.INSTANCE.newArrayList(x.volume());
         collect(((Compound)x).arrayClone(), l);
         return result(l);
 

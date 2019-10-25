@@ -62,36 +62,36 @@ public class VariableTest {
 		assertEquals(1, Narsese.term("?x").vars());
 		assertEquals(1, Narsese.term("%x").vars());
 
-		assertEquals(2, $("<$x <-> %y>").vars());
+		assertEquals(2, INSTANCE.$("<$x <-> %y>").vars());
 	}
 
 	@Test
 	void testBooleanReductionViaHasPatternVar() throws Narsese.NarseseException {
-		Compound d = $("<a <-> <$1 --> b>>");
+		Compound d = INSTANCE.$("<a <-> <$1 --> b>>");
 		assertEquals(0, d.varPattern());
 
-		Compound c = $("<a <-> <%1 --> b>>");
+		Compound c = INSTANCE.$("<a <-> <%1 --> b>>");
 		assertEquals(1, c.varPattern());
 
-		Compound e = $("<%2 <-> <%1 --> b>>");
+		Compound e = INSTANCE.$("<%2 <-> <%1 --> b>>");
 		assertEquals(2, e.varPattern());
 
 	}
 
 	@Test
 	void testNormalizeUnitCompound() {
-		assertEq("(#1)", $$("(#2)").normalize());
-		assertEq("(#1)", $$("(#1)").normalize());
+		assertEq("(#1)", INSTANCE.$$("(#2)").normalize());
+		assertEq("(#1)", INSTANCE.$$("(#1)").normalize());
 	}
 
 	@Test
 	void testNormalizeNegs() {
-		assertEq("(--,#1)", $$("(--,#2)").normalize());
-		assertEq("a((--,#1))", $$("a((--,#2))").normalize());
-		assertEq("(--,#1)", $$("(--,#1)").normalize());
-		assertEq("(--,#1)", $$("(--,#x)").normalize());
+		assertEq("(--,#1)", INSTANCE.$$("(--,#2)").normalize());
+		assertEq("a((--,#1))", INSTANCE.$$("a((--,#2))").normalize());
+		assertEq("(--,#1)", INSTANCE.$$("(--,#1)").normalize());
+		assertEq("(--,#1)", INSTANCE.$$("(--,#x)").normalize());
 
-		assertEq("((--,#1)&&(--,#2))", $$("((--,#3) && (--,#2))").normalize());
+		assertEq("((--,#1)&&(--,#2))", INSTANCE.$$("((--,#3) && (--,#2))").normalize());
 	}
 
 	/**
@@ -100,13 +100,13 @@ public class VariableTest {
 	@Test
 	void testVariableSubtermSortAffect0() {
 
-		assertEquals(-1, $.varIndep(1).compareTo($.varIndep(2)));
+		assertEquals(-1, $.INSTANCE.varIndep(1).compareTo($.INSTANCE.varIndep(2)));
 
 
-		Compound k1 = $.inh($.varIndep(1), Atomic.the("key"));
-		Compound k2 = $.inh($.varIndep(2), Atomic.the("key"));
-		Compound l1 = $.inh($.varIndep(1), Atomic.the("lock"));
-		Compound l2 = $.inh($.varIndep(2), Atomic.the("lock"));
+		Compound k1 = $.INSTANCE.inh($.INSTANCE.varIndep(1), Atomic.the("key"));
+		Compound k2 = $.INSTANCE.inh($.INSTANCE.varIndep(2), Atomic.the("key"));
+		Compound l1 = $.INSTANCE.inh($.INSTANCE.varIndep(1), Atomic.the("lock"));
+		Compound l2 = $.INSTANCE.inh($.INSTANCE.varIndep(2), Atomic.the("lock"));
 		assertEquals(-1, k1.compareTo(k2));
 		assertEquals(+1, k2.compareTo(k1));
 		assertEquals(-1, l1.compareTo(l2));
@@ -156,22 +156,22 @@ public class VariableTest {
 
 	@Test
 	void VariableTransform1() {
-		Term y = $$("(_3(#1,_1) &&+1 _2(#1,$2))").transform(VariableTransform.indepToQueryVar);
+		Term y = INSTANCE.$$("(_3(#1,_1) &&+1 _2(#1,$2))").transform(VariableTransform.indepToQueryVar);
 		assertEq("(_3(#1,_1) &&+1 _2(#1,?$2))", y);
 		assertEq("(_3(#1,_1) &&+1 _2(#1,?2))", y.normalize());
 	}
 
 	@Test
 	void NormalizationComplex() {
-		assertEq("(#1,$2)", $$("(#1,$1)").normalize());
-		assertEq("(#1,?2)", $$("(#1,?1)").normalize());
-		assertEq("(#1,($2==>($2)))", $$("(#1,($1==>($1)))").normalize());
-		assertEq("(($1==>($1)),#2)", $$("(($1==>($1)),#1)").normalize());
+		assertEq("(#1,$2)", INSTANCE.$$("(#1,$1)").normalize());
+		assertEq("(#1,?2)", INSTANCE.$$("(#1,?1)").normalize());
+		assertEq("(#1,($2==>($2)))", INSTANCE.$$("(#1,($1==>($1)))").normalize());
+		assertEq("(($1==>($1)),#2)", INSTANCE.$$("(($1==>($1)),#1)").normalize());
 	}
 
 	@Test
 	void NormalizationComplex2() {
-		Term x = $$$("((($1-->Investor)==>(possesses($1,#2)&&({#2}-->Investment))) ==>+- ({#1}-->Investment))");
+		Term x = INSTANCE.$$$("((($1-->Investor)==>(possesses($1,#2)&&({#2}-->Investment))) ==>+- ({#1}-->Investment))");
 		assertFalse(x.isNormalized());
 		assertEq("((($1-->Investor)==>(possesses($1,#2)&&({#2}-->Investment))) ==>+- ({#3}-->Investment))", x.normalize());
 	}

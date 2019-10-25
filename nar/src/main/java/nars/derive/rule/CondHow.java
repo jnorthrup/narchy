@@ -48,8 +48,8 @@ import static nars.unify.constraint.RelationConstraint.*;
 public abstract class CondHow/*Builder*/ extends HowBuilder {
 
 	/** for convenient usage */
-	protected static final VarPattern TheTask = $.varPattern(1);
-	protected static final VarPattern TheBelief = $.varPattern(2);
+	protected static final VarPattern TheTask = $.INSTANCE.varPattern(1);
+	protected static final VarPattern TheBelief = $.INSTANCE.varPattern(2);
 
 	public Term taskPattern = TheTask;
 	public Term beliefPattern = TheBelief;
@@ -402,7 +402,7 @@ public abstract class CondHow/*Builder*/ extends HowBuilder {
 
 
 			case "subsMin":
-				match(x, new TermMatcher.SubsMin((short) $.intValue(y)));
+				match(x, new TermMatcher.SubsMin((short) $.INSTANCE.intValue(y)));
 				break;
 
 			case "is": {
@@ -410,7 +410,7 @@ public abstract class CondHow/*Builder*/ extends HowBuilder {
 				if (y.op() == SETe) {
 					struct = 0;
 					for (Term yy : y.subterms()) {
-						struct |= Op.the($.unquote(yy)).bit;
+						struct |= Op.the($.INSTANCE.unquote(yy)).bit;
 					}
 				} else {
 					//TEMPORARY
@@ -419,7 +419,7 @@ public abstract class CondHow/*Builder*/ extends HowBuilder {
 						if (negated) negationApplied = true;
 						break;
 					}
-					struct = Op.the($.unquote(y)).bit;
+					struct = Op.the($.INSTANCE.unquote(y)).bit;
 				}
 				isAny(x, struct, negated);
 				if (negated) negationApplied = true;
@@ -442,7 +442,7 @@ public abstract class CondHow/*Builder*/ extends HowBuilder {
 			}
 
 			case "isUnneg": {
-                Op oo = Op.the($.unquote(y));
+                Op oo = Op.the($.INSTANCE.unquote(y));
 				isUnneg(x, oo, negated);
 				if (negated) negationApplied = true;
 				break;
@@ -451,7 +451,7 @@ public abstract class CondHow/*Builder*/ extends HowBuilder {
 
 			case "has": {
 				//hasAny
-				hasAny(x, Op.the($.unquote(y)), !negated);
+				hasAny(x, Op.the($.INSTANCE.unquote(y)), !negated);
 				if (negated) negationApplied = true;
 				break;
 			}

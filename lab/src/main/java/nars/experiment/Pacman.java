@@ -19,7 +19,7 @@ import org.eclipse.collections.api.block.predicate.primitive.BooleanPredicate;
 
 import java.util.function.Function;
 
-import static nars.$.$$;
+import static nars.$.*;
 
 
 public class Pacman extends GameX {
@@ -29,7 +29,7 @@ public class Pacman extends GameX {
     static float fps = 20.0F;
 
     public Pacman(NAR nar) {
-        super($$("Pac"),
+        super(INSTANCE.$$("Pac"),
                 //GameTime.durs(0.5f),
                 GameTime.fps(fps),nar
 		);
@@ -60,7 +60,7 @@ public class Pacman extends GameX {
             Bitmap2DSensor c = senseCamera(new IntIntToObjectFunction<Term>() {
                 @Override
                 public Term apply(int x, int y) {
-                    return $.inh(id, $.p(x, y));
+                    return $.INSTANCE.inh(id, $.INSTANCE.p(x, y));
                 }
             }, camScale/*, 0*/);
 //            VectorSensorView v = new VectorSensorView(c, this);
@@ -69,7 +69,7 @@ public class Pacman extends GameX {
         }
 //        SpaceGraph.window(gg, 300, 300);
 
-        actionPushButtonMutex($.inh(id,"left"), $.inh(id,"right"), new BooleanPredicate() {
+        actionPushButtonMutex($.INSTANCE.inh(id,"left"), $.INSTANCE.inh(id,"right"), new BooleanPredicate() {
             @Override
             public boolean accept(boolean b) {
                 if (b) {
@@ -88,7 +88,7 @@ public class Pacman extends GameX {
                 } else return false;
             }
         });
-        actionPushButtonMutex($.inh(id,"up"), $.inh(id,"down"), new BooleanPredicate() {
+        actionPushButtonMutex($.INSTANCE.inh(id,"up"), $.INSTANCE.inh(id,"down"), new BooleanPredicate() {
             @Override
             public boolean accept(boolean b) {
                 if (b) {

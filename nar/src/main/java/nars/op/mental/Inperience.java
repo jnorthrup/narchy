@@ -55,7 +55,7 @@ public class Inperience extends TaskTransformAction {
     }
 
     public static Term reifyQuestion(Term x, byte punc, Term self) {
-        return $.funcImg(verb(punc), self, describe(x));
+        return $.INSTANCE.funcImg(verb(punc), self, describe(x));
     }
 
     static Term reifyBeliefOrGoal(Task t, Term self) {
@@ -65,7 +65,7 @@ public class Inperience extends TaskTransformAction {
         Atomic verb = verb(t.punc());
 
         //return $.funcImg(verb, self, y.negIf(t.isNegative()));
-        return $.func(verb, self, y.negIf(t.isNegative()));
+        return $.INSTANCE.func(verb, self, y.negIf(t.isNegative()));
     }
 
     private static Atomic verb(byte punc) {
@@ -142,7 +142,7 @@ public class Inperience extends TaskTransformAction {
             Term r = reifyBeliefOrGoal(t, self);
             if ((r = validReification(r, volMax)) != null) {
                 Truth tt = t.truth();
-                u = new InperienceTask(r, $.t(1.0F,
+                u = new InperienceTask(r, $.INSTANCE.t(1.0F,
                     Math.max(d.confMin,
                         tt.conf() * tt.polarity()
 //                        (tt.isNegative() ?
@@ -154,7 +154,7 @@ public class Inperience extends TaskTransformAction {
             Term r = reifyQuestion(t.term(), t.punc(), self);
             if ((r = validReification(r, volMax)) != null) {
                 float beliefConfDefault = d.nar.confDefault(BELIEF);
-                u = new InperienceTask(r, $.t(1.0F,
+                u = new InperienceTask(r, $.INSTANCE.t(1.0F,
                     Math.max(d.confMin, beliefConfDefault * t.priElseZero())
                 ), t, s, e);
             }

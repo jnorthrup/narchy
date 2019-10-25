@@ -59,7 +59,7 @@ public class ConsoleAgent extends GameX {
 
         this.WIDTH = w; this.HEIGHT = h;
         R = new TestConsole(
-                $.inh(id,"should"),
+                $.INSTANCE.inh(id,"should"),
                 WIDTH, HEIGHT, alphabet) {
 
             @Override
@@ -107,7 +107,7 @@ public class ConsoleAgent extends GameX {
 
 
         W = new TestConsole(
-                $.inh(id, "is"),
+                $.INSTANCE.inh(id, "is"),
                 R.W(), R.H(), alphabet) {
 
             final FloatRange moveThresh = new FloatRange(0.51f, (float) 0, 1f);
@@ -117,18 +117,18 @@ public class ConsoleAgent extends GameX {
 
                 Term id = ConsoleAgent.this.id;
 
-                GoalActionConcept[] lr = actionPushButtonMutex($.inh(id, "left"), $.inh(id, "right"), this::Left, this::Right, moveThresh::floatValue);
-                PreciseTruth OFF = $.t((float) 0, nar.confDefault(BELIEF));
+                GoalActionConcept[] lr = actionPushButtonMutex($.INSTANCE.inh(id, "left"), $.INSTANCE.inh(id, "right"), this::Left, this::Right, moveThresh::floatValue);
+                PreciseTruth OFF = $.INSTANCE.t((float) 0, nar.confDefault(BELIEF));
                 lr[0].goalDefault(OFF, nar);
                 lr[1].goalDefault(OFF, nar);
 
                 if (R.H() > 1) {
-                    GoalActionConcept[] ud = actionPushButtonMutex($.inh(id, "up"), $.inh(id, "down"), this::Up, this::Down, moveThresh::floatValue);
+                    GoalActionConcept[] ud = actionPushButtonMutex($.INSTANCE.inh(id, "up"), $.INSTANCE.inh(id, "down"), this::Up, this::Down, moveThresh::floatValue);
                     ud[0].goalDefault(OFF, nar);
                     ud[1].goalDefault(OFF, nar);
                 }
                 for (char c : alphabet) {
-                    Term C = $.inh(id, $.quote(String.valueOf(c)));
+                    Term C = $.INSTANCE.inh(id, $.INSTANCE.quote(String.valueOf(c)));
                     //actionPushButton(C, writeThresh::floatValue, () -> write(c));
                     GoalActionConcept cc = actionUnipolar(C, new FloatToFloatFunction() {
                         @Override
@@ -214,14 +214,14 @@ public class ConsoleAgent extends GameX {
 
             for (int x = 0; x < w; x++) {
                 for (int y = 0; y < h; y++) {
-                    Term XY = $.p($.the(x), $.the(y));
+                    Term XY = $.INSTANCE.p($.INSTANCE.the(x), $.INSTANCE.the(y));
                     //PriNode xy = new PriNode(XY);
                     //nar.control.input(xy, charAttn);
 
                     for (int i = 0, alphabetLength = alphabet.length; i < alphabetLength; i++) {
                         char a = alphabet[i];
                         Term xya =
-                                $.inh(id, $.p($.quote(String.valueOf(a)), XY));
+                                $.INSTANCE.inh(id, $.INSTANCE.p($.INSTANCE.quote(String.valueOf(a)), XY));
                                 //$.funcImg((Atomic)id, $.the(a), XY);
                         int xx = x;
                         int yy = y;

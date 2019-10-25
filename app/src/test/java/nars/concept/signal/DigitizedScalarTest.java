@@ -26,7 +26,7 @@ class DigitizedScalarTest {
 
         FloatNormalized range = new FloatNormalized(m::floatValue, -1, 1f, true);
         DigitizedScalar f = new DigitizedScalar(range, DigitizedScalar.FuzzyNeedle, n,
-                $.p("low"), $.p("mid"), $.p("hih"));
+                $.INSTANCE.p("low"), $.INSTANCE.p("mid"), $.INSTANCE.p("hih"));
 
 
         testSteadyFreqCondition(m, f, new FloatPredicate() {
@@ -69,7 +69,7 @@ class DigitizedScalarTest {
         testSteadyFreqCondition(x,
                 new DigitizedScalar(
                         new FloatNormalized(x::floatValue).updateRange(-1).updateRange(1),
-                        DigitizedScalar.FuzzyBinary, n, $.p("x0"), $.p("x1"), $.p("x2")),
+                        DigitizedScalar.FuzzyBinary, n, $.INSTANCE.p("x0"), $.INSTANCE.p("x1"), $.INSTANCE.p("x2")),
                 new FloatPredicate() {
                     @Override
                     public boolean accept(float f) {

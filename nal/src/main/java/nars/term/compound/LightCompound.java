@@ -19,7 +19,7 @@ public class LightCompound extends SeparateSubtermsCompound  {
     }
 
     private LightCompound(byte o, Term... s) {
-        this(o, $.vFast(s));
+        this(o, $.INSTANCE.vFast(s));
     }
 
     public LightCompound(Op o, Subterms s) {

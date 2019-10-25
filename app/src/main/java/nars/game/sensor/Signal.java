@@ -41,7 +41,7 @@ public abstract class Signal extends TaskConcept implements GameLoop, PermanentC
             return (new FloatFloatToObjectFunction<Truth>() {
                 @Override
                 public Truth value(float prev, float next) {
-                    return next == next ? $.t(next, conf.asFloat()) : null;
+                    return next == next ? $.INSTANCE.t(next, conf.asFloat()) : null;
                 }
             });
         }
@@ -55,7 +55,7 @@ public abstract class Signal extends TaskConcept implements GameLoop, PermanentC
             return (new FloatFloatToObjectFunction<Truth>() {
                 @Override
                 public Truth value(float prev, float next) {
-                    return (next == next) ? ((prev == prev) ? $.t((next - prev) / 2f + 0.5f, conf.asFloat()) : $.t(0.5f, conf.asFloat())) : $.t(0.5f, conf.asFloat());
+                    return (next == next) ? ((prev == prev) ? $.INSTANCE.t((next - prev) / 2f + 0.5f, conf.asFloat()) : $.INSTANCE.t(0.5f, conf.asFloat())) : $.INSTANCE.t(0.5f, conf.asFloat());
                 }
             });
         }

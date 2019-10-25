@@ -46,7 +46,7 @@ class TermutatorTest {
 
         assertTermutatorProducesUniqueResults(
                 new Choose1(e1, p2,
-                        ((Compound)p("a", "b")).toSetSorted()), 2);
+                        ((Compound) INSTANCE.p("a", "b")).toSetSorted()), 2);
 
     }
 
@@ -55,7 +55,7 @@ class TermutatorTest {
 
         assertTermutatorProducesUniqueResults(
                 new Choose1(e1, p2,
-                        ((Compound)p("a", "b", "c")).toSetSorted()), 3);
+                        ((Compound) INSTANCE.p("a", "b", "c")).toSetSorted()), 3);
     }
 
     @Test
@@ -63,7 +63,7 @@ class TermutatorTest {
 
         assertTermutatorProducesUniqueResults(
                 new Choose1(e1, p2,
-                        ((Compound)p("a", "b", "c", "d")).toSetSorted()), 4);
+                        ((Compound) INSTANCE.p("a", "b", "c", "d")).toSetSorted()), 4);
     }
 
 
@@ -72,7 +72,7 @@ class TermutatorTest {
         
         Term ee0;
         try {
-            ee0 = $("%A..+");
+            ee0 = INSTANCE.$("%A..+");
         } catch (Narsese.NarseseException e) {
             ee0 = null;
             e.printStackTrace();
@@ -83,8 +83,8 @@ class TermutatorTest {
     private static final Ellipsis e1 = Ellipsis.EllipsisPrototype.make((byte) 1,1);
 
 
-    private static final Variable p2= v(Op.VAR_PATTERN, (byte) 2);
-    private static final SortedSet<Term> p2p3 = ((Compound)$.p( p2, v(Op.VAR_PATTERN, (byte) 3) )).toSetSorted();
+    private static final Variable p2= INSTANCE.v(Op.VAR_PATTERN, (byte) 2);
+    private static final SortedSet<Term> p2p3 = ((Compound) $.INSTANCE.p( p2, INSTANCE.v(Op.VAR_PATTERN, (byte) 3) )).toSetSorted();
 
     @Test
     void testChoose2_2() {
@@ -92,7 +92,7 @@ class TermutatorTest {
 
 
         assertTermutatorProducesUniqueResults(
-                new Choose2(e1, p2p3, ((Compound)p("a", "b")).toSetSorted()
+                new Choose2(e1, p2p3, ((Compound) INSTANCE.p("a", "b")).toSetSorted()
                 ), 2);
     }
 
@@ -100,7 +100,7 @@ class TermutatorTest {
     void testChoose2_3() {
 
         assertTermutatorProducesUniqueResults(
-                new Choose2(e1, p2p3, ((Compound)p("a", "b", "c")).toSetSorted()
+                new Choose2(e1, p2p3, ((Compound) INSTANCE.p("a", "b", "c")).toSetSorted()
                 ), 6);
     }
     @Test
@@ -110,7 +110,7 @@ class TermutatorTest {
             @Override
             public String apply(int i) {
                 return TermutatorTest.this.assertTermutatorProducesUniqueResults(
-                        new Choose2(e1, p2p3, ((Compound) p("a", "b", "c", "d")).toSetSorted()
+                        new Choose2(e1, p2p3, ((Compound) INSTANCE.p("a", "b", "c", "d")).toSetSorted()
                         ), 12);
             }
         }).collect(Collectors.toSet());
@@ -123,26 +123,26 @@ class TermutatorTest {
     @Test
     void testComm2() throws Narsese.NarseseException {
         assertTermutatorProducesUniqueResults(
-                new CommutivePermutations($("{%A,%B}"),
-                        $("{x,y}")), 2);
+                new CommutivePermutations(INSTANCE.$("{%A,%B}"),
+                        INSTANCE.$("{x,y}")), 2);
     }
     @Test
     void testComm3() throws Narsese.NarseseException {
         assertTermutatorProducesUniqueResults(
-                new CommutivePermutations($("{%A,%B,%C}"),
-                        $("{x,y,z}")), 6);
+                new CommutivePermutations(INSTANCE.$("{%A,%B,%C}"),
+                        INSTANCE.$("{x,y,z}")), 6);
     }
     @Test
     void testComm3Conj() throws Narsese.NarseseException {
         assertTermutatorProducesUniqueResults(
-                new CommutivePermutations($("(&&,%A,%B,%C)"),
-                        $("(&&,x,y,z)")), 6);
+                new CommutivePermutations(INSTANCE.$("(&&,%A,%B,%C)"),
+                        INSTANCE.$("(&&,x,y,z)")), 6);
     }
     @Test
     void testComm4() throws Narsese.NarseseException {
         assertTermutatorProducesUniqueResults(
-                new CommutivePermutations($("{%A,%B,%C,%D}"),
-                        $("{w,x,y,z}")), 24);
+                new CommutivePermutations(INSTANCE.$("{%A,%B,%C,%D}"),
+                        INSTANCE.$("{w,x,y,z}")), 24);
     }
 
     private String assertTermutatorProducesUniqueResults(@NotNull Termutator t, int num) {

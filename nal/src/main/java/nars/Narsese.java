@@ -177,12 +177,12 @@ public final class Narsese {
         if (_t instanceof Truth)
             t = (Truth) _t;
         else if (_t instanceof Float)
-            t = $.t((Float) _t, nar.confDefault(punct));
+            t = $.INSTANCE.t((Float) _t, nar.confDefault(punct));
         else
             t = null;
 
         if (t == null && ((int) punct == (int) BELIEF || (int) punct == (int) GOAL))
-            t = $.t(1.0F, nar.confDefault(punct)); //HACK
+            t = $.INSTANCE.t(1.0F, nar.confDefault(punct)); //HACK
 
 
         long[] occ = occurrence(nar.time, x[4]);

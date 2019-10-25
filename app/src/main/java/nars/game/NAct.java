@@ -91,7 +91,7 @@ import static nars.Op.BELIEF;
             off.run();
         }
 
-        return $.t(freq,
+        return $.INSTANCE.t(freq,
 
                 nar().confDefault(BELIEF) /*d.conf()*/);
     }
@@ -142,7 +142,7 @@ import static nars.Op.BELIEF;
                         throw new RuntimeException();
                 }
 
-                return $.t(f, NAct.this.nar().confDefault(BELIEF));
+                return $.INSTANCE.t(f, NAct.this.nar().confDefault(BELIEF));
             }
         }, nar());
 
@@ -192,7 +192,7 @@ import static nars.Op.BELIEF;
 
                 return
 
-                        $.t(f,
+                        $.INSTANCE.t(f,
 
                                 NAct.this.nar().confDefault(BELIEF)
                         )
@@ -426,7 +426,7 @@ import static nars.Op.BELIEF;
                         (float) (y ? 1 : 0);
                 float c =
                         n.confDefault(BELIEF);
-                return $.t(feedback, c);
+                return $.INSTANCE.t(feedback, c);
 
             }
         });
@@ -445,7 +445,7 @@ import static nars.Op.BELIEF;
                         (float) (y ? 1 : 0);
                 float c =
                         n.confDefault(BELIEF);
-                return $.t(feedback, c);
+                return $.INSTANCE.t(feedback, c);
             }
         });
 
@@ -640,7 +640,7 @@ import static nars.Op.BELIEF;
                 new FloatFloatToObjectFunction<Truth>() {
                     @Override
                     public Truth value(float feedbackFreq, float goalConf) {
-                        return $.t(feedbackFreq,
+                        return $.INSTANCE.t(feedbackFreq,
                                 NAct.this.nar().confDefault(BELIEF)
                                 //Math.max(nar().confMin.floatValue(), goalConf)
                         );

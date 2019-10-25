@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.function.Supplier;
 
-import static nars.$.$;
+import static nars.$.*;
 import static nars.Op.BELIEF;
 import static nars.time.Tense.ETERNAL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -39,7 +39,7 @@ class DynamicSectTest {
 
 
         {
-            Task k = n.answer($("((x|y)-->a)"), BELIEF, 0);
+            Task k = n.answer(INSTANCE.$("((x|y)-->a)"), BELIEF, 0);
             assertEquals(1f, k.truth().freq());
             assertEquals("(--,(((--,x)&&(--,y))-->a))", k.term().toString());
 //            assertEquals(0f, k.truth().freq());
@@ -48,13 +48,13 @@ class DynamicSectTest {
         }
 
         {
-            Task k = n.answer($("((x~y)-->a)"), BELIEF, 0);
+            Task k = n.answer(INSTANCE.$("((x~y)-->a)"), BELIEF, 0);
             assertEquals("(--,(((--,x)&&y)-->a))", k.term().toString());
             assertEquals(1f, k.truth().freq());
         }
 
         {
-            Task k = n.answer($("((x-y)-->a)"), BELIEF, 0);
+            Task k = n.answer(INSTANCE.$("((x-y)-->a)"), BELIEF, 0);
             assertEquals("(((--,y)&&x)-->a)", k.term().toString());
             assertEquals(0f, k.truth().freq());
         }
@@ -76,7 +76,7 @@ class DynamicSectTest {
     void testDynamicIntersectionAt(long now) throws Narsese.NarseseException {
 
 
-        assertTrue(((BeliefTables)n.conceptualize($("((x|y)-->a)")).beliefs())
+        assertTrue(((BeliefTables)n.conceptualize(INSTANCE.$("((x|y)-->a)")).beliefs())
                 .tableFirst(DynamicTruthTable.class)!=null);
 
         assertTruth("((x&y)-->a)", now, 1, 0.85f);
@@ -92,7 +92,7 @@ class DynamicSectTest {
 
     private void assertTruth(String tt, long now, float f, float c) throws Narsese.NarseseException {
         Truth t = n.beliefTruth(tt, now);
-        PreciseTruth e = $.t(f, c);
+        PreciseTruth e = $.INSTANCE.t(f, c);
         assertTrue(e.equalTruth(t, 0.1f), new Supplier<String>() {
             @Override
             public String get() {

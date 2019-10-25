@@ -4,7 +4,7 @@ import nars.term.util.TermTest;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import static nars.$.$$;
+import static nars.$.*;
 import static nars.Op.CONJ;
 import static nars.term.atom.IdempotentBool.Null;
 import static nars.term.util.TermTest.assertEq;
@@ -59,7 +59,7 @@ public class SectTest {
 
 
     @Test void SectDiff() {
-        Term t = CONJ.the((Term)$$("(--,(?2~(|,(--,(?2~?1)),?2,?3)))"), $$("?2"), $$("?3"));
+        Term t = CONJ.the((Term) INSTANCE.$$("(--,(?2~(|,(--,(?2~?1)),?2,?3)))"), INSTANCE.$$("?2"), INSTANCE.$$("?3"));
         assertEquals(t, t);
     }
 
@@ -90,13 +90,13 @@ public class SectTest {
                   (&,x,--(x-y)) =     x * (1-x*(1-y))
                 (&,--y,--(x-y)) = (1-y) * (1-x*(1-y))
          */
-        Term n3a = $$("(&,(--,(x-y)),(--,y),x)");
+        Term n3a = INSTANCE.$$("(&,(--,(x-y)),(--,y),x)");
 
-        Term n3b = $$("(&, (--,(x-y)), (--,y), x)");
-        Term n2 = $$("(&, (--,(&,(--,(x-y)),(--,y),x)), (--,(x-y)), (--,y), x)");
-        Term n1 = $$("(y-(&,(--,(&,(--,(x-y)),(--,y),x)),(--,(x-y)),(--,y),x))");
+        Term n3b = INSTANCE.$$("(&, (--,(x-y)), (--,y), x)");
+        Term n2 = INSTANCE.$$("(&, (--,(&,(--,(x-y)),(--,y),x)), (--,(x-y)), (--,y), x)");
+        Term n1 = INSTANCE.$$("(y-(&,(--,(&,(--,(x-y)),(--,y),x)),(--,(x-y)),(--,y),x))");
 
-        Term n = $$("(a-->(y-(&,(--,(&,(--,(x-y)),(--,y),x)),(--,(x-y)),(--,y),x)))");
+        Term n = INSTANCE.$$("(a-->(y-(&,(--,(&,(--,(x-y)),(--,y),x)),(--,(x-y)),(--,y),x)))");
 
     }
 

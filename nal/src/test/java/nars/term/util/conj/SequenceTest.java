@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.function.Supplier;
 
-import static nars.$.$$;
+import static nars.$.*;
 import static nars.Op.CONJ;
 import static nars.term.atom.IdempotentBool.False;
 import static org.junit.jupiter.api.Assertions.*;
@@ -17,10 +17,10 @@ import static org.junit.jupiter.api.Assertions.*;
 @Disabled
 class SequenceTest {
 
-    public static final Term A = $$("a");
-    public static final Term Z = $$("z");
-    public static final Term X = $$("x");
-    public static final Term Y = $$("y");
+    public static final Term A = INSTANCE.$$("a");
+    public static final Term Z = INSTANCE.$$("z");
+    public static final Term X = INSTANCE.$$("x");
+    public static final Term Y = INSTANCE.$$("y");
 
     @Test void IntervalOp() {
         assertFalse(Op.INTERVAL.taskable);
@@ -31,10 +31,10 @@ class SequenceTest {
 
     @Test void one() {
         ConjList l = new ConjList();
-        l.add(1L, $$("x"));
-        l.add(2L, $$("y"));
-        l.add(2L, $$("z"));
-        l.add(4L, $$("x"));
+        l.add(1L, INSTANCE.$$("x"));
+        l.add(2L, INSTANCE.$$("y"));
+        l.add(2L, INSTANCE.$$("z"));
+        l.add(4L, INSTANCE.$$("x"));
         //assertEquals("((x &&+1 (y&&z)) &&+2 x)", l.term().toString());
         Sequence s = ConjSeq.sequenceFlat(l);
 

@@ -24,8 +24,8 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import static java.lang.Long.toBinaryString;
-import static nars.$.$;
-import static nars.$.$$;
+import static nars.$.*;
+import static nars.$.*;
 import static nars.Op.*;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -38,22 +38,22 @@ public class TermTestMisc {
     @Test
     void testInstantiateBoolsFromEquivString() {
         for (Term b : new Term[]{IdempotentBool.True, IdempotentBool.False, IdempotentBool.Null})
-            assertSame(b, $.the(b.toString()));
+            assertSame(b, $.INSTANCE.the(b.toString()));
     }
 
     @Test
     void testIntifyVarCountOfSubtermsContainingVars() throws Narsese.NarseseException {
-        assertEquals(2, $.$("(addAt(s(s(0)),s(s(0)),?R)==>goal(?R))").varQuery());
+        assertEquals(2, $.INSTANCE.$("(addAt(s(s(0)),s(s(0)),?R)==>goal(?R))").varQuery());
     }
 
 
     @Test
     void testSetCommutivity() throws Exception {
 
-        assertEquals("{a,b}", $.$("{b,a}").toString());
-        assertEquals("{a,b}", $.$("{a,b}").toString());
-        assertEquals("{a,b}", SETe.the($.the("a"), $.the("b")).toString());
-        assertEquals("{a,b}", SETe.the($.the("b"), $.the("a")).toString());
+        assertEquals("{a,b}", $.INSTANCE.$("{b,a}").toString());
+        assertEquals("{a,b}", $.INSTANCE.$("{a,b}").toString());
+        assertEquals("{a,b}", SETe.the($.INSTANCE.the("a"), $.INSTANCE.the("b")).toString());
+        assertEquals("{a,b}", SETe.the($.INSTANCE.the("b"), $.INSTANCE.the("a")).toString());
 
         TermTest.assertEquivalentTerm("{b,a}", "{b,a}");
         TermTest.assertEquivalentTerm("{a,b}", "{b,a}");
@@ -71,9 +71,9 @@ public class TermTestMisc {
     void testSimCommutivity() throws Exception {
         TermTest.assertEquivalentTerm("<{Birdie}<->{Tweety}>", "<{Tweety}<->{Birdie}>");
 
-        TermTest.assertEq($.$("<{Birdie}<->{Tweety}>"), $.<Term>$("<{Tweety}<->{Birdie}>"));
+        TermTest.assertEq($.INSTANCE.$("<{Birdie}<->{Tweety}>"), $.INSTANCE.<Term>$("<{Tweety}<->{Birdie}>"));
 
-        TermTest.assertEq($.sim($.$("{Birdie}"), $.$("{Tweety}")), $.<Term>sim($.$("{Tweety}"), $.$("{Birdie}")));
+        TermTest.assertEq($.INSTANCE.sim($.INSTANCE.$("{Birdie}"), $.INSTANCE.$("{Tweety}")), $.INSTANCE.<Term>sim($.INSTANCE.$("{Tweety}"), $.INSTANCE.$("{Birdie}")));
 
 
     }
@@ -198,9 +198,9 @@ public class TermTestMisc {
     void testTermSort() throws Exception {
 
 
-        Term a = $.$("a").term();
-        Term b = $.$("b").term();
-        Term c = $.$("c").term();
+        Term a = $.INSTANCE.$("a").term();
+        Term b = $.INSTANCE.$("b").term();
+        Term c = $.INSTANCE.$("c").term();
 
         assertEquals(3, Terms.commute(a, b, c).length);
         assertEquals(2, Terms.commute(a, b, b).length);
@@ -220,12 +220,12 @@ public class TermTestMisc {
 
 
         String term1String = "<#1 --> (&,boy,(taller_than,{Tom},_))>";
-        Term term1 = $.$(term1String).term();
+        Term term1 = $.INSTANCE.$(term1String).term();
         String term1Alternate = "<#1 --> (&,(taller_than,{Tom},_),boy)>";
-        Term term1a = $.$(term1Alternate).term();
+        Term term1a = $.INSTANCE.$(term1Alternate).term();
 
 
-        Term term2 = $.$("<#1 --> (|,boy,(taller_than,{Tom},_))>").term();
+        Term term2 = $.INSTANCE.$("<#1 --> (|,boy,(taller_than,{Tom},_))>").term();
 
         assertEquals(term1a.toString(), term1.toString());
         assertTrue(term1.complexity() > 1);
@@ -262,8 +262,8 @@ public class TermTestMisc {
     void testUnconceptualizedTermInstancing() throws Narsese.NarseseException {
 
         String term1String = "<a --> b>";
-        Term term1 = $.$(term1String).term();
-        Term term2 = $.$(term1String).term();
+        Term term1 = $.INSTANCE.$(term1String).term();
+        Term term2 = $.INSTANCE.$(term1String).term();
 
         assertEquals(term1, term2);
         assertEquals(term1.hashCode(), term2.hashCode());
@@ -284,13 +284,13 @@ public class TermTestMisc {
     void testRootOfImplWithConj() throws Narsese.NarseseException {
         String ys = "((--,tetris(isRow,13,true))&&tetris(isRowClear,6,true))";
 
-        Term y = $.$(ys);
+        Term y = $.INSTANCE.$(ys);
         String yc;
         assertEquals("((--,tetris(isRow,13,true)) &&+- tetris(isRowClear,6,true))", yc = y.concept().toString());
 
         assertEquals(yc, y.root().toString());
 
-        Term x = $.$("(tetris(isRowClear,10,true) ==>+- " + ys + ')');
+        Term x = $.INSTANCE.$("(tetris(isRowClear,10,true) ==>+- " + ys + ')');
         assertEquals("(tetris(isRowClear,10,true) ==>+- " + yc + ')', x.concept().toString());
 
     }
@@ -320,8 +320,8 @@ public class TermTestMisc {
         }
 
         try {
-            Term subj = $.varIndep(1);
-            Term pred = $.$("(~,{place4},$1)").term();
+            Term subj = $.INSTANCE.varIndep(1);
+            Term pred = $.INSTANCE.$("(~,{place4},$1)").term();
 
             assertTrue(true);
 
@@ -336,7 +336,7 @@ public class TermTestMisc {
     @Test
     void testValidIndep() {
         assertTrue(Task.validTaskTerm(
-                $$("(($1 &&+4 $1) ==>-2 ((--,angX) &&+8 $1))")));
+                INSTANCE.$$("(($1 &&+4 $1) ==>-2 ((--,angX) &&+8 $1))")));
     }
 
     @Deprecated
@@ -354,7 +354,7 @@ public class TermTestMisc {
     void testParseOperationInFunctionalForm() throws Narsese.NarseseException {
 
 
-        Term x = $.$("wonder(a,b)").term();
+        Term x = $.INSTANCE.$("wonder(a,b)").term();
         assertEquals(INH, x.op());
         assertTrue(isOperation(x));
         assertEquals("wonder(a,b)", x.toString());
@@ -379,16 +379,16 @@ public class TermTestMisc {
 
     @Test
     void testPatternVar() throws Narsese.NarseseException {
-        assertSame($("%x").op(), Op.VAR_PATTERN);
+        assertSame(INSTANCE.$("%x").op(), Op.VAR_PATTERN);
     }
 
     @Test
     void termEqualityWithQueryVariables() throws Narsese.NarseseException {
 
         String a = "<?1-->bird>";
-        assertEquals($.$(a), $.$(a));
+        assertEquals($.INSTANCE.$(a), $.INSTANCE.$(a));
         String b = "<bird-->?1>";
-        assertEquals($.$(b), $.$(b));
+        assertEquals($.INSTANCE.$(b), $.INSTANCE.$(b));
     }
 
     private static void testTermEqualityNonNormalizing(@NotNull String s) {
@@ -411,10 +411,10 @@ public class TermTestMisc {
     private static void testTermEquality(@NotNull String s, boolean conceptualize) throws Narsese.NarseseException {
 
 
-        Term a = $.$(s).term();
+        Term a = $.INSTANCE.$(s).term();
 
         NAR n2 = NARS.shell();
-        Term b = $.$(s).term();
+        Term b = $.INSTANCE.$(s).term();
 
 
         if (a instanceof Compound) {
@@ -490,10 +490,10 @@ public class TermTestMisc {
     void termEqualityWithMixedVariables() throws Narsese.NarseseException {
 
         String s = "(&&, <<$1 --> key> ==> <#2 --> ( open, $1 )>>, <#2 --> lock>)";
-        Termed a = $.$(s);
+        Termed a = $.INSTANCE.$(s);
 
         Timed n2 = NARS.shell();
-        Termed b = $.$(s);
+        Termed b = $.INSTANCE.$(s);
 
 
         assertEquals(a, b);
@@ -534,8 +534,8 @@ public class TermTestMisc {
     private static void statementHash(@NotNull String a, @NotNull String b) throws Narsese.NarseseException {
 
 
-        Term ta = $(a);
-        Term tb = $(b);
+        Term ta = INSTANCE.$(a);
+        Term tb = INSTANCE.$(b);
 
         assertNotEquals(ta, tb);
         assertNotEquals(ta.hashCode(),
@@ -551,7 +551,7 @@ public class TermTestMisc {
 
     @Test
     void testHashConsistent() {
-        Term x = $.the("z");
+        Term x = $.INSTANCE.the("z");
         Subterms a = new UniSubterm(x);
         Subterms b = new ArrayTermVector(x);
         assertEquals(a, b);
@@ -562,8 +562,8 @@ public class TermTestMisc {
 
     @Test
     void testHashDistribution() {
-        int ah = new UniSubterm($.the("x")).hashCode();
-        int bh = new UniSubterm($.the("y")).hashCode();
+        int ah = new UniSubterm($.INSTANCE.the("x")).hashCode();
+        int bh = new UniSubterm($.INSTANCE.the("y")).hashCode();
         assertTrue(Math.abs(ah - bh) > 1, new Supplier<String>() {
             @Override
             public String get() {
@@ -594,7 +594,7 @@ public class TermTestMisc {
     }
 
     private static void testTermComplexityMass(@NotNull Timed n, @NotNull String x, int complexity, int mass, int varIndep, int varDep, int varQuery) throws Narsese.NarseseException {
-        Term t = $.$(x).term();
+        Term t = $.INSTANCE.$(x).term();
 
         assertNotNull(t);
         assertEquals(complexity, t.complexity());
@@ -616,7 +616,7 @@ public class TermTestMisc {
     @NotNull
     static <C extends Compound> C testStructure(@NotNull String term, String bits) throws Narsese.NarseseException {
 
-        C a = (C) $.$(term).term();
+        C a = (C) $.INSTANCE.$(term).term();
         assertEquals(bits, toBinaryString(a.structure()));
         assertEquals(term, a.toString());
         return a;
@@ -624,7 +624,7 @@ public class TermTestMisc {
 
 
     public static void assertValid(String o) {
-        assertEquals(o, assertValid($$(o)).toString());
+        assertEquals(o, assertValid(INSTANCE.$$(o)).toString());
     }
 
     public static Term assertValid(Term o) {
@@ -668,20 +668,20 @@ public class TermTestMisc {
     @Test
     void testSubTermStructure() throws Narsese.NarseseException {
         Assertions.assertTrue(RevisionTest.x.term().impossibleSubTerm(RevisionTest.x.term()));
-        assertTrue(!RevisionTest.x.hasAll($.$("(a-->#b)").term().structure()));
+        assertTrue(!RevisionTest.x.hasAll($.INSTANCE.$("(a-->#b)").term().structure()));
     }
 
     @Test
     void testCommutativeWithVariableEquality() throws Narsese.NarseseException {
 
-        Termed a = $.$("<(&&, <#1 --> M>, <#2 --> M>) ==> <#2 --> nonsense>>");
-        Termed b = $.$("<(&&, <#2 --> M>, <#1 --> M>) ==> <#2 --> nonsense>>");
+        Termed a = $.INSTANCE.$("<(&&, <#1 --> M>, <#2 --> M>) ==> <#2 --> nonsense>>");
+        Termed b = $.INSTANCE.$("<(&&, <#2 --> M>, <#1 --> M>) ==> <#2 --> nonsense>>");
         assertEquals(a, b);
 
-        Termed c = $.$("<(&&, <#1 --> M>, <#2 --> M>) ==> <#1 --> nonsense>>");
+        Termed c = $.INSTANCE.$("<(&&, <#1 --> M>, <#2 --> M>) ==> <#1 --> nonsense>>");
         assertNotEquals(a, c);
 
-        Termed x = $.$("(&&, <#1 --> M>, <#2 --> M>)");
+        Termed x = $.INSTANCE.$("(&&, <#1 --> M>, <#2 --> M>)");
         Term xa = x.term().sub(0);
         Term xb = x.term().sub(1);
         int o1 = xa.compareTo(xb);
@@ -705,25 +705,25 @@ public class TermTestMisc {
     private static void testUniqueHash(@NotNull String a, @NotNull String b) throws Narsese.NarseseException {
 
         Timed t = NARS.shell();
-        int h1 = $.$(a).hashCode();
-        int h2 = $.$(b).hashCode();
+        int h1 = $.INSTANCE.$(a).hashCode();
+        int h2 = $.INSTANCE.$(b).hashCode();
         assertNotEquals(h1, h2);
     }
 
     @Test
     void testSetOpFlags() throws Narsese.NarseseException {
-        Term e = $("{x}");
+        Term e = INSTANCE.$("{x}");
         assertTrue(e.op().set);
-        Term i = $("[y]");
+        Term i = INSTANCE.$("[y]");
         assertTrue(i.op().set);
-        assertFalse($("x").op().set);
-        assertFalse($("a:b").op().set);
+        assertFalse(INSTANCE.$("x").op().set);
+        assertFalse(INSTANCE.$("a:b").op().set);
     }
 
     @Test
     void testEmptyProductEquality() throws Narsese.NarseseException {
-        assertEquals($("()"), $("()"));
-        assertEquals(EmptyProduct, $("()"));
+        assertEquals(INSTANCE.$("()"), INSTANCE.$("()"));
+        assertEquals(EmptyProduct, INSTANCE.$("()"));
     }
 
 
@@ -731,7 +731,7 @@ public class TermTestMisc {
         assertThrows(TermException.class, new Executable() {
             @Override
             public void execute() throws Throwable {
-                $(o);
+                INSTANCE.$(o);
             }
         });
     }
@@ -739,7 +739,7 @@ public class TermTestMisc {
     @Test
     void reuseVariableTermsDuringNormalization2() throws Narsese.NarseseException {
         for (String v : new String[]{"?a", "?b", "#a", "#c"}) {
-            Compound x = $(String.join(v, "((", " --> b) ==> (", " --> c))"));
+            Compound x = INSTANCE.$(String.join(v, "((", " --> b) ==> (", " --> c))"));
             Term a = x.subPath((byte) 0, (byte) 0);
             Term b = x.subPath((byte) 1, (byte) 0);
             assertNotEquals(a, x.subPath((byte) 0, (byte) 1));
@@ -758,7 +758,7 @@ public class TermTestMisc {
         String a = "(&&,(#1-->key),(#2-->lock),open(#1,#2))";
         String b = "(&&,(#2-->key),(#1-->lock),open(#2,#1))";
 
-        assertEquals($.$(a), $.$(b));
+        assertEquals($.INSTANCE.$(a), $.INSTANCE.$(b));
 
     }
 }

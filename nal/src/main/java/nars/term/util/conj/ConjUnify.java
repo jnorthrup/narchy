@@ -41,7 +41,7 @@ public final class ConjUnify{
                         if (xe.size() == ye.size()) {//            if (xe.size()!=ye.size() && Ellipsis.firstEllipsis(xx)==null && Ellipsis.firstEllipsis(yy)==null)
 //                return false; //differing # of events
                             try {
-                                result = Subterms.unifyCommute($.vFast(xe), $.vFast(ye), u);
+                                result = Subterms.unifyCommute($.INSTANCE.vFast(xe), $.INSTANCE.vFast(ye), u);
                             } catch (Throwable t) {
                                 System.err.println("unify stack overflow?: " + xe + " " + ye);
                                 throw t;
@@ -74,7 +74,7 @@ public final class ConjUnify{
                                 });
                                 int xls = xl.size();
                                 if (xls == yl.size()) {
-                                    result = xls > 1 ? Subterms.unifyLinear($.vFast(xl), $.vFast(yl), u) : xl.get(0).unify(yl.get(0), u);
+                                    result = xls > 1 ? Subterms.unifyLinear($.INSTANCE.vFast(xl), $.INSTANCE.vFast(yl), u) : xl.get(0).unify(yl.get(0), u);
                                 }
                             }
                         }

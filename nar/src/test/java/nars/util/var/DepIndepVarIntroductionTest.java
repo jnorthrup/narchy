@@ -14,7 +14,7 @@ import java.util.TreeSet;
 import java.util.function.Supplier;
 import java.util.function.ToIntFunction;
 
-import static nars.$.$$;
+import static nars.$.*;
 import static nars.term.util.TermTest.assertEq;
 import static nars.util.var.DepIndepVarIntroduction.depIndepFilter;
 import static nars.util.var.DepIndepVarIntroduction.nonNegdepIndepFilter;
@@ -39,7 +39,7 @@ class DepIndepVarIntroductionTest {
     @Test
     void testIntroduceIndepVar2() {
         String x = "((a-->(x,#1))==>(b-->(x,#1)))";
-        Term input = $$(x);
+        Term input = INSTANCE.$$(x);
         @Nullable Term[] r = Terms.nextRepeat(input.subterms(), 2, depIndepFilter);
         assertEquals(2, r.length);
         Arrays.sort(r);
@@ -54,7 +54,7 @@ class DepIndepVarIntroductionTest {
     @Test
     void testDontIntroduceIndepVarInNeg() {
         String x = "((a,--(x,#1))==>(b,--(x,#1)))";
-        Term input = $$(x);
+        Term input = INSTANCE.$$(x);
         @Nullable Term[] r = Terms.nextRepeat(input.subterms(), 2, nonNegdepIndepFilter);
         assertNotNull(r);
         assertEquals(2, r.length);
@@ -67,7 +67,7 @@ class DepIndepVarIntroductionTest {
     @Test
     void testSubtermScore() {
         assertEquals("{y=3, x=4}",
-                Terms.subtermScore($$("((x,x,x,x),(y,y,y))"), 2, new ToIntFunction<Term>() {
+                Terms.subtermScore(INSTANCE.$$("((x,x,x,x),(y,y,y))"), 2, new ToIntFunction<Term>() {
                     @Override
                     public int applyAsInt(Term t1) {
                         return 1;
@@ -78,7 +78,7 @@ class DepIndepVarIntroductionTest {
     @Test
     void testSubtermScore_Intrinsic() {
         assertEquals("{%1=4, %2=3}",
-            Terms.subtermScore($$("((%1,%1,%1,%1),(%2,%2,%2))"), 2, new ToIntFunction<Term>() {
+            Terms.subtermScore(INSTANCE.$$("((%1,%1,%1,%1),(%2,%2,%2))"), 2, new ToIntFunction<Term>() {
                 @Override
                 public int applyAsInt(Term t) {
                     return 1;
@@ -113,7 +113,7 @@ class DepIndepVarIntroductionTest {
         Supplier<SortedSet> collectionFactory = TreeSet::new;
         SortedSet sortedSet = collectionFactory.get();
         for (int i = 0; i < iterations; i++) {
-            Term varIntro = n.eval($.func("varIntro", $$(term).normalize()));
+            Term varIntro = n.eval($.INSTANCE.func("varIntro", INSTANCE.$$(term).normalize()));
             if (varIntro != null) {
                 sortedSet.add(varIntro);
             }

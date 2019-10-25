@@ -217,7 +217,7 @@ public abstract class NQuadsRDF {
         try {
             return Atomic.the(s);
         } catch (Exception e) {
-            return $.quote(s); 
+            return $.INSTANCE.quote(s);
         }
 
         
@@ -310,8 +310,8 @@ public abstract class NQuadsRDF {
     static @Nullable Term subjObjInh(Term subject, char subjType, char objType, boolean reverse) {
         String a = reverse ? "subj" : "obj";
         String b = reverse ? "obj" : "subj";
-        return inh(
-                p(v(subjType, a), v(objType, b)),
+        return INSTANCE.inh(
+                INSTANCE.p(INSTANCE.v(subjType, a), INSTANCE.v(objType, b)),
                 subject);
     }
 
@@ -332,10 +332,10 @@ public abstract class NQuadsRDF {
             return null;
 
         try {
-            Term term = /*$.inst*/ $.inh($.p(subject, object), predicate);
+            Term term = /*$.inst*/ $.INSTANCE.inh($.INSTANCE.p(subject, object), predicate);
             if (term == null)
                 throw new NullPointerException();
-            Task t = new TaskBuilder(term, BELIEF, $.t(1f, nar.confDefault(BELIEF))).apply(nar);
+            Task t = new TaskBuilder(term, BELIEF, $.INSTANCE.t(1f, nar.confDefault(BELIEF))).apply(nar);
             return t;
         } catch (Exception e) {
             logger.error("rdf({}) to task: {}", new Term[]{subject, object, predicate}, e);
@@ -360,7 +360,7 @@ public abstract class NQuadsRDF {
         Term belief = null;
         if (Arrays.asList(type, subClassOf, subPropertyOf).contains(predicate)) {
             if (object.equals(owlClass)) {
-                belief = $.inst($.varDep(1), subject); 
+                belief = $.INSTANCE.inst($.INSTANCE.varDep(1), subject);
             }
 
             
@@ -370,7 +370,7 @@ public abstract class NQuadsRDF {
             } else {
                 
 
-                belief = inh(subject, object);
+                belief = INSTANCE.inh(subject, object);
             }
 
         } else if ((predicate.equals(parentOf))) {
@@ -379,15 +379,15 @@ public abstract class NQuadsRDF {
         } else if (predicate.equals(equivalentClass)) {
 
             belief = equi(
-                    inst(varIndep("subj"), subject),
-                    inst(varIndep("pred"), object)
+                    INSTANCE.inst(INSTANCE.varIndep("subj"), subject),
+                    INSTANCE.inst(INSTANCE.varIndep("pred"), object)
             );
         } else if (predicate.equals(isPartOf)) {
-            belief = $.instprop(subject, object);
+            belief = $.INSTANCE.instprop(subject, object);
         } else if (predicate.equals(sameAs)) {
-            belief = sim(subject, object);
+            belief = INSTANCE.sim(subject, object);
         } else if (predicate.equals(differentFrom)) {
-            belief = sim(subject, object).neg();
+            belief = INSTANCE.sim(subject, object).neg();
         } else if (predicate.equals(domain)) {
             
             
@@ -397,15 +397,15 @@ public abstract class NQuadsRDF {
             
 
 
-            belief = $.impl(
-                    $.func(subject, $.varIndep(1), $.varDep(2)),
-                    $.inst($.varIndep(1), object)
+            belief = $.INSTANCE.impl(
+                    $.INSTANCE.func(subject, $.INSTANCE.varIndep(1), $.INSTANCE.varDep(2)),
+                    $.INSTANCE.inst($.INSTANCE.varIndep(1), object)
             );
 
         } else if (predicate.equals(range)) {
-            belief = $.impl(
-                    $.func(subject, $.varDep(2), $.varIndep(1)),
-                    $.inst($.varIndep(1), object)
+            belief = $.INSTANCE.impl(
+                    $.INSTANCE.func(subject, $.INSTANCE.varDep(2), $.INSTANCE.varIndep(1)),
+                    $.INSTANCE.inst($.INSTANCE.varIndep(1), object)
             );
             
             
@@ -420,7 +420,7 @@ public abstract class NQuadsRDF {
 
         } else if (predicate.equals(equivalentProperty)) {
 
-            belief = sim(subject, object);
+            belief = INSTANCE.sim(subject, object);
         } else if (predicate.equals(inverseOf)) {
 
             
@@ -431,7 +431,7 @@ public abstract class NQuadsRDF {
         } else if (predicate.equals(disjointWith)) {
             
 
-            belief = $.inst($.varDep(1),
+            belief = $.INSTANCE.inst($.INSTANCE.varDep(1),
                     CONJ.the(subject, object)
             ).neg();
 
@@ -442,8 +442,8 @@ public abstract class NQuadsRDF {
             if (subject != null && object != null && predicate != null) {
                 belief =
                         
-                        inh(
-                                p(subject, object),
+                        INSTANCE.inh(
+                                INSTANCE.p(subject, object),
                                 predicate
                         );
             }
@@ -451,7 +451,7 @@ public abstract class NQuadsRDF {
 
         if (belief instanceof Compound) {
 
-            return NALTask.the(belief, BELIEF, $.t(1f, nar.confDefault(BELIEF)), nar.time(), Tense.ETERNAL, Tense.ETERNAL, nar.evidence())
+            return NALTask.the(belief, BELIEF, $.INSTANCE.t(1f, nar.confDefault(BELIEF)), nar.time(), Tense.ETERNAL, Tense.ETERNAL, nar.evidence())
                     .pri(nar)
                     ;
 

@@ -18,14 +18,14 @@ public class BooleanReactionTest extends MiniTest {
     public BooleanReactionTest(NAR n, BooleanSupplier input, BooleanBooleanPredicate reward) {
         super(n);
 
-        sense($.inh("i", id), new BooleanSupplier() {
+        sense($.INSTANCE.inh("i", id), new BooleanSupplier() {
             @Override
             public boolean getAsBoolean() {
                 return BooleanReactionTest.this.i = input.getAsBoolean();
             }
         });
 
-        actionPushButton($.inh("o", id), new BooleanPredicate() {
+        actionPushButton($.INSTANCE.inh("o", id), new BooleanPredicate() {
             @Override
             public boolean accept(boolean o) {
                 boolean c = reward.accept(i, o);

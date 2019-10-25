@@ -272,7 +272,7 @@ class BeliefTableTest {
 
         //for (int dt = 3; dt < 7; dt++) {
         { int dt = 3;
-            Term tt = IMPL.the((Term)$.$("a"), +dt, $.$("b"));
+            Term tt = IMPL.the((Term) $.INSTANCE.$("a"), +dt, $.INSTANCE.$("b"));
             Task fwd = n.answer(tt, BELIEF, when);
             assertEquals("(a ==>+3 b)", fwd.term().toString(), new Supplier<String>() {
                 @Override
@@ -283,11 +283,11 @@ class BeliefTableTest {
         }
 
         //TODO
-        Task bwd = n.answer($.impl($.$("a"), -5, $.$("b")), BELIEF, when);
+        Task bwd = n.answer($.INSTANCE.impl($.INSTANCE.$("a"), -5, $.INSTANCE.$("b")), BELIEF, when);
         assertEquals("(a ==>-2 b)", bwd.term().toString());
 
 
-        Task x = n.answer($.impl($.$("a"), DTERNAL, $.$("b")), BELIEF, when);
+        Task x = n.answer($.INSTANCE.impl($.INSTANCE.$("a"), DTERNAL, $.INSTANCE.$("b")), BELIEF, when);
         System.out.println(x);
 
 

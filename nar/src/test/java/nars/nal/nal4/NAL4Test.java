@@ -13,7 +13,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.function.LongPredicate;
 
-import static nars.$.$$;
+import static nars.$.*;
 import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -297,7 +297,7 @@ public class NAL4Test extends NALTest {
     @Test
     void testNormalize1() {
         String input = "((likes,cat,\\)-->[blue])";
-        assertEquals("(likes-->(cat,[blue]))", Image.imageNormalize($$(input)).toString());
+        assertEquals("(likes-->(cat,[blue]))", Image.imageNormalize(INSTANCE.$$(input)).toString());
 
         test
                 .mustBelieve(cycles, "(likes-->(cat,[blue]))", 1f, 0.9f)

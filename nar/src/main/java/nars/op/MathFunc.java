@@ -218,7 +218,7 @@ public final class MathFunc{
                 }
 
 
-                return changed ? $.func(this, x, y) : null;
+                return changed ? $.INSTANCE.func(this, x, y) : null;
 
             }
         }

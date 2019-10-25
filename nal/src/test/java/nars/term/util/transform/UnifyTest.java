@@ -22,7 +22,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiPredicate;
 import java.util.function.Supplier;
 
-import static nars.$.$$;
+import static nars.$.*;
 import static nars.Op.SETe;
 import static nars.term.util.TermTest.assertEq;
 import static org.junit.jupiter.api.Assertions.*;
@@ -34,13 +34,13 @@ public class UnifyTest {
 
     @Test void ResolvePosNeg() {
         Unify u = new UnifyAny(new XoRoShiRo128PlusRandom(1));
-        Term y = u.resolveTermRecurse($$("--x"));
+        Term y = u.resolveTermRecurse(INSTANCE.$$("--x"));
         assertEq("(--,x)", y);
     }
     @Test void PossiblyUnifiable() {
-        Term x = $$("x"), y = $$("y"), z = $$("z");
+        Term x = INSTANCE.$$("x"), y = INSTANCE.$$("y"), z = INSTANCE.$$("z");
 
-        assertTrue( Subterms.possiblyUnifiable(SETe.the(x.neg(), $.varDep(1)), SETe.the(x.neg(), z), Op.Variable) );
+        assertTrue( Subterms.possiblyUnifiable(SETe.the(x.neg(), $.INSTANCE.varDep(1)), SETe.the(x.neg(), z), Op.Variable) );
         assertFalse( Subterms.possiblyUnifiable(SETe.the(x.neg(), y), SETe.the(x.neg(), z), Op.Variable) );
         assertFalse( Subterms.possiblyUnifiable(SETe.the(x.neg(), y), SETe.the(x.neg(), z.neg()), Op.Variable) );
     }
@@ -52,14 +52,14 @@ public class UnifyTest {
 //            Terms.commonStructureTest( $$("(#1,$2,?3)").subterms(), $$("(#3,$2,?1)").subterms(), u)
 //        );
         assertTrue(
-                Subterms.possiblyUnifiable($$("(#1,$2,?3)").subterms(), $$("(#3,$2,?1)").subterms(), u.varBits)
+                Subterms.possiblyUnifiable(INSTANCE.$$("(#1,$2,?3)").subterms(), INSTANCE.$$("(#3,$2,?1)").subterms(), u.varBits)
         );
     }
 
     @Test
     void testFindSubst1() throws Narsese.NarseseException {
-        testUnify($.$("<a-->b>"), $.$("<?C-->b>"), true);
-        testUnify($.$("(--,(a))"), $.$("<?C-->(b)>"), false);
+        testUnify($.INSTANCE.$("<a-->b>"), $.INSTANCE.$("<?C-->b>"), true);
+        testUnify($.INSTANCE.$("(--,(a))"), $.INSTANCE.$("<?C-->(b)>"), false);
     }
 
 
@@ -80,7 +80,7 @@ public class UnifyTest {
     }
 
     @Test void EllipsisContainingTermNotEqual() {
-        assertNotEquals( $$("{a, %X}"), $$("{a, %X..+}"));
+        assertNotEquals( INSTANCE.$$("{a, %X}"), INSTANCE.$$("{a, %X..+}"));
     }
 
     private static Unify test(int rngSeed, /**/ Op type, String s1, String s2, boolean shouldSub, boolean anon1, boolean anon2) throws Narsese.NarseseException {
@@ -982,20 +982,20 @@ public class UnifyTest {
 
     @Test void VariableOrdering() {
         UnifyAny u = new UnifyAny();
-        Term a = $$("#1"), b = $$("(--,%1)");
+        Term a = INSTANCE.$$("#1"), b = INSTANCE.$$("(--,%1)");
         assertTrue( u.unify(a, b) );
         assertEquals("{%1=(--,#1)}", u.xy.toString()); //WRONG: "{#1=(--,%1)}",
     }
     @Test void VariableOrderingReverseA() {
         UnifyAny u = new UnifyAny();
-        Term a = $$("(--,#1)"), b = $$("%1");
+        Term a = INSTANCE.$$("(--,#1)"), b = INSTANCE.$$("%1");
         assertTrue( u.unify(a, b) );
         assertEquals("{%1=(--,#1)}", u.xy.toString()); //WRONG: "{#1=(--,%1)}",
     }
 
     @Test void VariableOrderingReverseB() {
         UnifyAny u = new UnifyAny();
-        Term a = $$("#1"), b = $$("(--,%1)");
+        Term a = INSTANCE.$$("#1"), b = INSTANCE.$$("(--,%1)");
         assertTrue( u.unify(b, a) );
         assertEquals("{%1=(--,#1)}", u.xy.toString()); //WRONG: "{#1=(--,%1)}",
     }
@@ -1003,22 +1003,22 @@ public class UnifyTest {
     @Test void XternalConjUnifyWTF() {
         UnifyAny u = new UnifyAny();
         Term
-            a = $$("(hasGUEState($1,GUE_MaximizedState) &&+- hasGUEState($1,GUE_UncoveredState))"),
-            b = $$("(agent($1,#2) &&+- ({#2}-->ComputerUser))");
+            a = INSTANCE.$$("(hasGUEState($1,GUE_MaximizedState) &&+- hasGUEState($1,GUE_UncoveredState))"),
+            b = INSTANCE.$$("(agent($1,#2) &&+- ({#2}-->ComputerUser))");
         assertFalse( u.unifies(a, b) );
     }
     @Test void XternalConjUnifyWTF2() {
         UnifyAny u = new UnifyAny();
         Term
-                a = $$("(x-->y)"),
-                b = $$("((x-->y) &&+- (x -->y))");
+                a = INSTANCE.$$("(x-->y)"),
+                b = INSTANCE.$$("((x-->y) &&+- (x -->y))");
         assertFalse( u.unifies(a, b) );
     }
     @Test void XternalConjUnifyWTF3() {
         UnifyAny u = new UnifyAny();
         Term
-                a = $$("(x-->y)"),
-                b = $$("(($3-->$1) &&+- ($3 --> $2))");
+                a = INSTANCE.$$("(x-->y)"),
+                b = INSTANCE.$$("(($3-->$1) &&+- ($3 --> $2))");
         for (int i = 0; i < 10; i++) {
             assertFalse(u.unifies(a, b));
             assertFalse(u.unifies(b, a));

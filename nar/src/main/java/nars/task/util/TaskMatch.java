@@ -44,7 +44,7 @@ public abstract class TaskMatch implements Consumer<Task>, Predicate<Task> {
     }
 
     public Term id() {
-        return $.func(getClass().getSimpleName(),
+        return $.INSTANCE.func(getClass().getSimpleName(),
                 (term), (punctuation)
         );
     }

@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Random;
 import java.util.function.Supplier;
 
-import static nars.$.t;
+import static nars.$.*;
 import static nars.NAL.truth.TRUTH_EPSILON;
 import static nars.truth.func.TruthFunctions.w2cSafe;
 import static org.junit.jupiter.api.Assertions.*;
@@ -38,29 +38,29 @@ class TruthTest {
 
     @Test
     void testEternalize() {
-        assertEquals(0.47f, w2cSafe(t(1f, 0.9f).eviEternalized()), 0.01f);
-        assertEquals(0.31f, w2cSafe(t(1f, 0.45f).eviEternalized()), 0.01f);
-        assertEquals(0.09f, w2cSafe(t(1f, 0.10f).eviEternalized()), 0.01f);
+        assertEquals(0.47f, w2cSafe(INSTANCE.t(1f, 0.9f).eviEternalized()), 0.01f);
+        assertEquals(0.31f, w2cSafe(INSTANCE.t(1f, 0.45f).eviEternalized()), 0.01f);
+        assertEquals(0.09f, w2cSafe(INSTANCE.t(1f, 0.10f).eviEternalized()), 0.01f);
     }
 
     @Test
     void testPreciseTruthEquality() {
 
-        assertEquals(t(0.5f, 0.5f),
-                t(0.5f, 0.5f));
+        assertEquals(INSTANCE.t(0.5f, 0.5f),
+                INSTANCE.t(0.5f, 0.5f));
         float insignificant = NAL.truth.TRUTH_EPSILON / 5f;
-        assertEquals(t(0.5f, 0.5f),
-                t(0.5f + insignificant, 0.50f));
+        assertEquals(INSTANCE.t(0.5f, 0.5f),
+                INSTANCE.t(0.5f + insignificant, 0.50f));
         float significant = NAL.truth.TRUTH_EPSILON;
-        assertNotEquals(t(0.5f, 0.5f),
-                t(0.5f + significant, 0.50f));
+        assertNotEquals(INSTANCE.t(0.5f, 0.5f),
+                INSTANCE.t(0.5f + significant, 0.50f));
 
-        assertEquals(t(0.5f, 0.5f),
-                t(0.5f, 0.5f));
-        assertEquals(t(0.5f, 0.5f),
-                t(0.5f, 0.50f + insignificant));
-        assertNotEquals(t(0.5f, 0.5f),
-                t(0.5f, 0.50f + significant));
+        assertEquals(INSTANCE.t(0.5f, 0.5f),
+                INSTANCE.t(0.5f, 0.5f));
+        assertEquals(INSTANCE.t(0.5f, 0.5f),
+                INSTANCE.t(0.5f, 0.50f + insignificant));
+        assertNotEquals(INSTANCE.t(0.5f, 0.5f),
+                INSTANCE.t(0.5f, 0.50f + significant));
 
     }
 
@@ -156,10 +156,10 @@ class TruthTest {
 
     @Test
     void testTruthPolarity() {
-        assertEquals(0f, t(0.5f, 0.9f).polarity(), 0.01f);
-        assertEquals(1f, t(0f, 0.9f).polarity(), 0.01f);
-        assertEquals(1f, t(1f, 0.9f).polarity(), 0.01f);
-        assertEquals(1f, t(1f, 0.5f).polarity(), 0.01f);
+        assertEquals(0f, INSTANCE.t(0.5f, 0.9f).polarity(), 0.01f);
+        assertEquals(1f, INSTANCE.t(0f, 0.9f).polarity(), 0.01f);
+        assertEquals(1f, INSTANCE.t(1f, 0.9f).polarity(), 0.01f);
+        assertEquals(1f, INSTANCE.t(1f, 0.5f).polarity(), 0.01f);
     }
 
 //    @Disabled

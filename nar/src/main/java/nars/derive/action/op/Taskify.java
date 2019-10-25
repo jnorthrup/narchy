@@ -45,7 +45,7 @@ public class Taskify extends ProxyTerm {
     final Occurrify.OccurrenceSolver time;
 
     public Taskify(Termify termify, Occurrify.OccurrenceSolver time, RuleCause rule) {
-        super($.pFast(termify, $.the((int) rule.id)));
+        super($.INSTANCE.pFast(termify, $.INSTANCE.the((int) rule.id)));
         this.termify = termify;
         this.time = time;
         this.rule = rule;

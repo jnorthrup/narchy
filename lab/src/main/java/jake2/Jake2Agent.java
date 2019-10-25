@@ -40,7 +40,7 @@ import java.util.function.IntFunction;
 
 import static jake2.Globals.STAT_FRAGS;
 import static jake2.Globals.cl;
-import static nars.$.$;
+import static nars.$.*;
 import static spacegraph.space2d.container.grid.Gridding.grid;
 
 /**
@@ -162,7 +162,7 @@ public class Jake2Agent extends GameX implements Runnable {
 
         int aeStates = 16;
         int nx = 8;
-        AutoclassifiedBitmap rgbAE = new AutoclassifiedBitmap($.the("gray"), rgbVision, nx, nx, aeStates, this);
+        AutoclassifiedBitmap rgbAE = new AutoclassifiedBitmap($.INSTANCE.the("gray"), rgbVision, nx, nx, aeStates, this);
         rgbAE.alpha(0.03f);
         rgbAE.noise.set(0.05f);
 
@@ -183,7 +183,7 @@ public class Jake2Agent extends GameX implements Runnable {
                 512, 16, new IntFunction<Term>() {
             @Override
             public Term apply(int f) {
-                return $.inh($.the(f), "hear");
+                return $.INSTANCE.inh($.INSTANCE.the(f), "hear");
             }
         });
         addSensor(hear);
@@ -195,7 +195,7 @@ public class Jake2Agent extends GameX implements Runnable {
 
 
         actionPushButtonMutex(
-                $.the("fore"), $.the("back"),
+                $.INSTANCE.the("fore"), $.INSTANCE.the("back"),
                 new BooleanProcedure() {
                     @Override
                     public void value(boolean x) {
@@ -217,7 +217,7 @@ public class Jake2Agent extends GameX implements Runnable {
 //        );
 
         actionPushButtonMutex(
-                $.the("left"), $.the("right"),
+                $.INSTANCE.the("left"), $.INSTANCE.the("right"),
                 new Runnable() {
                     @Override
                     public void run() {
@@ -233,7 +233,7 @@ public class Jake2Agent extends GameX implements Runnable {
         );
 
 
-        actionPushButton($("jump"), new BooleanProcedure() {
+        actionPushButton(INSTANCE.$("jump"), new BooleanProcedure() {
             @Override
             public void value(boolean x1) {
                 CL_input.in_up.state = x1 ? 1 : 0;
@@ -241,7 +241,7 @@ public class Jake2Agent extends GameX implements Runnable {
         });
 
 
-        actionPushButton($("fire"), new BooleanProcedure() {
+        actionPushButton(INSTANCE.$("fire"), new BooleanProcedure() {
             @Override
             public void value(boolean x) {
                 CL_input.in_attack.state = x ? 1 : 0;
@@ -250,7 +250,7 @@ public class Jake2Agent extends GameX implements Runnable {
 
         if (lookPitch) {
             actionPushButtonMutex(
-                    $.the("lookUp"), $.the("lookDown"),
+                    $.INSTANCE.the("lookUp"), $.INSTANCE.the("lookDown"),
                     new Runnable() {
                         @Override
                         public void run() {

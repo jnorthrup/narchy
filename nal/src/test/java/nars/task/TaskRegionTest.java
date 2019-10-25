@@ -87,6 +87,6 @@ class TaskRegionTest {
     }
 
     private static Task _task(float f, float c, long s, long e) {
-        return new TaskBuilder(x, BELIEF, $.t(f, c)).time(s, e).apply(n);
+        return new TaskBuilder(x, BELIEF, $.INSTANCE.t(f, c)).time(s, e).apply(n);
     }
 }

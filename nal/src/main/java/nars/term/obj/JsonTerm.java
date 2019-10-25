@@ -29,13 +29,13 @@ public enum JsonTerm { ;
                 list.add(the);
             }
             Term[] subterms = list.toArray(new Term[0]);
-            return $.p(subterms);
+            return $.INSTANCE.p(subterms);
 
         } else if (j.isValueNode()) {
             if (j.isTextual()) {
-                return $.quote(j.textValue());
+                return $.INSTANCE.quote(j.textValue());
             } else if (j.isNumber()) {
-                return $.the(j.numberValue());
+                return $.INSTANCE.the(j.numberValue());
             } else {
                 throw new UnsupportedOperationException();
             }
@@ -45,10 +45,10 @@ public enum JsonTerm { ;
             j.fields().forEachRemaining(new Consumer<Map.Entry<String, JsonNode>>() {
                 @Override
                 public void accept(Map.Entry<String, JsonNode> f) {
-                    Atomic k = $.quote(f.getKey());
+                    Atomic k = $.INSTANCE.quote(f.getKey());
                     Term v = the(f.getValue());
                     s[i[0]++] =
-                            $.inh(v, k);
+                            $.INSTANCE.inh(v, k);
 
 
                 }

@@ -24,7 +24,7 @@ import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
-import static nars.$.$;
+import static nars.$.*;
 
 /**
  * NAR sonification
@@ -214,20 +214,20 @@ public class SoNAR extends TimerTask {
         SoNAR s = new SoNAR(n);
         SampleDirectory d = new SampleDirectory();
         d.samples("/home/me/wav/legoweltkord");
-        s.listen(n.conceptualize($("a")), SampleDirectory::byHash);
-        s.listen(n.conceptualize($("b")), SampleDirectory::byHash);
-        s.listen(n.conceptualize($("c")), SampleDirectory::byHash);
-        s.listen(n.conceptualize($("d")), SampleDirectory::byHash);
-        s.listen(n.conceptualize($("e")), SampleDirectory::byHash);
-        s.listen(n.conceptualize($("f")), SampleDirectory::byHash);
-        s.listen(n.conceptualize($("g")), SampleDirectory::byHash);
-        s.listen(n.conceptualize($("a:b")), SampleDirectory::byHash);
-        s.listen(n.conceptualize($("b:c")), SampleDirectory::byHash);
-        s.listen(n.conceptualize($("c:d")), SampleDirectory::byHash);
-        s.listen(n.conceptualize($("d:e")), SampleDirectory::byHash);
-        s.listen(n.conceptualize($("e:f")), SampleDirectory::byHash);
-        s.listen(n.conceptualize($("f:g")), SampleDirectory::byHash);
-        s.listen(n.conceptualize($("a:g")), SampleDirectory::byHash);
+        s.listen(n.conceptualize(INSTANCE.$("a")), SampleDirectory::byHash);
+        s.listen(n.conceptualize(INSTANCE.$("b")), SampleDirectory::byHash);
+        s.listen(n.conceptualize(INSTANCE.$("c")), SampleDirectory::byHash);
+        s.listen(n.conceptualize(INSTANCE.$("d")), SampleDirectory::byHash);
+        s.listen(n.conceptualize(INSTANCE.$("e")), SampleDirectory::byHash);
+        s.listen(n.conceptualize(INSTANCE.$("f")), SampleDirectory::byHash);
+        s.listen(n.conceptualize(INSTANCE.$("g")), SampleDirectory::byHash);
+        s.listen(n.conceptualize(INSTANCE.$("a:b")), SampleDirectory::byHash);
+        s.listen(n.conceptualize(INSTANCE.$("b:c")), SampleDirectory::byHash);
+        s.listen(n.conceptualize(INSTANCE.$("c:d")), SampleDirectory::byHash);
+        s.listen(n.conceptualize(INSTANCE.$("d:e")), SampleDirectory::byHash);
+        s.listen(n.conceptualize(INSTANCE.$("e:f")), SampleDirectory::byHash);
+        s.listen(n.conceptualize(INSTANCE.$("f:g")), SampleDirectory::byHash);
+        s.listen(n.conceptualize(INSTANCE.$("a:g")), SampleDirectory::byHash);
         try {
             s.audio.record("/tmp/test.raw");
         } catch (FileNotFoundException e) {

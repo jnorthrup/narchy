@@ -38,11 +38,11 @@ public class AutoConceptualizerTest extends CameraSensorTest {
         }, new IntIntToObjectFunction<Term>() {
             @Override
             public Term apply(int x, int y) {
-                return $.p(x, y);
+                return $.INSTANCE.p(x, y);
             }
         });
 
-        AutoConceptualizer ac = new AutoConceptualizer($.inh(c.id, "auto"),
+        AutoConceptualizer ac = new AutoConceptualizer($.INSTANCE.inh(c.id, "auto"),
                 c.concepts.order() /* HACK */, true, 2, n);
 
 

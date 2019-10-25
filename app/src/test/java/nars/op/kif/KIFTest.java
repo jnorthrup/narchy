@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import static nars.$.$$;
+import static nars.$.*;
 import static nars.Op.BELIEF;
 import static nars.Op.GOAL;
 
@@ -54,7 +54,7 @@ class KIFTest {
         n.time.dur(10000);
         //TaskLinkWhat w = (TaskLinkWhat) n.what();
 
-        TaskLinkWhat w = n.fork(new TaskLinkWhat($$("sumo_x"), new TaskLinks(), new PriBuffer.DirectTaskBuffer<>()));
+        TaskLinkWhat w = n.fork(new TaskLinkWhat(INSTANCE.$$("sumo_x"), new TaskLinks(), new PriBuffer.DirectTaskBuffer<>()));
         w.links.links.capacity(512);
 
 
@@ -113,11 +113,11 @@ class KIFTest {
             }
         });
         //w.accept(new EternalTask($$("(#x --> Damaging)"), BELIEF, $.t(1, 0.9f), n).priSet(1));
-        w.accept(((Task) new EternalTask($$("(patient(#p,#a) && ({#p}-->Organism))"), BELIEF, $.t(1, 0.9f), n)).pri(0.05f));
-        w.accept(((Task) new EternalTask($$("({#x} --> Damaging)"), GOAL, $.t(0, 0.9f), n)).pri(0.05f));
-        w.accept(((Task) new EternalTask($$("({#x} --> CausingHappiness)"), GOAL, $.t(1, 0.9f), n)).pri(0.05f));
-        w.accept(((Task) new EternalTask($$("(Death --> Damaging)"), BELIEF, $.t(1, 0.9f), n)).pri(0.05f));
-        w.accept(((Task) new EternalTask($$("(Unhappiness --> Damaging)"), BELIEF, $.t(1, 0.9f), n)).pri(0.05f));
+        w.accept(((Task) new EternalTask(INSTANCE.$$("(patient(#p,#a) && ({#p}-->Organism))"), BELIEF, $.INSTANCE.t(1, 0.9f), n)).pri(0.05f));
+        w.accept(((Task) new EternalTask(INSTANCE.$$("({#x} --> Damaging)"), GOAL, $.INSTANCE.t(0, 0.9f), n)).pri(0.05f));
+        w.accept(((Task) new EternalTask(INSTANCE.$$("({#x} --> CausingHappiness)"), GOAL, $.INSTANCE.t(1, 0.9f), n)).pri(0.05f));
+        w.accept(((Task) new EternalTask(INSTANCE.$$("(Death --> Damaging)"), BELIEF, $.INSTANCE.t(1, 0.9f), n)).pri(0.05f));
+        w.accept(((Task) new EternalTask(INSTANCE.$$("(Unhappiness --> Damaging)"), BELIEF, $.INSTANCE.t(1, 0.9f), n)).pri(0.05f));
         //w.accept(new EternalTask($$("(#x --> Death)"), GOAL, $.t(0, 0.9f), n).priSet(1));
         //w.accept(new EternalTask($$("(?x ==> (?y --> Damaging))"), QUESTION, null, n).priSet(1));
         //n.input("$1.0 possesses(I,#everything)!");

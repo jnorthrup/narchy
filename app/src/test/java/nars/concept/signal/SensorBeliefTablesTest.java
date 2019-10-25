@@ -30,7 +30,7 @@ class SensorBeliefTablesTest {
 
         AtomicFloat xx = new AtomicFloat(0);
 
-        Signal x = new ScalarSignal($.the("x"), xx, n);
+        Signal x = new ScalarSignal($.INSTANCE.the("x"), xx, n);
         a.addSensor(x);
 
         SensorBeliefTables xb = (SensorBeliefTables) x.beliefs();

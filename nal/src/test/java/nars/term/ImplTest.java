@@ -5,8 +5,8 @@ import nars.Narsese;
 import nars.term.atom.IdempotentBool;
 import org.junit.jupiter.api.Test;
 
-import static nars.$.$;
-import static nars.$.$$;
+import static nars.$.*;
+import static nars.$.*;
 import static nars.term.atom.IdempotentBool.False;
 import static nars.term.atom.IdempotentBool.Null;
 import static nars.term.util.TermTest.assertEq;
@@ -108,7 +108,7 @@ class ImplTest {
 
     @Test
     void testInvalidCircularImpl() throws Narsese.NarseseException {
-        assertNotEquals(Null, $("(x(intValue,(),1) ==>+10 ((--,x(intValue,(),0)) &| x(intValue,(),1)))"));
+        assertNotEquals(Null, INSTANCE.$("(x(intValue,(),1) ==>+10 ((--,x(intValue,(),0)) &| x(intValue,(),1)))"));
         assertEq("(--,(x(intValue,(),1)==>x(intValue,(),0)))", "(x(intValue,(),1) ==> ((--,x(intValue,(),0)) &| x(intValue,(),1)))");
     }
 
@@ -134,7 +134,7 @@ class ImplTest {
 
 
                 s,
-                $.$(s).toString());
+                $.INSTANCE.$(s).toString());
     }
 
     @Test
@@ -143,7 +143,7 @@ class ImplTest {
         assertEquals(
 
                 s,
-                $.$(s).toString());
+                $.INSTANCE.$(s).toString());
     }
 
     @Test
@@ -152,7 +152,7 @@ class ImplTest {
         assertEquals(
 
                 s,
-                $.$(s).toString());
+                $.INSTANCE.$(s).toString());
     }
 
     @Test
@@ -162,13 +162,13 @@ class ImplTest {
         assertEquals(
 
                 s,
-                $.$(s).toString());
+                $.INSTANCE.$(s).toString());
     }
 
 
     @Test
     void implSubjSimultaneousWithTemporalPred() {
-        Term x = $$("((--,(tetris-->happy))==>(tetris(isRow,(2,true),true) &&+5 (tetris-->happy)))");
+        Term x = INSTANCE.$$("((--,(tetris-->happy))==>(tetris(isRow,(2,true),true) &&+5 (tetris-->happy)))");
         assertEquals(
                 "((--,(tetris-->happy))==>(tetris(isRow,(2,true),true) &&+5 (tetris-->happy)))",
                 x.toString());
@@ -260,7 +260,7 @@ class ImplTest {
         //test that implication construction returns the same result whether conj-containing input is factored or not
 
         assertEq("((c &&+1 d)&&x)", "((x&|c) &&+1 (x&|d))"); //sanity pre-test
-        assertEquals($$("((c &&+1 d),x)").volume() + 2, $$("((x&|c),(x&|d))").volume()); //factored form results in 2 volume savings
+        assertEquals(INSTANCE.$$("((c &&+1 d),x)").volume() + 2, INSTANCE.$$("((x&|c),(x&|d))").volume()); //factored form results in 2 volume savings
 
 
         //the (c&&x) case reduces to 'c' because it occurs at the same time point as (b&&x)
@@ -279,15 +279,15 @@ class ImplTest {
     void testElimination3() {
 
 
-        assertEq("(b ==>+1 (a&&x))", $$("(b ==>+1 (a&&x))"));
+        assertEq("(b ==>+1 (a&&x))", INSTANCE.$$("(b ==>+1 (a&&x))"));
 
-        Compound x1 = $$("((a &&+5 b) ==>+- (b &&+5 c))");
+        Compound x1 = INSTANCE.$$("((a &&+5 b) ==>+- (b &&+5 c))");
         Term y1 = x1.dt(0);
         assertEq("((a &&+5 b) ==>+5 c)", y1);
     }
     @Test
     void testElimination4() {
-        Compound x2 = $$("((a &&+5 b) ==>+1 (b &&+5 c))");
+        Compound x2 = INSTANCE.$$("((a &&+5 b) ==>+1 (b &&+5 c))");
         assertEq("((a &&+5 b) ==>+5 c)", x2.dt(0));
         assertEq("((a &&+5 b) ==>+5 c)", x2.dt(DTERNAL));
         assertEq("((a &&+5 b) ==>+- (b &&+5 c))", x2.dt(XTERNAL));
@@ -299,12 +299,12 @@ class ImplTest {
     @Test void ValidRepeatImplWithIndep() {
         {
             String x = "(($1 &&+5 b) ==>+1 ($1 &&+5 b))";
-            assertEquals(x, $$(x).toString());
+            assertEquals(x, INSTANCE.$$(x).toString());
         }
 
         {
             String x = "(($1 &&+5 b),($1 &&+5 b))";
-            assertEquals(x, $$(x).toString());
+            assertEquals(x, INSTANCE.$$(x).toString());
         }
     }
 

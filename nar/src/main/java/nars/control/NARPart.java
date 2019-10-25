@@ -34,14 +34,14 @@ public abstract class NARPart extends Parts<NAR> implements Termed, OffOn, SubPa
     }
 
     protected NARPart(@Nullable Term id) {
-        this.id = id != null ? id : $.identity(this);
+        this.id = id != null ? id : $.INSTANCE.identity(this);
     }
 
     public static Term id(@Nullable Term id, NARPart x) {
         if (id == null)
             return ((Termed) x).term();
         else
-            return NARPart.singleton() ? (x.id) : $.p(id, $.identity(x));
+            return NARPart.singleton() ? (x.id) : $.INSTANCE.p(id, $.INSTANCE.identity(x));
     }
     /**
      * resume

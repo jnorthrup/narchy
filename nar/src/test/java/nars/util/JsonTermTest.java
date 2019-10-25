@@ -22,7 +22,7 @@ class JsonTermTest {
         
         
 
-        d.believe( $.inh( JsonTerm.the("{ x: 3, y: [\"a\",4] }"), $.$("(json,2)") ) );
+        d.believe( $.INSTANCE.inh( JsonTerm.the("{ x: 3, y: [\"a\",4] }"), $.INSTANCE.$("(json,2)") ) );
         
         
 
@@ -43,8 +43,8 @@ class JsonTermTest {
                 "{\"coord\":{\"lon\":139.01,\"lat\":35.02},\"weather\":[{\"id\":800,\"main\":\"Clear\",\"description\":\"clear sky\",\"icon\":\"01n\"}],\"base\":\"stations\",\"main\":{\"temp\":285.514,\"pressure\":1013.75,\"humidity\":100,\"temp_min\":285.514,\"temp_max\":285.514,\"sea_level\":1023.22,\"grnd_level\":1013.75},\"wind\":{\"speed\":5.52,\"deg\":311},\"clouds\":{\"all\":0},\"dt\":1485792967,\"sys\":{\"message\":0.0025,\"country\":\"JP\",\"sunrise\":1485726240,\"sunset\":1485763863},\"id\":1907296,\"name\":\"Tawarano\",\"cod\":200}"
         }) {
             Atomic id = Atomic.the("WEATHER_" + (n++));
-            d.believe($.inh(JsonTerm.the(json), id), Tense.Eternal);
-            d.believe($.inst(id, Atomic.the("now")), Tense.Present);
+            d.believe($.INSTANCE.inh(JsonTerm.the(json), id), Tense.Eternal);
+            d.believe($.INSTANCE.inst(id, Atomic.the("now")), Tense.Present);
         }
         d.run(16);
     }
@@ -68,7 +68,7 @@ class JsonTermTest {
                 "     \"title\": \"Wildfires\"\n" +
                 "    }\n" +
                 "   ] }";
-        d.believe($.inh($.fromJSON(j), "x"));
+        d.believe($.INSTANCE.inh($.INSTANCE.fromJSON(j), "x"));
         d.run(16);
     }
 }

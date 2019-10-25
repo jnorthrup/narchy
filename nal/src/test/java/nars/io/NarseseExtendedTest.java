@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import static nars.$.$$;
+import static nars.$.*;
 import static nars.time.Tense.ETERNAL;
 import static nars.time.Tense.Present;
 import static org.junit.jupiter.api.Assertions.*;
@@ -23,20 +23,20 @@ class NarseseExtendedTest extends NarseseTest {
 
     @Test
     void testRuleComonent0() throws Narsese.NarseseException {
-        assertNotNull($.$("((P ==> S), (S ==> P))"));
-        assertNotNull($.$("((P ==> S), (S ==> P), neqCom(S,P), time(dtCombine))"));
+        assertNotNull($.INSTANCE.$("((P ==> S), (S ==> P))"));
+        assertNotNull($.INSTANCE.$("((P ==> S), (S ==> P), neqCom(S,P), time(dtCombine))"));
     }
 
     @Test
     void testRuleComonent1() throws Narsese.NarseseException {
         String s = "((P ==> S), (S ==> P), neqCom(S,P), time(dtCombine), notImpl(P), notEqui(S), task(\"?\"))";
-        assertNotNull($.$(s));
+        assertNotNull($.INSTANCE.$(s));
     }
 
     @Test void Boolean() {
-        assertSame(IdempotentBool.True, $$("true"));
-        assertSame(IdempotentBool.False, $$("false"));
-        assertSame(IdempotentBool.Null, $$("null"));
+        assertSame(IdempotentBool.True, INSTANCE.$$("true"));
+        assertSame(IdempotentBool.False, INSTANCE.$$("false"));
+        assertSame(IdempotentBool.Null, INSTANCE.$$("null"));
     }
 
     private static void eternal(Task t) {
@@ -286,11 +286,11 @@ class NarseseExtendedTest extends NarseseTest {
     @Disabled
     @Test
     void testOptionalCommas() throws Narsese.NarseseException {
-        Term pABC1 = $.$("(a b c)");
-        Term pABC2 = $.$("(a,b,c)");
+        Term pABC1 = $.INSTANCE.$("(a b c)");
+        Term pABC2 = $.INSTANCE.$("(a,b,c)");
         assertEquals(pABC1, pABC2);
 
-        Term pABC11 = $.$("(a      b c)");
+        Term pABC11 = $.INSTANCE.$("(a      b c)");
         assertEquals(pABC1, pABC11);
     }
 
@@ -298,7 +298,7 @@ class NarseseExtendedTest extends NarseseTest {
     @Test
     void testQuoteEscaping() {
         assertEquals("\"it said: \\\"wtf\\\"\"",
-                $.quote("it said: \"wtf\"").toString());
+                $.INSTANCE.quote("it said: \"wtf\"").toString());
     }
 
     @Test

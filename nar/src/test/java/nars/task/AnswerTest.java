@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.function.Supplier;
 
-import static nars.$.$$;
+import static nars.$.*;
 import static nars.Op.BELIEF;
 import static nars.time.Tense.ETERNAL;
 import static org.junit.jupiter.api.Assertions.*;
@@ -30,8 +30,8 @@ class AnswerTest {
     }
     @Test
     void testMatchPartialXternalDifferentVolume_Partial() throws Narsese.NarseseException {
-        assertTrue($$("((x &&+1 (x &&+1 y)) ==> z)")
-            .unify($$("((x &&+- y)          ==> z)"), new UnifyAny()));
+        assertTrue(INSTANCE.$$("((x &&+1 (x &&+1 y)) ==> z)")
+            .unify(INSTANCE.$$("((x &&+- y)          ==> z)"), new UnifyAny()));
         beliefQuery("((x &&+1 (x &&+1 y)) ==> z)",
                 new String[]{"((x &&+- y)       ==> z)"});
     }
@@ -41,14 +41,14 @@ class AnswerTest {
         n.believe(belief);
         queries = ArrayUtil.add(queries, belief);
         for (String q : queries) {
-            @Nullable Task a = n.answer($$(q), BELIEF, ETERNAL);
+            @Nullable Task a = n.answer(INSTANCE.$$(q), BELIEF, ETERNAL);
             assertNotNull(a, new Supplier<String>() {
                 @Override
                 public String get() {
                     return q + " did not match " + belief;
                 }
             });
-            assertEquals($$(belief), a.term());
+            assertEquals(INSTANCE.$$(belief), a.term());
         }
     }
 }

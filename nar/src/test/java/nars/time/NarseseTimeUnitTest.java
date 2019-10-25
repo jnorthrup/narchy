@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static nars.$.$$;
+import static nars.$.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -113,23 +113,23 @@ class NarseseTimeUnitTest {
 
         assertEquals(
                 "termDynamic(\"&&\",(a,b),(day,1))",
-                $$("(a &&+1day b)").toString()
+                INSTANCE.$$("(a &&+1day b)").toString()
         );
 
 
         assertEquals("(a &&+86400000 b)",
-                n.eval($$("(a &&+1day b)")).toString()
+                n.eval(INSTANCE.$$("(a &&+1day b)")).toString()
         );
 
 
         assertEquals("(a &&+129600000 b)",
-                n.eval($$("(a &&+1.5days b)")).toString()
+                n.eval(INSTANCE.$$("(a &&+1.5days b)")).toString()
         );
     }
     @Test
     void testTimeDeltaUnits2() {
         assertEquals("((c &&+259200000 b) &&+604800000 a)",
-                n.eval($$("(a &&-1week (b &&-3days c))")).toString()
+                n.eval(INSTANCE.$$("(a &&-1week (b &&-3days c))")).toString()
         );
 
     }

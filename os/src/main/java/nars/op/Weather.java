@@ -18,7 +18,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 
-import static nars.$.$$;
+import static nars.$.*;
 import static nars.Op.BELIEF;
 
 //import org.joda.time.LocalDate;
@@ -43,7 +43,7 @@ public class Weather extends NARPart {
 
     /** TODO GeoIP */
     public Weather(NAR nar, float lon, float lat) {
-        super($.func($.the(Weather.class.getSimpleName()), $.the(lon), $.the(lat)));
+        super($.INSTANCE.func($.INSTANCE.the(Weather.class.getSimpleName()), $.INSTANCE.the(lon), $.INSTANCE.the(lat)));
         this.lonLat = new v2(lon, lat);
 
         assert (nar.time instanceof RealTime.MS && ((RealTime)nar.time).relativeToStart);
@@ -98,15 +98,15 @@ public class Weather extends NARPart {
                 long HALF_HOUR_ms = (long) (3600 / 2 * 1000);
                 /* (parameters) */
                 events.add(
-                        NALTask.the($$("sunrise" /* (parameters) */), BELIEF, $.t(1.0F, 0.9f), nar.time(), sunrise.getTime() - HALF_HOUR_ms, sunrise.getTime() + HALF_HOUR_ms, nar.evidence())
+                        NALTask.the(INSTANCE.$$("sunrise" /* (parameters) */), BELIEF, $.INSTANCE.t(1.0F, 0.9f), nar.time(), sunrise.getTime() - HALF_HOUR_ms, sunrise.getTime() + HALF_HOUR_ms, nar.evidence())
                 );
                 /* (parameters) */
                 events.add(
-                        NALTask.the($$("sunset" /* (parameters) */), BELIEF, $.t(1.0F, 0.9f), nar.time(), sunset.getTime() - HALF_HOUR_ms, sunset.getTime() + HALF_HOUR_ms, nar.evidence())
+                        NALTask.the(INSTANCE.$$("sunset" /* (parameters) */), BELIEF, $.INSTANCE.t(1.0F, 0.9f), nar.time(), sunset.getTime() - HALF_HOUR_ms, sunset.getTime() + HALF_HOUR_ms, nar.evidence())
                 );
                 /* (parameters) */
                 events.add(
-                        NALTask.the($$("daylight" /* (parameters) */), BELIEF, $.t(1.0F, 0.9f), nar.time(), sunrise.getTime(), sunset.getTime(), nar.evidence())
+                        NALTask.the(INSTANCE.$$("daylight" /* (parameters) */), BELIEF, $.INSTANCE.t(1.0F, 0.9f), nar.time(), sunrise.getTime(), sunset.getTime(), nar.evidence())
                 );
             }
 
@@ -160,7 +160,7 @@ public class Weather extends NARPart {
         //System.out.println(at + " " + degreesF + " deg F");
         /* parameters, */
         events.add(
-                NALTask.the($.func("temperature", /* parameters, */ $.the(degreesF)), BELIEF, $.t(1.0F, 0.9f), nar.time(), at.getTime() - radiusMS, at.getTime() + radiusMS, nar.evidence())
+                NALTask.the($.INSTANCE.func("temperature", /* parameters, */ $.INSTANCE.the(degreesF)), BELIEF, $.INSTANCE.t(1.0F, 0.9f), nar.time(), at.getTime() - radiusMS, at.getTime() + radiusMS, nar.evidence())
         );
     }
 

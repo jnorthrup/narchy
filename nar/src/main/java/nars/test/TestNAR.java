@@ -22,7 +22,7 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import static java.lang.Float.NaN;
-import static nars.$.$$;
+import static nars.$.*;
 import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -261,7 +261,7 @@ public class TestNAR {
     public TestNAR goal(String t, Tense tense, float f, float c) {
         finished = false;
         try {
-            nar.want($.$(t), tense, f, c);
+            nar.want($.INSTANCE.$(t), tense, f, c);
         } catch (Narsese.NarseseException e) {
             throw new RuntimeException(e);
         }
@@ -388,7 +388,7 @@ public class TestNAR {
         cycleEnd = cycleEnd + (long) tt;
 
         Term term =
-                $.$(sentenceTerm);
+                $.INSTANCE.$(sentenceTerm);
         int tv = term.volume();
         int tvMax = nar.termVolMax.intValue();
         if (tv > tvMax) {
@@ -647,12 +647,12 @@ public class TestNAR {
     }
 
     @Deprecated public TestNAR ask(String termString) {
-        nar.question($$(termString));
+        nar.question(INSTANCE.$$(termString));
         return this;
     }
 
     public TestNAR quest(String termString)  {
-        nar.quest($$(termString));
+        nar.quest(INSTANCE.$$(termString));
         return this;
     }
 

@@ -86,7 +86,7 @@ public interface TermIO {
                 case VAR_INDEP:
                 case VAR_PATTERN:
                 case VAR_QUERY:
-                    return $.v(o, in.readByte());
+                    return $.INSTANCE.v(o, in.readByte());
                 case IMG:
                     return (int) in.readByte() == (int) ((byte) '/') ? Op.ImgExt : Op.ImgInt;
                 case BOOL:

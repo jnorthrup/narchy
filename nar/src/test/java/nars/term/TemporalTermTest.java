@@ -12,8 +12,8 @@ import java.util.Comparator;
 import java.util.TreeSet;
 import java.util.function.Consumer;
 
-import static nars.$.$;
-import static nars.$.$$;
+import static nars.$.*;
+import static nars.$.*;
 import static nars.term.atom.IdempotentBool.Null;
 import static nars.term.util.TermTest.assertEq;
 import static nars.term.util.TermTest.assertInvalidTerms;
@@ -27,9 +27,9 @@ class TemporalTermTest {
 
     @Test
     void testSortingTemporalImpl() {
-        assertEquals(-1, $$("(x ==>+1 y)").compareTo($$("(x ==>+10 y)")));
-        assertEquals(+1, $$("(x ==>+1 y)").compareTo($$("(x ==>-1 y)")));
-        assertEquals(-1, $$("(x ==>-1 y)").compareTo($$("(x ==>+1 y)")));
+        assertEquals(-1, INSTANCE.$$("(x ==>+1 y)").compareTo(INSTANCE.$$("(x ==>+10 y)")));
+        assertEquals(+1, INSTANCE.$$("(x ==>+1 y)").compareTo(INSTANCE.$$("(x ==>-1 y)")));
+        assertEquals(-1, INSTANCE.$$("(x ==>-1 y)").compareTo(INSTANCE.$$("(x ==>+1 y)")));
     }
 
 
@@ -57,12 +57,12 @@ class TemporalTermTest {
         assertEquals(
                 //"((--,(a &&+1 b))-->(a&&b))",
                 Null,
-                $("(--(a &&+1 b)-->(a && b))")
+                INSTANCE.$("(--(a &&+1 b)-->(a && b))")
         );
         assertEquals(
                 //"((a &&+1 b)-->(--,(a&&b)))",
                 Null,
-                $("((a &&+1 b) --> --(a && b))")//.toString()
+                INSTANCE.$("((a &&+1 b) --> --(a && b))")//.toString()
         );
 
     }
@@ -73,16 +73,16 @@ class TemporalTermTest {
 
 		assertEquals(
                 "(--,((x &&+- $1) ==>+- ((--,y) &&+- $1)))",
-                Retemporalize.retemporalizeAllToXTERNAL.apply($.<Compound>$("(--,(($1&&x) ==>+1 ((--,y) &&+2 $1)))")).toString());
+                Retemporalize.retemporalizeAllToXTERNAL.apply($.INSTANCE.<Compound>$("(--,(($1&&x) ==>+1 ((--,y) &&+2 $1)))")).toString());
         assertEquals(
                 "(--,((x &&+- $1) ==>+- ((--,y) &&+- $1)))",
-                $.<Compound>$("(--,(($1&&x) ==>+1 ((--,y) &&+2 $1)))").root().toString());
+                $.INSTANCE.<Compound>$("(--,(($1&&x) ==>+1 ((--,y) &&+2 $1)))").root().toString());
     }
 
     @Test
     void testAtemporalization3b() throws Narsese.NarseseException {
 
-        Compound x = $("((--,(($1&&x) ==>+1 ((--,y) &&+2 $1))) &&+3 (--,y))");
+        Compound x = INSTANCE.$("((--,(($1&&x) ==>+1 ((--,y) &&+2 $1))) &&+3 (--,y))");
 		Term y = Retemporalize.retemporalizeAllToXTERNAL.apply(x);
         assertEquals("((--,((x &&+- $1) ==>+- ((--,y) &&+- $1))) &&+- (--,y))", y.toString());
 
@@ -93,13 +93,13 @@ class TemporalTermTest {
 
 
         assertEquals("((x &&+- $1) ==>+- (y &&+- $1))",
-                $("((x&&$1) ==>+- (y&&$1))").root().toString());
+                INSTANCE.$("((x&&$1) ==>+- (y&&$1))").root().toString());
     }
 
     @Disabled
     @Test /* TODO decide the convention */ void testAtemporalization5() throws Narsese.NarseseException {
         for (String s : new String[]{"(y &&+- (x ==>+- z))", "((x ==>+- y) &&+- z)"}) {
-            Term c = $(s);
+            Term c = INSTANCE.$(s);
             assertTrue(c instanceof Compound);
             assertEquals("((x &&+- y) ==>+- z)",
                     c.toString());
@@ -112,7 +112,7 @@ class TemporalTermTest {
 
     @Test
     void testAtemporalization6() throws Narsese.NarseseException {
-        Compound x0 = $("(($1&&x) ==>+1 ((--,y) &&+2 $1)))");
+        Compound x0 = INSTANCE.$("(($1&&x) ==>+1 ((--,y) &&+2 $1)))");
         assertEquals("((x&&$1) ==>+1 ((--,y) &&+2 $1))", x0.toString());
 
     }
@@ -146,7 +146,7 @@ class TemporalTermTest {
 
     @Test
     void testAnonymization2() throws Narsese.NarseseException {
-        Termed nn = $("((do(that) &&+1 (a)) ==>+2 (b))");
+        Termed nn = INSTANCE.$("((do(that) &&+1 (a)) ==>+2 (b))");
         assertEquals("((do(that) &&+1 (a)) ==>+2 (b))", nn.toString());
 
 
@@ -158,8 +158,8 @@ class TemporalTermTest {
 
     @Test
     void testCommutiveTemporalityDepVar0() throws Narsese.NarseseException {
-        Term t0 = $("((SELF,#1)-->at)").term();
-        Term t1 = $("goto(#1)").term();
+        Term t0 = INSTANCE.$("((SELF,#1)-->at)").term();
+        Term t1 = INSTANCE.$("goto(#1)").term();
         Term[] a = Terms.commute(t0, t1);
         Term[] b = Terms.commute(t1, t0);
         assertEquals(
@@ -172,27 +172,27 @@ class TemporalTermTest {
     @Test
     void parseTemporalRelation() throws Narsese.NarseseException {
 
-        assertEquals("(x ==>+5 y)", $("(x ==>+5 y)").toString());
-        assertEquals("(x &&+5 y)", $("(x &&+5 y)").toString());
+        assertEquals("(x ==>+5 y)", INSTANCE.$("(x ==>+5 y)").toString());
+        assertEquals("(x &&+5 y)", INSTANCE.$("(x &&+5 y)").toString());
 
-        assertEquals("(x ==>-5 y)", $("(x ==>-5 y)").toString());
+        assertEquals("(x ==>-5 y)", INSTANCE.$("(x ==>-5 y)").toString());
 
-        assertEquals("((before-->x) ==>+5 (after-->x))", $("(x:before ==>+5 x:after)").toString());
+        assertEquals("((before-->x) ==>+5 (after-->x))", INSTANCE.$("(x:before ==>+5 x:after)").toString());
     }
 
     @Test
     void temporalEqualityAndCompare() throws Narsese.NarseseException {
-        assertNotEquals($("(x ==>+5 y)"), $("(x ==>+0 y)"));
-        assertNotEquals($("(x ==>+5 y)").hashCode(), $("(x ==>+0 y)").hashCode());
+        assertNotEquals(INSTANCE.$("(x ==>+5 y)"), INSTANCE.$("(x ==>+0 y)"));
+        assertNotEquals(INSTANCE.$("(x ==>+5 y)").hashCode(), INSTANCE.$("(x ==>+0 y)").hashCode());
         //assertNotEquals($("(x ==> y)").hashCode(), $("(x ==>+0 y)").hashCode());
 
-        assertEquals($("(x ==>+0 y)"), $("(x ==>-0 y)"));
-        assertNotEquals($("(x ==>+5 y)"), $("(y ==>-5 x)"));
+        assertEquals(INSTANCE.$("(x ==>+0 y)"), INSTANCE.$("(x ==>-0 y)"));
+        assertNotEquals(INSTANCE.$("(x ==>+5 y)"), INSTANCE.$("(y ==>-5 x)"));
 
 
-        assertEquals(0, $("(x ==>+0 y)").compareTo($("(x ==>+0 y)")));
-        assertEquals(-1, $("(x ==>+0 y)").compareTo($("(x ==>+1 y)")));
-        assertEquals(+1, $("(x ==>+1 y)").compareTo($("(x ==>+0 y)")));
+        assertEquals(0, INSTANCE.$("(x ==>+0 y)").compareTo(INSTANCE.$("(x ==>+0 y)")));
+        assertEquals(-1, INSTANCE.$("(x ==>+0 y)").compareTo(INSTANCE.$("(x ==>+1 y)")));
+        assertEquals(+1, INSTANCE.$("(x ==>+1 y)").compareTo(INSTANCE.$("(x ==>+0 y)")));
     }
 
 
@@ -201,7 +201,7 @@ class TemporalTermTest {
     @Test
     void testTransformedImplDoesntActuallyOverlap() {
         assertEquals("(((#1 &&+7 (_1,_2)) &&+143 (_1,_2)) ==>+7 (_1,_2))",
-                ((Compound)$$("(((#1 &&+7 (_1,_2)) &&+143 (_1,_2)) ==>+- (_1,_2))")).dt(7).toString());
+                ((Compound) INSTANCE.$$("(((#1 &&+7 (_1,_2)) &&+143 (_1,_2)) ==>+- (_1,_2))")).dt(7).toString());
     }
 
 
@@ -222,30 +222,30 @@ class TemporalTermTest {
         });
 
 
-        assertTrue(d.contains($("(x ==>+- y)")));
-        assertTrue(d.contains($("(y ==>+- x)")));
+        assertTrue(d.contains(INSTANCE.$("(x ==>+- y)")));
+        assertTrue(d.contains(INSTANCE.$("(y ==>+- x)")));
     }
 
     @Test
     void testImplRootDistinct() throws Narsese.NarseseException {
 
-        Term f = $("(x ==> y)");
+        Term f = INSTANCE.$("(x ==> y)");
         assertEquals("(x ==>+- y)", f.root().toString());
 
-        Term g = $("(y ==>+1 x)");
+        Term g = INSTANCE.$("(y ==>+1 x)");
         assertEquals("(y ==>+- x)", g.root().toString());
 
     }
 
     @Test
     void testImplRootRepeat() throws Narsese.NarseseException {
-        Term h = $("(x ==>+1 x)");
+        Term h = INSTANCE.$("(x ==>+1 x)");
         assertEquals("(x ==>+- x)", h.root().toString());
     }
 
     @Test
     void testImplRootNegate() throws Narsese.NarseseException {
-        Term i = $("(--x ==>+1 x)");
+        Term i = INSTANCE.$("(--x ==>+1 x)");
         assertEquals("((--,x) ==>+- x)", i.root().toString());
 
     }
@@ -268,22 +268,22 @@ class TemporalTermTest {
     void testEqualsAnonymous3() throws Narsese.NarseseException {
 
 
-		assertEquals(Retemporalize.retemporalizeAllToXTERNAL.apply($.<Compound>$("(x && (y ==> z))")),
-			Retemporalize.retemporalizeAllToXTERNAL.apply($.<Compound>$("(x &&+1 (y ==>+1 z))")));
+		assertEquals(Retemporalize.retemporalizeAllToXTERNAL.apply($.INSTANCE.<Compound>$("(x && (y ==> z))")),
+			Retemporalize.retemporalizeAllToXTERNAL.apply($.INSTANCE.<Compound>$("(x &&+1 (y ==>+1 z))")));
 
 
         assertEquals("((x &&+1 z) ==>+1 w)",
-                $("(x &&+1 (z ==>+1 w))").toString());
+                INSTANCE.$("(x &&+1 (z ==>+1 w))").toString());
 
-		assertEquals(Retemporalize.retemporalizeAllToXTERNAL.apply($.<Compound>$("((x &&+- z) ==>+- w)")),
-			Retemporalize.retemporalizeAllToXTERNAL.apply($.<Compound>$("(x &&+1 (z ==>+1 w))")));
+		assertEquals(Retemporalize.retemporalizeAllToXTERNAL.apply($.INSTANCE.<Compound>$("((x &&+- z) ==>+- w)")),
+			Retemporalize.retemporalizeAllToXTERNAL.apply($.INSTANCE.<Compound>$("(x &&+1 (z ==>+1 w))")));
     }
 
 
     @Test
     void testValidTaskTerm() {
         String s = "believe(x,(believe(x,(--,(cam(9,$1) ==>-78990 (ang,$1))))&|(cam(9,$1) ==>+570 (ang,$1))))";
-        Term ss = $$(s);
+        Term ss = INSTANCE.$$(s);
         assertTrue(Task.validTaskCompound((Compound) ss, true));
         assertTrue(Task.validTaskTerm(ss));
     }
@@ -291,17 +291,17 @@ class TemporalTermTest {
     @Test void ImplTransformMaintainsTiming() {
         assertEq(
                 "((_2-->_1) ==>+3 (_1-->_3))",
-                $$("(($1-->_1) ==>-1 ((_2-->$1) &&+4 (_1-->_3)))").replace($.varIndep(1), $$("_2"))
+                INSTANCE.$$("(($1-->_1) ==>-1 ((_2-->$1) &&+4 (_1-->_3)))").replace($.INSTANCE.varIndep(1), INSTANCE.$$("_2"))
         );
         assertEq(
                 "((_1-->_3) ==>+3 (_2-->_1))",
-                $$("(((_1-->_3) &&+4 (_2-->$1)) ==>-1 ($1-->_1))").replace($.varIndep(1), $$("_2"))
+                INSTANCE.$$("(((_1-->_3) &&+4 (_2-->$1)) ==>-1 ($1-->_1))").replace($.INSTANCE.varIndep(1), INSTANCE.$$("_2"))
         );
     }
     @Test void ConjTransformMaintainsTiming() {
         assertEq(
                 "((x-->a) &&+3 (z-->a))",
-                $$("((x-->a) &&+1 ((y-->b) &&+2 (z -->a)))").replace($$("b"), $$("y"))
+                INSTANCE.$$("((x-->a) &&+1 ((y-->b) &&+2 (z -->a)))").replace(INSTANCE.$$("b"), INSTANCE.$$("y"))
         );
     }
 }

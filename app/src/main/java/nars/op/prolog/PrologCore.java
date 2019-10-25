@@ -227,7 +227,7 @@ public class PrologCore extends Prolog implements Consumer<Task> {
         try {
             Term yt = nterm(answer.goal);
 
-            Task y = Task.tryTask(yt, BELIEF, $.t(1f, answerConf.floatValue()), new BiFunction<Term, Truth, Task>() {
+            Task y = Task.tryTask(yt, BELIEF, $.INSTANCE.t(1f, answerConf.floatValue()), new BiFunction<Term, Truth, Task>() {
                 @Override
                 public Task apply(Term term, Truth truth) {
                     Task t = NALTask.the(term, BELIEF, truth, nar.time(), ETERNAL, ETERNAL, nar.evidence())
@@ -269,7 +269,7 @@ public class PrologCore extends Prolog implements Consumer<Task> {
     private static Term nterm(alice.tuprolog.Term t) {
         Term result;
         if (t instanceof Var) {
-            result = $.varDep(((Var) t).name());
+            result = $.INSTANCE.varDep(((Var) t).name());
         } else {
             Struct s = (Struct) t;
             if (s.subs() > 0) {
@@ -310,16 +310,16 @@ public class PrologCore extends Prolog implements Consumer<Task> {
 
 
                     default:
-                        result = $.func(unwrapAtom(s.name()), nterms(((Struct) t).subArrayShared()));
+                        result = $.INSTANCE.func(unwrapAtom(s.name()), nterms(((Struct) t).subArrayShared()));
                         break;
                 }
             } else {
                 String n = s.name();
                 if (n.startsWith("'#")) {
 
-                    result = $.varDep(n.substring(2, n.length() - 1));
+                    result = $.INSTANCE.varDep(n.substring(2, n.length() - 1));
                 } else {
-                    result = $.the(unwrapAtom(n));
+                    result = $.INSTANCE.the(unwrapAtom(n));
                 }
 
             }

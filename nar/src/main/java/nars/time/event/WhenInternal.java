@@ -15,7 +15,7 @@ public abstract class WhenInternal {
 
     @Override
     public String toString() {
-        return $.inh(term(), category()).toString();
+        return $.INSTANCE.inh(term(), category()).toString();
     }
 
 }

@@ -30,7 +30,7 @@ public class CommutativeConstantPreFilter extends AbstractPred<PreDerivation> {
      * from = non-ellipsis target to check if present as a subterm of what appears at to
      */
     public CommutativeConstantPreFilter(byte[] ellipsisPath, byte[] contentPath, boolean ellipsisInTaskOrBelief /* direction */) {
-        super($.func(id, pathTerm(ellipsisPath), pathTerm(contentPath), ellipsisInTaskOrBelief ? Task : Belief));
+        super($.INSTANCE.func(id, pathTerm(ellipsisPath), pathTerm(contentPath), ellipsisInTaskOrBelief ? Task : Belief));
         this.ellipsisInTaskOrBelief = ellipsisInTaskOrBelief;
         this.ellipsisPath = ellipsisPath;
         this.contentPath = contentPath;
@@ -76,7 +76,7 @@ public class CommutativeConstantPreFilter extends AbstractPred<PreDerivation> {
     }
 
 	public static Term pathTerm(@Nullable byte[] path) {
-		return path == null ? $.the(-1) /* null */ : $.p(path);
+		return path == null ? $.INSTANCE.the(-1) /* null */ : $.INSTANCE.p(path);
 	}
 
 

@@ -26,7 +26,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.function.Consumer;
 
-import static nars.$.$$;
+import static nars.$.*;
 import static nars.Op.BELIEF;
 import static nars.truth.func.TruthFunctions.c2wSafe;
 import static nars.truth.func.TruthFunctions.w2cSafe;
@@ -141,7 +141,7 @@ public class AutoclassifiedBitmap extends VectorSensor {
     }
 
     public AutoclassifiedBitmap(String root, float[][] pixIn, int sw, int sh, MetaBits metabits, int states, Game game) {
-        this($$(root), pixIn, sw, sh, metabits, states, game);
+        this(INSTANCE.$$(root), pixIn, sw, sh, metabits, states, game);
     }
 
     public AutoclassifiedBitmap(Term root, float[][] pixIn, int sw, int sh, MetaBits metabits, int states, Game game) {
@@ -196,7 +196,7 @@ public class AutoclassifiedBitmap extends VectorSensor {
 
         this.feature = new Term[features];
         for (int i = 0; i < features; i++) {
-            feature[i] = $.quote(Util.uuid64()); //HACK
+            feature[i] = $.INSTANCE.quote(Util.uuid64()); //HACK
         }
 
         Term r = root;
@@ -241,7 +241,7 @@ public class AutoclassifiedBitmap extends VectorSensor {
      */
     protected Term coord(@Nullable Term root, int x, int y, int f) {
         Term ff = feature[f];
-        return root!=null ? $.inh(root, $.p($.p(x,y),ff)) : $.inh($.p(x, y), ff);
+        return root!=null ? $.INSTANCE.inh(root, $.INSTANCE.p($.INSTANCE.p(x,y),ff)) : $.INSTANCE.inh($.INSTANCE.p(x, y), ff);
 
         //return root!=null ? $.inh($.p(root, $.p(x, y)),feature[f]) : $.inh($.p(x, y), feature[f]);
         //return $.inh(component, feature[f]);

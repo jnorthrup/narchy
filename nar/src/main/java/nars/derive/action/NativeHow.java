@@ -20,7 +20,7 @@ public abstract class NativeHow/*Builder*/ extends CondHow {
 	protected PREDICATE<PreDerivation>[] conditions() {
         PREDICATE<PreDerivation>[] c = super.conditions();
 
-		this.id = $.impl($.p(c), $.identity(this));
+		this.id = $.INSTANCE.impl($.INSTANCE.p(c), $.INSTANCE.identity(this));
 		this.source = id.toString();
 
 		return c;

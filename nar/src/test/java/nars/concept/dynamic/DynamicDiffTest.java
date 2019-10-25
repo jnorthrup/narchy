@@ -9,8 +9,8 @@ import nars.table.dynamic.DynamicTruthTable;
 import nars.term.Term;
 import org.junit.jupiter.api.Test;
 
-import static nars.$.$;
-import static nars.$.$$;
+import static nars.$.*;
+import static nars.$.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class DynamicDiffTest extends AbstractDynamicTaskTest {
@@ -40,7 +40,7 @@ class DynamicDiffTest extends AbstractDynamicTaskTest {
         n.believe("c:y", 0.25f, 0.50f);
         n.run(1);
         //Term xMinY = $("c:(x - y)"), yMinX = $("c:(y - x)");
-        Term xMinY = $("c:(x & --y)"), yMinX = $("c:(y & --x)");
+        Term xMinY = INSTANCE.$("c:(x & --y)"), yMinX = INSTANCE.$("c:(y & --x)");
 
         assertNotNull(((BeliefTables) n.conceptualize(xMinY).beliefs()).tableFirst(DynamicTruthTable.class));
         assertNotNull(((BeliefTables) n.conceptualize(yMinX).beliefs()).tableFirst(DynamicTruthTable.class));
@@ -56,7 +56,7 @@ class DynamicDiffTest extends AbstractDynamicTaskTest {
         n.believe("c:x", 0.75f, 0.50f);
         n.believe("c:y", 0.25f, 0.50f);
         n.run(1);
-        Term xMinY = $("c:(x - y)"), yMinX = $("c:(y - x)");
+        Term xMinY = INSTANCE.$("c:(x - y)"), yMinX = INSTANCE.$("c:(y - x)");
         assertNotNull(((BeliefTables) n.conceptualize(xMinY).beliefs()).tableFirst(DynamicTruthTable.class));
         assertNotNull(((BeliefTables) n.conceptualize(yMinX).beliefs()).tableFirst(DynamicTruthTable.class));
         assertEquals(
@@ -74,9 +74,9 @@ class DynamicDiffTest extends AbstractDynamicTaskTest {
         n.believe("c:y", 0.25f, 0.50f, 1, 1);
         n.believe("c:z", 0.25f, 0.50f, 2, 2);
 
-        Task a = n.answerBelief($$("c:(x~y)"), 0, 1);
+        Task a = n.answerBelief(INSTANCE.$$("c:(x~y)"), 0, 1);
         assertNotNull(a);
-        Task b = n.answerBelief($$("c:(x~z)"), 0, 2);
+        Task b = n.answerBelief(INSTANCE.$$("c:(x~z)"), 0, 2);
         assertNotNull(b);
         assertEquals(b.freq(), a.freq());
         assertTrue(b.conf() < a.conf());

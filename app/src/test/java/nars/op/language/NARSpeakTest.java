@@ -28,11 +28,11 @@ public class NARSpeakTest {
 
         n.synch(); 
 
-        s.speak($.the("x"), 1, $.t(1f, 0.9f));
-        s.speak($.the("not_x"), 1, $.t(0f, 0.9f));
-        s.speak($.the("y"), 2, $.t(1f, 0.9f));
-        s.speak($.the("z"), 4, $.t(0.95f, 0.9f));
-        s.speak($.the("not_w"), 6, $.t(1f, 0.9f));
+        s.speak($.INSTANCE.the("x"), 1, $.INSTANCE.t(1f, 0.9f));
+        s.speak($.INSTANCE.the("not_x"), 1, $.INSTANCE.t(0f, 0.9f));
+        s.speak($.INSTANCE.the("y"), 2, $.INSTANCE.t(1f, 0.9f));
+        s.speak($.INSTANCE.the("z"), 4, $.INSTANCE.t(0.95f, 0.9f));
+        s.speak($.INSTANCE.the("not_w"), 6, $.INSTANCE.t(1f, 0.9f));
         assertEquals(5, s.vocalize.size()); 
         n.run(5);
         assertEquals("1:x 2:y 4:z ", b.toString());

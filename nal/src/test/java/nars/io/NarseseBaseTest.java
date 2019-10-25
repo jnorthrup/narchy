@@ -16,7 +16,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.function.Supplier;
 
-import static nars.$.$$;
+import static nars.$.*;
 import static nars.Op.FRAG;
 import static nars.Op.PROD;
 import static nars.term.util.TermTest.assertEq;
@@ -96,12 +96,12 @@ class NarseseBaseTest extends NarseseTest {
     @Test
     void testPropertyInstance2() throws Narsese.NarseseException {
         taskParses("(a -]- b).");
-        assertEquals("(a-->[b])", $.$("(a -]- b)").toString());
+        assertEquals("(a-->[b])", $.INSTANCE.$("(a -]- b)").toString());
     }
     @Test
     void testPropertyInstance3() throws Narsese.NarseseException {
         taskParses("(a {-] b).");
-        assertEquals("({a}-->[b])", $.$("(a {-] b)").toString());
+        assertEquals("({a}-->[b])", $.INSTANCE.$("(a {-] b)").toString());
     }
 
     @Test
@@ -186,21 +186,21 @@ class NarseseBaseTest extends NarseseTest {
 
     @Test
     void testDisjunction() throws Narsese.NarseseException {
-        assertEquals("(a||b)", $.$("(||,a,b)").toString());
-        assertEquals("(||,a,b,c)", $.$("(||,a,b,c)").toString());
-        assertEquals("((b&&c)||a)", $.$("(||,a,(b&&c))").toString());
-        assertEquals("a", $.$("(||,a)").toString());
+        assertEquals("(a||b)", $.INSTANCE.$("(||,a,b)").toString());
+        assertEquals("(||,a,b,c)", $.INSTANCE.$("(||,a,b,c)").toString());
+        assertEquals("((b&&c)||a)", $.INSTANCE.$("(||,a,(b&&c))").toString());
+        assertEquals("a", $.INSTANCE.$("(||,a)").toString());
     }
 
     @Test
     void testDisjunctionBinary() throws Narsese.NarseseException {
-        assertEquals("(a||b)", $.$("(a||b)").toString());
-        assertEquals("(a||b)", $.$("(a || b)").toString());
+        assertEquals("(a||b)", $.INSTANCE.$("(a||b)").toString());
+        assertEquals("(a||b)", $.INSTANCE.$("(a || b)").toString());
     }
     @Test
     void testDisjunctionXternal() throws Narsese.NarseseException {
-        assertEquals("(a ||+- b)", $.$("--(--a &&+- --b)").toString());
-        assertEquals("(a ||+- b)", $.$("(a ||+- b)").toString());
+        assertEquals("(a ||+- b)", $.INSTANCE.$("--(--a &&+- --b)").toString());
+        assertEquals("(a ||+- b)", $.INSTANCE.$("(a ||+- b)").toString());
     }
 
 
@@ -282,8 +282,8 @@ class NarseseBaseTest extends NarseseTest {
 
     @Test
     void testImplIsNotOperation() throws Narsese.NarseseException {
-        assertEquals("((b)==>a)", $.impl($.$("(b)"), Atomic.the("a")).toString());
-        assertEquals("((b) ==>+1 a)", $.impl($.$("(b)"), 1, Atomic.the("a")).toString());
+        assertEquals("((b)==>a)", $.INSTANCE.impl($.INSTANCE.$("(b)"), Atomic.the("a")).toString());
+        assertEquals("((b) ==>+1 a)", $.INSTANCE.impl($.INSTANCE.$("(b)"), 1, Atomic.the("a")).toString());
     }
 
     @Test
@@ -356,7 +356,7 @@ class NarseseBaseTest extends NarseseTest {
 
     @Test
     void testQuotedVar() throws Narsese.NarseseException {
-        assertEquals("$\"x\"",  $.$("$\"x\"").toString());
+        assertEquals("$\"x\"",  $.INSTANCE.$("$\"x\"").toString());
     }
 
     @Test
@@ -521,8 +521,8 @@ class NarseseBaseTest extends NarseseTest {
     void testMultilineQuotes() throws Narsese.NarseseException {
 
         String a = "js(\"\"\"\n" + "1\n" + "\"\"\")";
-        System.out.println(a + ' ' + $.$(a));
-        assertEquals(a, $.$(a).toString());
+        System.out.println(a + ' ' + $.INSTANCE.$(a));
+        assertEquals(a, $.INSTANCE.$(a).toString());
         List<Task> l = tasks(a + '!');
         assertEquals(1, l.size());
     }
@@ -578,11 +578,11 @@ class NarseseBaseTest extends NarseseTest {
 
 
     @Test void EllipsisMatch_Fragment() {
-        assertEq("`a,b,c`", Fragment.fragment(new Term[] { $$("a"), $$("b"), $$("c")}) );
+        assertEq("`a,b,c`", Fragment.fragment(new Term[] { INSTANCE.$$("a"), INSTANCE.$$("b"), INSTANCE.$$("c")}) );
         assertEq("`a,b,c`", "`a,b,c`");
-        assertEquals(FRAG, $$("`a,b,c`").op());
-        assertEquals(3, $$("`a,b,c`").subs());
-        assertNotEquals($$("(a,b,c)"), $$("`a,b,c`").term());
+        assertEquals(FRAG, INSTANCE.$$("`a,b,c`").op());
+        assertEquals(3, INSTANCE.$$("`a,b,c`").subs());
+        assertNotEquals(INSTANCE.$$("(a,b,c)"), INSTANCE.$$("`a,b,c`").term());
     }
 
 }

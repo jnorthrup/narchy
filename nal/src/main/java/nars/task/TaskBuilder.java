@@ -18,7 +18,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Objects;
 import java.util.function.Function;
 
-import static nars.$.t;
+import static nars.$.*;
 import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
 
@@ -54,7 +54,7 @@ public class TaskBuilder extends UnitPri implements TermedDelegate, Function<NAL
 
 
 	public TaskBuilder(Term t, byte punct, float freq, NAL nar) throws TaskException {
-		this(t, punct, t(freq, nar.confDefault(punct)));
+		this(t, punct, INSTANCE.t(freq, nar.confDefault(punct)));
 	}
 
 	public TaskBuilder(Term term, byte punct, @Nullable Truth truth) throws TaskException {
@@ -121,13 +121,13 @@ public class TaskBuilder extends UnitPri implements TermedDelegate, Function<NAL
 			case GOAL:
 				if (truth == null) {
 
-					setTruth(t(1.0F, n.confDefault(punc)));
+					setTruth(INSTANCE.t(1.0F, n.confDefault(punc)));
 				} else {
 
                     float confLimit = 1f - NAL.truth.TRUTH_EPSILON;
 					if (!isInput() && conf() > confLimit) {
 
-						setTruth(t(freq(), confLimit));
+						setTruth(INSTANCE.t(freq(), confLimit));
 					}
 				}
 

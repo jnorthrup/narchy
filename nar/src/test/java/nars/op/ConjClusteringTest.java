@@ -27,10 +27,10 @@ class ConjClusteringTest {
 
 
         for (int i = 0; i < ccap; i++)
-            n.believe($.the("x" + i), Tense.Present);
+            n.believe($.INSTANCE.the("x" + i), Tense.Present);
         n.run(64);
 
-        BeliefTable b = n.concept($.$("(&&,x0,x1,x2)")).beliefs();
+        BeliefTable b = n.concept($.INSTANCE.$("(&&,x0,x1,x2)")).beliefs();
         assertEquals(1, b.taskCount());
 
         assert123(b);
@@ -47,10 +47,10 @@ class ConjClusteringTest {
         n.run(1); //HACK
 
         for (int i = 0; i < ccap; i++)
-            n.believe($.the("x" + i).neg(), Tense.Present);
+            n.believe($.INSTANCE.the("x" + i).neg(), Tense.Present);
         n.run(64);
 
-        BeliefTable b = n.concept($.$("(&&,--x0,--x1,--x2)")).beliefs();
+        BeliefTable b = n.concept($.INSTANCE.$("(&&,--x0,--x1,--x2)")).beliefs();
         assertEquals(1, b.taskCount());
 
         assert123(b);

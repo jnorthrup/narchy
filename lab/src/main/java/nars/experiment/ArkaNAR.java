@@ -40,7 +40,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 import static jcog.learn.ql.dqn3.DQN3.Option.TD_ERROR_CLAMP;
-import static nars.$.$$;
+import static nars.$.*;
 import static spacegraph.SpaceGraph.window;
 
 /** NARkanoid */
@@ -72,7 +72,7 @@ public class ArkaNAR extends GameX {
 
         public static void main(String[] args) {
 
-            Term id = $$("rl");
+            Term id = INSTANCE.$$("rl");
             float FPS = 25f;
             NAR n = GameX.Companion.baseNAR(FPS, 2);
 
@@ -124,10 +124,10 @@ public class ArkaNAR extends GameX {
                 @Override
                 public void accept(NAR nn) {
 
-                    ArkaNAR a = new ArkaNAR($$("(noid,a)"), nn, cam, numeric);
+                    ArkaNAR a = new ArkaNAR(INSTANCE.$$("(noid,a)"), nn, cam, numeric);
                     a.ballSpeed.set(0.7f * a.ballSpeed.floatValue());
 
-                    ArkaNAR b = new ArkaNAR($$("(noid,b)"), nn, cam, numeric);
+                    ArkaNAR b = new ArkaNAR(INSTANCE.$$("(noid,b)"), nn, cam, numeric);
                     b.ballSpeed.set(0.33f * a.ballSpeed.floatValue());
 
 //                window(new Gridding(
@@ -180,7 +180,7 @@ public class ArkaNAR extends GameX {
             cc = senseCamera(new IntIntToObjectFunction<Term>() {
                 @Override
                 public Term apply(int x, int y) {
-                    return $.inh(id, $.p(x, y));
+                    return $.INSTANCE.inh(id, $.INSTANCE.p(x, y));
                 }
             }, new ScaledBitmap2D(
                     new SwingBitmap2D(noid)
@@ -193,21 +193,21 @@ public class ArkaNAR extends GameX {
         if (numeric) {
             float numRes = 0.2f;
             float resX = 0.02f;
-            AbstractSensor px = senseNumberBi($.inh(id,"px"), (new FloatSupplier() {
+            AbstractSensor px = senseNumberBi($.INSTANCE.inh(id,"px"), (new FloatSupplier() {
                 @Override
                 public float asFloat() {
                     return noid.paddle.x / (float) noid.getWidth();
                 }
             })).resolution(resX);
             px.resolution(numRes);
-            AbstractSensor dx = senseNumberBi($.inh(id, "dx"), (new FloatSupplier() {
+            AbstractSensor dx = senseNumberBi($.INSTANCE.inh(id, "dx"), (new FloatSupplier() {
                 @Override
                 public float asFloat() {
                     return 0.5f + 0.5f * (noid.ball.x - noid.paddle.x) / (float) noid.getWidth();
                 }
             })).resolution(resX);
             dx.resolution(numRes);
-            AbstractSensor cx = senseNumberBi($.inh(id, $.p("b", "x")), (new FloatSupplier() {
+            AbstractSensor cx = senseNumberBi($.INSTANCE.inh(id, $.INSTANCE.p("b", "x")), (new FloatSupplier() {
                 @Override
                 public float asFloat() {
                     return (noid.ball.x / (float) noid.getWidth());
@@ -215,7 +215,7 @@ public class ArkaNAR extends GameX {
             })).resolution(resX);
             cx.resolution(numRes);
             float resY = 0.02f;
-            AbstractSensor cy = senseNumberBi($.inh(id ,$.p("b", "y")), (new FloatSupplier() {
+            AbstractSensor cy = senseNumberBi($.INSTANCE.inh(id , $.INSTANCE.p("b", "y")), (new FloatSupplier() {
                 @Override
                 public float asFloat() {
                     return 1f - (noid.ball.y / (float) noid.getHeight());
@@ -276,7 +276,7 @@ public class ArkaNAR extends GameX {
     }
 
     private void initBipolarRelative() {
-        actionBipolar($.the("X"), false, new FloatToFloatFunction() {
+        actionBipolar($.INSTANCE.the("X"), false, new FloatToFloatFunction() {
             @Override
             public float valueOf(float dx) {
 
@@ -290,7 +290,7 @@ public class ArkaNAR extends GameX {
     }
 
     private void initBipolarDirect() {
-        actionBipolar($.the("X"), true, new FloatToFloatFunction() {
+        actionBipolar($.INSTANCE.the("X"), true, new FloatToFloatFunction() {
             @Override
             public float valueOf(float dx) {
                 noid.paddle.set(dx / 2f + 0.5f);
@@ -300,7 +300,7 @@ public class ArkaNAR extends GameX {
     }
 
     private void initPushButton() {
-        actionPushButtonMutex($.inh(id,NAct.NEG), $.inh(id,NAct.POS),
+        actionPushButtonMutex($.INSTANCE.inh(id,NAct.NEG), $.INSTANCE.inh(id,NAct.POS),
                 new BooleanPredicate() {
                     @Override
                     public boolean accept(boolean b) {
@@ -319,7 +319,7 @@ public class ArkaNAR extends GameX {
     }
 
     private void initUnipolar() {
-        actionUnipolar($.inh(id,NAct.NEG), true, new FloatToFloatFunction() {
+        actionUnipolar($.INSTANCE.inh(id,NAct.NEG), true, new FloatToFloatFunction() {
                     @Override
                     public float valueOf(float prev) {
                         return (float) 0;
@@ -332,7 +332,7 @@ public class ArkaNAR extends GameX {
                         return noid.paddle.move(-paddleSpeed * u) ? u : (float) 0;
                     }
                 });
-        actionUnipolar($.inh(id,NAct.POS), true, new FloatToFloatFunction() {
+        actionUnipolar($.INSTANCE.inh(id,NAct.POS), true, new FloatToFloatFunction() {
                     @Override
                     public float valueOf(float prev) {
                         return (float) 0;

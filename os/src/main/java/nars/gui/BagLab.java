@@ -48,7 +48,7 @@ public class BagLab {
         this.uniques = bag.capacity() * 2;
 
         int inputs = 10;
-        inputSliders = $.newArrayList(inputs);
+        inputSliders = $.INSTANCE.newArrayList(inputs);
         for (int i = 0; i < inputs; i++)
             inputSliders.add(new FloatSlider(0.5f, (float) 0, 1.0F));
 
@@ -159,7 +159,7 @@ public class BagLab {
                 //new XoRoShiRo128PlusRandom(seed);
                 ThreadLocalRandom.current();
 
-        List<PriReference<Integer>> sampled = $.newArrayList(1024);
+        List<PriReference<Integer>> sampled = $.INSTANCE.newArrayList(1024);
         int batchSize = 32;
         float sampleBatches = 1.0F;
         for (int i = 0; i < (int) sampleBatches; i++) {

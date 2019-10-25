@@ -18,7 +18,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import static nars.$.$$;
+import static nars.$.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class MemberTest {
@@ -28,54 +28,54 @@ public class MemberTest {
 	@Test
 	void Member1_true() {
 		Assertions.assertEquals(
-			Set.of($$("member(a,{a,b})")),
-			Evaluation.eval($$("member(a,{a,b})"), n));
+			Set.of(INSTANCE.$$("member(a,{a,b})")),
+			Evaluation.eval(INSTANCE.$$("member(a,{a,b})"), n));
 	}
 
 	@Disabled
 	@Test void Member1_product_arg() {
 		Assertions.assertEquals(
-			Set.of($$("member(a,(a,b))")),
-			Evaluation.eval($$("member(a,(a,b))"), n));
+			Set.of(INSTANCE.$$("member(a,(a,b))")),
+			Evaluation.eval(INSTANCE.$$("member(a,(a,b))"), n));
 
 	}
 
 	@Test void Member1_false() {
 		assertEquals(
-			Set.of($$("--member(c,{a,b})")),
-			Evaluation.eval($$("member(c,{a,b})"), true, true, n));
+			Set.of(INSTANCE.$$("--member(c,{a,b})")),
+			Evaluation.eval(INSTANCE.$$("member(c,{a,b})"), true, true, n));
 
 	}
 
 	@Test void Member1_generator() {
 		Assertions.assertEquals(
-			Set.of($$("member(a,{a,b})"), $$("member(b,{a,b})")),
-			Evaluation.eval($$("member(#x,{a,b})"), n));
+			Set.of(INSTANCE.$$("member(a,{a,b})"), INSTANCE.$$("member(b,{a,b})")),
+			Evaluation.eval(INSTANCE.$$("member(#x,{a,b})"), n));
 	}
 
 	@Test void member_unwrap1() {
 		Assertions.assertEquals(
-			Set.of($$("a"), $$("b")),
-			Evaluation.eval($$("(member(#x,{a,b}) && #x)"), n));
+			Set.of(INSTANCE.$$("a"), INSTANCE.$$("b")),
+			Evaluation.eval(INSTANCE.$$("(member(#x,{a,b}) && #x)"), n));
 	}
 	@Test void member_unwrap2() {
 		Assertions.assertEquals(
-			Set.of($$("(a)"),$$("(b)")),
-			Evaluation.eval($$("(member(#x,{a,b}) && (#x))"), n));
+			Set.of(INSTANCE.$$("(a)"), INSTANCE.$$("(b)")),
+			Evaluation.eval(INSTANCE.$$("(member(#x,{a,b}) && (#x))"), n));
 	}
 
 	@Test void member_can_not_unwrap_due_to_var() {
 		Assertions.assertEquals(
-			Set.of($$("(member(f(#x),{a,b}) && (#x))")),
-			Evaluation.eval($$("(member(f(#x),{a,b}) && (#x))"), n));
+			Set.of(INSTANCE.$$("(member(f(#x),{a,b}) && (#x))")),
+			Evaluation.eval(INSTANCE.$$("(member(f(#x),{a,b}) && (#x))"), n));
 	}
 
 	@Test void MultiTermute1() {
-		nars.term.Term s = $.$$("(((--,(tetris-->((--,#2)&&left))) &&+4710 (member(#1,{right,#2})&&(tetris-->#1))) &&+4000 member(#1,{2,3}))");
+		nars.term.Term s = $.INSTANCE.$$("(((--,(tetris-->((--,#2)&&left))) &&+4710 (member(#1,{right,#2})&&(tetris-->#1))) &&+4000 member(#1,{2,3}))");
 		Assertions.assertEquals(
 			Set.of(
-				$$("((--,(tetris-->((--,2)&&left))) &&+4710 (tetris-->2))"),
-				$$("((--,(tetris-->((--,3)&&left))) &&+4710 (tetris-->3))")
+				INSTANCE.$$("((--,(tetris-->((--,2)&&left))) &&+4710 (tetris-->2))"),
+				INSTANCE.$$("((--,(tetris-->((--,3)&&left))) &&+4710 (tetris-->3))")
 			),
 			Evaluation.eval((Compound)s, n));
 	}
@@ -132,7 +132,7 @@ public class MemberTest {
 	}
 	@Test void member_unwrap_2d() {
 		Assertions.assertEquals(
-			Set.of($$("(a,c)"),$$("(a,d)"),$$("(b,c)"),$$("(b,d)")),
-			Evaluation.eval($$("(&&, member(#x,{a,b}), member(#y,{c,d}), (#x,#y))"), n));
+			Set.of(INSTANCE.$$("(a,c)"), INSTANCE.$$("(a,d)"), INSTANCE.$$("(b,c)"), INSTANCE.$$("(b,d)")),
+			Evaluation.eval(INSTANCE.$$("(&&, member(#x,{a,b}), member(#y,{c,d}), (#x,#y))"), n));
 	}
 }

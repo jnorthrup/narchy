@@ -32,7 +32,7 @@ import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.function.*;
 
-import static nars.$.$$;
+import static nars.$.*;
 import static nars.experiment.mario.level.Level.*;
 import static nars.game.GameTime.fps;
 import static spacegraph.SpaceGraph.window;
@@ -50,7 +50,7 @@ public class NARio extends GameX {
 	private Mario theMario = null;
 
 	public NARio(NAR nar) {
-		super($$("nario"), fps(fps), nar);
+		super(INSTANCE.$$("nario"), fps(fps), nar);
 
 
 		game = new MarioComponent(
@@ -110,7 +110,7 @@ public class NARio extends GameX {
 
 
         int nx = 4;
-        AutoclassifiedBitmap camAE = new AutoclassifiedBitmap($.p(id,"cam"), cc, nx, nx, new AutoclassifiedBitmap.MetaBits() {
+        AutoclassifiedBitmap camAE = new AutoclassifiedBitmap($.INSTANCE.p(id,"cam"), cc, nx, nx, new AutoclassifiedBitmap.MetaBits() {
             @Override
             public float[] get(int subX, int subY) {
                 return new float[]{/*cc.X, cc.Y, */cc.Z};
@@ -183,14 +183,14 @@ public class NARio extends GameX {
 		//initBipolar();
 
 
-		DigitizedScalar vx = senseNumberDifferenceBi($.p(id, $.p("v", "x")), 8.0F, new FloatSupplier() {
+		DigitizedScalar vx = senseNumberDifferenceBi($.INSTANCE.p(id, $.INSTANCE.p("v", "x")), 8.0F, new FloatSupplier() {
             @Override
             public float asFloat() {
                 return theMario != null ? theMario.x : (float) 0;
             }
         })
 			.resolution(0.25f);
-		DigitizedScalar vy = senseNumberDifferenceBi($.p(id, $.p("v", "y")), 8.0F, new FloatSupplier() {
+		DigitizedScalar vy = senseNumberDifferenceBi($.INSTANCE.p(id, $.INSTANCE.p("v", "y")), 8.0F, new FloatSupplier() {
             @Override
             public float asFloat() {
                 return theMario != null ? theMario.y : (float) 0;
@@ -315,7 +315,7 @@ public class NARio extends GameX {
                 }, new IntFunction<Term>() {
                     @Override
                     public Term apply(int i) {
-                        return $.inh($.p(dx, dy), $.p($.the("tile"), $.the(i)));
+                        return $.INSTANCE.inh($.INSTANCE.p(dx, dy), $.INSTANCE.p($.INSTANCE.the("tile"), $.INSTANCE.the(i)));
                     }
                 }
 		);
@@ -350,8 +350,8 @@ public class NARio extends GameX {
 	private void initButton() {
 
 		actionPushButtonMutex(
-			$.inh(id, $$("L")),
-			$.inh(id, $$("R")),
+			$.INSTANCE.inh(id, INSTANCE.$$("L")),
+			$.INSTANCE.inh(id, INSTANCE.$$("R")),
                 new BooleanPredicate() {
                     @Override
                     public boolean accept(boolean n) {
@@ -369,7 +369,7 @@ public class NARio extends GameX {
                     }
                 });
 
-        GoalActionConcept j = actionPushButton($.inh(id, $$("jump")),
+        GoalActionConcept j = actionPushButton($.INSTANCE.inh(id, INSTANCE.$$("jump")),
                 new BooleanPredicate() {
                     @Override
                     public boolean accept(boolean n) {
@@ -412,7 +412,7 @@ public class NARio extends GameX {
 //        actionPushButton($$("down"),
 //                n -> { game.scene.key(Mario.KEY_DOWN, n); return n; } );
 
-		AbstractGoalActionConcept ss = actionPushButton($.inh(id, $$("speed")),
+		AbstractGoalActionConcept ss = actionPushButton($.INSTANCE.inh(id, INSTANCE.$$("speed")),
                 new BooleanPredicate() {
                     @Override
                     public boolean accept(boolean n) {
@@ -430,7 +430,7 @@ public class NARio extends GameX {
 	}
 
 	void initTriState() {
-		actionTriState($.inh($.the("x"), id), new IntPredicate() {
+		actionTriState($.INSTANCE.inh($.INSTANCE.the("x"), id), new IntPredicate() {
             @Override
             public boolean test(int i) {
                 boolean n, p;
@@ -455,7 +455,7 @@ public class NARio extends GameX {
                 return true;
             }
         });
-		actionTriState($.inh($.the("y"), id), new IntPredicate() {
+		actionTriState($.INSTANCE.inh($.INSTANCE.the("y"), id), new IntPredicate() {
             @Override
             public boolean test(int i) {
                 boolean n, p;
@@ -489,7 +489,7 @@ public class NARio extends GameX {
         float thresh = 0.25f;
 
 
-        BiPolarAction X = actionBipolarFrequencyDifferential($.p(id, $.the("x")), false, new FloatToFloatFunction() {
+        BiPolarAction X = actionBipolarFrequencyDifferential($.INSTANCE.p(id, $.INSTANCE.the("x")), false, new FloatToFloatFunction() {
             @Override
             public float valueOf(float x) {
                 if (game == null || game.scene == null) return Float.NaN; //HACK
@@ -518,7 +518,7 @@ public class NARio extends GameX {
                 }
             }
         });
-        BiPolarAction Y = actionBipolarFrequencyDifferential($.p(id, $.the("y")), false, new FloatToFloatFunction() {
+        BiPolarAction Y = actionBipolarFrequencyDifferential($.INSTANCE.p(id, $.INSTANCE.the("y")), false, new FloatToFloatFunction() {
             @Override
             public float valueOf(float y) {
                 if (game == null || game.scene == null) return Float.NaN; //HACK

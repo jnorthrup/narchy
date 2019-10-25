@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 import java.util.HashSet;
 import java.util.function.Supplier;
 
-import static nars.$.$;
+import static nars.$.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TermRadixTreeTest2 {
@@ -36,7 +36,7 @@ public class TermRadixTreeTest2 {
         };
         HashSet<Term> input = new HashSet();
         for (String s : terms) {
-            Term x = $(s).concept();
+            Term x = INSTANCE.$(s).concept();
             input.add(x);
 
             @Nullable Termed y = index.get(x, true);

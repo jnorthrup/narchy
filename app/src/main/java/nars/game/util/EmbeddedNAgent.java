@@ -51,7 +51,7 @@ public class EmbeddedNAgent extends Agent {
         final List<Signal> result = new ArrayList<>();
         for (int j = 0; j < inputs; j++) {
             final int i1 = j;
-            final Signal signal = env.sense($.inh($.the(i1), env.id), new FloatSupplier() {
+            final Signal signal = env.sense($.INSTANCE.inh($.INSTANCE.the(i1), env.id), new FloatSupplier() {
                 @Override
                 public float asFloat() {
                     return senseValue[i1];
@@ -63,7 +63,7 @@ public class EmbeddedNAgent extends Agent {
 
         final List<Object> list = new ArrayList<>();
         for (int i = 0; i < actions; i++) {
-            final Object inh = $.inh($.the(i), env.id);
+            final Object inh = $.INSTANCE.inh($.INSTANCE.the(i), env.id);
             list.add(inh);
         }
         final SwitchAction act;

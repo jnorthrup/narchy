@@ -24,7 +24,7 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import static nars.$.$;
+import static nars.$.*;
 import static nars.Op.BELIEF;
 import static nars.time.Tense.ETERNAL;
 import static nars.truth.func.TruthFunctions.c2w;
@@ -36,15 +36,15 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class RevisionTest {
 
-    public static final Term x = $.the("x");
+    public static final Term x = $.INSTANCE.the("x");
     private final NAR n = NARS.shell();
 
     private static TaskBuilder t(float freq, float conf, long occ) throws Narsese.NarseseException {
-        return new TaskBuilder($("a:b"), BELIEF, $.t(freq, conf)).time(0, occ, occ);
+        return new TaskBuilder(INSTANCE.$("a:b"), BELIEF, $.INSTANCE.t(freq, conf)).time(0, occ, occ);
     }
 
     static TaskBuilder t(float freq, float conf, long start, long end) throws Narsese.NarseseException {
-        return new TaskBuilder($("a:b"), BELIEF, $.t(freq, conf)).time(0, start, end);
+        return new TaskBuilder(INSTANCE.$("a:b"), BELIEF, $.INSTANCE.t(freq, conf)).time(0, start, end);
     }
 
     static NAR newNAR(int fixedNumBeliefs) {
@@ -398,8 +398,8 @@ public class RevisionTest {
     @Test
     void testSequenceIntermpolation1() throws Narsese.NarseseException {
 
-        Compound a = $.$("(((--,(dx-->noid)) &&+4 ((--,(by-->noid))&|(happy-->noid))) &&+11 (bx-->noid))");
-        Compound b = $.$("(((bx-->noid) &&+7 (--,(dx-->noid))) &&+4 ((--,(by-->noid))&|(happy-->noid)))");
+        Compound a = $.INSTANCE.$("(((--,(dx-->noid)) &&+4 ((--,(by-->noid))&|(happy-->noid))) &&+11 (bx-->noid))");
+        Compound b = $.INSTANCE.$("(((bx-->noid) &&+7 (--,(dx-->noid))) &&+4 ((--,(by-->noid))&|(happy-->noid)))");
         Term ar = a.root();
         Term br = b.root();
         assertEquals(ar, br);
@@ -426,8 +426,8 @@ public class RevisionTest {
     void testSequenceIntermpolationInBeliefTable() throws Narsese.NarseseException {
 
 
-        Term a = $.$("(((--,(dx-->noid)) &&+4 ((--,(by-->noid))&|(happy-->noid))) &&+11 (bx-->noid))");
-        Term b = $.$("(((bx-->noid) &&+7 (--,(dx-->noid))) &&+4 ((--,(by-->noid))&|(happy-->noid)))");
+        Term a = $.INSTANCE.$("(((--,(dx-->noid)) &&+4 ((--,(by-->noid))&|(happy-->noid))) &&+11 (bx-->noid))");
+        Term b = $.INSTANCE.$("(((bx-->noid) &&+7 (--,(dx-->noid))) &&+4 ((--,(by-->noid))&|(happy-->noid)))");
         assertEquals(a.root(), b.root());
         assertEquals(a.concept(), b.concept());
 
@@ -701,10 +701,10 @@ public class RevisionTest {
 
         n.run(1);
 
-        Concept c = n.concept($.$("(x ==> y)"));
+        Concept c = n.concept($.INSTANCE.$("(x ==> y)"));
         assertEquals(2, c.beliefs().taskCount());
 
-        Task tt = n.belief($.$("(x ==> y)"), 0);
+        Task tt = n.belief($.INSTANCE.$("(x ==> y)"), 0);
         assertNotNull(tt);
         Truth t = tt.truth();
         assertEquals(0.5f, t.freq(), 0.01f);

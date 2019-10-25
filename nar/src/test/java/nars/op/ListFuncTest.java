@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Set;
 
-import static nars.$.$$;
+import static nars.$.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 abstract class ListFuncTest {
@@ -23,11 +23,11 @@ abstract class ListFuncTest {
 
 
             assertEquals(
-                    Set.of($$("(x,y)")),
-                    Evaluation.eval($$("append((x),(y))"), n));
+                    Set.of(INSTANCE.$$("(x,y)")),
+                    Evaluation.eval(INSTANCE.$$("append((x),(y))"), n));
             assertEquals(
-                    Set.of($$("append(#x,(y))")),
-                    Evaluation.eval($$("append(#x,(y))"), n));
+                    Set.of(INSTANCE.$$("append(#x,(y))")),
+                    Evaluation.eval(INSTANCE.$$("append(#x,(y))"), n));
 
         }
 
@@ -36,13 +36,13 @@ abstract class ListFuncTest {
 
 
             assertEquals(
-                    Set.of($$("append((x),(y),(x,y))")),
-                    Evaluation.eval($$("append((x),(y),#what)"), n));
+                    Set.of(INSTANCE.$$("append((x),(y),(x,y))")),
+                    Evaluation.eval(INSTANCE.$$("append((x),(y),#what)"), n));
 
 
             assertEquals(
-                    Set.of($$("(append((x),(y),(x,y)) && ((x,y)<->solution))")),
-                    Evaluation.eval($$("(append((x),(y),#what) && (#what<->solution))"), n));
+                    Set.of(INSTANCE.$$("(append((x),(y),(x,y)) && ((x,y)<->solution))")),
+                    Evaluation.eval(INSTANCE.$$("(append((x),(y),#what) && (#what<->solution))"), n));
 
         }
 
@@ -52,16 +52,16 @@ abstract class ListFuncTest {
 
 
             assertEquals(
-                    Set.of($$("append((x),(y),(x,y))")),
-                    Evaluation.eval($$("append((x),(y),(x,y))"), n));
+                    Set.of(INSTANCE.$$("append((x),(y),(x,y))")),
+                    Evaluation.eval(INSTANCE.$$("append((x),(y),(x,y))"), n));
 
             assertEquals(
-                    Set.of($$("append(x,y,(x,y))")),
-                    Evaluation.eval($$("append(x,y,(x,y))"), n));
+                    Set.of(INSTANCE.$$("append(x,y,(x,y))")),
+                    Evaluation.eval(INSTANCE.$$("append(x,y,(x,y))"), n));
 
             assertEquals(
                     Set.of(),
-                    Evaluation.eval($$("append((x),(y),(x,y,z))"), n));
+                    Evaluation.eval(INSTANCE.$$("append((x),(y),(x,y,z))"), n));
 
         }
 
@@ -70,13 +70,13 @@ abstract class ListFuncTest {
 
 
             assertEquals(
-                    Set.of($$("append((x),(y),(x,y))")),
-                    Evaluation.eval($$("append((x),#what,(x,y))"), n));
+                    Set.of(INSTANCE.$$("append((x),(y),(x,y))")),
+                    Evaluation.eval(INSTANCE.$$("append((x),#what,(x,y))"), n));
 
 
             assertEquals(
-                    Set.of($$("append(x,(y),(x,y))")),
-                    Evaluation.eval($$("append(x,#what,(x,y))"), n));
+                    Set.of(INSTANCE.$$("append(x,(y),(x,y))")),
+                    Evaluation.eval(INSTANCE.$$("append(x,#what,(x,y))"), n));
 
         }
 
@@ -84,15 +84,15 @@ abstract class ListFuncTest {
         void appendNoSolution() {
             assertEquals(
                     Set.of(),
-                    Evaluation.eval($$("append((z),#what,(x,y))"), n));
+                    Evaluation.eval(INSTANCE.$$("append((z),#what,(x,y))"), n));
         }
 
         @Test
         void appendEmptyListIsOnlySolution() {
 
             assertEquals(
-                    Set.of($$("(append((x),(),(x)) && (()<->solution))")),
-                    Evaluation.eval($$("(append((x),#what,(x)) && (#what<->solution))"), n));
+                    Set.of(INSTANCE.$$("(append((x),(),(x)) && (()<->solution))")),
+                    Evaluation.eval(INSTANCE.$$("(append((x),#what,(x)) && (#what<->solution))"), n));
 
         }
 
@@ -100,12 +100,12 @@ abstract class ListFuncTest {
         void testAppendHeadAndTail() {
             assertEquals(
                     Set.of(
-                            $$("append((x,y,z),(),(x,y,z))"),
-                            $$("append((x,y),(z),(x,y,z))"),
-                            $$("append((x),(y,z),(x,y,z))"),
-                            $$("append((),(x,y,z),(x,y,z))")
+                            INSTANCE.$$("append((x,y,z),(),(x,y,z))"),
+                            INSTANCE.$$("append((x,y),(z),(x,y,z))"),
+                            INSTANCE.$$("append((x),(y,z),(x,y,z))"),
+                            INSTANCE.$$("append((),(x,y,z),(x,y,z))")
                     ),
-                    Evaluation.eval($$("append(#x,#y,(x,y,z))"), n));
+                    Evaluation.eval(INSTANCE.$$("append(#x,#y,(x,y,z))"), n));
         }
 
         @Test
@@ -114,17 +114,17 @@ abstract class ListFuncTest {
 
             assertEquals(
                     Set.of(
-                            $$("(append((),(x,y),(x,y)),append((a),(b),(a,b)))"),
-                            $$("(append((x),(y),(x,y)),append((),(a,b),(a,b)))"),
-                            $$("(append((),(x,y),(x,y)),append((a,b),(),(a,b)))"),
-                            $$("(append((x),(y),(x,y)),append((a,b),(),(a,b)))"),
-                            $$("(append((x,y),(),(x,y)),append((a,b),(),(a,b)))"),
-                            $$("(append((),(x,y),(x,y)),append((),(a,b),(a,b)))"),
-                            $$("(append((x),(y),(x,y)),append((a),(b),(a,b)))"),
-                            $$("(append((x,y),(),(x,y)),append((a),(b),(a,b)))"),
-                            $$("(append((x,y),(),(x,y)),append((),(a,b),(a,b)))")
+                            INSTANCE.$$("(append((),(x,y),(x,y)),append((a),(b),(a,b)))"),
+                            INSTANCE.$$("(append((x),(y),(x,y)),append((),(a,b),(a,b)))"),
+                            INSTANCE.$$("(append((),(x,y),(x,y)),append((a,b),(),(a,b)))"),
+                            INSTANCE.$$("(append((x),(y),(x,y)),append((a,b),(),(a,b)))"),
+                            INSTANCE.$$("(append((x,y),(),(x,y)),append((a,b),(),(a,b)))"),
+                            INSTANCE.$$("(append((),(x,y),(x,y)),append((),(a,b),(a,b)))"),
+                            INSTANCE.$$("(append((x),(y),(x,y)),append((a),(b),(a,b)))"),
+                            INSTANCE.$$("(append((x,y),(),(x,y)),append((a),(b),(a,b)))"),
+                            INSTANCE.$$("(append((x,y),(),(x,y)),append((),(a,b),(a,b)))")
                     ),
-                    Evaluation.eval($$("(append(#x,#y,(x,y)), append(#a,#b,(a,b)))"), n));
+                    Evaluation.eval(INSTANCE.$$("(append(#x,#y,(x,y)), append(#a,#b,(a,b)))"), n));
 
         }
 
@@ -132,20 +132,20 @@ abstract class ListFuncTest {
         void testAppendHeadAndTailMulti2() {
             assertEquals(
                     Set.of(
-                            $$("(append((),(x,y),(x,y)),append((),(x,b),(x,b)))"),
-                            $$("(append((x),(y),(x,y)),append((x),(b),(x,b)))")
+                            INSTANCE.$$("(append((),(x,y),(x,y)),append((),(x,b),(x,b)))"),
+                            INSTANCE.$$("(append((x),(y),(x,y)),append((x),(b),(x,b)))")
                     ),
-                    Evaluation.eval($$("(append(#x,#y,(x,y)), append(#x,#b,(x,b)))"), n));
+                    Evaluation.eval(INSTANCE.$$("(append(#x,#y,(x,y)), append(#x,#b,(x,b)))"), n));
         }
 
         @Test
         void testAppendHeadAndTailMulti3() {
             assertEquals(
                     Set.of(
-                            $$("(append((),(x,y),(x,y)) && append((),(x,b),(x,b)))"),
-                            $$("(append((x),(y),(x,y)) && append((x),(b),(x,b)))")
+                            INSTANCE.$$("(append((),(x,y),(x,y)) && append((),(x,b),(x,b)))"),
+                            INSTANCE.$$("(append((x),(y),(x,y)) && append((x),(b),(x,b)))")
                     ),
-                    Evaluation.eval($$("(&&,append(#x,#y,(x,y)),append(#a,#b,(x,b)),equal(#x,#a))"), n)
+                    Evaluation.eval(INSTANCE.$$("(&&,append(#x,#y,(x,y)),append(#a,#b,(x,b)),equal(#x,#a))"), n)
                             //.stream().filter(x->x.op()!=NEG).collect(toSet())
             );
 
@@ -156,12 +156,12 @@ abstract class ListFuncTest {
 
 
             assertEquals(
-                    Set.of($$("append((x),(y),(x,y))")),
-                    Evaluation.eval($$("append(#what,(y),(x,y))"), n));
+                    Set.of(INSTANCE.$$("append((x),(y),(x,y))")),
+                    Evaluation.eval(INSTANCE.$$("append(#what,(y),(x,y))"), n));
 
             assertEquals(
-                    Set.of($$("append((),(x,y),(x,y))")),
-                    Evaluation.eval($$("append(#what,(x,y),(x,y))"), n));
+                    Set.of(INSTANCE.$$("append((),(x,y),(x,y))")),
+                    Evaluation.eval(INSTANCE.$$("append(#what,(x,y),(x,y))"), n));
 
         }
 
@@ -233,56 +233,56 @@ abstract class ListFuncTest {
         @Test
         void testReverseForwards() {
             assertEquals(
-                    Set.of($$("reverse((x,y),(y,x))")),
-                    Evaluation.eval($$("reverse((x,y),#1)"), n));
+                    Set.of(INSTANCE.$$("reverse((x,y),(y,x))")),
+                    Evaluation.eval(INSTANCE.$$("reverse((x,y),#1)"), n));
         }
 
         @Test
         void testReverseInline() {
             assertEquals(
-                    Set.of($$("(y,x)")),
-                    Evaluation.eval($$("reverse((x,y))"), n));
+                    Set.of(INSTANCE.$$("(y,x)")),
+                    Evaluation.eval(INSTANCE.$$("reverse((x,y))"), n));
         }
 
         @Test
         void testReverseBackwards() {
             assertEquals(
-                    Set.of($$("reverse((y,x),(x,y))")),
-                    Evaluation.eval($$("reverse(#1,(x,y))"), n));
+                    Set.of(INSTANCE.$$("reverse((y,x),(x,y))")),
+                    Evaluation.eval(INSTANCE.$$("reverse(#1,(x,y))"), n));
         }
 
         @Test
         void testReverseTrue() {
 
             assertEquals(
-                    Set.of($$("reverse((y,x),(x,y))")),
-                    Evaluation.eval($$("reverse((y,x),(x,y))"), n));
+                    Set.of(INSTANCE.$$("reverse((y,x),(x,y))")),
+                    Evaluation.eval(INSTANCE.$$("reverse((y,x),(x,y))"), n));
         }
 
         @Test
         void testReverseFalse() {
 
             assertEquals(
-                    Set.of($$("(--,reverse((x,y),(x,y)))")),
-                    Evaluation.eval($$("reverse((x,y),(x,y))"), true, true, n));
+                    Set.of(INSTANCE.$$("(--,reverse((x,y),(x,y)))")),
+                    Evaluation.eval(INSTANCE.$$("reverse((x,y),(x,y))"), true, true, n));
 
         }
 
         @Test
         void testReverseReverse() {
             assertEquals(
-                    Set.of($$("(reverse((x,y),(y,x))&&reverse((y,x),(x,y)))")),
-                    Evaluation.eval($$("(reverse((x,y),#1) && reverse(#1,#2))"), n));
+                    Set.of(INSTANCE.$$("(reverse((x,y),(y,x))&&reverse((y,x),(x,y)))")),
+                    Evaluation.eval(INSTANCE.$$("(reverse((x,y),#1) && reverse(#1,#2))"), n));
         }
 
         @Test
         void testReverseStatement() {
             assertEquals(
-                    Set.of($$("(y-->x)")),
-                    Evaluation.eval($$("reverse((x-->y))"), n));
+                    Set.of(INSTANCE.$$("(y-->x)")),
+                    Evaluation.eval(INSTANCE.$$("reverse((x-->y))"), n));
             assertEquals(
-                    Set.of($$("(y==>x)")),
-                    Evaluation.eval($$("reverse((x==>y))"), n));
+                    Set.of(INSTANCE.$$("(y==>x)")),
+                    Evaluation.eval(INSTANCE.$$("reverse((x==>y))"), n));
         }
 
     }

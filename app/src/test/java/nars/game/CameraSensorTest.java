@@ -16,7 +16,7 @@ import org.junit.jupiter.api.Test;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import static nars.$.$$;
+import static nars.$.*;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -30,14 +30,14 @@ public class CameraSensorTest {
         NAR n = NARS.tmp();
         float[][] f = new float[w][h];
 
-        Bitmap2DSensor c = new Bitmap2DSensor($.the("x"),
+        Bitmap2DSensor c = new Bitmap2DSensor($.INSTANCE.the("x"),
                 new ArrayBitmap2D(f), n);
 
 
         n.log();
 
         //check for cause applied
-        Term aPixel = $$("x(0,0)");
+        Term aPixel = INSTANCE.$$("x(0,0)");
         //Term why = c.in.why.why;
 
         tmp = new MyGame();

@@ -8,7 +8,7 @@ import nars.truth.func.NALTruth;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
-import static nars.$.or;
+import static nars.$.*;
 import static nars.$.*;
 import static nars.Op.*;
 import static nars.term.atom.IdempotentBool.*;
@@ -20,13 +20,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 public class theBoolTest {
 
-    private static final Term x = $$("x");
-    private static final Term y = $$("y");
-    private static final Term z = $$("z");
+    private static final Term x = INSTANCE.$$("x");
+    private static final Term y = INSTANCE.$$("y");
+    private static final Term z = INSTANCE.$$("z");
 
     @Test
     void testBoolType() {
-        assertEquals("(true,false)", $.p(True, False).toString());
+        assertEquals("(true,false)", $.INSTANCE.p(True, False).toString());
     }
 
     @Test
@@ -42,12 +42,12 @@ public class theBoolTest {
 
     @Test
     void testBoolLabel() {
-        assertEquals(True, $$("true"));
-        assertEquals(False, $$("false"));
+        assertEquals(True, INSTANCE.$$("true"));
+        assertEquals(False, INSTANCE.$$("false"));
         //assertEquals(Null, $$("null"));
 
-        assertEq("plan(#1,true)", $$("plan(#1,true)"));
-        assertEq("plan(#1,true)", $$("plan(#1,true)").concept().term());
+        assertEq("plan(#1,true)", INSTANCE.$$("plan(#1,true)"));
+        assertEq("plan(#1,true)", INSTANCE.$$("plan(#1,true)").concept().term());
 
     }
 
@@ -112,14 +112,14 @@ public class theBoolTest {
     @Test
     void testDiffTautologies() {
 
-        @Nullable Truth selfDiff = NALTruth.Difference.apply($.t(1, 0.9f), $.t(1f, 0.9f), 0, null);
-        assertEquals($.t(0, 0.81f), selfDiff);
+        @Nullable Truth selfDiff = NALTruth.Difference.apply($.INSTANCE.t(1, 0.9f), $.INSTANCE.t(1f, 0.9f), 0, null);
+        assertEquals($.INSTANCE.t(0, 0.81f), selfDiff);
 
-        @Nullable Truth negDiff = NALTruth.Difference.apply($.t(0, 0.9f), $.t(1f, 0.9f), 0, null);
-        assertEquals($.t(0, 0.81f), negDiff);
+        @Nullable Truth negDiff = NALTruth.Difference.apply($.INSTANCE.t(0, 0.9f), $.INSTANCE.t(1f, 0.9f), 0, null);
+        assertEquals($.INSTANCE.t(0, 0.81f), negDiff);
 
-        @Nullable Truth posDiff = NALTruth.Difference.apply($.t(1, 0.9f), $.t(0f, 0.9f), 0, null);
-        assertEquals($.t(1, 0.81f), posDiff);
+        @Nullable Truth posDiff = NALTruth.Difference.apply($.INSTANCE.t(1, 0.9f), $.INSTANCE.t(0f, 0.9f), 0, null);
+        assertEquals($.INSTANCE.t(1, 0.81f), posDiff);
 
 
         for (String o : new String[]{Op.DIFFe, Op.DIFFi}) {
@@ -191,40 +191,40 @@ public class theBoolTest {
     @Test
     void testConjTautologies() {
         //a∧true == a		# neutral element (Huntington axiom)
-        assertEq(x, and(x, True));
+        assertEq(x, INSTANCE.and(x, True));
         //a∨false == a		# neutral element (Huntington axiom)
-        assertEq(x, or(x, False));
+        assertEq(x, INSTANCE.or(x, False));
         //a∧¬a == false		# complement (Huntington axiom) induces Principium contradictionis
-        assertEq(False, and(x, x.neg()));
+        assertEq(False, INSTANCE.and(x, x.neg()));
         //a∨¬a == true		# complement (Huntington axiom) induces Tertium non datur, law of excluded middle (Russel/Whitehead. Principia Mathematica. 1910, 101 *2.11)
-        assertEq(True, or(x, x.neg()));
+        assertEq(True, INSTANCE.or(x, x.neg()));
 
         //a∧a == a		# idempotent
-        assertEq(x, and(x, x));
+        assertEq(x, INSTANCE.and(x, x));
         //a∨a == a		# idempotent
-        assertEq(x, or(x, x));
+        assertEq(x, INSTANCE.or(x, x));
 
         //a∧false == false	# (dual to neutral element)
-        assertEq(False, and(False, x));
+        assertEq(False, INSTANCE.and(False, x));
         //a∨true == true		# (dual to neutral element)
-        assertEq(True, or(True, x));
+        assertEq(True, INSTANCE.or(True, x));
 
         //a∧(a∨b) == a		# absorbtion
-        assertEq(x, or(x, and(x, or(x, y))));
+        assertEq(x, INSTANCE.or(x, INSTANCE.and(x, INSTANCE.or(x, y))));
         //a∨(a∧b) == a		# absorbtion <=(a),(c),(idem)
-        assertEq(x, or(x, or(x, and(x, y))));
+        assertEq(x, INSTANCE.or(x, INSTANCE.or(x, INSTANCE.and(x, y))));
 
         //¬(a∧b) == ¬a∨¬b		# deMorgan
-        assertEq(or(x.neg(), y.neg()), and(x, y).neg());
+        assertEq(INSTANCE.or(x.neg(), y.neg()), INSTANCE.and(x, y).neg());
         //¬(a∨b) == ¬a∧¬b		# deMorgan
-        assertEq(and(x.neg(), y.neg()), or(x, y).neg());
+        assertEq(INSTANCE.and(x.neg(), y.neg()), INSTANCE.or(x, y).neg());
 
         //half deMorgan
-        assertEq(or(x, y.neg()), and(x.neg(), y).neg());
+        assertEq(INSTANCE.or(x, y.neg()), INSTANCE.and(x.neg(), y).neg());
 
-        assertEq(False, and(False, True));
-        assertEq(True, and(True, True));
-        assertEq(False, and(False, False));
+        assertEq(False, INSTANCE.and(False, True));
+        assertEq(True, INSTANCE.and(True, True));
+        assertEq(False, INSTANCE.and(False, False));
 //        assertEq(Null, and(Null, x));
 //        assertEq(Null, and(Null, Null));
 
@@ -233,82 +233,82 @@ public class theBoolTest {
 
     @Test
     void wtfAndAnotherOne() {
-        assertEq(and(y, x.neg()), and(y, and(x, y).neg()));
+        assertEq(INSTANCE.and(y, x.neg()), INSTANCE.and(y, INSTANCE.and(x, y).neg()));
     }
 
     @Test
     void testConjFactor2() {
-        assertEq(False, and(and(x, y), and(x, y.neg())));
+        assertEq(False, INSTANCE.and(INSTANCE.and(x, y), INSTANCE.and(x, y.neg())));
     }
 
     @Test
     void testConjFactor3() {
-        assertEq("(&&,x,y,z)", and(and(x, y), and(x, z)));
+        assertEq("(&&,x,y,z)", INSTANCE.and(INSTANCE.and(x, y), INSTANCE.and(x, z)));
     }
 
     @Test
     void testDisjFactor2() {
-        assertEq(x, or(and(x, y), and(x, y.neg())));
+        assertEq(x, INSTANCE.or(INSTANCE.and(x, y), INSTANCE.and(x, y.neg())));
     }
 
     @Test
     void testDisjFactor2_0() {
-        assertEq(x, or(x, and(x, y), and(x, y.neg())));
+        assertEq(x, INSTANCE.or(x, INSTANCE.and(x, y), INSTANCE.and(x, y.neg())));
     }
 
     @Test
     void testDisjFactor2Neg() {
-        assertEq(x.neg(), or(and(x.neg(), y), and(x.neg(), y.neg())));
+        assertEq(x.neg(), INSTANCE.or(INSTANCE.and(x.neg(), y), INSTANCE.and(x.neg(), y.neg())));
     }
 
 
     @Test
     void testDisjFactor1PosPos() {
         assertEq(x,
-                or(x, and(x, y)));
+                INSTANCE.or(x, INSTANCE.and(x, y)));
     }
 
     @Test
     void testDisjFactor1PosNeg() {
-        assertEq(or(x, y),
-                or(x, and(x.neg(), y)));
+        assertEq(INSTANCE.or(x, y),
+                INSTANCE.or(x, INSTANCE.and(x.neg(), y)));
     }
 
     @Test
     void testDisjFactor1NegPos() {
-        assertEq(or(x.neg(), y),
-                or(x.neg(), and(x, y)));
+        assertEq(INSTANCE.or(x.neg(), y),
+                INSTANCE.or(x.neg(), INSTANCE.and(x, y)));
     }
 
     @Test
     void testDisjFactor1NegNeg() {
         assertEq(x.neg(),
-                or(x.neg(), and(x.neg(), y)));
+                INSTANCE.or(x.neg(), INSTANCE.and(x.neg(), y)));
     }
 
 
     @Test
     void testDisjFactor3() {
-        assertEq(x, or(and(x, y), and(x, y.neg()), and(x, z)));
+        assertEq(x, INSTANCE.or(INSTANCE.and(x, y), INSTANCE.and(x, y.neg()), INSTANCE.and(x, z)));
     }
 
 
     @Test
     void testHuntington3() {
         //¬(¬a∨b) ∨ ¬(¬a∨¬b) == a	# Hungtington3
-        assertEq(x, or(or(x.neg(), y).neg(), or(x.neg(), y.neg()).neg()));
+        assertEq(x, INSTANCE.or(INSTANCE.or(x.neg(), y).neg(), INSTANCE.or(x.neg(), y.neg()).neg()));
     }
 
     @Test
     void testRobbinsAxiom3a() {
         //¬(a∨b) ∨ ¬(a∨¬b) == ¬a	# Robbins Algebra axiom3
-        assertEq(x.neg(), or(or(x, y).neg(), or(x, y.neg()).neg()));
+        assertEq(x.neg(), INSTANCE.or(INSTANCE.or(x, y).neg(), INSTANCE.or(x, y.neg()).neg()));
     }
 
     @Test
     void testRobbinsAxiom3() {
         //¬(¬(a∨b) ∨ ¬(a∨¬b)) == a	# Robbins Algebra axiom3
-        assertEq(x, or(or(x, y).neg(), or(x, y.neg()).neg()).neg());
+        assertEq(x, INSTANCE.or(INSTANCE.or(x, y).neg(), INSTANCE.or(x, y.neg()).neg()).neg());
     }
 
 

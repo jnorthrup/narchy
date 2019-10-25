@@ -57,7 +57,7 @@ class OperatorTest {
         NAR n = NARS.tmp();
 
 
-        @Nullable Concept statusFunctor = n.concept($.the("the"));
+        @Nullable Concept statusFunctor = n.concept($.INSTANCE.the("the"));
         statusFunctor.print();
 
         StringBuilder b = new StringBuilder();
@@ -107,16 +107,16 @@ class OperatorTest {
                 Subterms args = Functor.args(x);
                 if (args.subs() > 0) {
                     Term r;
-                    if ($.the(1).equals(args.sub(0))) {
+                    if ($.INSTANCE.the(1).equals(args.sub(0))) {
                         System.err.println("YES");
-                        r = $.the("good");
-                    } else if ($.the(0).equals(args.sub(0))) {
-                        r = $.the("good").neg();
+                        r = $.INSTANCE.the("good");
+                    } else if ($.INSTANCE.the(0).equals(args.sub(0))) {
+                        r = $.INSTANCE.the("good").neg();
                     } else {
                         return;
                     }
 
-                    n.believe($.impl(x.term(), r), Tense.Present);
+                    n.believe($.INSTANCE.impl(x.term(), r), Tense.Present);
                 }
             }
         }, 0.51f));
@@ -137,8 +137,8 @@ class OperatorTest {
             public void accept(Term t, Timed nar) {
                 Term x = t.term();
                 Subterms args = Functor.args(t);
-                Term y = $.func("args", args);
-                Term xy = $.impl(x, y);
+                Term y = $.INSTANCE.func("args", args);
+                Term xy = $.INSTANCE.impl(x, y);
                 n.believe(xy, Tense.Present);
             }
         }, 1));
@@ -181,7 +181,7 @@ class OperatorTest {
         Task a = t.input("(a, b, c);").get(0);
         assertNotNull(a);
         assertTrue(a.isCommand());
-        assertEquals($.$("(a, b, c)"), a.term());
+        assertEquals($.INSTANCE.$("(a, b, c)"), a.term());
     }
 
 

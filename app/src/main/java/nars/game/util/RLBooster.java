@@ -244,7 +244,7 @@ public class RLBooster  {
 //                System.out.println(actions[o].term() + " " + freq);
 
                 if (freq==freq) {
-                    PreciseTruth tt = $.t(freq, conf);
+                    PreciseTruth tt = $.INSTANCE.t(freq, conf);
 
                     in.accept(
                         NALTask.the(

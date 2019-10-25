@@ -7,7 +7,7 @@ import nars.task.util.Revision;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
-import static nars.$.t;
+import static nars.$.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TruthTest2 {
@@ -40,7 +40,7 @@ public class TruthTest2 {
 		for (int i = 1; i < steps; i++) {
 			for (int j = 1; j < subSteps; j++) {
 				float c = step * i + (subStep) * j;
-				@Nullable PreciseTruth p = t(1f, c).dither(n);
+				@Nullable PreciseTruth p = INSTANCE.t(1f, c).dither(n);
 				if (p!=null)
 					System.out.println(p + "\t" + Texts.INSTANCE.n2(c) + '\t' + Texts.INSTANCE.n4(c)+ '\t' + c );
 			}

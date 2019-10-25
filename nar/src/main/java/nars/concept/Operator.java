@@ -47,9 +47,9 @@ public final class Operator extends AbstractAtomic implements Idempotent {
     public static Task error(Task x, Throwable error, long when) {
         
         
-        return Operator.command("error", when, $.quote(x.toString()),
+        return Operator.command("error", when, $.INSTANCE.quote(x.toString()),
                 
-                error!=null ? $.quote(error.getMessage()!=null ? error.getMessage() : error.toString()) : $.the("?") 
+                error!=null ? $.INSTANCE.quote(error.getMessage()!=null ? error.getMessage() : error.toString()) : $.INSTANCE.the("?")
         );
     }
 
@@ -59,11 +59,11 @@ public final class Operator extends AbstractAtomic implements Idempotent {
     }
 
     public static Task log(long when, Object content) {
-        return Operator.command(LOG_FUNCTOR, when, $.the(content));
+        return Operator.command(LOG_FUNCTOR, when, $.INSTANCE.the(content));
     }
 
     private static Task command(String func, long now,  Term... args) {
-        return Operator.command($.func(func, args), now);
+        return Operator.command($.INSTANCE.func(func, args), now);
     }
 
     public static Term arg(Term operation, int sub) {

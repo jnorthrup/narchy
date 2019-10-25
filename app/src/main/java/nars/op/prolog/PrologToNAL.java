@@ -25,7 +25,7 @@ import static nars.Op.CONJ;
 
 public class PrologToNAL {
 
-    public static final Term QUESTION_GOAL = $.the("?-");
+    public static final Term QUESTION_GOAL = $.INSTANCE.the("?-");
 
     public static Iterable<Term> N(Theory t) {
         return N((Iterable)t);
@@ -61,7 +61,7 @@ public class PrologToNAL {
                     Term post = N(s.sub(0));
 
 
-                    Term impl = $.impl(pre, post);
+                    Term impl = $.INSTANCE.impl(pre, post);
                     pre = impl.sub(0);
                     post = impl.sub(1);
 
@@ -90,7 +90,7 @@ public class PrologToNAL {
                         if (cs > 0) {
                             Map<Term, Term> x = new UnifiedMap(cs);
                             for (Variable c : common) {
-                                x.put(c, $.varIndep(c.toString().substring(1)));
+                                x.put(c, $.INSTANCE.varIndep(c.toString().substring(1)));
                             }
                             impl = impl.replace(x);
                         }
@@ -100,13 +100,13 @@ public class PrologToNAL {
                 case ",":
                     return CONJ.the(N(s.sub(0)), N(s.sub(1)));
                 default:
-                    Term atom = $.the(name);
+                    Term atom = $.INSTANCE.the(name);
                     int arity = s.subs();
                     if (arity == 0) {
                         return atom;
                     } else {
-                        return $.inh(
-                                $.p((Term[])Util.map(0, arity, Term[]::new, new IntFunction<Term>() {
+                        return $.INSTANCE.inh(
+                                $.INSTANCE.p((Term[])Util.map(0, arity, Term[]::new, new IntFunction<Term>() {
                                     @Override
                                     public Term apply(int i) {
                                         return N(s.sub(i));
@@ -116,10 +116,10 @@ public class PrologToNAL {
                     }
             }
         } else if (t instanceof Var) {
-            return $.varQuery(((Var) t).name());
+            return $.INSTANCE.varQuery(((Var) t).name());
             
         } else if (t instanceof NumberTerm.Int) {
-            return $.the(((NumberTerm.Int)t).intValue());
+            return $.INSTANCE.the(((NumberTerm.Int)t).intValue());
         } else {
             throw new TODO(t + " (" + t.getClass() + ") untranslatable");
         }

@@ -15,7 +15,7 @@ public class QuantityTerm extends ProxyTerm {
     public final Quantity<?> quant;
 
     public QuantityTerm(Quantity<?> q) {
-        super( $.p( $.the(q.getUnit().toString()), $.the( q.getValue() ) ) );
+        super( $.INSTANCE.p( $.INSTANCE.the(q.getUnit().toString()), $.INSTANCE.the( q.getValue() ) ) );
         this.quant = q;
     }
 
@@ -30,7 +30,7 @@ public class QuantityTerm extends ProxyTerm {
     public static @Nullable QuantityTerm the(Term qTerm) throws IllegalArgumentException {
         if (qTerm.op()==PROD && qTerm.subs()==2) {
             Term unit = qTerm.sub(0);
-            double value = $.doubleValue(qTerm.sub(1));
+            double value = $.INSTANCE.doubleValue(qTerm.sub(1));
             return QuantityTerm.the(value + " " + unit);
         }
         return null;

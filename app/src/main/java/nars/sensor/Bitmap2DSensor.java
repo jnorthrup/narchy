@@ -39,7 +39,7 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
                         /* 1D default */ new IntIntToObjectFunction<Term>() {
                     @Override
                     public Term apply(int x, int y) {
-                        return root != null ? $.inh(root, $.the(x)) : $.p(x);
+                        return root != null ? $.INSTANCE.inh(root, $.INSTANCE.the(x)) : $.INSTANCE.p(x);
                     }
                 } //y==1
         );
@@ -52,8 +52,8 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
     public Bitmap2DSensor(NAR n, float defaultFreq, P src, @Nullable IntIntToObjectFunction<Term> pixelTerm) {
         super(pixelTerm.apply(0,1)
                     .replace(Map.of(
-                        IdempotInt.the(0), $.func("range", IdempotInt.the(0), IdempotInt.the(src.width()-1)),
-                        IdempotInt.the(1), $.func("range", IdempotInt.the(0), IdempotInt.the(src.height()-1)))
+                        IdempotInt.the(0), $.INSTANCE.func("range", IdempotInt.the(0), IdempotInt.the(src.width()-1)),
+                        IdempotInt.the(1), $.INSTANCE.func("range", IdempotInt.the(0), IdempotInt.the(src.height()-1)))
         ), n);
         this.width = src.width();
         this.height = src.height();
@@ -115,7 +115,7 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
         return new IntIntToObjectFunction<Term>() {
             @Override
             public Term apply(int x, int y) {
-                return $.inh($.p(x, y), root);
+                return $.INSTANCE.inh($.INSTANCE.p(x, y), root);
             }
         };
     }
@@ -124,7 +124,7 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
         return new IntIntToObjectFunction<Term>() {
             @Override
             public Term apply(int x, int y) {
-                return $.p(root, $.pRadix(x, radix, width), $.pRadix(y, radix, height));
+                return $.INSTANCE.p(root, $.INSTANCE.pRadix(x, radix, width), $.INSTANCE.pRadix(y, radix, height));
             }
         };
     }
@@ -134,11 +134,11 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
             @Override
             public Term apply(int x, int y) {
                 Term coords = radix > 1 ?
-                        $.p(zipCoords(coord(x, width, radix), coord(y, height, radix))) :
-                        $.p(x, y);
+                        $.INSTANCE.p(zipCoords(coord(x, width, radix), coord(y, height, radix))) :
+                        $.INSTANCE.p(x, y);
                 return root == null ? coords :
                         //$.p(root, coords);
-                        $.inh(coords, root);
+                        $.INSTANCE.inh(coords, root);
             }
         };
     }
@@ -148,9 +148,9 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
             @Override
             public Term apply(int x, int y) {
                 Term coords = radix > 1 ?
-                        $.pRecurse(true, zipCoords(coord(x, width, radix), coord(y, height, radix))) :
-                        $.p(x, y);
-                return root == null ? coords : $.p(root, coords);
+                        $.INSTANCE.pRecurse(true, zipCoords(coord(x, width, radix), coord(y, height, radix))) :
+                        $.INSTANCE.p(x, y);
+                return root == null ? coords : $.INSTANCE.p(root, coords);
             }
         };
     }
@@ -160,9 +160,9 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
             @Override
             public Term apply(int x, int y) {
                 Term coords = radix > 1 ?
-                        $.inhRecurse(zipCoords(coord(x, width, radix), coord(y, height, radix))) :
-                        $.p(x, y);
-                return root == null ? coords : $.p(root, coords);
+                        $.INSTANCE.inhRecurse(zipCoords(coord(x, width, radix), coord(y, height, radix))) :
+                        $.INSTANCE.p(x, y);
+                return root == null ? coords : $.INSTANCE.p(root, coords);
             }
         };
     }
@@ -181,13 +181,13 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
 
             if (i >= sx && i >= sy) {
 
-                xy = $.p($.the(x[ix++]), $.the(levelPrefix), $.the(y[iy++]));
+                xy = $.INSTANCE.p($.INSTANCE.the(x[ix++]), $.INSTANCE.the(levelPrefix), $.INSTANCE.the(y[iy++]));
             } else if (i >= sx) {
 
-                xy = $.p($.the(levelPrefix), $.the(x[ix++]));
+                xy = $.INSTANCE.p($.INSTANCE.the(levelPrefix), $.INSTANCE.the(x[ix++]));
             } else {
 
-                xy = $.p($.the(y[iy++]), $.the(levelPrefix));
+                xy = $.INSTANCE.p($.INSTANCE.the(y[iy++]), $.INSTANCE.the(levelPrefix));
             }
             r[i] = xy;
         }
@@ -196,11 +196,11 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
 
 
     public static Term coord(char prefix, int n, int max) {
-        return $.p($.the(prefix), $.p($.radixArray(n, 2, max)));
+        return $.INSTANCE.p($.INSTANCE.the(prefix), $.INSTANCE.p($.INSTANCE.radixArray(n, 2, max)));
     }
 
     public static Term[] coord(int n, int max, int radix) {
-        return $.radixArray(n, radix, max);
+        return $.INSTANCE.radixArray(n, radix, max);
     }
 
     public Bitmap2DSensor<P> diff() {

@@ -6,14 +6,14 @@ import nars.table.BeliefTables;
 import nars.table.dynamic.DynamicTruthTable;
 import nars.term.Term;
 
-import static nars.$.$$;
+import static nars.$.*;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class AbstractDynamicTaskTest {
     protected final NAR n = NARS.shell();
 
     public final boolean isDynamicTable(String t) {
-        return isDynamicTable($$(t));
+        return isDynamicTable(INSTANCE.$$(t));
     }
 
     protected final boolean isDynamicTable(Term $$) {

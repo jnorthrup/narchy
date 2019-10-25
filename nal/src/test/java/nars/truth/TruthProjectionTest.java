@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static nars.$.$$;
+import static nars.$.*;
 import static nars.Op.BELIEF;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class TruthProjectionTest {
 
     static final AtomicInteger serial = new AtomicInteger();
-    static final Term x = $$("x");
+    static final Term x = INSTANCE.$$("x");
 
     @Test
     public void testEqualEvidenceInSubInterval_of_Task() {
@@ -83,7 +83,7 @@ class TruthProjectionTest {
 
     private static Task t(float freq, float conf, long start, long end) {
         long[] stamp = { serial.getAndIncrement() };
-        return NALTask.the(x, BELIEF, $.t(freq, conf), (long) 0, start, end, stamp);
+        return NALTask.the(x, BELIEF, $.INSTANCE.t(freq, conf), (long) 0, start, end, stamp);
     }
 
 }

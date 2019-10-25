@@ -22,7 +22,7 @@ class WhenPeriodic extends WhenInternal {
 
         var y = x instanceof ConsumerAdapter ? ((ConsumerAdapter) x).r : x;
 
-        id = $.identity(y);
+        id = $.INSTANCE.identity(y);
     }
 
     @Override

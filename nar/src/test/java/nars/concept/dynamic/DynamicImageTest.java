@@ -9,8 +9,8 @@ import nars.term.Term;
 import nars.term.util.Image;
 import org.junit.jupiter.api.Test;
 
-import static nars.$.$;
-import static nars.$.$$;
+import static nars.$.*;
+import static nars.$.*;
 import static nars.Op.BELIEF;
 import static nars.time.Tense.ETERNAL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -36,14 +36,14 @@ class DynamicImageTest extends AbstractDynamicTaskTest {
     }
 
     private void assertImageIdentity(long when, String x, String x1, String x2) throws Narsese.NarseseException {
-        Term t = $$(x);
+        Term t = INSTANCE.$$(x);
 
-        Term i1 = $(x1);
+        Term i1 = INSTANCE.$(x1);
         assertEquals(t, Image.imageNormalize(i1));
-        Term i2 = $(x2);
+        Term i2 = INSTANCE.$(x2);
         assertEquals(t, Image.imageNormalize(i2));
 
-        n.believe($$(x), when,0.75f, 0.50f);
+        n.believe(INSTANCE.$$(x), when,0.75f, 0.50f);
 
 
         assertEquals(
@@ -60,7 +60,7 @@ class DynamicImageTest extends AbstractDynamicTaskTest {
 
     @Test void InternalImageTaskTermRepresentation() {
         NAR n = NARS.tmp(4);
-        Term it = $$("(x --> (y,/))");
+        Term it = INSTANCE.$$("(x --> (y,/))");
         n.believe(it);
         Concept i = n.conceptualize(it);
         Term pt = Image.imageNormalize(it);

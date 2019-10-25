@@ -24,7 +24,7 @@ public class Cmp extends SimpleBinaryFunctor {
     }
 
     private static Term swap(Term x, Term y, int c) {
-        return $.func(cmp, y, x, IdempotInt.the(-c));
+        return $.INSTANCE.func(cmp, y, x, IdempotInt.the(-c));
     }
 
     @Override

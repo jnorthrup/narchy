@@ -24,19 +24,19 @@ public class DeductiveChainTest  {
     public static final @Nullable IndexedStatementBuilder inh = new IndexedStatementBuilder() {
         @Override
         public @NotNull Term apply(int x, int y) {
-            return $.inh(a(x), a(y));
+            return $.INSTANCE.inh(a(x), a(y));
         }
     };
     public static final @Nullable IndexedStatementBuilder sim = new IndexedStatementBuilder() {
         @Override
         public @NotNull Term apply(int x, int y) {
-            return $.sim(a(x), a(y));
+            return $.INSTANCE.sim(a(x), a(y));
         }
     };
     public static final @Nullable IndexedStatementBuilder impl = new IndexedStatementBuilder() {
         @Override
         public @NotNull Term apply(int x, int y) {
-            return $.impl(a(x), a(y));
+            return $.INSTANCE.impl(a(x), a(y));
         }
     };
 
@@ -66,7 +66,7 @@ public class DeductiveChainTest  {
 
 
     static @NotNull Atomic a(int i) {
-        return $.the((byte)((int) 'a' + i));
+        return $.INSTANCE.the((byte)((int) 'a' + i));
     }
 
 

@@ -25,7 +25,7 @@ import org.jetbrains.annotations.Nullable;
      * <(*,subject,object) --> predicate>
      */
     public static @Nullable Term sop(Term subject, Term object, Term predicate) {
-        return $.inh($.p(reflect(subject), reflect(object)), predicate);
+        return $.INSTANCE.inh($.INSTANCE.p(reflect(subject), reflect(object)), predicate);
     }
 
     public static @Nullable Term sopNamed(String operatorName, @NotNull Compound s) {
@@ -48,11 +48,11 @@ import org.jetbrains.annotations.Nullable;
 
 
         
-        return $.inh($.p(reflect(s.sub(0)), reflect(s.sub(1))), $.quote(operatorName));
+        return $.INSTANCE.inh($.INSTANCE.p(reflect(s.sub(0)), reflect(s.sub(1))), $.INSTANCE.quote(operatorName));
     }
 
     public static @Nullable Term sop(@NotNull Subterms s, Term predicate) {
-        return $.inh($.p(reflect(s.sub(0)), reflect(s.sub(1))), predicate);
+        return $.INSTANCE.inh($.INSTANCE.p(reflect(s.sub(0)), reflect(s.sub(1))), predicate);
     }
 
     public static @Nullable Term sop(String operatorName, @NotNull Subterms c) {
@@ -81,7 +81,7 @@ import org.jetbrains.annotations.Nullable;
 
 
         
-        return $.inh($.p(m), $.quote(operatorName));
+        return $.INSTANCE.inh($.INSTANCE.p(m), $.INSTANCE.quote(operatorName));
     }
 
     public static @Nullable Term reflect(Term t) {

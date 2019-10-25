@@ -32,7 +32,7 @@ public class FORK<X> extends AbstractPred<X> {
 
     private FORK(PREDICATE<X>[] actions) {
         super(
-                $.sFast(actions)
+                $.INSTANCE.sFast(actions)
         );
         assert (actions.length > 0);
         this.branch = actions;

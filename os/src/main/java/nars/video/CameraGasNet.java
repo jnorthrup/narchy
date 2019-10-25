@@ -53,7 +53,7 @@ public class CameraGasNet<P extends Bitmap2D> implements Consumer<NAR> {
 
         for (int j = 0; j < blobs; j++) {
             int i = j;
-            Term base = $.func("blob", $.the(i), root);
+            Term base = $.INSTANCE.func("blob", $.INSTANCE.the(i), root);
 
             FloatSupplier v2 = new FloatSupplier() {
                 @Override
@@ -65,7 +65,7 @@ public class CameraGasNet<P extends Bitmap2D> implements Consumer<NAR> {
                         return Float.NaN;
                 }
             };
-            agent.sense($.inh(base, Atomic.the("x")), new FloatNormalized(v2, 0f, 1f));
+            agent.sense($.INSTANCE.inh(base, Atomic.the("x")), new FloatNormalized(v2, 0f, 1f));
             FloatSupplier v1 = new FloatSupplier() {
                 @Override
                 public float asFloat() {
@@ -76,7 +76,7 @@ public class CameraGasNet<P extends Bitmap2D> implements Consumer<NAR> {
                         return Float.NaN;
                 }
             };
-            agent.sense($.inh(base, Atomic.the("y")), new FloatNormalized(v1, 0f, 1f));
+            agent.sense($.INSTANCE.inh(base, Atomic.the("y")), new FloatNormalized(v1, 0f, 1f));
             FloatSupplier v = new FloatSupplier() {
                 @Override
                 public float asFloat() {
@@ -87,7 +87,7 @@ public class CameraGasNet<P extends Bitmap2D> implements Consumer<NAR> {
                         return Float.NaN;
                 }
             };
-            agent.sense($.inh(base, Atomic.the("c")), new FloatNormalized(v, 0f, 1f));
+            agent.sense($.INSTANCE.inh(base, Atomic.the("c")), new FloatNormalized(v, 0f, 1f));
 
 
         }

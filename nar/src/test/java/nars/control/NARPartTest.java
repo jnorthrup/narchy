@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Set;
 
 import static java.util.stream.Collectors.toSet;
-import static nars.$.$$;
+import static nars.$.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -54,7 +54,7 @@ class NARPartTest {
         NAR n = NARS.shell();
         n.add(new NARPart(){
             {
-                add(new NARPart((Term)$$("dependent")) {
+                add(new NARPart((Term) INSTANCE.$$("dependent")) {
                     @Override
                     protected void starting(NAR nar) {
                         super.starting(nar);

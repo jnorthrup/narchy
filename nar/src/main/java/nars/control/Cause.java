@@ -65,7 +65,7 @@ public class Cause extends WhenInternal implements Comparable<Cause>, Caused, Pr
     public Cause(short id, @Nullable Object name) {
         this.id = id;
         this.why = IdempotInt.the((int) id);
-        this.name = $.identity(name != null ? name : this);
+        this.name = $.INSTANCE.identity(name != null ? name : this);
         credit = new AtomicFloatVector(MetaGoal.values().length);
         //credit = new Credit[MetaGoal.values().length];
         //for (int i = 0; i < credit.length; i++) {

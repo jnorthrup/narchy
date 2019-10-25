@@ -48,13 +48,13 @@ public class Line1DContinuous extends Game {
 
         for (int i = 0; i < size; i++) {
             int ii = i;
-            sense($.func("h", atom("x"), $.the(i)), new FloatSupplier() {
+            sense($.INSTANCE.func("h", atom("x"), $.INSTANCE.the(i)), new FloatSupplier() {
                 @Override
                 public float asFloat() {
                     return ins[ii];
                 }
             });
-            sense($.func("e", atom("x"), $.the(i)), new FloatSupplier() {
+            sense($.INSTANCE.func("e", atom("x"), $.INSTANCE.the(i)), new FloatSupplier() {
                 @Override
                 public float asFloat() {
                     return ins[size + ii];
@@ -64,7 +64,7 @@ public class Line1DContinuous extends Game {
 
         ActionSignal a;
 
-        actionBipolar($.inh(Atomic.the("move"), Atomic.the("x")), new FloatToFloatFunction() {
+        actionBipolar($.INSTANCE.inh(Atomic.the("move"), Atomic.the("x")), new FloatToFloatFunction() {
             @Override
             public float valueOf(float v) {
 

@@ -27,7 +27,7 @@ import org.jetbrains.annotations.Nullable;
 
 import static jcog.Util.and;
 import static jcog.Util.or;
-import static nars.$.tt;
+import static nars.$.*;
 import static nars.NAL.HORIZON;
 import static nars.truth.func.TruthFunctions2.weak;
 
@@ -46,7 +46,7 @@ public final class TruthFunctions{
      */
     public static Truth conversion(Truth t, float minConf) {
         float c = (float) w2cSafe((double) t.freq() * t.confDouble());
-        return c >= minConf ? tt(1.0F, c) : null;
+        return c >= minConf ? INSTANCE.tt(1.0F, c) : null;
     }
 
     /* ----- Single argument functions, called in StructuralRules ----- */
@@ -74,7 +74,7 @@ public final class TruthFunctions{
     private static @Nullable Truth deductionR(Truth a, double reliance, float minConf) {
         float f = a.freq();
         float c = and(f, confCompose(a, reliance));
-        return (c >= minConf) ? tt(f, c) : null;
+        return (c >= minConf) ? INSTANCE.tt(f, c) : null;
     }
 
 
@@ -94,7 +94,7 @@ public final class TruthFunctions{
         if (!strong)
             c = weak(c);
 
-        return (c < minConf) ? null : tt(fxy, c);
+        return (c < minConf) ? null : INSTANCE.tt(fxy, c);
     }
 
     /**
@@ -104,7 +104,7 @@ public final class TruthFunctions{
      */
     public static @Nullable Truth analogy(Truth a, float bf, double bc, float minConf) {
         float c = and(confCompose(a, bc), bf);
-        return c >= minConf ? tt(and(a.freq(), bf), c) : null;
+        return c >= minConf ? INSTANCE.tt(and(a.freq(), bf), c) : null;
     }
 
 
@@ -120,7 +120,7 @@ public final class TruthFunctions{
         float f1 = v1.freq();
         float f2 = v2.freq();
         float c = and(confCompose(v1, v2), or(f1, f2));
-        return c >= minConf ? tt(and(f1, f2), c) : null;
+        return c >= minConf ? INSTANCE.tt(and(f1, f2), c) : null;
     }
 
     /**
@@ -134,7 +134,7 @@ public final class TruthFunctions{
         float ab = confCompose(a, b);
         if (ab < minConf) return null;
         float c = w2cSafe(ab * b.freq());
-        return c >= minConf ? $.tt(a.freq(), c) : null;
+        return c >= minConf ? $.INSTANCE.tt(a.freq(), c) : null;
     }
 
 
@@ -144,7 +144,7 @@ public final class TruthFunctions{
      */
     static Truth exemplification(Truth a, Truth b, float minConf) {
         float c = w2cSafe(a.freq() * b.freq() * confCompose(a, b));
-        return c >= minConf ? tt(1.0F, c) : null;
+        return c >= minConf ? INSTANCE.tt(1.0F, c) : null;
     }
 
 
@@ -164,7 +164,7 @@ public final class TruthFunctions{
             return null;
 
         float f = (f0 < NAL.truth.TRUTH_EPSILON) ? (float) 0 : (and(f1, f2) / f0);
-        return $.tt(f,(float)c);
+        return $.INSTANCE.tt(f,(float)c);
     }
 
 //    /**
@@ -253,7 +253,7 @@ public final class TruthFunctions{
     }
     public static @Nullable Truth intersection(Truth x, boolean negX, Truth y, boolean negY, float minConf) {
         float c = confCompose(x, y);
-        return (c < minConf) ? null : $.tt(and(negIf(x.freq(),negX), negIf(y.freq(),negY)), c);
+        return (c < minConf) ? null : $.INSTANCE.tt(and(negIf(x.freq(),negX), negIf(y.freq(),negY)), c);
     }
 
     private static float negIf(float f, boolean neg) {
@@ -319,7 +319,7 @@ public final class TruthFunctions{
         float f = and(f1, f2);
         float c12 = confCompose(a, b);
         float c = and(c12, f2) * (strong ? 1.0F : w2cSafe(1.0F));
-        return c > minConf ? tt(f, c) : null;
+        return c > minConf ? INSTANCE.tt(f, c) : null;
     }
 
     public static float c2w(float c) {

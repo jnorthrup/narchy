@@ -58,19 +58,19 @@ public class TopCraft extends GameX {
         onFrame(p::updateBitmap);
 
 
-        senseSwitch($.func("dir", id), new IntSupplier() {
+        senseSwitch($.INSTANCE.func("dir", id), new IntSupplier() {
             @Override
             public int getAsInt() {
                 return craft.player.dir;
             }
         }, 0, 4);
-        sense($.func("stamina", id), new FloatSupplier() {
+        sense($.INSTANCE.func("stamina", id), new FloatSupplier() {
             @Override
             public float asFloat() {
                 return (float) (craft.player.stamina) / ((float) craft.player.maxStamina);
             }
         });
-        sense($.func("health", id), new FloatSupplier() {
+        sense($.INSTANCE.func("health", id), new FloatSupplier() {
             @Override
             public float asFloat() {
                 return (float) (craft.player.health) / ((float) craft.player.maxHealth);
@@ -85,12 +85,12 @@ public class TopCraft extends GameX {
         senseSwitch("tile:left", () -> craft.player.tile(-1, 0).id, 0, tileMax);
 
         InputHandler input = craft.input;
-        actionPushButton($.func("fire", id), input.attack::pressed/*, 16*/);
-        actionPushButtonMutex($.func("l", id), $.func("r", id),
+        actionPushButton($.INSTANCE.func("fire", id), input.attack::pressed/*, 16*/);
+        actionPushButtonMutex($.INSTANCE.func("l", id), $.INSTANCE.func("r", id),
                 input.left::pressed, input.right::pressed);
-        actionPushButtonMutex($.func("u", id), $.func("d", id),
+        actionPushButtonMutex($.INSTANCE.func("u", id), $.INSTANCE.func("d", id),
                 input.up::pressed, input.down::pressed);
-        actionPushButton($.func("next", id), new BooleanProcedure() {
+        actionPushButton($.INSTANCE.func("next", id), new BooleanProcedure() {
             @Override
             public void value(boolean i) {
                 if (craft.menu != null) {
@@ -99,7 +99,7 @@ public class TopCraft extends GameX {
                 }
             }
         });
-        actionPushButton($.func("menu", id), new FloatSupplier() {
+        actionPushButton($.INSTANCE.func("menu", id), new FloatSupplier() {
             @Override
             public float asFloat() {
                 return 0.9f;

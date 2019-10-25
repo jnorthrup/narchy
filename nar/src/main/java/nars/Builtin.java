@@ -127,7 +127,7 @@ public final class Builtin{
 
 
             /** applies the changes in structurally similar terms "from" and "to" to the target target */
-            Functor.f3((Atom) $.the("substDiff"), new TriFunction<Term, Term, Term, Term>() {
+            Functor.f3((Atom) $.INSTANCE.the("substDiff"), new TriFunction<Term, Term, Term, Term>() {
                 @Override
                 public Term apply(Term target, Term from, Term to) {
                     if (from.equals(to))
@@ -189,7 +189,7 @@ public final class Builtin{
                         for (int i = 0; i < s; i++) {
                             if (x.sub(i).equals(y)) {
                                 if (indices == null) indices = new TreeSet();
-                                indices.add($.p(y, IdempotInt.the(i)));
+                                indices.add($.INSTANCE.p(y, IdempotInt.the(i)));
                             }
                         }
                         if (indices == null)
@@ -217,11 +217,11 @@ public final class Builtin{
                     if (s > 0) {
                         List<Term> list = new ArrayList<>();
                         for (int i = 0; i < s; i++) {
-                            Term term = x.sub(i).equals(y) ? y : $.varDep("z" + i);
+                            Term term = x.sub(i).equals(y) ? y : $.INSTANCE.varDep("z" + i);
                             list.add(term);
                         }
                         Term[] t = list.toArray(new Term[0]);
-                        return $.p(t);
+                        return $.INSTANCE.p(t);
                     }
                     return Null;
                 }
@@ -234,19 +234,19 @@ public final class Builtin{
             Functor.f1Const("toString", new Function<Term, Term>() {
                 @Override
                 public Term apply(Term x) {
-                    return $.quote(x.toString());
+                    return $.INSTANCE.quote(x.toString());
                 }
             }),
             Functor.f1Const("toChars", new Function<Term, Term>() {
                 @Override
                 public Term apply(Term x) {
-                    return $.p(x.toString().toCharArray(), $::the);
+                    return $.INSTANCE.p(x.toString().toCharArray(), $.INSTANCE::the);
                 }
             }),
             Functor.f1Const("complexity", new Function<Term, Term>() {
                 @Override
                 public Term apply(Term x) {
-                    return $.the(x.complexity());
+                    return $.INSTANCE.the(x.complexity());
                 }
             }),
 
@@ -256,7 +256,7 @@ public final class Builtin{
                         @Override
                         public Term apply(Term a, Term b) {
                             return ((a instanceof Variable) || (b instanceof Variable)) ? null :
-                                    $.the(Texts.INSTANCE.levenshteinDistance(a.toString(), b.toString()));
+                                    $.INSTANCE.the(Texts.INSTANCE.levenshteinDistance(a.toString(), b.toString()));
                         }
                     }
             ),
@@ -326,7 +326,7 @@ public final class Builtin{
                 public Term apply(Term x, Term index) {
                     try {
                         if (index instanceof IdempotInt && index.op() == INT) {
-                            return x.sub($.intValue(index));
+                            return x.sub($.INSTANCE.intValue(index));
                         }
                     } catch (NumberFormatException ignored) {
                     }
@@ -366,7 +366,7 @@ public final class Builtin{
         nar.add(Functor.f(termDynamic, new Function<Subterms, Term>() {
             @Override
             public Term apply(Subterms s) {
-                Op o = Op.stringToOperator.get($.unquote(s.sub(0)));
+                Op o = Op.stringToOperator.get($.INSTANCE.unquote(s.sub(0)));
                 Term[] args = s.sub(1).subterms().arrayShared();
                 if (args.length == 2) {
                     if (o.temporal) {
@@ -416,7 +416,7 @@ public final class Builtin{
                     if (index instanceof Variable)
                         return Null;
 
-                    which = $.intValue(index, -1);
+                    which = $.INSTANCE.intValue(index, -1);
                     if (which < 0)
                         return Null;
 
@@ -571,7 +571,7 @@ public final class Builtin{
         nar.add(Functor.f1Concept("beliefTruth", nar, new BiFunction<Concept, NAR, Term>() {
             @Override
             public Term apply(Concept c, NAR n) {
-                return $.quote(n.belief(c, n.time()));
+                return $.INSTANCE.quote(n.belief(c, n.time()));
             }
         }));
 //        nar.on(Functor.f1Concept("goalTruth", nar, (c, n) -> $.quote(n.goal(c, n.time()))));
@@ -586,11 +586,11 @@ public final class Builtin{
                 if (what instanceof Atom) {
                     switch (what.toString()) {
                         case "sys":
-                            return $.p(
-                                    $.quote(nar.emotion.summary()),
-                                    $.quote(nar.memory.summary()),
-                                    $.quote(nar.emotion.summary()),
-                                    $.quote(nar.exe.toString())
+                            return $.INSTANCE.p(
+                                    $.INSTANCE.quote(nar.emotion.summary()),
+                                    $.INSTANCE.quote(nar.memory.summary()),
+                                    $.INSTANCE.quote(nar.emotion.summary()),
+                                    $.INSTANCE.quote(nar.exe.toString())
                             );
                     }
                 }
@@ -599,7 +599,7 @@ public final class Builtin{
                 if (x == null)
                     x = what;
 
-                return $.quote($.p($.quote(x.getClass().toString()), $.quote(x.toString())));
+                return $.INSTANCE.quote($.INSTANCE.p($.INSTANCE.quote(x.getClass().toString()), $.INSTANCE.quote(x.toString())));
             }
         }));
 
@@ -631,7 +631,7 @@ public final class Builtin{
                                             if (si == ei)
                                                 return Op.EmptyProduct;
                                             if (si < ei) {
-                                                return $.p(Arrays.copyOfRange(x.subterms().arrayClone(), si, ei));
+                                                return $.INSTANCE.p(Arrays.copyOfRange(x.subterms().arrayClone(), si, ei));
                                             }
                                         }
                                     }
@@ -654,7 +654,7 @@ public final class Builtin{
         nar.setOp(Task.BeliefAtom, new BiFunction<Task, NAR, Task>() {
                     @Override
                     public Task apply(Task x, NAR nn) {
-                        return Task.tryTask(x.term().sub(0).sub(0), BELIEF, $.t(1f, nn.confDefault(BELIEF)), new BiFunction<Term, Truth, Task>() {
+                        return Task.tryTask(x.term().sub(0).sub(0), BELIEF, $.INSTANCE.t(1f, nn.confDefault(BELIEF)), new BiFunction<Term, Truth, Task>() {
                             @Override
                             public Task apply(Term term, Truth truth) {
                                 return ((Task) NALTask.the(term, BELIEF, truth, nn.time(), ETERNAL, ETERNAL, nn.evidence())).pri(nn.priDefault(BELIEF));

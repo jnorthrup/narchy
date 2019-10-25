@@ -226,7 +226,7 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
                                 MultiArgTerm(FRAG, FRAG.ch, false, false)
                         ),
 
-                        seq(NEG.str, Term(), push(($.the(pop())).neg())),
+                        seq(NEG.str, Term(), push(($.INSTANCE.the(pop())).neg())),
 
                         seq(oper, Function()),
 
@@ -286,7 +286,7 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
         return seq(
                 //https://stackoverflow.com/questions/163360/regular-expression-to-match-urls-in-java#163398
                 regex("^[a-z]+://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]"),
-                push($.quote(match()))
+                push($.INSTANCE.quote(match()))
         );
     }
 
@@ -303,7 +303,7 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
                         MultiArgTerm(PROD, COMPOUND_TERM_CLOSER, false, false)
                 ),
 
-                push(INH.the((Term) pop(), $.the(pop())))
+                push(INH.the((Term) pop(), $.INSTANCE.the(pop())))
 
         );
     }
@@ -347,7 +347,7 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
             } else {
 
                 QuantityTerm q = (QuantityTerm) timeDelta;
-                return $.func(termDynamic, o.strAtom, $.p(subj, pred), q);
+                return $.INSTANCE.func(termDynamic, o.strAtom, $.INSTANCE.p(subj, pred), q);
             }
         }
     }
@@ -456,7 +456,7 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
                         optional('.', oneOrMore(digit()))
                 ),
 
-                push($.the(Float.parseFloat(matchOrDefault("NaN"))))
+                push($.INSTANCE.the(Float.parseFloat(matchOrDefault("NaN"))))
         );
     }
 
@@ -540,7 +540,7 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
     }
 
     Rule Variable(Op varType) {
-        return seq(AtomStr(), push($.v(varType, (String) pop())));
+        return seq(AtomStr(), push($.INSTANCE.v(varType, (String) pop())));
     }
 
     Rule Op() {
@@ -672,7 +672,7 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
                 break;
 
             case "||+-":
-                result = CONJ.the(XTERNAL, $.neg(subs.toArray(EmptyTermArray))).neg();
+                result = CONJ.the(XTERNAL, $.INSTANCE.neg(subs.toArray(EmptyTermArray))).neg();
                 break;
 
             case "=|>":
@@ -680,13 +680,13 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
                 break;
 
             case "-{-":
-                result = subs.size() != 2 ? IdempotentBool.Null : $.inst(subs.get(0), subs.get(1));
+                result = subs.size() != 2 ? IdempotentBool.Null : $.INSTANCE.inst(subs.get(0), subs.get(1));
                 break;
             case "-]-":
-                result = subs.size() != 2 ? IdempotentBool.Null : $.prop(subs.get(0), subs.get(1));
+                result = subs.size() != 2 ? IdempotentBool.Null : $.INSTANCE.prop(subs.get(0), subs.get(1));
                 break;
             case "{-]":
-                result = subs.size() != 2 ? IdempotentBool.Null : $.instprop(subs.get(0), subs.get(1));
+                result = subs.size() != 2 ? IdempotentBool.Null : $.INSTANCE.instprop(subs.get(0), subs.get(1));
                 break;
 
 

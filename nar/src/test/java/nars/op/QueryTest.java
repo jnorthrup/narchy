@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Set;
 
-import static nars.$.$$;
+import static nars.$.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class QueryTest {
@@ -18,7 +18,7 @@ public class QueryTest {
         NAR n = NARS.shell();
         n.believe("f(x)");
 
-        Set<Term> e = FactualEvaluator.queryAll($$("f(?what)"), n);
+        Set<Term> e = FactualEvaluator.queryAll(INSTANCE.$$("f(?what)"), n);
         assertEquals("[f(x)]", e.toString());
     }
 
@@ -27,15 +27,15 @@ public class QueryTest {
         n.believe("f(x)");
         n.believe("f(y)");
 
-        Set<Term> e = FactualEvaluator.queryAll($$("f(?what)"), n);
-        assertEquals(Set.of($$("f(x)"), $$("f(y)")), e);
+        Set<Term> e = FactualEvaluator.queryAll(INSTANCE.$$("f(?what)"), n);
+        assertEquals(Set.of(INSTANCE.$$("f(x)"), INSTANCE.$$("f(y)")), e);
     }
 
     @Test void FactNeg() throws Narsese.NarseseException {
         NAR n = NARS.shell();
         n.believe("--f(x)");
 
-        Set<Term> e = FactualEvaluator.queryAll($$("f(?what)"), n);
+        Set<Term> e = FactualEvaluator.queryAll(INSTANCE.$$("f(?what)"), n);
         assertEquals("[(--,f(x))]", e.toString());
     }
 
@@ -44,7 +44,7 @@ public class QueryTest {
         n.believe("(f(x) ==> g(x))");
         n.believe("f(x)");
 
-        Set<Term> e = FactualEvaluator.queryAll($$("g(?what)"), n);
+        Set<Term> e = FactualEvaluator.queryAll(INSTANCE.$$("g(?what)"), n);
         assertEquals("[f(x)]", e.toString());
     }
 
@@ -54,7 +54,7 @@ public class QueryTest {
         n.believe("f(x)");
         n.believe("f(y)");
 
-        Set<Term> e = FactualEvaluator.queryAll($$("g(?1,?2)"), n);
+        Set<Term> e = FactualEvaluator.queryAll(INSTANCE.$$("g(?1,?2)"), n);
         assertEquals("[g(x,x),g(x,y),g(y,y),g(y,x)]", e.toString());
     }
 
@@ -127,7 +127,7 @@ public class QueryTest {
 
         @Test
         public void test4() {
-            Set<Term> x = FactualEvaluator.queryAll($$("sibling(tom,erica)"), n);
+            Set<Term> x = FactualEvaluator.queryAll(INSTANCE.$$("sibling(tom,erica)"), n);
             System.out.println(x);
 
 

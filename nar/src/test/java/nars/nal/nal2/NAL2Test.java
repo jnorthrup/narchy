@@ -285,7 +285,7 @@ public class NAL2Test extends NALTest {
 
     @Test
     void set_operations2_difference() throws Narsese.NarseseException {
-        assertEquals("{Mars,Venus}", $.diff($.$("{Mars,Pluto,Venus}"), $.$("{Pluto,Saturn}")).toString());
+        assertEquals("{Mars,Venus}", $.INSTANCE.diff($.INSTANCE.$("{Mars,Pluto,Venus}"), $.INSTANCE.$("{Pluto,Saturn}")).toString());
 
         TestNAR tester = test;
         tester.nar.confMin.set(0.8);

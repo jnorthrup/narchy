@@ -29,12 +29,12 @@ public final class Forkable extends AbstractPred<PreDerivation> {
 //    }
 
     public Forkable(short id) {
-        super($.func(F, SETe.the(IdempotInt.the((int) id))));
+        super($.INSTANCE.func(F, SETe.the(IdempotInt.the((int) id))));
         this.can = new short[] { id };
     }
 
     public Forkable(RoaringBitmap can) {
-        super($.func(F, $.sete(can)));
+        super($.INSTANCE.func(F, $.INSTANCE.sete(can)));
         this.can = ArrayUtil.toShort(can.toArray());
     }
 

@@ -17,14 +17,14 @@ public final class CommutivePermutations extends Termutator.AbstractTermutator {
     private final Subterms x;
     private final Subterms y;
 
-    static final Atom COMMUTIVE_PERMUTATIONS = $.the(CommutivePermutations.class);
+    static final Atom COMMUTIVE_PERMUTATIONS = $.INSTANCE.the(CommutivePermutations.class);
 
     /**
      * NOTE X and Y should be pre-sorted using Terms.sort otherwise diferent permutations of the same
      * values could result in duplicate termutes HACK
      */
     public CommutivePermutations(Subterms X, Subterms Y) {
-        super(COMMUTIVE_PERMUTATIONS, $.sFast(X), $.sFast(Y));
+        super(COMMUTIVE_PERMUTATIONS, $.INSTANCE.sFast(X), $.INSTANCE.sFast(Y));
 
         this.x = X;
         this.y = Y;

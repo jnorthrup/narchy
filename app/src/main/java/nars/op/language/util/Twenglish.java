@@ -207,10 +207,10 @@ public class Twenglish {
         if (inputProduct) {
 
             Term tokens =
-                    $.p(t.toArray(new Term[t.size()]));
+                    $.INSTANCE.p(t.toArray(new Term[t.size()]));
 
 
-            Term q = $.func("hear", Atomic.the(source), tokens);
+            Term q = $.INSTANCE.func("hear", Atomic.the(source), tokens);
 
             TaskBuilder newtask = new TaskBuilder(q, BELIEF, 1f, n).present(n);
             tt.add(newtask); 
@@ -244,10 +244,10 @@ public class Twenglish {
     }
 
     
-    public static final Atomic EXCLAMATION = $.quote("!");
-    public static final Atomic PERIOD = $.quote(".");
-    public static final Atomic QUESTION_MARK = $.quote("?");
-    public static final Atomic COMMA = $.quote(",");
+    public static final Atomic EXCLAMATION = $.INSTANCE.quote("!");
+    public static final Atomic PERIOD = $.INSTANCE.quote(".");
+    public static final Atomic QUESTION_MARK = $.INSTANCE.quote("?");
+    public static final Atomic COMMA = $.INSTANCE.quote(",");
 
     public static @Nullable Term spanToTerm(@NotNull Span c, boolean includeWordPOS) {
         switch (c.pattern) {
@@ -258,7 +258,7 @@ public class Twenglish {
                 } else {
                     String pos = POS.get(c.content.toLowerCase());
                     if (pos != null) {
-                        return $.prop(lexToTerm(c.content), tagToTerm(pos));
+                        return $.INSTANCE.prop(lexToTerm(c.content), tagToTerm(pos));
                     }
                 }
                 break;
@@ -276,12 +276,12 @@ public class Twenglish {
                 break;
         }
 
-        return $.prop(lexToTerm(c.content), tagToTerm(c.pattern));
+        return $.INSTANCE.prop(lexToTerm(c.content), tagToTerm(c.pattern));
     }
 
     public static Term lexToTerm(String c) {
         
-        return $.quote(c);
+        return $.INSTANCE.quote(c);
         
 
         
@@ -305,7 +305,7 @@ public class Twenglish {
 
     public static @NotNull Term tagToTerm(String c) {
         c = c.toLowerCase();
-        if ("word".equals(c)) return $.quote(" ");
+        if ("word".equals(c)) return $.INSTANCE.quote(" ");
         return Atomic.the(c);
     }
 
@@ -316,13 +316,13 @@ public class Twenglish {
     public @NotNull List<TaskBuilder> parse(String source, @NotNull NAR n, String s) {
 
 
-        List<TaskBuilder> results = $.newArrayList();
+        List<TaskBuilder> results = $.INSTANCE.newArrayList();
 
         List<Span> tokens = Twokenize.twokenize(s);
 
-        List<List<Span>> sentences = $.newArrayList();
+        List<List<Span>> sentences = $.INSTANCE.newArrayList();
 
-        List<Span> currentSentence = $.newArrayList(tokens.size());
+        List<Span> currentSentence = $.INSTANCE.newArrayList(tokens.size());
         for (Span p : tokens) {
 
             currentSentence.add(p);
@@ -334,7 +334,7 @@ public class Twenglish {
                     case "!":
                         if (!currentSentence.isEmpty()) {
                             sentences.add(currentSentence);
-                            currentSentence = $.newArrayList();
+                            currentSentence = $.INSTANCE.newArrayList();
                             break;
                         }
                 }

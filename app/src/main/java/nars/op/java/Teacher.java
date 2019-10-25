@@ -28,7 +28,7 @@ public class Teacher<X> {
 
     public Teacher(Opjects objs, Class<? extends X> clazz) {
         this.n = objs.nar;
-        this.x = objs.a($.the("a_" + clazz.getSimpleName()), clazz);
+        this.x = objs.a($.INSTANCE.the("a_" + clazz.getSimpleName()), clazz);
     }
 
     public Trick<X> teach(String taskName,

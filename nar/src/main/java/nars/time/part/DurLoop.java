@@ -128,7 +128,7 @@ public abstract class DurLoop extends NARPart {
         private final Runnable r;
 
         public DurRunnable(Runnable r) {
-            super($.identity(r));
+            super($.INSTANCE.identity(r));
             this.r = r;
         }
 
@@ -228,7 +228,7 @@ public abstract class DurLoop extends NARPart {
 
         @Override
         public final Term term() {
-            return $.identity(this); //globally unique
+            return $.INSTANCE.identity(this); //globally unique
         }
     }
 

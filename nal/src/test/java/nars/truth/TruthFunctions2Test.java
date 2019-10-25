@@ -12,9 +12,9 @@ class TruthFunctions2Test {
 
 	@Test
 	void testUnion() {
-		assertEquals($.t(1f, 0.81f), TruthFunctions2.union($.t(1,0.9f), $.t(1, 0.9f), Float.MIN_NORMAL));
-		assertEquals($.t(0.88f, 0.58f), TruthFunctions2.union($.t(0.75f,0.9f), $.t(0.5f, 0.9f), Float.MIN_NORMAL));
-		assertNull(TruthFunctions2.union($.t(1f,0.9f), $.t(0f, 0.9f), Float.MIN_NORMAL)); //full frequency distortion
+		assertEquals($.INSTANCE.t(1f, 0.81f), TruthFunctions2.union($.INSTANCE.t(1,0.9f), $.INSTANCE.t(1, 0.9f), Float.MIN_NORMAL));
+		assertEquals($.INSTANCE.t(0.88f, 0.58f), TruthFunctions2.union($.INSTANCE.t(0.75f,0.9f), $.INSTANCE.t(0.5f, 0.9f), Float.MIN_NORMAL));
+		assertNull(TruthFunctions2.union($.INSTANCE.t(1f,0.9f), $.INSTANCE.t(0f, 0.9f), Float.MIN_NORMAL)); //full frequency distortion
 	}
 
 //    @Test

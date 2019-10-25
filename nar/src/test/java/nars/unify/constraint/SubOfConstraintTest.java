@@ -3,7 +3,7 @@ package nars.unify.constraint;
 import nars.$;
 import org.junit.jupiter.api.Test;
 
-import static nars.$.$$;
+import static nars.$.*;
 import static nars.subterm.util.SubtermCondition.Event;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -12,13 +12,13 @@ class SubOfConstraintTest {
     @Test
     void testEventOf_Commutive() {
 
-        SubOfConstraint c = new SubOfConstraint($.varPattern(1), $.varPattern(2), Event, +1);
-		assertTrue(c.valid($$("(x&&y)"), $$("x"), null));
-		assertTrue(!c.valid($$("(x&&y)"), $$("z"), null));
+        SubOfConstraint c = new SubOfConstraint($.INSTANCE.varPattern(1), $.INSTANCE.varPattern(2), Event, +1);
+		assertTrue(c.valid(INSTANCE.$$("(x&&y)"), INSTANCE.$$("x"), null));
+		assertTrue(!c.valid(INSTANCE.$$("(x&&y)"), INSTANCE.$$("z"), null));
 
-		assertTrue(c.valid($$("(x &&+1 (y&|z))"), $$("(y&|z)"), null));
-		assertTrue(c.valid($$("(x &&+1 (y&|z))"), $$("x"), null));
-		assertTrue(c.valid($$("(x &&+1 (y&|z))"), $$("y"), null));
+		assertTrue(c.valid(INSTANCE.$$("(x &&+1 (y&|z))"), INSTANCE.$$("(y&|z)"), null));
+		assertTrue(c.valid(INSTANCE.$$("(x &&+1 (y&|z))"), INSTANCE.$$("x"), null));
+		assertTrue(c.valid(INSTANCE.$$("(x &&+1 (y&|z))"), INSTANCE.$$("y"), null));
 
     }
 

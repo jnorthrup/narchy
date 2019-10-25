@@ -70,9 +70,9 @@ public class Termducer {
 
 
         Termducer t = new Termducer();
-        t.put($.$$("(a-->b)"), $.$$("(1-->2)"));
-        t.put($.$$("(a-->(b,c))"), $.$$("(1-->(2,3))"));
-        t.put($.$$("add(1,1))"), IdempotInt.the(2));
+        t.put($.INSTANCE.$$("(a-->b)"), $.INSTANCE.$$("(1-->2)"));
+        t.put($.INSTANCE.$$("(a-->(b,c))"), $.INSTANCE.$$("(1-->(2,3))"));
+        t.put($.INSTANCE.$$("add(1,1))"), IdempotInt.the(2));
 
         FST f = t.build();
         System.out.println("RAM bytes used: " + f.ramBytesUsed());

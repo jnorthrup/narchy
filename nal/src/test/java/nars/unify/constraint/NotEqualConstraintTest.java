@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.function.Supplier;
 
-import static nars.$.$$;
+import static nars.$.*;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class NotEqualConstraintTest {
@@ -36,8 +36,8 @@ class NotEqualConstraintTest {
         assertEqRCom(a, b, true);
     }
     static void assertEqRCom(String a, String b, boolean isTrue) {
-        Term A = $$(a);
-        Term B = $$(b);
+        Term A = INSTANCE.$$(a);
+        Term B = INSTANCE.$$(b);
         Supplier<String> msg = new Supplier<String>() {
             @Override
             public String get() {

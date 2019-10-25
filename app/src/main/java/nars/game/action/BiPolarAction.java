@@ -170,8 +170,8 @@ public class BiPolarAction extends AbstractSensor {
 
             float feedbackConf = nar.confDefault(BELIEF);
 
-            Pb = yp == yp ? $.t(yp, feedbackConf).dither(nar) : null;
-            Nb = yn == yn ? $.t(yn, feedbackConf).dither(nar) : null;
+            Pb = yp == yp ? $.INSTANCE.t(yp, feedbackConf).dither(nar) : null;
+            Nb = yn == yn ? $.INSTANCE.t(yn, feedbackConf).dither(nar) : null;
 
         } else {
             Pb = Nb = null;

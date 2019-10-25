@@ -144,7 +144,7 @@ public abstract class Functor extends AbstractAtomic implements BiFunction<Evalu
         return f0(fName, new Supplier<Term>() {
             @Override
             public Term get() {
-                return new AbstractPred<>($.inst($.quote(Util.uuid64()), fName)) {
+                return new AbstractPred<>($.INSTANCE.inst($.INSTANCE.quote(Util.uuid64()), fName)) {
 
                     @Override
                     public boolean test(Object o) {

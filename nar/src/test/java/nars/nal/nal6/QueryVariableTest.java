@@ -69,7 +69,7 @@ class QueryVariableTest {
 
         NAR nar = NARS.shell();
 
-        Term beliefTerm = $.$(belief);
+        Term beliefTerm = $.INSTANCE.$(belief);
         assertNotNull(beliefTerm);
 
 

@@ -11,7 +11,7 @@ import nars.term.util.TermTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import static nars.$.$$;
+import static nars.$.*;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -22,8 +22,8 @@ public class SubtermsTest {
 
     @Test
     void testUnionReusesInstance() throws Narsese.NarseseException {
-        Compound container = $.$("{a,b}");
-        Compound contained = $.$("{a}");
+        Compound container = $.INSTANCE.$("{a,b}");
+        Compound contained = $.INSTANCE.$("{a}");
         assertSame(Terms.union(container.op(), container, contained), container);
         assertSame(Terms.union(contained.op(), contained, container), container);
         assertSame(Terms.union(container.op(), container, container), container);
@@ -31,21 +31,21 @@ public class SubtermsTest {
 
     @Test
     void testDifferReusesInstance() throws Narsese.NarseseException {
-        Compound x = $.$("{x}");
-        Compound y = $.$("{y}");
+        Compound x = $.INSTANCE.$("{x}");
+        Compound y = $.INSTANCE.$("{y}");
         assertSame(SetSectDiff.differenceSet(x.op(), x, y), x);
     }
     @Test
     void testIntersectReusesInstance() throws Narsese.NarseseException {
-        Compound x = $.$("{x,y}");
-        Compound y = $.$("{x,y}");
+        Compound x = $.INSTANCE.$("{x,y}");
+        Compound y = $.INSTANCE.$("{x,y}");
         assertSame(Terms.intersect(x.op(), x, y), x);
     }
 
     @Test
     void testSomething() throws Narsese.NarseseException {
-        Compound x = $.$("{e,f}");
-        Compound y = $.$("{e,d}");
+        Compound x = $.INSTANCE.$("{e,f}");
+        Compound y = $.INSTANCE.$("{e,d}");
 
         System.out.println(Terms.intersect(x.op(), x, y));
         System.out.println(SetSectDiff.differenceSet(x.op(), x, y));
@@ -104,10 +104,10 @@ public class SubtermsTest {
     }
 
     @Test void BiSubtermsContainsNeg() {
-        assertTrue( ((Compound)$$("(--x &&+1 x)")).containsNeg($$("x")) );
-        assertTrue( ((Compound)$$("(--x &&+1 x)")).containsNeg($$("--x")) );
-        assertTrue( $$("(--x &&+1 x)").contains($$("x")) );
-        assertTrue( $$("(--x &&+1 x)").contains($$("--x")) );
+        assertTrue( ((Compound) INSTANCE.$$("(--x &&+1 x)")).containsNeg(INSTANCE.$$("x")) );
+        assertTrue( ((Compound) INSTANCE.$$("(--x &&+1 x)")).containsNeg(INSTANCE.$$("--x")) );
+        assertTrue( INSTANCE.$$("(--x &&+1 x)").contains(INSTANCE.$$("x")) );
+        assertTrue( INSTANCE.$$("(--x &&+1 x)").contains(INSTANCE.$$("--x")) );
     }
 //    @Test
 //    void testEqualityOfBiSubtermReverseImpls() {

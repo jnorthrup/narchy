@@ -108,7 +108,7 @@ class TermIDTest {
     private @NotNull
     static Term testBytesRepresentation(@Nullable String expectedCompactOutput, @NotNull String expectedPrettyOutput, int expectedLength) throws Narsese.NarseseException {
         
-        Termed i = $.$(expectedPrettyOutput);
+        Termed i = $.INSTANCE.$(expectedPrettyOutput);
         
         
 

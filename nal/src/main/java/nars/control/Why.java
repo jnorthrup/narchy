@@ -43,7 +43,7 @@ public enum Why { ;
 			ArrayUtil.shuffle(why, ThreadLocalRandom.current());
 			why = Arrays.copyOf(why, capacity-1);
 		}
-		return SETe.the($.ints(why));
+		return SETe.the($.INSTANCE.ints(why));
 	}
 
 //	public static Term why(Term whyA, short whyB, int capacity) {
@@ -59,7 +59,7 @@ public enum Why { ;
 			return null;
 
 		if (ss < capacity)
-			return SETe.the($.ints(why));
+			return SETe.the($.INSTANCE.ints(why));
 
 		//convert to array for sampling
 

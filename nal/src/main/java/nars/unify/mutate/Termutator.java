@@ -32,8 +32,8 @@ import org.jetbrains.annotations.Nullable;
     abstract class AbstractTermutator extends ProxyTerm implements Termutator {
 
         AbstractTermutator(Atom klass, Term... keyComponents) {
-            super($.pFast(klass, keyComponents.length == 1 ? keyComponents[0] :
-                    $.pFast(keyComponents)));
+            super($.INSTANCE.pFast(klass, keyComponents.length == 1 ? keyComponents[0] :
+                    $.INSTANCE.pFast(keyComponents)));
         }
 
     }

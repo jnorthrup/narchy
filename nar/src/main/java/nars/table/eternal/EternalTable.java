@@ -346,7 +346,7 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
                         Arrays.equals(x.stamp(), input.stamp()) &&
                         Util.equals(x.conf(), input.conf(), nar.confResolution.floatValue())) {
 
-                    yt = $.t((x.freq() + input.freq()) / 2.0F, x.conf()).dither(nar);
+                    yt = $.INSTANCE.t((x.freq() + input.freq()) / 2.0F, x.conf()).dither(nar);
                 }
 
             } else {

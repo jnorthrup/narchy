@@ -61,7 +61,7 @@ public final class PuncMap extends AbstractPred<PreDerivation> {
             //HACK
             Term tt = s.size() == 1 ? s.iterator().next() : SETe.the(s);
 
-            return $.func(PUNC, tt);
+            return $.INSTANCE.func(PUNC, tt);
         }
     }
 
@@ -72,7 +72,7 @@ public final class PuncMap extends AbstractPred<PreDerivation> {
             case 1:
                 return puncAtom;
             default:
-                return $.p(puncAtom, Op.puncAtom(value));
+                return $.INSTANCE.p(puncAtom, Op.puncAtom(value));
         }
     }
 

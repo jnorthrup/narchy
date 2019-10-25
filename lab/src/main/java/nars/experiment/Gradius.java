@@ -28,7 +28,7 @@ import java.util.function.IntFunction;
 import java.util.function.Supplier;
 
 import static java4k.gradius4k.Gradius4K.*;
-import static nars.$.$$;
+import static nars.$.*;
 import static nars.game.GameTime.fps;
 
 /**
@@ -59,7 +59,7 @@ public class Gradius extends GameX {
     }
 
     public Gradius(NAR nar) {
-        super($$("g"), fps(25.0F), nar);
+        super(INSTANCE.$$("g"), fps(25.0F), nar);
 
         //TODO coordinate with fps
         g.updateMS =
@@ -110,13 +110,13 @@ public class Gradius extends GameX {
                     int ii = i;
                     int jj = j;
                     Term Pbig = //$.p(big, $.p($.the(ii), $.the(jj)));
-                        $.p(Atomic.atom("c" + ii),Atomic.atom("c" + jj));
+                        $.INSTANCE.p(Atomic.atom("c" + ii),Atomic.atom("c" + jj));
 
                     //Term subSection = $.p(id, $.the(ii), $.the(jj));
                     Bitmap2DSensor c = senseCamera(new IntIntToObjectFunction<Term>() {
                                                        @Override
                                                        public Term apply(int x, int y) {
-                                                           return $.inh(id, $.p(Pbig, $.the(x), $.the(y)));
+                                                           return $.INSTANCE.inh(id, $.INSTANCE.p(Pbig, $.INSTANCE.the(x), $.INSTANCE.the(y)));
                                                        }
                                                    },
                             //$.p(
@@ -156,7 +156,7 @@ public class Gradius extends GameX {
                 }, new IntFunction<Term>() {
                     @Override
                     public Term apply(int level) {
-                        return $.p($.the(level), $.p(id, $.the("y")));
+                        return $.INSTANCE.p($.INSTANCE.the(level), $.INSTANCE.p(id, $.INSTANCE.the("y")));
                     }
                 }
         ).resolution(gpsRes);
@@ -168,13 +168,13 @@ public class Gradius extends GameX {
                 }, new IntFunction<Term>() {
                     @Override
                     public Term apply(int level) {
-                        return $.p($.the(level), $.p(id, $.the("x")));
+                        return $.INSTANCE.p($.INSTANCE.the(level), $.INSTANCE.p(id, $.INSTANCE.the("x")));
                     }
                 }
         ).resolution(gpsRes);
 
 
-        actionUnipolar($.inh(id,$$("speed")), new FloatConsumer() {
+        actionUnipolar($.INSTANCE.inh(id, INSTANCE.$$("speed")), new FloatConsumer() {
             @Override
             public void accept(float s) {
                 g.SPEED = Util.lerp(s, 0.1f, 4.0F);
@@ -182,7 +182,7 @@ public class Gradius extends GameX {
         }).resolution(0.1f);
 
 
-        actionPushButton($.inh(id,$$("fire")), new BooleanProcedure() {
+        actionPushButton($.INSTANCE.inh(id, INSTANCE.$$("fire")), new BooleanProcedure() {
             @Override
             public void value(boolean b) {
                 g.keys[VK_SHOOT] = b;
@@ -247,12 +247,12 @@ public class Gradius extends GameX {
 
     void initToggle() {
         //TODO boundary feedback
-        Atomic X = $.the("x");
-        Atomic Y = $.the("y");
-        Term left =  $.inh(id, $.p(X, NEG));
-        Term right =  $.inh(id, $.p(X, POS));
-        Term down =  $.inh(id, $.p(Y, NEG));
-        Term up =  $.inh(id, $.p(Y, POS));
+        Atomic X = $.INSTANCE.the("x");
+        Atomic Y = $.INSTANCE.the("y");
+        Term left =  $.INSTANCE.inh(id, $.INSTANCE.p(X, NEG));
+        Term right =  $.INSTANCE.inh(id, $.INSTANCE.p(X, POS));
+        Term down =  $.INSTANCE.inh(id, $.INSTANCE.p(Y, NEG));
+        Term up =  $.INSTANCE.inh(id, $.INSTANCE.p(Y, POS));
         GoalActionConcept[] lr = actionPushButtonMutex(left, right,
                 new BooleanPredicate() {
                     @Override
@@ -287,7 +287,7 @@ public class Gradius extends GameX {
     void initBipolar() {
 
         float thresh = 0.1f;
-        actionBipolar($.inh(id, $.p($$("y"), $.varQuery(1))), new FloatToFloatFunction() {
+        actionBipolar($.INSTANCE.inh(id, $.INSTANCE.p(INSTANCE.$$("y"), $.INSTANCE.varQuery(1))), new FloatToFloatFunction() {
             @Override
             public float valueOf(float dy) {
                 if (dy < -thresh) {
@@ -306,7 +306,7 @@ public class Gradius extends GameX {
 
             }
         });
-        actionBipolar($.inh(id, $.p($$("x"), $.varQuery(1))), new FloatToFloatFunction() {
+        actionBipolar($.INSTANCE.inh(id, $.INSTANCE.p(INSTANCE.$$("x"), $.INSTANCE.varQuery(1))), new FloatToFloatFunction() {
             @Override
             public float valueOf(float dx) {
                 if (dx < -thresh) {

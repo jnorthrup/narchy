@@ -35,6 +35,7 @@ import static nars.truth.func.TruthFunctions.c2wSafe;
  */
 public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
+    public static final $ $ = nars.$.INSTANCE;
     public static boolean TRACE = false;
 
     /**
@@ -401,7 +402,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
 
     static Atom randomSelf() {
-        return $.uuid(/*"I_"*/);
+        return  $.uuid(/*"I_"*/);
     }
 
     public static double eviEternalizable(double evi, long dt, float dur) {

@@ -11,7 +11,7 @@ import nars.term.util.Image;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import static nars.$.$$;
+import static nars.$.*;
 import static nars.Op.INH;
 import static nars.term.atom.IdempotentBool.Null;
 import static nars.term.atom.IdempotentBool.True;
@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class ImageTest {
 
     @Test void PreNormalize() {
-        Term t = $$("(acid --> (reaction,/,base))");
+        Term t = INSTANCE.$$("(acid --> (reaction,/,base))");
         assertEquals(CachedCompound.SimpleCachedCompound.class, t.getClass());
         t.isNormalized();
     }
@@ -41,16 +41,16 @@ class ImageTest {
     void testNormlizeExt() {
         assertEq(
                 "reaction(acid,base)",
-                imageNormalize($$("(acid --> (reaction,/,base))"))
+                imageNormalize(INSTANCE.$$("(acid --> (reaction,/,base))"))
         );
         assertEq(
                 "reaction(acid,base)",
-                imageNormalize($$("(base --> (reaction,acid,/))"))
+                imageNormalize(INSTANCE.$$("(base --> (reaction,acid,/))"))
         );
 
         assertEq(
                 "reaction(acid)",
-                imageNormalize($$("(acid --> (reaction,/))"))
+                imageNormalize(INSTANCE.$$("(acid --> (reaction,/))"))
         );
 
 
@@ -63,15 +63,15 @@ class ImageTest {
 
         assertEq(
                 "(neutralization-->(acid,base))",
-                imageNormalize($$("((neutralization,\\,base) --> acid)"))
+                imageNormalize(INSTANCE.$$("((neutralization,\\,base) --> acid)"))
         );
         assertEq(
                 "(neutralization-->(acid,base))",
-                imageNormalize($$("((neutralization,acid,\\) --> base)"))
+                imageNormalize(INSTANCE.$$("((neutralization,acid,\\) --> base)"))
         );
         assertEq(
                 "(neutralization-->(acid))",
-                imageNormalize($$("((neutralization,\\) --> acid)"))
+                imageNormalize(INSTANCE.$$("((neutralization,\\) --> acid)"))
         );
 
     }
@@ -80,7 +80,7 @@ class ImageTest {
     void testCanNotNormlizeIntExt() {
         assertEq(
                 "((neutralization,\\,base)-->(reaction,/,base))",
-                imageNormalize($$("((neutralization,\\,base) --> (reaction,/,base))"))
+                imageNormalize(INSTANCE.$$("((neutralization,\\,base) --> (reaction,/,base))"))
         );
     }
 
@@ -89,23 +89,23 @@ class ImageTest {
 
         assertEq(
                 "(reaction(acid,base)<->x)",
-                $$("(x <-> (acid --> (reaction,/,base)))")
+                INSTANCE.$$("(x <-> (acid --> (reaction,/,base)))")
         );
         assertEq(
                 "(reaction(acid)<->x)",
-                $$("(x <-> (acid --> (reaction,/)))")
+                INSTANCE.$$("(x <-> (acid --> (reaction,/)))")
         );
     }
 
     @Test
     void testImageIntWithNumbers() {
         String x = "((0,1,0)-->bitmap)";
-        Term xx = $$(x);
+        Term xx = INSTANCE.$$(x);
 
         assertEq("(0-->(bitmap,/,1,/))",
                 Image.imageExt(xx, IdempotInt.the(0)));
 
-        assertEq($$("(0-->(bitmap,/,1,/))"),
+        assertEq(INSTANCE.$$("(0-->(bitmap,/,1,/))"),
                 Image.imageExt(xx, IdempotInt.the(0)));
 
         assertEq("(1-->(bitmap,0,/,0))",
@@ -118,14 +118,14 @@ class ImageTest {
 
     @Test
     void testImagizeDepVar() {
-        Term x = $$("reaction(acid,#1)");
-        Term y = Image.imageExt(x, $.varDep(1));
+        Term x = INSTANCE.$$("reaction(acid,#1)");
+        Term y = Image.imageExt(x, $.INSTANCE.varDep(1));
         assertEquals("(#1-->(reaction,acid,/))", y.toString());
         assertEquals(x, imageNormalize(y));
     }
 
     @Test void OneArgFunctionAsImage() {
-        assertEquals("(y-->(x,/))", $.funcImg($.the("x"), $.the("y")).toString());
+        assertEquals("(y-->(x,/))", $.INSTANCE.funcImg($.INSTANCE.the("x"), $.INSTANCE.the("y")).toString());
     }
     @Test void ConceptualizationNormalizesImages() throws Narsese.NarseseException {
         //"$.04 ((|,(--,(cart,"+")),(--,(cart,"-")),(--,angX))-->(believe,"-ß2~czîÊeå",/))! 406461⋈406503 %.06;.04%"
@@ -141,18 +141,18 @@ class ImageTest {
     @Test void RecursiveUnwrapping() {
         //assertEquals(
         //"reaction(acid,base)",
-        Term a1 = $$("(((chemical,reaction),base)-->acid)");
+        Term a1 = INSTANCE.$$("(((chemical,reaction),base)-->acid)");
 
-        Term a2Bad = Image.imageExt(a1, $$("reaction"));
+        Term a2Bad = Image.imageExt(a1, INSTANCE.$$("reaction"));
         assertEquals(Null, a2Bad); //not in the next reachable level
 
-        Term a2 = Image.imageExt(a1, $$("(chemical,reaction)"));
+        Term a2 = Image.imageExt(a1, INSTANCE.$$("(chemical,reaction)"));
         assertEquals("((chemical,reaction)-->(acid,/,base))", a2.toString());
 
-        Term a3Bad = Image.imageInt(a2, $$("reaction"));
+        Term a3Bad = Image.imageInt(a2, INSTANCE.$$("reaction"));
         assertEquals(Null, a3Bad);
 
-        Term a3 = Image.imageExt(a2, $$("reaction"));
+        Term a3 = Image.imageExt(a2, INSTANCE.$$("reaction"));
         assertEquals("(reaction-->((acid,/,base),chemical,/))", a3.toString());
 
         //reverse
@@ -166,20 +166,20 @@ class ImageTest {
     }
 
     @Test void NonRepeatableImage() {
-        assertEq("(c-->(a,b,/,/))", Image.imageExt($$("a(b,/,c)"), $$("c"))); //TODO test
+        assertEq("(c-->(a,b,/,/))", Image.imageExt(INSTANCE.$$("a(b,/,c)"), INSTANCE.$$("c"))); //TODO test
     }
     @Test void RepeatableImageInSubterm() {
-        assertEq("(b-->(a,/,(c,/)))", Image.imageExt($$("a(b,(c,/))"), $$("b")));
-        assertEq("((c,/)-->(a,b,/))", Image.imageExt($$("a(b,(c,/))"), $$("(c,/)")));
+        assertEq("(b-->(a,/,(c,/)))", Image.imageExt(INSTANCE.$$("a(b,(c,/))"), INSTANCE.$$("b")));
+        assertEq("((c,/)-->(a,b,/))", Image.imageExt(INSTANCE.$$("a(b,(c,/))"), INSTANCE.$$("(c,/)")));
     }
 
     @Disabled
     @Test void OppositeImageOK() {
-        assertEq("(c-->(a,b,\\,/))", Image.imageExt($$("a(b,\\,c)"), $$("c")));
+        assertEq("(c-->(a,b,\\,/))", Image.imageExt(INSTANCE.$$("a(b,\\,c)"), INSTANCE.$$("c")));
     }
 
     @Test void NormalizeVsImageNormalize() {
-        Term x = $$("(acid-->(reaction,/))");
+        Term x = INSTANCE.$$("(acid-->(reaction,/))");
         assertTrue(x.isNormalized());
         assertEquals(
                 "(acid-->(reaction,/))",
@@ -199,22 +199,22 @@ class ImageTest {
 
         assertEquals(y, xx.toString());
 
-        assertEquals($$(y), xx);
+        assertEquals(INSTANCE.$$(y), xx);
     }
 
     @Test void testImageExtNeg() {
         assertEq(    "(TRUE-->((isRow,tetris,/),14,/))",
-            Image.imageExt($$("((14,TRUE)-->(isRow,tetris,/))"),$$("TRUE")));
+            Image.imageExt(INSTANCE.$$("((14,TRUE)-->(isRow,tetris,/))"), INSTANCE.$$("TRUE")));
         assertEq("(--,(TRUE-->((isRow,tetris,/),14,/)))",
-            Image.imageExt($$("((14,(--,TRUE))-->(isRow,tetris,/))"),$$("--TRUE")));
+            Image.imageExt(INSTANCE.$$("((14,(--,TRUE))-->(isRow,tetris,/))"), INSTANCE.$$("--TRUE")));
     }
 
     @Test void ConjNegatedNormalizeWTF() {
         assertEq("((--,(delta-->vel)) &&+280 (--,vel(fz,y)))", "((--,(delta-->vel)) &&+280 (--,(y-->(vel,fz,/))))");
     }
     @Disabled @Test void bothImageTypesInProduct() {
-        assertEq("TODO", Image.imageNormalize($$("((b,\\,c,/)-->a)")));
-        assertEq("TODO", Image.imageNormalize($$("(a-->(b,\\,c,/))")));
+        assertEq("TODO", Image.imageNormalize(INSTANCE.$$("((b,\\,c,/)-->a)")));
+        assertEq("TODO", Image.imageNormalize(INSTANCE.$$("(a-->(b,\\,c,/))")));
     }
     @Test void ConjNegatedNormalizeWTF2() {
         assertEq("(((--,v(fz,x)) &&+2 (--,v(fz,y))) &&+1 z)",
@@ -234,12 +234,12 @@ class ImageTest {
     @Test void ImageRecursionFilter() {
 
 
-        Term x0 = $$("(_ANIMAL-->((cat,ANIMAL),cat,/))");
+        Term x0 = INSTANCE.$$("(_ANIMAL-->((cat,ANIMAL),cat,/))");
         assertEq("((cat,_ANIMAL)-->(cat,ANIMAL))", imageNormalize(x0)); //to see what would happen
 
-        assertEq(IdempotentBool.True, Image.normalize(new LighterCompound(INH, $$("ANIMAL"), $$("((cat,ANIMAL),cat,/)")), true, true));
+        assertEq(IdempotentBool.True, Image.normalize(new LighterCompound(INH, INSTANCE.$$("ANIMAL"), INSTANCE.$$("((cat,ANIMAL),cat,/)")), true, true));
 
-        Term x = $$("(ANIMAL-->((cat,ANIMAL),cat,/))");
+        Term x = INSTANCE.$$("(ANIMAL-->((cat,ANIMAL),cat,/))");
         assertEquals(True, x);
 
 

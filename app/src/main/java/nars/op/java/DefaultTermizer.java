@@ -31,7 +31,7 @@ import static nars.Op.*;
 public class DefaultTermizer implements Termizer {
 
 
-    public static final Variable INSTANCE_VAR = $.varDep("instance");
+    public static final Variable INSTANCE_VAR = $.INSTANCE.varDep("instance");
     static final Term TRUE_TERM =
             Atomic.the("TRUE");
             //Bool.True;
@@ -118,24 +118,24 @@ public class DefaultTermizer implements Termizer {
         } else if (o instanceof Term) {
             result = (Term) o;
         } else if (o instanceof String) {
-            result = $.quote(o);
+            result = $.INSTANCE.quote(o);
         } else if (o instanceof Boolean) {
             result = ((Boolean) o) ? TRUE_TERM : FALSE_TERM;
         } else if (o instanceof Character) {
-            result = $.quote(String.valueOf(o));
+            result = $.INSTANCE.quote(String.valueOf(o));
         } else if (o instanceof Number) {
             result = number((Number) o);
         } else if (o instanceof Class) {
             Class oc = (Class) o;
             result = classTerm(oc);
         } else if (o instanceof Path) {
-            result = $.the((Path) o);
+            result = $.INSTANCE.the((Path) o);
         } else if (o instanceof URI) {
-            result = $.the((URI) o);
+            result = $.INSTANCE.the((URI) o);
         } else if (o instanceof URL) {
-            result = $.the((URL) o);
+            result = $.INSTANCE.the((URL) o);
         } else if (o instanceof int[]) {
-            result = $.p((int[]) o);
+            result = $.INSTANCE.p((int[]) o);
         } else if (o instanceof Object[]) {
             List<Term> arg = new ArrayList<>();
             for (Object o1 : (Object[]) o) {
@@ -143,18 +143,18 @@ public class DefaultTermizer implements Termizer {
                 arg.add(term);
             }
             if (!arg.isEmpty()) {
-                result = $.p(arg);
+                result = $.INSTANCE.p(arg);
             }
         } else if (o instanceof List) {
             if (!((Collection) o).isEmpty()) {
                 Collection c = (Collection) o;
-                List<Term> arg = $.newArrayList(c.size());
+                List<Term> arg = $.INSTANCE.newArrayList(c.size());
                 for (Object x : c) {
                     Term y = term(x);
                     arg.add(y);
                 }
                 if (!arg.isEmpty()) {
-                    result = $.p(arg);/*} else if (o instanceof Stream) {
+                    result = $.INSTANCE.p(arg);/*} else if (o instanceof Stream) {
             return Atom.quote(o.toString().substring(17));
         }*/
                 }
@@ -179,7 +179,7 @@ public class DefaultTermizer implements Termizer {
 
                     if ((tv != null) && (tk != null)) {
                         components.add(
-                                $.inh(tv, tk)
+                                $.INSTANCE.inh(tv, tk)
                         );
                     }
                 }
@@ -196,7 +196,7 @@ public class DefaultTermizer implements Termizer {
     }
 
     protected static Term number(Number o) {
-        return $.the(o);
+        return $.INSTANCE.the(o);
     }
 
 
@@ -219,7 +219,7 @@ public class DefaultTermizer implements Termizer {
 
         String varPrefix = m.getName() + '_';
         int n = m.getParameterCount();
-        Term args = $.p(getArgVariables(varPrefix, n));
+        Term args = $.INSTANCE.p(getArgVariables(varPrefix, n));
 
         return m.getReturnType() == void.class ? new Term[]{
                 INSTANCE_VAR,
@@ -227,7 +227,7 @@ public class DefaultTermizer implements Termizer {
         } : new Term[]{
                 INSTANCE_VAR,
                 args,
-                $.varDep(varPrefix + "_return")
+                $.INSTANCE.varDep(varPrefix + "_return")
         };
     }
 
@@ -235,7 +235,7 @@ public class DefaultTermizer implements Termizer {
     private static Term[] getArgVariables(String prefix, int numParams) {
         List<nars.term.Variable> list = new ArrayList<>();
         for (int i = 0; i < numParams; i++) {
-            nars.term.Variable variable = $.varDep(prefix + i);
+            nars.term.Variable variable = $.INSTANCE.varDep(prefix + i);
             list.add(variable);
         }
         Term[] x = list.toArray(new Term[0]);
@@ -251,7 +251,7 @@ public class DefaultTermizer implements Termizer {
     }
 
     public static Term termClassInPackage( Class c) {
-        return $.p(termPackage(c.getPackage()), classTerm(c));
+        return $.INSTANCE.p(termPackage(c.getPackage()), classTerm(c));
     }
 
     
@@ -261,7 +261,7 @@ public class DefaultTermizer implements Termizer {
         String n = p.getName();
 
         String[] path = n.split("\\.");
-        return $.p(path);
+        return $.INSTANCE.p(path);
 
 
     }
@@ -270,7 +270,7 @@ public class DefaultTermizer implements Termizer {
      * generic instance target representation
      */
     public static Term instanceTerm(Object o) {
-        return $.p(System.identityHashCode(o), 36);
+        return $.INSTANCE.p(System.identityHashCode(o), 36);
     }
 
     protected @Nullable Term classInPackage(Term classs, @Deprecated Term packagge) {
@@ -291,9 +291,9 @@ public class DefaultTermizer implements Termizer {
             if (o instanceof Byte || o instanceof Short || o instanceof Integer || (o instanceof Long && Math.abs((Long) o) < (long) (Integer.MAX_VALUE - 1))) {
                 return IdempotInt.the(((Number) o).intValue());
             } else if (o instanceof Float || o instanceof Double) {
-                return $.the(((Number) o).doubleValue());
+                return $.INSTANCE.the(((Number) o).doubleValue());
             } else if (o instanceof Long /* beyond an Int's capacity */) {
-                return $.the(Long.toString((Long) o));
+                return $.INSTANCE.the(Long.toString((Long) o));
             } else {
                 throw new TODO("support: " + o + " (" + o.getClass() + ')');
             }
@@ -336,7 +336,7 @@ public class DefaultTermizer implements Termizer {
                     objToTerm.put(o, ob);
                     return ob;
                 } else
-                    return $.the("Object_" + System.identityHashCode(o));
+                    return $.INSTANCE.the("Object_" + System.identityHashCode(o));
             }
         } else {
             oe = obj2term(o);

@@ -122,9 +122,9 @@ class NARTest {
     void testConceptInstancing() throws Narsese.NarseseException {
         NAR n = NARS.tmp();
 
-        Termed a = $.$("a");
+        Termed a = $.INSTANCE.$("a");
         assertNotNull(a);
-        Termed a1 = $.$("a");
+        Termed a1 = $.INSTANCE.$("a");
         assertEquals(a, a1);
 
         String statement1 = "<a --> b>.";
@@ -140,7 +140,7 @@ class NARTest {
         n.input(statement2);
         n.run(4);
 
-        Termed a2 = $.$("a");
+        Termed a2 = $.INSTANCE.$("a");
         assertNotNull(a2);
 
         Concept ca = n.conceptualize(a2);

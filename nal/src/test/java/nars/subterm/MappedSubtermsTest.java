@@ -6,19 +6,19 @@ import nars.term.util.TermTest;
 import nars.term.var.CommonVariable;
 import org.junit.jupiter.api.Test;
 
-import static nars.$.$$;
-import static nars.$.$$$;
+import static nars.$.*;
+import static nars.$.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class MappedSubtermsTest {
 
-    static final Term x = $$("x");
-    static final Term y = $$("y");
-    static final Term z = $$("z");
+    static final Term x = INSTANCE.$$("x");
+    static final Term y = INSTANCE.$$("y");
+    static final Term z = INSTANCE.$$("z");
 
     @Test void TwoAry() {
-        assertEq($$("x"), $$("(y --> (z,/))"));
+        assertEq(INSTANCE.$$("x"), INSTANCE.$$("(y --> (z,/))"));
     }
     @Test
     void test3ary() {
@@ -56,14 +56,14 @@ public class MappedSubtermsTest {
 
     @Test void RepeatedSubterms() {
         {
-            Term s = $$("(abc,abc,abc,abc)");
+            Term s = INSTANCE.$$("(abc,abc,abc,abc)");
             assertEquals(RemappedSubterms.RepeatedSubterms.class, s.subterms().getClass());
             assertEquals(4, s.subs());
             assertEquals(5, s.volume());
             assertEquals("(abc,abc,abc,abc)", s.toString());
         }
         {
-            Subterms s = new RemappedSubterms.RepeatedSubterms($$$("#a"), 3);
+            Subterms s = new RemappedSubterms.RepeatedSubterms(INSTANCE.$$$("#a"), 3);
             assertEquals(RemappedSubterms.RepeatedSubterms.class, s.getClass());
             assertEquals(3, s.subs());
             assertEquals(3, s.vars());
@@ -76,11 +76,11 @@ public class MappedSubtermsTest {
         }
     }
     @Test void BiSubtermWeird() {
-        Term allegedTarget = $$$("( &&+- ,(--,##2#4),_1,##2#4,$1)");
-        Subterms base = new BiSubterm(allegedTarget, $$$("$1"));
+        Term allegedTarget = INSTANCE.$$$("( &&+- ,(--,##2#4),_1,##2#4,$1)");
+        Subterms base = new BiSubterm(allegedTarget, INSTANCE.$$$("$1"));
         assertEquals("(( &&+- ,(--,##2#4),_1,$1,##2#4),$1)", base.toString());
 
-        Term target = $$$("( &&+- ,(--,##2#4),_1,##2#4,$1)");
+        Term target = INSTANCE.$$$("( &&+- ,(--,##2#4),_1,##2#4,$1)");
         assertEquals(0, base.indexOf(target));
 
         /*
@@ -102,9 +102,9 @@ public class MappedSubtermsTest {
             ##2#5 (#[CommonVariable] c0,v1,dt=-2147483648,dtRange=0 10000000000000)
           ##2#5 (#[CommonVariable] c0,v1,dt=-2147483648,dtRange=0 10000000000000)
      */
-        assertTrue($$("##2#5") instanceof CommonVariable);
-        assertTrue($$("##2#5").equals($$("##2#5")));
-        assertTrue($$("##2#5").neg().equals($$("##2#5").neg()));
-        assertTrue($$("--##2#5").unneg().equals($$("--##2#5").unneg()));
+        assertTrue(INSTANCE.$$("##2#5") instanceof CommonVariable);
+        assertTrue(INSTANCE.$$("##2#5").equals(INSTANCE.$$("##2#5")));
+        assertTrue(INSTANCE.$$("##2#5").neg().equals(INSTANCE.$$("##2#5").neg()));
+        assertTrue(INSTANCE.$$("--##2#5").unneg().equals(INSTANCE.$$("--##2#5").unneg()));
     }
 }

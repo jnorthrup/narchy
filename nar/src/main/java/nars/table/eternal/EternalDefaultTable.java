@@ -37,7 +37,7 @@ public class EternalDefaultTable extends DynamicTaskTable {
     }
 
     public static EternalDefaultTable add(Concept c, float freq, NAR n) {
-        return add(c, $.t(freq, n.beliefConfDefault.conf()), n);
+        return add(c, $.INSTANCE.t(freq, n.beliefConfDefault.conf()), n);
     }
 
     public static EternalDefaultTable add(Concept c, Truth t, NAR n) {

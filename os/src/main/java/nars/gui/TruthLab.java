@@ -20,7 +20,7 @@
 //import java.util.function.IntFunction;
 //
 //import static java.util.stream.Collectors.toList;
-//import static nars.$.$;
+//import static nars.$.*;
 //import static spacegraph.video.Draw.pop;
 //import static spacegraph.video.Draw.push;
 //

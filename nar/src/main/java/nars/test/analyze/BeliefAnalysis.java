@@ -26,7 +26,7 @@ public class BeliefAnalysis implements TermedDelegate {
 	}
 
 	public BeliefAnalysis(@NotNull NAR n, @NotNull String term) throws Narsese.NarseseException {
-        this( n, $.$(term));
+        this( n, $.INSTANCE.$(term));
 	}
 
 	@Override

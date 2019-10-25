@@ -31,7 +31,7 @@ public class NARVideo extends NARPart {
         private volatile JoglDisplay surfaceWindow = null;
 
         Video(NAR nar, Webcam cam) {
-            super($.p($.the("video"), $.the(cam.getName())));
+            super($.INSTANCE.p($.INSTANCE.the("video"), $.INSTANCE.the(cam.getName())));
             this.cam = cam;
             surface = new Gridding(); 
             //nar.remove(this);

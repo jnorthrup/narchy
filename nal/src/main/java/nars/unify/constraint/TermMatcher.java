@@ -187,7 +187,7 @@ public abstract class TermMatcher {
 
         public VolMin(int volMin, int depth) {
             assert(volMin > 1);
-            this.param = $.the(this.volMin = volMin);
+            this.param = $.INSTANCE.the(this.volMin = volMin);
             this.cost = (0.03f + (0.01f * (float) depth));
         }
 
@@ -214,7 +214,7 @@ public abstract class TermMatcher {
 
         public VolMax(int volMax) {
             assert(volMax >= 1);
-            this.param = $.the(this.volMax = volMax);
+            this.param = $.INSTANCE.the(this.volMax = volMax);
             this.cost = (0.04f);
         }
 
@@ -254,7 +254,7 @@ public abstract class TermMatcher {
         public Has(int struct, boolean anyOrAll) {
             this.struct = struct;
             this.anyOrAll = anyOrAll;
-            this.param = $.func(anyOrAll ? ANY : ALL, Op.strucTerm(struct));
+            this.param = $.INSTANCE.func(anyOrAll ? ANY : ALL, Op.strucTerm(struct));
             this.cost = Math.max(
                     (anyOrAll ? 0.21f : 0.19f) - 0.001f * (float) Integer.bitCount(struct),
                     0.1f);
@@ -316,7 +316,7 @@ public abstract class TermMatcher {
             this.cost = (0.07f + (0.01f * (float) depth)) * (1f / (float) (1 + (Integer.bitCount(struct))));
 
             Atom isParam = Op.the((int) this.is).strAtom;
-			this.param = structSubs != 0 ? $.p(isParam, Op.strucTerm(structSubs)) : isParam;
+			this.param = structSubs != 0 ? $.INSTANCE.p(isParam, Op.strucTerm(structSubs)) : isParam;
         }
         @Override
         public boolean test(Term term) {
@@ -461,7 +461,7 @@ public abstract class TermMatcher {
 
         @Override
         public Term param() {
-            return $.the((int) subsMin);
+            return $.INSTANCE.the((int) subsMin);
         }
 
         @Override

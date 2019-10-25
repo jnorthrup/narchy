@@ -51,16 +51,16 @@ import static nars.Op.*;
 public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPrioritizable, Caused {
 
     Task[] EmptyArray = new Task[0];
-    Atom BeliefAtom = $.quote(String.valueOf((char)BELIEF));
-    Atom GoalAtom =  $.quote(String.valueOf((char)GOAL));
-    Atom QuestionAtom =  $.quote(String.valueOf((char)QUESTION));
-    Atom QuestAtom =  $.quote(String.valueOf((char)QUEST));
-    Atom CommandAtom =  $.quote(String.valueOf((char)COMMAND));
+    Atom BeliefAtom = $.INSTANCE.quote(String.valueOf((char)BELIEF));
+    Atom GoalAtom =  $.INSTANCE.quote(String.valueOf((char)GOAL));
+    Atom QuestionAtom =  $.INSTANCE.quote(String.valueOf((char)QUESTION));
+    Atom QuestAtom =  $.INSTANCE.quote(String.valueOf((char)QUEST));
+    Atom CommandAtom =  $.INSTANCE.quote(String.valueOf((char)COMMAND));
 
     Atom Que = Atomic.atom(String.valueOf((char) QUESTION) + (char) QUEST);
 
-    Term VAR_DEP_1 = $.varDep(1);
-    Term VAR_DEP_2 = $.varDep(2);
+    Term VAR_DEP_1 = $.INSTANCE.varDep(1);
+    Term VAR_DEP_2 = $.INSTANCE.varDep(2);
 
 
     /**

@@ -1,6 +1,7 @@
 package nars.experiment.trackxy;
 
 import com.jogamp.opengl.GL2;
+import jcog.Texts;
 import jcog.Util;
 import jcog.exe.Exe;
 import jcog.math.FloatNormalized;
@@ -32,14 +33,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.function.IntPredicate;
 
-import static jcog.Texts.*;
-import static nars.$.$$;
 import static nars.Op.GOAL;
 import static spacegraph.SpaceGraph.window;
 
 public class TrackXY_NAR extends GameX {
 
-	static boolean
+    public static final Texts TEXTS = Texts.INSTANCE;
+    static boolean
 		sourceNumerics = true;
 	static boolean targetNumerics = false;
 	static boolean targetCam = !targetNumerics;
@@ -61,7 +61,7 @@ public class TrackXY_NAR extends GameX {
 	private final TrackXY track;
 
 	protected TrackXY_NAR(NAR nar, TrackXY xy) {
-		super($$("trackXY"),
+		super($.INSTANCE.$$("trackXY"),
 			//FrameTrigger.cycles(W*H*2),
 			GameTime.durs(1.0F),
 			//GameTime.fps(1),
@@ -75,14 +75,14 @@ public class TrackXY_NAR extends GameX {
 		assert (sourceNumerics | targetNumerics | targetCam);
 
 		if (sourceNumerics) {
-			senseNumberBi($.inh(id, "sx"), new FloatNormalized(new FloatSupplier() {
+			senseNumberBi($.INSTANCE.inh(id, "sx"), new FloatNormalized(new FloatSupplier() {
                 @Override
                 public float asFloat() {
                     return track.cx;
                 }
             }, (float) 0, (float) (W - 1)));
 			if (H > 1)
-				senseNumberBi($.inh(id, "sy"), new FloatNormalized(new FloatSupplier() {
+				senseNumberBi($.INSTANCE.inh(id, "sy"), new FloatNormalized(new FloatSupplier() {
                     @Override
                     public float asFloat() {
                         return track.cy;
@@ -92,14 +92,14 @@ public class TrackXY_NAR extends GameX {
 
 
 		if (targetNumerics) {
-			senseNumberBi($.inh(id, "tx"), new FloatNormalized(new FloatSupplier() {
+			senseNumberBi($.INSTANCE.inh(id, "tx"), new FloatNormalized(new FloatSupplier() {
                 @Override
                 public float asFloat() {
                     return track.tx;
                 }
             }, (float) 0, (float) W));
 			if (H > 1)
-				senseNumberBi($.inh(id, "ty"), new FloatNormalized(new FloatSupplier() {
+				senseNumberBi($.INSTANCE.inh(id, "ty"), new FloatNormalized(new FloatSupplier() {
                     @Override
                     public float asFloat() {
                         return track.ty;
@@ -190,14 +190,14 @@ public class TrackXY_NAR extends GameX {
                     long now = nar.time();
                     int durMS = Math.round(TrackXY_NAR.this.dur());
                     if (track.ty < track.cy) {
-                        TrackXY_NAR.this.nar().want(0.1f, $.the("down"), now, now + (long) durMS, 1f, 0.02f);
+                        TrackXY_NAR.this.nar().want(0.1f, $.INSTANCE.the("down"), now, now + (long) durMS, 1f, 0.02f);
                     } else if (track.ty > track.cy) {
-                        TrackXY_NAR.this.nar().want(0.1f, $.the("up"), now, now + (long) durMS, 1f, 0.02f);
+                        TrackXY_NAR.this.nar().want(0.1f, $.INSTANCE.the("up"), now, now + (long) durMS, 1f, 0.02f);
                     }
                     if (track.tx < track.cx) {
-                        TrackXY_NAR.this.nar().want(0.1f, $.the("left"), now, now + (long) durMS, 1f, 0.02f);
+                        TrackXY_NAR.this.nar().want(0.1f, $.INSTANCE.the("left"), now, now + (long) durMS, 1f, 0.02f);
                     } else if (track.tx > track.cx) {
-                        TrackXY_NAR.this.nar().want(0.1f, $.the("right"), now, now + (long) durMS, 1f, 0.02f);
+                        TrackXY_NAR.this.nar().want(0.1f, $.INSTANCE.the("right"), now, now + (long) durMS, 1f, 0.02f);
                     }
                 }
             }
@@ -395,7 +395,7 @@ public class TrackXY_NAR extends GameX {
                                         boolean ok = Math.signum(wantsDir) == Math.signum(needsDir);
                                         if (!ok) {
                                             String summary = ok ? "OK" : "WRONG";
-                                            System.out.println(ttt + " " + INSTANCE.n2(wantsDir) + " ? " + INSTANCE.n2(needsDir) + " " + summary);
+                                            System.out.println(ttt + " " + TEXTS.n2(wantsDir) + " ? " + TEXTS.n2(needsDir) + " " + summary);
                                             System.out.println(tt.proof());
 
 //									((TaskLinkWhat)a.what()).links.links.print();
@@ -494,7 +494,7 @@ public class TrackXY_NAR extends GameX {
 //        });
 
 		//FloatAveragedWindow _controlSpeed = new FloatAveragedWindow(8, 0.05f);
-		actionUnipolar($.inh(id, $.the("speed")), new FloatToFloatFunction() {
+		actionUnipolar($.INSTANCE.inh(id, $.INSTANCE.the("speed")), new FloatToFloatFunction() {
             @Override
             public float valueOf(float a) {
 //            System.out.println(a);
@@ -563,7 +563,7 @@ public class TrackXY_NAR extends GameX {
 	private void actionTriState() {
 
 		if (track.grid.height() > 1) {
-			actionTriState($.p($.the("Y"), id), new IntPredicate() {
+			actionTriState($.INSTANCE.p($.INSTANCE.the("Y"), id), new IntPredicate() {
                 @Override
                 public boolean test(int dy) {
                     float py = track.cy;
@@ -574,7 +574,7 @@ public class TrackXY_NAR extends GameX {
             });
 		}
 
-		actionTriState($.p($.the("X"), id), new IntPredicate() {
+		actionTriState($.INSTANCE.p($.INSTANCE.the("X"), id), new IntPredicate() {
             @Override
             public boolean test(int dx) {
                 float px = track.cx;
@@ -587,12 +587,12 @@ public class TrackXY_NAR extends GameX {
 
 	private void actionPushButton() {
 
-		actionPushButton($.inh(id, "right"), movement((float) +1, (float) 0));
-		actionPushButton($.inh(id, "left"), movement(-1.0F, (float) 0));
+		actionPushButton($.INSTANCE.inh(id, "right"), movement((float) +1, (float) 0));
+		actionPushButton($.INSTANCE.inh(id, "left"), movement(-1.0F, (float) 0));
 
 		if (track.grid.height() > 1) {
-			actionPushButton($.inh(id, "up"), movement((float) 0, (float) +1));
-			actionPushButton($.inh(id, "down"), movement((float) 0, -1.0F));
+			actionPushButton($.INSTANCE.inh(id, "up"), movement((float) 0, (float) +1));
+			actionPushButton($.INSTANCE.inh(id, "down"), movement((float) 0, -1.0F));
 		}
 	}
 
@@ -618,7 +618,7 @@ public class TrackXY_NAR extends GameX {
 	private void actionPushButtonMutex() {
 
 		if (track.grid.height() > 1) {
-			actionPushButtonMutex($.inh(id, $.the("up")), $.inh(id, $.the("down")), new BooleanPredicate() {
+			actionPushButtonMutex($.INSTANCE.inh(id, $.INSTANCE.the("up")), $.INSTANCE.inh(id, $.INSTANCE.the("down")), new BooleanPredicate() {
                 @Override
                 public boolean accept(boolean b) {
                     if (b) {
@@ -641,7 +641,7 @@ public class TrackXY_NAR extends GameX {
             });
 		}
 
-		actionPushButtonMutex($.inh(id, $.the("left")), $.inh(id, $.the("right")), new BooleanPredicate() {
+		actionPushButtonMutex($.INSTANCE.inh(id, $.INSTANCE.the("left")), $.INSTANCE.inh(id, $.INSTANCE.the("right")), new BooleanPredicate() {
             @Override
             public boolean accept(boolean b) {
                 if (b) {

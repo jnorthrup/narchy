@@ -33,7 +33,7 @@ public class Choose2 extends Termutator.AbstractTermutator {
     private final Ellipsis xEllipsis;
 
 
-    private static final Atom CHOOSE_2 = $.the(Choose2.class);
+    private static final Atom CHOOSE_2 = $.INSTANCE.the(Choose2.class);
 
 //    public Choose2(Ellipsis xEllipsis, Unify f, MutableSet<Term> x, SortedSet<Term> yFree) {
 //        this(xEllipsis, f,
@@ -48,11 +48,11 @@ public class Choose2 extends Termutator.AbstractTermutator {
     }
 
     private Choose2(Ellipsis xEllipsis, Term[] x, SortedSet<Term> yFree) {
-        this(xEllipsis, x, $.sFast(yFree));
+        this(xEllipsis, x, $.INSTANCE.sFast(yFree));
     }
 
     private Choose2(Ellipsis xEllipsis, Term[] x, Compound yFree) {
-        super(CHOOSE_2, $.pFast(x), xEllipsis, yFree);
+        super(CHOOSE_2, $.INSTANCE.pFast(x), xEllipsis, yFree);
 
 
 
@@ -70,7 +70,7 @@ public class Choose2 extends Termutator.AbstractTermutator {
         Term a = xFixed.get(0), b = xFixed.get(1);
         boolean av = u.var(a), bv = u.var(b);
         if (!av || !bv) {
-            Compound yy = $.sFast(yFree);
+            Compound yy = $.INSTANCE.sFast(yFree);
             if (!av && !Subterms.possiblyUnifiableAssumingNotEqual(a, yy, u.varBits) ||
                 (!bv && !Subterms.possiblyUnifiableAssumingNotEqual(b, yy, u.varBits))) {
                 return null;

@@ -38,12 +38,12 @@ public class Line1DSimplest extends Game {
         super("", durs(1));
 
         in = sense(
-                $.the("x"),
+                $.INSTANCE.the("x"),
 
                 this.i
         );
         sense(
-                $.the("y"),
+                $.INSTANCE.the("y"),
 
                 this.o
         );
@@ -71,7 +71,7 @@ public class Line1DSimplest extends Game {
     private void initDualToggle() {
 
 
-        actionPushButton($.$$("y:up"), new BooleanProcedure() {
+        actionPushButton($.INSTANCE.$$("y:up"), new BooleanProcedure() {
             @Override
             public void value(boolean b1) {
                 if (b1) {
@@ -82,7 +82,7 @@ public class Line1DSimplest extends Game {
         });
 
 
-        actionPushButton($.$$("y:down"), new BooleanProcedure() {
+        actionPushButton($.INSTANCE.$$("y:down"), new BooleanProcedure() {
             @Override
             public void value(boolean b) {
                 if (b) {
@@ -104,7 +104,7 @@ public class Line1DSimplest extends Game {
                 Line1DSimplest.this.o.set(Util.unitize(o.floatValue() + d * speed.floatValue()));
             }
         });
-        actionUnipolar($.p("up"), new FloatToFloatFunction() {
+        actionUnipolar($.INSTANCE.p("up"), new FloatToFloatFunction() {
             @Override
             public float valueOf(float d) {
 
@@ -118,7 +118,7 @@ public class Line1DSimplest extends Game {
             }
         });
 
-        actionUnipolar($.p("down"), new FloatToFloatFunction() {
+        actionUnipolar($.INSTANCE.p("down"), new FloatToFloatFunction() {
             @Override
             public float valueOf(float d) {
 
@@ -136,7 +136,7 @@ public class Line1DSimplest extends Game {
     }
 
     public void initBipolar() {
-        actionBipolar($.the("y"), new FloatToFloatFunction() {
+        actionBipolar($.INSTANCE.the("y"), new FloatToFloatFunction() {
             @Override
             public float valueOf(float v) {
                 if (v == v) {

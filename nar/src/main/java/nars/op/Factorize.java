@@ -131,8 +131,8 @@ public final class Factorize{
         return x.arrayKeep();
     }
 
-    private static final Variable f = $.varDep("_f");
-    private static final Variable fIfNoDep = $.varDep(1);
+    private static final Variable f = $.INSTANCE.varDep("_f");
+    private static final Variable fIfNoDep = $.INSTANCE.varDep(1);
     static final Comparator<Pair<Term, RichIterable<ObjectBytePair<Term>>>> c = Comparator
             .comparingInt(new ToIntFunction<Pair<Term, RichIterable<ObjectBytePair<Term>>>>() {
                 @Override
@@ -230,7 +230,7 @@ public final class Factorize{
             if (!masked.contains(i)) {
                 t.add(x[(int) i]);
             }
-        final Term s = $.sete(rr.getTwo().collect(new org.eclipse.collections.api.block.function.Function<ObjectBytePair<Term>, Term>() {
+        final Term s = $.INSTANCE.sete(rr.getTwo().collect(new org.eclipse.collections.api.block.function.Function<ObjectBytePair<Term>, Term>() {
             @Override
             public Term valueOf(ObjectBytePair<Term> ob) {
                 final Term y = ob.getOne();
@@ -239,7 +239,7 @@ public final class Factorize{
         }));
         if (s instanceof IdempotentBool)
             return null;
-        final Term m = $.func(Member.member, f, s);
+        final Term m = $.INSTANCE.func(Member.member, f, s);
         if (m == Null)
             return null;
 

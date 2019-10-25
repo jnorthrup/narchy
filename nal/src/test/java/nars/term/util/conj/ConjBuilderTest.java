@@ -15,8 +15,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class ConjBuilderTest {
 
-    static final Term x = $.the("x");
-    static final Term y = $.the("y");
+    static final Term x = $.INSTANCE.the("x");
+    static final Term y = $.INSTANCE.the("y");
 
     @Test
     void testSimpleEternalsNeg() {

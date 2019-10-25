@@ -3,7 +3,7 @@ package nars.term;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import static nars.$.$$;
+import static nars.$.*;
 import static nars.Op.CONJ;
 import static nars.term.atom.IdempotentBool.False;
 import static nars.term.util.TermTest.assertEq;
@@ -19,7 +19,7 @@ public class ConjToSectTest {
 
     @Test
     void reduce_ConjToSect_subj_intersection_2ary_ok_also() {
-        assertEq("(vy-->((--,0)&&-1))", CONJ.the(DTERNAL, $$("(--,(vy-->0))"), $$("(vy-->-1)")));
+        assertEq("(vy-->((--,0)&&-1))", CONJ.the(DTERNAL, INSTANCE.$$("(--,(vy-->0))"), INSTANCE.$$("(vy-->-1)")));
     }
 
     @Test

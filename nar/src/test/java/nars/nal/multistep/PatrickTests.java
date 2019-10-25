@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.function.LongPredicate;
 
-import static nars.$.$;
+import static nars.$.*;
 import static nars.Op.GOAL;
 
 /**
@@ -311,7 +311,7 @@ public class PatrickTests extends NALTest {
         n.input(image1.split("\n"));
 
 
-        n.question($.parallel($("P:p_2_3"), $("P:p_3_2"), $("P:p_3_4"), $("P:p_4_3"), $("name:example1")));
+        n.question($.INSTANCE.parallel(INSTANCE.$("P:p_2_3"), INSTANCE.$("P:p_3_2"), INSTANCE.$("P:p_3_4"), INSTANCE.$("P:p_4_3"), INSTANCE.$("name:example1")));
 
 
         n.run(6000);
@@ -350,7 +350,7 @@ public class PatrickTests extends NALTest {
         n.input(image2.split("\n"));
 
 
-        n.question($.parallel($("P:p_2_3"), $("P:p_3_2"), $("P:p_3_3"), $("P:p_3_4"), $("P:p_4_3"), $("name:example2")));
+        n.question($.INSTANCE.parallel(INSTANCE.$("P:p_2_3"), INSTANCE.$("P:p_3_2"), INSTANCE.$("P:p_3_3"), INSTANCE.$("P:p_3_4"), INSTANCE.$("P:p_4_3"), INSTANCE.$("name:example2")));
         n.run(6000);
 
 

@@ -12,7 +12,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.function.LongPredicate;
 
-import static nars.$.$$;
+import static nars.$.*;
 import static nars.Op.BELIEF;
 import static nars.Op.QUESTION;
 import static nars.time.Tense.ETERNAL;
@@ -302,9 +302,9 @@ public class NAL3DecomposeBeliefTest extends NAL3Test {
 
 
         {
-            Term cn = $$("((_2-_1)|(--,_3))");
+            Term cn = INSTANCE.$$("((_2-_1)|(--,_3))");
 //        Term cp = $$("((_2-_1)|_3)");
-            Term xp = $$("_3");
+            Term xp = INSTANCE.$$("_3");
 //        Term xn = $$("(--,_3)");
 //        assertFalse(cn.contains(xp));
 //        assertFalse(cp.contains(xn));
@@ -312,7 +312,7 @@ public class NAL3DecomposeBeliefTest extends NAL3Test {
 //        assertTrue(cp.contains(xp));
 
             assertFalse(
-                new SubOfConstraint($.varDep(1), $.varDep(2), SubtermCondition.Subterm)
+                new SubOfConstraint($.INSTANCE.varDep(1), $.INSTANCE.varDep(2), SubtermCondition.Subterm)
                     .valid(cn, xp, null)
             );
         }

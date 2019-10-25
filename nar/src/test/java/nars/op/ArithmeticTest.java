@@ -17,7 +17,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Supplier;
 
-import static nars.$.$$;
+import static nars.$.*;
 import static nars.term.atom.IdempotentBool.Null;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -44,7 +44,7 @@ class ArithmeticTest {
     }
 
     @Test void Add_1_const_1_var() {
-        assertEval($.varDep(1), "add(#1,0)");
+        assertEval($.INSTANCE.varDep(1), "add(#1,0)");
     }
 
 
@@ -52,8 +52,8 @@ class ArithmeticTest {
     @Test
     void testAddCommutive() throws Narsese.NarseseException {
 
-        String fwd = n.eval($.$("add(#x,1)")).toString();
-        String rev = n.eval($.$("add(1,#x)")).toString();
+        String fwd = n.eval($.INSTANCE.$("add(#x,1)")).toString();
+        String rev = n.eval($.INSTANCE.$("add(1,#x)")).toString();
         assertEquals("add(#1,1)", fwd);
         assertEquals(fwd, rev);
 
@@ -62,15 +62,15 @@ class ArithmeticTest {
     @Test
     void testAddIdentity() {
 
-        assertEval($.varDep(1), "add(#1,0)");
-        assertEval($.varDep(1), "add(0,#1)");
+        assertEval($.INSTANCE.varDep(1), "add(#1,0)");
+        assertEval($.INSTANCE.varDep(1), "add(0,#1)");
     }
     @Test
     void testMulIdentity() {
         assertEval(IdempotInt.the(0), "mul(x,0)");
-        assertEval($$("x"), "mul(x,1)");
-        assertEval($.varDep(1), "mul(1,#1)");
-        assertEval($.varDep(1), "mul(#1,1)");
+        assertEval(INSTANCE.$$("x"), "mul(x,1)");
+        assertEval($.INSTANCE.varDep(1), "mul(1,#1)");
+        assertEval($.INSTANCE.varDep(1), "mul(#1,1)");
 
     }
 
@@ -88,7 +88,7 @@ class ArithmeticTest {
         var each = collectionFactory.get();
         int bound = p.length * 4;
         for (int i = 0; i < bound; i++) {
-            String toString = Arithmeticize.apply($$(q), rng).toString();
+            String toString = Arithmeticize.apply(INSTANCE.$$(q), rng).toString();
             each.add(toString);
         }
         assertEquals(s, each);
@@ -112,7 +112,7 @@ class ArithmeticTest {
 
     static void assertEval(Term out, String in) {
         assertEquals( out,
-                NARS.shell().eval($$(in))
+                NARS.shell().eval(INSTANCE.$$(in))
         );
     }
 
@@ -164,15 +164,15 @@ class ArithmeticTest {
 
     @Test
     void testComparator_Inline() {
-        TermTest.assertEq("-1", n.eval($$("cmp(1,2)")));
+        TermTest.assertEq("-1", n.eval(INSTANCE.$$("cmp(1,2)")));
     }
     @Test
     void testComparator1() {
-        TermTest.assertEq("cmp(1,2,-1)", n.eval($$("cmp(1,2,#x)")));
+        TermTest.assertEq("cmp(1,2,-1)", n.eval(INSTANCE.$$("cmp(1,2,#x)")));
     }
     @Test
     void testComparator2() {
-        TermTest.assertEq("cmp(#1,2,#2)", n.eval($$("cmp(#1,2,#x)")));
+        TermTest.assertEq("cmp(#1,2,#2)", n.eval(INSTANCE.$$("cmp(#1,2,#x)")));
     }
     @Test
     void testComparator3() {
@@ -185,48 +185,48 @@ class ArithmeticTest {
 
     @Test
     void testCmpReduceToEqual1() {
-        TermTest.assertEq("equal(#1,#2)", n.eval($$("cmp(#x,#y,0)")));
-        TermTest.assertEq("equal(#1,#2)", n.eval($$("cmp(#y,#x,0)")));
+        TermTest.assertEq("equal(#1,#2)", n.eval(INSTANCE.$$("cmp(#x,#y,0)")));
+        TermTest.assertEq("equal(#1,#2)", n.eval(INSTANCE.$$("cmp(#y,#x,0)")));
     }
     @Test
     void testCmpReduceToEqual2() {
-        TermTest.assertEq("equal((a,#1),(b,#2))", n.eval($$("cmp((a,#x),(b,#y),0)")));
-        TermTest.assertEq("equal((a,#2),(b,#1))", n.eval($$("cmp((b,#x),(a,#y),0)")));
+        TermTest.assertEq("equal((a,#1),(b,#2))", n.eval(INSTANCE.$$("cmp((a,#x),(b,#y),0)")));
+        TermTest.assertEq("equal((a,#2),(b,#1))", n.eval(INSTANCE.$$("cmp((b,#x),(a,#y),0)")));
     }
 
     @Test
     void testComparatorOrdering1() {
-        TermTest.assertEq("cmp(1,2,-1)", n.eval($$("cmp(2,1,#x)")));
+        TermTest.assertEq("cmp(1,2,-1)", n.eval(INSTANCE.$$("cmp(2,1,#x)")));
     }
     @Test
     void testComparatorOrderingConstant() {
 
-        TermTest.assertEq("cmp(#1,2,-1)", n.eval($$("cmp(#1,2,-1)")));
-        TermTest.assertEq("cmp(#1,2,-1)", n.eval($$("cmp(2,#1,1)")));
+        TermTest.assertEq("cmp(#1,2,-1)", n.eval(INSTANCE.$$("cmp(#1,2,-1)")));
+        TermTest.assertEq("cmp(#1,2,-1)", n.eval(INSTANCE.$$("cmp(2,#1,1)")));
     }
 
     @Test
     void testComparatorOrdering_withVars() {
-        TermTest.assertEq("cmp(1,2,-1)", n.eval($$("cmp(2,1,#x)")));
+        TermTest.assertEq("cmp(1,2,-1)", n.eval(INSTANCE.$$("cmp(2,1,#x)")));
     }
 
     @Test
     void testComparatorCondition_1() {
-        TermTest.assertEq("f(4)", n.eval($$("(&&, cmp(#1,3,1), f(#1), equal(#1,4))")));
+        TermTest.assertEq("f(4)", n.eval(INSTANCE.$$("(&&, cmp(#1,3,1), f(#1), equal(#1,4))")));
     }
 
     @Test
     void testComparatorCondition_2() {
         //backwards solve possible because cmp==0
-        TermTest.assertEq("f(4,4)", n.eval($$("(&&, cmp(#1,#2,0), f(#1,#2), equal(#1,4))")));
+        TermTest.assertEq("f(4,4)", n.eval(INSTANCE.$$("(&&, cmp(#1,#2,0), f(#1,#2), equal(#1,4))")));
 
     }
 
     @Test
     void testComparatorWithVars_DontEval() {
-        TermTest.assertEq("cmp(x(1),x(2),-1)", n.eval($$("cmp(x(1),x(2),#c)"))); //constant
-        TermTest.assertEq("cmp(x(#1),x(#2),#3)", n.eval($$("cmp(x(#a),x(#b),#c)"))); //variable
-        TermTest.assertEq("cmp(x(#1),x(#1),0)", n.eval($$("cmp(x(#a),x(#a),#c)"))); //variable, but equality known
+        TermTest.assertEq("cmp(x(1),x(2),-1)", n.eval(INSTANCE.$$("cmp(x(1),x(2),#c)"))); //constant
+        TermTest.assertEq("cmp(x(#1),x(#2),#3)", n.eval(INSTANCE.$$("cmp(x(#a),x(#b),#c)"))); //variable
+        TermTest.assertEq("cmp(x(#1),x(#1),0)", n.eval(INSTANCE.$$("cmp(x(#a),x(#a),#c)"))); //variable, but equality known
     }
 
     @Test void NonConjArithmeticize() {
@@ -237,15 +237,15 @@ class ArithmeticTest {
     }
 
     @Test void XOR() {
-        assertEval($$("xor(true,false)"), "xor(true,false)");
-        assertEval($$("xor(#1,true)"), "xor(#x,true)");
-        assertEval($$("(--,xor(true,true))"), "xor(true,true)");
+        assertEval(INSTANCE.$$("xor(true,false)"), "xor(true,false)");
+        assertEval(INSTANCE.$$("xor(#1,true)"), "xor(#x,true)");
+        assertEval(INSTANCE.$$("(--,xor(true,true))"), "xor(true,true)");
     }
 
     private void assertArithmetic(String x, String y) {
         Set<String> solutions = new TreeSet();
         for (int i = 0; i < 10; i++) {
-            Term s = Arithmeticize.apply($$(x), rng);
+            Term s = Arithmeticize.apply(INSTANCE.$$(x), rng);
             if (s == null) {
                 assertNull(y);
                 return;

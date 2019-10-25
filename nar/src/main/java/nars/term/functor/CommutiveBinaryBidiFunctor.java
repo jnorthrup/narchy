@@ -23,7 +23,7 @@ public abstract class CommutiveBinaryBidiFunctor extends BinaryBidiFunctor {
             x = y;
             y = z;
         }
-        return $.func(func, x, y);
+        return $.INSTANCE.func(func, x, y);
     }
 
     @Override

@@ -97,7 +97,7 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
 	}
 
 	public Game(String id, GameTime time) {
-		this($.$$(id), time);
+		this($.INSTANCE.$$(id), time);
 	}
 
 	/**
@@ -121,7 +121,7 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
 	}
 
 	static Term env(Term x) {
-		return $.func(GAME, x);
+		return $.INSTANCE.func(GAME, x);
 	}
 
 	public static FloatSupplier normalize(FloatSupplier rewardFunc, float min, float max) {
@@ -261,11 +261,11 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
 
 		init();
 
-		nar.control.add(actionPri = new PriSource($.inh(id, ACTION),
+		nar.control.add(actionPri = new PriSource($.INSTANCE.inh(id, ACTION),
 			nar.goalPriDefault.pri()));
-		nar.control.add(sensorPri = new PriSource($.inh(id, SENSOR),
+		nar.control.add(sensorPri = new PriSource($.INSTANCE.inh(id, SENSOR),
 			nar.beliefPriDefault.pri()));
-		nar.control.add(rewardPri = new PriSource($.inh(id, REWARD),
+		nar.control.add(rewardPri = new PriSource($.INSTANCE.inh(id, REWARD),
 			Util.or(nar.beliefPriDefault.pri(), nar.goalPriDefault.pri())));
 
 		for (GameLoop s : sensors) {
@@ -331,7 +331,7 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
 	 */
 	protected Term rewardTerm(String reward) {
 
-		return $.inh(id, reward);
+		return $.INSTANCE.inh(id, reward);
 	}
 
 	public Reward rewardNormalized(String reward, float min, float max, FloatSupplier rewardFunc) {

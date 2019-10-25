@@ -20,8 +20,8 @@ import java.io.IOException;
 import java.util.Arrays;
 
 import static java.lang.System.out;
-import static nars.$.$;
-import static nars.$.$$;
+import static nars.$.*;
+import static nars.$.*;
 import static nars.Op.*;
 import static nars.term.util.TermTest.assertEq;
 import static org.junit.jupiter.api.Assertions.*;
@@ -35,7 +35,7 @@ class TermIOTest {
     final DummyNAL nal = new DummyNAL();
 
     private static byte[] assertEqualSerialize(@NotNull String orig) throws Narsese.NarseseException, IOException {
-        return assertEqualSerialize($.$(orig).term());
+        return assertEqualSerialize($.INSTANCE.$(orig).term());
     }
 
     private void assertEqualTask(@NotNull String orig) throws Narsese.NarseseException, IOException {
@@ -112,8 +112,8 @@ class TermIOTest {
 
         
         assertEquals(1,
-                IO.termToBytes($$("(x)")).length -
-                IO.termToBytes($$("(--,x)")).length);
+                IO.termToBytes(INSTANCE.$$("(x)")).length -
+                IO.termToBytes(INSTANCE.$$("(--,x)")).length);
     }
 
     @Test
@@ -170,10 +170,10 @@ class TermIOTest {
     void testAnonSerialization() throws IOException {
 
         Term[] anons = {
-                $.v(VAR_DEP, (byte)1),
-                $.v(VAR_INDEP, (byte)1),
-                $.v(VAR_QUERY, (byte)1),
-                $.v(VAR_PATTERN, (byte)1),
+                $.INSTANCE.v(VAR_DEP, (byte)1),
+                $.INSTANCE.v(VAR_INDEP, (byte)1),
+                $.INSTANCE.v(VAR_QUERY, (byte)1),
+                $.INSTANCE.v(VAR_PATTERN, (byte)1),
                 Atomic.the("x"),
                 IdempotInt.the(1),
                 IdempotInt.the(-1000),
@@ -199,32 +199,32 @@ class TermIOTest {
             }
         }
 
-        assertEqualSerialize($.p( anons ));
+        assertEqualSerialize($.INSTANCE.p( anons ));
 
-        assertEqualSerialize($.p( Anom.the(1), Anom.the(2) ));
-        assertEqualSerialize($.p( Anom.the(1), $.varDep(2) ));
+        assertEqualSerialize($.INSTANCE.p( Anom.the(1), Anom.the(2) ));
+        assertEqualSerialize($.INSTANCE.p( Anom.the(1), $.INSTANCE.varDep(2) ));
     }
 
     @Test void DepVarCombinations() throws IOException {
-        Term a = $$("(#1 &&+32 (#1 &&+24 #1))");
-        Term b = $$("#1");
-        Term c = $$("(--,#1)");
+        Term a = INSTANCE.$$("(#1 &&+32 (#1 &&+24 #1))");
+        Term b = INSTANCE.$$("#1");
+        Term c = INSTANCE.$$("(--,#1)");
         assertEqualSerialize(a);
         assertEqualSerialize(b);
         assertEqualSerialize(c);
-        assertEqualSerialize($.p(a,b));
-        assertEqualSerialize($.p(b,a));
-        assertEqualSerialize($.p(b,c));
-        assertEqualSerialize($.p(c,b));
-        assertEqualSerialize($.p(a,c));
-        assertEqualSerialize($.p(c,a));
-        assertEqualSerialize($.p(a,b,c));
-        assertEqualSerialize($.p(c,b,a));
-        assertEqualSerialize($.p(c,a,b));
-        assertEqualSerialize($.p(b,c,a));
-        assertEqualSerialize($.p(b,a,c));
-        assertEqualSerialize($.p(a,c,b));
-        assertEq("(((#1 &&+32 #1) &&+24 #1),#1,(--,#1))", $.p(a,b,c));
+        assertEqualSerialize($.INSTANCE.p(a,b));
+        assertEqualSerialize($.INSTANCE.p(b,a));
+        assertEqualSerialize($.INSTANCE.p(b,c));
+        assertEqualSerialize($.INSTANCE.p(c,b));
+        assertEqualSerialize($.INSTANCE.p(a,c));
+        assertEqualSerialize($.INSTANCE.p(c,a));
+        assertEqualSerialize($.INSTANCE.p(a,b,c));
+        assertEqualSerialize($.INSTANCE.p(c,b,a));
+        assertEqualSerialize($.INSTANCE.p(c,a,b));
+        assertEqualSerialize($.INSTANCE.p(b,c,a));
+        assertEqualSerialize($.INSTANCE.p(b,a,c));
+        assertEqualSerialize($.INSTANCE.p(a,c,b));
+        assertEq("(((#1 &&+32 #1) &&+24 #1),#1,(--,#1))", $.INSTANCE.p(a,b,c));
     }
 
     @Test
@@ -241,16 +241,16 @@ class TermIOTest {
     void testTermSerialization3_2() throws Exception {
         
 
-        Variable q = $.varQuery(1);
-        Compound twoB = $.inh($.varDep(2), Atomic.the("b"));
+        Variable q = $.INSTANCE.varQuery(1);
+        Compound twoB = $.INSTANCE.inh($.INSTANCE.varDep(2), Atomic.the("b"));
         assertNotEquals(
                 q.compareTo(twoB),
                 twoB.compareTo(q));
 
         assertTermEqualSerialize("((#a --> b) <-> ?c)");
 
-        Term a = $("(#2-->b)");
-        Term b = $("?1");
+        Term a = INSTANCE.$("(#2-->b)");
+        Term b = INSTANCE.$("?1");
         int x = a.compareTo(b);
         int y = b.compareTo(a);
         assertNotEquals((int) Math.signum(x), (int) Math.signum(y));
@@ -258,7 +258,7 @@ class TermIOTest {
     }
 
     private static void assertTermEqualSerialize(String s) throws Narsese.NarseseException, IOException {
-        Termed t = $.$(s);
+        Termed t = $.INSTANCE.$(s);
         assertTrue(t.term().isNormalized());
         assertEqualSerialize(t.term() /* target, not the concept */);
     }

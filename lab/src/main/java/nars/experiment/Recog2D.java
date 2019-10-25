@@ -44,7 +44,7 @@ import java.util.function.Supplier;
 import java.util.stream.IntStream;
 
 import static jcog.Util.compose;
-import static nars.$.$$;
+import static nars.$.*;
 import static nars.Op.GOAL;
 
 /**
@@ -75,7 +75,7 @@ public class Recog2D extends GameX {
     static final int FPS = 16;
 
     public Recog2D(NAR n) {
-        super($$("x"), GameTime.fps((float) FPS), n);
+        super(INSTANCE.$$("x"), GameTime.fps((float) FPS), n);
 
 
         w = 12; h = 14;
@@ -91,7 +91,7 @@ public class Recog2D extends GameX {
         int sh = 9;
         int sw = 7;
         sp = senseCamera(
-                $.p(id,$.the("x"))
+                $.INSTANCE.p(id, $.INSTANCE.the("x"))
 
 
                 ,
@@ -106,7 +106,7 @@ public class Recog2D extends GameX {
         outs = new BeliefVector(this, maxImages, new IntFunction<Term>() {
             @Override
             public Term apply(int ii) {
-                return $.inh(id, $.the(ii));
+                return $.INSTANCE.inh(id, $.INSTANCE.the(ii));
             }
         }
         );
@@ -477,7 +477,7 @@ public class Recog2D extends GameX {
 
 
                                                                                    //return x;
-                                                                                   return x != null ? $.t(x.freq(), nar.beliefConfDefault.floatValue()) : null;
+                                                                                   return x != null ? $.INSTANCE.t(x.freq(), nar.beliefConfDefault.floatValue()) : null;
                                                                                }
                                                                            });
 

@@ -34,7 +34,7 @@ public class FactualEvaluator extends Evaluator {
 
     @Deprecated
     public static FactualEvaluator query(String s, NAR n) throws Narsese.NarseseException {
-        return query($.$(s), n);
+        return query($.INSTANCE.$(s), n);
     }
 
     @Deprecated

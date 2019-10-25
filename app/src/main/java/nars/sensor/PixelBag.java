@@ -267,22 +267,22 @@ public class PixelBag implements Bitmap2D {
         if (this.actions != null && !this.actions.isEmpty())
             throw new UnsupportedOperationException("actions already added");
 
-        actions = $.newArrayList(3);
+        actions = $.INSTANCE.newArrayList(3);
 
         if (horizontal)
-            actions.add(a.actionUnipolar($.inh(termRoot, Atomic.the("panX")), this::setXRelative));
+            actions.add(a.actionUnipolar($.INSTANCE.inh(termRoot, Atomic.the("panX")), this::setXRelative));
         else {
             pos.x = posNext.x = 0.5f;
         }
 
         if (vertical)
-            actions.add(a.actionUnipolar($.inh(termRoot, Atomic.the("panY")), this::setYRelative));
+            actions.add(a.actionUnipolar($.INSTANCE.inh(termRoot, Atomic.the("panY")), this::setYRelative));
         else {
             pos.y = posNext.y = 0.5f;
         }
 
         if (zoom) {
-            actions.add(a.actionUnipolar($.inh(termRoot, Atomic.the("zoom")), this::setZoom));
+            actions.add(a.actionUnipolar($.INSTANCE.inh(termRoot, Atomic.the("zoom")), this::setZoom));
             //minZoom = 1.5f; //expand to allow viewing the entire image as summary
         } else
             Z = Znext = 0.5f;

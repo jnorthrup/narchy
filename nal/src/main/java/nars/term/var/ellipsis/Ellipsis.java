@@ -72,7 +72,7 @@ public abstract class Ellipsis extends UnnormalizedVariable implements Ellipsisl
 
 
         public static Ellipsis make(byte serial, int minArity) {
-            NormalizedVariable v = $.v(VAR_PATTERN, serial);
+            NormalizedVariable v = $.INSTANCE.v(VAR_PATTERN, serial);
             switch (minArity) {
                 case 0:
                     return new EllipsisZeroOrMore(v);

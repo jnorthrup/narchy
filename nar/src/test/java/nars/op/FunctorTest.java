@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import static nars.$.$$;
+import static nars.$.*;
 import static nars.Op.BELIEF;
 import static nars.time.Tense.ETERNAL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -27,7 +27,7 @@ class FunctorTest {
         NAR n = NARS.tmp();
 
 
-        Term y = $$("[a,b]");
+        Term y = INSTANCE.$$("[a,b]");
 
         boolean[] got = {false};
         n.onTask(new Consumer<Task>() {
@@ -122,7 +122,7 @@ class FunctorTest {
     @Test
     @Disabled void testAnon1() {
         NAR d = NARS.shell();
-        Set<Term> result = Evaluation.eval($$("anon((a,b),#x)"), d);
+        Set<Term> result = Evaluation.eval(INSTANCE.$$("anon((a,b),#x)"), d);
         assertEquals("[anon((a,b),(_1,_2))]", result.toString());
     }
 

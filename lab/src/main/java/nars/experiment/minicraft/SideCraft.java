@@ -21,7 +21,7 @@ import java.awt.image.BufferedImage;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import static nars.$.$;
+import static nars.$.*;
 
 /**
  * Created by me on 9/19/16.
@@ -58,7 +58,7 @@ public class SideCraft extends GameX {
                 return camBuffer;
             }
         }), 48, 32)
-                .addActions($.$("cra"), this);
+                .addActions($.INSTANCE.$("cra"), this);
 
 
         AutoclassifiedBitmap camAE = new AutoclassifiedBitmap("cra", cam.pixels, 8, 8, 32, this);
@@ -72,7 +72,7 @@ public class SideCraft extends GameX {
         /* slow */
 
 
-        actionPushButton($("cra(key,left)"), new BooleanProcedure() {
+        actionPushButton(INSTANCE.$("cra(key,left)"), new BooleanProcedure() {
             @Override
             public void value(boolean b4) {
                 if (b4) craft.player.startLeft(false /* slow */);
@@ -83,7 +83,7 @@ public class SideCraft extends GameX {
         /* slow */
 
 
-        actionPushButton($("cra(key,right)"), new BooleanProcedure() {
+        actionPushButton(INSTANCE.$("cra(key,right)"), new BooleanProcedure() {
             @Override
             public void value(boolean b3) {
                 if (b3) craft.player.startRight(false /* slow */);
@@ -92,7 +92,7 @@ public class SideCraft extends GameX {
         });
 
 
-        actionPushButton($("cra(key,up)"), new BooleanProcedure() {
+        actionPushButton(INSTANCE.$("cra(key,up)"), new BooleanProcedure() {
             @Override
             public void value(boolean b2) {
                 if (b2) craft.player.startClimb();
@@ -101,7 +101,7 @@ public class SideCraft extends GameX {
         });
 
 
-        actionPushButton($("cra(key,mouseL)"), new BooleanProcedure() {
+        actionPushButton(INSTANCE.$("cra(key,mouseL)"), new BooleanProcedure() {
             @Override
             public void value(boolean b1) {
                 craft.leftClick = b1;
@@ -109,7 +109,7 @@ public class SideCraft extends GameX {
         });
 
 
-        actionPushButton($("cra(key,mouseR)"), new BooleanProcedure() {
+        actionPushButton(INSTANCE.$("cra(key,mouseR)"), new BooleanProcedure() {
             @Override
             public void value(boolean b) {
                 craft.rightClick = b;
@@ -117,7 +117,7 @@ public class SideCraft extends GameX {
         });
 
         float mSpeed = 45f;
-        actionBipolar($("cra(mouse,X)"), new FloatToFloatFunction() {
+        actionBipolar(INSTANCE.$("cra(mouse,X)"), new FloatToFloatFunction() {
             @Override
             public float valueOf(float v) {
                 int x = craft.screenMousePos.x;
@@ -128,7 +128,7 @@ public class SideCraft extends GameX {
 
             }
         });
-        actionBipolar($("cra(mouse,Y)"), new FloatToFloatFunction() {
+        actionBipolar(INSTANCE.$("cra(mouse,Y)"), new FloatToFloatFunction() {
             @Override
             public float valueOf(float v) {
                 int y = craft.screenMousePos.y;

@@ -60,11 +60,11 @@ class UnitCompoundTest {
     @Test
     void testUnitCompound2() {
         Atomic x = Atomic.the("x");
-        Term c = $.p(x);
+        Term c = $.INSTANCE.p(x);
         System.out.println(c);
         System.out.println(c.sub(0));
 
-        Compound d = $.inh(x, Atomic.the("y"));
+        Compound d = $.INSTANCE.inh(x, Atomic.the("y"));
         System.out.println(d);
     }
 
@@ -72,7 +72,7 @@ class UnitCompoundTest {
     void testUnitCompound3() {
         Atomic x = Atomic.the("x");
         Atomic y = Atomic.the("y");
-        Term c = $.func(x, y);
+        Term c = $.INSTANCE.func(x, y);
         System.out.println(c);
         assertEquals("(y)", c.sub(0).toString());
         assertEquals("x", c.sub(1).toString());
@@ -105,14 +105,14 @@ class UnitCompoundTest {
 
     @Test
     void testRecursiveContains() throws Narsese.NarseseException {
-        Term s = $.$("(--,(x))");
-        Term p = $.$("((--,(x)) &&+0 (--,(y)))");
+        Term s = $.INSTANCE.$("(--,(x))");
+        Term p = $.INSTANCE.$("((--,(x)) &&+0 (--,(y)))");
         assertTrue(p.contains(s));
         assertTrue(p.containsRecursively(s));
     }
 
     @Test
     void testImpossibleSubterm() throws Narsese.NarseseException {
-        assertFalse($.$("(--,(x))").impossibleSubTerm($.$("(x)")));
+        assertFalse($.INSTANCE.$("(--,(x))").impossibleSubTerm($.INSTANCE.$("(x)")));
     }
 }

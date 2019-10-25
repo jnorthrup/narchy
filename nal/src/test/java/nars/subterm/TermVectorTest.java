@@ -20,8 +20,8 @@ class TermVectorTest {
     @Test
     void testSubtermsEquality() throws Narsese.NarseseException {
 
-        Term a = $.$("(a-->b)");
-        Compound b = $.impl(Atomic.the("a"), Atomic.the("b"));
+        Term a = $.INSTANCE.$("(a-->b)");
+        Compound b = $.INSTANCE.impl(Atomic.the("a"), Atomic.the("b"));
         assertNotEquals(a, b);
         assertNotEquals(a.hashCode(), b.hashCode());
 
@@ -39,8 +39,8 @@ class TermVectorTest {
 
     @Test
     void testSortedTermContainer() throws Narsese.NarseseException {
-        Term aa = $.$("a");
-        Term bb = $.$("b");
+        Term aa = $.INSTANCE.$("a");
+        Term bb = $.INSTANCE.$("b");
         Subterms a = Op.terms.subterms(aa, bb);
         assertTrue(a.isSorted());
         Subterms b = Op.terms.subterms(bb, aa);

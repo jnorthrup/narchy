@@ -132,7 +132,7 @@ final class TaskEvaluation extends Evaluation implements Predicate<Term> {
 
 			return Task.clone(x,
 				x.term(),
-				$.t((float) (y == True ? 1 : 0), w.nar.confDefault(answerPunc)),
+				$.INSTANCE.t((float) (y == True ? 1 : 0), w.nar.confDefault(answerPunc)),
 				answerPunc,
 				x.start(), x.end());
 

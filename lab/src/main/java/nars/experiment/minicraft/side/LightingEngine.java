@@ -40,7 +40,7 @@ public class LightingEngine implements Serializable {
             }
         }
         if (isSun) {
-            List<LightingPoint> sources = $.newArrayList(width);
+            List<LightingPoint> sources = $.INSTANCE.newArrayList(width);
             for (int x = 0; x < width; x++) {
                 getSunSources(x, sources);
             }
@@ -75,7 +75,7 @@ public class LightingEngine implements Serializable {
         }
         lightFlow[x][y] = Direction.UNKNOWN;
         if (isSun) {
-            spreadLightingDijkstra(getSunSources(x, $.newArrayList()));
+            spreadLightingDijkstra(getSunSources(x, $.INSTANCE.newArrayList()));
         }
         spreadLightingDijkstra(new LightingPoint(x, y, Direction.UNKNOWN, lightValues[x][y])
                 .getNeighbors(true, width, height));

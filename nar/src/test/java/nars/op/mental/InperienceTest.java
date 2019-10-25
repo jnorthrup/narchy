@@ -5,7 +5,7 @@ import nars.NARS;
 import nars.Narsese;
 import org.junit.jupiter.api.Test;
 
-import static nars.$.$$;
+import static nars.$.*;
 import static nars.term.util.TermTest.assertEq;
 
 class InperienceTest {
@@ -16,13 +16,13 @@ class InperienceTest {
 
 		assertEq(
 			"believe(I,x)",
-			Inperience.reifyBeliefOrGoal(n.inputTask("x. |"), $$("I"))
+			Inperience.reifyBeliefOrGoal(n.inputTask("x. |"), INSTANCE.$$("I"))
 		);
 
 		//negation is maintained internally to the overall positive belief
 		assertEq(
 			"believe(I,(--,x))",
-			Inperience.reifyBeliefOrGoal(n.inputTask("--x. |"), $$("I"))
+			Inperience.reifyBeliefOrGoal(n.inputTask("--x. |"), INSTANCE.$$("I"))
 		);
 	}
 }

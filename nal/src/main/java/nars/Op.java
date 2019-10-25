@@ -550,7 +550,7 @@ public enum Op {
                 return op.strAtom;
             }
             default: {
-                return $.quote(Integer.toBinaryString(struct)/*.substring(Op.ops.length)*/);
+                return $.INSTANCE.quote(Integer.toBinaryString(struct)/*.substring(Op.ops.length)*/);
             }
         }
     }
@@ -579,7 +579,7 @@ public enum Op {
                 return x[0];
             default:
                 Term[] xx = x.clone();
-                $.neg(xx);
+                $.INSTANCE.neg(xx);
                 return CONJ.the(b, dt, xx).neg();
         }
     }
@@ -610,16 +610,16 @@ public enum Op {
     }
 
     public static Task believe(Term x) {
-        return new AbstractCommandTask($.func(Task.BeliefAtom, x));
+        return new AbstractCommandTask($.INSTANCE.func(Task.BeliefAtom, x));
     }
     public static Task ask(Term x) {
-        return new AbstractCommandTask($.func(Task.QuestionAtom, x));
+        return new AbstractCommandTask($.INSTANCE.func(Task.QuestionAtom, x));
     }
     public static Task want(Term x) {
-        return new AbstractCommandTask($.func(Task.GoalAtom, x));
+        return new AbstractCommandTask($.INSTANCE.func(Task.GoalAtom, x));
     }
     public static Task how(Term x) {
-        return new AbstractCommandTask($.func(Task.QuestAtom, x));
+        return new AbstractCommandTask($.INSTANCE.func(Task.QuestAtom, x));
     }
 
     public final Term the(Subterms s) {

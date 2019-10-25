@@ -231,7 +231,7 @@ public class IRCNLP extends IRC {
 
 
 
-        Term HEAR = $.the("hear");
+        Term HEAR = $.INSTANCE.the("hear");
 
 
         n.onTask(new Consumer<Task>() {
@@ -292,7 +292,7 @@ public class IRCNLP extends IRC {
     protected float send(Term o) {
         Runnable r = null;
         synchronized (channels) {
-            String w = $.unquote(o);
+            String w = $.INSTANCE.unquote(o);
             this.s += w;
             boolean punctuation = List.of(".", "!", "?").contains(w);
             if (!punctuation)

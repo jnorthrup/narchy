@@ -20,7 +20,7 @@ public final class SingleOrDoublePremise extends AbstractPred<PreDerivation> {
     }
 
     public SingleOrDoublePremise(PuncMap requires, boolean singleOrDouble) {
-        super($.func(singleOrDouble ? S : D, requires));
+        super($.INSTANCE.func(singleOrDouble ? S : D, requires));
         this.requires = requires;
         this.singleOrDouble = singleOrDouble;
     }

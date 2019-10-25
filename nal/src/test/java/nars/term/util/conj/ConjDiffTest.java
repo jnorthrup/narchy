@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import java.util.TreeSet;
 import java.util.function.Supplier;
 
-import static nars.$.$$;
+import static nars.$.*;
 import static nars.term.atom.IdempotentBool.False;
 import static nars.term.util.TermTest.assertEq;
 import static nars.time.Tense.ETERNAL;
@@ -18,9 +18,9 @@ class ConjDiffTest {
     void testConjDiff_EliminateSeq() {
 
         assertEq("c", Conj.diff(
-                $$("(b &&+5 c)"), 5, $$("(a &&+5 b)"), 0).term());
+                INSTANCE.$$("(b &&+5 c)"), 5, INSTANCE.$$("(a &&+5 b)"), 0).term());
         assertEq("c", Conj.diff(
-                $$("(--b &&+5 c)"), 5, $$("(a &&+5 --b)"), 0).term());
+                INSTANCE.$$("(--b &&+5 c)"), 5, INSTANCE.$$("(a &&+5 --b)"), 0).term());
     }
 
 
@@ -45,43 +45,43 @@ class ConjDiffTest {
     void testConjDiff_EternalComponents_Same_Masked() {
         //x && ... common to both
         assertEq("z", Conj.diff(
-                $$("(x&&z)"), 0, $$("(x&&y)"), 0).term());
+                INSTANCE.$$("(x&&z)"), 0, INSTANCE.$$("(x&&y)"), 0).term());
 
         assertEq("z", Conj.diff(
-                $$("(x&&z)"), 0, $$("(x&&y)"), ETERNAL).term());
+                INSTANCE.$$("(x&&z)"), 0, INSTANCE.$$("(x&&y)"), ETERNAL).term());
 //        assertEq("z", ConjDiff.the(
 //                $$("(x&&z)"), 0, $$("(x&&y)"), ETERNAL).target());
 
         assertEq("z", Conj.diff(
-                $$("(x&&z)"), 1, $$("(x&&y)"), 1).term());
+                INSTANCE.$$("(x&&z)"), 1, INSTANCE.$$("(x&&y)"), 1).term());
         assertEq("(x&&z)", Conj.diff(
-                $$("(x&&z)"), 1, $$("(x&&y)"), 0).term());
+                INSTANCE.$$("(x&&z)"), 1, INSTANCE.$$("(x&&y)"), 0).term());
         assertEq("(x&&z)", Conj.diff(
-                $$("(x&&z)"), 0, $$("(x&&y)"), 1).term());
+                INSTANCE.$$("(x&&z)"), 0, INSTANCE.$$("(x&&y)"), 1).term());
 
         assertEq("(c&&x)", Conj.diff(
-                $$("(x&&(b &&+5 c))"), 5, $$("(x&&(a &&+5 b))"), 0).term());
+                INSTANCE.$$("(x&&(b &&+5 c))"), 5, INSTANCE.$$("(x&&(a &&+5 b))"), 0).term());
     }
 
     @Test
     void testConjDiff_EternalComponents_Diff_Masked_Ete() {
         assertEq("(w&&z)", Conj.diff(
-                $$("(w && z)"), 5, $$("(x && y)"), 0).term());
+                INSTANCE.$$("(w && z)"), 5, INSTANCE.$$("(x && y)"), 0).term());
     }
     @Test
     void testConjDiff_EternalComponents_Diff_Masked_Seq() {
 
-        assertEquals(5, $$("((a &&+5 b)&&x)").eventRange());
+        assertEquals(5, INSTANCE.$$("((a &&+5 b)&&x)").eventRange());
 
         assertEq("(((a &&+5 b)&&x)==>(y &&+5 (c&&y)))", "(((a &&+5 b)&&x)==>((b &&+5 c)&&y))");
 
         assertEq("(y &&+5 (c&&y))", Conj.diff(
-                $$("(y && (b &&+5 c))"), 5, $$("(x && (a &&+5 b))"), 0).term());
+                INSTANCE.$$("(y && (b &&+5 c))"), 5, INSTANCE.$$("(x && (a &&+5 b))"), 0).term());
     }
 
     @Test void ConjWithoutPN_EliminateOnlyOneAtAtime_Seq() {
-        Term x = $$("x"), y = $$("y");
-        Term xy = $$("((x &&+4120 y) &&+1232 --y)");
+        Term x = INSTANCE.$$("x"), y = INSTANCE.$$("y");
+        Term xy = INSTANCE.$$("((x &&+4120 y) &&+1232 --y)");
 
         String both = "[(x &&+5352 (--,y)), (x &&+4120 y)]";
         assertConjDiffPN(xy, y, "[x]"); //2 compound results
@@ -89,20 +89,20 @@ class ConjDiffTest {
         assertConjDiffPN(xy, x, "[(y &&+1232 (--,y))]"); //1 compound result
     }
 
-    private final Term xy = $$("((x &&+4120 (y&&z)) &&+1232 --y)");
+    private final Term xy = INSTANCE.$$("((x &&+4120 (y&&z)) &&+1232 --y)");
 
     @Test void ConjWithoutPN_EliminateOnlyOneAtAtime_Seq_with_inner_Comm() {
-        assertConjDiffPN(xy, $$("(y&&z)"), "[(x &&+5352 (--,y))]");
+        assertConjDiffPN(xy, INSTANCE.$$("(y&&z)"), "[(x &&+5352 (--,y))]");
         //assertConjDiffPN(xy, $$("(y&&z)").neg(), "[(x &&+5352 (--,y))]");
     }
 
     @Test void ConjWithoutPN_EliminateOnlyOneAtAtime_Seq_with_inner_Comm_unify() {
-        assertConjDiffPN(xy, $$("(z &&+1232 --y)"), "[(x &&+4120 y)]");
+        assertConjDiffPN(xy, INSTANCE.$$("(z &&+1232 --y)"), "[(x &&+4120 y)]");
     }
 
     @Test void ConjWithoutPN_EliminateOnlyOneAtAtime_Comm2() {
-        Term x = $$("x"), y = $$("y");
-        Term xy = $$("(x && y)");
+        Term x = INSTANCE.$$("x"), y = INSTANCE.$$("y");
+        Term xy = INSTANCE.$$("(x && y)");
         assertConjDiffPN(xy, y, "[x]");
         assertConjDiffPN(xy, x, "[y]");
     }
@@ -125,39 +125,39 @@ class ConjDiffTest {
     }
 
     @Test void eventOf() {
-        assertEventOf($$("(x && y)"), $$("x"));
-        assertEventOf($$("(x && y)"), $$("y"));
-        assertNotEventOf($$("(x && y)"), $$("(x&&y)")); //equal
+        assertEventOf(INSTANCE.$$("(x && y)"), INSTANCE.$$("x"));
+        assertEventOf(INSTANCE.$$("(x && y)"), INSTANCE.$$("y"));
+        assertNotEventOf(INSTANCE.$$("(x && y)"), INSTANCE.$$("(x&&y)")); //equal
 
-        assertNotEventOf($$("(x &&+- y)"), $$("(x&&y)")); //component-wise, this is contained
+        assertNotEventOf(INSTANCE.$$("(x &&+- y)"), INSTANCE.$$("(x&&y)")); //component-wise, this is contained
 
-        assertEventOf($$("(x &&+- y)"), $$("x"));
-        assertEventOf($$("(x &&+- y)"), $$("y"));
+        assertEventOf(INSTANCE.$$("(x &&+- y)"), INSTANCE.$$("x"));
+        assertEventOf(INSTANCE.$$("(x &&+- y)"), INSTANCE.$$("y"));
 
-        assertEventOf($$("(x &&+1 y)"), $$("x"));
-        assertEventOf($$("(x &&+1 y)"), $$("y"));
+        assertEventOf(INSTANCE.$$("(x &&+1 y)"), INSTANCE.$$("x"));
+        assertEventOf(INSTANCE.$$("(x &&+1 y)"), INSTANCE.$$("y"));
 
-        assertEventOf($$("(&&,x,y,z)"), $$("x"));
-        assertEventOf($$("(&&,x,y,z)"), $$("(x && y)"));
-        assertEventOf($$("(&&,x,y,z)"), $$("(x && z)"));
+        assertEventOf(INSTANCE.$$("(&&,x,y,z)"), INSTANCE.$$("x"));
+        assertEventOf(INSTANCE.$$("(&&,x,y,z)"), INSTANCE.$$("(x && y)"));
+        assertEventOf(INSTANCE.$$("(&&,x,y,z)"), INSTANCE.$$("(x && z)"));
 
-        assertEventOf($$("((&&,x,y) &&+1 w)"), $$("w"));
-        assertEventOf($$("((&&,x,y) &&+1 w)"), $$("(x && y)"));
+        assertEventOf(INSTANCE.$$("((&&,x,y) &&+1 w)"), INSTANCE.$$("w"));
+        assertEventOf(INSTANCE.$$("((&&,x,y) &&+1 w)"), INSTANCE.$$("(x && y)"));
     }
     @Test void eventOf_SubSeq() {
-        assertEventOf(xy, $$("(z &&+1232 --y)"));
-        assertNotEventOf(xy, $$("(w &&+1232 --y)")); //wrong start term
-        assertNotEventOf(xy, $$("(z &&+1232 w)")); //wrong end term
-        assertNotEventOf(xy, $$("(z &&+1231 --y)")); //different sequencing
+        assertEventOf(xy, INSTANCE.$$("(z &&+1232 --y)"));
+        assertNotEventOf(xy, INSTANCE.$$("(w &&+1232 --y)")); //wrong start term
+        assertNotEventOf(xy, INSTANCE.$$("(z &&+1232 w)")); //wrong end term
+        assertNotEventOf(xy, INSTANCE.$$("(z &&+1231 --y)")); //different sequencing
 
     }
     @Test void diffCommComm() {
-        assertEq("(b&&c)", Conj.diffAll($$("(&&,a,b,c)"), $$("(&&,a,d,e)")));
-        assertEq("a", Conj.diffAll($$("(&&,a,b,c)"), $$("(&&,b,c,e)")));
-        assertEq("b", Conj.diffAll($$("(&&,a,b,c)"), $$("(&&,a,c,e)")));
+        assertEq("(b&&c)", Conj.diffAll(INSTANCE.$$("(&&,a,b,c)"), INSTANCE.$$("(&&,a,d,e)")));
+        assertEq("a", Conj.diffAll(INSTANCE.$$("(&&,a,b,c)"), INSTANCE.$$("(&&,b,c,e)")));
+        assertEq("b", Conj.diffAll(INSTANCE.$$("(&&,a,b,c)"), INSTANCE.$$("(&&,a,c,e)")));
 
-        assertEq("b", Conj.diffAll($$("(&&,a,b)"), $$("(&&,a,c)")));
-        assertEq("a", Conj.diffAll($$("(&&,a,b)"), $$("(&&,b,c)")));
+        assertEq("b", Conj.diffAll(INSTANCE.$$("(&&,a,b)"), INSTANCE.$$("(&&,a,c)")));
+        assertEq("a", Conj.diffAll(INSTANCE.$$("(&&,a,b)"), INSTANCE.$$("(&&,b,c)")));
 
     }
 

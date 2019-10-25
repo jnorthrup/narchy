@@ -31,9 +31,9 @@ class ImplicationNetworkTest {
         new BeliefContradictionDetector(n);
     }
 
-    final Term a = $.the("a");
-    final Term b = $.the("b");
-    final Term c = $.the("c");
+    final Term a = $.INSTANCE.the("a");
+    final Term b = $.INSTANCE.the("b");
+    final Term c = $.INSTANCE.the("c");
 
     @Test
     void testEternal_A_PosBelief_ToBC() {

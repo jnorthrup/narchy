@@ -15,8 +15,8 @@ import org.junit.jupiter.api.Test;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import static nars.$.$;
-import static nars.$.$$;
+import static nars.$.*;
+import static nars.$.*;
 import static nars.Op.CONJ;
 import static nars.term.util.TermTest.assertEq;
 import static nars.time.Tense.DTERNAL;
@@ -30,7 +30,7 @@ class ConceptualizationTest {
 
 
     private static Term ceptualStable(String s) throws Narsese.NarseseException {
-        Term c = $(s);
+        Term c = INSTANCE.$(s);
         Term c1 = c.concept();
 
         Term c2 = c1.concept();
@@ -44,20 +44,20 @@ class ConceptualizationTest {
     }
 
     public static void assertConceptual(String cexp, String c) throws Narsese.NarseseException {
-        assertEq(cexp, $(c).concept().toString());
+        assertEq(cexp, INSTANCE.$(c).concept().toString());
     }
 
 
     @Test
     void testFlattenAndDeduplicateAndUnnegateConj_Conceptualization() {
-        Term t = $$("((||+- ,((--,(right-->fz)) &&+- (--,(right-->fz))),(fz-->race)) &&+- (fz-->race))");
+        Term t = INSTANCE.$$("((||+- ,((--,(right-->fz)) &&+- (--,(right-->fz))),(fz-->race)) &&+- (fz-->race))");
         assertEq("( &&+- ,(--,(fz-->race)),(--,(right-->fz)),(fz-->race))", Conceptualization.FlattenAndDeduplicateAndUnnegateConj.apply(t));
     }
 
     @Test
     void testConceptualization() throws Narsese.NarseseException {
 
-        Term t = $("(x==>y)");
+        Term t = INSTANCE.$("(x==>y)");
         Term x = t.root();
         assertEquals(XTERNAL, x.dt());
         assertEquals("(x ==>+- y)", x.toString());
@@ -89,7 +89,7 @@ class ConceptualizationTest {
     @Test
     void testEmbeddedChangedRoot() throws Narsese.NarseseException {
         assertEquals("(a ==>+- (b &&+- c))",
-                $("(a ==> (b &&+1 c))").root().toString());
+                INSTANCE.$("(a ==> (b &&+1 c))").root().toString());
     }
 
 
@@ -97,18 +97,18 @@ class ConceptualizationTest {
     void testEmbeddedChangedRootVariations() throws Narsese.NarseseException {
         {
 
-            Term x = $("(a ==> (b &&+1 (c && d)))");
+            Term x = INSTANCE.$("(a ==> (b &&+1 (c && d)))");
             assertEquals("(a==>(b &&+1 (c&&d)))", x.toString());
             assertEquals("(a ==>+- ( &&+- ,b,c,d))", x.root().toString());
         }
         {
-            Term x = $("(a ==> (b &&+1 (c && d)))");
+            Term x = INSTANCE.$("(a ==> (b &&+1 (c && d)))");
             assertEquals("(a ==>+- ( &&+- ,b,c,d))", x.root().toString());
         }
 
 
         {
-            Term x = $("(a ==> (b &&+1 (c &&+1 d)))");
+            Term x = INSTANCE.$("(a ==> (b &&+1 (c &&+1 d)))");
             assertEquals("(a ==>+- ( &&+- ,b,c,d))", x.root().toString());
         }
 
@@ -121,29 +121,29 @@ class ConceptualizationTest {
 
     @Test void ConceptualizeSequence() {
         assertEq("((2,(g,y)) &&+- (2,(g,y)))",
-                $$("((2,(g,y)) &&+260 (2,(g,y)))").root());
+                INSTANCE.$$("((2,(g,y)) &&+260 (2,(g,y)))").root());
 
         assertEq("((--,(2,(g,y))) &&+- (--,(2,(g,y))))",
-                $$("(--(2,(g,y)) &&+260 --(2,(g,y)))").root());
+                INSTANCE.$$("(--(2,(g,y)) &&+260 --(2,(g,y)))").root());
 
         assertEq("((2,(g,y)) &&+- (2,(g,y)))",
-                $$("(((2,(g,y)) &&+260 (2,(g,y))) &&+710 (2,(g,y)))").root());
+                INSTANCE.$$("(((2,(g,y)) &&+260 (2,(g,y))) &&+710 (2,(g,y)))").root());
 
         assertEq("((--,(2,(g,y))) &&+- (--,(2,(g,y))))",
-                $$("(((--,(2,(g,y))) &&+260 (--,(2,(g,y)))) &&+710 (--,(2,(g,y))))").root());
+                INSTANCE.$$("(((--,(2,(g,y))) &&+260 (--,(2,(g,y)))) &&+710 (--,(2,(g,y))))").root());
     }
 
 
 
 
     @Test void Conceptualize_Not_NAL3_seq() {
-        assertEq("(x-->(a &&+- a))", $$("(x-->(a &&+1 a))").root());
+        assertEq("(x-->(a &&+- a))", INSTANCE.$$("(x-->(a &&+1 a))").root());
     }
 
     @Test
     void testStableNormalizationAndConceptualizationComplex() {
         String s = "(((--,checkScore(#1))&&#1) &&+14540 ((--,((#1)-->$2)) ==>+17140 (isRow(#1,(0,false),true)&&((#1)-->$2))))";
-        Term t = $$(s);
+        Term t = INSTANCE.$$(s);
         assertEquals(s, t.toString());
         assertEquals(s, t.normalize().toString());
         assertEquals(s, t.normalize().normalize().toString());
@@ -160,17 +160,17 @@ class ConceptualizationTest {
 
     @Test
     void testAtemporalization() throws Narsese.NarseseException {
-        assertEquals("(x ==>+- y)", n.conceptualize($("(x ==>+10 y)")).toString());
+        assertEquals("(x ==>+- y)", n.conceptualize(INSTANCE.$("(x ==>+10 y)")).toString());
     }
     @Test
     void testCoNegatedSubtermConceptImpl() throws Narsese.NarseseException {
-        assertEquals("(x ==>+- x)", n.conceptualize($("(x ==>+10 x)")).toString());
-        assertEquals("((--,x) ==>+- x)", n.conceptualize($("((--,x) ==>+10 x)")).toString());
+        assertEquals("(x ==>+- x)", n.conceptualize(INSTANCE.$("(x ==>+10 x)")).toString());
+        assertEquals("((--,x) ==>+- x)", n.conceptualize(INSTANCE.$("((--,x) ==>+10 x)")).toString());
 
-        Term xThenNegX = $("(x ==>+10 (--,x))");
+        Term xThenNegX = INSTANCE.$("(x ==>+10 (--,x))");
         assertEquals("(x ==>+- x)", n.conceptualize(xThenNegX).toString());
 
-        assertEquals("(x ==>+- x)", n.conceptualize($("(x ==>-10 (--,x))")).toString());
+        assertEquals("(x ==>+- x)", n.conceptualize(INSTANCE.$("(x ==>-10 (--,x))")).toString());
 
     }
 
@@ -190,7 +190,7 @@ class ConceptualizationTest {
     }
     @Test
     void conceptualizability() {
-        assertEq("(( &&+- ,b,c,d) ==>+- b)", $$("((c &&+5 (b&|d)) ==>-10 b)").concept());
+        assertEq("(( &&+- ,b,c,d) ==>+- b)", INSTANCE.$$("((c &&+5 (b&|d)) ==>-10 b)").concept());
     }
 
     @Test
@@ -237,19 +237,19 @@ class ConceptualizationTest {
     @Test
     void testConjRootMultiConj() throws Narsese.NarseseException {
 
-        Term d = $("(x &&+1 (y &&+1 z))");
+        Term d = INSTANCE.$("(x &&+1 (y &&+1 z))");
         assertEq("( &&+- ,x,y,z)", d.root());
 
     }
     @Test
     void testEmbeddedChangedRootSeqToMerged() throws Narsese.NarseseException {
-        Term x = $("(b &&+1 (c &&+1 d))");
+        Term x = INSTANCE.$("(b &&+1 (c &&+1 d))");
         assertEquals("( &&+- ,b,c,d)", x.root().toString());
     }
     @Test
     void testConceptOfDisjunctionFckup() {
         assertEq("((||+- ,(1-->ang),(--,z),(--,ang)) &&+- (--,(2-->ang)))",
-                $$("((--,(&|,(--,(1-->ang)),ang,z))&&(--,(2-->ang)))").concept());
+                INSTANCE.$$("((--,(&|,(--,(1-->ang)),ang,z))&&(--,(2-->ang)))").concept());
 
         //TODO ((grid,#1,13) &&+440 (--,((||,(--,(grid,#1,#1)),rotate)&&left))) .concept()
         //TODO ((&|,(tetris-->curi),(--,left),(--,rotate))&&(--,((--,rotate) &&+819 (--,left))))
@@ -261,7 +261,7 @@ class ConceptualizationTest {
         String s = "((x &&+1 y) &&+1 z)";
         assertEq(
                 "( &&+- ,x,y,z)",
-                $$(s).concept().toString());
+                INSTANCE.$$(s).concept().toString());
     }
 
     @Test
@@ -271,7 +271,7 @@ class ConceptualizationTest {
 
         assertEq(
                 "((--,noid(0,5)) &&+- noid(11,2))",
-                $$(x).concept()
+                INSTANCE.$$(x).concept()
         );
     }
 
@@ -280,15 +280,15 @@ class ConceptualizationTest {
     void testConceptualizationWithoutConjReduction() {
         String s = "((--,((happy-->#1) &&+345 (#1,zoom))) &&+1215 (--,((#1,zoom) &&+10 (happy-->#1))))";
         assertEq("((--,((happy-->#1) &&+- (#1,zoom))) &&+- (--,((happy-->#1) &&+- (#1,zoom))))",
-                $$(s).concept().toString());
+                INSTANCE.$$(s).concept().toString());
     }
 
     @Test
     void testCoNegatedSubtermConceptConj() {
-        assertEq("(x &&+- x)", n.conceptualize($$("(x &&+10 x)")).toString());
+        assertEq("(x &&+- x)", n.conceptualize(INSTANCE.$$("(x &&+10 x)")).toString());
 
-        assertEq("((--,x) &&+- x)", n.conceptualize($$("(x &&+10 (--,x))")).toString());
-        assertEq("((--,x) &&+- x)", n.conceptualize($$("(x &&-10 (--,x))")).toString());
+        assertEq("((--,x) &&+- x)", n.conceptualize(INSTANCE.$$("(x &&+10 (--,x))")).toString());
+        assertEq("((--,x) &&+- x)", n.conceptualize(INSTANCE.$$("(x &&-10 (--,x))")).toString());
 
 
     }
@@ -296,7 +296,7 @@ class ConceptualizationTest {
     @Test
     public void testConjConceptualizationWithNeg1() {
         String s = "(--,((--,(right &&+24 #1)) &&+24 #1))";
-        Term t = $$(s);
+        Term t = INSTANCE.$$(s);
         assertEquals(s, t.toString());
         assertEq("(--,((--,(right &&+24 #1)) &&+24 #1))", t.normalize().toString());
         assertEq("(--,((--,(right &&+- #1)) &&+- #1))", t.root().toString());
@@ -306,7 +306,7 @@ class ConceptualizationTest {
 
     @Test
     void testStableConceptualization6a() {
-        Term s = $$("((tetris($1,#2) &&+290 tetris(isRow,(8,false),true))=|>(tetris(checkScore,#2)&|tetris($1,#2)))");
+        Term s = INSTANCE.$$("((tetris($1,#2) &&+290 tetris(isRow,(8,false),true))=|>(tetris(checkScore,#2)&|tetris($1,#2)))");
         assertEq("((tetris(isRow,(8,false),true) &&+- tetris($1,#2)) ==>+- (tetris(checkScore,#2) &&+- tetris($1,#2)))", s.concept().toString());
     }
 
@@ -339,7 +339,7 @@ class ConceptualizationTest {
     }
     @Test
     void testConjSeqConceptual2() throws Narsese.NarseseException {
-        Term t = $("((--,((--,(--a &&+1 --b)) &&+1 a)) &&+1 a)");
+        Term t = INSTANCE.$("((--,((--,(--a &&+1 --b)) &&+1 a)) &&+1 a)");
         assertEquals("((--,((--,((--,a) &&+1 (--,b))) &&+1 a)) &&+1 a)", t.toString());
 
         Term r = t.root();
@@ -360,7 +360,7 @@ class ConceptualizationTest {
 
         for (int dt : new int[]{ /*XTERNAL,*/ 0, DTERNAL}) {
             assertEquals("( &&+- ,a,b,c)",
-                    CONJ.the(dt, $$("a"), $$("b"), $$("c")).concept().toString(), new Supplier<String>() {
+                    CONJ.the(dt, INSTANCE.$$("a"), INSTANCE.$$("b"), INSTANCE.$$("c")).concept().toString(), new Supplier<String>() {
                         @Override
                         public String get() {
                             return "dt=" + dt;
@@ -371,11 +371,11 @@ class ConceptualizationTest {
 
         assertEquals(
                 "( &&+- ,(bx-->noid),(happy-->noid),#1)",
-                $$("(--,(((bx-->noid) &| (happy-->noid)) &| #1))")
+                INSTANCE.$$("(--,(((bx-->noid) &| (happy-->noid)) &| #1))")
                         .concept().toString());
         assertEquals(
                 "(x,(--,( &&+- ,a,b,c)))",
-                $$("(x,(--,(( a &| b) &| c)))")
+                INSTANCE.$$("(x,(--,(( a &| b) &| c)))")
                         .concept().toString());
     }
 
@@ -384,26 +384,26 @@ class ConceptualizationTest {
 
 
         for (String op : new String[]{"&&"}) {
-            Concept a = n.conceptualize($("(x " + op + "   y)"));
-            Concept b = n.conceptualize($("(x " + op + "+1 y)"));
+            Concept a = n.conceptualize(INSTANCE.$("(x " + op + "   y)"));
+            Concept b = n.conceptualize(INSTANCE.$("(x " + op + "+1 y)"));
 
             assertSame(a, b);
 
-            Concept c = n.conceptualize($("(x " + op + "+2 y)"));
+            Concept c = n.conceptualize(INSTANCE.$("(x " + op + "+2 y)"));
 
             assertSame(b, c);
 
-            Concept d = n.conceptualize($("(x " + op + "-1 y)"));
+            Concept d = n.conceptualize(INSTANCE.$("(x " + op + "-1 y)"));
 
             assertSame(c, d);
 
-            Term e0 = $("(x " + op + "+- y)");
+            Term e0 = INSTANCE.$("(x " + op + "+- y)");
             assertEquals("(x " + op + "+- y)", e0.toString());
             Concept e = n.conceptualize(e0);
 
             assertSame(d, e);
 
-            Term f0 = $("(y " + op + "+- x)");
+            Term f0 = INSTANCE.$("(y " + op + "+- x)");
             assertEquals("(x " + op + "+- y)", f0.toString());
             assertEquals("(x " + op + "+- y)", f0.root().toString());
 
@@ -416,11 +416,11 @@ class ConceptualizationTest {
             });
 
 
-            Concept g = n.conceptualize($("(x " + op + "+- x)"));
+            Concept g = n.conceptualize(INSTANCE.$("(x " + op + "+- x)"));
             assertEquals("(x " + op + "+- x)", g.toString());
 
 
-            Concept h = n.conceptualize($("(x " + op + "+- (--,x))"));
+            Concept h = n.conceptualize(INSTANCE.$("(x " + op + "+- (--,x))"));
             assertEquals("((--,x) " + op + "+- x)", h.toString());
 
 
@@ -429,46 +429,46 @@ class ConceptualizationTest {
     }
 
     @Test void testInhConj() {
-        Term a = $$("(x-->(y&&z))");
+        Term a = INSTANCE.$$("(x-->(y&&z))");
         Term ac = a.concept();
         assertEq("(x-->(y&&z))", ac);
-        assertEq("(x-->(y &&+- z))", $$("(x-->(y &&+1 z))").concept());
-        assertEq("((tetris-->((--,score)&&rotate))-->(plan,z,/))", $$("((tetris-->((--,score)&&rotate))-->(plan,z,/))").concept());
+        assertEq("(x-->(y &&+- z))", INSTANCE.$$("(x-->(y &&+1 z))").concept());
+        assertEq("((tetris-->((--,score)&&rotate))-->(plan,z,/))", INSTANCE.$$("((tetris-->((--,score)&&rotate))-->(plan,z,/))").concept());
     }
     /** TODO make consistent with new conceptualization */
     @Disabled @Test void ConceptualizeNAL3() {
         //direct inh subterm
-        assertEq("(x-->(a &&+- b))", $$("(x-->(a&&b))").root());
-        assertEq("(x-->(a &&+- b))", $$("(x-->(a&&b))").concept());
+        assertEq("(x-->(a &&+- b))", INSTANCE.$$("(x-->(a&&b))").root());
+        assertEq("(x-->(a &&+- b))", INSTANCE.$$("(x-->(a&&b))").concept());
 
         assertEq(//TODO "(x-->(a||b))",
             "(--,(x-->((--,a) &&+- (--,b))))",
-            $$("(x-->(a||b))").root());
+            INSTANCE.$$("(x-->(a||b))").root());
         assertEq(//TODO "(x-->(a||b))",
             "(x-->((--,a) &&+- (--,b)))",
-            $$("(x-->(a||b))").concept());
+            INSTANCE.$$("(x-->(a||b))").concept());
 
 
-        assertEq("(x-->( &&+- ,a,b,c))", $$("(x-->(&&,a,b,c))").root());
+        assertEq("(x-->( &&+- ,a,b,c))", INSTANCE.$$("(x-->(&&,a,b,c))").root());
 
         //direct sim subterm
-        assertEq("((a &&+- b)<->x)", $$("(x<->(a&&b))").root());
-        assertEq("((a &&+- b)<->x)", $$("(x<->(a&&b))").concept());
-        assertEq("((a &&+- b)<->(c &&+- d))", $$("((c&&d)<->(a&&b))").root());
+        assertEq("((a &&+- b)<->x)", INSTANCE.$$("(x<->(a&&b))").root());
+        assertEq("((a &&+- b)<->x)", INSTANCE.$$("(x<->(a&&b))").concept());
+        assertEq("((a &&+- b)<->(c &&+- d))", INSTANCE.$$("((c&&d)<->(a&&b))").root());
 
         //indirect inh subterm (thru product)
-        assertEq("x((a &&+- b))", $$("x((a&&b))").root());
-        assertEq("x((a ||+- b))", $$("x((a||b))").root());
+        assertEq("x((a &&+- b))", INSTANCE.$$("x((a&&b))").root());
+        assertEq("x((a ||+- b))", INSTANCE.$$("x((a||b))").root());
         assertEq(//"x(( &&+- ,(--,b),(--,c),a))",
             "x(((b ||+- c) &&+- a))",
-            $$("x((a&&(b||c)))").root());
+            INSTANCE.$$("x((a&&(b||c)))").root());
 
-        assertEq("(a-->(x &&+- y))", $$("(a-->(x && y))").concept());
-        assertEq("((x &&+- y)-->a)", $$("((x && y)-->a)").concept());
-        assertEq("((x &&+- y)<->a)", $$("((x && y)<->a)").concept());
-        assertEq("(a-->( &&+- ,x,y,z))", $$("(a-->(&&,x,y,z))").concept());
+        assertEq("(a-->(x &&+- y))", INSTANCE.$$("(a-->(x && y))").concept());
+        assertEq("((x &&+- y)-->a)", INSTANCE.$$("((x && y)-->a)").concept());
+        assertEq("((x &&+- y)<->a)", INSTANCE.$$("((x && y)<->a)").concept());
+        assertEq("(a-->( &&+- ,x,y,z))", INSTANCE.$$("(a-->(&&,x,y,z))").concept());
 
-        assertEq("(a-->((--,x) &&+- (--,y)))", $$("(a-->(x || y))").concept());
+        assertEq("(a-->((--,x) &&+- (--,y)))", INSTANCE.$$("(a-->(x || y))").concept());
     }
 
 }

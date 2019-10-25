@@ -38,13 +38,13 @@ public interface NSense {
 
 
     static Term switchTerm(String a, String b) throws Narsese.NarseseException {
-        return switchTerm($(a), $(b));
+        return switchTerm(INSTANCE.$(a), INSTANCE.$(b));
     }
 
 
     static Term switchTerm(Term a, Term b) {
 
-        return p(a, b);
+        return INSTANCE.p(a, b);
         //return $.prop(a,b);
     }
 
@@ -91,7 +91,7 @@ public interface NSense {
         return senseSwitch(min, max, value, new IntFunction<Term>() {
             @Override
             public Term apply(int e) {
-                return switchTerm(term, the(e));
+                return switchTerm(term, INSTANCE.the(e));
             }
         });
     }
@@ -187,7 +187,7 @@ public interface NSense {
 
 
     default List<Signal> senseNumber(int from, int to, IntFunction<String> id, IntFunction<FloatSupplier> v) {
-        List<Signal> l = newArrayList(to - from);
+        List<Signal> l = INSTANCE.newArrayList(to - from);
         for (int i = from; i < to; i++) {
             l.add(senseNumber(id.apply(i), v.apply(i)));
         }
@@ -267,7 +267,7 @@ public interface NSense {
                 new IntFunction<Term>() {
                     @Override
                     public Term apply(int angle) {
-                        return $.inh(root, the(angle));
+                        return $.INSTANCE.inh(root, INSTANCE.the(angle));
                     }
                 }
                 //angle -> $.inh($.pRadix(angle, 2, divisions-1), root)
@@ -291,15 +291,15 @@ public interface NSense {
     }
 
     default Signal senseNumber(String id, FloatSupplier v) {
-        return sense($$(id), v);
+        return sense(INSTANCE.$$(id), v);
     }
 
     default DigitizedScalar senseNumberBi(Term id, FloatSupplier v) {
-        return senseNumber(v, DigitizedScalar.FuzzyNeedle, inh(id, LOW), inh(id, HIH));
+        return senseNumber(v, DigitizedScalar.FuzzyNeedle, INSTANCE.inh(id, LOW), INSTANCE.inh(id, HIH));
     }
 
     default DigitizedScalar senseNumberTri(Term id, FloatSupplier v) {
-        return senseNumber(v, DigitizedScalar.FuzzyNeedle, inh(id, LOW), inh(id, MID), inh(id, HIH));
+        return senseNumber(v, DigitizedScalar.FuzzyNeedle, INSTANCE.inh(id, LOW), INSTANCE.inh(id, MID), INSTANCE.inh(id, HIH));
     }
 
 
@@ -315,7 +315,7 @@ public interface NSense {
     default BiPolarAction actionBipolarFrequencyDifferential(Term template, boolean fair, FloatToFloatFunction motor) {
         if (!template.hasAny(Op.VAR_QUERY)) {
             //throw new TermException("has no query variables", template);
-            template = $.inh(template, $.varQuery(1));
+            template = $.INSTANCE.inh(template, $.INSTANCE.varQuery(1));
         }
 
         Term t = template;
@@ -323,7 +323,7 @@ public interface NSense {
                 fair, new BooleanToObjectFunction<Term>() {
                     @Override
                     public Term valueOf(boolean posOrNeg) {
-                        return t.replace($.varQuery(1), posOrNeg ? POS : NEG);
+                        return t.replace($.INSTANCE.varQuery(1), posOrNeg ? POS : NEG);
                     }
                 },
                 motor);

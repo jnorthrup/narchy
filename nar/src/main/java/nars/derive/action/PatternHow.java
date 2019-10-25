@@ -120,7 +120,7 @@ public class PatternHow extends CondHow {
         this.source = ruleSrc;
         this.id = new MyPremiseRuleNormalization().apply(
             new UppercaseAtomsToPatternVariables().apply(
-                $.pFast(parseRuleComponents(ruleSrc))
+                $.INSTANCE.pFast(parseRuleComponents(ruleSrc))
             )
         );
 
@@ -536,7 +536,7 @@ public class PatternHow extends CondHow {
         if (!savedConj.isEmpty()) {
             int i = 0;
             for (Term x : savedConj) {
-                Term y = $.p(eteConj, $.the(i));
+                Term y = $.INSTANCE.p(eteConj, $.INSTANCE.the(i));
                 subbedConj.add(y);
                 c = c.replace(x, y);
                 i++;
@@ -813,7 +813,7 @@ public class PatternHow extends CondHow {
 
     private static final Pattern ruleImpl = Pattern.compile("\\|-");
 
-    private static final Term eteConj = $.the("eteConj");
+    private static final Term eteConj = $.INSTANCE.the("eteConj");
 
     private static final Map<Term, Truthify> truthifies = new ConcurrentHashMap<>(512);
 
@@ -837,7 +837,7 @@ public class PatternHow extends CondHow {
                         return map.computeIfAbsent(name, new Function<String, Term>() {
                             @Override
                             public Term apply(String n) {
-                                return $.varPattern(1 + map.size());
+                                return $.INSTANCE.varPattern(1 + map.size());
                             }
                         });
 

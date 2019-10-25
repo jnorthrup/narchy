@@ -102,7 +102,7 @@ public class EvalTermBuffer extends TermBuffer {
                 return this.value; //cached
             } else {
 
-                Term argsY = DeferredEvaluator.apply($.pFast(args)); //recurse apply to arguments before eval
+                Term argsY = DeferredEvaluator.apply($.INSTANCE.pFast(args)); //recurse apply to arguments before eval
                 Term e;
                 if (argsY == Null)
                     e = Null;

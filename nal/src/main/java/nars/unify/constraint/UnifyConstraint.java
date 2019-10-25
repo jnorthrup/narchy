@@ -45,7 +45,7 @@ public abstract class UnifyConstraint<U extends Unify> extends AbstractPred<U> {
 
 	UnifyConstraint(Variable x, Term func, @Nullable Term... args) {
 		super(args != null && args.length > 0 ?
-			$.impl(x, $.p(func, $.pOrOnly(args))) : $.impl(x, func));
+			$.INSTANCE.impl(x, $.INSTANCE.p(func, $.INSTANCE.pOrOnly(args))) : $.INSTANCE.impl(x, func));
 		this.x = x;
 	}
 
@@ -146,7 +146,7 @@ public abstract class UnifyConstraint<U extends Unify> extends AbstractPred<U> {
                     new Function<UnifyConstraint, Term>() {
                         @Override
                         public Term apply(UnifyConstraint cc) {
-                            return $.pOrOnly(
+                            return $.INSTANCE.pOrOnly(
                                     cc.sub(1)
                                     //cc.sub(0).subterms().subRangeArray(1, Integer.MAX_VALUE)
                             );

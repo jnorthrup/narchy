@@ -10,7 +10,7 @@ public final class DurNARConsumer extends DurLoop {
 	final Consumer<NAR> r;
 
 	public DurNARConsumer(Consumer<NAR> r) {
-		super($.identity(r));
+		super($.INSTANCE.identity(r));
 		this.r = r;
 	}
 

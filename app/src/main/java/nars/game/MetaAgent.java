@@ -37,7 +37,7 @@ import java.util.function.DoubleSupplier;
 import java.util.function.Predicate;
 import java.util.function.ToDoubleFunction;
 
-import static nars.$.$$;
+import static nars.$.*;
 
 /**
  * supraself agent metavisor
@@ -125,11 +125,11 @@ public abstract class MetaAgent extends Game {
 //	}
 
 	void priAction(PriSource a) {
-		priAction($.inh(a.id, pri), a);
+		priAction($.INSTANCE.inh(a.id, pri), a);
 	}
 
 	void priAction(PriAmp a) {
-		floatAction($.inh(a.id, pri), 2.0F, a.amp).resolution(PRI_ACTION_RESOLUTION);
+		floatAction($.INSTANCE.inh(a.id, pri), 2.0F, a.amp).resolution(PRI_ACTION_RESOLUTION);
 	}
 
 	void priAction(Term id, PriSource a) {
@@ -201,7 +201,7 @@ public abstract class MetaAgent extends Game {
 		}
 
 		public SelfMetaAgent(NAR nar, float durs) {
-			super($.inh(nar.self(), $$("meta")), GameTime.durs(durs), nar);
+			super($.INSTANCE.inh(nar.self(), INSTANCE.$$("meta")), GameTime.durs(durs), nar);
             NAR n = nar;
 
             Term SELF = n.self();
@@ -209,13 +209,13 @@ public abstract class MetaAgent extends Game {
 
             Emotion e = n.emotion;
 
-			sense($.inh(SELF, $$("busy")), new FloatNormalized(e.busyVol));
-			sense($.inh(SELF, $$("premiseRun")), new FloatNormalized(e.premiseRun));
-			sense($.inh(SELF, $$("deriveTask")), new FloatNormalized(e.deriveTask));
-			sense($.inh(SELF, $$("lag")), new FloatNormalized(e.durLoopLag));
+			sense($.INSTANCE.inh(SELF, INSTANCE.$$("busy")), new FloatNormalized(e.busyVol));
+			sense($.INSTANCE.inh(SELF, INSTANCE.$$("premiseRun")), new FloatNormalized(e.premiseRun));
+			sense($.INSTANCE.inh(SELF, INSTANCE.$$("deriveTask")), new FloatNormalized(e.deriveTask));
+			sense($.INSTANCE.inh(SELF, INSTANCE.$$("lag")), new FloatNormalized(e.durLoopLag));
 
 			for (MetaGoal mg : MetaGoal.values()) {
-                GoalActionConcept a = actionUnipolar($.inh(SELF, $.the(mg.name())), new FloatConsumer() {
+                GoalActionConcept a = actionUnipolar($.INSTANCE.inh(SELF, $.INSTANCE.the(mg.name())), new FloatConsumer() {
                     @Override
                     public void accept(float x) {
                         nar.emotion.want(mg,
@@ -234,7 +234,7 @@ public abstract class MetaAgent extends Game {
 //        actionCtl($.inh(SELF, beliefPri), n.beliefPriDefault.amp.subRange(maxPri/dynamic, maxPri));
 //        actionCtl($.inh(SELF, goalPri), n.goalPriDefault.amp.subRange(maxPri/dynamic, maxPri));
 
-			actionUnipolar($.inh(SELF, precise), new FloatToFloatFunction() {
+			actionUnipolar($.INSTANCE.inh(SELF, precise), new FloatToFloatFunction() {
                 @Override
                 public float valueOf(float x) {
                     float x1 = x;
@@ -323,7 +323,7 @@ public abstract class MetaAgent extends Game {
 
 			float durMeasured = (float) 0;
 
-			reward($.inh(SELF, $.p(happy, now)), new FloatSupplier() {
+			reward($.INSTANCE.inh(SELF, $.INSTANCE.p(happy, now)), new FloatSupplier() {
                 @Override
                 public float asFloat() {
                     return SelfMetaAgent.this.happiness(nowPercept.start, nowPercept.end, durMeasured, nar);
@@ -332,7 +332,7 @@ public abstract class MetaAgent extends Game {
 
 			/** past happiness ~= gradient momentum / echo effect */
 			float emotionalMomentumDurs = 4.0F;
-			reward($.inh(SELF, $.p(happy, past)), new FloatSupplier() {
+			reward($.INSTANCE.inh(SELF, $.INSTANCE.p(happy, past)), new FloatSupplier() {
                 @Override
                 public float asFloat() {
                     return SelfMetaAgent.this.happiness((long) Math.round((float) nowPercept.start - SelfMetaAgent.this.dur() * emotionalMomentumDurs), nowPercept.start, durMeasured, nar);
@@ -340,7 +340,7 @@ public abstract class MetaAgent extends Game {
             });
 
 			/** optimism */
-			reward($.inh(SELF, $.p(happy, future)), new FloatSupplier() {
+			reward($.INSTANCE.inh(SELF, $.INSTANCE.p(happy, future)), new FloatSupplier() {
                 @Override
                 public float asFloat() {
                     return SelfMetaAgent.this.happiness(nowPercept.end, (long) Math.round((float) nowPercept.end + SelfMetaAgent.this.dur() * emotionalMomentumDurs), durMeasured, nar);
@@ -395,7 +395,7 @@ public abstract class MetaAgent extends Game {
 		private static final long autoResumePeriod = 256L;
 
 		public GameMetaAgent(Game g, boolean allowPause) {
-			super($.inh(g.what().id, $$("meta")), g.time.chain(2.0F /* nyquist */), g.nar);
+			super($.INSTANCE.inh(g.what().id, INSTANCE.$$("meta")), g.time.chain(2.0F /* nyquist */), g.nar);
 
             What w = g.what();
 
@@ -409,8 +409,8 @@ public abstract class MetaAgent extends Game {
 			priAction(g.actionPri);
 
 
-			floatAction($.inh(gid, forget), ((TaskLinkWhat) w).links.decay);
-			floatAction($.inh(gid, grow), ((TaskLinkWhat) w).links.grow);
+			floatAction($.INSTANCE.inh(gid, forget), ((TaskLinkWhat) w).links.decay);
+			floatAction($.INSTANCE.inh(gid, grow), ((TaskLinkWhat) w).links.grow);
 			//actionCtl($.inh(gid, remember), ((TaskLinkWhat) w).links.sustain);
 
 			//actionCtl($.inh(gid, amplify), ((TaskLinkWhat) w).links.amp);
@@ -442,7 +442,7 @@ public abstract class MetaAgent extends Game {
 //			};
 
 
-			actionUnipolar($.inh(gid, duration), new FloatConsumer() {
+			actionUnipolar($.INSTANCE.inh(gid, duration), new FloatConsumer() {
                 @Override
                 public void accept(float x) {
                     float ditherDT = (float) nar.dtDither();
@@ -456,10 +456,10 @@ public abstract class MetaAgent extends Game {
             });
 
 			if (w.inBuffer instanceof PriBuffer.BagTaskBuffer)
-				floatAction($.inh(gid, input), ((PriBuffer.BagTaskBuffer) (w.inBuffer)).valve);
+				floatAction($.INSTANCE.inh(gid, input), ((PriBuffer.BagTaskBuffer) (w.inBuffer)).valve);
 
 
-			reward($.inh(gid, happy), new FloatSupplier() {
+			reward($.INSTANCE.inh(gid, happy), new FloatSupplier() {
                 @Override
                 public float asFloat() {
                     return g.isOn() ? (float) g.happiness(nowPercept.start, nowPercept.end, (float) 0) : Float.NaN;
@@ -467,7 +467,7 @@ public abstract class MetaAgent extends Game {
             });
 
 
-			rewardNormalized($.inh(gid, dex), 1.0F, (float) 0, ScalarValue.EPSILON,
+			rewardNormalized($.INSTANCE.inh(gid, dex), 1.0F, (float) 0, ScalarValue.EPSILON,
                     new FloatSupplier() {
                         @Override
                         public float asFloat() {
@@ -481,7 +481,7 @@ public abstract class MetaAgent extends Game {
 
 			for (GameLoop s : g.sensors) {
 				if (s instanceof VectorSensor)
-					floatAction($.inh(((AbstractSensor) s).id, pri), ((VectorSensor) s).pri.amp);
+					floatAction($.INSTANCE.inh(((AbstractSensor) s).id, pri), ((VectorSensor) s).pri.amp);
 			}
 
 
@@ -497,7 +497,7 @@ public abstract class MetaAgent extends Game {
 
 			if (allowPause) {
                 float playThresh = 0.25f;
-				actionPushButton($.inh(gid, MetaAgent.play), new BooleanProcedure() {
+				actionPushButton($.INSTANCE.inh(gid, MetaAgent.play), new BooleanProcedure() {
 
 					private volatile int autoResumeID = 0;
 					private volatile ScheduledTask autoResume;

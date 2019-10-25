@@ -18,7 +18,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.List;
 
-import static nars.$.$$;
+import static nars.$.*;
 import static spacegraph.SpaceGraph.window;
 
 class ConceptGraph2DTest {
@@ -73,14 +73,14 @@ class ConceptGraph2DTest {
                         new PushButton("good+").clicked(new Runnable() {
                                                             @Override
                                                             public void run() {
-                                                                n.believe($$("good"), n.time(), Math.round(n.time() + ((double) n.dur())), 1f, 0.9f);
+                                                                n.believe(INSTANCE.$$("good"), n.time(), Math.round(n.time() + ((double) n.dur())), 1f, 0.9f);
                                                             }
                                                         }
                         ), 0.5f,
                         new PushButton("good-").clicked(new Runnable() {
                                                             @Override
                                                             public void run() {
-                                                                n.believe($$("good"), n.time(), Math.round(n.time() + ((double) n.dur())), 0f, 0.9f);
+                                                                n.believe(INSTANCE.$$("good"), n.time(), Math.round(n.time() + ((double) n.dur())), 0f, 0.9f);
                                                             }
                                                         }
                         )
@@ -90,22 +90,22 @@ class ConceptGraph2DTest {
                         new PushButton("bad+").clicked(new Runnable() {
                                                            @Override
                                                            public void run() {
-                                                               n.believe($$("bad"), n.time(), Math.round(n.time() + ((double) n.dur())), 1f, 0.9f);
+                                                               n.believe(INSTANCE.$$("bad"), n.time(), Math.round(n.time() + ((double) n.dur())), 1f, 0.9f);
                                                            }
                                                        }
                         ), 0.5f,
                         new PushButton("bad-").clicked(new Runnable() {
                                                            @Override
                                                            public void run() {
-                                                               n.believe($$("bad"), n.time(), Math.round(n.time() + ((double) n.dur())), 0f, 0.9f);
+                                                               n.believe(INSTANCE.$$("bad"), n.time(), Math.round(n.time() + ((double) n.dur())), 0f, 0.9f);
                                                            }
                                                        }
                         )
                     )
                     ),
                 new Gridding(
-                    NARui.beliefCharts(n, $$("good"), $$("bad"), $$("reward")),
-                    NARui.beliefIcons(n, List.of($$("good"), $$("bad"), $$("reward")))
+                    NARui.beliefCharts(n, INSTANCE.$$("good"), INSTANCE.$$("bad"), INSTANCE.$$("reward")),
+                    NARui.beliefIcons(n, List.of(INSTANCE.$$("good"), INSTANCE.$$("bad"), INSTANCE.$$("reward")))
                 ),
                 new Gridding(
                     new PushButton("reset").clicked(n::reset),

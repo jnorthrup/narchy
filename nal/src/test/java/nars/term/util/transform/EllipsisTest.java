@@ -24,8 +24,8 @@ import java.util.Random;
 import java.util.Set;
 import java.util.function.Supplier;
 
-import static nars.$.$;
-import static nars.$.$$$;
+import static nars.$.*;
+import static nars.$.*;
 import static nars.Op.VAR_PATTERN;
 import static nars.term.util.TermTest.assertEq;
 import static nars.term.var.ellipsis.Ellipsis.firstEllipsis;
@@ -193,13 +193,13 @@ public class EllipsisTest {
             String p = this.prefix;
             if ((arity == 0) && (p.endsWith(",")))
                 p = p.substring(0, p.length()-1);
-            return $(p + s + suffix);
+            return INSTANCE.$(p + s + suffix);
         }
     }
 
     public static class CommutiveEllipsisTest1 extends CommutiveEllipsisTest {
 
-        static final Variable fixedTerm = $.varPattern(1);
+        static final Variable fixedTerm = $.INSTANCE.varPattern(1);
 
 
         CommutiveEllipsisTest1(String ellipsisTerm, String[] openClose) throws Narsese.NarseseException {
@@ -275,14 +275,14 @@ public class EllipsisTest {
 
         @Override
         public @Nullable Compound getPattern(String prefix, String suffix) throws Narsese.NarseseException {
-            return $(prefix + ellipsisTerm + suffix);
+            return INSTANCE.$(prefix + ellipsisTerm + suffix);
         }
 
 
         @Override
         public Term getResult() throws Narsese.NarseseException {
             String s = prefix + "Z, " + ellipsisTerm + suffix;
-            Compound c = $(s);
+            Compound c = INSTANCE.$(s);
             assertNotNull(c, new Supplier<String>() {
                 @Override
                 public String get() {
@@ -313,7 +313,7 @@ public class EllipsisTest {
     @Test
     void testEllipsisOneOrMore() throws Narsese.NarseseException {
         String s = "%prefix..+";
-        Variable t = $(s);
+        Variable t = INSTANCE.$(s);
         assertNotNull(t);
         assertEquals("%prefixU..+", t.toString());
 
@@ -326,14 +326,14 @@ public class EllipsisTest {
     @Test
     void testEllipsisZeroOrMore() throws Narsese.NarseseException {
         String s = "%prefix..*";
-        Variable t = $(s);
+        Variable t = INSTANCE.$(s);
         assertNotNull(t);
         assertEquals("%prefixU..*", t.toString());
 
         Term tn = t.normalizedVariable((byte) 1);
         assertEquals(EllipsisZeroOrMore.class, tn.getClass());
         assertEquals("%1..*", tn.toString());
-        assertNotEquals($.varPattern(1), tn);
+        assertNotEquals($.INSTANCE.varPattern(1), tn);
     }
 
 
@@ -460,32 +460,32 @@ public class EllipsisTest {
     void testEllipsisCombinatorics1() throws Narsese.NarseseException {
         
         testCombinations(
-                $$$("(&&, %1..+, %2)"),
-                $$$("(&&, x, y, z)"),
+                INSTANCE.$$$("(&&, %1..+, %2)"),
+                INSTANCE.$$$("(&&, x, y, z)"),
                 3);
     }
 
     @Test
     void testMatchAll2() throws Narsese.NarseseException {
         testCombinations(
-                $$$("((|,%1,%2),(|,%2,%3))"),
-                $$$("((|,bird,swimmer),(|,animal,swimmer))"),
+                INSTANCE.$$$("((|,%1,%2),(|,%2,%3))"),
+                INSTANCE.$$$("((|,bird,swimmer),(|,animal,swimmer))"),
                 1);
     }
 
     @Test
     void testMatchAll3() throws Narsese.NarseseException {
         testCombinations(
-                $$$("((|,%X,%Z,%A) , (|,%Y,%Z,%A))"),
-                $$$("((|,bird,man, swimmer),(|,man, animal,swimmer))"),
+                INSTANCE.$$$("((|,%X,%Z,%A) , (|,%Y,%Z,%A))"),
+                INSTANCE.$$$("((|,bird,man, swimmer),(|,man, animal,swimmer))"),
                 2);
     }
 
     @Test
     void testRepeatEllipsisAWithoutEllipsis() throws Narsese.NarseseException {
         testCombinations(
-                $$$("((|,%X,%Y) ,(|,%Y,%Z))"),
-                $$$("((|,bird,swimmer),(|,animal,swimmer))"),
+                INSTANCE.$$$("((|,%X,%Y) ,(|,%Y,%Z))"),
+                INSTANCE.$$$("((|,bird,swimmer),(|,animal,swimmer))"),
                 1);
     }
 
@@ -493,10 +493,10 @@ public class EllipsisTest {
     void testRepeatEllipsisA() throws Narsese.NarseseException {
 
         assertEq("(%1||%2..+)", "(|,%X,%A..+)");
-        assertNotEquals($$$("(|,%X,%A..+)"), $$$("(|,%Y,%A..+)"));
+        assertNotEquals(INSTANCE.$$$("(|,%X,%A..+)"), INSTANCE.$$$("(|,%Y,%A..+)"));
         testCombinations(
-                $$$("((|,%X,%A..+) , (|,%Y,%A..+))"),
-                $$$("((|,x,common),(|,y,common))"),
+                INSTANCE.$$$("((|,%X,%A..+) , (|,%Y,%A..+))"),
+                INSTANCE.$$$("((|,x,common),(|,y,common))"),
                 1);
     }
 
@@ -504,16 +504,16 @@ public class EllipsisTest {
     void testRepeatEllipsisA2() throws Narsese.NarseseException {
 
         testCombinations(
-                $$$("((%X,%A..+) , (%Y,%A..+))"),
-                $$$("((bird,swimmer),(animal,swimmer))"),
+                INSTANCE.$$$("((%X,%A..+) , (%Y,%A..+))"),
+                INSTANCE.$$$("((bird,swimmer),(animal,swimmer))"),
                 1);
     }
 
     @Test
     void testRepeatEllipsisA0() throws Narsese.NarseseException {
         testCombinations(
-                $$$("((%A, %X) --> (%B, %X))"),
-                $$$("((bird,swimmer)-->(animal,swimmer))"),
+                INSTANCE.$$$("((%A, %X) --> (%B, %X))"),
+                INSTANCE.$$$("((bird,swimmer)-->(animal,swimmer))"),
                 1);
     }
 
@@ -522,34 +522,34 @@ public class EllipsisTest {
 
         
         testCombinations(
-                $$$("((|,%X,%A..+) ,(|,%X,%B..+))"),
-                $$$("((|,bird,swimmer),(|,animal,swimmer))"),
+                INSTANCE.$$$("((|,%X,%A..+) ,(|,%X,%B..+))"),
+                INSTANCE.$$$("((|,bird,swimmer),(|,animal,swimmer))"),
                 1);
     }
 
     @Test
     void testIntersection1() throws Narsese.NarseseException {
         testCombinations(
-                $$$("(%M --> (|,%S,%A..+))"),
-                $$$("(m-->(|,s,a))"),
+                INSTANCE.$$$("(%M --> (|,%S,%A..+))"),
+                INSTANCE.$$$("(m-->(|,s,a))"),
                 2);
         testCombinations(
-                $$$("(%M --> (&,%S,%A..+))"),
-                $$$("(m-->(&,s,a))"),
+                INSTANCE.$$$("(%M --> (&,%S,%A..+))"),
+                INSTANCE.$$$("(m-->(&,s,a))"),
                 2);
     }
     @Test
     void conjEllipsisToConjSeq1() throws Narsese.NarseseException {
         testCombinations(
-                $$$("(a &&+- %A..+)"),
-                $$$("((a &&+1 b) &&+1 c)"),
+                INSTANCE.$$$("(a &&+- %A..+)"),
+                INSTANCE.$$$("((a &&+1 b) &&+1 c)"),
                 1);
     }
     @Test
     void conjEllipsisToConjSeq2() {
         testCombinations(
-                $$$("(%X &&+- %A..+)"),
-                $$$("((a &&+1 b) &&+1 c)"),
+                INSTANCE.$$$("(%X &&+- %A..+)"),
+                INSTANCE.$$$("((a &&+1 b) &&+1 c)"),
                 3);
     }
 

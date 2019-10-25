@@ -216,7 +216,7 @@ public abstract class Atomic implements Term {
 //                            return Int.the(i);
 //                    }
 
-                    return $.quote(id);
+                    return $.INSTANCE.quote(id);
                 } else {
                     Atom.validateAtomID(id);
                     return Op.terms.atom(id);
