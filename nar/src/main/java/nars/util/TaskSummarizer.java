@@ -12,7 +12,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
-import static jcog.Texts.n2;
+import static jcog.Texts.*;
 import static nars.Op.*;
 
 /** fast summarization of certain Task features used for control feedback.  gathers statistics concurrently
@@ -89,7 +89,7 @@ public class TaskSummarizer extends NARPart implements Consumer<Task> {
             forEach(new CellConsumer() {
                         @Override
                         public void accept(byte punc, int num, Op o, float volMean, float priMean) {
-                            out.println(o.str + ' ' + ((char) punc) + " x " + num + ", volMean=" + n2(volMean) + " priMean=" + n2(priMean));
+                            out.println(o.str + ' ' + ((char) punc) + " x " + num + ", volMean=" + INSTANCE.n2(volMean) + " priMean=" + INSTANCE.n2(priMean));
                         }
                     }
             );

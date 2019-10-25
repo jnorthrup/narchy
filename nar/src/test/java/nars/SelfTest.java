@@ -421,7 +421,7 @@ public class SelfTest {
 
     private static class NSTimeFormatter extends NumberColumnFormatter {
         public String format(double value) {
-            return Texts.timeStr(Math.round(value));
+            return Texts.INSTANCE.timeStr(Math.round(value));
         }
     }
 }

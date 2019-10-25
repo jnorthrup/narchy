@@ -5,7 +5,7 @@ import jcog.Util;
 import jcog.math.v2;
 import jcog.tree.rtree.HyperRegion;
 
-import static jcog.Texts.n4;
+import static jcog.Texts.*;
 import static jcog.Util.lerpSafe;
 import static jcog.tree.rtree.Spatialization.EPSILON;
 import static jcog.tree.rtree.Spatialization.EPSILONf;
@@ -245,9 +245,9 @@ public class RectFloat implements HyperRegion, Comparable<RectFloat> {
     }
 
     public String toString() {
-        return /* estimate */ '(' + n4(cx()) + ',' + n4(cy()) + ')' +
+        return /* estimate */ '(' + INSTANCE.n4(cx()) + ',' + INSTANCE.n4(cy()) + ')' +
                 'x' +
-                '(' + n4(w) + ',' + n4(h) + ')';
+                '(' + INSTANCE.n4(w) + ',' + INSTANCE.n4(h) + ')';
     }
 
     @Override

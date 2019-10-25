@@ -510,7 +510,7 @@ public class UDPeer extends UDP {
         long latencyMS = now - sent;
 
         //if (logger.isDebugEnabled())
-        logger.info("{} pong {} from {} ({})", name(), m, connected, Texts.timeStr(1E6 * (double) latencyMS));
+        logger.info("{} pong {} from {} ({})", name(), m, connected, Texts.INSTANCE.timeStr(1E6 * (double) latencyMS));
 
         if (connected != null) {
             connected.onPing(latencyMS);

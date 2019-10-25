@@ -540,7 +540,7 @@ import java.util.function.Predicate;
             
             if (o instanceof Number) {
                 Number n = (Number)o;
-                out.append(Texts.n4(n.floatValue()));
+                out.append(Texts.INSTANCE.n4(n.floatValue()));
             } else {
                 out.append('"').append(String.valueOf(o)).append('"');
             }

@@ -6,7 +6,7 @@
 //
 //import java.util.function.BiConsumer;
 //
-//import static jcog.Texts.n2;
+//import static jcog.Texts.*;
 //import static org.junit.jupiter.api.Assertions.assertEquals;
 //import static org.junit.jupiter.api.Assertions.assertTrue;
 //

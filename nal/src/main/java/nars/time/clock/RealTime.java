@@ -118,7 +118,7 @@ public abstract class RealTime extends Time {
 
     @Override
     public String timeString(long time) {
-        return Texts.timeStr(unitsToSeconds((double) time) * 1.0E9);
+        return Texts.INSTANCE.timeStr(unitsToSeconds((double) time) * 1.0E9);
     }
 
     /** ratio of duration to fps */

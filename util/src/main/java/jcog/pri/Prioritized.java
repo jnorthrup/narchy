@@ -40,7 +40,7 @@ public interface Prioritized extends Deleteable {
 
 
     static String toString(Prioritized b) {
-        return toStringBuilder(null, Texts.n4(b.pri())).toString();
+        return toStringBuilder(null, Texts.INSTANCE.n4(b.pri())).toString();
     }
 
     

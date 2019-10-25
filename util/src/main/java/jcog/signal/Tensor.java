@@ -351,14 +351,14 @@ public interface Tensor  {
      * value is rounded to 4 digits of decimal precision
      */
     default String tsv4() {
-        return Joiner.on('\t').join(iterator(Texts::n4));
+        return Joiner.on('\t').join(iterator(Texts.INSTANCE::n4));
     }
 
     /** produces a string which is separated by tab characters (for .TSV) and each
      * value is rounded to 2 digits of decimal precision
      */
     default String tsv2() {
-        return Joiner.on('\t').join(iterator(Texts::n2));
+        return Joiner.on('\t').join(iterator(Texts.INSTANCE::n2));
     }
 
     default <X> Iterator<X> iterator(FloatToObjectFunction<X> map) {

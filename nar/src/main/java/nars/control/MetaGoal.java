@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
 import java.io.PrintStream;
 import java.util.function.BiConsumer;
 
-import static jcog.Texts.n4;
+import static jcog.Texts.*;
 
 /**
  * high-level reasoner control parameters
@@ -264,7 +264,7 @@ public enum MetaGoal {
                                                                          @Override
                                                                          public void value(ObjectDoublePair<ObjectBytePair<Cause>> x) {
                                                                              out.println(
-                                                                                     n4(x.getTwo()) + '\t' + MetaGoal.values()[(int) x.getOne().getTwo()] + '\t' + x.getOne().getOne()
+                                                                                     INSTANCE.n4(x.getTwo()) + '\t' + MetaGoal.values()[(int) x.getOne().getTwo()] + '\t' + x.getOne().getOne()
                                                                              );
                                                                          }
                                                                      }

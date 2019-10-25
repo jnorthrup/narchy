@@ -5,7 +5,7 @@ import jcog.Util;
 import java.lang.ref.SoftReference;
 import java.util.function.Supplier;
 
-import static jcog.Texts.n4;
+import static jcog.Texts.*;
 
 /** prioritized proxy pair, can be used to represent cached memoizable operation with input X and output Y */
 public interface PriProxy<X, Y> extends UnitPrioritizable, Supplier<Y> {
@@ -100,7 +100,7 @@ public interface PriProxy<X, Y> extends UnitPrioritizable, Supplier<Y> {
 
         @Override
         public String toString() {
-            return '$' + n4(pri) + ' ' + get();
+            return '$' + INSTANCE.n4(pri) + ' ' + get();
         }
 
         @Override

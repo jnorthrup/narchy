@@ -82,6 +82,6 @@ public abstract class How extends AbstractPred<Derivation>  {
 	}
 
 	public void trace(Derivation d) {
-		System.out.println("$" + Texts.n4(pri(d)) + " " + this + "\t" + d);
+		System.out.println("$" + Texts.INSTANCE.n4(pri(d)) + " " + this + "\t" + d);
 	}
 }

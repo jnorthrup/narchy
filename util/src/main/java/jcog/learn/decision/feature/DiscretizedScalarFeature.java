@@ -69,7 +69,7 @@ public class DiscretizedScalarFeature {
         @Override
         public String toString() {
             double[] interval = value();
-            return name + '=' + ((label != null ? (label + '[') : "") + Texts.n4(interval[0]) + ".." + Texts.n4(interval[1]) + ']');
+            return name + '=' + ((label != null ? (label + '[') : "") + Texts.INSTANCE.n4(interval[0]) + ".." + Texts.INSTANCE.n4(interval[1]) + ']');
         }
 
         /** computes a bounded estimate interval */

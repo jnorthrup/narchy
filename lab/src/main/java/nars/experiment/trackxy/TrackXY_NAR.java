@@ -32,7 +32,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.function.IntPredicate;
 
-import static jcog.Texts.n2;
+import static jcog.Texts.*;
 import static nars.$.$$;
 import static nars.Op.GOAL;
 import static spacegraph.SpaceGraph.window;
@@ -395,7 +395,7 @@ public class TrackXY_NAR extends GameX {
                                         boolean ok = Math.signum(wantsDir) == Math.signum(needsDir);
                                         if (!ok) {
                                             String summary = ok ? "OK" : "WRONG";
-                                            System.out.println(ttt + " " + n2(wantsDir) + " ? " + n2(needsDir) + " " + summary);
+                                            System.out.println(ttt + " " + INSTANCE.n2(wantsDir) + " ? " + INSTANCE.n2(needsDir) + " " + summary);
                                             System.out.println(tt.proof());
 
 //									((TaskLinkWhat)a.what()).links.links.print();

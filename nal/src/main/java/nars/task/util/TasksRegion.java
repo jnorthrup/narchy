@@ -127,13 +127,13 @@ public final class TasksRegion extends Longerval implements TaskRegion {
         return '@' +
                 Tense.tStr(start, end) +
                 '[' +
-                Texts.n(freqMin(), decimals) +
+                Texts.INSTANCE.n(freqMin(), decimals) +
                 ".." +
-                Texts.n(freqMax(), decimals) +
+                Texts.INSTANCE.n(freqMax(), decimals) +
                 Op.VALUE_SEPARATOR +
-                Texts.n(confMin(), decimals) +
+                Texts.INSTANCE.n(confMin(), decimals) +
                 ".." +
-                Texts.n(confMax(), decimals) +
+                Texts.INSTANCE.n(confMax(), decimals) +
                 Op.TRUTH_VALUE_MARK + ']';
     }
 

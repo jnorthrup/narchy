@@ -68,7 +68,7 @@ public class LiveSTMTest {
         };
 
         for (int c = 0; c < 400000; c++) {
-            System.out.println(c + "\t\t" + Texts.n4( l.next()) + "\t\t" + i);
+            System.out.println(c + "\t\t" + Texts.INSTANCE.n4( l.next()) + "\t\t" + i);
         }
     }
 

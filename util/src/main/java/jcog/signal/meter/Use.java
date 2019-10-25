@@ -80,9 +80,9 @@ public class Use {
 		double confInterval = Z * timeCopy.getStdDeviation()/Math.sqrt((double) N) / mean;
 
 		return
-			Texts.timeStr(mean * (double) N) + //total time, estimate
-			" mean=" + Texts.timeStr((double) Math.round(mean)) +
-			"±" + Texts.n2(confInterval* 100.0) + "% x " + N;
+			Texts.INSTANCE.timeStr(mean * (double) N) + //total time, estimate
+			" mean=" + Texts.INSTANCE.timeStr((double) Math.round(mean)) +
+			"±" + Texts.INSTANCE.n2(confInterval* 100.0) + "% x " + N;
 			//+ Texts.histogramString(timeCopy, false);
 	}
 }

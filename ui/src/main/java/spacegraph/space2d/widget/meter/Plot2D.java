@@ -77,8 +77,8 @@ public class Plot2D extends Widget {
         float H = 1.0f;
         Draw.line((float) 0, H, W, H, gl);
 
-        HersheyFont.hersheyText(gl, Texts.n(minValue, 7), 0.04f, (float) 0, (float) 0, (float) 0, Draw.TextAlignment.Left);
-        HersheyFont.hersheyText(gl, Texts.n(maxValue, 7), 0.04f, (float) 0, H, (float) 0, Draw.TextAlignment.Left);
+        HersheyFont.hersheyText(gl, Texts.INSTANCE.n(minValue, 7), 0.04f, (float) 0, (float) 0, (float) 0, Draw.TextAlignment.Left);
+        HersheyFont.hersheyText(gl, Texts.INSTANCE.n(maxValue, 7), 0.04f, (float) 0, H, (float) 0, Draw.TextAlignment.Left);
 
         int seriesSize = series.size();
         float textScale = 1f / (float) (seriesSize) * 0.5f;

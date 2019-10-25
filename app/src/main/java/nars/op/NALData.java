@@ -111,7 +111,7 @@ public class NALData {
     }
 
     private static Term attrTerm(String ai) {
-        return $.$$(Texts.unquote(ai));
+        return $.$$(Texts.INSTANCE.unquote(ai));
     }
 
     public static Stream<Task> tasks(NAR n, DataTable a, BiFunction<Term, Term[], Term> pointGenerator) {

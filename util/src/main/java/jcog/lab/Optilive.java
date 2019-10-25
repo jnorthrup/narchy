@@ -166,7 +166,7 @@ public class Optilive<S,E>  {
             logger.error("{}", t);
         } finally {
             long currentEnd = System.currentTimeMillis();
-            logger.info("experiment end {}\t({})", new Date(currentEnd), Texts.timeStr((double) (1_000_000L * (currentEnd - currentStart))));
+            logger.info("experiment end {}\t({})", new Date(currentEnd), Texts.INSTANCE.timeStr((double) (1_000_000L * (currentEnd - currentStart))));
 
             if (outDir!=null) {
                 save();

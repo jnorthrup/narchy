@@ -80,7 +80,7 @@ public class FloatSlider extends Widget implements FloatSupplier {
     }
 
     public String text() {
-        return this.labelText + Texts.n2(slider.value());
+        return this.labelText + Texts.INSTANCE.n2(slider.value());
     }
 
     public FloatSlider type(SliderModel.SliderUI t) {

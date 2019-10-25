@@ -16,7 +16,7 @@ import spacegraph.video.Draw;
 
 import java.util.function.Supplier;
 
-import static jcog.Texts.n4;
+import static jcog.Texts.*;
 import static jcog.Util.unitize;
 
 /**
@@ -79,11 +79,11 @@ public class XYSlider extends PaintSurface  {
     }
 
     public static String summaryX(float x) {
-        return n4(x);
+        return INSTANCE.n4(x);
     }
 
     public static String summaryY(float y) {
-        return n4(y);
+        return INSTANCE.n4(y);
     }
 
     public XYSlider on(FloatFloatProcedure change) {

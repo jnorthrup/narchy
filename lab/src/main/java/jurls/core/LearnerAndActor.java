@@ -44,8 +44,8 @@ public abstract class LearnerAndActor {
         stringBuilder.append(ind).append("@").append(numIterations);
         stringBuilder.append(" (").append(iterationsPerSecond).append("/s)\n");
         if (parameterizedFunction != null) {
-            stringBuilder.append(ind).append(" QMin: ").append(Texts.n4(parameterizedFunction.minOutputDebug())).append('\n');
-            stringBuilder.append(ind).append(" QMax: ").append(Texts.n4(parameterizedFunction.maxOutputDebug())).append('\n');
+            stringBuilder.append(ind).append(" QMin: ").append(Texts.INSTANCE.n4(parameterizedFunction.minOutputDebug())).append('\n');
+            stringBuilder.append(ind).append(" QMax: ").append(Texts.INSTANCE.n4(parameterizedFunction.maxOutputDebug())).append('\n');
         }
         return stringBuilder.toString();
     }

@@ -46,14 +46,14 @@ public class BitmapLabel extends AbstractLabel {
         String prev = text;
         if (prev==null || !prev.equals(next)) {
 
-            int rows = 1 + Texts.countRows(next, '\n');
+            int rows = 1 + Texts.INSTANCE.countRows(next, '\n');
             boolean resized;
             if (rows == 1) {
                 resized = view.resize(next.length(), 1);
             } else {
                 //HACK do better
                 //int cols = Arrays.stream(next.split("\n")).mapToInt(String::length).max().getAsInt();
-                resized = view.resize(Texts.countCols(next), rows);
+                resized = view.resize(Texts.INSTANCE.countCols(next), rows);
             }
 
             super.text(next);

@@ -182,7 +182,7 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
                         optional(digit()),
                         optional('.', oneOrMore(digit()))
                 ),
-                push(Texts.f(matchOrDefault("NaN"), (float) 0, 1.0f))
+                push(Texts.INSTANCE.f(matchOrDefault("NaN"), (float) 0, 1.0f))
         );
     }
 
@@ -362,10 +362,10 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
 
                         seq("+-", push(XTERNAL)),
                         seq('+', oneOrMore(digit()),
-                                push(Texts.i(matchOrDefault(invalidCycleDeltaString)))
+                                push(Texts.INSTANCE.i(matchOrDefault(invalidCycleDeltaString)))
                         ),
                         seq('-', oneOrMore(digit()),
-                                push(-Texts.i(matchOrDefault(invalidCycleDeltaString)))
+                                push(-Texts.INSTANCE.i(matchOrDefault(invalidCycleDeltaString)))
                         )
                 );
 
@@ -422,8 +422,8 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
                         seq(firstOf("now", "|", ":|:"), push(Tense.Present)),
 
                         TimeUnit(),
-                        seq("-", oneOrMore(digit()), push(-Texts.i(match()))),
-                        seq("+", oneOrMore(digit()), push(Texts.i(match())))
+                        seq("-", oneOrMore(digit()), push(-Texts.INSTANCE.i(match()))),
+                        seq("+", oneOrMore(digit()), push(Texts.INSTANCE.i(match())))
 
 
                 )

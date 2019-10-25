@@ -7,7 +7,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.StringJoiner;
 
-import static jcog.Texts.n4;
+import static jcog.Texts.*;
 
 /**
  * stores 4 (four) 16-bit fixed-point numbers, covering a unit range [0..1.0]
@@ -70,7 +70,7 @@ public class AtomicFixedPoint4x16bitVector implements WritableTensor {
     }
 
     private String toString(int component) {
-        return n4(getAt(component));
+        return INSTANCE.n4(getAt(component));
     }
 
     @Override public final float merge(int c, float arg, FloatFloatToFloatFunction F, @Nullable PriReturn returning) {

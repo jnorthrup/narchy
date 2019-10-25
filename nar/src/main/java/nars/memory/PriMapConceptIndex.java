@@ -26,7 +26,7 @@
 //import java.util.function.Consumer;
 //import java.util.stream.Stream;
 //
-//import static jcog.Texts.n2;
+//import static jcog.Texts.*;
 //import static jcog.pri.PriCache.Hold.SOFT;
 //import static jcog.pri.PriCache.Hold.STRONG;
 //

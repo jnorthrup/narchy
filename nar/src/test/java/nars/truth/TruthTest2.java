@@ -42,7 +42,7 @@ public class TruthTest2 {
 				float c = step * i + (subStep) * j;
 				@Nullable PreciseTruth p = t(1f, c).dither(n);
 				if (p!=null)
-					System.out.println(p + "\t" + Texts.n2(c) + '\t' + Texts.n4(c)+ '\t' + c );
+					System.out.println(p + "\t" + Texts.INSTANCE.n2(c) + '\t' + Texts.INSTANCE.n4(c)+ '\t' + c );
 			}
 		}
 	}

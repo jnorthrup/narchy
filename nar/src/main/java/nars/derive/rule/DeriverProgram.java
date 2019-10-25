@@ -76,7 +76,7 @@ public class DeriverProgram {
 
     protected void print(final Object x, final PrintStream out, final int indent) {
 
-        Texts.indent(indent);
+        Texts.INSTANCE.indent(indent);
 
         if (x instanceof DeriverProgram) {
 
@@ -91,7 +91,7 @@ public class DeriverProgram {
             for (final short c : b.can) {
                 print(branch[(int) c], out, indent+2);
             }
-            Texts.indent(indent);out.println("}");
+            Texts.INSTANCE.indent(indent);out.println("}");
 
 
         } else if (x instanceof How) {
@@ -108,7 +108,7 @@ public class DeriverProgram {
 
             print(aa, out, indent + 2);
 
-            Texts.indent(indent);out.println("}");
+            Texts.INSTANCE.indent(indent);out.println("}");
 
         } else if (x instanceof AND) {
             out.println("and {");
@@ -120,7 +120,7 @@ public class DeriverProgram {
                                        }
                                    }
             );
-            Texts.indent(indent);
+            Texts.INSTANCE.indent(indent);
             out.println("}");
         } /*else if (p instanceof Try) {
             out.println("eval {");
@@ -139,7 +139,7 @@ public class DeriverProgram {
             out.println("fork {");
             for (final PREDICATE b : ((FORK) x).branch)
                 print(b, out, indent + 2);
-            Texts.indent(indent);
+            Texts.INSTANCE.indent(indent);
             out.println("}");
 
         } else if (x instanceof SWITCH) {
@@ -150,14 +150,14 @@ public class DeriverProgram {
                 i++;
                 if (b == null) continue;
 
-                Texts.indent(indent + 2);
+                Texts.INSTANCE.indent(indent + 2);
                 out.println('"' + Op.values()[i].toString() + "\": {");
                 print(b, out, indent + 4);
-                Texts.indent(indent + 2);
+                Texts.INSTANCE.indent(indent + 2);
                 out.println("}");
 
             }
-            Texts.indent(indent);
+            Texts.INSTANCE.indent(indent);
             out.println("}");
         } else {
             out.print( /*Util.className(p) + ": " +*/ x);

@@ -8,7 +8,7 @@ import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
-import static jcog.Texts.n2;
+import static jcog.Texts.*;
 import static nars.Op.BELIEF;
 import static nars.Op.IMPL;
 import static nars.time.Tense.ETERNAL;
@@ -59,7 +59,7 @@ class ImplicationTest {
 
                         @Nullable Truth nzt = n.beliefTruth(nz, ETERNAL);
 
-                        o.append(z + ". %" + n2(condFreq) + "% " + impl + ". " + nz + '=' + nzt + '\n');
+                        o.append(z + ". %" + INSTANCE.n2(condFreq) + "% " + impl + ". " + nz + '=' + nzt + '\n');
                     }
                 }
             }

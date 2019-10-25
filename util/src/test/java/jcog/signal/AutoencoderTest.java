@@ -55,12 +55,12 @@ class AutoencoderTest {
 
         int test_N = 2;
         for (int i = 0; i < test_N; i++) {
-            System.out.println(Texts.n4(test_X[i]));
+            System.out.println(Texts.INSTANCE.n4(test_X[i]));
             float[] reconstructed_X = da.reconstruct(test_X[i]);
-            System.out.println(Texts.n4(reconstructed_X));
+            System.out.println(Texts.INSTANCE.n4(reconstructed_X));
             float[] encoded_X = new float[n_hidden];
             da.encode(test_X[i], encoded_X, 0, 0, sigmoid,normalize);
-            System.out.println('\t' + Texts.n4(encoded_X));
+            System.out.println('\t' + Texts.INSTANCE.n4(encoded_X));
             System.out.println();
         }
     }

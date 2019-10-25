@@ -141,7 +141,7 @@ public class DistractedSequenceRecallProblem extends AbstractAgentTest {
             rewardStat.addValue((double) reward);
 
             if (i % windowLen == 0) {
-                System.out.println(Texts.n4(rewardStat.getMean()));
+                System.out.println(Texts.INSTANCE.n4(rewardStat.getMean()));
                 //print();
             }
 

@@ -47,7 +47,7 @@ public abstract class ContainerSurface extends Surface {
         forEach(new Consumer<Surface>() {
             @Override
             public void accept(Surface c) {
-                out.print(Texts.repeat("  ", indent + 1));
+                out.print(Texts.INSTANCE.repeat("  ", indent + 1));
                 c.print(out, indent + 1);
             }
         });

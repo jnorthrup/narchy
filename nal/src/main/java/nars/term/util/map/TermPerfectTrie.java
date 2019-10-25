@@ -50,7 +50,7 @@ public class TermPerfectTrie<K extends Term, V> extends Trie<List<K>, V> impleme
 
                 out.print(n.childCount() + "|" + n.getSize() + "  ");
 
-                Texts.indent(from * 4);
+                Texts.INSTANCE.indent(from * 4);
 
                 out.println(Joiner.on(" , ").join(seq.subList(from, n.end())
 

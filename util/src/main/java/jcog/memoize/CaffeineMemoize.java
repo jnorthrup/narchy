@@ -7,7 +7,7 @@ import com.google.common.util.concurrent.MoreExecutors;
 
 import java.util.function.Function;
 
-import static jcog.Texts.n2;
+import static jcog.Texts.*;
 
 public class CaffeineMemoize<K, V> implements Memoize<K, V> {
 
@@ -44,7 +44,7 @@ public class CaffeineMemoize<K, V> implements Memoize<K, V> {
         CacheStats stats = cache.stats();
         String a;
         if (stats.hitCount() > 0L)
-            a = n2(stats.hitRate() * 100) + "% hits, ";
+            a = INSTANCE.n2(stats.hitRate() * 100) + "% hits, ";
         else
             a = "";
         return a + cache.estimatedSize() + " size";

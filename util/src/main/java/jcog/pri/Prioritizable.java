@@ -107,7 +107,7 @@ public interface Prioritizable extends Prioritized, ScalarValue {
     }
 
     default StringBuilder toBudgetStringExternal(StringBuilder sb) {
-        return Prioritized.toStringBuilder(sb, Texts.n2(pri()));
+        return Prioritized.toStringBuilder(sb, Texts.INSTANCE.n2(pri()));
     }
 
     default String toBudgetString() {

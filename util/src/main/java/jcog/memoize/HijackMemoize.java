@@ -168,8 +168,8 @@ public class HijackMemoize<X, Y> extends AbstractMemoize<X,Y> {
             }
         });
         sb.setLength(sb.length() - 1);
-        sb.append(" D=").append(Texts.n2percent(bag.density()));
-        sb.insert(0, Texts.n2percent(rate));
+        sb.append(" D=").append(Texts.INSTANCE.n2percent(bag.density()));
+        sb.insert(0, Texts.INSTANCE.n2percent(rate));
         return sb.toString();
     }
 

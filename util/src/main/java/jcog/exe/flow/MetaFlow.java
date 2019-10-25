@@ -214,7 +214,7 @@ public class MetaFlow {
                         return new ConcurrentHistogram(digitResolution) {
                             @Override
                             public String toString() {
-                                return Texts.histogramString(this, false);
+                                return Texts.INSTANCE.histogramString(this, false);
                             }
                         };
                     }

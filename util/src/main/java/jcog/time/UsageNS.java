@@ -55,7 +55,7 @@ public class UsageNS<X> {
             public void value(HashCachedPair<X, AtomicHistogram> xh) {
 
                 //out.println(xh.getOne());
-                out.println(xh.getTwo().getTotalCount() + "\t*" + Texts.n4(xh.getTwo().getMean()) + "\t" + xh.getOne());
+                out.println(xh.getTwo().getTotalCount() + "\t*" + Texts.INSTANCE.n4(xh.getTwo().getMean()) + "\t" + xh.getOne());
 //            AtomicHistogram h = xh.getTwo();
 //            if (h.getTotalCount() > 0) {
 //                Texts.histogramPrint(h.copy(), out);

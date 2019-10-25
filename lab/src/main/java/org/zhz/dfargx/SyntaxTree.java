@@ -123,7 +123,7 @@ public class SyntaxTree {
                                 break label;
                         }
                     }
-                    int least = Texts.i(sb.toString());
+                    int least = Texts.INSTANCE.i(sb.toString());
 
 
                     int most = -1;
@@ -135,7 +135,7 @@ public class SyntaxTree {
                                 sb.append(nextNext);
                             }
                             if (sb.length() != 0) {
-                                most = Texts.i(sb.toString());
+                                most = Texts.INSTANCE.i(sb.toString());
                             }
                         }
                     } else most = least;

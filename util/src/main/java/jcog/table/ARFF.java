@@ -437,7 +437,7 @@ private static void joinWith(Row r, Appendable s, CharSequence del) throws IOExc
     }
 
     public static String quoteIfNecessary(String name) {
-        return isQuoteNecessary(name) ? Texts.quote(name) : name;
+        return isQuoteNecessary(name) ? Texts.INSTANCE.quote(name) : name;
     }
 
     /**

@@ -22,8 +22,8 @@ import java.util.*;
 import java.util.zip.GZIPInputStream;
 
 import static java.lang.Double.parseDouble;
-import static jcog.Texts.l;
-import static jcog.Texts.n4;
+import static jcog.Texts.*;
+import static jcog.Texts.*;
 
 /**
  * Created by unkei on 2017/04/25.
@@ -74,7 +74,7 @@ public class Osm {
     public static URL url(String apiURL, double lonMin, double latMin, double lonMax, double latMax)  {
         try {
             return new URL(apiURL + "/api/0.6/map?bbox=" +
-                    n4(lonMin) + ',' + n4(latMin) + ',' + n4(lonMax) + ',' + n4(latMax) );
+                    INSTANCE.n4(lonMin) + ',' + INSTANCE.n4(latMin) + ',' + INSTANCE.n4(lonMax) + ',' + INSTANCE.n4(latMax) );
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
@@ -123,7 +123,7 @@ public class Osm {
                 }
                 case "node": {
                     Element childElement = (Element) n;
-                    long id = l(childElement.getAttribute("id"));
+                    long id = INSTANCE.l(childElement.getAttribute("id"));
 
                     Map<String, String> osmTags = null;
                     NodeList nodeChildren = ((Element) n).getElementsByTagName("tag") /*childNode.getChildNodes()*/;
@@ -151,7 +151,7 @@ public class Osm {
                 }
                 case "way": {
                     Element childElement = (Element) n;
-                    long id = l(childElement.getAttribute("id"));
+                    long id = INSTANCE.l(childElement.getAttribute("id"));
 
                     List<OsmElement> refOsmNodes = new FasterList<>();
                     Map<String, String> osmTags = null;
@@ -165,7 +165,7 @@ public class Osm {
                             case "nd":
                                 Element wayChildElement = (Element) wayChild;
                                 refOsmNodes.add(
-                                        this.nodes.get(l(wayChildElement.getAttribute("ref")))
+                                        this.nodes.get(INSTANCE.l(wayChildElement.getAttribute("ref")))
                                 );
                                 break;
                             case "tag":
@@ -185,7 +185,7 @@ public class Osm {
                 }
                 case "relation":
                     Element childElement = (Element) n;
-                    long id = l(childElement.getAttribute("id"));
+                    long id = INSTANCE.l(childElement.getAttribute("id"));
 
                     NodeList relationChildren = childElement.getElementsByTagName("tag");
                     Map<String, String> osmTags = null;
@@ -211,7 +211,7 @@ public class Osm {
 
         
         for (Element relationElement : relationElements) {
-            long id = l(relationElement.getAttribute("id"));
+            long id = INSTANCE.l(relationElement.getAttribute("id"));
 
             OsmRelation osmRelation = this.relations.get(id);
 
@@ -236,7 +236,7 @@ public class Osm {
                 {
                     Element r = (Element) relationChild;
                     String type = r.getAttribute("type");
-                    long ref = l(r.getAttribute("ref"));
+                    long ref = INSTANCE.l(r.getAttribute("ref"));
 
                     OsmElement member = null;
                     switch (type) {
@@ -282,7 +282,7 @@ public class Osm {
         
         
         for (Element relationElement : relationElements) {
-            long id = l(relationElement.getAttribute("id"));
+            long id = INSTANCE.l(relationElement.getAttribute("id"));
 
             OsmRelation osmRelation = this.relations.get(id);
 

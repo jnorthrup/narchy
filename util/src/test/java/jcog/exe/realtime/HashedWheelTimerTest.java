@@ -182,7 +182,7 @@ abstract class HashedWheelTimerTest {
 
                                              long now = System.nanoTime();
                                              r.add(now);
-                                             System.out.println(Texts.timeStr(now - start));
+                                             System.out.println(Texts.INSTANCE.timeStr(now - start));
 
 //                    latch.countDown();
 //
@@ -212,7 +212,7 @@ abstract class HashedWheelTimerTest {
         assertTrue(Math.abs(a2 - a1) >= 90L*1E6 && Math.abs(a2-a1) < 110L*1E6, new Supplier<String>() {
             @Override
             public String get() {
-                return Texts.timeStr(a2) + " vs " + Texts.timeStr(a1);
+                return Texts.INSTANCE.timeStr(a2) + " vs " + Texts.INSTANCE.timeStr(a1);
             }
         });
     }
@@ -299,9 +299,9 @@ abstract class HashedWheelTimerTest {
 
         {
             Histogram w = when.copy();
-            Texts.histogramPrint(w, System.out);
-            System.out.println("mean=" + Texts.timeStr(w.getMean()));
-            System.out.println("max=" + Texts.timeStr(w.getMaxValue()));
+            Texts.INSTANCE.histogramPrint(w, System.out);
+            System.out.println("mean=" + Texts.INSTANCE.timeStr(w.getMean()));
+            System.out.println("max=" + Texts.INSTANCE.timeStr(w.getMaxValue()));
             long delayNS = TimeUnit.MILLISECONDS.toNanos(periodMS);
             double err = Math.abs(delayNS - w.getMean());
             assertTrue(err < delayNS / 4);

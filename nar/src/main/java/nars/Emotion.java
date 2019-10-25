@@ -21,7 +21,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-import static jcog.Texts.n4;
+import static jcog.Texts.*;
 
 /**
  * emotion - internal mental state
@@ -182,7 +182,7 @@ public class Emotion implements Meter, Consumer<NAR> {
     }
 
     public String summary() {
-        return "busy=" + n4(busyVol.asDouble());
+        return "busy=" + INSTANCE.n4(busyVol.asDouble());
     }
 
     /**
@@ -217,11 +217,11 @@ public class Emotion implements Meter, Consumer<NAR> {
         else if (o instanceof Object[])
             return Arrays.toString((Object[])o);
         else if (o instanceof float[])
-            return Texts.n4((float[])o);
+            return Texts.INSTANCE.n4((float[])o);
         else if (o instanceof FloatAveragedWindow)
             return ((FloatAveragedWindow)o).asFloat();
         else if (o instanceof Histogram) {
-            return Texts.histogramString((Histogram)o, true);
+            return Texts.INSTANCE.histogramString((Histogram)o, true);
         }
         return o;
     }

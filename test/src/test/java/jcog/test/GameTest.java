@@ -18,7 +18,7 @@ import tech.tablesaw.api.DoubleColumn;
 
 import java.util.function.Supplier;
 
-import static jcog.Texts.n4;
+import static jcog.Texts.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -100,8 +100,8 @@ public class GameTest {
         double avgDex = a.dex.getMean();
 
         System.out.println((posOrNeg ? "positive" : " negative"));
-        System.out.println("\tavgReward=" + n4(avgReward));
-        System.out.println("\tavgDex=" + n4(avgDex));
+        System.out.println("\tavgReward=" + INSTANCE.n4(avgReward));
+        System.out.println("\tavgDex=" + INSTANCE.n4(avgDex));
 
         assertTrue(avgReward > 0.6f, new Supplier<String>() {
             @Override

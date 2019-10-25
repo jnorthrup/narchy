@@ -15,8 +15,8 @@
 //import java.util.List;
 //
 //import static java.lang.Math.PI;
-//import static jcog.Texts.n2;
-//import static jcog.Texts.n4;
+//import static jcog.Texts.*;
+//import static jcog.Texts.*;
 //import static spacegraph.space2d.container.grid.Gridding.VERTICAL;
 //
 //public class Line1DCalibrate {

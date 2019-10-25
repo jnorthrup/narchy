@@ -256,7 +256,7 @@ public final class Builtin{
                         @Override
                         public Term apply(Term a, Term b) {
                             return ((a instanceof Variable) || (b instanceof Variable)) ? null :
-                                    $.the(Texts.levenshteinDistance(a.toString(), b.toString()));
+                                    $.the(Texts.INSTANCE.levenshteinDistance(a.toString(), b.toString()));
                         }
                     }
             ),

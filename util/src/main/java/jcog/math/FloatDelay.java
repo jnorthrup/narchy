@@ -22,7 +22,7 @@ public class FloatDelay implements FloatSupplier {
 
     @Override
     public String toString() {
-        return input + "=" + Texts.n4(data);
+        return input + "=" + Texts.INSTANCE.n4(data);
     }
 
     @Override

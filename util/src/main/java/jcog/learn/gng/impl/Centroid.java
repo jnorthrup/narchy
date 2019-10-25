@@ -6,7 +6,7 @@ import org.apache.commons.math3.linear.ArrayRealVector;
 
 import java.util.Arrays;
 
-import static jcog.Texts.n4;
+import static jcog.Texts.*;
 
 /**
  * TODO implement Tensor
@@ -131,7 +131,7 @@ public class Centroid extends ArrayRealVector {
 
     @Override
     public String toString() {
-        return id + ": <" + n4(getDataRef()) + "> lErr=" + n4(localError) + " dist=" + n4(localDistance());
+        return id + ": <" + INSTANCE.n4(getDataRef()) + "> lErr=" + INSTANCE.n4(localError) + " dist=" + INSTANCE.n4(localDistance());
     }
 
     /** tests the first dimension value if not NaN */

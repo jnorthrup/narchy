@@ -35,9 +35,9 @@ import java.util.Arrays;
 
     @Override
     public String toString() {
-        return Texts.n4(actual) + "    ||    " +
-                Texts.n4(expected) + "   ||   " +
-                Texts.n4(predicted)
+        return Texts.INSTANCE.n4(actual) + "    ||    " +
+                Texts.INSTANCE.n4(expected) + "   ||   " +
+                Texts.INSTANCE.n4(predicted)
                 
                 ;
     }

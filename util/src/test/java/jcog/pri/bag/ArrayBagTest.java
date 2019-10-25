@@ -258,7 +258,7 @@ class ArrayBagTest {
                 int s = b.sampleNext(rng, b.size());
                 h.recordValue(s);
             }
-            Texts.histogramPrint(h, System.out);
+            Texts.INSTANCE.histogramPrint(h, System.out);
         }
 //
 //        Tensor d = BagTest.samplingPriDist(b, samples,  60);

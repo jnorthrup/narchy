@@ -29,7 +29,7 @@ import java.util.List;
     public FloatTable<H> print(PrintStream out) {
         System.out.println(Joiner.on("\t").join(cols));
         for (float[] row : rows) {
-            String s = Texts.n4(row);
+            String s = Texts.INSTANCE.n4(row);
             out.println(s);
         }
         return this;

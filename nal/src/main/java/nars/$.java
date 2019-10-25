@@ -94,7 +94,7 @@ public enum $ { ;
     }
 
     public static Atom quote(String text) {
-        return text.isEmpty() ? emptyQuote : (Atom) Atomic.the(Texts.quote(text));
+        return text.isEmpty() ? emptyQuote : (Atom) Atomic.the(Texts.INSTANCE.quote(text));
     }
 
     public static Atom quote(Object text) {
@@ -660,7 +660,7 @@ public enum $ { ;
 
 
     public static String unquote(Term s) {
-        return Texts.unquote(s.toString());
+        return Texts.INSTANCE.unquote(s.toString());
     }
 
 

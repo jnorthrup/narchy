@@ -8,7 +8,7 @@ import jcog.signal.tensor.WritableTensor;
 
 import java.util.Random;
 
-import static jcog.Texts.n2;
+import static jcog.Texts.*;
 
 /** dead-simple fixed range continuous histogram with fixed # and size of bins. supports PDF sampling */
 public class ArrayHistogram  /*AtomicDoubleArrayTensor*/  /* ArrayTensor */{
@@ -30,7 +30,7 @@ public class ArrayHistogram  /*AtomicDoubleArrayTensor*/  /* ArrayTensor */{
 
     @Override
     public String toString() {
-        return lo + ".." + hi + " @ " + mass() + " = " + n2(data.floatArray());
+        return lo + ".." + hi + " @ " + mass() + " = " + INSTANCE.n2(data.floatArray());
     }
 
     private void resize(int bins) {

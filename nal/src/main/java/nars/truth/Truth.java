@@ -143,9 +143,9 @@ public interface Truth extends Truthed {
 
         return sb
                 .append(Op.TRUTH_VALUE_MARK)
-                .append(Texts.n(freq, decimals))
+                .append(Texts.INSTANCE.n(freq, decimals))
                 .append(Op.VALUE_SEPARATOR)
-                .append(Texts.n(conf, decimals))
+                .append(Texts.INSTANCE.n(conf, decimals))
                 .append(Op.TRUTH_VALUE_MARK);
     }
 

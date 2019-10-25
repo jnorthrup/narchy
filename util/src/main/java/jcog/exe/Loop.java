@@ -10,7 +10,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.util.concurrent.TimeUnit.NANOSECONDS;
-import static jcog.Texts.n2;
+import static jcog.Texts.*;
 
 
 public abstract class Loop extends FixedRateTimedFuture {
@@ -122,7 +122,7 @@ public abstract class Loop extends FixedRateTimedFuture {
     }
 
     private void _start(int nextPeriodMS) {
-        logger.debug("start {} {} fps", this, n2(1000f/ (float) nextPeriodMS));
+        logger.debug("start {} {} fps", this, INSTANCE.n2(1000f/ (float) nextPeriodMS));
 
         //synchronized (periodMS) {
             starting();

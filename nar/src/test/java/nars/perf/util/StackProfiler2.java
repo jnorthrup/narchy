@@ -315,7 +315,7 @@ public class StackProfiler2 implements InternalProfiler {
                 dd.forEach(new Procedure<ObjectIntPair<StackRecord>>() {
                     @Override
                     public void value(ObjectIntPair<StackRecord> x) {
-                        sb.append('\t').append(Texts.n4(x.getTwo() / totalHundredths)).append("%\t").append(x.getOne()).append('\n');
+                        sb.append('\t').append(Texts.INSTANCE.n4(x.getTwo() / totalHundredths)).append("%\t").append(x.getOne()).append('\n');
                     }
                 });
 
@@ -334,7 +334,7 @@ public class StackProfiler2 implements InternalProfiler {
             calleeSum.topOccurrences(topCallees).forEach(new Procedure<ObjectIntPair<Pair<String, IntObjectPair<String>>>>() {
                 @Override
                 public void value(ObjectIntPair<Pair<String, IntObjectPair<String>>> x) {
-                    sb.append('\t').append(Texts.n4(x.getTwo() / totalHundredths)).append("%\t").append(x.getOne()).append('\n');
+                    sb.append('\t').append(Texts.INSTANCE.n4(x.getTwo() / totalHundredths)).append("%\t").append(x.getOne()).append('\n');
                 }
             });
 

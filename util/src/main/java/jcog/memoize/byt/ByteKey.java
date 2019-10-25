@@ -28,7 +28,7 @@ public interface ByteKey  {
 
 
     static String toString(ByteKey b) {
-        return Texts.i(b.array(),0, b.length(), 16) + " [" + Integer.toUnsignedString(b.hashCode(),32) + ']';
+        return Texts.INSTANCE.i(b.array(),0, b.length(), 16) + " [" + Integer.toUnsignedString(b.hashCode(),32) + ']';
     }
 
 

@@ -4,7 +4,7 @@ import jcog.data.map.MRUMap;
 
 import java.util.function.Function;
 
-import static jcog.Texts.n2;
+import static jcog.Texts.*;
 
 
 public class LinkedMRUMemoize<X, Y> extends MRUMap<X, Y> implements Memoize<X, Y> {
@@ -45,7 +45,7 @@ public class LinkedMRUMemoize<X, Y> extends MRUMap<X, Y> implements Memoize<X, Y
 
         @Override
         public String summary() {
-            return getClass() + " " + n2(hitRate() * 100f) + "% x " + (hit+miss) + ", size=" + size();
+            return getClass() + " " + INSTANCE.n2(hitRate() * 100f) + "% x " + (hit+miss) + ", size=" + size();
         }
 
         @Override

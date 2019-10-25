@@ -2,7 +2,7 @@ package jcog.pri;
 
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 
-import static jcog.Texts.n4;
+import static jcog.Texts.*;
 
 /**
  * immutable object + mutable number pair;
@@ -41,7 +41,7 @@ public class NLink<X> extends AtomicPri implements PriReference<X> {
 
     @Override
     public String toString() {
-        return n4(pri()) + ' ' + id;
+        return INSTANCE.n4(pri()) + ' ' + id;
     }
 
     public float priElse(FloatFunction<X> prioritization) {

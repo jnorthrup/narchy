@@ -21,7 +21,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import static jcog.Texts.n4;
+import static jcog.Texts.*;
 import static jcog.pri.bag.ArrayBagTest.assertSorted;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -99,7 +99,7 @@ public class BagTest {
         /*if (s.getN() > 0)*/
         for (SummaryStatistics s : f.getBinStats()) {
             System.out.println(
-                    n4(s.getMin()) + ".." + n4(s.getMax()) + ":\t" + s.getN());
+                    INSTANCE.n4(s.getMin()) + ".." + INSTANCE.n4(s.getMax()) + ":\t" + s.getN());
         }
     }
 

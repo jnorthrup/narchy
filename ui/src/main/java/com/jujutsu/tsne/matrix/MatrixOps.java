@@ -121,7 +121,7 @@ public enum MatrixOps { ;
 
 	@Deprecated
 	private static String formatDouble(double d) {
-	    return Texts.n4(d);
+	    return Texts.INSTANCE.n4(d);
 
 
 

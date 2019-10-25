@@ -32,7 +32,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import static java.util.stream.Collectors.toList;
-import static jcog.Texts.n4;
+import static jcog.Texts.*;
 import static nars.Op.BELIEF;
 import static nars.task.TaskTest.task;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -143,7 +143,7 @@ class RTreeBeliefTableTest {
         }
         double avgErr = errSum / (end - start + 1);
         System.out.println();
-        System.out.println(n4(avgErr) + " avg freq err per point");
+        System.out.println(INSTANCE.n4(avgErr) + " avg freq err per point");
         assertTrue(avgErr < 0.4f);
     }
 

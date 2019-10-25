@@ -132,7 +132,7 @@ public abstract class NARWeb extends EvalSocket<NAR> {
 
 //            ClientBuilder.rebuildAsync(NARWebClient.class, false);
 
-            int port = args.length > 0 ? Texts.i(args[0]) : DEFAULT_PORT;
+            int port = args.length > 0 ? Texts.INSTANCE.i(args[0]) : DEFAULT_PORT;
 
             NAR nar = NARchy.core(1);
             //nar.log();

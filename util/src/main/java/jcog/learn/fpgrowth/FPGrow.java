@@ -12,7 +12,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
-import static jcog.Texts.n4;
+import static jcog.Texts.*;
 
 
 /**
@@ -293,7 +293,7 @@ public class FPGrow {
                     return;
                 int support = entry.getValue();
                 float supportPct = entry.getValue() / count;
-                System.out.println(n4(supportPct) + '\t' + Arrays.toString(rule.toArray()));
+                System.out.println(INSTANCE.n4(supportPct) + '\t' + Arrays.toString(rule.toArray()));
             }
         });
     }

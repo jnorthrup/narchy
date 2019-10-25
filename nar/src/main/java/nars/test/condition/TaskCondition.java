@@ -26,7 +26,7 @@ public abstract class TaskCondition implements NARCondition, Predicate<Task> {
 	private boolean matched;
 
 	public static String rangeStringN2(float min, float max) {
-		return '(' + Texts.n2(min) + ',' + Texts.n2(max) + ')';
+		return '(' + Texts.INSTANCE.n2(min) + ',' + Texts.INSTANCE.n2(max) + ')';
 	}
 
 	/**
@@ -53,7 +53,7 @@ public abstract class TaskCondition implements NARCondition, Predicate<Task> {
 			if (dist >= ifLessThan) return dist;
 		}
 
-		dist += Texts.levenshteinFraction(
+		dist += Texts.INSTANCE.levenshteinFraction(
 			a.toString(),
 			b.toString()) * 0.1f;
 

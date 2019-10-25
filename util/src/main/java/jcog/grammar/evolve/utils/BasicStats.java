@@ -17,7 +17,7 @@
  */
 package jcog.grammar.evolve.utils;
 
-import static jcog.Texts.n4;
+import static jcog.Texts.*;
 
 /**
  *
@@ -33,9 +33,9 @@ public final class BasicStats {
 
     @Override
     public String toString() {
-        return "accuracy=" + n4(accuracy()) + ", precision=" + n4(precision()) +
-                ", recall=" + n4(recall()) +
-                ", falsePositiveRate=" + n4(fpr()) + ", falseNegativeRate=" + n4(fnr());
+        return "accuracy=" + INSTANCE.n4(accuracy()) + ", precision=" + INSTANCE.n4(precision()) +
+                ", recall=" + INSTANCE.n4(recall()) +
+                ", falsePositiveRate=" + INSTANCE.n4(fpr()) + ", falseNegativeRate=" + INSTANCE.n4(fnr());
     }
 
     public double accuracy() {

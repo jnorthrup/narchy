@@ -239,7 +239,7 @@ public abstract class Surface implements Surfacelike {
     }
 
     public void print(PrintStream out, int indent) {
-        out.print(Texts.repeat("  ", indent));
+        out.print(Texts.INSTANCE.repeat("  ", indent));
         out.println(this);
     }
 

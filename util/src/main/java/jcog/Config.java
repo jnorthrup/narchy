@@ -54,7 +54,7 @@ public enum Config { ;
 
       if (y != null) {
 
-         y = Texts.unquote(y);
+         y = Texts.INSTANCE.unquote(y);
 
           boolean var6 = false;
 //         int var8 = false;

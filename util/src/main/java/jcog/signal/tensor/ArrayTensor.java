@@ -49,7 +49,7 @@ public class ArrayTensor extends AbstractMutableTensor
 
     @Override
     public String toString() {
-        return Arrays.toString(shape) + '<' + Texts.n4(data) + '>';
+        return Arrays.toString(shape) + '<' + Texts.INSTANCE.n4(data) + '>';
     }
 
     @Override

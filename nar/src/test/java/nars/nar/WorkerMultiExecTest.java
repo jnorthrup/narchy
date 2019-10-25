@@ -21,7 +21,7 @@
 //import java.util.concurrent.atomic.AtomicLong;
 //import java.util.function.ToDoubleFunction;
 //
-//import static jcog.Texts.timeStr;
+//import static jcog.Texts.*;
 //import static org.junit.jupiter.api.Assertions.assertEquals;
 //
 //public class WorkerMultiExecTest {

@@ -254,7 +254,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 	public String toString() {
 		return String.format("HashedWheelTimer { Buffer Size: %d, Resolution: %s }",
 			wheels,
-			Texts.timeStr((double) resolution));
+			Texts.INSTANCE.timeStr((double) resolution));
 	}
 
 	/**

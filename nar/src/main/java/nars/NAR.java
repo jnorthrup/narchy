@@ -304,7 +304,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
 
             Util.toMap(rootOp, "concept op", x::put);
 
-            Texts.histogramDecode(volume, "concept volume", 4, x::put);
+            Texts.INSTANCE.histogramDecode(volume, "concept volume", 4, x::put);
 
             Util.toMap(clazz, "concept class", x::put);
 

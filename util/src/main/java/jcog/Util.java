@@ -1172,7 +1172,7 @@ public class Util {
             procedure.run();
         } else {
             long dtNS = timeNS(procedure);
-            logger.info("{} {}", procName, Texts.timeStr((double) dtNS));
+            logger.info("{} {}", procName, Texts.INSTANCE.timeStr((double) dtNS));
         }
     }
 
@@ -1976,11 +1976,11 @@ public class Util {
         else {
             switch (decimals) {
                 case 0:
-                    return Texts.n2(s) + 's';
+                    return Texts.INSTANCE.n2(s) + 's';
                 case 3:
-                    return Texts.n2(s * 1000.0) + "ms";
+                    return Texts.INSTANCE.n2(s * 1000.0) + "ms";
                 case 6:
-                    return Texts.n2(s * 1.0E6) + "us";
+                    return Texts.INSTANCE.n2(s * 1.0E6) + "us";
                 default:
                     throw new UnsupportedOperationException("TODO");
             }
@@ -2440,7 +2440,7 @@ public class Util {
         String specifiedThreads = System.getenv("threads");
         int threads;
         if (specifiedThreads != null)
-            threads = Texts.i(specifiedThreads);
+            threads = Texts.INSTANCE.i(specifiedThreads);
         else
             threads = Runtime.getRuntime().availableProcessors() - reserve;
 
