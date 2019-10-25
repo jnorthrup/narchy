@@ -230,9 +230,7 @@ abstract class GameX(id: Term, gameTime: GameTime, n: NAR?) : Game(id, gameTime,
          * ex: new PoleCart($.p(Atomic.the(PoleCart.class.getSimpleName()), n.self()), n);
          */
         @Deprecated("")
-        fun runRTNet(threads: Int, narFPS: Float, netFPS: Float, a: Function<NAR, Game>): NAR {
-            return initFn(threads, narFPS, a)
-        }
+        fun runRTNet(threads: Int, narFPS: Float, netFPS: Float, a: Function<NAR, Game>): NAR = initFn(threads, narFPS, a)
 
         fun baseNAR(durFPS: Float, _threads: Int): NAR {
 

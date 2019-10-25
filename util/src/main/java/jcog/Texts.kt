@@ -56,34 +56,18 @@ object Texts {
         return cost[len0 - 1]
     }
 
-    fun n1(x: Float): String {
-        return if (x != x) "NaN" else DoubleFormatUtil.formatDoubleFast(x.toDouble(), 1)
+    fun n1(x: Float): String = if (x != x) "NaN" else DoubleFormatUtil.formatDoubleFast(x.toDouble(), 1)
 
-    }
-
-    fun n3(x: Float): String {
-        return if (x != x) "NaN" else DoubleFormatUtil.formatDoubleFast(x.toDouble(), 3)
-
-    }
+    fun n3(x: Float): String = if (x != x) "NaN" else DoubleFormatUtil.formatDoubleFast(x.toDouble(), 3)
 
 
-    fun n4(x: Float): String {
-        return if (x != x) NaN4 else DoubleFormatUtil.formatDoubleFast(x.toDouble(), 4)
+    fun n4(x: Float): String = if (x != x) NaN4 else DoubleFormatUtil.formatDoubleFast(x.toDouble(), 4)
 
-    }
+    fun n4(x: Double): String = if (x != x) NaN4 else DoubleFormatUtil.formatDoubleFast(x, 4)
 
-    fun n4(x: Double): String {
-        return if (x != x) NaN4 else DoubleFormatUtil.formatDoubleFast(x, 4)
+    fun hundredths(d: Float): Long = (d * 100.0f + 0.5f).toLong()
 
-    }
-
-    fun hundredths(d: Float): Long {
-        return (d * 100.0f + 0.5f).toLong()
-    }
-
-    fun tens(d: Float): Int {
-        return (d * 10.0f + 0.5f).toInt()
-    }
+    fun tens(d: Float): Int = (d * 10.0f + 0.5f).toInt()
 
     fun n2(x: Float): String {
         if (x != x)
@@ -114,16 +98,12 @@ object Texts {
     }
 
 
-    fun n2(p: Double): String {
-        return if (p != p) NaN2 else n2(p.toFloat())
-    }
+    fun n2(p: Double): String = if (p != p) NaN2 else n2(p.toFloat())
 
     /**
      * character to a digit, or -1 if it wasnt a digit
      */
-    fun i(c: Char): Int {
-        return if (c >= '0' && c  <= '9') c  - '0' else -1
-    }
+    fun i(c: Char): Int = if (c >= '0' && c  <= '9') c  - '0' else -1
 
     /**
      * fast parse an int under certain conditions, avoiding Integer.parse if possible
@@ -205,9 +185,7 @@ object Texts {
         }
     }
 
-    fun i(b: ByteArray, radix: Int): String {
-        return i(b, 0, b.size, radix)
-    }
+    fun i(b: ByteArray, radix: Int): String = i(b, 0, b.size, radix)
 
     fun i(b: ByteArray, from: Int, to: Int, radix: Int): String {
         assert(radix == 16)
@@ -239,9 +217,7 @@ object Texts {
         }
     }
 
-    private fun i3(s: String, ifMissing: Int): Int {
-        return i3(s, 0, ifMissing)
-    }
+    private fun i3(s: String, ifMissing: Int): Int = i3(s, 0, ifMissing)
 
     private fun i3(s: String, offset: Int, ifMissing: Int): Int {
         val dig100 = i(s[offset])
@@ -255,9 +231,7 @@ object Texts {
 
     }
 
-    private fun i2(s: String, ifMissing: Int): Int {
-        return i2(s, 0, ifMissing)
-    }
+    private fun i2(s: String, ifMissing: Int): Int = i2(s, 0, ifMissing)
 
     private fun i2(s: String, offset: Int, ifMissing: Int): Int {
         val dig10 = i(s[offset])
@@ -268,9 +242,7 @@ object Texts {
 
     }
 
-    private fun i1(s: String, ifMissing: Int): Int {
-        return i1(s, 0, ifMissing)
-    }
+    private fun i1(s: String, ifMissing: Int): Int = i1(s, 0, ifMissing)
 
     private fun i1(s: String, offset: Int, ifMissing: Int): Int {
         val dig1 = i(s[offset])
@@ -474,9 +446,7 @@ object Texts {
         return s
     }
 
-    fun n2percent(rate: Float): String {
-        return n2(100f * rate) + '%'
-    }
+    fun n2percent(rate: Float): String = n2(100f * rate) + '%'
 
     fun histogramDecode(h: AbstractHistogram, header: String, linearStep: Int, x: BiConsumer<String, Any>) {
         val digits = (1.0 + Math.log10(h.maxValue.toDouble())).toInt()
@@ -793,10 +763,8 @@ object Texts {
              * @param precision the precision to round at (use if abs(source) &lt; 1.0)
              * @return true if the source value will be rounded to zero
              */
-            private fun isRoundedToZero(source: Double, decimals: Int, precision: Int): Boolean {
-
-                return source == 0.0 || Math.abs(source) < 4.999999999999999 / tenPowDouble(Math.max(decimals, precision) + 1)
-            }
+            private fun isRoundedToZero(source: Double, decimals: Int, precision: Int): Boolean =
+                    source == 0.0 || Math.abs(source) < 4.999999999999999 / tenPowDouble(Math.max(decimals, precision) + 1)
 
             /**
              * Returns ten to the power of n

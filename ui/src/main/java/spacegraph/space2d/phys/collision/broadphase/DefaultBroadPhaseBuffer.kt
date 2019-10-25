@@ -90,13 +90,9 @@ class DefaultBroadPhaseBuffer(private val m_tree: BroadPhaseStrategy) : TreeCall
         bufferMove(proxyId)
     }
 
-    override fun get(proxyId: Int): Any {
-        return m_tree.getUserData(proxyId)
-    }
+    override fun get(proxyId: Int): Any = m_tree.getUserData(proxyId)
 
-    override fun getFatAABB(proxyId: Int): AABB {
-        return m_tree.getFatAABB(proxyId)
-    }
+    override fun getFatAABB(proxyId: Int): AABB = m_tree.getFatAABB(proxyId)
 
     override fun testOverlap(proxyIdA: Int, proxyIdB: Int): Boolean {
 
@@ -109,9 +105,7 @@ class DefaultBroadPhaseBuffer(private val m_tree: BroadPhaseStrategy) : TreeCall
 
     }
 
-    override fun getProxyCount(): Int {
-        return m_proxyCount
-    }
+    override fun getProxyCount(): Int = m_proxyCount
 
     override fun drawTree(argDraw: DebugDraw) {
         m_tree.drawTree(argDraw)
@@ -173,17 +167,11 @@ class DefaultBroadPhaseBuffer(private val m_tree: BroadPhaseStrategy) : TreeCall
         m_tree.raycast(callback, input)
     }
 
-    override fun getTreeHeight(): Int {
-        return m_tree.height
-    }
+    override fun getTreeHeight(): Int = m_tree.height
 
-    override fun getTreeBalance(): Int {
-        return m_tree.maxBalance
-    }
+    override fun getTreeBalance(): Int = m_tree.maxBalance
 
-    override fun getTreeQuality(): Float {
-        return m_tree.areaRatio
-    }
+    override fun getTreeQuality(): Float = m_tree.areaRatio
 
     private fun bufferMove(proxyId: Int) {
         if (m_moveCount == m_moveCapacity) {
