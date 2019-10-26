@@ -610,7 +610,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
         double priMean = (double) (Util.sum(Task::priElseZero, x) / (float) x.length);
         float p = (float)(priMean * volFactor * confFactor * rangeFactor);
 
-        float yp = Prioritizable.fund(p, priCopyOrMove, x);
+        float yp = Prioritizable.Companion.fund(p, priCopyOrMove, x);
 
         merge(y, x, yp);
     }

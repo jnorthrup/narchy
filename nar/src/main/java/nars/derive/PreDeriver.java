@@ -1,17 +1,12 @@
 package nars.derive;
 
-import jcog.memoize.Memoizers;
+..import jcog.memoize.Memoizers;
 import jcog.memoize.byt.ByteHijackMemoize;
-import nars.concept.Concept;
-import nars.concept.snapshot.Snapshot;
 import nars.derive.util.PremiseKey;
 import nars.link.TaskLink;
 import nars.term.util.builder.InterningTermBuilder;
 
-import java.util.function.BiFunction;
 import java.util.function.Function;
-
-import static jcog.memoize.Memoizers.DEFAULT_HIJACK_REPROBES;
 
 /** winnows the subset of valid conclusion pathways applicable to a particular Pre-derivation.
  *  this is returned as a short[] of conclusions id's. */
@@ -59,35 +54,5 @@ import static jcog.memoize.Memoizers.DEFAULT_HIJACK_REPROBES;
 
     }
 
-
-
-    /** experimental: caches the memoizations in Concept meta maps.
-     *  this is likely wasteful even though it attempts to use Soft ref's
-     *  TODO use Concept Snapshot API
-     *  */
-    PreDeriver SnapshotMemoizer = new PreDeriver() {
-        @Override
-        public short[] apply(PreDerivation preDerivation) {
-            Derivation d = (Derivation) preDerivation;
-
-            ByteHijackMemoize<PremiseKey, short[]> whats = Snapshot.Companion.get(preDerivation.taskTerm, d.nar,
-                    "ConceptMetaMemoizer_" + System.identityHashCode(d.deriver), d.time, -1, new BiFunction<Concept, ByteHijackMemoize<PremiseKey, short[]>, ByteHijackMemoize<PremiseKey, short[]>>() {
-                        @Override
-                        public ByteHijackMemoize<PremiseKey, short[]> apply(Concept c, ByteHijackMemoize<PremiseKey, short[]> w) {
-                            ByteHijackMemoize<PremiseKey, short[]> w1 = w;
-                            if (w1 == null) {
-                                int capacity = 512;
-                                w1 = new ByteHijackMemoize<>(PreDeriver::run,
-                                        capacity,
-                                        DEFAULT_HIJACK_REPROBES, false);
-                            }
-                            return w1;
-                        }
-                    });
-
-            //failsafe
-            return whats != null ? whats.apply(new PremiseKey(d)) : run(preDerivation);
-        }
-    };
 
 }

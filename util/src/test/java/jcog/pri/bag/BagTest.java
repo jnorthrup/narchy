@@ -55,7 +55,7 @@ public class BagTest {
         PriReference<String> x = c.get("x");
         assertNotNull(x);
         assertSame(x, x0);
-        assertTrue(Util.equals(Prioritized.Zero.priElseNeg1(), x.priElseNeg1(), 0.01f));
+        assertTrue(Util.equals(Prioritized.Companion.getZero().priElseNeg1(), x.priElseNeg1(), 0.01f));
 
     }
 

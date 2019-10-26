@@ -168,7 +168,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
                             Ansi.Attribute.INTENSITY_BOLD :
                             Ansi.Attribute.INTENSITY_FAINT)
                     .a(tvp > 0.75f ? Ansi.Attribute.NEGATIVE_ON : Ansi.Attribute.NEGATIVE_OFF)
-                    .fg(Prioritized.budgetSummaryColor(tv))
+                    .fg(Prioritized.Companion.budgetSummaryColor(tv))
                     .a(
                             tv.toString(true)
                     )

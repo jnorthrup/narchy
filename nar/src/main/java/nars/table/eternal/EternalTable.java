@@ -408,7 +408,7 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
             });
             if (revised != null) {
                 //TODO maybe based on relative evidence
-                revised.pri(Prioritizable.fund(Math.max(theOldBelief.priElseZero(), input.priElseZero()), false, theOldBelief, input));
+                revised.pri(Prioritizable.Companion.fund(Math.max(theOldBelief.priElseZero(), input.priElseZero()), false, theOldBelief, input));
                 revised.why(theOldBelief.why());
             }
         } else {
