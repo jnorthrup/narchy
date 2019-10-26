@@ -43,7 +43,7 @@ public abstract class AbstractAdjacentIndexer extends AdjacentIndexer {
             NAR nar = d.nar;
 
 
-            List<Term> tangent = Snapshot.get(to, nar, id, d.time, ttl(d), new BiFunction<Concept, List<Term>, List<Term>>() {
+            List<Term> tangent = Snapshot.Companion.get(to, nar, id, d.time, ttl(d), new BiFunction<Concept, List<Term>, List<Term>>() {
                 @Override
                 public List<Term> apply(Concept targetConcept, List<Term> t) {
                     //TOO SLOW, impl indexes

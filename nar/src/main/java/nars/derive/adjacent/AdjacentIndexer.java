@@ -55,7 +55,7 @@ public class AdjacentIndexer implements AdjacentConcepts {
 //			return null;
 
 		if (cache(to)) {
-            TaskLinkSnapshot match = Snapshot.get(to, d.nar, links.links.id(false, true), d.time, Math.round(d.dur * (float) ATOM_TANGENT_REFRESH_DURS), new BiFunction<Concept, TaskLinkSnapshot, TaskLinkSnapshot>() {
+            TaskLinkSnapshot match = Snapshot.Companion.get(to, d.nar, links.links.id(false, true), d.time, Math.round(d.dur * (float) ATOM_TANGENT_REFRESH_DURS), new BiFunction<Concept, TaskLinkSnapshot, TaskLinkSnapshot>() {
                 @Override
                 public TaskLinkSnapshot apply(Concept T, TaskLinkSnapshot s) {
                     TaskLinkSnapshot s1 = s;

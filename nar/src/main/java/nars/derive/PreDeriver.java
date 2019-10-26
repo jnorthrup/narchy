@@ -70,7 +70,7 @@ import static jcog.memoize.Memoizers.DEFAULT_HIJACK_REPROBES;
         public short[] apply(PreDerivation preDerivation) {
             Derivation d = (Derivation) preDerivation;
 
-            ByteHijackMemoize<PremiseKey, short[]> whats = Snapshot.get(preDerivation.taskTerm, d.nar,
+            ByteHijackMemoize<PremiseKey, short[]> whats = Snapshot.Companion.get(preDerivation.taskTerm, d.nar,
                     "ConceptMetaMemoizer_" + System.identityHashCode(d.deriver), d.time, -1, new BiFunction<Concept, ByteHijackMemoize<PremiseKey, short[]>, ByteHijackMemoize<PremiseKey, short[]>>() {
                         @Override
                         public ByteHijackMemoize<PremiseKey, short[]> apply(Concept c, ByteHijackMemoize<PremiseKey, short[]> w) {
