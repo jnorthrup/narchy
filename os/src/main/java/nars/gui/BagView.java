@@ -87,7 +87,7 @@ public class BagView<X extends Prioritized> extends TabMenu {
                 n, new Runnable() {
                     @Override
                     public void run() {
-                        PriReference.histogram(bag, d);
+                        PriReference.Companion.histogram(bag, d);
                     }
                 });
 
