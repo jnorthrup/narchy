@@ -161,7 +161,7 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
         float s = zoom * Math.min(W, H);
 
         boolean scaleChanged;
-        float scaleChangeTolerance = ScalarValue.EPSILONcoarse;
+        float scaleChangeTolerance = ScalarValue.Companion.getEPSILONcoarse();
         if (parent instanceof Surface) {
             Surface ps = (Surface) this.parent;
             scaleChanged = scale.setIfChanged(s * W /ps.w(), s * H /ps.h(), scaleChangeTolerance);

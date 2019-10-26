@@ -211,7 +211,7 @@ public class QuadtreeIndex<V extends Vec2D> extends Rect implements SpatialIndex
 
     @Override
     public void bounds(RectFloat bounds) {
-        if (bounds.equals(x, y, width, height, ScalarValue.EPSILON))
+        if (bounds.equals(x, y, width, height, ScalarValue.Companion.getEPSILON()))
             return; //no change
 
         x = bounds.x;

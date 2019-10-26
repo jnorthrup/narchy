@@ -48,11 +48,11 @@ public class STMLinker extends TaskAction {
 		/* pri split bidirectionally so * 0.5 */
         float pri = 0.5f * factor * pri(next, prev);
 
-		if (pri >= ScalarValue.EPSILON) {
+		if (pri >= ScalarValue.Companion.getEPSILON()) {
             long dt = next.minTimeTo(prev);
 			if (dt > 0L) {
 				pri = (float) NAL.evi((double) pri, dt, d.dur); //fade by time distance
-				if (pri < ScalarValue.EPSILON)
+				if (pri < ScalarValue.Companion.getEPSILON())
 					return true;
 			}
 

@@ -90,7 +90,7 @@ public enum Should { ;
 			}
 
             float range = max - min;
-			if (range < ScalarValue.EPSILON) {
+			if (range < ScalarValue.Companion.getEPSILON()) {
 //                        float flat = 1f/ww;
 //                        for (int i = 0; i < ww; i++)
 //                            c[i].pri(flat);

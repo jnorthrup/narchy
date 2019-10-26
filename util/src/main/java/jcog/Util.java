@@ -2769,7 +2769,7 @@ public class Util {
         for (int i = 0; i < v.length; i++) {
             current += Math.abs(v[i]);
         }
-        if (current < ScalarValue.EPSILON) {
+        if (current < ScalarValue.Companion.getEPSILON()) {
             Arrays.fill(v, target / (float) v.length);
         } else {
             float scale = target / current;

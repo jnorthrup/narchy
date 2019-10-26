@@ -8,7 +8,7 @@ import nars.derive.Derivation;
 
 public class DirectDerivePri implements DerivePri {
 
-    public final FloatRange gain = new FloatRange(1f, ScalarValue.EPSILON, 1f);
+    public final FloatRange gain = new FloatRange(1f, ScalarValue.Companion.getEPSILON(), 1f);
 
     @Override
     public float pri(Task t, Derivation d) {

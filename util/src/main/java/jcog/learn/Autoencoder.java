@@ -15,7 +15,7 @@ import static java.util.Arrays.fill;
  */
 public class Autoencoder {
 
-    static final float NORMALIZATION_EPSILON = (float) Math.sqrt((double) ScalarValue.EPSILON);
+    static final float NORMALIZATION_EPSILON = (float) Math.sqrt((double) ScalarValue.Companion.getEPSILON());
 
 
     /**

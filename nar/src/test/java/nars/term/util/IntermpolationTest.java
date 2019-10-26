@@ -41,7 +41,7 @@ class IntermpolationTest {
                     return "dtDiff(" + a + "," + b + ")=" + ab;
                 }
             });
-            assertEquals(ab, Intermpolate.dtDiff(b, a), ScalarValue.EPSILON); //commutative
+            assertEquals(ab, Intermpolate.dtDiff(b, a), ScalarValue.Companion.getEPSILON()); //commutative
         }
 
         NAR s = NARS.shell();

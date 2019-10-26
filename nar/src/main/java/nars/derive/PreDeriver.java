@@ -1,6 +1,6 @@
 package nars.derive;
 
-..import jcog.memoize.Memoizers;
+ import jcog.memoize.Memoizers;
 import jcog.memoize.byt.ByteHijackMemoize;
 import nars.derive.util.PremiseKey;
 import nars.link.TaskLink;

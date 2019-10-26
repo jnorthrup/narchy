@@ -245,7 +245,7 @@ public class ConceptGraph2D extends Graph2D<Term> {
             pp[2] = _question ? l.priPunc(QUESTION) : (float) 0;
             pp[3] = _quest ? l.priPunc(QUEST) : (float) 0;
             float pSum = (pp[0] + pp[1] + pp[2] + pp[3]);
-            if (pSum < ScalarValue.EPSILON)
+            if (pSum < ScalarValue.Companion.getEPSILON())
                 return;
 
 
@@ -262,7 +262,7 @@ public class ConceptGraph2D extends Graph2D<Term> {
 
                 for (int i = 0; i < 4; i++) {
                     float ppi = pp[i];
-                    if (ppi < ScalarValue.EPSILON)
+                    if (ppi < ScalarValue.Companion.getEPSILON())
                         continue;
 
                     int b;

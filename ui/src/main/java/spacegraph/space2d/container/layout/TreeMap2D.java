@@ -104,7 +104,7 @@ public class TreeMap2D<X> extends DynamicLayout2D<X> {
             MutableRectFloat x = this.nodes.get(i);
 
             float p = x.node.pri;
-            if (p != p || p < ScalarValue.EPSILON) {
+            if (p != p || p < ScalarValue.Companion.getEPSILON()) {
                 x.size(0.1f,0.1f);
                 continue;
             }

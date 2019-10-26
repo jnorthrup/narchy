@@ -9,7 +9,7 @@ import org.eclipse.collections.api.tuple.primitive.ObjectFloatPair;
 
 import java.util.Random;
 
-import static jcog.pri.ScalarValue.EPSILON;
+import static jcog.pri.ScalarValue.Companion;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
 /** accumulates overflow priority from operations, and tracks opportunities how the overflow can
@@ -30,7 +30,7 @@ public class OverflowDistributor<X> extends MutableFloat {
 
     /** headroom = remaining demand that can be supplied */
     public void overflow(X x, float overflow, float headroom) {
-        if (overflow > EPSILON && headroom > EPSILON) {
+        if (overflow > Companion.getEPSILON() && headroom > Companion.getEPSILON()) {
             add(overflow);
             needs.add(pair(x, headroom));
             totalHeadRoom += headroom;
@@ -49,7 +49,7 @@ public class OverflowDistributor<X> extends MutableFloat {
         int s = needs.size();
         if (s > 0) {
             float pTotal = floatValue();
-            if (pTotal >= EPSILON * (float) s) {
+            if (pTotal >= ScalarValue.Companion.getEPSILON() * (float) s) {
 
                 if (s == 1) {
                     how.value(needs.getFirst().getOne(), pTotal);
@@ -65,7 +65,7 @@ public class OverflowDistributor<X> extends MutableFloat {
                         ObjectFloatPair<X> n = needs.get(i);
 
                         float given = Math.min(maxAlloc, n.getTwo());
-                        if (given >= EPSILON) {
+                        if (given >= ScalarValue.Companion.getEPSILON()) {
                             how.value(n.getOne(), given);
 
                             subtract(given);

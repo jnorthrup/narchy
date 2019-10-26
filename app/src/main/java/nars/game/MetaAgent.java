@@ -467,7 +467,7 @@ public abstract class MetaAgent extends Game {
             });
 
 
-			rewardNormalized($.INSTANCE.inh(gid, dex), 1.0F, (float) 0, ScalarValue.EPSILON,
+			rewardNormalized($.INSTANCE.inh(gid, dex), 1.0F, (float) 0, ScalarValue.Companion.getEPSILON(),
                     new FloatSupplier() {
                         @Override
                         public float asFloat() {

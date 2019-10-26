@@ -528,7 +528,7 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
 
         if (delta > (float) 0) {
             if (posBefore > 0) {
-                if (-valueAt(posBefore - 1, cmp) > priAfter - ScalarValue.EPSILON / 2.0F)
+                if (-valueAt(posBefore - 1, cmp) > priAfter - ScalarValue.Companion.getEPSILON() / 2.0F)
                     return; //order doesnt change
             } else {
                 //already highest
@@ -536,7 +536,7 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
             }
         } else if (delta < (float) 0) {
             if (posBefore < size() - 1) {
-                if (-valueAt(posBefore+1, cmp) < priAfter + ScalarValue.EPSILON / 2.0F)
+                if (-valueAt(posBefore+1, cmp) < priAfter + ScalarValue.Companion.getEPSILON() / 2.0F)
                     return; //order doesnt change
             } else {
                 //already lowest

@@ -35,7 +35,7 @@ public class ProxyTask extends AbstractTask {
             if (NAL.DELETE_PROXY_TASK_TO_DELETED_TASK)
                 delete();
             else
-                pri(ScalarValue.EPSILON);
+                pri(ScalarValue.Companion.getEPSILON());
         } else
             pri(p);
 

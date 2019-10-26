@@ -289,7 +289,7 @@ public class Taskify extends ProxyTerm {
             spam(d, NAL.derive.TTL_COST_DERIVE_TASK_UNPRIORITIZABLE);
             return null;
         }
-        t.pri(Util.clamp(priority, ScalarValue.EPSILON, 1.0F));
+        t.pri(Util.clamp(priority, ScalarValue.Companion.getEPSILON(), 1.0F));
 
         //these must be applied before possible merge on input to derivedTask bag
         t.why(rule.why(d));

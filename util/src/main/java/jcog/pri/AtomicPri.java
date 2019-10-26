@@ -94,12 +94,12 @@ public abstract class AtomicPri implements ScalarValue {
     private static float _vUnit(float x) {
         return x!=x ? Float.NaN : Util.unitize(x);
     }
-    private static final FloatFloatToFloatFunction priAddUpdateFunctionUnit = AtomicPri.post(priAddUpdateFunction,AtomicPri::_vUnit);
-    private static final FloatFloatToFloatFunction priAddUpdateFunctionNonZero = AtomicPri.post(priAddUpdateFunction,AtomicPri::_vNonZero);
-    private static final FloatFloatToFloatFunction priAddUpdateFunctionAny = AtomicPri.post(priAddUpdateFunction,AtomicPri::_vAny);
+    private static final FloatFloatToFloatFunction priAddUpdateFunctionUnit = AtomicPri.post(Companion.getPriAddUpdateFunction(),AtomicPri::_vUnit);
+    private static final FloatFloatToFloatFunction priAddUpdateFunctionNonZero = AtomicPri.post(Companion.getPriAddUpdateFunction(),AtomicPri::_vNonZero);
+    private static final FloatFloatToFloatFunction priAddUpdateFunctionAny = AtomicPri.post(Companion.getPriAddUpdateFunction(),AtomicPri::_vAny);
 
-    private static final FloatFloatToFloatFunction priMulUpdateFunctionUnit = AtomicPri.post(priMulUpdateFunction,AtomicPri::_vUnit);
-    private static final FloatFloatToFloatFunction priMulUpdateFunctionNonZero = AtomicPri.post(priMulUpdateFunction,AtomicPri::_vNonZero);
+    private static final FloatFloatToFloatFunction priMulUpdateFunctionUnit = AtomicPri.post(Companion.getPriMulUpdateFunction(),AtomicPri::_vUnit);
+    private static final FloatFloatToFloatFunction priMulUpdateFunctionNonZero = AtomicPri.post(Companion.getPriMulUpdateFunction(),AtomicPri::_vNonZero);
 
     private int _pri() {
         return PRI.INT.getOpaque(this);

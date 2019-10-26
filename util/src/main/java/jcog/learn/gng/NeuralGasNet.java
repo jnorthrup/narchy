@@ -199,7 +199,7 @@ public class NeuralGasNet<N extends Centroid>  /*extends SimpleGraph<N, Connecti
             throw new ArrayIndexOutOfBoundsException();
 
         float alpha = this.alpha.floatValue();
-        if (alpha < ScalarValue.EPSILON || lambdaPeriod == 0)
+        if (alpha < ScalarValue.Companion.getEPSILON() || lambdaPeriod == 0)
             return null;
 
 

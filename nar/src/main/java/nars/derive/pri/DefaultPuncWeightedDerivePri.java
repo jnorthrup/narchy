@@ -44,7 +44,7 @@ public class DefaultPuncWeightedDerivePri extends DefaultDerivePri {
 
         //normalize to 1.0, for postAmp usage
         float sum = Util.sum(beliefPri, goalPri, questionPri, questPri);
-        if (sum < ScalarValue.EPSILON) {
+        if (sum < ScalarValue.Companion.getEPSILON()) {
             //flat
             this.beliefPri = this.goalPri = this.questionPri = this.questPri = 1f;
         } else {

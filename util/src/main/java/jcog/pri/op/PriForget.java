@@ -53,7 +53,7 @@ public enum PriForget { ;
 
             //Util.unitize(pressure * temperature / mass);
 
-            if (factor > (float) cap * ScalarValue.EPSILON) {
+            if (factor > (float) cap * ScalarValue.Companion.getEPSILON()) {
                 return new PriMult<>(1.0F -decayRate);
             }
         }
@@ -69,7 +69,7 @@ public enum PriForget { ;
         double eachMustForgetPct =
                 rate * (excess / (mass+excess));
 
-            if (eachMustForgetPct >= (double) ScalarValue.EPSILON) {
+            if (eachMustForgetPct >= (double) ScalarValue.Companion.getEPSILON()) {
                 return new PriMult<>((float)Util.unitize(1.0 -eachMustForgetPct));
             }
 

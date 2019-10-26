@@ -130,7 +130,7 @@ public class SignalView extends Gridding {
                                 float ss = Util.clamp(x(selectStart), left(), right());
                                 gl.glColor4f(1f, 0.8f, (float) 0, selectorAlpha);
                                 float ee = Util.clamp(x(selectEnd), left(), right());
-                                if (ee - ss > ScalarValue.EPSILON) {
+                                if (ee - ss > ScalarValue.Companion.getEPSILON()) {
                                     Draw.rect(x() + ss, y(), ee - ss, h(), gl);
                                 }
                             }

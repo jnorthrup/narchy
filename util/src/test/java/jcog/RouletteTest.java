@@ -67,7 +67,7 @@ class RouletteTest {
 
         float[] w = new float[uniques];
         for (int i = 0; i < uniques; i++)
-            w[i] = ScalarValue.EPSILON + rng.nextFloat();
+            w[i] = ScalarValue.Companion.getEPSILON() + rng.nextFloat();
 
         testMutableRoulette(rng, uniques, samples, w);
     }

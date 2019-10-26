@@ -2,6 +2,7 @@ package jcog.net.attn;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import jcog.Util;
+import jcog.pri.ScalarValue;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -11,7 +12,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiFunction;
 
-import static jcog.pri.ScalarValue.EPSILON;
+import static jcog.pri.ScalarValue.Companion;
 
 /**
  * Created by me on 5/2/17.
@@ -82,16 +83,16 @@ public class HashMapTagSet implements TagSet, Serializable {
     @Override
     public boolean pri(String tag, float pri) {
         pri = Util.unitize(pri);
-        if (Util.equals(pri, 0f, EPSILON))
+        if (Util.equals(pri, 0f, ScalarValue.Companion.getEPSILON()))
             return data.remove(tag) != null;
         else {
             Float existing = data.put(tag, pri);
-            return existing == null || !Util.equals(existing, EPSILON);
+            return existing == null || !Util.equals(existing, ScalarValue.Companion.getEPSILON());
         }
     }
 
     public boolean add(String tag, float pri) {
-        if (pri <= EPSILON)
+        if (pri <= ScalarValue.Companion.getEPSILON())
             return false;
 
         boolean[] mod = {true};
@@ -99,7 +100,7 @@ public class HashMapTagSet implements TagSet, Serializable {
             @Override
             public Float apply(Float existing, Float added) {
                 float next = Util.unitize(existing + added);
-                mod[0] = !Util.equals(existing, next, EPSILON);
+                mod[0] = !Util.equals(existing, next, Companion.getEPSILON());
                 return next;
             }
         });

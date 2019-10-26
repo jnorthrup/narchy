@@ -100,7 +100,7 @@ public class Cause extends WhenInternal implements Comparable<Cause>, Caused, Pr
      * 0..+1
      */
     public float amp() {
-        return Math.max(ScalarValue.EPSILON, gain() / 2f);
+        return Math.max(ScalarValue.Companion.getEPSILON(), gain() / 2f);
     }
 
     /**

@@ -41,7 +41,7 @@ public final class Roulette{
 
         float weight_sum = Util.sumIfPositive(weightCount, weight);
 
-        if (weight_sum < ScalarValue.EPSILON) {
+        if (weight_sum < ScalarValue.Companion.getEPSILON()) {
             //flat
             return Util.bin(rng.asFloat() * (float) weightCount, weightCount);//rng.nextInt(count)
         } else {

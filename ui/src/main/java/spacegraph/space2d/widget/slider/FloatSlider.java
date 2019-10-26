@@ -189,7 +189,7 @@ public class FloatSlider extends Widget implements FloatSupplier {
             float min = min(), max = max();
 //            min = Math.min(min, max); //HAcK
 //            max = Math.max(min, max); //HAcK
-            return Util.equals(min, max, ScalarValue.EPSILON) ? 0.5f : (Util.clamp(v, min, max) - min) / (max - min);
+            return Util.equals(min, max, ScalarValue.Companion.getEPSILON()) ? 0.5f : (Util.clamp(v, min, max) - min) / (max - min);
         }
 
         @Override

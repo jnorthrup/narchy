@@ -262,7 +262,7 @@ public abstract class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
                     }
 
                     if (sorted) {
-                        if (p - above >= ScalarValue.EPSILON / 2.0F) {
+                        if (p - above >= ScalarValue.Companion.getEPSILON() / 2.0F) {
                             sorted = false;
                         } else {
                             above = p;
@@ -804,7 +804,7 @@ public abstract class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
             //delta = priAfter - priBefore;
 
             if (sortContinuously()) {
-                if (Math.abs(delta) >= ScalarValue.EPSILON) {
+                if (Math.abs(delta) >= ScalarValue.Companion.getEPSILON()) {
                     //if removed, or significant change occurred
 
                     //if (result != null) {

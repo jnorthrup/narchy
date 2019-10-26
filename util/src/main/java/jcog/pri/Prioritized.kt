@@ -42,7 +42,7 @@ interface Prioritized : Deleteable {
 
     /** deleted if pri()==NaN  */
     @kotlin.jvm.JvmDefault
-    override fun isDeleted(): Boolean {
+    override val isDeleted : Boolean get(){
         val p = pri()
         return p != p
     }

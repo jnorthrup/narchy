@@ -723,7 +723,7 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
                     System.arraycopy(wPri, 1, wPri, 0, windowSize - 1);
                 }
                 wVal[windowSize - 1] = v0;
-                wPri[windowSize - 1] = Math.max(p, ScalarValue.EPSILON);
+                wPri[windowSize - 1] = Math.max(p, ScalarValue.Companion.getEPSILON());
 
             }
 

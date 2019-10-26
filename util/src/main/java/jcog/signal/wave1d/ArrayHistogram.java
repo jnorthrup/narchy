@@ -134,7 +134,7 @@ public class ArrayHistogram  /*AtomicDoubleArrayTensor*/  /* ArrayTensor */{
             flat = true;
         } else {
             mass = mass();
-            flat = (mass <= ScalarValue.EPSILON * (1.0F +rangeDelta));
+            flat = (mass <= ScalarValue.Companion.getEPSILON() * (1.0F +rangeDelta));
         }
 
 

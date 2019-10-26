@@ -71,7 +71,7 @@ public class BrightnessNormalize implements Bitmap2D {
         }
         float mean = (float) (brightSum / (double) (W * H));
         float range = max-min;
-        if (range < ScalarValue.EPSILON)
+        if (range < ScalarValue.Companion.getEPSILON())
             return; //no change, just pass-thru
 
         //center around the mean value

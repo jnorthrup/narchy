@@ -42,7 +42,7 @@ public class BagTest {
         }
 
         
-        PLink x0 = new PLink("x", 2 * ScalarValue.EPSILON);
+        PLink x0 = new PLink("x", 2 * ScalarValue.Companion.getEPSILON());
         PriReference added = c.put(x0);
         assertSame(added, x0);
         c.commit();
@@ -50,7 +50,7 @@ public class BagTest {
         assertEquals(1, c.size());
 
 
-        assertEquals(0, c.priMin(), ScalarValue.EPSILON * 2);
+        assertEquals(0, c.priMin(), ScalarValue.Companion.getEPSILON() * 2);
 
         PriReference<String> x = c.get("x");
         assertNotNull(x);

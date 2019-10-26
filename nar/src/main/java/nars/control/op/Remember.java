@@ -212,7 +212,7 @@ public class Remember {
         if (next!=prev) {
             float np = next.priElseZero();
             float pp = prev.priElseZero();
-            float dPriPct = (np - pp) / Math.max(ScalarValue.EPSILON, Math.max(np, pp));
+            float dPriPct = (np - pp) / Math.max(ScalarValue.Companion.getEPSILON(), Math.max(np, pp));
 
             //priority change significant enough
             if (dPriPct >= NAL.belief.REMEMBER_REPEAT_PRI_PCT_THRESHOLD) {

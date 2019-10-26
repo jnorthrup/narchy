@@ -123,8 +123,8 @@ public class MutableRoulette {
         }
 
         if (n == 0 || s < (float) n * EPSILON) {
-            Arrays.fill(w, ScalarValue.EPSILON);
-            s = ScalarValue.EPSILON * (float) n;
+            Arrays.fill(w, ScalarValue.Companion.getEPSILON());
+            s = ScalarValue.Companion.getEPSILON() * (float) n;
             n = w.length;
         }
 

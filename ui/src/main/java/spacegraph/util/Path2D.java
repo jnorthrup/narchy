@@ -57,7 +57,7 @@ public class Path2D extends FloatArrayList {
             int s = this.size;
             if (s > 0) {
                 //quick test for equality with last point
-                if (Util.equals(items[s-2], p.x, ScalarValue.EPSILON) && Util.equals(items[s-1], p.y, ScalarValue.EPSILON))
+                if (Util.equals(items[s-2], p.x, ScalarValue.Companion.getEPSILON()) && Util.equals(items[s-1], p.y, ScalarValue.Companion.getEPSILON()))
                     return false;
             }
 

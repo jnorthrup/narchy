@@ -119,7 +119,7 @@ public class SimpleTSne implements TSne {
                 scalarMultiply(scalarMult(gains, .8), abs(equal(biggerThan(dY, 0.0), biggerThan(iY, 0.0)))));
 
         //Double.MIN_NORMAL;
-        double min_gain = (double) ScalarValue.EPSILON;
+        double min_gain = (double) ScalarValue.Companion.getEPSILON();
         assignAllLessThan(gains, min_gain, min_gain);
         //0.1f;
         double eta = 0.5;

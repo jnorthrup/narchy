@@ -4,6 +4,7 @@ import jcog.Texts
 import jcog.Util
 import jcog.pri.op.PriMerge
 import jcog.pri.op.PriReturn
+import jcog.util.FloatFloatToFloatFunction
 import org.eclipse.collections.api.block.function.primitive.FloatFunction
 import java.util.function.Function
 
@@ -65,7 +66,8 @@ interface Prioritizable : Prioritized, ScalarValue {
 
         val before = FloatArray(1)
 
-        val after = pri({ x, a ->
+        val after = pri(
+                FloatFloatToFloatFunction(){ x, a ->
             var x1 = x
             if (x1 != x1)
                 x1 = 0.toFloat()

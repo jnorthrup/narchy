@@ -517,7 +517,7 @@ public abstract class Bag<X, Y> implements Table<X, Y>, Sampler<Y>, jcog.pri.Pre
     @Override
     public float depressurizePct(float percentToRemove) {
         assertUnitized(percentToRemove);
-        if (percentToRemove < ScalarValue.EPSILON) {
+        if (percentToRemove < ScalarValue.Companion.getEPSILON()) {
             return (float) 0; //remove nothing
         }
 

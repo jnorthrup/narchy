@@ -308,7 +308,7 @@ public enum Intermpolate {;
 
         if (adt == (long) XTERNAL || bdt == (long) XTERNAL) {
             //dDT = 0.25f; //undercut the DTERNAL case
-            return ScalarValue.EPSILONcoarse;
+            return ScalarValue.Companion.getEPSILONcoarse();
         } else {
             float range = (float) Math.max(1L, Math.abs(adt) + Math.abs(bdt));
 //            return Math.abs(adt - bdt) / (range);

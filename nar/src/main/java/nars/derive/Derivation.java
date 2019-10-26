@@ -585,7 +585,7 @@ public abstract class Derivation extends PreDerivation implements Caused, Predic
             }
 
             double tbe = te + be;
-            double tb = tbe < (double) ScalarValue.EPSILON ? 0.5 : te / tbe;
+            double tb = tbe < (double) ScalarValue.Companion.getEPSILON() ? 0.5 : te / tbe;
 
             long[] e = Stamp.merge(_task.stamp(), _belief.stamp(), (float) tb, unify.random);
             if (stampDouble == null || !Arrays.equals(e, stampDouble))
