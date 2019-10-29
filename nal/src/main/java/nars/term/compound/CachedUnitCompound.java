@@ -1,7 +1,6 @@
 package nars.term.compound;
 
 import nars.Op;
-import nars.term.Compound;
 import nars.term.Term;
 
 import static nars.Op.*;
@@ -17,7 +16,7 @@ public class CachedUnitCompound extends SemiCachedUnitCompound {
     private final short volume;
 
     public CachedUnitCompound(/*@NotNull*/ Op op, /*@NotNull*/ Term sub) {
-        super(sub, Compound.hash1(op.id, sub));
+        super(sub, nars.term.Compound.hash1(op.id, sub));
         assert(op!=NEG && op!=CONJ);
 
         this.op = op.id;

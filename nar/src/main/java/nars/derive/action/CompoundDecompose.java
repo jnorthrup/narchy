@@ -82,11 +82,14 @@ abstract public class CompoundDecompose extends NativeHow {
 		}
 	}
 
-	/** second layer TODO predicate condition that subterms contains compounds */
+	/** second layer */
 	public static final class Two extends CompoundDecompose {
 
 		public Two(boolean taskOrBelief) {
 			super(taskOrBelief);
+
+			//predicate condition: subterms contains compounds
+			match(taskOrBelief ? TheTask : TheBelief, TermMatcher.SubstructureCompounds);
 		}
 
 		@Override

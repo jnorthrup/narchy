@@ -280,7 +280,7 @@ public enum Op {
      */
     public static final int Temporal = or(Op.CONJ, Op.IMPL);
     public static final int Variable = or(Op.VAR_PATTERN, Op.VAR_INDEP, Op.VAR_DEP, Op.VAR_QUERY);
-
+    public static final int Compound = or(Arrays.stream(Op.ops).filter(x->!x.atomic).toArray(Op[]::new));
 
 
     public static final Term[] EmptyTermArray = new Term[0];

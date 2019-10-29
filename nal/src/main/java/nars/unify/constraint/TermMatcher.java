@@ -468,12 +468,6 @@ public abstract class TermMatcher {
         public boolean test(Term term) {
             return term instanceof Compound && (subsMin==1 || term.subs() >= subsMin);
         }
-//
-//        @Override
-//        public boolean testSuper(Term x) {
-//            //return (x.volume() >= subsMin + 1); //this is the minimum possible volume, if it was the target and if it was only atoms
-//            return true;
-//        }
 
         @Override
         public float cost() {
@@ -481,6 +475,25 @@ public abstract class TermMatcher {
         }
 
     }
+    public static final TermMatcher SubstructureCompounds = new TermMatcher() {
+
+        @Override
+        public boolean test(Term term) {
+            return Op.hasAny(term.subStructure(), Op.Compound);
+        }
+
+        @Nullable
+        @Override
+        public Term param() {
+            return null;
+        }
+
+        @Override
+        public float cost() {
+            return 0.05f;
+        }
+
+    };
 
     public static final class ConjSequence extends TermMatcher {
 
