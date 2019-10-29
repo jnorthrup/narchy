@@ -2,7 +2,7 @@ package jcog.exe.realtime;
 
 import java.util.concurrent.TimeUnit;
 
-/** lighweight one time procedure */
+/** lighweight one-time procedure */
 public abstract class Soon extends AbstractTimedFuture<Object> {
 
     /** immediately */

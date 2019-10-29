@@ -38,7 +38,8 @@ public class Deriver {
 				.add(TaskResolve.the)
 				.add(MatchBelief.the)
 				.add(QuestionAnswering.the)
-				.add(new CompoundDecompose(true))
+				.add(new CompoundDecompose.One(true))
+				.add(new CompoundDecompose.Two(true))
 				.add(new AdjacentLinks(new AdjacentIndexer()))
 				.add(new ImageUnfold())
 				//TODO functor evaluator

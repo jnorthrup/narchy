@@ -12,7 +12,7 @@ import nars.term.Term;
 import nars.unify.constraint.TermMatcher;
 import org.jetbrains.annotations.Nullable;
 
-public class CompoundDecompose extends NativeHow {
+abstract public class CompoundDecompose extends NativeHow {
 
 	private final boolean taskOrBelief;
 
@@ -34,7 +34,6 @@ public class CompoundDecompose extends NativeHow {
 		Task srcTask = taskOrBelief ? d._task : d._belief;
 
 		Compound src = (Compound) srcTask.term();
-
 
 		Term tgt = decompose(src, d);
 		if (tgt!=null) {
@@ -58,43 +57,42 @@ public class CompoundDecompose extends NativeHow {
 		}
 
 
-////TODO
-
-//				if (forward != null) {
-//					if (!forward.op().conceptualizable) { // && !src.containsRecursively(forward)) {
-//						target = forward;
-//					} else {
-//
-//
-//
-
-//					}
-//				}
-		//}
-
 	}
 
-	/**
-	 * selects the decomposition strategy for the given Compound
-	 */
-	protected static TermDecomposer decomposer(Compound t) {
-		switch (t.op()) {
-//			case IMPL:
-//				return DynamicTermDecomposer.WeightedImpl;
-//			case CONJ:
-//				return DynamicTermDecomposer.WeightedConjEvent;
-			default:
-				return DynamicTermDecomposer.Weighted;
-		}
-	}
 
 	/**
 	 * determines forward growth target. null to disable
 	 * override to provide a custom termlink supplier
 	 */
-    protected @Nullable
-	static Term decompose(Compound src, Derivation d) {
-		return decomposer(src).decompose(src, d.random);
+    abstract protected @Nullable Term decompose(Compound src, Derivation d);
+//    {
+//		return decomposer(src).decompose(src, d.random);
+//	}
+
+	/** first layer */
+	public static final class One extends CompoundDecompose {
+
+		public One(boolean taskOrBelief) {
+			super(taskOrBelief);
+		}
+
+		@Override
+		protected @Nullable Term decompose(Compound src, Derivation d) {
+			return DynamicTermDecomposer.One.decompose(src, d.random);
+		}
+	}
+
+	/** second layer TODO predicate condition that subterms contains compounds */
+	public static final class Two extends CompoundDecompose {
+
+		public Two(boolean taskOrBelief) {
+			super(taskOrBelief);
+		}
+
+		@Override
+		protected @Nullable Term decompose(Compound src, Derivation d) {
+			return DynamicTermDecomposer.Two.decompose(src, d.random);
+		}
 	}
 
 }

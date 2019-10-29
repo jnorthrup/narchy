@@ -21,12 +21,12 @@ public class FixedRateTimedFuture extends AbstractTimedRunnable {
     }
 
     @Override
-    public boolean isCancelled() {
+    public final boolean isCancelled() {
         return periodNS < 0;
     }
 
     @Override
-    public boolean cancel(boolean mayInterruptIfRunning) {
+    public final boolean cancel(boolean mayInterruptIfRunning) {
         periodNS = -1;
         return true;
     }

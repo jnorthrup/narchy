@@ -1,44 +1,37 @@
 package nars.link;
 
 import jcog.Util;
-import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.*;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.compound.SeparateSubtermsCompound;
-import nars.term.util.conj.Conj;
-import nars.term.util.conj.ConjList;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Random;
 
-import static nars.Op.CONJ;
-
 public abstract class DynamicTermDecomposer implements TermDecomposer {
 
 
-//    /** force descent to maximum 2 layers */
-    public static final TermDecomposer Two = new WeightedDynamicTermDecomposer() {
-        @Override
-        protected int depth(Compound root, Random rng) {
-            return 2;
-        }
-    };
     /** force descent to maximum 1 layers */
     public static final TermDecomposer One = new WeightedDynamicTermDecomposer() {
         @Override
-        protected int depth(Compound root, Random rng) {
-            return 1;
+        public @Nullable Term decompose(Compound t, Random rng) {
+            return sampleDynamic(t, 1, rng);
         }
     };
-
+    public static final TermDecomposer Two = new WeightedDynamicTermDecomposer() {
+        @Override
+        public @Nullable Term decompose(Compound t, Random rng) {
+            return sampleDynamic(t, 2, rng);
+        }
+    };
     /** doesnt unnegate subterms */
     public static final TermDecomposer OnePolarized = new WeightedDynamicTermDecomposer() {
         @Override
-        protected int depth(Compound root, Random rng) {
-            return 1;
+        public @Nullable Term decompose(Compound t, Random rng) {
+            return sampleDynamic(t, 1, rng);
         }
 
         @Override
@@ -64,7 +57,7 @@ public abstract class DynamicTermDecomposer implements TermDecomposer {
         return sampleDynamic(t, depth(t, rng), rng);
     }
 
-    private @Nullable Term sampleDynamic(Compound t, int depthRemain, Random rng) {
+    @Nullable Term sampleDynamic(Compound t, int depthRemain, Random rng) {
 
         Term u = subterm(t, rng);
 
@@ -123,29 +116,29 @@ public abstract class DynamicTermDecomposer implements TermDecomposer {
 
     /** uses roulette selection on arbitrary subterm weighting function */
     public static final DynamicTermDecomposer Weighted = new WeightedDynamicTermDecomposer();
-    public static final DynamicTermDecomposer WeightedConjEvent = new WeightedDynamicTermDecomposer() {
-        @Override
-        public @Nullable Term decompose(Compound conj, Random rng) {
-            if (rng.nextBoolean() && Conj.isSeq(conj))
-                return subterm(conj, ConjList.events(conj).asSubterms(false), rng);
-            else {
-                //possibly embedded conj within conj
-                //flat
-                return Op.hasAny(conj.subStructure(), CONJ) ? Weighted.decompose(conj, rng) : One.decompose(conj, rng);
-            }
-        }
-    };
-    public static final DynamicTermDecomposer WeightedImpl = new WeightedDynamicTermDecomposer() {
-        @Override
-        public @Nullable Term decompose(Compound t, Random rng) {
-            Term subjOrPred = subterm(t, rng);
-            if (subjOrPred instanceof Compound && rng.nextBoolean()) {
-                return subjOrPred.opID() == CONJ.id ? WeightedConjEvent.decompose((Compound) subjOrPred, rng) : Weighted.decompose((Compound) subjOrPred, rng);
-            } else {
-                return subjOrPred;
-            }
-        }
-    };
+//    public static final DynamicTermDecomposer WeightedConjEvent = new WeightedDynamicTermDecomposer() {
+//        @Override
+//        public @Nullable Term decompose(Compound conj, Random rng) {
+//            if (rng.nextBoolean() && Conj.isSeq(conj))
+//                return subterm(conj, ConjList.events(conj).asSubterms(false), rng);
+//            else {
+//                //possibly embedded conj within conj
+//                //flat
+//                return Op.hasAny(conj.subStructure(), CONJ) ? Weighted.decompose(conj, rng) : One.decompose(conj, rng);
+//            }
+//        }
+//    };
+//    public static final DynamicTermDecomposer WeightedImpl = new WeightedDynamicTermDecomposer() {
+//        @Override
+//        public @Nullable Term decompose(Compound t, Random rng) {
+//            Term subjOrPred = subterm(t, rng);
+//            if (subjOrPred instanceof Compound && rng.nextBoolean()) {
+//                return subjOrPred.opID() == CONJ.id ? WeightedConjEvent.decompose((Compound) subjOrPred, rng) : Weighted.decompose((Compound) subjOrPred, rng);
+//            } else {
+//                return subjOrPred;
+//            }
+//        }
+//    };
 
     private static class WeightedDynamicTermDecomposer extends DynamicTermDecomposer implements FloatFunction<Term> {
         //        @Override

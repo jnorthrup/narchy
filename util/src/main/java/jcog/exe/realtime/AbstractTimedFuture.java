@@ -10,8 +10,8 @@ public abstract class AbstractTimedFuture<T> implements TimedFuture<T> {
 
     }
 
+    /** @param rounds phase offset */
     AbstractTimedFuture(int rounds) {
-        this();
         this.rounds = rounds;
     }
 
