@@ -67,7 +67,7 @@ public class LoopPanel extends Gridding {
                                         //HACK maybe necessary
                                         if (o) {
                                             pause = false;
-                                            loop.setFPS(fps.intValue());
+                                            loop.fps(fps.intValue());
                                         } else {
                                             pause = true;
                                             loop.stop();
@@ -92,7 +92,7 @@ public class LoopPanel extends Gridding {
                 int g = Math.round(loop.getFPS());
                 if (f > 0) {
                     if (f != g) {
-                        loop.setFPS(f);
+                        loop.fps(f);
                         fpsLabel.set(f);
                     }
                 } else {

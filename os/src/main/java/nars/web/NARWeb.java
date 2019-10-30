@@ -133,7 +133,7 @@ public abstract class NARWeb extends EvalSocket<NAR> {
             //nar.log();
 
             jcog.net.http.HttpServer h = new HttpServer(port, new NARWeb.Single(nar));
-            h.setFPS(10f);
+            h.fps(10f);
 
             nar.startFPS(1f);
             nar.loop.throttle.set(0.01f);

@@ -51,7 +51,7 @@ public abstract class SubFinger extends Finger {
         @Override
         protected void start(SpaceGraph x) {
             super.start(x);
-            on = Loop.of(this::update).setFPS(20f);
+            on = Loop.of(this::update).fps(20f);
         }
 
         @Override public void update() {

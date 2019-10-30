@@ -10,7 +10,6 @@ import nars.NAR;
 
 import java.util.Random;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 import static jcog.Util.lerpSafe;
 
@@ -138,13 +137,13 @@ public enum Should { ;
 	};
 
 	/** applies simple LERP memory to each computed priority */
-	public static final Consumer<FasterList<Cause>> normalizePri = new Consumer<>() {
+	public static final BiConsumer<NAR,FasterList<Cause>> lerpPri = new BiConsumer<>() {
 
 		float[] f = ArrayUtil.EMPTY_FLOAT_ARRAY;
 		float[] fNorm = ArrayUtil.EMPTY_FLOAT_ARRAY;
 
 		@Override
-		public void accept(FasterList<Cause> cc) {
+		public void accept(NAR n, FasterList<Cause> cc) {
 
 			Cause[] c = cc.array();
 			int ww = Math.min(c.length, cc.size());
@@ -186,12 +185,12 @@ public enum Should { ;
 
 
 	/** applies simple LERP memory to each computed value */
-	static final Consumer<FasterList<Cause>> normalizeValue = new Consumer<>() {
+	public static final BiConsumer<NAR,FasterList<Cause>> lerpVal = new BiConsumer<>() {
 
 		float[] f = ArrayUtil.EMPTY_FLOAT_ARRAY;
 
 		@Override
-		public void accept(FasterList<Cause> cc) {
+		public void accept(NAR nar, FasterList<Cause> cc) {
 
 			Cause[] c = cc.array();
 			int ww = Math.min(c.length, cc.size());

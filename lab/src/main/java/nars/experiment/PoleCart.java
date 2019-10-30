@@ -107,7 +107,7 @@ public class PoleCart extends GameX {
 									a.meta("impiler", (Object) dd);
 
 							}
-						}).setFPS(1f);
+						}).fps(1f);
 						n.onDur(() -> {
 							double dur = n.dur() * 3;
 							long now = n.time();

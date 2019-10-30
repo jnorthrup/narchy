@@ -20,13 +20,13 @@ import static nars.term.atom.Bool.*;
 import static nars.time.Tense.*;
 
 /**
- * statements include: inheritance -->, similarity <->, and implication ==>
+ * STATEMENTS
+ * inheritance -->
+ * similarity  <->
+ * implication ==>
  */
 public enum Statement {
     ;
-
-
-//    private static final int mobiusExcept = Op.or(/*CONJ, */VAR_PATTERN);
 
     public static Term statement(TermBuilder B, Op op, int dt, Term subject, Term predicate) {
         return statement(B, op, dt, subject, predicate, 6);
@@ -55,8 +55,7 @@ public enum Statement {
                 return True;
             else if (subject.equalsNeg(predicate))
                 return False;
-
-            if (op == INH || op == SIM) {
+            else if (op == INH || op == SIM) {
                 if (subject.unneg().equalsRoot(predicate.unneg()))
                     return Null; //HACK dont support non-temporal statements where the root is equal because they arent conceptualized
             }
@@ -224,8 +223,6 @@ public enum Statement {
                                 //??
                                 dt = 0;
                             } else {
-//
-
                                 dt = Tense.occToDT(shift - subjRange);
 
                                 if (newPred.dt() == 0 && predicate.dt() == DTERNAL && predicate.subterms().equals(newPred.subterms())) {
@@ -258,15 +255,14 @@ public enum Statement {
                                 Term[] common = ssub.subsIncluding(psub::contains);
                                 if (common != null && common.length > 0) {
                                     int cn = common.length;
-                                    if (cn == ssub.subs() || cn == psub.subs()) {
-                                        //contained entirely by the other
-                                        //True; //TODO negate
-                                        return Null;
-                                    }
-                                    Predicate<Term> notCommon = common.length > 1 ? z -> ArrayUtil.indexOf(common, z) == -1 : z -> !common[0].equals(z);
-                                    subject = CONJ.the(ssub.subsIncluding(notCommon));
-                                    predicate = CONJ.the(psub.subsIncluding(notCommon));
-                                    return statement(B, op, dt, subject, predicate, depth-1);
+                                    if (cn == ssub.subs() || cn == psub.subs())
+                                        return Null; //contained entirely by the other //True; //TODO negate
+                                    Predicate<Term> notCommon = common.length > 1 ?
+                                        z -> ArrayUtil.indexOf(common, z) == -1 :
+                                        z -> !common[0].equals(z);
+                                    return statement(B, op, dt,
+                                        CONJ.the(ssub.subsIncluding(notCommon)),
+                                        CONJ.the(psub.subsIncluding(notCommon)), depth-1);
                                 }
                             } else if (sConj) {
                                 Subterms ssub = subject.subterms();
@@ -287,10 +283,7 @@ public enum Statement {
 
         }
 
-
         assert(op!=IMPL || dt!=DTERNAL); //HACK dt should ==0
-
-
 
 //            boolean sa = subject instanceof AliasConcept.AliasAtom;
 //            if (sa) {
@@ -323,24 +316,18 @@ public enum Statement {
             }
         }
 
-
-
         if (op == INH && (subject.hasAny(Op.IMG) || predicate.hasAny(Op.IMG))) {
             Term inhCollapsed = Image.recursionFilter(subject, predicate, B);
             if (inhCollapsed instanceof Bool)
                 return inhCollapsed;
         }
 
-
-
         if (op == IMPL) {
             if (dt == 0)
                 dt = DTERNAL; //HACK generalize to DTERNAL ==>
         }
 
-        Term t = B.newCompound(op, dt, subject, predicate);
-
-        return t.negIf(negate);
+        return B.newCompound(op, dt, subject, predicate).negIf(negate);
     }
 
     private static boolean recursive(Op op, Term subject, Term predicate) {

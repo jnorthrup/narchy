@@ -16,7 +16,7 @@ class UDPeerTest {
     @ValueSource(ints={0,1})
     void testDiscoverDoesntSelfConnect(int pingSelf) throws IOException {
         UDPeer x = new UDPeer();
-        x.setFPS(8f);
+        x.fps(8f);
          if (pingSelf==1) {
             x.ping(x.addr);
         }
@@ -32,10 +32,10 @@ class UDPeerTest {
     void testDiscoverableByLANMulticast() throws IOException {
 
         UDPeer x = new UDPeer();
-        x.setFPS(4);
+        x.fps(4);
 
         UDPeer y = new UDPeer();
-        y.setFPS(4);
+        y.fps(4);
 
 
         Util.sleepMS(5000);

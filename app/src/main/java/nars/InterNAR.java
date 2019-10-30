@@ -129,13 +129,13 @@ public class InterNAR extends NARPart implements TriConsumer<NAR, Task /* questi
 	public InterNAR fps(float fps) {
 		peerFPS = fps;
 		if (peer.isRunning())
-			peer.setFPS(fps);
+			peer.fps(fps);
 		return this;
 	}
 
 	@Override
 	protected void starting(NAR nar) {
-		peer.setFPS(peerFPS);
+		peer.fps(peerFPS);
 		this.send.start(this::send, nar);
 	}
 

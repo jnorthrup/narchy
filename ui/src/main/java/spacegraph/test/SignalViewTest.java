@@ -100,7 +100,7 @@ public enum SignalViewTest {
                 if (!t)
                     n.udp.stop();
                 else
-                    n.udp.setFPS(fps);
+                    n.udp.fps(fps);
             }), new PushButton("?")));
 
             Exe.runLater(() -> {
@@ -183,7 +183,7 @@ public enum SignalViewTest {
             float audioFPS = 4;
             in.set(i, 1 / audioFPS);
             float granularity = 2;
-            in.setFPS(audioFPS * granularity);
+            in.fps(audioFPS * granularity);
         }
 
         @Override
@@ -306,8 +306,8 @@ public enum SignalViewTest {
             HttpServer tcp = new HttpServer(udp.addr(), h);
 
 
-            udp.setFPS(5);
-            tcp.setFPS(5f);
+            udp.fps(5);
+            tcp.fps(5f);
 
         }
 
@@ -428,7 +428,7 @@ public enum SignalViewTest {
                 } catch (Exception e) {
                     //ignore
                 }
-            }).setFPS(camFPS);
+            }).fps(camFPS);
 
             g.addEvents(ge, v -> v.set(((Surface) (v.id.name))), new Timeline2DEvents.LinearTimelineUpdater<>());
 

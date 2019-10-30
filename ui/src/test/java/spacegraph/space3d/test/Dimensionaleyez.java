@@ -67,7 +67,7 @@ public class Dimensionaleyez extends SimpleSpatial {
                 return true;
 
             }
-        }.setFPS(20f);
+        }.fps(20f);
     }
 
 

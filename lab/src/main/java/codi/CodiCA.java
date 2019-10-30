@@ -439,7 +439,7 @@ public class CodiCA extends CA {
                 c.next();
                 return true;
             }
-        }.setFPS(20);
+        }.fps(20);
 
         SpaceGraph.window(new CodiSurface(c), 1000, 1000);
     }

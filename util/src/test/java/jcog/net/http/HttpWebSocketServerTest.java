@@ -30,7 +30,7 @@ class HttpWebSocketServerTest {
         });
 
 
-        server.setFPS(20f);
+        server.fps(20f);
 
         //test http client connect
         URL u = new URL("http://localhost:8080/");

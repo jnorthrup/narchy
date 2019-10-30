@@ -84,7 +84,7 @@ public abstract class Loop extends FixedRateTimedFuture {
         return !running.getOpaque() && scheduled.compareAndSet(false,true);
     }
 
-    public final Loop setFPS(float fps) {
+    public final Loop fps(float fps) {
         setPeriodMS(fpsToMS(fps));
         return this;
     }

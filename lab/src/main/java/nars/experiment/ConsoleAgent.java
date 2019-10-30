@@ -148,7 +148,7 @@ public class ConsoleAgent extends GameX {
             R.c[0] = random().nextInt(R.cols);
             R.c[1] = random().nextInt(R.rows);
             R.write(alphabet[random().nextInt(alphabet.length)]);
-        }).setFPS(0.5f);
+        }).fps(0.5f);
 
     }
 

@@ -38,7 +38,7 @@ public class SpaceLog {
     public SpaceLog(int port) throws IOException {
         this.udp = new UDPeer(port);
         this.udp.receive.on(this::input);
-        this.udp.setFPS(20f);
+        this.udp.fps(20f);
 
         logger = LoggerFactory.getLogger(SpaceLog.class.getSimpleName() + '@' + udp.name());
 
@@ -185,7 +185,7 @@ public class SpaceLog {
 
         public DummyLogGenerator(UDPeer udPeer) {
             this.out = udPeer;
-            out.setFPS(10f);
+            out.fps(10f);
         }
 
         @Override

@@ -324,7 +324,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
             add(exe);
 
             if (running)
-                loop.setFPS(fps);
+                loop.fps(fps);
         }
 
         logger.info("reset");

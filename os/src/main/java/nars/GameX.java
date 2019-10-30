@@ -34,6 +34,7 @@ import nars.memory.CaffeineMemory;
 import nars.op.Arithmeticize;
 import nars.op.AutoencodedBitmap;
 import nars.op.Factorize;
+import nars.op.mental.Abbreviation;
 import nars.op.mental.Inperience;
 import nars.op.stm.ConjClustering;
 import nars.op.stm.STMLinker;
@@ -231,16 +232,14 @@ public abstract class GameX extends Game {
         n.what.remove(n.main.id);
 
         n.dtDither.set(
-
-                10
-
-
+            10
         );
 
         n.causeCapacity.set(16);
         n.termVolMax.set(
-                50
-                //64
+            24
+            //50
+            //64
         );
 
 
@@ -262,16 +261,12 @@ public abstract class GameX extends Game {
 
     private static void initPlugins(NAR n) {
 
+        n.exe.governor =
+            Should.lerpVal;
+            //Should.predictMLP;
+            //Should.lerpPri;
 
-        n.exe.governor = Should.predictMLP;
-
-        Loop.of(() -> {
-
-            n.stats(false, true, System.out);
-
-            System.out.println();
-        }).setFPS(0.25f);
-
+        Loop.of(() -> n.stats(false, true, System.out)).fps(0.25f);
 
         ConjClustering cc;
 
@@ -282,7 +277,13 @@ public abstract class GameX extends Game {
                         .add(new Factorize.FactorIntroduction())
                         .add(new Inperience())
                         .add(cc = new ConjClustering(n, BELIEF, BELIEF, 6, 32, t -> true))
+                //.add(new ConjClustering(n, GOAL, GOAL, 3, 8, t->true))
+                //.add(new AdjacentLinks(new FirstOrderIndexer())) //<- slow
 
+                .add(new Abbreviation.AbbreviateRecursive(4, 8))
+                .add(new Abbreviation.UnabbreviateRecursive())
+//                //.add(new Abbreviation.AbbreviateRoot(4, 9))
+//                //.add(new Abbreviation.UnabbreviateRoot())
 
                 ,
                 new MixedTimeFocus(

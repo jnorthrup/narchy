@@ -119,7 +119,7 @@ public abstract class GameTime {
         private final class NARSubLoop extends NARPart {
             @Override
             protected void starting(NAR nar) {
-                loop.setFPS(initialFPS);
+                loop.fps(initialFPS);
             }
 
             @Override
