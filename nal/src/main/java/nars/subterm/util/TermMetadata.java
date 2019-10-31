@@ -1,14 +1,25 @@
 package nars.subterm.util;
 
 import it.unimi.dsi.fastutil.bytes.ByteArrayList;
+import jcog.TODO;
+import nars.Op;
 import nars.subterm.Subterms;
+import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Termlike;
 import nars.term.Variable;
 import nars.term.anon.Intrin;
+import nars.term.atom.Bool;
 import nars.term.util.Image;
 import nars.term.util.TermException;
 import nars.term.var.NormalizedVariable;
+import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
+
+import java.util.function.BiPredicate;
+import java.util.function.Predicate;
+import java.util.function.ToIntFunction;
+
+import static nars.Op.*;
 
 /**
  * cached values for target/subterm metadata
@@ -190,4 +201,136 @@ public abstract class TermMetadata implements Termlike {
 
     @Override
     public abstract boolean equals(Object obj);
+
+    @Override
+    public abstract Term sub(int i);
+
+    @Override
+    public Term subSafe(int i) {
+        return sub(i, Bool.Null);
+    }
+
+    @Override
+    public Term sub(int i, Term ifOutOfBounds) {
+        return i >= subs() ? ifOutOfBounds : sub(i);
+    }
+
+    @Override
+    public abstract int subs();
+
+    @Override
+    public int height() {
+        return subs() == 0 ? 1 : 1 + max(Term::height);
+    }
+
+    @Override
+    public int sum(ToIntFunction<Term> value) {
+//        int x = 0;
+//        int s = subs();
+//        for (int i = 0; i < s; i++)
+//            x += value.applyAsInt(sub(i));
+//
+//        return x;
+        return intifyShallow(0, (x, t) -> x + value.applyAsInt(t));
+    }
+
+    @Override
+    public int max(ToIntFunction<Term> value) {
+        return intifyShallow(Integer.MIN_VALUE, (x, t) -> Math.max(value.applyAsInt(t), x));
+    }
+
+    @Override
+    public int intifyShallow(int v, IntObjectToIntFunction<Term> reduce) {
+        int n = subs();
+        for (int i = 0; i < n; i++)
+            v = reduce.intValueOf(v, sub(i));
+        return v;
+    }
+
+    @Override
+    public int intifyRecurse(int _v, IntObjectToIntFunction<Term> reduce) {
+        return intifyShallow(_v, (v, s) -> s.intifyRecurse(v, reduce));
+    }
+
+    @Override
+    public abstract boolean recurseTerms(Predicate<Term> inSuperCompound, Predicate<Term> whileTrue, Compound parent);
+
+    @Override
+    public abstract boolean recurseTerms(Predicate<Compound> aSuperCompoundMust, BiPredicate<Term, Compound> whileTrue, Compound parent);
+
+    @Override
+    public float voluplexity() {
+        return (complexity() + volume()) / 2f;
+    }
+
+    @Override
+    @Deprecated
+    public abstract boolean contains(Term t);
+
+    @Override
+    @Deprecated
+    public abstract boolean containsInstance(Term t);
+
+    @Override
+    public abstract boolean hasXternal();
+
+    @Override
+    public abstract boolean impossibleSubTerm(Termlike target);
+
+    @Override
+    public boolean hasAll(int structuralVector) {
+        return Op.has(structure(), structuralVector, true);
+    }
+
+    @Override
+    public boolean hasAny(int structuralVector) {
+        return Op.has(structure(), structuralVector, false);
+    }
+
+    @Override
+    public /* final */ boolean hasAny(/*@NotNull*/ Op op) {
+        return hasAny(op.bit);
+    }
+
+    @Override
+    public /* final */ boolean hasAllAny(/*@NotNull*/ int all, int any) {
+        int s = structure();
+        return Op.has(s, all, true) && Op.has(s, any, false);
+    }
+
+    @Override
+    public abstract boolean impossibleSubStructure(int structure);
+
+    @Override
+    public boolean impossibleSubVolume(int otherTermVolume) {
+        return otherTermVolume > volume() - subs();
+    }
+
+    @Override
+    public boolean hasVars() {
+        return hasAny(VAR_INDEP.bit | VAR_DEP.bit | VAR_QUERY.bit | VAR_PATTERN.bit);
+    }
+
+    @Override
+    public int structureSurface() {
+        return intifyShallow(0, (s, x) -> s | x.opBit());
+    }
+
+    @Override
+    public boolean these() {
+        throw new TODO();
+    }
+
+    @Override
+    public int addAllTo(Term[] t, int offset) {
+        int s = subs();
+        for (int i = 0; i < s; )
+            t[offset++] = sub(i++);
+        return s;
+    }
+
+    @Override
+    public int subStructure() {
+        return 0;
+    }
 }

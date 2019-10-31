@@ -38,6 +38,7 @@ import nars.term.util.transform.MapSubst;
 import nars.term.util.transform.TermTransform;
 import nars.time.Tense;
 import nars.unify.Unify;
+import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 import org.eclipse.collections.api.list.primitive.ByteList;
 import org.eclipse.collections.impl.list.mutable.primitive.ByteArrayList;
@@ -50,7 +51,7 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.function.*;
 
-import static nars.Op.CONJ;
+import static nars.Op.*;
 import static nars.time.Tense.DTERNAL;
 
 
@@ -181,7 +182,180 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
 	    return ((h & 0xffff) ^ (h >>> 16));
     }
 
-	enum TermWalk {
+    @Override
+    default Term subSafe(int i) {
+        return sub(i, Bool.Null);
+    }
+
+    @Override
+    default Term sub(int i, Term ifOutOfBounds) {
+        return i >= subs() ? ifOutOfBounds : sub(i);
+    }
+
+    @Override
+    default int height() {
+        return subs() == 0 ? 1 : 1 + max(Term::height);
+    }
+
+    @Override
+    default int volume() {
+        return 1 + sum(Term::volume);
+    }
+
+    @Override
+    default int complexity() {
+        return 1 + sum(Term::complexity);
+    }
+
+    @Override
+    default int sum(ToIntFunction<Term> value) {
+//        int x = 0;
+//        int s = subs();
+//        for (int i = 0; i < s; i++)
+//            x += value.applyAsInt(sub(i));
+//
+//        return x;
+        return intifyShallow(0, (x, t) -> x + value.applyAsInt(t));
+    }
+
+    @Override
+    default int max(ToIntFunction<Term> value) {
+        return intifyShallow(Integer.MIN_VALUE, (x, t) -> Math.max(value.applyAsInt(t), x));
+    }
+
+    @Override
+    default int intifyShallow(int v, IntObjectToIntFunction<Term> reduce) {
+        int n = subs();
+        for (int i = 0; i < n; i++)
+            v = reduce.intValueOf(v, sub(i));
+        return v;
+    }
+
+    @Override
+    default int intifyRecurse(int _v, IntObjectToIntFunction<Term> reduce) {
+        return intifyShallow(_v, (v, s) -> s.intifyRecurse(v, reduce));
+    }
+
+    @Override
+    int structure();
+
+    @Override
+    default float voluplexity() {
+        return (complexity() + volume()) / 2f;
+    }
+
+    @Override
+    @Deprecated
+    boolean contains(Term t);
+
+    @Override
+    @Deprecated
+    boolean containsInstance(Term t);
+
+    @Override
+    boolean hasXternal();
+
+    @Override
+    boolean impossibleSubTerm(Termlike target);
+
+    @Override
+    default boolean hasAll(int structuralVector) {
+        return Op.has(structure(), structuralVector, true);
+    }
+
+    @Override
+    default boolean hasAny(int structuralVector) {
+        return Op.has(structure(), structuralVector, false);
+    }
+
+    @Override
+    default /* final */ boolean hasAny(/*@NotNull*/ Op op) {
+        return hasAny(op.bit);
+    }
+
+    @Override
+    default /* final */ boolean hasAllAny(/*@NotNull*/ int all, int any) {
+        int s = structure();
+        return Op.has(s, all, true) && Op.has(s, any, false);
+    }
+
+    @Override
+    default boolean hasVarIndep() {
+        return hasAny(Op.VAR_INDEP.bit);
+    }
+
+    @Override
+    default boolean hasVarDep() {
+        return hasAny(Op.VAR_DEP.bit);
+    }
+
+    @Override
+    default boolean hasVarQuery() {
+        return hasAny(Op.VAR_QUERY.bit);
+    }
+
+    @Override
+    default boolean hasVarPattern() {
+        return hasAny(Op.VAR_PATTERN.bit);
+    }
+
+    @Override
+    boolean impossibleSubStructure(int structure);
+
+    @Override
+    default boolean impossibleSubVolume(int otherTermVolume) {
+        return otherTermVolume > volume() - subs();
+    }
+
+    @Override
+    default int vars() {
+        return hasVars() ? sum(Term::vars) : 0;
+    }
+
+    @Override
+    default boolean hasVars() {
+        return hasAny(VAR_INDEP.bit | VAR_DEP.bit | VAR_QUERY.bit | VAR_PATTERN.bit);
+    }
+
+    @Override
+    default int varDep() {
+        return sum(Term::varDep);
+    }
+
+    @Override
+    default int varIndep() {
+        return sum(Term::varIndep);
+    }
+
+    @Override
+    default int varQuery() {
+        return sum(Term::varQuery);
+    }
+
+    @Override
+    default int varPattern() {
+        return sum(Term::varPattern);
+    }
+
+    @Override
+    default int structureSurface() {
+        return intifyShallow(0, (s, x) -> s | x.opBit());
+    }
+
+    @Override
+    default int addAllTo(Term[] t, int offset) {
+        int s = subs();
+        for (int i = 0; i < s; )
+            t[offset++] = sub(i++);
+        return s;
+    }
+
+    @Override
+    default int subStructure() {
+        return 0;
+    }
+
+    enum TermWalk {
         Left, //prev subterm
         Right, //next subterm
         Down, //descend, recurse, or equivalent to Right if atomic

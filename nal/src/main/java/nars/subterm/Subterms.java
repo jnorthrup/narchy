@@ -1,24 +1,20 @@
 package nars.subterm;
 
 import com.google.common.base.Joiner;
-import com.google.common.collect.Streams;
 import jcog.TODO;
 import jcog.Util;
 import jcog.data.bit.MetalBitSet;
 import jcog.data.byt.DynBytes;
 import jcog.data.list.FasterList;
-import jcog.data.set.ArrayUnenforcedSortedSet;
-import jcog.data.set.MetalTreeSet;
-import jcog.decide.Roulette;
 import jcog.sort.QuickSort;
 import jcog.util.ArrayUtil;
 import nars.NAL;
 import nars.Op;
-import nars.subterm.util.TermMetadata;
+import nars.term.Compound;
+import nars.term.Term;
+import nars.term.Termlike;
 import nars.term.Variable;
-import nars.term.*;
 import nars.term.atom.Bool;
-import nars.term.var.ellipsis.Fragment;
 import nars.unify.Unify;
 import nars.unify.mutate.CommutivePermutations;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
@@ -26,7 +22,6 @@ import org.eclipse.collections.api.block.predicate.primitive.IntObjectPredicate;
 import org.eclipse.collections.api.block.predicate.primitive.ObjectIntPredicate;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectIntProcedure;
 import org.eclipse.collections.api.set.MutableSet;
-import org.eclipse.collections.impl.factory.Sets;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
 
@@ -370,7 +365,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 	/**
 	 * test for eliding repeats in visitors
 	 */
-	private static boolean different(Term prev, Term next) {
+	public  static boolean different(Term prev, Term next) {
 		return prev != next;
 	}
 
@@ -378,7 +373,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 	 * determines if the two non-identical terms are actually equivalent or if y must be part of the output for some reason (special term, etc)
 	 * TODO refine
 	 */
-	private static boolean differentlyTransformed(Term xi, Term yi) {
+	  static boolean differentlyTransformed(Term xi, Term yi) {
 		return !xi.equals(yi) || xi.unneg().getClass() != yi.unneg().getClass();// || !yi.the();
 //        if (!xi.equals(yi)) return true;
 //        Term xxi, yyi;
@@ -439,25 +434,12 @@ public interface Subterms extends Termlike, Iterable<Term> {
 //    }
 
 	@Override
-	default boolean hasXternal() {
-		return hasAny(Op.Temporal) && OR(Term::hasXternal);
-	}
+	boolean hasXternal();
 
-	default Predicate<Term> containing() {
-		switch (subs()) {
-			case 0:
-				return (x) -> false;
-			case 1:
-				return sub(0)::equals;
-			default:
-				return this::contains;
-		}
-	}
+	Predicate<Term> containing();
 
 	@Override
-	default boolean contains(Term x) {
-		return indexOf(x) != -1;
-	}
+	boolean contains(Term x);
 
 //    /*@NotNull*/
 //    static boolean commonSubterms(/*@NotNull*/ Compound a, /*@NotNull*/ Compound b, boolean excludeVariables) {
@@ -475,37 +457,17 @@ public interface Subterms extends Termlike, Iterable<Term> {
 //
 //    }
 
-	default boolean containsInstance(Term t) {
-		return ORwith((i, T) -> i == T, t);
-	}
+	boolean containsInstance(Term t);
 
-	default @Nullable Term subSub(byte[] path) {
-		return subSub(0, path.length, path);
-	}
+	@Nullable Term subSub(byte[] path);
 
-	default @Nullable Term subSub(int start, int end, byte[] path) {
-		Termlike ptr = this;
-		for (int i = start; i < end; i++) {
-			if ((ptr = ptr.subSafe(path[i])) == Bool.Null)
-				return null;
-		}
-		return ptr != this ? (Term) ptr : null;
-	}
+	@Nullable Term subSub(int start, int end, byte[] path);
 
-	default @Nullable Term subSubUnsafe(int start, int end, byte[] path) {
-		Termlike ptr = this;
-		for (int i = start; i < end; )
-			ptr = ptr.sub(path[i++]);
-		return (Term) ptr;
-	}
+	@Nullable Term subSubUnsafe(int start, int end, byte[] path);
 
-	default boolean containsAll(Subterms ofThese) {
-		return this.equals(ofThese) || ofThese.AND(this::contains);
-	}
+	boolean containsAll(Subterms ofThese);
 
-	default boolean containsAny(Subterms ofThese) {
-		return this.equals(ofThese) || ofThese.OR(this::contains);
-	}
+	boolean containsAny(Subterms ofThese);
 
 	//    /**
 //     * a and b must be instances of input, and output must be of size input.length-2
@@ -528,108 +490,29 @@ public interface Subterms extends Termlike, Iterable<Term> {
 //        return output;
 //    }
 
-	default <X> X[] array(Function<Term, X> map, IntFunction<X[]> arrayizer) {
-		int s = subs();
-		X[] xx = arrayizer.apply(s);
-		for (int i = 0; i < s; i++)
-			xx[i] = map.apply(sub(i));
-		return xx;
-	}
+	<X> X[] array(Function<Term, X> map, IntFunction<X[]> arrayizer);
 
-	default int subEventRange(int i) {
-		return sub(i).eventRange();
-	}
+	int subEventRange(int i);
 
-	default @Nullable Term subRoulette(FloatFunction<Term> subValue, Random rng) {
-		int s = subs();
-		switch (s) {
-			case 0:
-				return null;
-			case 1:
-				return sub(0);
-			default:
-				return sub(Roulette.selectRoulette(s, i -> subValue.floatValueOf(sub(i)), rng));
-		}
-	}
+	@Nullable Term subRoulette(FloatFunction<Term> subValue, Random rng);
 
-	default @Nullable Term sub(Random rng) {
-		int s = subs();
-		switch (s) {
-			case 0:
-				return null;
-			case 1:
-				return sub(0);
-			default:
-				return sub(rng.nextInt(s));
-		}
-	}
+	@Nullable Term sub(Random rng);
 
-	default Subterms remove(Term event) {
-		Term[] t = removing(event);
-		return (t == null || t.length == subs()) ? this : Op.terms.subterms(t);
-	}
+	Subterms remove(Term event);
 
-	@Override
-	default int structure() {
-		return intifyShallow(0, (s, x) -> s | x.structure());
-	}
+	void forEachI(ObjectIntProcedure<Term> t);
 
-	default void forEachI(ObjectIntProcedure<Term> t) {
-		int s = subs();
-		for (int i = 0; i < s; i++)
-			t.value(sub(i), i);
-	}
-
-	default <X> void forEachWith(BiConsumer<Term, X> t, X argConst) {
-		int s = subs();
-		for (int i = 0; i < s; i++)
-			t.accept(sub(i), argConst);
-	}
+	<X> void forEachWith(BiConsumer<Term, X> t, X argConst);
 
 	/**
 	 * sorted and deduplicated
 	 */
-	default Subterms commuted() {
-		if (subs() <= 1) return this;
-		Term[] x = arrayShared();
-		Term[] y = Terms.commute(x);
-		return x == y ? this : new TermList(y);
-	}
+	Subterms commuted();
 
-	default boolean isSorted() {
-		int s = subs();
-		if (s < 2) return true;
-		Term p = sub(0);
-		for (int i = 1; i < s; i++) {
-			Term n = sub(i);
-			if (p.compareTo(n) > 0)
-				return false;
-			p = n;
-		}
-		return true;
-	}
+	boolean isSorted();
 
-	default boolean isCommuted() {
-		int s = subs();
-		if (s < 2) return true;
-		Term p = sub(0);
-		for (int i = 1; i < s; i++) {
-			Term n = sub(i);
-			if (p.compareTo(n) >= 0)
-				return false;
-			p = n;
-		}
-		return true;
-	}
+	boolean isCommuted();
 
-	/**
-	 * TODO constructing a Stream like this just for the Iterator is not very efficient
-	 */
-	@Override
-	default Iterator<Term> iterator() {
-		return new SubtermsIterator(this);
-		//return IntStream.range(0, subs()).mapToObj(this::sub).iterator();
-	}
 
 	final class SubtermsIterator implements Iterator<Term> {
 		final int s;
@@ -652,22 +535,11 @@ public interface Subterms extends Termlike, Iterable<Term> {
 		}
 	}
 
-	default boolean subEquals(int i, /*@NotNull*/ Term x) {
-		return subs() > i && sub(i).equals(x);
-	}
+	boolean subEquals(int i, /*@NotNull*/ Term x);
 
-	default /*@NotNull*/ SortedSet<Term> toSetSorted() {
-		SortedSet<nars.term.Term> u = new MetalTreeSet();
-		addAllTo(u);
-		return u;
-	}
+	/*@NotNull*/ SortedSet<Term> toSetSorted();
 
-	@SuppressWarnings("LambdaUnfriendlyMethodOverload")
-	default /*@NotNull*/ SortedSet<Term> toSetSorted(UnaryOperator<Term> map) {
-		MetalTreeSet<Term> u = new MetalTreeSet();
-		addAllTo(u);
-		return u;
-	}
+	@SuppressWarnings("LambdaUnfriendlyMethodOverload") /*@NotNull*/ SortedSet<Term> toSetSorted(UnaryOperator<Term> map);
 
 
 //    /**
@@ -690,46 +562,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 //        return r;
 //    }
 
-	default /*@NotNull*/ SortedSet<Term> toSetSorted(Predicate<Term> t) {
-		int s = subs();
-		switch (s) {
-			case 1:
-				Term the = sub(0);
-				return t.test(the) ? ArrayUnenforcedSortedSet.the(the) : ArrayUnenforcedSortedSet.empty;
-			case 2:
-				Term a = sub(0), b = sub(1);
-				boolean aok = t.test(a), bok = t.test(b);
-				if (aok && bok) {
-					return ArrayUnenforcedSortedSet.the(a, b);
-				} else if (!aok && !bok) {
-					return ArrayUnenforcedSortedSet.empty;
-				} else if (!bok) {
-					return ArrayUnenforcedSortedSet.the(a);
-				} else
-					return ArrayUnenforcedSortedSet.the(b);
-			default:
-				List<Term> u = new FasterList<>(s);
-				for (Term x : this) {
-					if (t.test(x)) u.add(x);
-				}
-				int us = u.size();
-				if (us == s) {
-					if (this instanceof TermVector)
-						return ArrayUnenforcedSortedSet.the(this.arrayShared());
-				}
-				switch (us) {
-					case 0:
-						return ArrayUnenforcedSortedSet.empty;
-					case 1:
-						return ArrayUnenforcedSortedSet.the(u.get(0));
-					case 2:
-						return ArrayUnenforcedSortedSet.the(u.get(0), u.get(1));
-					default:
-						return ArrayUnenforcedSortedSet.the(u.toArray(Op.EmptyTermArray));
-				}
-		}
-
-	}
+	/*@NotNull*/ SortedSet<Term> toSetSorted(Predicate<Term> t);
 
 	/**
 	 * an array of the subterms, which an implementation may allow
@@ -737,253 +570,93 @@ public interface Subterms extends Termlike, Iterable<Term> {
 	 * lead to disaster. by default, it will call 'toArray' which
 	 * guarantees a clone. override with caution
 	 */
-	default Term[] arrayShared() {
-		return arrayClone();
-	}
+	Term[] arrayShared();
 
 	/**
 	 * an array of the subterms
 	 * this is meant to be a clone always
 	 */
-	default Term[] arrayClone() {
-		int s = subs();
-		return s == 0 ? Op.EmptyTermArray : arrayClone(new Term[s], 0, s);
-	}
+	Term[] arrayClone();
 
-	default Term[] arrayClone(Term[] target) {
-		return arrayClone(target, 0, subs());
-	}
+	Term[] arrayClone(Term[] target);
 
-	default Term[] arrayClone(Term[] target, int from, int to) {
-		for (int i = from, j = 0; i < to; i++, j++)
-			target[j] = this.sub(i);
+	Term[] arrayClone(Term[] target, int from, int to);
 
-		return target;
-	}
-
-	default /*@NotNull*/ TermList toList() {
-		return new TermList(this);
-	}
+	/*@NotNull*/ TermList toList();
 
 	/**
 	 * @return a Mutable Set, unless empty
 	 */
-	default /*@NotNull*/ MutableSet<Term> toSet() {
-		int s = subs();
-		UnifiedSet<Term> u = new UnifiedSet(s, 0.99f);
-		if (s > 0)
-		    addAllTo(u);
-		return u;
-	}
+	/*@NotNull*/ MutableSet<Term> toSet();
 
-	default @Nullable <C extends Collection<Term>> C collect(Predicate<Term> ifTrue, C c) {
-		int s = subs();
-		//UnifiedSet<Term> u = null;
-		for (int i = 0; i < s; i++) {
-			/*@NotNull*/
-			Term x = sub(i);
-			if (ifTrue.test(x)) {
-//                    if (c == null)
-//                        c = new UnifiedSet<>((s - i) * 2);
-				c.add(x);
-			}
-		}
-
-		return c;
-	}
+	@Nullable <C extends Collection<Term>> C collect(Predicate<Term> ifTrue, C c);
 
 	/**
 	 * by default this does not need to do anything
 	 * but implementations can cache the normalization
 	 * in a boolean because it only needs done once.
 	 */
-	default void setNormalized() {
-
-	}
+	void setNormalized();
 
 	/**
 	 * assume its normalized if no variables are present
 	 */
-	default boolean isNormalized() {
-		return TermMetadata.normalized(this);
-	}
+	boolean isNormalized();
 
 	/**
 	 * gets the set of unique recursively contained terms of a specific type
 	 * TODO generalize to a provided lambda predicate selector
 	 */
 	/*@NotNull*/
-	default Set<Term> recurseSubtermsToSet(Op _onlyType) {
-	    int onlyType = _onlyType.bit;
-		if (!hasAny(onlyType))
-			return Sets.mutable.empty();
-
-		Set<Term> t = new HashSet(volume());
-
-
-		recurseTerms(
-			tt -> tt.hasAny(onlyType),
-			tt -> {
-				if (tt.opBit() == onlyType)
-					t.add(tt);
-				return true;
-			}, null);
-		return t;
-	}
+	Set<Term> recurseSubtermsToSet(Op _onlyType);
 
 	/*@NotNull*/
-	default boolean recurseSubtermsToSet(int inStructure, /*@NotNull*/ Collection<Term> t, boolean untilAddedORwhileNotRemoved) {
-		boolean[] r = {false};
-		Predicate<Term> selector = s -> {
+	boolean recurseSubtermsToSet(int inStructure, /*@NotNull*/ Collection<Term> t, boolean untilAddedORwhileNotRemoved);
 
-			if (!untilAddedORwhileNotRemoved && r[0])
-				return false;
+	boolean containsRecursively(/*@NotNull*/ Term x, boolean root, Predicate<Term> subTermOf);
 
-			if (s.hasAny(inStructure)) {
-				r[0] |= (untilAddedORwhileNotRemoved) ? t.add(s) : t.remove(s);
-			}
+	boolean equalTerms(/*@NotNull*/ Subterms c);
 
-			return true;
-		};
+	void addAllTo(Collection target);
 
+	void addAllTo(FasterList target);
 
-		recurseTerms(
-			(inStructure != -1) ?
-				p -> p.hasAny(inStructure)
-				:
-				any -> true,
-			selector, null);
+	/* final */ boolean impossibleSubStructure(int structure);
 
+	int subStructure();
 
-		return r[0];
-	}
+	Term[] terms(/*@NotNull*/ IntObjectPredicate<Term> filter);
 
-	default boolean containsRecursively(/*@NotNull*/ Term x, boolean root, Predicate<Term> subTermOf) {
+	void forEach(Consumer<? super Term> action, int start, int stop);
 
-		if (!impossibleSubTerm(x)) {
-			int s = subs();
-			Term prev = null;
-			for (int i = 0; i < s; i++) {
-				Term ii = sub(i);
-				if (different(prev, ii)) {
-					if (ii == x ||
-						((root ? ii.equalsRoot(x) : ii.equals(x)) || ii.containsRecursively(x, root, subTermOf)))
-						return true;
-					prev = ii;
-				}
-			}
-		}
-		return false;
-	}
-
-	default boolean equalTerms(/*@NotNull*/ Subterms c) {
-		int s = subs();
-		if (s != c.subs())
-			return false;
-        for (int i = 0; i < s; i++) {
-            if (!sub(i).equals(c.sub(i)))
-                return false;
-        }
-        return true;
-	}
-
-	default void addAllTo(Collection target) {
-        forEach(target::add);
-	}
-
-	default void addAllTo(FasterList target) {
-		target.ensureCapacity(subs());
-        forEach(target::addFast);
-	}
-
-	default /* final */ boolean impossibleSubStructure(int structure) {
-		//return !hasAll(structure);
-		return !Op.has(subStructure(), structure, true);
-	}
-
-	default int subStructure() {
-		assert (!(this instanceof Compound));
-		return structure();
-	}
-
-	default Term[] terms(/*@NotNull*/ IntObjectPredicate<Term> filter) {
-		TermList l = null;
-		int s = subs();
-		for (int i = 0; i < s; i++) {
-			Term t = sub(i);
-			if (filter.accept(i, t)) {
-				if (l == null)
-					l = new TermList(subs() - i);
-				l.add(t);
-			}
-		}
-		return l == null ? Op.EmptyTermArray : l.arrayKeep();
-	}
-
-	default void forEach(Consumer<? super Term> action, int start, int stop) {
-		if (start < 0 || stop > subs())
-			throw new ArrayIndexOutOfBoundsException();
-
-		for (int i = start; i < stop; i++)
-			action.accept(sub(i));
-	}
-
-	@Override
-	default void forEach(Consumer<? super Term> action) {
-		forEach(action, 0, subs());
-	}
 
 	/**
 	 * return whether a subterm op at an index is an operator.
 	 */
-	default boolean subIs(int i, Op o) {
-		return sub(i).opID() == o.id;
-	}
+	boolean subIs(int i, Op o);
 
 	/**
 	 * counts subterms matching the predicate
 	 */
-	default int count(Predicate<Term> match) {
-		return intifyShallow(0, (c, sub) -> match.test(sub) ? c + 1 : c);
-	}
+	int count(Predicate<Term> match);
 
-	default boolean countEquals(Predicate<Term> match, int n) {
-		int s = subs();
-		if (n > s) return false; //impossible
-		int c = 0;
-		for (int i = 0; i < s; i++) {
-			if (match.test(sub(i))) {
-				c++;
-				if (c > n)
-					return false;
-			}
-		}
-		return c == n;
-	}
+	boolean countEquals(Predicate<Term> match, int n);
 
 	/**
 	 * counts subterms matching the supplied op
 	 */
-	default int count(Op matchingOp) {
-		int matchingOpID = matchingOp.id;
-		return count(x -> x.opID() == matchingOpID);
-	}
+	int count(Op matchingOp);
 
 	/**
 	 * return whether a subterm op at an index is an operator.
 	 * if there is no subterm or the index is out of bounds, returns false.
 	 */
-	default boolean subIsOrOOB(int i, Op o) {
-		Term x = sub(i, null);
-		return x != null && x.opID() == o.id;
-	}
+	boolean subIsOrOOB(int i, Op o);
 
 	/**
 	 * first index of; follows normal indexOf() semantics; -1 if not found
 	 */
-	default /* final */ int indexOf(/*@NotNull*/ Term t) {
-		return indexOf(t, -1);
-	}
+	/* final */ int indexOf(/*@NotNull*/ Term t);
 
 //    static boolean unifyLinearN_TwoPhase0(Subterms x, Subterms y, int n, Unify u) {
 //        Term[] p = null;
@@ -1054,26 +727,14 @@ public interface Subterms extends Termlike, Iterable<Term> {
 ////                    }
 //    }
 
-	default int indexOf(/*@NotNull*/ Term t, int after) {
-		return indexOf(t::equals, after);
-	}
+	int indexOf(/*@NotNull*/ Term t, int after);
 
 	/**
 	 * return the first subterm matching the predicate, or null if none match
 	 */
-	default @Nullable Term subFirst(Predicate<Term> match) {
-		int i = indexOf(match);
-		return i != -1 ? sub(i) : null;
-	}
+	@Nullable Term subFirst(Predicate<Term> match);
 
-	@Override
-	default boolean impossibleSubTerm(Termlike target) {
-		return impossibleSubVolume(target.volume()) || impossibleSubStructure(target.structure());
-	}
-
-	default boolean impossibleSubTerm(int structure, int volume) {
-		return impossibleSubStructure(structure) || impossibleSubVolume(volume);
-	}
+	boolean impossibleSubTerm(int structure, int volume);
 
 
 //    default Term[] termsExcept(RoaringBitmap toRemove) {
@@ -1092,119 +753,36 @@ public interface Subterms extends Termlike, Iterable<Term> {
 	/**
 	 * stream of each subterm
 	 */
-	default Stream<Term> subStream() {
-		return Streams.stream(this);
-	}
+	Stream<Term> subStream();
 
 	/**
 	 * allows the subterms to hold a different hashcode than hashCode when comparing subterms
 	 */
-	default int hashCodeSubterms() {
-		return Subterms.hash(this);
-	}
+	int hashCodeSubterms();
 
 	/**
 	 * TODO write negating version of this that negates only up to subs() bits
 	 */
-	default MetalBitSet indicesOfBits(Predicate<Term> match) {
-		int n = subs();
-		MetalBitSet m = MetalBitSet.bits(n);
-		for (int i = 0; i < n; i++) {
-			if (match.test(sub(i)))
-				m.set(i);
-		}
-		return m;
-	}
+	MetalBitSet indicesOfBits(Predicate<Term> match);
 
-	default Term[] subsIncluding(Predicate<Term> toKeep) {
-		return subsIncExc(indicesOfBits(toKeep), true);
-	}
+	Term[] subsIncluding(Predicate<Term> toKeep);
 
-	default Term[] subsIncluding(MetalBitSet toKeep) {
-		return subsIncExc(toKeep, true);
-	}
+	Term[] subsIncluding(MetalBitSet toKeep);
 
-	default Term[] removing(MetalBitSet toRemove) {
-		return subsIncExc(toRemove, false);
-	}
+	Term[] removing(MetalBitSet toRemove);
 
-	default @Nullable Term[] subsIncExc(MetalBitSet s, boolean includeOrExclude) {
-
-		int c = s.cardinality();
-
-		if (c == 0) {
-//            if (!includeOrExclude)
-//                throw new UnsupportedOperationException("should not reach here");
-			return includeOrExclude ? Op.EmptyTermArray : arrayShared();
-		}
-
-		int size = subs();
-		assert (c <= size) : "bitset has extra bits setAt beyond the range of subterms";
-
-		if (includeOrExclude) {
-			if (c == size) return arrayShared();
-			if (c == 1) return new Term[]{sub(s.first(true))};
-		} else {
-			if (c == size) return EmptyTermArray;
-			if (c == 1) return removing(s.first(true));
-		}
-
-
-		int newSize = includeOrExclude ? c : size - c;
-		Term[] t = new Term[newSize];
-		int j = 0;
-		for (int i = 0; i < size; i++) {
-			if (s.get(i) == includeOrExclude)
-				t[j++] = sub(i);
-		}
-		return t;
-	}
+	@Nullable Term[] subsIncExc(MetalBitSet s, boolean includeOrExclude);
 
 	/**
 	 * match a range of subterms of Y.
 	 * WARNING: provides a shared (non-cloned) copy if the entire range is selected
 	 */
 	/*@NotNull*/
-	default Term[] subRangeArray(int from, int to) {
-		int n = subs();
-		if (from == Integer.MIN_VALUE) from = 0;
-		if (to == Integer.MAX_VALUE) to = n;
+	Term[] subRangeArray(int from, int to);
 
-		if (from == 0 && to == n) {
-			return arrayShared();
+	int indexOf(/*@NotNull*/ Predicate<Term> p);
 
-		} else {
-
-			int s = to - from;
-			if (s == 0)
-				return EmptyTermArray;
-			else {
-				Term[] l = new Term[s];
-				int y = from;
-				for (int i = 0; i < s; i++)
-					l[i] = sub(y++);
-				return l;
-			}
-		}
-	}
-
-	default int indexOf(/*@NotNull*/ Predicate<Term> p) {
-		return indexOf(p, -1);
-	}
-
-	default int indexOf(/*@NotNull*/ Predicate<Term> p, int after) {
-		int s = subs();
-		Term prev = null;
-		for (int i = after + 1; i < s; i++) {
-			Term next = sub(i);
-			if (different(prev, next)) {
-				if (p.test(next))
-					return i;
-				prev = next;
-			}
-		}
-		return -1;
-	}
+	int indexOf(/*@NotNull*/ Predicate<Term> p, int after);
 
 	/**
 	 * returns true if evaluates true for all terms
@@ -1212,19 +790,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 	 *
 	 * @param p
 	 */
-	default boolean AND(/*@NotNull*/ Predicate<Term> p) {
-		int s = subs();
-		Term prev = null;
-		for (int i = 0; i < s; i++) {
-			Term next = sub(i);
-			if (different(prev, next)) {
-				if (!p.test(next))
-					return false;
-				prev = next;
-			}
-		}
-		return true;
-	}
+	boolean AND(/*@NotNull*/ Predicate<Term> p);
 
 	/**
 	 * returns true if evaluates true for any terms
@@ -1232,180 +798,65 @@ public interface Subterms extends Termlike, Iterable<Term> {
 	 *
 	 * @param p
 	 */
-	default boolean OR(/*@NotNull*/ Predicate<Term> p) {
-		int s = subs();
-		Term prev = null;
-		for (int i = 0; i < s; i++) {
-			Term next = sub(i);
-			if (different(prev, next)) {
-				if (p.test(next))
-					return true;
-				prev = next;
-			}
-		}
-		return false;
-	}
+	boolean OR(/*@NotNull*/ Predicate<Term> p);
 
 	/**
 	 * supplies the i'th index as 2nd lambda argument. all subterms traversed, incl repeats
 	 */
-	default boolean ANDi(/*@NotNull*/ ObjectIntPredicate<Term> p) {
-		int s = subs();
-        for (int i = 0; i < s; i++)
-            if (!p.accept(sub(i), i))
-                return false;
-        return true;
-	}
+	boolean ANDi(/*@NotNull*/ ObjectIntPredicate<Term> p);
 
 	/**
 	 * supplies the i'th index as 2nd lambda argument. all subterms traversed, incl repeats
 	 */
-	default boolean ORi(/*@NotNull*/ ObjectIntPredicate<Term> p) {
-		int s = subs();
-        for (int i = 0; i < s; i++)
-            if (p.accept(sub(i), i))
-                return true;
-        return false;
-	}
+	boolean ORi(/*@NotNull*/ ObjectIntPredicate<Term> p);
 
 	/**
 	 * warning: elides test for repeated subterm
 	 */
-	default <X> boolean ORwith(/*@NotNull*/ BiPredicate<Term, X> p, X param) {
-		int s = subs();
-		Term prev = null;
-		for (int i = 0; i < s; i++) {
-			Term next = sub(i);
-			if (different(prev, next)) {
-				if (p.test(next, param))
-					return true;
-				prev = next;
-			}
-		}
-		return false;
-	}
+	<X> boolean ORwith(/*@NotNull*/ BiPredicate<Term, X> p, X param);
 
 	/**
 	 * warning: elides test for repeated subterm
 	 */
-	default <X> boolean ANDwith(/*@NotNull*/ BiPredicate<Term, X> p, X param) {
-		int s = subs();
-		Term prev = null;
-		for (int i = 0; i < s; i++) {
-			Term next = sub(i);
-			if (different(prev, next)) {
-				if (!p.test(next, param))
-					return false;
-				prev = next;
-			}
-		}
-		return true;
-	}
+	<X> boolean ANDwith(/*@NotNull*/ BiPredicate<Term, X> p, X param);
 
 	/**
 	 * visits each, incl repeats
 	 */
-	default <X> boolean ANDwithOrdered(/*@NotNull*/ BiPredicate<Term, X> p, X param) {
-		int s = subs();
-        for (int i = 0; i < s; i++) {
-            if (!p.test(sub(i), param))
-                return false;
-        }
-        return true;
-	}
+	<X> boolean ANDwithOrdered(/*@NotNull*/ BiPredicate<Term, X> p, X param);
 
 	/**
 	 * warning: elides test for repeated subterm
 	 */
-	default boolean ANDrecurse(Predicate<Term> p) {
-		int s = subs();
-		Term prev = null;
-		for (int i = 0; i < s; i++) {
-			Term next = sub(i);
-			if (different(prev, next)) {
-				if (!p.test(next) || (next instanceof Compound && !((Compound) next).ANDrecurse(p)))
-					return false;
-				prev = next;
-			}
-		}
-		return true;
-	}
+	boolean ANDrecurse(Predicate<Term> p);
 
 	/**
 	 * warning: elides test for repeated subterm
 	 */
-	default boolean ORrecurse(Predicate<Term> p) {
-		int s = subs();
-		Term prev = null;
-		for (int i = 0; i < s; i++) {
-			Term next = sub(i);
-			if (different(prev, next)) {
-				if (p.test(next) || (next instanceof Compound && ((Compound) next).ORrecurse(p)))
-					return true;
-				prev = next;
-			}
-		}
-		return false;
-	}
+	boolean ORrecurse(Predicate<Term> p);
 
 	/**
 	 * must be overriden by any Compound subclasses
 	 */
-	@Override
-	default boolean recurseTerms(Predicate<Term> inSuperCompound, Predicate<Term> whileTrue, Compound parent) {
-		return AND(s -> s.recurseTerms(inSuperCompound, whileTrue, parent));
-	}
-
-	/**
-	 * must be overriden by any Compound subclasses
-	 */
-	default boolean recurseTerms(Predicate<Compound> aSuperCompoundMust, BiPredicate<Term, Compound> whileTrue, Compound parent) {
-		return AND(s -> s.recurseTerms(aSuperCompoundMust, whileTrue, parent));
-	}
+	boolean recurseTerms(Predicate<Compound> aSuperCompoundMust, BiPredicate<Term, Compound> whileTrue, Compound parent);
 
 	/**
 	 * incl repeats
 	 */
-	default boolean recurseTermsOrdered(Predicate<Term> inSuperCompound, Predicate<Term> whileTrue, Compound parent) {
-        int s = subs();
-        for (int i = 0; i < s; i++)
-            if (!sub(i).recurseTermsOrdered(inSuperCompound, whileTrue, parent))
-                return false;
-        return true;
-	}
+	boolean recurseTermsOrdered(Predicate<Term> inSuperCompound, Predicate<Term> whileTrue, Compound parent);
 
-	default Subterms reversed() {
-		return RemappedSubterms.reverse(this);
-	}
+	Subterms reversed();
 
 	/**
 	 * removes first occurrence only
 	 */
-	default Term[] removing(int index) {
-		int s = subs();
-		Term[] x = new Term[s - 1];
-		int k = 0;
-		for (int j = 0; j < s; j++) {
-			if (j != index)
-				x[k++] = sub(j);
-		}
-		return x;
+	Term[] removing(int index);
 
-		//return ArrayUtils.remove(arrayShared(), Term[]::new, i);
-	}
+	int hashWith(Op op);
 
-	default int hashWith(Op op) {
-		return hashWith(op.id);
-	}
+	int hashWith(/*byte*/int op);
 
-	default int hashWith(/*byte*/int op) {
-		return Util.hashCombine(this.hashCodeSubterms(), op);
-	}
-
-	default @Nullable Term[] removing(Term x) {
-		MetalBitSet toRemove = indicesOfBits(x::equals);
-		return toRemove.cardinality() == 0 ? null : removing(toRemove);
-	}
+	@Nullable Term[] removing(Term x);
 
 //    /**
 //     * dont override
@@ -1414,17 +865,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 //        return !from.equals(to) && !impossibleSubTerm(from) ? transformSubs(MapSubst.replace(from, to), ATOM) : this;
 //    }
 
-	default Subterms transformSub(int which, UnaryOperator<Term> f) {
-		Term x = sub(which);
-		Term y = f.apply(x);
-		//if (x == y)
-		if (x.equals(y))
-			return this;
-
-		Term[] yy = arrayClone();
-		yy[which] = y;
-		return Op.terms.subterms(yy);
-	}
+	Subterms transformSub(int which, UnaryOperator<Term> f);
 
 	/**
 	 * returns 'x' unchanged if no changes were applied,
@@ -1435,71 +876,12 @@ public interface Subterms extends Termlike, Iterable<Term> {
 	 * providing a hint about the target operator the subterms is being constructed for
 	 * this allows certain fail-fast cases
 	 */
-	default @Nullable Subterms transformSubs(UnaryOperator<Term> f, Op superOp) {
-
-		TermList y = null;
-
-		int s = subs();
+	@Nullable Subterms transformSubs(UnaryOperator<Term> f, Op superOp);
 
 
-		for (int i = 0; i < s; i++) {
+	boolean containsPosOrNeg(Term x);
 
-			Term xi = sub(i);
-
-			Term yi = f.apply(xi);
-
-			//if (yi instanceof Bool) {
-			if (yi == Bool.Null)
-				return null; //short-circuit
-			//}
-
-			if (yi instanceof Fragment) {
-
-				Subterms yy = yi.subterms();
-				if (s == 1) {
-					return (yy.subs() == 0) ?
-						EmptySubterms //the empty ellipsis is the only subterm
-						:
-						yy.transformSubs(f, superOp); //it is only this ellipsis match so inline it by transforming directly and returning it (tail-call)
-				} else {
-					y = transformSubInline(yy, f, y, s, i);
-					if (y == null)
-						return null;
-				}
-
-
-			} else {
-
-
-				if (y == null) {
-					if (differentlyTransformed(xi, yi) /* special */)
-						y = new DisposableTermList(s, i);
-//                    else Util.nop(); ///why
-				}
-
-				if (y != null)
-					y.addFast(yi);
-			}
-		}
-
-		return y != null ? y.commit(this) : this;
-	}
-
-	@Override
-	default boolean these() {
-		return AND(Term::the);
-	}
-
-	default boolean containsPosOrNeg(Term x) {
-		//TODO optimize
-		return contains(x) || containsNeg(x);
-	}
-
-	default boolean containsNeg(Term x) {
-		return x instanceof Neg ? contains(x.unneg()) : hasAny(NEG) && !impossibleSubTerm(x.structure() | NEG.bit, x.volume() + 1)
-			&&
-			ORwith((z, xx) -> z instanceof Neg && xx.equals(z.unneg()), x);
-	}
+	boolean containsNeg(Term x);
 
 	/**
 	 * allows a Subterms implementation to accept the byte[] key that was used in constructing it,

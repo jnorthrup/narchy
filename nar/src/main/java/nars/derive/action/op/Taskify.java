@@ -1,14 +1,13 @@
 package nars.derive.action.op;
 
+import jcog.TODO;
 import jcog.Util;
 import jcog.pri.ScalarValue;
-import nars.$;
-import nars.NAL;
-import nars.NAR;
-import nars.Task;
+import nars.*;
 import nars.derive.Derivation;
 import nars.derive.rule.RuleCause;
 import nars.derive.util.DerivationFailure;
+import nars.subterm.Subterms;
 import nars.task.DebugDerivedTask;
 import nars.task.DerivedTask;
 import nars.term.Compound;
@@ -20,11 +19,13 @@ import nars.term.util.transform.VariableTransform;
 import nars.term.var.VarIndep;
 import nars.time.Tense;
 import nars.truth.Truth;
+import org.eclipse.collections.api.list.primitive.ByteList;
 import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.Arrays;
 
 import static nars.NAL.derive.DERIVE_FILTER_SIMILAR_TO_PARENTS;
@@ -342,6 +343,156 @@ public class Taskify extends ProxyTerm {
             d.unify.use(NAL.derive.TTL_COST_TASK_TASKIFY);
 
         return y;
+    }
+
+    @Override
+    public final boolean the() {
+        return false;
+    }
+
+    @Override
+    public String toString() {
+        return ref.toString();
+    }
+
+    @Override
+    public final Subterms subterms() {
+        return ref.subterms();
+    }
+
+    @Override
+    public Subterms subtermsDirect() {
+        return ((Compound)ref).subtermsDirect();
+    }
+
+    @Override
+    public final int dt() {
+        return ref.dt();
+    }
+
+    @Override
+    public Op op() {
+        return ref.op();
+    }
+
+    @Override
+    public Term unneg() {
+        return ifDifferentElseThis(ref.unneg());
+    }
+
+    @Override
+    public final Term ifDifferentElseThis(Term u) {
+		//continue proxying
+		return u == ref ? this : u;
+    }
+
+    @Override
+    public @Nullable Term replaceAt(ByteList path, Term replacement) {
+        throw new TODO();
+    }
+
+    @Override
+    public @Nullable Term replaceAt(ByteList path, int depth, Term replacement) {
+        throw new TODO();
+    }
+
+    @Override
+    public @Nullable Term normalize(byte varOffset) {
+        return ifDifferentElseThis(ref.normalize(varOffset));
+    }
+
+    @Override
+    public int volume() {
+        return ref.volume();
+    }
+
+    @Override
+    public int complexity() {
+        return ref.complexity();
+    }
+
+    @Override
+    public int structure() {
+        return ref.structure();
+    }
+
+    @Override public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o instanceof ProxyTerm)
+            o = ((ProxyTerm)o).ref;
+//        if (o instanceof Termed)
+//            o = ((Termed)o).term();
+        return ref.equals(o);
+    }
+
+    @Override
+    public int hashCode() {
+        return ref.hashCode();
+    }
+
+    @Override
+    public Term root() {
+        return ifDifferentElseThis(ref.root());
+    }
+
+    @Override
+    public Term concept() {
+        return ifDifferentElseThis(ref.concept());
+    }
+
+    @Override
+    public boolean isCommutative() {
+        return ref.isCommutative();
+    }
+
+    @Override
+    public void appendTo(Appendable w) throws IOException {
+        ref.appendTo(w);
+    }
+
+    @Override
+    public boolean isNormalized() {
+        return ref.isNormalized();
+    }
+
+    @Override
+    public Term sub(int i) {
+        return ref.sub(i);
+    }
+
+    @Override
+    public int subs() {
+        return ref.subs();
+    }
+
+    @Override
+    public final int compareTo(Term t) {
+        return ref.compareTo(t);
+    }
+
+    @Override
+    public int vars() {
+        return ref.vars();
+    }
+
+    @Override
+    public int varIndep() {
+        return ref.varIndep();
+    }
+
+    @Override
+    public int varDep() {
+        return ref.varDep();
+    }
+
+    @Override
+    public int varQuery() {
+        return ref.varQuery();
+    }
+
+    @Override
+    public int varPattern() {
+        return ref.varPattern();
     }
 
     //    @Deprecated

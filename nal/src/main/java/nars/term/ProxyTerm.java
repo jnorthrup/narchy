@@ -1,6 +1,5 @@
 package nars.term;
 
-import jcog.TODO;
 import jcog.WTF;
 import nars.Op;
 import nars.subterm.Subterms;
@@ -13,7 +12,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 
 
-public class ProxyTerm implements SameSubtermsCompound {
+public abstract class ProxyTerm implements SameSubtermsCompound {
 
     public final /*HACK make unpublic */ Term ref;
 
@@ -32,44 +31,27 @@ public class ProxyTerm implements SameSubtermsCompound {
 
 
     @Override
-    public final boolean the() {
-        return false;
-    }
+    public abstract boolean the();
 
     @Override
-    public String toString() {
-        return ref.toString();
-    }
+    public abstract String toString();
 
     @Override
-    public final Subterms subterms() {
-        return ref.subterms();
-    }
+    public abstract Subterms subterms();
 
     @Override
-    public Subterms subtermsDirect() {
-        return ((Compound)ref).subtermsDirect();
-    }
+    public abstract Subterms subtermsDirect();
 
     @Override
-    public final int dt() {
-        return ref.dt();
-    }
+    public abstract int dt();
 
     @Override
-    public Op op() {
-        return ref.op();
-    }
+    public abstract Op op();
 
     @Override
-    public Term unneg() {
-        return ifDifferentElseThis(ref.unneg());
-    }
+    public abstract Term unneg();
 
-    final Term ifDifferentElseThis(Term u) {
-		//continue proxying
-		return u == ref ? this : u;
-    }
+    public abstract Term ifDifferentElseThis(Term u);
 
 //
 //    @Override
@@ -83,113 +65,69 @@ public class ProxyTerm implements SameSubtermsCompound {
 //    }
 
     @Override
-    public @Nullable Term replaceAt(ByteList path, Term replacement) {
-        throw new TODO();
-    }
+    public @Nullable
+    abstract Term replaceAt(ByteList path, Term replacement);
 
     @Override
-    public @Nullable Term replaceAt(ByteList path, int depth, Term replacement) {
-        throw new TODO();
-    }
+    public @Nullable
+    abstract Term replaceAt(ByteList path, int depth, Term replacement);
 
     @Override
-    public @Nullable Term normalize(byte varOffset) {
-        return ifDifferentElseThis(ref.normalize(varOffset));
-    }
+    public @Nullable
+    abstract Term normalize(byte varOffset);
 
     @Override
-    public int volume() {
-        return ref.volume();
-    }
+    public abstract int volume();
 
     @Override
-    public int complexity() {
-        return ref.complexity();
-    }
+    public abstract int complexity();
 
     @Override
-    public int structure() {
-        return ref.structure();
-    }
+    public abstract int structure();
 
 
-    @Override public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o instanceof ProxyTerm)
-            o = ((ProxyTerm)o).ref;
-//        if (o instanceof Termed)
-//            o = ((Termed)o).term();
-        return ref.equals(o);
-    }
+    @Override public abstract boolean equals(Object o);
 
     @Override
-    public int hashCode() {
-        return ref.hashCode();
-    }
+    public abstract int hashCode();
 
     @Override
-    public Term root() {
-        return ifDifferentElseThis(ref.root());
-    }
+    public abstract Term root();
 
     @Override
-    public Term concept() {
-        return ifDifferentElseThis(ref.concept());
-    }
+    public abstract Term concept();
 
     @Override
-    public boolean isCommutative() {
-        return ref.isCommutative();
-    }
+    public abstract boolean isCommutative();
 
     @Override
-    public void appendTo(Appendable w) throws IOException {
-        ref.appendTo(w);
-    }
+    public abstract void appendTo(Appendable w) throws IOException;
 
     @Override
-    public boolean isNormalized() {
-        return ref.isNormalized();
-    }
+    public abstract boolean isNormalized();
 
     @Override
-    public Term sub(int i) {
-        return ref.sub(i);
-    }
+    public abstract Term sub(int i);
 
     @Override
-    public int subs() {
-        return ref.subs();
-    }
+    public abstract int subs();
 
     @Override
-    public final int compareTo(Term t) {
-        return ref.compareTo(t);
-    }
+    public abstract int compareTo(Term t);
 
     @Override
-    public int vars() {
-        return ref.vars();
-    }
+    public abstract int vars();
 
     @Override
-    public int varIndep() {
-        return ref.varIndep();
-    }
+    public abstract int varIndep();
 
     @Override
-    public int varDep() {
-        return ref.varDep();
-    }
+    public abstract int varDep();
 
     @Override
-    public int varQuery() {
-        return ref.varQuery();
-    }
+    public abstract int varQuery();
 
     @Override
-    public int varPattern() {
-        return ref.varPattern();
-    }
+    public abstract int varPattern();
 
 }

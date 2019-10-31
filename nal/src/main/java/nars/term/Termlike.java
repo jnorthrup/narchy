@@ -1,15 +1,11 @@
 package nars.term;
 
-import jcog.TODO;
 import nars.Op;
-import nars.term.atom.Bool;
 import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
 
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 import java.util.function.ToIntFunction;
-
-import static nars.Op.*;
 
 /**
  * something which is like a target but isnt quite,
@@ -33,18 +29,14 @@ public interface Termlike {
      * returns Null if the index is out of bounds;
      * also dont expect a negative index, just >=0
      */
-    default Term subSafe(int i) {
-        return sub(i, Bool.Null);
-    }
+    Term subSafe(int i);
 
     /**
      * tries to get the ith subterm (if this is a TermContainer),
      * or of is out of bounds or not a container,
      * returns the provided ifOutOfBounds
      */
-    default Term sub(int i, Term ifOutOfBounds) {
-        return i >= subs() ? ifOutOfBounds : sub(i);
-    }
+    Term sub(int i, Term ifOutOfBounds);
 
 
     /**
@@ -55,59 +47,36 @@ public interface Termlike {
     /**
      * recursion height; atomic=1, compound>1
      */
-    default int height() {
-        return subs() == 0 ? 1 : 1 + max(Term::height);
-    }
+    int height();
 
     /**
      * syntactic volume = 1 + total volume of terms = complexity of subterms - # variable instances
      */
-    default int volume() {
-        return 1 + sum(Term::volume);
-    }
+    int volume();
 
 
     /**
      * syntactic complexity 1 + total complexity number of leaf terms, excluding variables which have a complexity of zero
      */
-    default int complexity() {
-        return 1 + sum(Term::complexity);
-    }
+    int complexity();
 
     /**
      * only 1-layer (shallow, non-recursive)
      */
-    default int sum(ToIntFunction<Term> value) {
-//        int x = 0;
-//        int s = subs();
-//        for (int i = 0; i < s; i++)
-//            x += value.applyAsInt(sub(i));
-//
-//        return x;
-        return intifyShallow(0, (x, t) -> x + value.applyAsInt(t));
-    }
+    int sum(ToIntFunction<Term> value);
 
     /**
      * only 1-layer (shallow, non-recursive)
      */
-    default int max(ToIntFunction<Term> value) {
-        return intifyShallow(Integer.MIN_VALUE, (x, t) -> Math.max(value.applyAsInt(t), x));
-    }
+    int max(ToIntFunction<Term> value);
 
 
     /**
      * non-recursive, visits only 1 layer deep, and not the current if compound
      */
-    default int intifyShallow(int v, IntObjectToIntFunction<Term> reduce) {
-        int n = subs();
-        for (int i = 0; i < n; i++)
-            v = reduce.intValueOf(v, sub(i));
-        return v;
-    }
+    int intifyShallow(int v, IntObjectToIntFunction<Term> reduce);
 
-    default int intifyRecurse(int _v, IntObjectToIntFunction<Term> reduce) {
-        return intifyShallow(_v, (v, s) -> s.intifyRecurse(v, reduce));
-    }
+    int intifyRecurse(int _v, IntObjectToIntFunction<Term> reduce);
 
     boolean recurseTerms(Predicate<Term> inSuperCompound, Predicate<Term> whileTrue, Compound parent);
 
@@ -122,9 +91,7 @@ public interface Termlike {
     /**
      * average of complexity and volume
      */
-    default float voluplexity() {
-        return (complexity() + volume()) / 2f;
-    }
+    float voluplexity();
 
 
     /**
@@ -148,45 +115,26 @@ public interface Termlike {
     boolean impossibleSubTerm(Termlike target);
 
 
-    default boolean hasAll(int structuralVector) {
-        return Op.has(structure(), structuralVector, true);
-    }
+    boolean hasAll(int structuralVector);
 
-    default boolean hasAny(int structuralVector) {
-        return Op.has(structure(), structuralVector, false);
-    }
+    boolean hasAny(int structuralVector);
 
-    default /* final */ boolean hasAny(/*@NotNull*/ Op op) {
-        return hasAny(op.bit);
-    }
+    /* final */ boolean hasAny(/*@NotNull*/ Op op);
 
-    default /* final */ boolean hasAllAny(/*@NotNull*/ int all, int any) {
-        int s = structure();
-        return Op.has(s, all, true) && Op.has(s, any, false);
-    }
+    /* final */ boolean hasAllAny(/*@NotNull*/ int all, int any);
 
-    default boolean hasVarIndep() {
-        return hasAny(Op.VAR_INDEP.bit);
-    }
+    boolean hasVarIndep();
 
-    default boolean hasVarDep() {
-        return hasAny(Op.VAR_DEP.bit);
-    }
+    boolean hasVarDep();
 
-    default boolean hasVarQuery() {
-        return hasAny(Op.VAR_QUERY.bit);
-    }
+    boolean hasVarQuery();
 
-    default boolean hasVarPattern() {
-        return hasAny(Op.VAR_PATTERN.bit);
-    }
+    boolean hasVarPattern();
 
 
     boolean impossibleSubStructure(int structure);
 
-    default boolean impossibleSubVolume(int otherTermVolume) {
-        return otherTermVolume > volume() - subs();
-    }
+    boolean impossibleSubVolume(int otherTermVolume);
 
 //    /**
 //     * if it's larger than this target it can not be equal to this.
@@ -202,57 +150,34 @@ public interface Termlike {
 //    }
 
 
-    default int vars() {
-        return hasVars() ? sum(Term::vars) : 0;
-    }
+    int vars();
 
-    default boolean hasVars() {
-        return hasAny(VAR_INDEP.bit | VAR_DEP.bit | VAR_QUERY.bit | VAR_PATTERN.bit);
-    }
+    boolean hasVars();
 
     /**
      * # of contained dependent variables in subterms (1st layer only)
      */
-    default int varDep() {
-        return sum(Term::varDep);
-    }
+    int varDep();
 
-    default int varIndep() {
-        return sum(Term::varIndep);
-    }
+    int varIndep();
 
-    default int varQuery() {
-        return sum(Term::varQuery);
-    }
+    int varQuery();
 
-    default int varPattern() {
-        return sum(Term::varPattern);
-    }
+    int varPattern();
 
 
     /**
      * structure of the first layer (surface) only
      */
-    default int structureSurface() {
-        return intifyShallow(0, (s, x) -> s | x.opBit());
-    }
+    int structureSurface();
 
     /**
      * immutable internability
      */
-    default boolean these() {
-        throw new TODO();
-    }
+    boolean these();
 
-    default int addAllTo(Term[] t, int offset) {
-        int s = subs();
-        for (int i = 0; i < s; )
-            t[offset++] = sub(i++);
-        return s;
-    }
+    int addAllTo(Term[] t, int offset);
 
-    default int subStructure() {
-        return 0;
-    }
+    int subStructure();
 }
 

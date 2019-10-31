@@ -22,34 +22,28 @@ package nars.term;
 
 import jcog.Util;
 import jcog.data.bit.MetalBitSet;
+import jcog.data.list.FasterList;
 import jcog.data.sexpression.IPair;
-import jcog.data.sexpression.Pair;
 import nars.Op;
-import nars.The;
-import nars.io.TermAppender;
 import nars.subterm.Subterms;
-import nars.term.anon.Anon;
+import nars.subterm.TermList;
 import nars.term.compound.UnitCompound;
-import nars.term.util.TermTransformException;
 import nars.term.util.builder.TermBuilder;
-import nars.term.util.conj.Conj;
-import nars.term.util.conj.ConjSeq;
-import nars.term.util.conj.ConjUnify;
-import nars.term.util.transform.MapSubst;
 import nars.term.util.transform.TermTransform;
 import nars.unify.Unify;
-import nars.unify.UnifyAny;
-import nars.unify.UnifyFirst;
+import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
+import org.eclipse.collections.api.block.predicate.primitive.IntObjectPredicate;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
+import org.eclipse.collections.api.block.predicate.primitive.ObjectIntPredicate;
+import org.eclipse.collections.api.block.procedure.primitive.ObjectIntProcedure;
+import org.eclipse.collections.api.set.MutableSet;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
-import java.util.function.BiPredicate;
-import java.util.function.Predicate;
-
-import static nars.Op.CONJ;
-import static nars.time.Tense.*;
+import java.util.*;
+import java.util.function.*;
+import java.util.stream.Stream;
 
 /**
  * a compound target
@@ -140,9 +134,7 @@ public interface Compound extends Term, IPair, Subterms {
     int hashCode();
 
     @Override
-    default int intifyRecurse(int v, IntObjectToIntFunction<Term> reduce) {
-        return reduce.intValueOf(subterms().intifyRecurse(v, reduce), this);
-    }
+    int intifyRecurse(int v, IntObjectToIntFunction<Term> reduce);
 
     @Override
     boolean recurseTerms(Predicate<Term> inSuperCompound, Predicate<Term> whileTrue, @Nullable Compound superterm);
@@ -150,34 +142,10 @@ public interface Compound extends Term, IPair, Subterms {
     @Override
     boolean recurseTermsOrdered(Predicate<Term> inSuperCompound, Predicate<Term> whileTrue, Compound parent);
 
-    default boolean unifiesRecursively(Term x) {
-        return unifiesRecursively(x, (y)->true);
-    }
+    boolean unifiesRecursively(Term x);
 
     /** TODO test */
-    default boolean unifiesRecursively(Term x, Predicate<Term> preFilter) {
-
-        if (x instanceof Compound) {
-//            int xv = x.volume();
-            if (!hasAny(Op.Variable) /*&& xv > volume()*/)
-                return false; //TODO check
-
-            UnifyAny u = new UnifyAny();
-
-            //if (u.unifies(this, x)) return true;
-
-            int xOp = x.opID();
-            return !subterms().recurseTerms(s->s.hasAny(1<<xOp)/*t->t.volume()>=xv*/, s->{
-                if (s instanceof Compound && s.opID()==xOp) {
-                    return !preFilter.test(s) || !x.unify(s, u);
-                }
-                return true;
-            }, this);
-        } else {
-            return x instanceof Variable || containsRecursively(x);
-        }
-    }
-
+    boolean unifiesRecursively(Term x, Predicate<Term> preFilter);
 
 
     @Override
@@ -186,10 +154,7 @@ public interface Compound extends Term, IPair, Subterms {
     /**
      * very fragile be careful here
      */
-    @Override
-    default /* final */ boolean containsRecursively(Term x, boolean root, @Nullable Predicate<Term> inSubtermsOf) {
-        return (inSubtermsOf == null || inSubtermsOf.test(this)) && subtermsContainsRecursively(x, root, inSubtermsOf);
-    }
+    @Override /* final */ boolean containsRecursively(Term x, boolean root, @Nullable Predicate<Term> inSubtermsOf);
 
     boolean subtermsContainsRecursively(Term x, boolean root, Predicate<Term> inSubtermsOf);
 
@@ -200,46 +165,29 @@ public interface Compound extends Term, IPair, Subterms {
     Subterms subterms();
 
     /** for direct access to subterms only; may return this instance if SameSubtermsCompound */
-    default Subterms subtermsDirect() {
-        return subterms();
-    }
+    Subterms subtermsDirect();
 
     @Override
-    default boolean the() {
-        return this instanceof The && subterms().these();
-    }
+    boolean the();
 
     @Override
-    default boolean these() {
-        return this.the();
-    }
+    boolean these();
 
     @Override
-    default Term anon() {
-        return new Anon(/* TODO size estimate */).put(this);
-    }
-
+    Term anon();
 
 
     @Override
-    default Term sub(int i) {
-        return null;
-    }
+    Term sub(int i);
 
     @Override
-    default int subs() {
-        return 0;
-    }
+    int subs();
 
     @Override
-    default boolean ORrecurse(Predicate<Term> p) {
-        return p.test(this) || subterms().ORrecurse(p);
-    }
+    boolean ORrecurse(Predicate<Term> p);
 
     @Override
-    default boolean ANDrecurse(Predicate<Term> p) {
-        return p.test(this) && subterms().ANDrecurse(p);
-    }
+    boolean ANDrecurse(Predicate<Term> p);
 
 
     /**
@@ -256,105 +204,34 @@ public interface Compound extends Term, IPair, Subterms {
 //
 //    }
     @Override
-    default boolean unify(Term y, Unify u) {
-        return (this == y)
-                ||
-                (y instanceof UnifyFirst && y.unify(this, u))
-                ||
-                (y instanceof Compound && (equals(y) || (opID() == y.opID() && unifySubterms((Compound)y, u))))
-
-                ;
-    }
+    boolean unify(Term y, Unify u);
 
 
-    default boolean unifySubterms(Compound y, Unify u) {
-
-        Compound x = this;
-
-        Op o = op();
-        if (o.temporal && !u.unifyDT(x, y))
-            return false;
-
-        Subterms xx = x.subterms(), yy = y.subterms();
-
-        if (o.temporal) {
-
-            if (xx.equals(yy))
-                return true; //compound equality would have been true if non-temporal
-
-            if (o == CONJ)
-                return ConjUnify.unifyConj(x, y, xx, yy, u);
-        }
-
-        int xs = xx.subs();
-        if (xs != yy.subs())
-            return false;
-
-        if (xs == 1)
-            return xx.sub(0).unify(y.sub(0), u);
-
-        if (!Subterms.possiblyUnifiableAssumingNotEqual(xx, yy, u.varBits))
-            return false;
-
-        /* subs>1 */
-        return o.commutative ?
-            Subterms.unifyCommute(xx, yy, u) :
-            Subterms.unifyLinear(xx, yy, u);
-    }
+    boolean unifySubterms(Compound y, Unify u);
 
     @Override
-    default void appendTo(/*@NotNull*/ Appendable p) throws IOException {
-        TermAppender.append(this, p);
-    }
+    void appendTo(/*@NotNull*/ Appendable p) throws IOException;
 
     @Override
-    default @Nullable Object _car() {
-        return sub(0);
-    }
+    @Nullable Object _car();
 
     /**
      * cdr or 'rest' function for s-expression interface when arity > 1
      */
     @Override
-    default @Nullable Object _cdr() {
-        int len = subs();
-        switch (len) {
-            case 1:
-                throw new RuntimeException("Pair fault");
-            case 2:
-                return sub(1);
-            case 3:
-                return new Pair(sub(1), sub(2));
-            case 4:
-                return new Pair(sub(1), new Pair(sub(2), sub(3)));
-        }
-
-
-        Pair p = null;
-        for (int i = len - 2; i >= 0; i--) {
-            p = new Pair(sub(i), p == null ? sub(i + 1) : p);
-        }
-        return p;
-    }
+    @Nullable Object _cdr();
 
 
     /*@NotNull*/
     @Override
-    default Object setFirst(Object first) {
-        throw new UnsupportedOperationException();
-    }
+    Object setFirst(Object first);
 
     /*@NotNull*/
     @Override
-    default Object setRest(Object rest) {
-        throw new UnsupportedOperationException();
-    }
+    Object setRest(Object rest);
 
     @Override
-    default boolean isCommutative() {
-        //Op op = op();
-        return /*op == CONJ ? dtSpecial(dt()) : */op().commutative && subs() > 1;
-    }
+    boolean isCommutative();
 
     /**
      * gets temporal relation value
@@ -365,36 +242,12 @@ public interface Compound extends Term, IPair, Subterms {
     @Override
     boolean isNormalized();
 
-    default int subStructure() {
-        return Subterms.super.structure();
-    }
+    int subStructure();
 
     /**
      * replaces the 'from' target with 'to', recursively
      */
-    default Term replace(Term from, Term to) {
-
-        return MapSubst.replace(from, to, this);
-
-//
-//        Subterms oldSubs = subterms();
-//        Subterms newSubs = oldSubs.replaceSub(from, to, op());
-//
-//        if (newSubs == oldSubs)
-//            return this;
-//
-//        if (newSubs == null)
-//            return Bool.Null;
-//
-//        int dt = dt();
-//        Op o = op();
-//        if (newSubs instanceof TermList) {
-//            return o.the(dt, ((TermList) newSubs).arrayKeep());
-//        } else {
-//            return o.the(dt, newSubs);
-//        }
-//
-    }
+    Term replace(Term from, Term to);
 
 //    @Deprecated default int subTimeOnly(Term event) {
 //        int[] t = subTimes(event, 1);
@@ -467,206 +320,45 @@ public interface Compound extends Term, IPair, Subterms {
 
 
     @Override
-    default boolean eventsOR(LongObjectPredicate<Term> each, long offset, boolean decomposeConjDTernal, boolean decomposeXternal) {
-        return !eventsAND((when,what)-> !each.accept(when, what), offset, decomposeConjDTernal, decomposeXternal);
-    }
+    boolean eventsOR(LongObjectPredicate<Term> each, long offset, boolean decomposeConjDTernal, boolean decomposeXternal);
 
     /**
      * iterates contained events within a conjunction
      */
     @Override
-    default boolean eventsAND(LongObjectPredicate<Term> each, long offset, boolean decomposeConjDTernal, boolean decomposeXternal) {
-
-
-        boolean decompose;
-        int dt;
-
-        if (opID() != CONJ.id) {
-            decompose = false;
-            dt = DTERNAL;
-        } else {
-
-            dt = dt();
-            switch (dt) {
-
-                case DTERNAL:
-                    if (ConjSeq.isFactoredSeq(this)) {
-                        Subterms ss = subterms();
-
-                        //distribute the factored inner sequence
-                        MetalBitSet eteComponents = ConjSeq.seqEternalComponents(ss);
-                        Term seq = ConjSeq.seqTemporal(ss, eteComponents);
-
-                        int sdt = seq.dt();
-                        //non-special sequence
-                        boolean unfactor = sdt != XTERNAL || decomposeXternal;
-                        if (unfactor) {
-                            Term factor = ConjSeq.seqEternal(ss, eteComponents);
-
-                            return seq.eventsAND(
-                                    (!decomposeConjDTernal) ?
-                                            (when, what) -> {
-                                                //combine the component with the eternal factor
-                                                Term distributed = CONJ.the(what, factor);
-
-                                                if (distributed.op() != CONJ)
-                                                    throw new TermTransformException(Compound.this, distributed, "invalid conjunction factorization"
-                                                    );
-
-                                                return each.accept(when, distributed);
-                                            }
-                                            :
-                                            (when, what) ->
-                                                    //provide the component and the eternal separately, at the appropriate time
-                                                    each.accept(when, what) && each.accept(when, factor)
-
-                                    , offset, decomposeConjDTernal, decomposeXternal);
-
-                        }
-
-                    }
-
-                    if (decompose = decomposeConjDTernal)
-                        dt = 0;
-
-                    break;
-//            case 0:
-//                decompose = decomposeConjParallel;
-//                break;
-                case XTERNAL:
-                    if (decompose = decomposeXternal)
-                        dt = 0;
-                    break;
-                default:
-                    decompose = true;
-                    break;
-            }
-        }
-
-        if (!decompose) {
-            return each.accept(offset, this);
-        } else {
-
-            Subterms ee = subterms();
-
-            long t = offset;
-
-            boolean changeDT = dt != 0 && t != ETERNAL && t != TIMELESS /* motionless in time */;
-
-
-            boolean fwd;
-            if (changeDT) {
-                fwd = dt >= 0;
-                if (!fwd)
-                    dt = -dt;
-            } else {
-                fwd = true;
-            }
-
-            int s = ee.subs() - 1;
-            for (int i = 0; i <= s; i++) {
-                Term ei = ee.sub(fwd ? i : s - i);
-                if (!ei.eventsAND(each, t, decomposeConjDTernal, decomposeXternal))
-                    return false;
-
-                if (changeDT && i < s)
-                    t += dt + ei.eventRange();
-            }
-
-
-            return true;
-        }
-    }
+    boolean eventsAND(LongObjectPredicate<Term> each, long offset, boolean decomposeConjDTernal, boolean decomposeXternal);
 
 
     @Override
-    default boolean hasXternal() {
-        return dt() == XTERNAL || Subterms.super.hasXternal();
-    }
+    boolean hasXternal();
 
     @Override
-    default @Nullable Term normalize(byte varOffset) {
-        return varOffset == 0 && this.isNormalized() ? this : Op.terms.normalize(this, varOffset);
-
-    }
-
-
-    @Override default Term root() { return Op.terms.root(this);  }
-    @Override default Term concept() { return TermBuilder.concept(this);  }
+    @Nullable Term normalize(byte varOffset);
 
 
     @Override
-    default int eventRange() {
-        if (opID() == CONJ.id) {
-            int dt = dt();
-            if (dt == XTERNAL)
-                return 0; //unknown actual range; logically must be considered as point-like event
+    Term root();
 
-            Subterms tt = subterms();
-            int l = tt.subs();
-            if (l == 2) {
-
-                switch (dt) {
-                    case DTERNAL:
-                    case 0:
-                        dt = 0;
-                        break;
-                    default:
-                        dt = Math.abs(dt);
-                        break;
-                }
-
-                return tt.subEventRange(0) + dt + tt.subEventRange(1);
-
-            } else {
-                int s = 0;
-                for (int i = 0; i < l; i++)
-                    s = Math.max(s, tt.subEventRange(i));
-                return s;
-            }
-        }
-        return 0;
-
-    }
+    @Override
+    Term concept();
 
 
     @Override
-    default int structure() {
-        return subStructure() | opBit();
-    }
+    int eventRange();
 
-    default Term dt(int dt) {
-        return dt(dt, Op.terms);
-    }
-
-    default Term dt(int nextDT, TermBuilder b) {
-        return b.dt(this, nextDT);
-    }
 
     @Override
-    default boolean equalsRoot(Term x) {
-        if (!(x instanceof Compound))
-            return false;
+    int structure();
 
-        if (this.equals(x))
-            return true;
+    Term dt(int dt);
 
-        if (opID() != x.opID() || !hasAny(Op.Temporal)
-                || structure()!=x.structure())
-            return false;
+    Term dt(int nextDT, TermBuilder b);
 
-        Term root = root(), xRoot;
-        return (root != this && root.equals(x)) || (((xRoot = x.root())) != x && root.equals(xRoot));
-    }
+    @Override
+    boolean equalsRoot(Term x);
 
 
-    @Override default /* final */ Term transform(TermTransform t) {
-//        if (t instanceof RecursiveTermTransform) {
-//            return transform((RecursiveTermTransform) t, null, XTERNAL);
-//            //return transformBuffered(t, null, 256); //<- not ready yet
-//        } else
-            return t.applyCompound(this);
-    }
+    @Override /* final */ Term transform(TermTransform t);
 
 
 //    /** global default transform procedure: can decide semi-optimal transform implementation
@@ -695,35 +387,238 @@ public interface Compound extends Term, IPair, Subterms {
 
 
 
-    default Term eventFirst() {
-        if (Conj.isSeq(this)) {
-            Term[] first = new Term[1];
-            eventsAND((when, what) -> {
-                first[0] = what;
-                return false; //done got first
-            }, 0, false, false);
-            return first[0];
-        }
-        return this;
-    }
+    Term eventFirst();
 
     /**
      * TODO optimize
      */
-    default Term eventLast() {
-        if (Conj.isSeq(this)) {
-            Term[] last = new Term[1];
-            eventsAND((when, what) -> {
-                last[0] = what;
-                return true; //HACK keep going to end
-            }, 0, false, false);
-            return last[0];
-        }
-        return this;
-    }
+    Term eventLast();
 
 
+    @Override
+    Predicate<Term> containing();
 
+    @Override
+    boolean contains(Term x);
+
+    @Override
+    boolean containsInstance(Term t);
+
+    @Override
+    @Nullable Term subSub(byte[] path);
+
+    @Override
+    @Nullable Term subSub(int start, int end, byte[] path);
+
+    @Override
+    @Nullable Term subSubUnsafe(int start, int end, byte[] path);
+
+    @Override
+    boolean containsAll(Subterms ofThese);
+
+    @Override
+    boolean containsAny(Subterms ofThese);
+
+    @Override
+    <X> X[] array(Function<Term, X> map, IntFunction<X[]> arrayizer);
+
+    @Override
+    int subEventRange(int i);
+
+    @Override
+    @Nullable Term subRoulette(FloatFunction<Term> subValue, Random rng);
+
+    @Override
+    @Nullable Term sub(Random rng);
+
+    @Override
+    Subterms remove(Term event);
+
+    @Override
+    void forEachI(ObjectIntProcedure<Term> t);
+
+    @Override
+    <X> void forEachWith(BiConsumer<Term, X> t, X argConst);
+
+    @Override
+    Subterms commuted();
+
+    @Override
+    boolean isSorted();
+
+    @Override
+    boolean isCommuted();
+
+    @Override
+    Iterator<Term> iterator();
+
+    @Override
+    boolean subEquals(int i, /*@NotNull*/ Term x);
+
+    @Override /*@NotNull*/ SortedSet<Term> toSetSorted();
+
+    @Override
+    @SuppressWarnings("LambdaUnfriendlyMethodOverload") /*@NotNull*/ SortedSet<Term> toSetSorted(UnaryOperator<Term> map);
+
+    @Override /*@NotNull*/ SortedSet<Term> toSetSorted(Predicate<Term> t);
+
+    @Override
+    Term[] arrayShared();
+
+    @Override
+    Term[] arrayClone();
+
+    @Override
+    Term[] arrayClone(Term[] target);
+
+    @Override
+    Term[] arrayClone(Term[] target, int from, int to);
+
+    @Override /*@NotNull*/ TermList toList();
+
+    @Override /*@NotNull*/ MutableSet<Term> toSet();
+
+    @Override
+    @Nullable <C extends Collection<Term>> C collect(Predicate<Term> ifTrue, C c);
+
+    @Override
+    void setNormalized();
+
+    /*@NotNull*/
+    @Override
+    Set<Term> recurseSubtermsToSet(Op _onlyType);
+
+    /*@NotNull*/
+    @Override
+    boolean recurseSubtermsToSet(int inStructure, /*@NotNull*/ Collection<Term> t, boolean untilAddedORwhileNotRemoved);
+
+    @Override
+    boolean equalTerms(/*@NotNull*/ Subterms c);
+
+    @Override
+    void addAllTo(Collection target);
+
+    @Override
+    void addAllTo(FasterList target);
+
+    @Override /* final */ boolean impossibleSubStructure(int structure);
+
+    @Override
+    Term[] terms(/*@NotNull*/ IntObjectPredicate<Term> filter);
+
+    @Override
+    void forEach(Consumer<? super Term> action, int start, int stop);
+
+    @Override
+    void forEach(Consumer<? super Term> action);
+
+    @Override
+    boolean subIs(int i, Op o);
+
+    @Override
+    int count(Predicate<Term> match);
+
+    @Override
+    boolean countEquals(Predicate<Term> match, int n);
+
+    @Override
+    int count(Op matchingOp);
+
+    @Override
+    boolean subIsOrOOB(int i, Op o);
+
+    @Override /* final */ int indexOf(/*@NotNull*/ Term t);
+
+    @Override
+    int indexOf(/*@NotNull*/ Term t, int after);
+
+    @Override
+    @Nullable Term subFirst(Predicate<Term> match);
+
+    @Override
+    boolean impossibleSubTerm(Termlike target);
+
+    @Override
+    boolean impossibleSubTerm(int structure, int volume);
+
+    @Override
+    Stream<Term> subStream();
+
+    @Override
+    int hashCodeSubterms();
+
+    @Override
+    MetalBitSet indicesOfBits(Predicate<Term> match);
+
+    @Override
+    Term[] subsIncluding(Predicate<Term> toKeep);
+
+    @Override
+    Term[] subsIncluding(MetalBitSet toKeep);
+
+    @Override
+    Term[] removing(MetalBitSet toRemove);
+
+    @Override
+    @Nullable Term[] subsIncExc(MetalBitSet s, boolean includeOrExclude);
+
+    /*@NotNull*/
+    @Override
+    Term[] subRangeArray(int from, int to);
+
+    @Override
+    int indexOf(/*@NotNull*/ Predicate<Term> p);
+
+    @Override
+    int indexOf(/*@NotNull*/ Predicate<Term> p, int after);
+
+    @Override
+    boolean AND(/*@NotNull*/ Predicate<Term> p);
+
+    @Override
+    boolean OR(/*@NotNull*/ Predicate<Term> p);
+
+    @Override
+    boolean ANDi(/*@NotNull*/ ObjectIntPredicate<Term> p);
+
+    @Override
+    boolean ORi(/*@NotNull*/ ObjectIntPredicate<Term> p);
+
+    @Override
+    <X> boolean ORwith(/*@NotNull*/ BiPredicate<Term, X> p, X param);
+
+    @Override
+    <X> boolean ANDwith(/*@NotNull*/ BiPredicate<Term, X> p, X param);
+
+    @Override
+    <X> boolean ANDwithOrdered(/*@NotNull*/ BiPredicate<Term, X> p, X param);
+
+    @Override
+    Subterms reversed();
+
+    @Override
+    Term[] removing(int index);
+
+    @Override
+    int hashWith(Op op);
+
+    @Override
+    int hashWith(/*byte*/int op);
+
+    @Override
+    @Nullable Term[] removing(Term x);
+
+    @Override
+    Subterms transformSub(int which, UnaryOperator<Term> f);
+
+    @Override
+    @Nullable Subterms transformSubs(UnaryOperator<Term> f, Op superOp);
+
+    @Override
+    boolean containsPosOrNeg(Term x);
+
+    @Override
+    boolean containsNeg(Term x);
 }
 
 
